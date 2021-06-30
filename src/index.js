@@ -1,24 +1,15 @@
 
 import React from 'react';
-import { SafeAreaView, View, Text, StyleSheet } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { AuthNavigator } from './navigations';
 
-const WelcomeScreen = () => {
+const AppScreen = () => {
 
     return (
-        <SafeAreaView style={styles.container}>
-            <Text>{'Testing...'}</Text>
-        </SafeAreaView>
+        <NavigationContainer>
+            <AuthNavigator.AuthStackNavigator />
+        </NavigationContainer>
     )
 }
 
-export default WelcomeScreen;
-
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center'
-    }
-})
+export default AppScreen;
