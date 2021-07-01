@@ -2,13 +2,17 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { AuthNavigator } from './navigations';
+import { Provider } from 'react-redux';
+import reduxStore from './redux/reduxStore';
 
 const AppScreen = () => {
 
     return (
-        <NavigationContainer>
-            <AuthNavigator.AuthStackNavigator />
-        </NavigationContainer>
+        <Provider store={reduxStore}>
+            <NavigationContainer>
+                <AuthNavigator.AuthStackNavigator />
+            </NavigationContainer>
+        </Provider>
     )
 }
 

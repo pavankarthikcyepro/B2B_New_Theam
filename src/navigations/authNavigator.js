@@ -10,7 +10,7 @@ import ForgotScreen from '../scenes/loginScenes/forgotComp';
 const AuthStackIdentifiers = {
     WELCOME: 'WELCOME',
     LOGIN: 'LOGIN',
-    SIGNUP: 'SIGNUP'
+    FORGOT: 'FORGOT'
 }
 
 const Stack = createStackNavigator();
@@ -26,7 +26,7 @@ const AuthStackNavigator = () => {
         >
             <Stack.Screen name={AuthStackIdentifiers.WELCOME} component={WelcomeScreen} options={{ headerShown: false, }} />
             <Stack.Screen name={AuthStackIdentifiers.LOGIN} component={LoginScreen} options={{ title: 'Sign In', headerBackTitleVisible: false }} />
-            <Stack.Screen name={AuthStackIdentifiers.SIGNUP} component={ForgotScreen} options={{ title: 'Forgot', headerBackTitleVisible: false }} />
+            <Stack.Screen name={AuthStackIdentifiers.FORGOT} component={ForgotScreen} options={{ title: 'Forgot', headerBackTitleVisible: false }} />
         </Stack.Navigator>
     )
 }
