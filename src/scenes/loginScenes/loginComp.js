@@ -1,11 +1,11 @@
 
 import React, { useEffect, useRef } from 'react';
-import { SafeAreaView, View, Text, StyleSheet, Dimensions, Pressable, Animated } from 'react-native';
+import { SafeAreaView, View, Text, StyleSheet, Dimensions, Pressable, Animated, Image } from 'react-native';
 import { Colors } from '../../styles';
 import { TextinputComp } from '../../components/textinputComp';
 import { ButtonComp } from '../../components/buttonComp';
 import { useSelector, useDispatch } from 'react-redux';
-import { updateEmployeeId, updatePassword } from '../../redux/loginSlice';
+import { updateEmployeeId, updatePassword, updateSecurePassword, showErrorMessage } from '../../redux/loginSlice';
 import { AuthNavigator } from '../../navigations';
 import { IconButton } from 'react-native-paper';
 
@@ -27,12 +27,30 @@ const LoginScreen = ({ navigation }) => {
     }, [])
 
     const loginClicked = () => {
-        console.log('name: ', selector.employeeId);
-        console.log('name: ', selector.password);
 
-        // if () {
+        const employeeId = selector.employeeId;
+        const password = selector.password;
 
-        // }
+        if (employeeId.length === 0) {
+            let object = {
+                key: 'EMPLOYEEID',
+                message: "Please enter employee id"
+            }
+            dispatch(showErrorMessage(object));
+            return;
+        }
+
+        if (password.length === 0) {
+            let object = {
+                key: 'PASSWORD',
+                message: "Please enter password"
+            }
+            dispatch(showErrorMessage(object));
+            return;
+        }
+
+        console.log('employeeId: ', employeeId);
+        console.log('password: ', password);
     }
 
     const forgotClicked = () => {
@@ -51,45 +69,59 @@ const LoginScreen = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.container}>
 
-            <View style={{ paddingHorizontal: 20, paddingTop: 10 }}>
-                <Text style={styles.welcomeStyle}>{'Wlecome To Automate'}</Text>
-                <TextinputComp
-                    value={selector.employeeId}
-                    label={'Employee ID'}
-                    mode={'outlined'}
-                    onChangeText={(text) => dispatch(updateEmployeeId(text))}
+            <View style={{ flex: 1 }}>
+                <Image
+                    style={{ width: '100%', height: 400 }}
+                    resizeMode={'center'}
+                    source={require('../../assets/images/welcome.png')}
                 />
-                <View style={{ height: 20 }}></View>
-                <TextinputComp
-                    value={selector.password}
-                    label={'Password'}
-                    mode={'outlined'}
-                    isSecure={true}
-                    onChangeText={(text) => dispatch(updatePassword(text))}
-                />
-                <View style={styles.forgotView}>
-                    <Pressable onPress={forgotClicked}>
-                        <Text style={styles.forgotText}>{'Forgot Password?'}</Text>
-                    </Pressable>
-                </View>
-                <View style={{ height: 40 }}></View>
-                <ButtonComp title={'LOG IN'} width={ScreenWidth - 40} onPress={loginClicked} />
-            </View>
 
-            {/* Bottom Popup */}
-            <Animated.View style={[styles.bottomView, { opacity: fadeAnima }]}>
-                <View style={styles.bottomVwSubVw}>
-                    <Text style={styles.text1}>{'User’s Profile'}</Text>
-                    <Text style={styles.text2}>{'Thanks to user’s profile your vehicles, service books and massages will be stored safely in a cloud, so you do not have to worry about that anymore.'}</Text>
+                <View style={{ height: '100%', position: 'absolute', paddingHorizontal: 20, paddingTop: 30, marginTop: 150, backgroundColor: Colors.WHITE, borderRadius: 4 }}>
+                    <Text style={styles.welcomeStyle}>{'Wlecome To Automate'}</Text>
+                    <TextinputComp
+                        value={selector.employeeId}
+                        error={selector.showLoginErr}
+                        errorMsg={selector.loginErrMessage}
+                        label={'Employee ID'}
+                        mode={'outlined'}
+                        onChangeText={(text) => dispatch(updateEmployeeId(text))}
+                    />
+                    <View style={{ height: 20 }}></View>
+                    <TextinputComp
+                        value={selector.password}
+                        error={selector.showPasswordErr}
+                        errorMsg={selector.passwordErrMessage}
+                        label={'Password'}
+                        mode={'outlined'}
+                        isSecure={selector.securePassword}
+                        showRightIcon={true}
+                        onChangeText={(text) => dispatch(updatePassword(text))}
+                        onRightIconPressed={() => dispatch(updateSecurePassword())}
+                    />
+                    <View style={styles.forgotView}>
+                        <Pressable onPress={forgotClicked}>
+                            <Text style={styles.forgotText}>{'Forgot Password?'}</Text>
+                        </Pressable>
+                    </View>
+                    <View style={{ height: 40 }}></View>
+                    <ButtonComp title={'LOG IN'} width={ScreenWidth - 40} onPress={loginClicked} />
                 </View>
-                <IconButton
-                    style={styles.closeStyle}
-                    icon="close"
-                    color={Colors.DARK_GRAY}
-                    size={20}
-                    onPress={closeBottomView}
-                />
-            </Animated.View>
+
+                {/* Bottom Popup */}
+                <Animated.View style={[styles.bottomView, { opacity: fadeAnima }]}>
+                    <View style={styles.bottomVwSubVw}>
+                        <Text style={styles.text1}>{'User’s Profile'}</Text>
+                        <Text style={styles.text2}>{'Thanks to user’s profile your vehicles, service books and massages will be stored safely in a cloud, so you do not have to worry about that anymore.'}</Text>
+                    </View>
+                    <IconButton
+                        style={styles.closeStyle}
+                        icon="close"
+                        color={Colors.DARK_GRAY}
+                        size={20}
+                        onPress={closeBottomView}
+                    />
+                </Animated.View>
+            </View>
         </SafeAreaView>
     )
 }
@@ -101,14 +133,14 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: 'column',
-        backgroundColor: Colors.WHITE
+        backgroundColor: Colors.LIGHT_GRAY
     },
     welcomeStyle: {
         fontSize: 20,
         fontWeight: '600',
         color: Colors.RED,
         textAlign: 'center',
-        marginBottom: 30
+        marginBottom: 40
     },
     forgotView: {
         flexDirection: 'row',
