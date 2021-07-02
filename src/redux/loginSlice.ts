@@ -1,4 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { client } from '../networking/client';
+import { ENDPOINT, KEYS } from '../networking/endpoints';
 
 interface LoginState {
     employeeId: string,
@@ -24,6 +26,13 @@ const initialState: LoginState = {
     loginErrMessage: "",
     passwordErrMessage: ""
 }
+
+export const postUserData = createAsyncThunk('LOGIN_SLICE/postUserData', async (inputData) => {
+
+    const response = await client.post(ENDPOINT(KEYS.login), inputData)
+    console.log('response: ', response);
+    return response
+})
 
 export const loginSlice = createSlice({
     name: 'LOGIN_SLICE',
@@ -61,9 +70,31 @@ export const loginSlice = createSlice({
                 state.passwordErrMessage = action.payload.message;
             }
         }
+    },
+    extraReducers: (builder) => {
+        builder.addCase(postUserData.pending, (state, action) => {
+
+        })
+        builder.addCase(postUserData.fulfilled, (state, action) => {
+
+        })
+        builder.addCase(postUserData.rejected, (state, action) => {
+
+        })
     }
 })
+
+
 
 export const { updateEmployeeId, updatePassword, updateSecurePassword, showErrorMessage } = loginSlice.actions;
 
 export default loginSlice.reducer;
+
+
+
+
+
+// export const postUserData = createAsyncThunk('LOGIN_SLICE/postUserData', async () => {
+//     const response = await client.get(ENDPOINT(KEYS.login))
+//     return response.hostelList
+// })
