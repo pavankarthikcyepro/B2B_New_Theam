@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="78" height="50.5" viewBox="0 0 78 50.5">
+    <defs>
+        <filter id="prefix__indicator" width="78" height="50.5" x="0" y="0" filterUnits="userSpaceOnUse">
+            <feOffset dy="3"/>
+            <feGaussianBlur result="blur" stdDeviation="3"/>
+            <feFlood flood-opacity=".161"/>
+            <feComposite in2="blur" operator="in"/>
+            <feComposite in="SourceGraphic"/>
+        </filter>
+    </defs>
+    <g>
+        <path id="prefix__indicator-2" d="M125.5 661.765L123.156 665H112a4.5 4.5 0 0 0-4.5 4.5v20a4.5 4.5 0 0 0 4.5 4.5h51a4.5 4.5 0 0 0 4.5-4.5v-20a4.5 4.5 0 0 0-4.5-4.5h-34.142l-2.307-3.233a.656.656 0 0 0-1.055 0z" data-name="indicator" transform="translate(-98.5 -655.5)" style="fill:#ed1c24"/>
+    </g>
+</svg>

@@ -145,7 +145,6 @@
 				951DA2BE2B9C43FB880437C2 /* Pods-B2B_NEW_THEME-B2B_NEW_THEMETests.debug.xcconfig */,
 				28421A78B981B5F556337F99 /* Pods-B2B_NEW_THEME-B2B_NEW_THEMETests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -263,7 +262,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\n\nexport NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
+			shellScript = "set -e\n\nexport NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n../node_modules/react-native-vector-image/strip_svgs.sh\n";
 		};
 		39896838D3CBA026AED68970 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
