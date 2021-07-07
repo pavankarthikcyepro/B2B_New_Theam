@@ -13,9 +13,9 @@ const BOOKING_PAYMENT_MODE = require("../images/booking_payment_mode.svg");
 const BOOKING_TRACKER = require("../images/booking_tracker.svg");
 const BOOK = require("../images/book.svg");
 const BOOKINGS = require("../images/bookings.svg");
-const CALL_FOLLOW_UP = require("../images/call_follow_up");
+const CALL_FOLLOW_UP = require("../images/call_follow_up.svg");
 const CAR = require("../images/car.svg");
-const CONTACT = require("../images/contact.svg");
+const CONTRACT = require("../images/contract.svg");
 const CHATBOT = require("../images/chatbot.svg");
 const CHECKED = require("../images/checked.svg");
 const CHECKBOX_INACTIVE = require("../images/checkbox_inactive.svg");
@@ -30,7 +30,6 @@ const COMMITMENT = require("../images/commitment.svg");
 const COMMUNICATION_DETAILS = require("../images/communication_details.svg");
 const COMMUNOCATION = require("../images/communocation.svg");
 const CREATE_NEW = require("../images/create_new.svg");
-const CREATE_NEW_FAB = require("../images/create_new_fab.svg");
 const CUSTOMER_NEED_ANALYSIS = require("../images/customer_need_analysis.svg");
 const CUSTOMER_PROFILE = require("../images/customer_profile.svg");
 const CUSTOMER_RELATIONSHIP = require("../images/customer_relationship.svg");
@@ -42,7 +41,7 @@ const DOCUMENT_FOR_VERIFICATION = require("../images/document_for_verification.s
 const DOCUMENT_UPLOAD = require("../images/document_upload.svg");
 const DOCUMENT_WALLET = require("../images/document_wallet.svg");
 const DOCUMENTS = require("../images/documents.svg");
-const DOWNARROW = require("../images/downarrow.svg");
+const DOWNARROW = require("../images/down_arrow.svg");
 const DOWNLOAD = require("../images/download.svg");
 const DRAFT = require("../images/draft.svg");
 const EARNED_INCENTIVE = require("../images/earned_incentive.svg");
@@ -58,16 +57,13 @@ const FORKLIFT = require("../images/forklift.svg");
 const FINANCE_DETAILS = require("../images/finance_details.svg");
 const FINANCE_DO_LETTER = require("../images/finance_do_letter.svg");
 const FINANCE = require("../images/finance.svg");
-const GROUP2567 = require("../images/group2567.svg");
-const GROUP2568 = require("../images/group2568.svg");
-const GROUP2569 = require("../images/group2569.svg");
-const GROUP2570 = require("../images/group2570.svg");
-const GROUP2571 = require("../images/group2571.svg");
+// const GROUP2569 = require("../images/group2569.svg");
+// const GROUP2570 = require("../images/group2570.svg");
 const HOME_RUN = require("../images/home_run.svg");
 const INAUGURATION = require("../images/inauguration.svg");
-const INDICATOR = require("../images/indicator.svg");
+// const INDICATOR = require("../images/indicator.svg");
 const INVOICE = require("../images/invoice.svg");
-const KNOWLEDGE_FAB = require("../images/knowledge_fab.svg");
+// const KNOWLEDGE_FAB = require("../images/knowledge_fab.svg");
 const KEYPAD = require("../images/keypad.svg");
 const LOGOUT = require("../images/logout.svg");
 const LEFTARROW = require("../images/leftarrow.svg");
@@ -82,8 +78,7 @@ const MONTH = require("../images/month.svg");
 const MORE = require("../images/more.svg");
 const MUTE = require("../images/mute.svg");
 const MATE = require("../images/mate.svg");
-const MYSCHEDULE = require("../images/myschedule.svg");
-const MY_ATTENDENCE = require("../images/my_attendence.svg");
+const MY_ATTENDENCE = require("../images/my_attendance.svg");
 const MY_PERFORMANCE = require("../images/my_performance.svg");
 const NEXT = require("../images/next.svg");
 const NEW_CAR_PENCIL_PRINT = require("../images/new_car_pencil_print.svg");
@@ -91,8 +86,8 @@ const NEW_ENQUIRES = require("../images/new_enquires.svg");
 const NOTEPAD = require("../images/notepad.svg");
 const NOTIFICATION = require("../images/notification.svg");
 const NOTIFY = require("../images/notify.svg");
-const OFFER_FILL = require("../images/offer_fill.svg");
-const OFFER_LINE = require("../images/offer_line.svg");
+const OFFERS_FILL = require("../images/offers_fill.svg");
+const OFFERS_LINE = require("../images/offers_line.svg");
 const OPEN_AND_PENDING_ENQUIRES = require("../images/open_and_pending_enquires.svg");
 const PATH6 = require("../images/path6.svg");
 const PATH5 = require("../images/path5.svg");
@@ -104,8 +99,7 @@ const PATH2198 = require("../images/path2198.svg");
 const PATH2195 = require("../images/path2195.svg");
 const PAYMENT_RECIEPTS = require("../images/payment_reciepts.svg");
 const PDF_DOWNLOAD = require("../images/pdf_download.svg");
-const PDF = require("../images/pdf.svg");
-const PEN = require("../images/pen.svg");
+const PDF = require("../images/PDF.svg");
 const PHONE = require("../images/phone.svg");
 const PENDING = require("../images/pending.svg");
 const PERSONAL_DETAILSCOPY = require("../images/personal_detailscopy.svg");
@@ -115,7 +109,7 @@ const PLUS = require("../images/plus.svg");
 const PLACEHOLDER = require("../images/placeholder.svg");
 const POTENTIAL_INCENTIVE = require("../images/potential_incentive.svg");
 const PRICE_CONFIRMATION = require("../images/price_confirmation.svg");
-const PRINT = require("../images/price.svg");
+const PRINT = require("../images/print.svg");
 const PURSE = require("../images/purse.svg");
 const QR_CODE = require("../images/qr_code.svg");
 const REGISTER = require("../images/register.svg");
@@ -130,8 +124,6 @@ const SERVICES = require("../images/services.svg");
 const SETTINGS = require("../images/settings.svg");
 const SIM_CARD = require("../images/sim_card.svg");
 const SPEED = require("../images/speed.svg");
-const STOCK_CARD_1 = require("../images/stock_card_1.svg");
-const STOCK_CARD_2 = require("../images/stock_card_2.svg");
 const STOCK_FILL = require("../images/stock_fill.svg");
 const STOCK_LINE = require("../images/stock_fill.svg");
 const SUPPORT = require("../images/support.svg");
@@ -140,18 +132,17 @@ const SEO_REPORT = require("../images/seo_report.svg");
 const SHOPPING_BAG = require("../images/shopping_bag.svg");
 const TERRITORY_ALLOCATION = require("../images/territory_allocation.svg");
 const TODAY = require("../images/today.svg");
-const TODAY_ENQUIRES = require("../images/today_enquires.svg");
+const TOTAL_ENQUIRES = require("../images/total_enquires.svg");
 const TICK = require("../images/tick.svg");
 const TESTING = require("../images/testing.svg");
 const UNDERTAKING_LETTERS = require("../images/undertaking_letters.svg");
-const UPARROW = require("../images/uparrow.svg");
+const UPARROW = require("../images/up_arrow.svg");
 const UPLOAD = require("../images/upload.svg");
 const VEHICLE_EXCHANGE = require("../images/vehicle_exchange.svg");
 const VEHICLE_ALLOTMENT_DETAILS = require("../images/vehicle_allotment_details.svg");
 const VEHICLES = require("../images/vehicles.svg");
 const WEEK = require("../images/week.svg");
 const YEAR = require("../images/year.svg");
-
 
 
 export {
@@ -172,7 +163,7 @@ export {
   BOOKINGS,
   CALL_FOLLOW_UP,
   CAR,
-  CONTACT,
+  CONTRACT,
   CHATBOT,
   CHECKED,
   CHECKBOX_INACTIVE,
@@ -183,12 +174,10 @@ export {
   CLIP_OUTLINE,
   CLOSE,
   COST,
-  CHECKBOX_SELECTED,
   COMMITMENT,
   COMMUNICATION_DETAILS,
   COMMUNOCATION,
   CREATE_NEW,
-  CREATE_NEW_FAB,
   CUSTOMER_NEED_ANALYSIS,
   CUSTOMER_PROFILE,
   CUSTOMER_RELATIONSHIP,
@@ -217,16 +206,9 @@ export {
   FINANCE_DO_LETTER,
   FINANCE,
   ENQUIRY,
-  GROUP2567,
-  GROUP2568,
-  GROUP2569,
-  GROUP2570,
-  GROUP2571,
   HOME_RUN,
   INAUGURATION,
-  INDICATOR,
   INVOICE,
-  KNOWLEDGE_FAB,
   LOGOUT,
   LEFTARROW,
   MANAGE,
@@ -239,7 +221,6 @@ export {
   MODEL_SELECTION,
   MONTH,
   MORE,
-  MYSCHEDULE,
   MY_ATTENDENCE,
   MY_PERFORMANCE,
   NEXT,
@@ -248,8 +229,8 @@ export {
   NOTEPAD,
   NOTIFICATION,
   NOTIFY,
-  OFFER_FILL,
-  OFFER_LINE,
+  OFFERS_FILL,
+  OFFERS_LINE,
   OPEN_AND_PENDING_ENQUIRES,
   PATH5,
   PATH6,
@@ -261,7 +242,6 @@ export {
   PATH2198,
   PAYMENT_RECIEPTS,
   PDF_DOWNLOAD,
-  PEN,
   PDF,
   PENDING,
   PERSONAL_DETAILSCOPY,
@@ -289,8 +269,6 @@ export {
   SAVE,
   SUPPORT,
   SIM_CARD,
-  STOCK_CARD_1,
-  STOCK_CARD_2,
   STOCK_FILL,
   STOCK_LINE,
   SURFACE1,
@@ -298,7 +276,7 @@ export {
   SHOPPING_BAG,
   TERRITORY_ALLOCATION,
   TODAY,
-  TODAY_ENQUIRES,
+  TOTAL_ENQUIRES,
   TICK,
   TESTING,
   UNDERTAKING_LETTERS,
