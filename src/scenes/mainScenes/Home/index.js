@@ -20,7 +20,7 @@ const HomeScreen = ({ navigation }) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={{ flex: 1, paddingVertical: 10, paddingHorizontal: 15 }}>
+            <View style={{ flex: 1, paddingVertical: 10, paddingHorizontal: 15, }}>
                 <View style={{ flexDirection: 'row', height: 60, alignItems: 'center', justifyContent: 'space-between' }}>
                     <Searchbar
                         style={{ width: '90%' }}
@@ -43,12 +43,15 @@ const HomeScreen = ({ navigation }) => {
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={({ item, index }) => {
                         return (
-                            <View style={{ width: itemWidth, height: 200, padding: 5 }}>
-                                <View style={styles.shadow}>
-                                    <Image
-                                        style={{ width: '100%', height: 100 }}
-                                        source={require('../../../assets/images/bently.png')}
-                                    />
+                            <View style={{ flex: 1, width: itemWidth, padding: 5 }}>
+                                <View style={[styles.shadow, { backgroundColor: index == 0 ? Colors.YELLOW : Colors.GREEN }]}>
+                                    <View style={{ overflow: 'hidden' }}>
+                                        <Image
+                                            style={{ width: '100%', height: 150, overflow: "hidden" }}
+                                            resizeMode={'cover'}
+                                            source={require('../../../assets/images/bently.png')}
+                                        />
+                                    </View>
                                 </View>
                             </View>
                         )
@@ -70,17 +73,18 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.LIGHT_GRAY
     },
     shadow: {
-        overflow: 'hidden',
+        //   overflow: 'hidden',
         borderRadius: 4,
-        width: '90%',
-        height: '100%',
+        width: '100%',
+        height: 250,
         shadowColor: Colors.DARK_GRAY,
         shadowOffset: {
             width: 0,
-            height: 3
+            height: 2
         },
-        shadowRadius: 5,
-        shadowOpacity: 1.0,
-        backgroundColor: 'red'
+        shadowRadius: 2,
+        shadowOpacity: 0.5,
+        elevation: 3,
+        position: 'relative'
     }
 })
