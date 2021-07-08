@@ -59,7 +59,7 @@ const FINANCE_DO_LETTER = require("../images/finance_do_letter.svg");
 const FINANCE = require("../images/finance.svg");
 // const GROUP2569 = require("../images/group2569.svg");
 // const GROUP2570 = require("../images/group2570.svg");
-const HOME_RUN = require("../images/home_run.svg");
+//const HOME_RUN = require("../images/home_run.svg");
 const INAUGURATION = require("../images/inauguration.svg");
 // const INDICATOR = require("../images/indicator.svg");
 const INVOICE = require("../images/invoice.svg");
@@ -143,7 +143,6 @@ const VEHICLE_ALLOTMENT_DETAILS = require("../images/vehicle_allotment_details.s
 const VEHICLES = require("../images/vehicles.svg");
 const WEEK = require("../images/week.svg");
 const YEAR = require("../images/year.svg");
-
 
 export {
   HOME_FILL,
