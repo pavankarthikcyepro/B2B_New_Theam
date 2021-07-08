@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { SafeAreaView, View, Text, StyleSheet, Dimensions, Pressable, Animated, Image } from 'react-native';
 import { Colors } from '../../styles';
 import { TextinputComp } from '../../components/textinputComp';
