@@ -1,46 +1,31 @@
 import React from 'react';
-import { SafeAreaView, View, Text, StyleSheet, Dimensions, Image, FlatList } from 'react-native';
+import { SafeAreaView, View, Text, StyleSheet, Dimensions, Image, FlatList, Pressable } from 'react-native';
 import { IconButton, Divider, List } from 'react-native-paper';
 import { Colors } from '../../styles'
 import VectorImage from 'react-native-vector-image';
-import { SETTINGS, SCHEDULE_FILL } from '../../assets/svg';
+import { useSelector, useDispatch } from 'react-redux';
+import { AppNavigator } from '../../navigations';
 
 const screenWidth = Dimensions.get('window').width;
 const profileWidth = screenWidth / 4;
-const testData = [
-    {
-        title: "Attendance",
-        icon: SETTINGS,
-    },
-    {
-        title: "Team Target Assignment",
-        icon: SCHEDULE_FILL,
-    },
-    {
-        title: "Pending booking tracker",
-        icon: SETTINGS,
-    },
-    {
-        title: "Event Management",
-        icon: SCHEDULE_FILL,
-    },
-    {
-        title: "Customer Relationship",
-        icon: SETTINGS,
-    },
-    {
-        title: "Document Wallet",
-        icon: SCHEDULE_FILL,
-    },
-    {
-        title: "Helpdesk",
-        icon: SETTINGS,
-    }
-]
-
 
 const SideMenuScreen = ({ navigation }) => {
 
+    const selector = useSelector(state => state.sideMenuReducer);
+
+    const itemSelected = (item) => {
+        switch (item.screen) {
+            case 100:
+                navigation.navigate(AppNavigator.CommonStackIdentifiers.upcomingDeliveries)
+                break
+            case 101:
+                navigation.navigate(AppNavigator.CommonStackIdentifiers.complaint)
+                break
+            case 102:
+                navigation.navigate(AppNavigator.CommonStackIdentifiers.settings)
+                break
+        }
+    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -70,19 +55,21 @@ const SideMenuScreen = ({ navigation }) => {
             </View>
             <Divider />
             <FlatList
-                data={testData}
+                data={selector.tableData}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item, index }) => {
                     return (
-                        <View style={{ paddingLeft: 10 }}>
-                            <List.Item
-                                title={item.title}
-                                titleStyle={{ fontSize: 16, fontWeight: '600' }}
-                                left={props => <List.Icon {...props} icon="folder" />}
-                            />
-                            {/* // <VectorImage source={item.icon} width={20} height={20} /> */}
-                            <Divider />
-                        </View>
+                        <Pressable onPress={() => itemSelected(item)}>
+                            <View style={{ paddingLeft: 10 }}>
+                                <List.Item
+                                    title={item.title}
+                                    titleStyle={{ fontSize: 16, fontWeight: '600' }}
+                                    left={props => <List.Icon {...props} icon="folder" />}
+                                />
+                                {/* // <VectorImage source={item.icon} width={20} height={20} /> */}
+                                <Divider />
+                            </View>
+                        </Pressable>
                     )
                 }}
             />

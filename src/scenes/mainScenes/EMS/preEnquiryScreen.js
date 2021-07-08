@@ -4,8 +4,6 @@ import { PreEnquiryItem } from '../../../pureComponents/preEnquiryItem';
 import { Colors, GlobalStyle } from '../../../styles';
 import { useSelector, useDispatch } from 'react-redux';
 
-const testData = [1, 2, 3, 4]
-
 const PreEnquiryScreen = () => {
 
     const selector = useSelector(state => state.preEnquiryReducer);

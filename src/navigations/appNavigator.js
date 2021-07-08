@@ -5,15 +5,21 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { IconButton } from 'react-native-paper';
+import VectorImage from 'react-native-vector-image';
+import { Colors } from '../styles';
+import { EMS_LINE, HOME_LINE, HOME_FILL, SCHEDULE_FILL, SCHEDULE_LINE } from '../assets/svg'
+
 
 import HomeScreen from '../scenes/mainScenes/Home';
 import EMSScreen from '../scenes/mainScenes/EMS';
 import MyTasksScreen from '../scenes/mainScenes/MyTasks';
 
-import { EMS_LINE, HOME_LINE, HOME_FILL, SCHEDULE_FILL, SCHEDULE_LINE } from '../assets/svg'
-import VectorImage from 'react-native-vector-image';
-import { Colors } from '../styles';
+import SettingsScreen from '../scenes/mainScenes/settingsScreen';
+import UpcomingDeliveriesScreen from '../scenes/mainScenes/upcomingDeliveriesScreen';
+import ComplaintsScreen from '../scenes/mainScenes/complaintsScreen';
 import SideMenuScreen from '../scenes/mainScenes/sideMenuScreen';
+import NotificationScreen from '../scenes/mainScenes/notificationsScreen';
+
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -50,15 +56,24 @@ const SearchIcon = () => {
     )
 }
 
-const NotficationIcon = () => {
+const NotficationIcon = ({ navigation }) => {
     return (
         <IconButton
             icon="bell"
             color={Colors.WHITE}
             size={25}
-            onPress={() => console.log('Pressed')}
+            onPress={() => {
+                navigation.navigate(CommonStackIdentifiers.notification)
+            }}
         />
     )
+}
+
+export const CommonStackIdentifiers = {
+    upcomingDeliveries: 'UPCOMING_DELIVERIES',
+    complaint: 'COMPLAINTS',
+    settings: 'SETTINGS',
+    notification: 'NOTIFICATION'
 }
 
 const HomeStack = createStackNavigator();
@@ -79,12 +94,17 @@ const HomeStackNavigator = ({ navigation }) => {
                         return (
                             <View style={{ flexDirection: 'row' }}>
                                 <SearchIcon />
-                                <NotficationIcon />
+                                <NotficationIcon navigation={navigation} />
                             </View>
                         )
                     }
                 }}
             />
+
+            <HomeStack.Screen name={CommonStackIdentifiers.upcomingDeliveries} component={UpcomingDeliveriesScreen} />
+            <HomeStack.Screen name={CommonStackIdentifiers.complaint} component={ComplaintsScreen} />
+            <HomeStack.Screen name={CommonStackIdentifiers.settings} component={SettingsScreen} />
+            <HomeStack.Screen name={CommonStackIdentifiers.notification} component={NotificationScreen} />
 
         </HomeStack.Navigator>
     );
@@ -124,12 +144,17 @@ const EmsStackNavigator = ({ navigation }) => {
                         return (
                             <View style={{ flexDirection: 'row' }}>
                                 <SearchIcon />
-                                <NotficationIcon />
+                                <NotficationIcon navigation={navigation} />
                             </View>
                         )
                     }
                 }}
             />
+
+            <EmsStack.Screen name={CommonStackIdentifiers.upcomingDeliveries} component={UpcomingDeliveriesScreen} />
+            <EmsStack.Screen name={CommonStackIdentifiers.complaint} component={ComplaintsScreen} />
+            <EmsStack.Screen name={CommonStackIdentifiers.settings} component={SettingsScreen} />
+            <EmsStack.Screen name={CommonStackIdentifiers.notification} component={NotificationScreen} />
         </EmsStack.Navigator>
     );
 }
@@ -168,12 +193,17 @@ const MyTaskStackNavigator = ({ navigation }) => {
                         return (
                             <View style={{ flexDirection: 'row' }}>
                                 <SearchIcon />
-                                <NotficationIcon />
+                                <NotficationIcon navigation={navigation} />
                             </View>
                         )
                     }
                 }}
             />
+
+            <MyTaskStack.Screen name={CommonStackIdentifiers.upcomingDeliveries} component={UpcomingDeliveriesScreen} />
+            <MyTaskStack.Screen name={CommonStackIdentifiers.complaint} component={ComplaintsScreen} />
+            <MyTaskStack.Screen name={CommonStackIdentifiers.settings} component={SettingsScreen} />
+            <MyTaskStack.Screen name={CommonStackIdentifiers.notification} component={NotificationScreen} />
         </MyTaskStack.Navigator>
     );
 }
