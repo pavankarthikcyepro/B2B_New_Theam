@@ -101,10 +101,10 @@ const HomeStackNavigator = ({ navigation }) => {
                 }}
             />
 
-            <HomeStack.Screen name={CommonStackIdentifiers.upcomingDeliveries} component={UpcomingDeliveriesScreen} />
-            <HomeStack.Screen name={CommonStackIdentifiers.complaint} component={ComplaintsScreen} />
-            <HomeStack.Screen name={CommonStackIdentifiers.settings} component={SettingsScreen} />
-            <HomeStack.Screen name={CommonStackIdentifiers.notification} component={NotificationScreen} />
+            <HomeStack.Screen name={CommonStackIdentifiers.upcomingDeliveries} component={UpcomingDeliveriesScreen} options={{ title: 'Upcoming Deliveries' }} />
+            <HomeStack.Screen name={CommonStackIdentifiers.complaint} component={ComplaintsScreen} options={{ title: 'Complaints' }} />
+            <HomeStack.Screen name={CommonStackIdentifiers.settings} component={SettingsScreen} options={{ title: 'Settings' }} />
+            <HomeStack.Screen name={CommonStackIdentifiers.notification} component={NotificationScreen} options={{ title: 'Notfications' }} />
 
         </HomeStack.Navigator>
     );
@@ -119,6 +119,7 @@ const HomeStackDrawerNavigator = () => {
                 width: drawerWidth,
             }}
             drawerContent={(props) => <SideMenuScreen {...props} />}
+            initialRouteName={'HOME_DRAWER'}
         >
             <HomeDrawer.Screen name="HOME_DRAWER" component={HomeStackNavigator} />
         </HomeDrawer.Navigator>
@@ -151,10 +152,10 @@ const EmsStackNavigator = ({ navigation }) => {
                 }}
             />
 
-            <EmsStack.Screen name={CommonStackIdentifiers.upcomingDeliveries} component={UpcomingDeliveriesScreen} />
-            <EmsStack.Screen name={CommonStackIdentifiers.complaint} component={ComplaintsScreen} />
-            <EmsStack.Screen name={CommonStackIdentifiers.settings} component={SettingsScreen} />
-            <EmsStack.Screen name={CommonStackIdentifiers.notification} component={NotificationScreen} />
+            <EmsStack.Screen name={CommonStackIdentifiers.upcomingDeliveries} component={UpcomingDeliveriesScreen} options={{ title: 'Upcoming Deliveries' }} />
+            <EmsStack.Screen name={CommonStackIdentifiers.complaint} component={ComplaintsScreen} options={{ title: 'Complaints' }} />
+            <EmsStack.Screen name={CommonStackIdentifiers.settings} component={SettingsScreen} options={{ title: 'Settings' }} />
+            <EmsStack.Screen name={CommonStackIdentifiers.notification} component={NotificationScreen} options={{ title: 'Notfications' }} />
         </EmsStack.Navigator>
     );
 }
@@ -168,6 +169,7 @@ const EMSStackDrawerNavigator = () => {
                 width: drawerWidth,
             }}
             drawerContent={(props) => <SideMenuScreen {...props} />}
+            initialRouteName={'EMS_DRAWER'}
         >
             <EMSDrawer.Screen name="EMS_DRAWER" component={EmsStackNavigator} />
         </EMSDrawer.Navigator>
@@ -200,10 +202,10 @@ const MyTaskStackNavigator = ({ navigation }) => {
                 }}
             />
 
-            <MyTaskStack.Screen name={CommonStackIdentifiers.upcomingDeliveries} component={UpcomingDeliveriesScreen} />
-            <MyTaskStack.Screen name={CommonStackIdentifiers.complaint} component={ComplaintsScreen} />
-            <MyTaskStack.Screen name={CommonStackIdentifiers.settings} component={SettingsScreen} />
-            <MyTaskStack.Screen name={CommonStackIdentifiers.notification} component={NotificationScreen} />
+            <MyTaskStack.Screen name={CommonStackIdentifiers.upcomingDeliveries} component={UpcomingDeliveriesScreen} options={{ title: 'Upcoming Deliveries' }} />
+            <MyTaskStack.Screen name={CommonStackIdentifiers.complaint} component={ComplaintsScreen} options={{ title: 'Complaints' }} />
+            <MyTaskStack.Screen name={CommonStackIdentifiers.settings} component={SettingsScreen} options={{ title: 'Settings' }} />
+            <MyTaskStack.Screen name={CommonStackIdentifiers.notification} component={NotificationScreen} options={{ title: 'Notfications' }} />
         </MyTaskStack.Navigator>
     );
 }
@@ -217,6 +219,7 @@ const MyTaskStackDrawerNavigator = () => {
                 width: drawerWidth,
             }}
             drawerContent={(props) => <SideMenuScreen {...props} />}
+            initialRouteName={'MY_TASK_DRAWER'}
         >
             <MyTaskDrawer.Screen name="MY_TASK_DRAWER" component={MyTaskStackNavigator} />
         </MyTaskDrawer.Navigator>
@@ -231,11 +234,11 @@ const TabNavigator = () => {
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
 
-                    if (route.name === 'HOME') {
+                    if (route.name === 'HOME_TAB') {
                         iconName = focused ? HOME_FILL : HOME_LINE;
-                    } else if (route.name === 'EMS') {
+                    } else if (route.name === 'EMS_TAB') {
                         iconName = focused ? HOME_FILL : EMS_LINE;
-                    } else if (route.name === 'MY_TASKS') {
+                    } else if (route.name === 'MY_TASKS_TAB') {
                         iconName = focused ? SCHEDULE_FILL : SCHEDULE_LINE;
                     }
 
@@ -246,10 +249,11 @@ const TabNavigator = () => {
                 activeTintColor: Colors.RED,
                 inactiveTintColor: 'gray',
             }}
+            initialRouteName={'HOME_TAB'}
         >
-            <Tab.Screen name="HOME" component={HomeStackDrawerNavigator} options={{ title: 'Home' }} />
-            <Tab.Screen name="EMS" component={EMSStackDrawerNavigator} options={{ title: 'EMS' }} />
-            <Tab.Screen name="MY_TASKS" component={MyTaskStackDrawerNavigator} options={{ title: 'My Tasks' }} />
+            <Tab.Screen name="HOME_TAB" component={HomeStackDrawerNavigator} options={{ title: 'Home' }} />
+            <Tab.Screen name="EMS_TAB" component={EMSStackDrawerNavigator} options={{ title: 'EMS' }} />
+            <Tab.Screen name="MY_TASKS_TAB" component={MyTaskStackDrawerNavigator} options={{ title: 'My Tasks' }} />
         </Tab.Navigator>
     )
 }

@@ -1,13 +1,14 @@
 import React from 'react';
 import { SafeAreaView, View, Text, StyleSheet, Dimensions, Image, FlatList, Pressable } from 'react-native';
-import { IconButton, Divider, List } from 'react-native-paper';
-import { Colors } from '../../styles'
+import { IconButton, Divider, List, Button } from 'react-native-paper';
+import { Colors, GlobalStyle } from '../../styles'
 import VectorImage from 'react-native-vector-image';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppNavigator } from '../../navigations';
 
 const screenWidth = Dimensions.get('window').width;
 const profileWidth = screenWidth / 4;
+const profileBgWidth = profileWidth + 5;
 
 const SideMenuScreen = ({ navigation }) => {
 
@@ -39,10 +40,12 @@ const SideMenuScreen = ({ navigation }) => {
                 <Text style={styles.nameStyle}>{'Welcome Ravinder,'}</Text>
             </View>
             <View style={styles.profileContainerView}>
-                <Image
-                    style={{ width: profileWidth, height: profileWidth, borderRadius: profileWidth / 2 }}
-                    source={require('../../assets/images/bently.png')}
-                />
+                <View style={[styles.profileBgVw, GlobalStyle.shadow]}>
+                    <Image
+                        style={{ width: profileWidth, height: profileWidth, borderRadius: profileWidth / 2 }}
+                        source={require('../../assets/images/bently.png')}
+                    />
+                </View>
                 <View style={{ marginTop: 15 }}>
                     <Text style={[styles.nameStyle, { textAlign: 'center' }]}>{'Ravinder Katta'}</Text>
                     <Text style={styles.text1}>{'Branch Manager, 40yrs'}</Text>
@@ -73,6 +76,18 @@ const SideMenuScreen = ({ navigation }) => {
                     )
                 }}
             />
+            <View style={styles.bottomVw}>
+                <Button
+                    icon="logout"
+                    mode="contained"
+                    style={{ marginHorizontal: 40 }}
+                    contentStyle={{ backgroundColor: Colors.RED }}
+                    labelStyle={{ fontSize: 14, fontWeight: '600', textTransform: 'none' }}
+                    onPress={() => console.log('Pressed')}
+                >
+                    Sign Out
+                </Button>
+            </View>
         </SafeAreaView>
     )
 }
@@ -111,5 +126,17 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '400',
         color: Colors.GRAY
+    },
+    profileBgVw: {
+        width: profileBgWidth,
+        height: profileBgWidth,
+        borderRadius: profileBgWidth / 2,
+        backgroundColor: Colors.WHITE,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    bottomVw: {
+        bottom: 0,
+        paddingVertical: 20
     }
 })
