@@ -21,6 +21,7 @@ import SideMenuScreen from '../scenes/mainScenes/sideMenuScreen';
 import NotificationScreen from '../scenes/mainScenes/notificationsScreen';
 import AddPreEnquiryScreen from '../scenes/mainScenes/EMS/addPreEnquiryScreen';
 
+
 const drawerWidth = 300;
 const screeOptionStyle = {
     headerTitleStyle: {

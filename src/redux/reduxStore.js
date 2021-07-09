@@ -5,13 +5,15 @@ import loginReducer from './loginSlice';
 import preEnquiryReducer from './preEnquirySlice';
 import sideMenuReducer from './sideMenuSlice';
 import homeReducer from './homeSlice';
+import mytaskReducer from './mytaskSlice';
 
 
 const reducer = combineReducers({
     loginReducer: loginReducer,
     preEnquiryReducer: preEnquiryReducer,
     sideMenuReducer,
-    homeReducer
+    homeReducer,
+    mytaskReducer
 })
 
 const store = configureStore({

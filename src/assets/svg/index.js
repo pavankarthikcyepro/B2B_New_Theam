@@ -145,7 +145,6 @@ const VEHICLES = require("../images/vehicles.svg");
 const WEEK = require("../images/week.svg");
 const YEAR = require("../images/year.svg");
 
-
 export {
   HOME_FILL,
   HOME_LINE,
