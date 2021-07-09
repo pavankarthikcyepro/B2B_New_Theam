@@ -1,22 +1,36 @@
 
 import React from 'react';
-import { SafeAreaView, View, Text, StyleSheet, FlatList, Dimensions, Image } from 'react-native';
+import { SafeAreaView, View, Text, StyleSheet, FlatList, Dimensions, Image, Pressable, Alert } from 'react-native';
 import { Colors } from '../../../styles';
 import { Searchbar } from 'react-native-paper';
 import { IconButton } from 'react-native-paper';
 import VectorImage from 'react-native-vector-image';
+import { useDispatch, useSelector } from 'react-redux';
 import { FILTER } from '../../../assets/svg'
+import { DateItem } from '../../../pureComponents/dateItem';
+import { AppNavigator } from '../../../navigations';
+import { dateSelected } from '../../../redux/homeSlice';
 
 const screenWidth = Dimensions.get('window').width;
 const itemWidth = (screenWidth - 30) / 2;
-const data = [1, 2]
 
 const HomeScreen = ({ navigation }) => {
 
-    const [searchQuery, setSearchQuery] = React.useState('');
+    const selector = useSelector(state => state.homeReducer);
+    const dispatch = useDispatch();
 
+    const dateClicked = (index) => {
+        Alert.alert('message')
+    }
 
-    const onChangeSearch = query => setSearchQuery(query);
+    const cardClicked = (index) => {
+        if (index === 0) {
+            navigation.navigate(AppNavigator.TabStackIdentifiers.ems)
+        }
+        else if (index === 1) {
+            navigation.navigate(AppNavigator.TabStackIdentifiers.myTask)
+        }
+    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -25,8 +39,8 @@ const HomeScreen = ({ navigation }) => {
                     <Searchbar
                         style={{ width: '90%' }}
                         placeholder="Search"
-                        onChangeText={onChangeSearch}
-                        value={searchQuery}
+                        onChangeText={(text) => { }}
+                        value={selector.serchtext}
                     />
                     <VectorImage
                         width={25}
@@ -36,24 +50,71 @@ const HomeScreen = ({ navigation }) => {
                     />
                 </View>
 
+                <Pressable onPress={dateClicked}>
+                    <View style={styles.dateVw}>
+                        <Text style={styles.text3}>{'My Activities'}</Text>
+                        <IconButton
+                            icon="calendar-month"
+                            color={Colors.RED}
+                            size={25}
+                        />
+                    </View>
+                </Pressable>
+
+                <View style={{ maxHeight: 100, marginBottom: 15 }}>
+                    <FlatList
+                        data={selector.datesData}
+                        style={{}}
+                        keyExtractor={(item, index) => index.toString()}
+                        horizontal={true}
+                        showsHorizontalScrollIndicator={false}
+                        renderItem={({ item, index }) => {
+
+                            return (
+                                <Pressable onPress={() => dispatch(dateSelected(index))}>
+                                    <View style={{ paddingRight: 10 }}>
+                                        <DateItem
+                                            month={item.month}
+                                            date={item.date}
+                                            day={item.day}
+                                            selected={selector.dateSelectedIndex === index ? true : false}
+                                        />
+                                    </View>
+                                </Pressable>
+                            )
+                        }}
+                    />
+                </View>
+
                 <FlatList
-                    data={data}
+                    data={selector.tableData}
                     numColumns={2}
                     horizontal={false}
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={({ item, index }) => {
                         return (
-                            <View style={{ flex: 1, width: itemWidth, padding: 5 }}>
-                                <View style={[styles.shadow, { backgroundColor: index == 0 ? Colors.YELLOW : Colors.GREEN }]}>
-                                    <View style={{ overflow: 'hidden' }}>
-                                        <Image
-                                            style={{ width: '100%', height: 150, overflow: "hidden" }}
-                                            resizeMode={'cover'}
-                                            source={require('../../../assets/images/bently.png')}
-                                        />
+                            <Pressable onPress={() => cardClicked(index)}>
+                                <View style={{ flex: 1, width: itemWidth, padding: 5 }}>
+                                    <View style={[styles.shadow, { backgroundColor: index == 0 ? Colors.YELLOW : Colors.GREEN }]}>
+                                        <View style={{ overflow: 'hidden' }}>
+                                            <Image
+                                                style={{ width: '100%', height: 150, overflow: "hidden" }}
+                                                resizeMode={'cover'}
+                                                source={require('../../../assets/images/bently.png')}
+                                            />
+
+                                            <View style={{ width: '100%', height: 100, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
+                                                <Text style={styles.text1}>{item.title}</Text>
+                                                <View style={{ height: 100, width: 50, alignItems: 'center' }}>
+                                                    <View style={styles.barVw}>
+                                                        <Text style={styles.text2}>{item.count}</Text>
+                                                    </View>
+                                                </View>
+                                            </View>
+                                        </View>
                                     </View>
                                 </View>
-                            </View>
+                            </Pressable>
                         )
                     }}
                 />
@@ -72,6 +133,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: Colors.LIGHT_GRAY
     },
+    dateVw: {
+        width: '100%',
+        height: 50,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
     shadow: {
         //   overflow: 'hidden',
         borderRadius: 4,
@@ -86,5 +153,25 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.5,
         elevation: 3,
         position: 'relative'
+    },
+    text1: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: Colors.WHITE
+    },
+    barVw: {
+        backgroundColor: Colors.WHITE,
+        width: 40,
+        height: '70%',
+        justifyContent: 'center'
+    },
+    text2: {
+        fontSize: 20,
+        fontWeight: '600',
+        textAlign: 'center',
+    },
+    text3: {
+        fontSize: 18,
+        fontWeight: '800',
     }
 })

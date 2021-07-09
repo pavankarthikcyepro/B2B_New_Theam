@@ -76,6 +76,12 @@ export const CommonStackIdentifiers = {
     notification: 'NOTIFICATION'
 }
 
+export const TabStackIdentifiers = {
+    home: "HOME_TAB",
+    ems: "EMS_TAB",
+    myTask: 'MY_TASK_TAB'
+}
+
 const HomeStack = createStackNavigator();
 
 const HomeStackNavigator = ({ navigation }) => {
@@ -234,11 +240,13 @@ const TabNavigator = () => {
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
 
-                    if (route.name === 'HOME_TAB') {
+                    if (route.name === TabStackIdentifiers.home) {
                         iconName = focused ? HOME_FILL : HOME_LINE;
-                    } else if (route.name === 'EMS_TAB') {
+                    }
+                    else if (route.name === TabStackIdentifiers.ems) {
                         iconName = focused ? HOME_FILL : EMS_LINE;
-                    } else if (route.name === 'MY_TASKS_TAB') {
+                    }
+                    else if (route.name === TabStackIdentifiers.myTask) {
                         iconName = focused ? SCHEDULE_FILL : SCHEDULE_LINE;
                     }
 
@@ -249,11 +257,11 @@ const TabNavigator = () => {
                 activeTintColor: Colors.RED,
                 inactiveTintColor: 'gray',
             }}
-            initialRouteName={'HOME_TAB'}
+            initialRouteName={TabStackIdentifiers.home}
         >
-            <Tab.Screen name="HOME_TAB" component={HomeStackDrawerNavigator} options={{ title: 'Home' }} />
-            <Tab.Screen name="EMS_TAB" component={EMSStackDrawerNavigator} options={{ title: 'EMS' }} />
-            <Tab.Screen name="MY_TASKS_TAB" component={MyTaskStackDrawerNavigator} options={{ title: 'My Tasks' }} />
+            <Tab.Screen name={TabStackIdentifiers.home} component={HomeStackDrawerNavigator} options={{ title: 'Home' }} />
+            <Tab.Screen name={TabStackIdentifiers.ems} component={EMSStackDrawerNavigator} options={{ title: 'EMS' }} />
+            <Tab.Screen name={TabStackIdentifiers.myTask} component={MyTaskStackDrawerNavigator} options={{ title: 'My Tasks' }} />
         </Tab.Navigator>
     )
 }
