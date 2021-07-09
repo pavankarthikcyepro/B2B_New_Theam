@@ -19,12 +19,12 @@ import UpcomingDeliveriesScreen from '../scenes/mainScenes/upcomingDeliveriesScr
 import ComplaintsScreen from '../scenes/mainScenes/complaintsScreen';
 import SideMenuScreen from '../scenes/mainScenes/sideMenuScreen';
 import NotificationScreen from '../scenes/mainScenes/notificationsScreen';
-
+import AddPreEnquiryScreen from '../scenes/mainScenes/EMS/addPreEnquiryScreen';
 
 const drawerWidth = 300;
 const screeOptionStyle = {
     headerTitleStyle: {
-        fontSize: 22,
+        fontSize: 20,
         fontWeight: '600'
     },
     headerStyle: {
@@ -80,6 +80,10 @@ export const TabStackIdentifiers = {
     home: "HOME_TAB",
     ems: "EMS_TAB",
     myTask: 'MY_TASK_TAB'
+}
+
+export const EmsStackIdentifiers = {
+    addPreEnq: "ADD_PRE_ENQUIRY"
 }
 
 const HomeStack = createStackNavigator();
@@ -162,6 +166,9 @@ const EmsStackNavigator = ({ navigation }) => {
             <EmsStack.Screen name={CommonStackIdentifiers.complaint} component={ComplaintsScreen} options={{ title: 'Complaints' }} />
             <EmsStack.Screen name={CommonStackIdentifiers.settings} component={SettingsScreen} options={{ title: 'Settings' }} />
             <EmsStack.Screen name={CommonStackIdentifiers.notification} component={NotificationScreen} options={{ title: 'Notfications' }} />
+
+            <EmsStack.Screen name={EmsStackIdentifiers.addPreEnq} component={AddPreEnquiryScreen} options={{ title: 'Pre-Enquiry' }} />
+
         </EmsStack.Navigator>
     );
 }

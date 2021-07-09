@@ -30,6 +30,7 @@ const COMMITMENT = require("../images/commitment.svg");
 const COMMUNICATION_DETAILS = require("../images/communication_details.svg");
 const COMMUNOCATION = require("../images/communocation.svg");
 const CREATE_NEW = require("../images/create_new.svg");
+// const CREATE_NEW_FAB = require("../images/create_new_fab.svg");
 const CUSTOMER_NEED_ANALYSIS = require("../images/customer_need_analysis.svg");
 const CUSTOMER_PROFILE = require("../images/customer_profile.svg");
 const CUSTOMER_RELATIONSHIP = require("../images/customer_relationship.svg");
