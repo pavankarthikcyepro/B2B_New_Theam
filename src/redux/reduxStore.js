@@ -2,10 +2,14 @@ import { configureStore } from '@reduxjs/toolkit';
 import { combineReducers } from 'redux';
 
 import loginReducer from './loginSlice';
+import preEnquiryReducer from './preEnquirySlice';
+import sideMenuReducer from './sideMenuSlice';
 
 
 const reducer = combineReducers({
-    loginReducer: loginReducer
+    loginReducer: loginReducer,
+    preEnquiryReducer: preEnquiryReducer,
+    sideMenuReducer
 })
 
 const store = configureStore({

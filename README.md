@@ -9,4 +9,8 @@ To display the vector icons used:
  -> react-native-vector-image 
  -> @klarna/react-native-vector-drawable
  
+To display top tab navigation, used: 
+
+ -> @react-navigation/material-top-tabs 
+ -> react-native-tab-view@^2.16.0
  

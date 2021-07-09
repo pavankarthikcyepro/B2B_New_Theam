@@ -5,15 +5,21 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { IconButton } from 'react-native-paper';
+import VectorImage from 'react-native-vector-image';
+import { Colors } from '../styles';
+import { EMS_LINE, HOME_LINE, HOME_FILL, SCHEDULE_FILL, SCHEDULE_LINE } from '../assets/svg'
+
 
 import HomeScreen from '../scenes/mainScenes/Home';
 import EMSScreen from '../scenes/mainScenes/EMS';
 import MyTasksScreen from '../scenes/mainScenes/MyTasks';
 
-import { EMS_LINE, HOME_LINE, HOME_FILL, SCHEDULE_FILL, SCHEDULE_LINE } from '../assets/svg'
-import VectorImage from 'react-native-vector-image';
-import { Colors } from '../styles';
+import SettingsScreen from '../scenes/mainScenes/settingsScreen';
+import UpcomingDeliveriesScreen from '../scenes/mainScenes/upcomingDeliveriesScreen';
+import ComplaintsScreen from '../scenes/mainScenes/complaintsScreen';
 import SideMenuScreen from '../scenes/mainScenes/sideMenuScreen';
+import NotificationScreen from '../scenes/mainScenes/notificationsScreen';
+
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -50,15 +56,24 @@ const SearchIcon = () => {
     )
 }
 
-const NotficationIcon = () => {
+const NotficationIcon = ({ navigation }) => {
     return (
         <IconButton
             icon="bell"
             color={Colors.WHITE}
             size={25}
-            onPress={() => console.log('Pressed')}
+            onPress={() => {
+                navigation.navigate(CommonStackIdentifiers.notification)
+            }}
         />
     )
+}
+
+export const CommonStackIdentifiers = {
+    upcomingDeliveries: 'UPCOMING_DELIVERIES',
+    complaint: 'COMPLAINTS',
+    settings: 'SETTINGS',
+    notification: 'NOTIFICATION'
 }
 
 const HomeStack = createStackNavigator();
@@ -79,12 +94,18 @@ const HomeStackNavigator = ({ navigation }) => {
                         return (
                             <View style={{ flexDirection: 'row' }}>
                                 <SearchIcon />
-                                <NotficationIcon />
+                                <NotficationIcon navigation={navigation} />
                             </View>
                         )
                     }
                 }}
             />
+
+            <HomeStack.Screen name={CommonStackIdentifiers.upcomingDeliveries} component={UpcomingDeliveriesScreen} options={{ title: 'Upcoming Deliveries' }} />
+            <HomeStack.Screen name={CommonStackIdentifiers.complaint} component={ComplaintsScreen} options={{ title: 'Complaints' }} />
+            <HomeStack.Screen name={CommonStackIdentifiers.settings} component={SettingsScreen} options={{ title: 'Settings' }} />
+            <HomeStack.Screen name={CommonStackIdentifiers.notification} component={NotificationScreen} options={{ title: 'Notfications' }} />
+
         </HomeStack.Navigator>
     );
 }
@@ -98,6 +119,7 @@ const HomeStackDrawerNavigator = () => {
                 width: drawerWidth,
             }}
             drawerContent={(props) => <SideMenuScreen {...props} />}
+            initialRouteName={'HOME_DRAWER'}
         >
             <HomeDrawer.Screen name="HOME_DRAWER" component={HomeStackNavigator} />
         </HomeDrawer.Navigator>
@@ -123,12 +145,17 @@ const EmsStackNavigator = ({ navigation }) => {
                         return (
                             <View style={{ flexDirection: 'row' }}>
                                 <SearchIcon />
-                                <NotficationIcon />
+                                <NotficationIcon navigation={navigation} />
                             </View>
                         )
                     }
                 }}
             />
+
+            <EmsStack.Screen name={CommonStackIdentifiers.upcomingDeliveries} component={UpcomingDeliveriesScreen} options={{ title: 'Upcoming Deliveries' }} />
+            <EmsStack.Screen name={CommonStackIdentifiers.complaint} component={ComplaintsScreen} options={{ title: 'Complaints' }} />
+            <EmsStack.Screen name={CommonStackIdentifiers.settings} component={SettingsScreen} options={{ title: 'Settings' }} />
+            <EmsStack.Screen name={CommonStackIdentifiers.notification} component={NotificationScreen} options={{ title: 'Notfications' }} />
         </EmsStack.Navigator>
     );
 }
@@ -142,6 +169,7 @@ const EMSStackDrawerNavigator = () => {
                 width: drawerWidth,
             }}
             drawerContent={(props) => <SideMenuScreen {...props} />}
+            initialRouteName={'EMS_DRAWER'}
         >
             <EMSDrawer.Screen name="EMS_DRAWER" component={EmsStackNavigator} />
         </EMSDrawer.Navigator>
@@ -167,12 +195,17 @@ const MyTaskStackNavigator = ({ navigation }) => {
                         return (
                             <View style={{ flexDirection: 'row' }}>
                                 <SearchIcon />
-                                <NotficationIcon />
+                                <NotficationIcon navigation={navigation} />
                             </View>
                         )
                     }
                 }}
             />
+
+            <MyTaskStack.Screen name={CommonStackIdentifiers.upcomingDeliveries} component={UpcomingDeliveriesScreen} options={{ title: 'Upcoming Deliveries' }} />
+            <MyTaskStack.Screen name={CommonStackIdentifiers.complaint} component={ComplaintsScreen} options={{ title: 'Complaints' }} />
+            <MyTaskStack.Screen name={CommonStackIdentifiers.settings} component={SettingsScreen} options={{ title: 'Settings' }} />
+            <MyTaskStack.Screen name={CommonStackIdentifiers.notification} component={NotificationScreen} options={{ title: 'Notfications' }} />
         </MyTaskStack.Navigator>
     );
 }
@@ -186,6 +219,7 @@ const MyTaskStackDrawerNavigator = () => {
                 width: drawerWidth,
             }}
             drawerContent={(props) => <SideMenuScreen {...props} />}
+            initialRouteName={'MY_TASK_DRAWER'}
         >
             <MyTaskDrawer.Screen name="MY_TASK_DRAWER" component={MyTaskStackNavigator} />
         </MyTaskDrawer.Navigator>
@@ -200,11 +234,11 @@ const TabNavigator = () => {
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
 
-                    if (route.name === 'HOME') {
+                    if (route.name === 'HOME_TAB') {
                         iconName = focused ? HOME_FILL : HOME_LINE;
-                    } else if (route.name === 'EMS') {
+                    } else if (route.name === 'EMS_TAB') {
                         iconName = focused ? HOME_FILL : EMS_LINE;
-                    } else if (route.name === 'MY_TASKS') {
+                    } else if (route.name === 'MY_TASKS_TAB') {
                         iconName = focused ? SCHEDULE_FILL : SCHEDULE_LINE;
                     }
 
@@ -215,10 +249,11 @@ const TabNavigator = () => {
                 activeTintColor: Colors.RED,
                 inactiveTintColor: 'gray',
             }}
+            initialRouteName={'HOME_TAB'}
         >
-            <Tab.Screen name="HOME" component={HomeStackDrawerNavigator} options={{ title: 'Home' }} />
-            <Tab.Screen name="EMS" component={EMSStackDrawerNavigator} options={{ title: 'EMS' }} />
-            <Tab.Screen name="MY_TASKS" component={MyTaskStackDrawerNavigator} options={{ title: 'My Tasks' }} />
+            <Tab.Screen name="HOME_TAB" component={HomeStackDrawerNavigator} options={{ title: 'Home' }} />
+            <Tab.Screen name="EMS_TAB" component={EMSStackDrawerNavigator} options={{ title: 'EMS' }} />
+            <Tab.Screen name="MY_TASKS_TAB" component={MyTaskStackDrawerNavigator} options={{ title: 'My Tasks' }} />
         </Tab.Navigator>
     )
 }
