@@ -43,8 +43,8 @@ const MenuIcon = ({ navigation }) => {
             size={30}
             onPress={() => navigation.openDrawer()}
         />
-    )
-}
+    );
+};
 
 const SearchIcon = () => {
     return (
@@ -52,10 +52,10 @@ const SearchIcon = () => {
             icon="magnify"
             color={Colors.WHITE}
             size={25}
-            onPress={() => console.log('Pressed')}
+            onPress={() => console.log("Pressed")}
         />
-    )
-}
+    );
+};
 
 const NotficationIcon = ({ navigation }) => {
     return (
@@ -64,18 +64,18 @@ const NotficationIcon = ({ navigation }) => {
             color={Colors.WHITE}
             size={25}
             onPress={() => {
-                navigation.navigate(CommonStackIdentifiers.notification)
+                navigation.navigate(CommonStackIdentifiers.notification);
             }}
         />
-    )
-}
+    );
+};
 
 export const CommonStackIdentifiers = {
-    upcomingDeliveries: 'UPCOMING_DELIVERIES',
-    complaint: 'COMPLAINTS',
-    settings: 'SETTINGS',
-    notification: 'NOTIFICATION'
-}
+    upcomingDeliveries: "UPCOMING_DELIVERIES",
+    complaint: "COMPLAINTS",
+    settings: "SETTINGS",
+    notification: "NOTIFICATION",
+};
 
 export const TabStackIdentifiers = {
     home: "HOME_TAB",
@@ -92,34 +92,49 @@ const HomeStack = createStackNavigator();
 const HomeStackNavigator = ({ navigation }) => {
     return (
         <HomeStack.Navigator
-            initialRouteName={'Home'}
+            initialRouteName={"Home"}
             screenOptions={screeOptionStyle}
         >
             <HomeStack.Screen
                 name="Home"
                 component={HomeScreen}
                 options={{
-                    title: 'Dashboard',
+                    title: "Dashboard",
                     headerLeft: () => <MenuIcon navigation={navigation} />,
                     headerRight: () => {
                         return (
-                            <View style={{ flexDirection: 'row' }}>
+                            <View style={{ flexDirection: "row" }}>
                                 <SearchIcon />
                                 <NotficationIcon navigation={navigation} />
                             </View>
-                        )
-                    }
+                        );
+                    },
                 }}
             />
 
-            <HomeStack.Screen name={CommonStackIdentifiers.upcomingDeliveries} component={UpcomingDeliveriesScreen} options={{ title: 'Upcoming Deliveries' }} />
-            <HomeStack.Screen name={CommonStackIdentifiers.complaint} component={ComplaintsScreen} options={{ title: 'Complaints' }} />
-            <HomeStack.Screen name={CommonStackIdentifiers.settings} component={SettingsScreen} options={{ title: 'Settings' }} />
-            <HomeStack.Screen name={CommonStackIdentifiers.notification} component={NotificationScreen} options={{ title: 'Notfications' }} />
-
+            <HomeStack.Screen
+                name={CommonStackIdentifiers.upcomingDeliveries}
+                component={UpcomingDeliveriesScreen}
+                options={{ title: "Upcoming Deliveries" }}
+            />
+            <HomeStack.Screen
+                name={CommonStackIdentifiers.complaint}
+                component={ComplaintsScreen}
+                options={{ title: "Complaints" }}
+            />
+            <HomeStack.Screen
+                name={CommonStackIdentifiers.settings}
+                component={SettingsScreen}
+                options={{ title: "Settings" }}
+            />
+            <HomeStack.Screen
+                name={CommonStackIdentifiers.notification}
+                component={NotificationScreen}
+                options={{ title: "Notfications" }}
+            />
         </HomeStack.Navigator>
     );
-}
+};
 
 const HomeDrawer = createDrawerNavigator();
 
@@ -130,13 +145,12 @@ const HomeStackDrawerNavigator = () => {
                 width: drawerWidth,
             }}
             drawerContent={(props) => <SideMenuScreen {...props} />}
-            initialRouteName={'HOME_DRAWER'}
+            initialRouteName={"HOME_DRAWER"}
         >
             <HomeDrawer.Screen name="HOME_DRAWER" component={HomeStackNavigator} />
         </HomeDrawer.Navigator>
-    )
-}
-
+    );
+};
 
 const EmsStack = createStackNavigator();
 
@@ -183,46 +197,61 @@ const EMSStackDrawerNavigator = () => {
                 width: drawerWidth,
             }}
             drawerContent={(props) => <SideMenuScreen {...props} />}
-            initialRouteName={'EMS_DRAWER'}
+            initialRouteName={"EMS_DRAWER"}
         >
             <EMSDrawer.Screen name="EMS_DRAWER" component={EmsStackNavigator} />
         </EMSDrawer.Navigator>
-    )
-}
-
+    );
+};
 
 const MyTaskStack = createStackNavigator();
 
 const MyTaskStackNavigator = ({ navigation }) => {
     return (
         <MyTaskStack.Navigator
-            initialRouteName={'MY_TASKS'}
+            initialRouteName={"MY_TASKS"}
             screenOptions={screeOptionStyle}
         >
             <MyTaskStack.Screen
                 name="MY_TASKS"
                 component={MyTasksScreen}
                 options={{
-                    title: 'My Tasks',
+                    title: "My Tasks",
                     headerLeft: () => <MenuIcon navigation={navigation} />,
                     headerRight: () => {
                         return (
-                            <View style={{ flexDirection: 'row' }}>
+                            <View style={{ flexDirection: "row" }}>
                                 <SearchIcon />
                                 <NotficationIcon navigation={navigation} />
                             </View>
-                        )
-                    }
+                        );
+                    },
                 }}
             />
 
-            <MyTaskStack.Screen name={CommonStackIdentifiers.upcomingDeliveries} component={UpcomingDeliveriesScreen} options={{ title: 'Upcoming Deliveries' }} />
-            <MyTaskStack.Screen name={CommonStackIdentifiers.complaint} component={ComplaintsScreen} options={{ title: 'Complaints' }} />
-            <MyTaskStack.Screen name={CommonStackIdentifiers.settings} component={SettingsScreen} options={{ title: 'Settings' }} />
-            <MyTaskStack.Screen name={CommonStackIdentifiers.notification} component={NotificationScreen} options={{ title: 'Notfications' }} />
+            <MyTaskStack.Screen
+                name={CommonStackIdentifiers.upcomingDeliveries}
+                component={UpcomingDeliveriesScreen}
+                options={{ title: "Upcoming Deliveries" }}
+            />
+            <MyTaskStack.Screen
+                name={CommonStackIdentifiers.complaint}
+                component={ComplaintsScreen}
+                options={{ title: "Complaints" }}
+            />
+            <MyTaskStack.Screen
+                name={CommonStackIdentifiers.settings}
+                component={SettingsScreen}
+                options={{ title: "Settings" }}
+            />
+            <MyTaskStack.Screen
+                name={CommonStackIdentifiers.notification}
+                component={NotificationScreen}
+                options={{ title: "Notfications" }}
+            />
         </MyTaskStack.Navigator>
     );
-}
+};
 
 const MyTaskDrawer = createDrawerNavigator();
 
@@ -233,12 +262,15 @@ const MyTaskStackDrawerNavigator = () => {
                 width: drawerWidth,
             }}
             drawerContent={(props) => <SideMenuScreen {...props} />}
-            initialRouteName={'MY_TASK_DRAWER'}
+            initialRouteName={"MY_TASK_DRAWER"}
         >
-            <MyTaskDrawer.Screen name="MY_TASK_DRAWER" component={MyTaskStackNavigator} />
+            <MyTaskDrawer.Screen
+                name="MY_TASK_DRAWER"
+                component={MyTaskStackNavigator}
+            />
         </MyTaskDrawer.Navigator>
-    )
-}
+    );
+};
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {

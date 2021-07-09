@@ -75,7 +75,7 @@ build/
 local.properties
 *.iml
 /android/app/src/main/res/drawable/
-
+/android/.gradle
 # node.js
 #
 node_modules/
