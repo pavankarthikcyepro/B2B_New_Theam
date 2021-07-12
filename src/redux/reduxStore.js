@@ -6,14 +6,15 @@ import preEnquiryReducer from './preEnquirySlice';
 import sideMenuReducer from './sideMenuSlice';
 import homeReducer from './homeSlice';
 import mytaskReducer from './mytaskSlice';
-
+import notificationReducer from './notificationSlice';
 
 const reducer = combineReducers({
     loginReducer: loginReducer,
     preEnquiryReducer: preEnquiryReducer,
     sideMenuReducer,
     homeReducer,
-    mytaskReducer
+    mytaskReducer,
+    notificationReducer
 })
 
 const store = configureStore({
