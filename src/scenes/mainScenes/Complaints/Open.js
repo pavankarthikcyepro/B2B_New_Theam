@@ -10,11 +10,11 @@ import {
 import { Colors, GlobalStyle } from "../../../styles";
 import { ComplaintsItem } from "../../../pureComponents/complaintsItem";
 import { useDispatch, useSelector } from "react-redux";
-import { ComplaintsTopTabNavigator } from "../../../navigations/complaintsTopTabNavigator";
 
 const screenWidth = Dimensions.get("window").width;
 
 const OpenScreen = ({ navigation }) => {
+
   const selector = useSelector((state) => state.complaintsReducer);
 
   return (
@@ -29,7 +29,7 @@ const OpenScreen = ({ navigation }) => {
           }}
           renderItem={({ item, index }) => {
             return (
-              <View style={[styles.listBgVw]}>
+              <View style={[styles.listBgVw, GlobalStyle.shadow]}>
                 <ComplaintsItem
                   complaintFactor={item.complaintFactor}
                   name={item.name}
@@ -58,14 +58,13 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.LIGHT_GRAY,
   },
   view1: {
-    paddingHorizontal: 20,
+    flex: 1,
+    paddingHorizontal: 10,
     marginTop: 10,
   },
   listBgVw: {
-    width: screenWidth - 40,
     backgroundColor: Colors.WHITE,
-    paddingHorizontal: 20,
-    paddingVertical: 5,
+    padding: 10,
   },
   separator: {
     height: 10,

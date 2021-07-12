@@ -10,3 +10,4 @@ export const TEXT_INPUT_BORDER_COLOR = "#000000"
 export const GREEN = "#24c2bd";
 export const YELLOW = "#ffb300";
 export const SKY_BLUE = "#8f8bff";
+export const BLUE = "#1462de";

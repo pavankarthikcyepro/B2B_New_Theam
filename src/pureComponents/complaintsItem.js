@@ -1,16 +1,15 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { Colors } from "../styles";
+import { Colors, GlobalStyle } from "../styles";
 import { IconButton } from "react-native-paper";
-import { color } from "react-native-reanimated";
 
-const NameComp = ({ label, value }) => {
+const NameComp = ({ label, value, labelStyle, valueStyle }) => {
   return (
     <View
       style={{ flexDirection: "row", alignItems: "center", marginBottom: 5 }}
     >
-      <Text style={styles.text1}>{label}</Text>
-      <Text style={styles.text2}>{value}</Text>
+      <Text style={[styles.text1, labelStyle]}>{label}</Text>
+      <Text style={[styles.text2, valueStyle]}>{value}</Text>
     </View>
   );
 };
@@ -26,38 +25,43 @@ export const ComplaintsItem = ({
   car,
   text,
 }) => {
+
   return (
-    <View>
-      <View style={{ alignSelf: "stretch" }}>
-        <View style={{ flexDirection: "row" }}>
-          <NameComp label={"Complaint Factor: "} value={complaintFactor} />
-          <IconButton icon="phone" color={Colors.GREEN} size={20} />
-        </View>
+    <View style={{}}>
+      <NameComp label={"Complaint Factor: "} labelStyle={{ color: Colors.RED }} value={complaintFactor} valueStyle={{ color: Colors.BLUE }} />
 
-        <NameComp value={name} />
+      <View style={styles.view1}>
 
-        <View style={{ flexDirection: "row" }}>
+        <View>
+          <NameComp value={name} />
           <NameComp value={place} />
-          <View style={styles.rightView}>
-            <IconButton icon="email" color={Colors.SKY_BLUE} size={30} />
-          </View>
+          <NameComp label={"Enquiry ID    : "} value={enquiryID} />
+          <NameComp label={"Enquiry DATE   : "} value={enquiryDate} />
+          <NameComp label={"Source  : "} value={source} />
+          <NameComp label={"DSE   : "} value={dse} />
+          <NameComp />
         </View>
 
-        <NameComp label={"Enquiry ID    : "} value={enquiryID} />
-        <NameComp label={"Enquiry DATE   : "} value={enquiryDate} />
-        <NameComp label={"Source  : "} value={source} />
-        <NameComp label={"DSE   : "} value={dse} />
-        <NameComp />
-        <NameComp value={car} />
-        <NameComp value={text} />
+        <View style={{ flexDirection: 'column' }}>
+          <IconButton icon="phone" color={Colors.GREEN} size={20} />
+          <IconButton icon="email" color={Colors.SKY_BLUE} size={20} />
+        </View>
+
       </View>
+
+      <NameComp value={car} />
+      <NameComp value={text} valueStyle={{ color: Colors.GRAY }} />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  view1: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
   text1: {
-    color: Colors.BLACK,
+    color: Colors.GRAY,
     fontSize: 14,
     fontWeight: "700",
   },

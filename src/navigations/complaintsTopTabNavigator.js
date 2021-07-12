@@ -1,9 +1,9 @@
 import React from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 
-import OpenScreen from "../scenes/mainScenes/Complaints/Open";
-import ClosedScreen from "../scenes/mainScenes/Complaints/Closed";
-import InprogressScreen from "../scenes/mainScenes/Complaints/Inprogress";
+import OpenScreen from "../scenes/mainScenes/Complaints/open";
+import ClosedScreen from "../scenes/mainScenes/Complaints/closed";
+import InprogressScreen from "../scenes/mainScenes/Complaints/inprogress";
 import { Colors } from "../styles";
 
 const ComplaintsTopTabNavigatorIdentifiers = {
