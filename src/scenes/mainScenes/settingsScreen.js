@@ -8,7 +8,7 @@ import {
   Dimensions,
 } from "react-native";
 import { Colors } from "../../styles";
-import {} from "../../pureComponents/settingScreenItem";
+import { SettingsScreenItem } from "../../pureComponents/settingScreenItem";
 const screenWidth = Dimensions.get("window").width;
 
 const datalist = [
@@ -23,32 +23,22 @@ const datalist = [
 const SettingsScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
-      <FlatList
-        data={datalist}
-        keyExtractor={(item, index) => index.toString()}
-        ItemSeparatorComponent={() => {
-          return (
-            <View
-              style={{
-                width: screenWidth,
-                height: 10,
-                backgroundColor: Colors.LIGHT_GRAY,
-              }}
-            ></View>
-          );
-        }}
-        renderItem={({ item, index }) => {
-          return (
-            <View style={styles.list}>
-              <View style={{ flexDirection: "row" }}>
-                <Text style={{ fontSize: 14, fontWeight: "bold" }}>
-                  {item.name}
-                </Text>
-              </View>
-            </View>
-          );
-        }}
-      />
+      <View style={styles.view2}>
+        <FlatList
+          data={datalist}
+          keyExtractor={(item, index) => index.toString()}
+          ItemSeparatorComponent={() => {
+            return (
+              <View style={styles.view1}></View>
+            );
+          }}
+          renderItem={({ item, index }) => {
+            return (
+              <SettingsScreenItem name={item.name} />
+            );
+          }}
+        />
+      </View>
     </SafeAreaView>
   );
 };
@@ -62,9 +52,17 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.LIGHT_GRAY,
     paddingTop: 10,
   },
+  view2: {
+    flex: 1,
+    padding: 10
+  },
   list: {
     padding: 20,
     backgroundColor: Colors.WHITE,
     borderRadius: 10,
   },
+  view1: {
+    height: 10,
+    backgroundColor: Colors.LIGHT_GRAY,
+  }
 });

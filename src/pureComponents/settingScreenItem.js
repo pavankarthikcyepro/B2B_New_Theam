@@ -1,22 +1,12 @@
 import React from "react";
 import { View, StyleSheet, Text, Pressable } from "react-native";
+import { Colors } from '../styles'
 
-export const settingsScreenItem = ({ name }) => {
+export const SettingsScreenItem = ({ name }) => {
   return (
-    <SafeAreaView style={styles.container}>
-      <View>
-        <Text
-          style={{
-            color: Colors.BLACK,
-            fontSize: 16,
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          {name}
-        </Text>
-      </View>
-    </SafeAreaView>
+    <View style={styles.container}>
+      <Text style={styles.text1}>{name}</Text>
+    </View>
   );
 };
 
@@ -25,5 +15,15 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "flex-start",
     alignItems: "flex-start",
+    backgroundColor: Colors.WHITE,
+    height: 50,
+    justifyContent: 'center',
+    paddingHorizontal: 10
   },
+  text1: {
+    color: Colors.BLACK,
+    fontSize: 16,
+    justifyContent: "center",
+    alignItems: "center",
+  }
 });

@@ -128,17 +128,7 @@ const HomeStackNavigator = ({ navigation }) => {
       <HomeStack.Screen
         name={CommonStackIdentifiers.settings}
         component={SettingsScreen}
-        options={{
-          title: "Settings",
-          headerRight: () => {
-            return (
-              <View style={{ flexDirection: "row" }}>
-                <SearchIcon />
-                <NotficationIcon navigation={navigation} />
-              </View>
-            );
-          },
-        }}
+        options={{ title: "Settings" }}
       />
       <HomeStack.Screen
         name={CommonStackIdentifiers.notification}
