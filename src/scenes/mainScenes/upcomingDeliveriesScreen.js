@@ -6,12 +6,12 @@ import {
   View,
   SafeAreaView,
   Pressable,
-  Image,
-  IconButton,
+  Alert,
 } from "react-native";
 import { Colors, GlobalStyle } from "../../styles";
-import { UpcomingDeliveriesItem } from '../../pureComponents/upcomingDeliveriesItem';
-
+import { UpcomingDeliveriesItem } from "../../pureComponents/upcomingDeliveriesItem";
+import { PageControlItem } from "../../pureComponents/pageControlItem";
+import { IconButton } from "react-native-paper";
 const datalist = [
   {
     name: "Mr.Sunil Prakash",
@@ -75,13 +75,15 @@ const UpcomingDeliveriesScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ flex: 1, paddingHorizontal: 10, paddingTop: 10 }}>
+        <View style={styles.view1}>
+          <PageControlItem pageNumber={1} totalPages={254} />
+        </View>
         <View style={GlobalStyle.shadow}>
           <FlatList
             data={datalist}
             keyExtractor={(item, index) => index.toString()}
             showsVerticalScrollIndicator={false}
             renderItem={({ item, index }) => {
-
               let color = Colors.WHITE;
               if (index % 2 != 0) {
                 color = Colors.LIGHT_GRAY;
@@ -95,13 +97,18 @@ const UpcomingDeliveriesScreen = () => {
                   dseName={item.dSEName}
                   modelName={item.vehicleName}
                   bgColor={color}
+                  onPress={() => {
+                    console.log("onpress");
+                  }}
+                  onCallPress={() => {
+                    console.log("icon pressed");
+                  }}
                 />
               );
             }}
           />
         </View>
       </View>
-
     </SafeAreaView>
   );
 };
@@ -113,5 +120,15 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     justifyContent: "center",
-  }
+  },
+  view1: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 5,
+  },
+  text1: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: Colors.RED,
+  },
 });
