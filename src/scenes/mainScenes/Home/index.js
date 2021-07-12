@@ -167,5 +167,10 @@ const styles = StyleSheet.create({
   text3: {
     fontSize: 18,
     fontWeight: '800',
+  },
+  dateVw: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 60
   }
 })
