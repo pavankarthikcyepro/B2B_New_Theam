@@ -1,98 +1,61 @@
 import React from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  SafeAreaView,
-  SectionList,
-  StatusBar,
-} from "react-native";
+import { StyleSheet, Text, View, SafeAreaView, SectionList, StatusBar } from "react-native";
 import { Colors } from "../../styles";
+import { useDispatch, useSelector } from 'react-redux';
+import { NotificationItem } from '../../pureComponents/notificationItem';
+import { Button } from 'react-native-paper';
 
-const DATA = [
-  {
-    title: "Today",
-    data: [
-      "You have been assigned a target for Aug 20         2 hours ago",
-      "General visitor request created for Aziz Khan @ 1PM                                                                                                                                                                    6 hours ago",
-      " You have a new missed activity under general tasks due for 3 days                                                                          5 hours ago    ",
+const NotificationScreen = () => {
 
-      "You have been assigned a target for Aug 20         2 hours ago",
-      "General visitor request created for Aziz Khan @ 1PM                                                                                                                                                                    6 hours ago",
-      " You have a new missed activity under general tasks due for 3 days                                                                          5 hours ago    ",
-    ],
-  },
-  {
-    title: "Yesterday",
-    data: [
-      "You have been assigned a target for Aug 20         2 hours ago",
-      "General visitor request created for Aziz Khan @ 1PM                                                                                                                                                                    6 hours ago",
-      " You have a new missed activity under general tasks due for 3 days                                                                          5 hours ago    ",
-    ],
-  },
-  {
-    title: "july 7, 1:40 AM",
-    data: [
-      "You have been assigned a target for Aug 20         2 hours ago",
-      "General visitor request created for Aziz Khan @ 1PM                                                                                                                                                                    6 hours ago",
-      " You have a new missed activity under general tasks due for 3 days                                                                          5 hours ago    ",
-    ],
-    hrs: ["5 hours ago"],
-  },
-  {
-    title: "july 6, 12 AM",
-    data: [
-      "You have been assigned a target for Aug 20         2 hours ago",
-      "General visitor request created for Aziz Khan @ 1PM                                                                                                                                                                    6 hours ago",
-      " You have a new missed activity under general tasks due for 3 days                                                                          5 hours ago    ",
-    ],
-    hrs: ["4 hours ago"],
-  },
-];
+  const selector = useSelector(state => state.notificationReducer);
 
-const Item = ({ title }) => (
-  <View style={styles.item}>
-    <Text style={styles.title}>{title}</Text>
-  </View>
-);
+  return (
+    <SafeAreaView style={styles.container}>
 
-const NotificationScreen = () => (
-  <SafeAreaView style={styles.container}>
-    <View>
-      <Text
-        style={{
-          fontWeight: "bold",
-          color: Colors.RED,
-          marginLeft: 249,
-          marginBottom: -28,
-          fontSize: 14,
+      <SectionList
+        sections={selector.tableData}
+        keyExtractor={(item, index) => index.toString()}
+        showsVerticalScrollIndicator={false}
+        renderItem={({ item }) => {
+
+          return (
+            <View>
+              <NotificationItem title={item.name} date={item.date} />
+            </View>
+          )
         }}
-      >
-        Mark all Read
-      </Text>
-    </View>
-    <SectionList
-      sections={DATA}
-      keyExtractor={(item, index) => item + index}
-      renderItem={({ item }) => <Item title={item} />}
-      renderSectionHeader={({ section: { title } }) => (
-        <Text style={styles.header}>{title}</Text>
-      )}
-    />
-  </SafeAreaView>
-);
+        renderSectionHeader={({ section: { title } }) => {
+
+          let showMarkAllRead = false;
+          if (title === "Today") {
+            showMarkAllRead = true
+          }
+
+          return (
+            <View style={styles.sectionHeaderVw}>
+              <Text style={styles.header}>{title}</Text>
+              {showMarkAllRead ? <Button
+                mode="text"
+                labelStyle={{ fontSize: 14, color: Colors.RED, textTransform: 'none', textAlign: 'right', paddingRight: 0, marginRight: 0 }}
+                contentStyle={{ margin: 0, padding: 0 }}
+                onPress={() => console.log('Pressed')}
+              >
+                Mark all read
+              </Button> : null}
+            </View>
+          )
+        }}
+      />
+    </SafeAreaView>
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: StatusBar.currentHeight,
     marginHorizontal: 10,
-  },
-  item: {
-    backgroundColor: Colors.WHITE,
-    padding: 10,
-    marginVertical: 10,
-    borderRadius: 6,
+    backgroundColor: Colors.LIGHT_GRAY
   },
   header: {
     fontSize: 20,
@@ -100,10 +63,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     backgroundColor: Colors.gray,
   },
-  title: {
-    fontSize: 12,
-    fontWeight: "300",
-  },
+  sectionHeaderVw: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: Colors.LIGHT_GRAY
+  }
 });
 
 export default NotificationScreen;
