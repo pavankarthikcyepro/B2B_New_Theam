@@ -25,13 +25,16 @@ export const ComplaintsItem = ({
   car,
   text,
 }) => {
-
   return (
     <View style={{}}>
-      <NameComp label={"Complaint Factor: "} labelStyle={{ color: Colors.RED }} value={complaintFactor} valueStyle={{ color: Colors.BLUE }} />
+      <NameComp
+        label={"Complaint Factor: "}
+        labelStyle={{ color: Colors.RED }}
+        value={complaintFactor}
+        valueStyle={{ color: Colors.BLUE }}
+      />
 
       <View style={styles.view1}>
-
         <View>
           <NameComp value={name} />
           <NameComp value={place} />
@@ -42,11 +45,10 @@ export const ComplaintsItem = ({
           <NameComp />
         </View>
 
-        <View style={{ flexDirection: 'column' }}>
+        <View style={{ flexDirection: "column" }}>
           <IconButton icon="phone" color={Colors.GREEN} size={20} />
-          <IconButton icon="email" color={Colors.SKY_BLUE} size={20} />
+          <IconButton icon="email" color={Colors.LIGHT_SKY_BLUE} size={20} />
         </View>
-
       </View>
 
       <NameComp value={car} />
@@ -57,8 +59,8 @@ export const ComplaintsItem = ({
 
 const styles = StyleSheet.create({
   view1: {
-    flexDirection: 'row',
-    justifyContent: 'space-between'
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   text1: {
     color: Colors.GRAY,

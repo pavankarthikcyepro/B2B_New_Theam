@@ -14,7 +14,6 @@ import { useDispatch, useSelector } from "react-redux";
 const screenWidth = Dimensions.get("window").width;
 
 const OpenScreen = ({ navigation }) => {
-
   const selector = useSelector((state) => state.complaintsReducer);
 
   return (
@@ -65,6 +64,7 @@ const styles = StyleSheet.create({
   listBgVw: {
     backgroundColor: Colors.WHITE,
     padding: 10,
+    borderRadius: 10,
   },
   separator: {
     height: 10,
