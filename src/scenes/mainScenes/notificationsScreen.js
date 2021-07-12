@@ -1,207 +1,109 @@
 import React from "react";
 import {
-  SafeAreaView,
-  View,
-  FlatList,
   StyleSheet,
   Text,
-  Dimensions,
-  Image,
+  View,
+  SafeAreaView,
+  SectionList,
+  StatusBar,
 } from "react-native";
 import { Colors } from "../../styles";
 
-const screenWidth = Dimensions.get("window").width;
+const DATA = [
+  {
+    title: "Today",
+    data: [
+      "You have been assigned a target for Aug 20         2 hours ago",
+      "General visitor request created for Aziz Khan @ 1PM                                                                                                                                                                    6 hours ago",
+      " You have a new missed activity under general tasks due for 3 days                                                                          5 hours ago    ",
 
-const DataBase = [
-  {
-    id: 1,
-    name: "You have been assigned a target for Aug 20",
-    hrs: "2 hours ago",
+      "You have been assigned a target for Aug 20         2 hours ago",
+      "General visitor request created for Aziz Khan @ 1PM                                                                                                                                                                    6 hours ago",
+      " You have a new missed activity under general tasks due for 3 days                                                                          5 hours ago    ",
+    ],
   },
   {
-    id: 2,
-    name: "General visitor request created for Aziz Khan @ 1PM",
-    hrs: "6 hours ago",
+    title: "Yesterday",
+    data: [
+      "You have been assigned a target for Aug 20         2 hours ago",
+      "General visitor request created for Aziz Khan @ 1PM                                                                                                                                                                    6 hours ago",
+      " You have a new missed activity under general tasks due for 3 days                                                                          5 hours ago    ",
+    ],
   },
   {
-    id: 3,
-    name: " You have a new missed activity under general tasks due for 3 days",
-    hrs: "  5 hours ago",
+    title: "july 7, 1:40 AM",
+    data: [
+      "You have been assigned a target for Aug 20         2 hours ago",
+      "General visitor request created for Aziz Khan @ 1PM                                                                                                                                                                    6 hours ago",
+      " You have a new missed activity under general tasks due for 3 days                                                                          5 hours ago    ",
+    ],
+    hrs: ["5 hours ago"],
   },
   {
-    id: 4,
-    name: "You have been assigned a target for Aug 20",
-    hrs: "2 hours ago",
-  },
-  {
-    id: 5,
-    name: "General visitor request created for Aziz Khan @ 1PM",
-    hrs: "6 hours ago",
-  },
-  {
-    id: 6,
-    name: " You have a new missed activity under general tasks due for 3 days",
-    hrs: "5 hours ago",
-  },
-  {
-    id: 7,
-    role: "Yesterday",
-  },
-  {
-    id: 8,
-    name: "You have been assigned a target for Aug 20",
-    hrs: "2 hours ago",
-  },
-  {
-    id: 9,
-    name: "General visitor request created for Aziz Khan @ 1PM",
-    hrs: "6 hours ago",
-  },
-  {
-    id: 10,
-    name: " You have a new missed activity under general tasks due for 3 days",
-    hrs: "5 hours ago",
+    title: "july 6, 12 AM",
+    data: [
+      "You have been assigned a target for Aug 20         2 hours ago",
+      "General visitor request created for Aziz Khan @ 1PM                                                                                                                                                                    6 hours ago",
+      " You have a new missed activity under general tasks due for 3 days                                                                          5 hours ago    ",
+    ],
+    hrs: ["4 hours ago"],
   },
 ];
-const ScreenInterior = () => {
-  return (
-    <SafeAreaView style={styles.rootStyle}>
-      <View style={{ padding: 10 }}>
-        <Text
-          style={{
-            fontWeight: "bold",
-            color: Colors.BLACK,
-            marginRight: 150,
-            fontSize: 20,
-          }}
-        >
-          Today
-        </Text>
-        <Text
-          style={{
-            fontWeight: "bold",
-            color: Colors.RED,
-            marginLeft: 250,
-            marginTop: -22,
-            fontSize: 14,
-          }}
-        >
-          Mark all Read
-        </Text>
-        <View style={{ padding: 10 }}></View>
-        {/* <Text
-          style={{
-            fontWeight: "bold",
-            color: Colors.BLACK,
-            marginRight: 150,
-            fontSize: 20,
-            marginBottom: 50,
-          }}
-        >
-          Yesterday
-        </Text> */}
-        <FlatList
-          data={DataBase}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item, index }) => {
-            return (
-              <View
-                style={{
-                  width: screenWidth - 20,
-                  height: 60,
-                  borderRadius: 8,
 
-                  backgroundColor: Colors.WHITE,
+const Item = ({ title }) => (
+  <View style={styles.item}>
+    <Text style={styles.title}>{title}</Text>
+  </View>
+);
 
-                  flexDirection: "row",
-
-                  justifyContent: "space-between",
-                }}
-              >
-                <View style={{ flexDirection: "row" }}>
-                  <View
-                    style={{
-                      flexDirection: "column",
-                      marginLeft: 5,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: 12,
-                        fontWeight: "bold",
-                        color: "black",
-                        margin: 5,
-                      }}
-                    >
-                      {item.name}
-                    </Text>
-
-                    <Text
-                      style={{
-                        fontSize: 14,
-                        marginLeft: 250,
-                        fontWeight: "400",
-                        color: "gray",
-                      }}
-                    >
-                      {item.hrs}
-                    </Text>
-
-                    {/* <View
-                      style={{
-                        width: screenWidth - 20,
-                        height: 60,
-                        borderRadius: 8,
-
-                        backgroundColor: Colors.GRAY,
-
-                        flexDirection: "row",
-
-                        justifyContent: "space-between",
-                      }}
-                    /> */}
-                    <Text
-                      style={{
-                        fontSize: 24,
-
-                        fontWeight: "bold",
-                        color: "black",
-                        marginTop: -30,
-                      }}
-                    >
-                      {item.role}
-                    </Text>
-
-                    <View></View>
-                  </View>
-                </View>
-              </View>
-            );
-          }}
-          ItemSeparatorComponent={() => {
-            return (
-              <View
-                style={{
-                  width: screenWidth - 30,
-                  height: 8,
-                  marginRight: 10,
-                  backgroundColor: Colors.gray,
-                }}
-              ></View>
-            );
-          }}
-        />
-      </View>
-    </SafeAreaView>
-  );
-};
-
-export default ScreenInterior;
+const NotificationScreen = () => (
+  <SafeAreaView style={styles.container}>
+    <View>
+      <Text
+        style={{
+          fontWeight: "bold",
+          color: Colors.RED,
+          marginLeft: 249,
+          marginBottom: -28,
+          fontSize: 14,
+        }}
+      >
+        Mark all Read
+      </Text>
+    </View>
+    <SectionList
+      sections={DATA}
+      keyExtractor={(item, index) => item + index}
+      renderItem={({ item }) => <Item title={item} />}
+      renderSectionHeader={({ section: { title } }) => (
+        <Text style={styles.header}>{title}</Text>
+      )}
+    />
+  </SafeAreaView>
+);
 
 const styles = StyleSheet.create({
-  rootStyle: {
+  container: {
     flex: 1,
-    flexDirection: "column",
-    alignItems: "center",
+    paddingTop: StatusBar.currentHeight,
+    marginHorizontal: 10,
+  },
+  item: {
+    backgroundColor: Colors.WHITE,
+    padding: 10,
+    marginVertical: 10,
+    borderRadius: 6,
+  },
+  header: {
+    fontSize: 20,
+    marginLeft: 10,
+    fontWeight: "bold",
+    backgroundColor: Colors.gray,
+  },
+  title: {
+    fontSize: 12,
+    fontWeight: "300",
   },
 });
+
+export default NotificationScreen;
