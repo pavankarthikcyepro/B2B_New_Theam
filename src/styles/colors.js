@@ -9,3 +9,5 @@ export const GREEN = "#24c2bd";
 export const YELLOW = "#ffb300";
 export const SKY_BLUE = "#8f8bff";
 export const LIGHT_PINK = "#f5b8ef";
+export const BLUE = "#1462de";
+export const LIGHT_SKY_BLUE = "#87CEFA";
