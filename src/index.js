@@ -11,7 +11,7 @@ const AppScreen = () => {
         <Provider store={reduxStore}>
             <NavigationContainer>
                 {/* <AuthNavigator.AuthStackNavigator /> */}
-                <AppNavigator.TabNavigator />
+                <AppNavigator.MainStackDrawerNavigator />
             </NavigationContainer>
         </Provider>
     )

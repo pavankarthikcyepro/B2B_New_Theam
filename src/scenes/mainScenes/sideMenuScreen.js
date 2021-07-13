@@ -16,14 +16,17 @@ const SideMenuScreen = ({ navigation }) => {
 
     const itemSelected = (item) => {
         switch (item.screen) {
+            case 99:
+                navigation.navigate(AppNavigator.DrawerStackIdentifiers.home)
+                break
             case 100:
-                navigation.navigate(AppNavigator.CommonStackIdentifiers.upcomingDeliveries)
+                navigation.navigate(AppNavigator.DrawerStackIdentifiers.upcomingDeliveries)
                 break
             case 101:
-                navigation.navigate(AppNavigator.CommonStackIdentifiers.complaint)
+                navigation.navigate(AppNavigator.DrawerStackIdentifiers.complaint)
                 break
             case 102:
-                navigation.navigate(AppNavigator.CommonStackIdentifiers.settings)
+                navigation.navigate(AppNavigator.DrawerStackIdentifiers.settings)
                 break
         }
     }

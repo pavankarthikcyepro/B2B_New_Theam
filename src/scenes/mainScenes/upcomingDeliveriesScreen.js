@@ -72,6 +72,7 @@ const datalist = [
 ];
 
 const UpcomingDeliveriesScreen = () => {
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ flex: 1, paddingHorizontal: 10, paddingTop: 10 }}>

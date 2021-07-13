@@ -3,6 +3,11 @@ import { SETTINGS, SCHEDULE_FILL } from '../assets/svg';
 
 const data = [
     {
+        title: "Home",
+        icon: SCHEDULE_FILL,
+        screen: 99
+    },
+    {
         title: "Upcoming Deliveries",
         icon: SETTINGS,
         screen: 100
