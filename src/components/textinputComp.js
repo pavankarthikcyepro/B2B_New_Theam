@@ -4,17 +4,21 @@ import { TextInput, HelperText } from 'react-native-paper';
 import { Colors } from '../styles';
 import PropTypes from 'prop-types';
 
-const TextinputComp = ({ value, mode = 'flat', label, disabled, placeholder, error, errorMsg = "", multiline, numberOfLines, editable, keyboardType = 'default', isSecure = false, showRightIcon = false, onChangeText, onRightIconPressed }) => {
+const TextinputComp = ({ value, mode = 'flat', label, disabled, placeholder, error, errorMsg = "", multiline, numberOfLines, editable, keyboardType = 'default', isSecure = false, showRightIcon = false, rightIconObj = {}, onChangeText, onRightIconPressed, style = {}, onPressIn }) => {
 
     let rightIconComp = null;
     if (showRightIcon) {
-        rightIconComp = <TextInput.Icon name="eye-off-outline" color={Colors.GRAY} onPress={onRightIconPressed} />
+        if (rightIconObj) {
+            rightIconComp = <TextInput.Icon name={rightIconObj.name} color={rightIconObj.color} onPress={onRightIconPressed} />
+        } else {
+            rightIconComp = <TextInput.Icon name="eye-off-outline" color={Colors.GRAY} onPress={onRightIconPressed} />
+        }
     }
 
     return (
         <View>
             <TextInput
-                style={{ height: 50, width: '100%', fontSize: 16, fontWeight: '400', backgroundColor: Colors.WHITE }}
+                style={[{ height: 50, width: '100%', fontSize: 16, fontWeight: '400', backgroundColor: Colors.WHITE }, style]}
                 mode={mode}
                 label={label}
                 value={value}
@@ -33,6 +37,7 @@ const TextinputComp = ({ value, mode = 'flat', label, disabled, placeholder, err
                 secureTextEntry={isSecure}
                 right={rightIconComp}
                 theme={{ colors: { primary: Colors.GRAY, underlineColor: 'transparent' } }}
+                onPressIn={onPressIn}
             />
             {error ? <HelperText type="error" visible={true} padding={'none'} style={{ color: Colors.RED }}>
                 {errorMsg}

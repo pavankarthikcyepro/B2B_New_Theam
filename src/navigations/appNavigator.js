@@ -107,7 +107,6 @@ const HomeStackNavigator = ({ navigation }) => {
           headerRight: () => {
             return (
               <View style={{ flexDirection: "row" }}>
-                <SearchIcon />
                 <NotficationIcon navigation={navigation} />
               </View>
             );
