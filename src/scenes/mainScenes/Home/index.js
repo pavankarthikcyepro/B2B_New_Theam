@@ -63,9 +63,9 @@ const HomeScreen = ({ navigation }) => {
           </View>
         </Pressable>
 
-        <DateRangeComp fromDate={'09/23/2209'} toDate={'89/09/2021'} />
+        {/* <DateRangeComp fromDate={'09/23/2209'} toDate={'89/09/2021'} /> */}
 
-        {/* <View style={{ maxHeight: 100, marginBottom: 15 }}>
+        <View style={{ maxHeight: 100, marginBottom: 15 }}>
           <FlatList
             data={selector.datesData}
             style={{}}
@@ -88,7 +88,7 @@ const HomeScreen = ({ navigation }) => {
               )
             }}
           />
-        </View> */}
+        </View>
 
         <FlatList
           data={selector.tableData}

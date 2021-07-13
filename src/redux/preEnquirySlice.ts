@@ -43,9 +43,14 @@ export const preEnquirySlice = createSlice({
   name: "PRE_ENQUIRY",
   initialState: {
     sampleDataAry: data,
+    modelVisible: false
   },
-  reducers: {},
+  reducers: {
+    callPressed: (state, action) => {
+      state.modelVisible = !state.modelVisible;
+    }
+  },
 });
 
-export const {} = preEnquirySlice.actions;
+export const { callPressed } = preEnquirySlice.actions;
 export default preEnquirySlice.reducer;

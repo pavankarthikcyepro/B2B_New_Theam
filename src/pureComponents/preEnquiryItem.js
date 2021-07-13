@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { View, StyleSheet, Text, Pressable } from "react-native";
 import { Button, IconButton } from "react-native-paper";
 import { Colors } from "../styles";
 
@@ -21,7 +21,7 @@ export const PreEnquiryItem = ({
   }
 
   return (
-    <TouchableOpacity onPress={onPress}>
+    <Pressable onPress={onPress}>
       <View style={[styles.container, { backgroundColor: bgColor }]}>
         <View style={styles.leftView}>
           <Text style={styles.text1}>
@@ -41,7 +41,7 @@ export const PreEnquiryItem = ({
         <View style={styles.rightView}>
           <Button
             mode="contained"
-            contentStyle={{ height: 40, backgroundColor: Colors.RED }}
+            contentStyle={{ height: 30, backgroundColor: Colors.RED }}
             labelStyle={{ fontSize: 12, fontWeight: "600" }}
             onPress={() => console.log("Pressed")}
           >
@@ -55,7 +55,7 @@ export const PreEnquiryItem = ({
           />
         </View>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 

@@ -8,13 +8,19 @@ import { IconButton } from 'react-native-paper';
 import VectorImage from 'react-native-vector-image';
 import { CREATE_NEW } from '../../../assets/svg';
 import { AppNavigator } from '../../../navigations';
+import { CallUserComponent } from '../../../components/callUserComp';
+import { callPressed } from '../../../redux/preEnquirySlice'
 
 const PreEnquiryScreen = ({ navigation }) => {
 
     const selector = useSelector(state => state.preEnquiryReducer);
+    const dispatch = useDispatch();
 
     return (
         <SafeAreaView style={styles.conatiner}>
+
+            <CallUserComponent visible={selector.modelVisible} onRequestClose={() => dispatch(callPressed())} />
+
             <View style={{ flex: 1, paddingHorizontal: 10, paddingTop: 10 }}>
 
                 <View style={styles.view1}>
@@ -49,8 +55,8 @@ const PreEnquiryScreen = ({ navigation }) => {
                                     date={item.date}
                                     type={item.type}
                                     modelName={item.vehicle}
-                                    onPress={() => { console.log('onpress') }}
-                                    onCallPress={() => { console.log('icon pressed') }}
+                                    onPress={() => { }}
+                                    onCallPress={() => dispatch(callPressed())}
                                 />
                             )
                         }}
@@ -64,7 +70,7 @@ const PreEnquiryScreen = ({ navigation }) => {
                 </View>
 
             </View>
-        </SafeAreaView>
+        </SafeAreaView >
     )
 }
 

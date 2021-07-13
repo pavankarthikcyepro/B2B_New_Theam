@@ -134,7 +134,6 @@ const PreEnquiry = ({ navigation }) => {
         onRequestClose={() => {
           Alert.alert("Popup has bees closed.");
           setModalVisible(!modalVisible);
-          justifyContent: "center";
         }}
       >
         <View style={styles.centeredView}>
