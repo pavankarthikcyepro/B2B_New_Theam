@@ -9,6 +9,7 @@ import VectorImage from 'react-native-vector-image';
 import { CREATE_NEW } from '../../../assets/svg';
 import { AppNavigator } from '../../../navigations';
 import { CallUserComponent } from '../../../components/callUserComp';
+import { DatePickerComponent } from '../../../components/datepickerComp';
 import { callPressed } from '../../../redux/preEnquirySlice'
 
 const PreEnquiryScreen = ({ navigation }) => {
@@ -19,7 +20,9 @@ const PreEnquiryScreen = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.conatiner}>
 
-            <CallUserComponent visible={selector.modelVisible} onRequestClose={() => dispatch(callPressed())} />
+            {/* <CallUserComponent visible={selector.modelVisible} onRequestClose={() => dispatch(callPressed())} /> */}
+            <DatePickerComponent visible={selector.modelVisible} value={new Date(Date.now())} onRequestClose={() => dispatch(callPressed())} />
+
 
             <View style={{ flex: 1, paddingHorizontal: 10, paddingTop: 10 }}>
 
