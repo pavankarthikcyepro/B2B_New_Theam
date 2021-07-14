@@ -61,6 +61,7 @@ const LoginScreen = ({ navigation }) => {
 
     console.log("employeeId: ", employeeId);
     console.log("password: ", password);
+
   };
 
   const forgotClicked = () => {

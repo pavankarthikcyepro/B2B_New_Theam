@@ -21,7 +21,13 @@ const PreEnquiryScreen = ({ navigation }) => {
         <SafeAreaView style={styles.conatiner}>
 
             {/* <CallUserComponent visible={selector.modelVisible} onRequestClose={() => dispatch(callPressed())} /> */}
-            <DatePickerComponent visible={selector.modelVisible} value={new Date(Date.now())} onRequestClose={() => dispatch(callPressed())} />
+            <DatePickerComponent
+                visible={selector.modelVisible}
+                mode={'time'}
+                value={new Date(Date.now())}
+                onChange={(date) => console.log('dateSelected: ', date)}
+                onRequestClose={() => dispatch(callPressed())}
+            />
 
 
             <View style={{ flex: 1, paddingHorizontal: 10, paddingTop: 10 }}>
