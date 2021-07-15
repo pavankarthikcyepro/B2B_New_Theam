@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView, StyleSheet, View, Text, FlatList, Pressable, Alert } from 'react-native';
+import { SafeAreaView, StyleSheet, View, Text, FlatList, Pressable, Alert, Platform } from 'react-native';
 import { PreEnquiryItem } from '../../../pureComponents/preEnquiryItem';
 import { PageControlItem } from '../../../pureComponents/pageControlItem';
 import { Colors, GlobalStyle } from '../../../styles';
@@ -11,6 +11,7 @@ import { AppNavigator } from '../../../navigations';
 import { CallUserComponent } from '../../../components/callUserComp';
 import { DatePickerComponent } from '../../../components/datepickerComp';
 import { callPressed } from '../../../redux/preEnquirySlice'
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const PreEnquiryScreen = ({ navigation }) => {
 
@@ -20,14 +21,22 @@ const PreEnquiryScreen = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.conatiner}>
 
-            {/* <CallUserComponent visible={selector.modelVisible} onRequestClose={() => dispatch(callPressed())} /> */}
-            <DatePickerComponent
+            <CallUserComponent visible={selector.modelVisible} onRequestClose={() => dispatch(callPressed())} />
+            {/* {selector.modelVisible && <DatePickerComponent
                 visible={selector.modelVisible}
-                mode={'time'}
+                mode={'date'}
                 value={new Date(Date.now())}
-                onChange={(date) => console.log('dateSelected: ', date)}
-                onRequestClose={() => dispatch(callPressed())}
-            />
+                onChange={(event, selectedDate) => {
+                    console.log('date: ', selectedDate)
+                    if (Platform.OS === "android") {
+                        dispatch(callPressed());
+                    }
+                }}
+                onRequestClose={() => {
+                    console.log('closed');
+                    dispatch(callPressed())
+                }}
+            />} */}
 
 
             <View style={{ flex: 1, paddingHorizontal: 10, paddingTop: 10 }}>

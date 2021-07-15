@@ -10,9 +10,9 @@ const DatePickerComponent = ({ visible = false, onRequestClose, value, mode = "d
 
     if (Platform.OS === "android") {
 
-        if (!visible) {
-            return null;
-        }
+        // if (!visible) {
+        //     return null;
+        // }
 
         return (
             <DateTimePicker
@@ -38,17 +38,17 @@ const DatePickerComponent = ({ visible = false, onRequestClose, value, mode = "d
                 <SafeAreaView style={styles.container}>
                     <View style={styles.view1}>
                         <View style={styles.view2}>
-                            <Button
+                            {/* <Button
                                 mode="text"
                                 labelStyle={{ textTransform: 'none', color: Colors.DARK_GRAY }}
                                 onPress={onRequestClose}
                             >
                                 Cancel
-                            </Button>
+                            </Button> */}
                             <Button
                                 mode="text"
                                 labelStyle={{ textTransform: 'none', color: Colors.RED }}
-                                onPress={() => console.log('Pressed')}
+                                onPress={onRequestClose}
                             >
                                 Done
                             </Button>
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     view2: {
         height: 50,
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-end',
         alignItems: 'center',
         backgroundColor: Colors.LIGHT_GRAY
     },
