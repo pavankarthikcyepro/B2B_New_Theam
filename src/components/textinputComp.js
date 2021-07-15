@@ -28,7 +28,7 @@ const TextinputComp = ({ value, mode = 'flat', label, disabled, placeholder, err
                 keyboardType={keyboardType}
                 selectionColor={Colors.BLACK}
                 underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
-                underlineColor={Colors.TEXT_INPUT_BORDER_COLOR}
+                underlineColor={Colors.LIGHT_GRAY}
                 outlineColor={Colors.BLACK}
                 multiline={multiline}
                 numberOfLines={numberOfLines}
