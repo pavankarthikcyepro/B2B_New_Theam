@@ -17,25 +17,27 @@ const DateModalComp = ({ visible = false, onRequestClose }) => {
       onRequestClose={onRequestClose}
     >
       <View style={styles.container}>
+
         <View style={styles.view1}>
-          <View style={styles.View2}>
-            <Text style={styles.Text1}> Please select a date range</Text>
+          <View style={styles.view2}>
+            <Text style={styles.text1}> Please select a date range</Text>
           </View>
 
-          <View style={{ height: 30 }}></View>
-          <DateRangeComp />
-          <View style={{ height: 30 }}></View>
+          <View style={{ paddingHorizontal: 15, height: 200, justifyContent: 'center', }}>
+            <DateRangeComp />
+          </View>
+
           <View style={styles.view3}>
-            <View style={{ width: "48%", padding: 10 }}>
+            <View style={{ width: "48%", }}>
               <Button
                 labelStyle={{ color: Colors.BLACK, textTransform: "none" }}
                 mode="outlined"
-                onPress={() => {}}
+                onPress={() => { }}
               >
                 Cancel
               </Button>
             </View>
-            <View style={{ width: "48%", padding: 10 }}>
+            <View style={{ width: "48%", }}>
               <Button
                 labelStyle={{
                   color: Colors.WHITE,
@@ -43,7 +45,7 @@ const DateModalComp = ({ visible = false, onRequestClose }) => {
                 }}
                 contentStyle={{ backgroundColor: Colors.BLACK }}
                 mode="contained"
-                onPress={() => {}}
+                onPress={() => { }}
               >
                 Submit
               </Button>
@@ -66,23 +68,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   view1: {
-    width: screenWidth - 60,
+    width: screenWidth - 40,
     backgroundColor: Colors.WHITE,
   },
-  View2: {
+  view2: {
     height: 50,
     backgroundColor: Colors.CORAL,
     justifyContent: "center",
     alignItems: "flex-start",
   },
-  Text1: {
-    fontSize: 24,
+  text1: {
+    fontSize: 20,
     fontWeight: "500",
     color: Colors.WHITE,
   },
   view3: {
     flexDirection: "row",
-    padding: 5,
+    paddingHorizontal: 15,
+    marginVertical: 30,
     justifyContent: "space-between",
   },
   textinputComp: {
