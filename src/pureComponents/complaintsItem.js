@@ -26,7 +26,7 @@ export const ComplaintsItem = ({
   text,
 }) => {
   return (
-    <View style={{}}>
+    <View>
       <NameComp
         label={"Complaint Factor: "}
         labelStyle={{ color: Colors.RED }}
