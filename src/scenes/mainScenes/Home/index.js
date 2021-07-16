@@ -46,7 +46,7 @@ const HomeScreen = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <DateModalComp
         visible={selector.dateModalVisible}
-        onRequestClose={() => dispatch(Pressed())}
+        onRequestClose={() => dispatch(dateSelected())}
       />
 
       <View style={{ flex: 1, paddingVertical: 10, paddingHorizontal: 15 }}>
@@ -75,7 +75,12 @@ const HomeScreen = ({ navigation }) => {
         <Pressable onPress={dateClicked}>
           <View style={styles.dateVw}>
             <Text style={styles.text3}>{"My Activities"}</Text>
-            <IconButton icon="calendar-month" color={Colors.RED} size={25} />
+            <IconButton
+              icon="calendar-month"
+              color={Colors.RED}
+              size={25}
+              ondateSelected={() => dispatch(dateSelected())}
+            />
           </View>
         </Pressable>
 

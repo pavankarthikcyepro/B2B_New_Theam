@@ -1,14 +1,23 @@
 import React from "react";
-import { View, Modal, StyleSheet, Text, Dimensions } from "react-native";
+import {
+  View,
+  Modal,
+  StyleSheet,
+  Text,
+  Dimensions,
+  Pressable,
+  TouchableOpacity,
+} from "react-native";
 import { Colors } from "../styles";
 import { Button } from "react-native-paper";
+import { useSelector, useDispatch } from "react-redux";
 
+import { dateSelected } from "../redux/homeSlice";
 import { DateRangeComp } from "../components/dateRangeComp";
-import { TextinputComp } from "./textinputComp";
 
 const screenWidth = Dimensions.get("window").width;
 
-const DateModalComp = ({ visible = false, onRequestClose }) => {
+const DateModalComp = ({ visible = false, onRequestClose, onPress }) => {
   return (
     <Modal
       animationType={"slide"}
@@ -17,27 +26,32 @@ const DateModalComp = ({ visible = false, onRequestClose }) => {
       onRequestClose={onRequestClose}
     >
       <View style={styles.container}>
-
         <View style={styles.view1}>
           <View style={styles.view2}>
             <Text style={styles.text1}> Please select a date range</Text>
           </View>
 
-          <View style={{ paddingHorizontal: 15, height: 200, justifyContent: 'center', }}>
+          <View
+            style={{
+              paddingHorizontal: 15,
+              height: 200,
+              justifyContent: "center",
+            }}
+          >
             <DateRangeComp />
           </View>
-
-          <View style={styles.view3}>
-            <View style={{ width: "48%", }}>
+          <TouchableOpacity onPress={onPress} style={styles.view3}>
+            <View style={{ width: "48%" }}>
               <Button
                 labelStyle={{ color: Colors.BLACK, textTransform: "none" }}
                 mode="outlined"
-                onPress={() => { }}
+                onPress={onRequestClose}
+                //onPress={() => dispatch(dateSelected())}
               >
                 Cancel
               </Button>
             </View>
-            <View style={{ width: "48%", }}>
+            <View style={{ width: "48%" }}>
               <Button
                 labelStyle={{
                   color: Colors.WHITE,
@@ -45,12 +59,13 @@ const DateModalComp = ({ visible = false, onRequestClose }) => {
                 }}
                 contentStyle={{ backgroundColor: Colors.BLACK }}
                 mode="contained"
-                onPress={() => { }}
+                onPress={onRequestClose}
+                // onPress={() => dispatch(dateSelected())}
               >
                 Submit
               </Button>
             </View>
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
     </Modal>
