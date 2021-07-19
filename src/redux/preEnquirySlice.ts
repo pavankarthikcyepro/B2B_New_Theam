@@ -43,14 +43,18 @@ export const preEnquirySlice = createSlice({
   name: "PRE_ENQUIRY",
   initialState: {
     sampleDataAry: data,
-    modelVisible: false
+    modelVisible: false,
+    sortAndFilterVisible: false
   },
   reducers: {
     callPressed: (state, action) => {
       state.modelVisible = !state.modelVisible;
+    },
+    sortAndFilterPressed: (state, action) => {
+      state.sortAndFilterVisible = !state.sortAndFilterVisible;
     }
   },
 });
 
-export const { callPressed } = preEnquirySlice.actions;
+export const { callPressed, sortAndFilterPressed } = preEnquirySlice.actions;
 export default preEnquirySlice.reducer;

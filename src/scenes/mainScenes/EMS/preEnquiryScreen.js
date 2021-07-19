@@ -8,8 +8,8 @@ import { IconButton } from 'react-native-paper';
 import VectorImage from 'react-native-vector-image';
 import { CREATE_NEW } from '../../../assets/svg';
 import { AppNavigator } from '../../../navigations';
-import { CallUserComponent } from '../../../components/callUserComp';
-import { callPressed } from '../../../redux/preEnquirySlice'
+import { CallUserComponent, SortAndFilterComp } from '../../../components';
+import { callPressed, sortAndFilterPressed } from '../../../redux/preEnquirySlice'
 
 const PreEnquiryScreen = ({ navigation }) => {
 
@@ -20,6 +20,14 @@ const PreEnquiryScreen = ({ navigation }) => {
         <SafeAreaView style={styles.conatiner}>
 
             <CallUserComponent visible={selector.modelVisible} onRequestClose={() => dispatch(callPressed())} />
+
+            <SortAndFilterComp
+                visible={selector.sortAndFilterVisible}
+                onRequestClose={() => {
+                    dispatch(sortAndFilterPressed());
+                }}
+            />
+
             {/* {selector.modelVisible && <DatePickerComponent
                 visible={selector.modelVisible}
                 mode={'date'}
@@ -44,7 +52,7 @@ const PreEnquiryScreen = ({ navigation }) => {
                         pageNumber={1}
                         totalPages={10}
                     />
-                    <Pressable onPress={() => { Alert.alert('test') }}>
+                    <Pressable onPress={() => dispatch(sortAndFilterPressed())}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Text style={styles.text1}>{'Sort & Filter'}</Text>
                             <IconButton icon={'dots-vertical'} size={20} color={Colors.RED} style={{ margin: 0 }} />

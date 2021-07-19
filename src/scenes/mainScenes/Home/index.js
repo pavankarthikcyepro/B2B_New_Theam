@@ -10,8 +10,7 @@ import { FILTER } from '../../../assets/svg'
 import { DateItem } from '../../../pureComponents/dateItem';
 import { AppNavigator } from '../../../navigations';
 import { dateSelected } from '../../../redux/homeSlice';
-import { DateRangeComp } from '../../../components/dateRangeComp';
-import { DatePickerComponent } from '../../../components/datepickerComp';
+import { DateRangeComp, DatePickerComponent, SortAndFilterComp } from '../../../components';
 
 const screenWidth = Dimensions.get('window').width;
 const itemWidth = (screenWidth - 30) / 2;
@@ -83,7 +82,6 @@ const HomeScreen = ({ navigation }) => {
           </View>
         </Pressable>
 
-        {/* <DateRangeComp fromDate={'09/23/2209'} toDate={'89/09/2021'} /> */}
 
         <View style={{ maxHeight: 100, marginBottom: 15 }}>
           <FlatList
