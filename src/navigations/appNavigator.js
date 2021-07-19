@@ -24,6 +24,7 @@ import ComplaintsScreen from "../scenes/mainScenes/complaintsScreen";
 import SideMenuScreen from "../scenes/mainScenes/sideMenuScreen";
 import NotificationScreen from "../scenes/mainScenes/notificationsScreen";
 import AddPreEnquiryScreen from "../scenes/mainScenes/EMS/addPreEnquiryScreen";
+import ConfirmedPreEnquiryScreen from "../scenes/mainScenes/EMS/confirmedPreEnquiryScreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -89,6 +90,7 @@ export const TabStackIdentifiers = {
 
 export const EmsStackIdentifiers = {
   addPreEnq: "ADD_PRE_ENQUIRY",
+  confirmedPreEnq: 'CONFIRMED_PRE_ENQUIRY'
 };
 
 const HomeStack = createStackNavigator();
@@ -147,6 +149,8 @@ const EmsStackNavigator = ({ navigation }) => {
 
       <EmsStack.Screen name={"NOTIF_2"} component={NotificationScreen} options={{ title: "Notfications" }} />
       <EmsStack.Screen name={EmsStackIdentifiers.addPreEnq} component={AddPreEnquiryScreen} options={{ title: "Pre-Enquiry" }} />
+      <EmsStack.Screen name={EmsStackIdentifiers.confirmedPreEnq} component={ConfirmedPreEnquiryScreen} options={{ title: "Pre-Enquiry" }} />
+
     </EmsStack.Navigator>
   );
 };

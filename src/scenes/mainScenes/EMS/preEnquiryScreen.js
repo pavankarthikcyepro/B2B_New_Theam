@@ -9,9 +9,7 @@ import VectorImage from 'react-native-vector-image';
 import { CREATE_NEW } from '../../../assets/svg';
 import { AppNavigator } from '../../../navigations';
 import { CallUserComponent } from '../../../components/callUserComp';
-import { DatePickerComponent } from '../../../components/datepickerComp';
 import { callPressed } from '../../../redux/preEnquirySlice'
-import DateTimePicker from '@react-native-community/datetimepicker';
 
 const PreEnquiryScreen = ({ navigation }) => {
 

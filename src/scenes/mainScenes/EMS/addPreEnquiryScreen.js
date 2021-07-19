@@ -5,6 +5,7 @@ import { Checkbox, Button, IconButton } from 'react-native-paper';
 import { Colors, GlobalStyle } from '../../../styles';
 import { TextinputComp } from '../../../components/textinputComp';
 import { DropDownComponant } from '../../../components/dropDownComp';
+import { EmsStackIdentifiers } from '../../../navigations/appNavigator';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -28,7 +29,7 @@ const DropDownSelectionComponant = ({ label, value, onPress }) => {
     )
 }
 
-const AddPreEnquiryScreen = () => {
+const AddPreEnquiryScreen = ({ navigation }) => {
 
     const [checked, setChecked] = useState(false);
     const [text, setText] = useState("");
@@ -92,35 +93,40 @@ const AddPreEnquiryScreen = () => {
                         label={'First Name'}
                         onChangeText={(text) => setText(text)}
                     />
-                    <Text style={{ width: '100%', height: 0.5, backgroundColor: Colors.GRAY }}></Text>
+                    <Text style={styles.devider}></Text>
+
                     <TextinputComp
                         style={{ height: 70 }}
                         value={text}
                         label={'Last Name'}
                         onChangeText={(text) => setText(text)}
                     />
-                    <Text style={{ width: '100%', height: 0.5, backgroundColor: Colors.GRAY }}></Text>
+                    <Text style={styles.devider}></Text>
+
                     <TextinputComp
                         style={{ height: 70 }}
                         value={text}
                         label={'Mobile Number'}
                         onChangeText={(text) => setText(text)}
                     />
-                    <Text style={{ width: '100%', height: 0.5, backgroundColor: Colors.GRAY }}></Text>
+                    <Text style={styles.devider}></Text>
+
                     <TextinputComp
                         style={{ height: 70 }}
                         value={text}
                         label={'Alternate Mobile Number'}
                         onChangeText={(text) => setText(text)}
                     />
-                    <Text style={{ width: '100%', height: 0.5, backgroundColor: Colors.GRAY }}></Text>
+                    <Text style={styles.devider}></Text>
+
                     <TextinputComp
                         style={{ height: 70 }}
                         value={text}
                         label={'Email-Id'}
                         onChangeText={(text) => setText(text)}
                     />
-                    <Text style={{ width: '100%', height: 0.5, backgroundColor: Colors.GRAY }}></Text>
+                    <Text style={styles.devider}></Text>
+
 
                     <DropDownSelectionComponant
                         label={'Select Model'}
@@ -145,14 +151,15 @@ const AddPreEnquiryScreen = () => {
                         label={'Pincode'}
                         onChangeText={(text) => setText(text)}
                     />
-                    <Text style={{ width: '100%', height: 0.5, backgroundColor: Colors.GRAY }}></Text>
+                    <Text style={styles.devider}></Text>
+
                 </View>
 
                 <View style={styles.view2}>
                     <ButtonComp
                         title={"SUBMIT"}
                         width={screenWidth - 40}
-                        onPress={() => { }}
+                        onPress={() => navigation.navigate(EmsStackIdentifiers.confirmedPreEnq)}
                     />
                 </View>
             </ScrollView>
@@ -196,5 +203,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '400',
         color: Colors.GRAY
+    },
+    devider: {
+        width: '100%', height: 0.5, backgroundColor: Colors.GRAY
     }
 })

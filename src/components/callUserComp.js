@@ -27,6 +27,8 @@ const CallItem = ({ title, mobile, onPress }) => {
 
 const CallUserComponent = ({ visible = false, onRequestClose, onPress }) => {
 
+    const [checked, setChecked] = React.useState(false);
+
     return (
         <Modal
             animationType={'slide'}
@@ -47,6 +49,15 @@ const CallUserComponent = ({ visible = false, onRequestClose, onPress }) => {
                     </View>
                     <CallItem title={'SIM 1'} mobile={'9886525252'} onPress={onPress} />
                     <CallItem title={'SIM 2'} mobile={'6765436353'} onPress={onPress} />
+                    <View style={styles.view4}>
+                        <Checkbox.Android
+                            status={checked ? 'checked' : 'unchecked'}
+                            uncheckedColor={Colors.DARK_GRAY}
+                            color={Colors.RED}
+                            onPress={() => setChecked(!checked)}
+                        />
+                        <Text style={styles.text3}>{'Make this my default selection'}</Text>
+                    </View>
                 </View>
             </View>
         </Modal>
@@ -88,5 +99,15 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '600',
         color: Colors.GRAY
+    },
+    view4: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    text3: {
+        fontSize: 14,
+        fontWeight: '400',
+        color: Colors.RED
     }
 })

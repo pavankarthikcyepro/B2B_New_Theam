@@ -1,6 +1,6 @@
 # B2B_New_Theam
 
-To display the svg icons run below command before npx react-native run-android
+To display the svg icons run below command before run "npx react-native run-ios" or "npx react-native run-android"
 
  -> yarn react-native-vector-image generate
 

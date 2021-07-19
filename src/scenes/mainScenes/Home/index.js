@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { SafeAreaView, View, Text, StyleSheet, FlatList, Dimensions, Image, Pressable, Alert } from 'react-native';
 import { Colors } from '../../../styles';
 import { Searchbar } from 'react-native-paper';
@@ -11,6 +11,7 @@ import { DateItem } from '../../../pureComponents/dateItem';
 import { AppNavigator } from '../../../navigations';
 import { dateSelected } from '../../../redux/homeSlice';
 import { DateRangeComp } from '../../../components/dateRangeComp';
+import { DatePickerComponent } from '../../../components/datepickerComp';
 
 const screenWidth = Dimensions.get('window').width;
 const itemWidth = (screenWidth - 30) / 2;
@@ -19,9 +20,11 @@ const HomeScreen = ({ navigation }) => {
 
   const selector = useSelector(state => state.homeReducer);
   const dispatch = useDispatch();
+  const [datePickerVisible, setDatePickerVisible] = useState(false);
 
   const dateClicked = (index) => {
-    Alert.alert('message')
+    //Alert.alert('message')
+    setDatePickerVisible(true)
   }
 
   const cardClicked = (index) => {
@@ -35,6 +38,23 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+
+      {datePickerVisible && <DatePickerComponent
+        visible={datePickerVisible}
+        mode={'date'}
+        value={new Date(Date.now())}
+        onChange={(event, selectedDate) => {
+          console.log('date: ', selectedDate)
+          if (Platform.OS === "android") {
+            setDatePickerVisible(false)
+          }
+        }}
+        onRequestClose={() => {
+          console.log('closed');
+          setDatePickerVisible(false)
+        }}
+      />}
+
       <View style={{ flex: 1, paddingVertical: 10, paddingHorizontal: 15, }}>
         <View style={{ flexDirection: 'row', height: 60, alignItems: 'center', justifyContent: 'space-between' }}>
           <Searchbar
