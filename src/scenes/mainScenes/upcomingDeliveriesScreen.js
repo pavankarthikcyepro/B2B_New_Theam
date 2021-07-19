@@ -12,6 +12,8 @@ import { Colors, GlobalStyle } from "../../styles";
 import { UpcomingDeliveriesItem } from "../../pureComponents/upcomingDeliveriesItem";
 import { PageControlItem } from "../../pureComponents/pageControlItem";
 import { IconButton } from "react-native-paper";
+import { DateRangeComp } from "../../components/dateRangeComp";
+
 const datalist = [
   {
     name: "Mr.Sunil Prakash",
@@ -76,6 +78,9 @@ const UpcomingDeliveriesScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ flex: 1, paddingHorizontal: 10, paddingTop: 10 }}>
+        <View style={styles.view0}>
+          <DateRangeComp fromDate={'09/23/2209'} toDate={'89/09/2021'} />
+        </View>
         <View style={styles.view1}>
           <PageControlItem pageNumber={1} totalPages={254} />
         </View>
@@ -132,4 +137,8 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: Colors.RED,
   },
+  view0: {
+    paddingHorizontal: 30,
+    paddingBottom: 10
+  }
 });
