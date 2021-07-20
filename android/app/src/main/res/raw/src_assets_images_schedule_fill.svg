@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+    <defs>
+        <style>
+            .prefix__cls-1,.prefix__cls-2{fill:#fff}.prefix__cls-2{stroke:#fff}.prefix__cls-3{stroke:none}.prefix__cls-4{fill:none}
+        </style>
+    </defs>
+    <g id="prefix__schedule_fill" transform="translate(-284 -543.954)">
+        <g id="prefix__my_schedule" data-name="my schedule" transform="translate(284 543.954)">
+            <g id="prefix__Group_1539" data-name="Group 1539">
+                <g id="prefix__Group_1538" data-name="Group 1538">
+                    <path id="prefix__Path_1779" d="M21.891 2.813h-.7v-.7A2.112 2.112 0 0 0 19.078 0H2.109A2.112 2.112 0 0 0 0 2.109v19.782A2.112 2.112 0 0 0 2.109 24h16.969a2.112 2.112 0 0 0 2.109-2.109v-.7h.7A2.112 2.112 0 0 0 24 19.078V4.922a2.112 2.112 0 0 0-2.109-2.109zm.7 16.266a.7.7 0 0 1-.7.7h-.7v-4.263h1.406zm0-4.969h-1.403V9.891h1.406zm0-5.625h-1.403V4.219h.7a.7.7 0 0 1 .7.7z" data-name="Path 1779"/>
+                </g>
+            </g>
+        </g>
+        <g id="prefix__Group_2521" data-name="Group 2521">
+            <rect id="prefix__Rectangle_888" width="2" height="22" class="prefix__cls-1" data-name="Rectangle 888" rx="1" transform="translate(288 545)"/>
+            <g id="prefix__Rectangle_889" class="prefix__cls-2" data-name="Rectangle 889" transform="translate(287 547)">
+                <rect width="4" height="1" class="prefix__cls-3" rx=".5"/>
+                <rect width="3" x=".5" y=".5" class="prefix__cls-4"/>
+            </g>
+            <g id="prefix__Rectangle_890" class="prefix__cls-2" data-name="Rectangle 890" transform="translate(287 552)">
+                <rect width="4" height="1" class="prefix__cls-3" rx=".5"/>
+                <rect width="3" x=".5" y=".5" class="prefix__cls-4"/>
+            </g>
+            <g id="prefix__Rectangle_891" class="prefix__cls-2" data-name="Rectangle 891" transform="translate(287 558)">
+                <rect width="4" height="1" class="prefix__cls-3" rx=".5"/>
+                <rect width="3" x=".5" y=".5" class="prefix__cls-4"/>
+            </g>
+            <g id="prefix__Rectangle_892" class="prefix__cls-2" data-name="Rectangle 892" transform="translate(287 564)">
+                <rect width="4" height="1" class="prefix__cls-3" rx=".5"/>
+                <rect width="3" x=".5" y=".5" class="prefix__cls-4"/>
+            </g>
+        </g>
+        <g id="prefix__Group_2522" data-name="Group 2522" transform="translate(-38)">
+            <g id="prefix__Group_2519" data-name="Group 2519" transform="translate(330.529 549.704)">
+                <g id="prefix__Group_1536" data-name="Group 1536">
+                    <path id="prefix__Path_1778" d="M186.181 125.652a2.755 2.755 0 0 0-2-4.652 2.794 2.794 0 0 0-2.8 2.757 2.7 2.7 0 0 0 .781 1.9 4.239 4.239 0 0 0-.921.686 4.079 4.079 0 0 0-1.241 2.928v.689a.689.689 0 0 0 .689.689h6.938a.689.689 0 0 0 .689-.689v-.689a4.138 4.138 0 0 0-2.135-3.619zm-2-3.273a1.378 1.378 0 0 1 0 2.757 1.379 1.379 0 1 1 0-2.757zm-2.8 6.892a2.78 2.78 0 0 1 5.56 0z" class="prefix__cls-1" data-name="Path 1778" transform="translate(-180 -121)"/>
+                </g>
+            </g>
+            <g id="prefix__Group_2520" data-name="Group 2520" transform="translate(330.529 560.896)">
+                <g id="prefix__Group_1540" data-name="Group 1540">
+                    <path id="prefix__Path_1780" d="M187.627 361h-6.938a.689.689 0 0 0 0 1.378h6.938a.689.689 0 0 0 0-1.378z" class="prefix__cls-1" data-name="Path 1780" transform="translate(-180 -361)"/>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

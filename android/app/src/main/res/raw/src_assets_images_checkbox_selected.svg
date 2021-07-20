@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="21.957" height="21.957" viewBox="0 0 21.957 21.957">
+    <defs>
+        <clipPath id="prefix__clip-path">
+            <path id="prefix__Path_2046" fill="none" d="M19.517-18H2.44A2.447 2.447 0 0 0 0-15.56V1.517a2.447 2.447 0 0 0 2.44 2.44h17.077a2.447 2.447 0 0 0 2.44-2.44V-15.56a2.447 2.447 0 0 0-2.44-2.44zM8.539-.922L2.44-6.787l1.707-1.642 4.392 4.223 9.271-8.914 1.708 1.642L8.539-.922z" clip-rule="evenodd" data-name="Path 2046" transform="translate(0 18)"/>
+        </clipPath>
+    </defs>
+    <g id="prefix__checkbox_selected" transform="translate(-13 18)">
+        <g id="prefix__Group_1865" clip-path="url(#prefix__clip-path)" data-name="Group 1865" transform="translate(13 -18)">
+            <path id="prefix__Path_2045" fill="red" d="M-5-23h34.155v34.155H-5z" data-name="Path 2045" transform="translate(-1.099 16.901)"/>
+        </g>
+    </g>
+</svg>
