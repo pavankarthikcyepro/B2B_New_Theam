@@ -46,7 +46,8 @@ const HomeScreen = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <DateModalComp
         visible={selector.dateModalVisible}
-        onRequestClose={() => dispatch(dateSelected())}
+        onRequestClose={() => dispatch(showDateModal())}
+        submitCallback={() => { }}
       />
 
       <View style={{ flex: 1, paddingVertical: 10, paddingHorizontal: 15 }}>
@@ -61,7 +62,7 @@ const HomeScreen = ({ navigation }) => {
           <Searchbar
             style={{ width: "90%" }}
             placeholder="Search"
-            onChangeText={(text) => {}}
+            onChangeText={(text) => { }}
             value={selector.serchtext}
           />
           <VectorImage
