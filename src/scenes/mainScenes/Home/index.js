@@ -9,57 +9,65 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FILTER } from '../../../assets/svg'
 import { DateItem } from '../../../pureComponents/dateItem';
 import { AppNavigator } from '../../../navigations';
-import { dateSelected } from '../../../redux/homeSlice';
+import { dateSelected, showDateModal } from '../../../redux/homeSlice';
 import { DateRangeComp, DatePickerComponent, SortAndFilterComp } from '../../../components';
+import { DateModalComp } from "../../../components/dateModalComp";
 
-
-const screenWidth = Dimensions.get('window').width;
+const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 30) / 2;
 
 const HomeScreen = ({ navigation }) => {
-
-  const selector = useSelector(state => state.homeReducer);
+  const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
   const [datePickerVisible, setDatePickerVisible] = useState(false);
 
   const dateClicked = (index) => {
-    //Alert.alert('message')
-    setDatePickerVisible(true)
-  }
+
+    //setDatePickerVisible(true)
+    dispatch(showDateModal());
+  };
 
   const cardClicked = (index) => {
 
     if (index === 0) {
-      navigation.navigate(AppNavigator.TabStackIdentifiers.ems)
+      navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+    } else if (index === 1) {
+      navigation.navigate(AppNavigator.TabStackIdentifiers.myTask);
     }
-    else if (index === 1) {
-      navigation.navigate(AppNavigator.TabStackIdentifiers.myTask)
-    }
-  }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
 
-      {datePickerVisible && <DatePickerComponent
-        visible={datePickerVisible}
-        mode={'date'}
-        value={new Date(Date.now())}
-        onChange={(event, selectedDate) => {
-          console.log('date: ', selectedDate)
-          if (Platform.OS === "android") {
+      {
+        datePickerVisible && <DatePickerComponent
+          visible={datePickerVisible}
+          mode={'date'}
+          value={new Date(Date.now())}
+          onChange={(event, selectedDate) => {
+            console.log('date: ', selectedDate)
+            if (Platform.OS === "android") {
+              setDatePickerVisible(false)
+            }
+          }}
+          onRequestClose={() => {
+            console.log('closed');
             setDatePickerVisible(false)
-          }
-        }}
-        onRequestClose={() => {
-          console.log('closed');
-          setDatePickerVisible(false)
-        }}
-      />}
+          }}
+        />
+      }
+
+      <DateModalComp
+        visible={selector.dateModalVisible}
+        onRequestClose={() => dispatch(showDateModal())}
+        submitCallback={() => { }}
+      />
 
       <View style={{ flex: 1, paddingVertical: 10, paddingHorizontal: 15, }}>
         <View style={{ flexDirection: 'row', height: 60, alignItems: 'center', justifyContent: 'space-between' }}>
+
           <Searchbar
-            style={{ width: '90%' }}
+            style={{ width: "90%" }}
             placeholder="Search"
             onChangeText={(text) => { }}
             value={selector.serchtext}
@@ -72,20 +80,19 @@ const HomeScreen = ({ navigation }) => {
           />
         </View>
 
-
         <Pressable onPress={dateClicked}>
           <View style={styles.dateVw}>
-            <Text style={styles.text3}>{'My Activities'}</Text>
+            <Text style={styles.text3}>{"My Activities"}</Text>
             <IconButton
               icon="calendar-month"
               color={Colors.RED}
               size={25}
+            // ondateSelected={() => dispatch(showDateModal())}
             />
           </View>
         </Pressable>
 
-
-        <View style={{ maxHeight: 100, marginBottom: 15 }}>
+        {/* <View style={{ maxHeight: 100, marginBottom: 15 }}>
           <FlatList
             data={selector.datesData}
             style={{}}
@@ -93,7 +100,6 @@ const HomeScreen = ({ navigation }) => {
             horizontal={true}
             showsHorizontalScrollIndicator={false}
             renderItem={({ item, index }) => {
-
               return (
                 <Pressable onPress={() => dispatch(dateSelected(index))}>
                   <View style={{ paddingRight: 10 }}>
@@ -101,14 +107,16 @@ const HomeScreen = ({ navigation }) => {
                       month={item.month}
                       date={item.date}
                       day={item.day}
-                      selected={selector.dateSelectedIndex === index ? true : false}
+                      selected={
+                        selector.dateSelectedIndex === index ? true : false
+                      }
                     />
                   </View>
                 </Pressable>
-              )
+              );
             }}
           />
-        </View>
+        </View> */}
 
         <FlatList
           data={selector.tableData}
@@ -119,17 +127,43 @@ const HomeScreen = ({ navigation }) => {
             return (
               <Pressable onPress={() => cardClicked(index)}>
                 <View style={{ flex: 1, width: itemWidth, padding: 5 }}>
-                  <View style={[styles.shadow, { backgroundColor: index == 0 ? Colors.YELLOW : Colors.GREEN }]}>
-                    <View style={{ overflow: 'hidden' }}>
+                  <View
+                    style={[
+                      styles.shadow,
+                      {
+                        backgroundColor:
+                          index == 0 ? Colors.YELLOW : Colors.GREEN,
+                      },
+                    ]}
+                  >
+                    <View style={{ overflow: "hidden" }}>
                       <Image
-                        style={{ width: '100%', height: 150, overflow: "hidden" }}
-                        resizeMode={'cover'}
-                        source={require('../../../assets/images/bently.png')}
+                        style={{
+                          width: "100%",
+                          height: 150,
+                          overflow: "hidden",
+                        }}
+                        resizeMode={"cover"}
+                        source={require("../../../assets/images/bently.png")}
                       />
 
-                      <View style={{ width: '100%', height: 100, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
+                      <View
+                        style={{
+                          width: "100%",
+                          height: 100,
+                          flexDirection: "row",
+                          justifyContent: "space-around",
+                          alignItems: "center",
+                        }}
+                      >
                         <Text style={styles.text1}>{item.title}</Text>
-                        <View style={{ height: 100, width: 50, alignItems: 'center' }}>
+                        <View
+                          style={{
+                            height: 100,
+                            width: 50,
+                            alignItems: "center",
+                          }}
+                        >
                           <View style={styles.barVw}>
                             <Text style={styles.text2}>{item.count}</Text>
                           </View>
@@ -139,13 +173,13 @@ const HomeScreen = ({ navigation }) => {
                   </View>
                 </View>
               </Pressable>
-            )
+            );
           }}
         />
       </View>
     </SafeAreaView>
-  )
-}
+  );
+};
 
 export default HomeScreen;
 
@@ -159,41 +193,41 @@ const styles = StyleSheet.create({
   shadow: {
     //   overflow: 'hidden',
     borderRadius: 4,
-    width: '100%',
+    width: "100%",
     height: 250,
     shadowColor: Colors.DARK_GRAY,
     shadowOffset: {
       width: 0,
-      height: 2
+      height: 2,
     },
     shadowRadius: 2,
     shadowOpacity: 0.5,
     elevation: 3,
-    position: 'relative'
+    position: "relative",
   },
   text1: {
     fontSize: 16,
-    fontWeight: '600',
-    color: Colors.WHITE
+    fontWeight: "600",
+    color: Colors.WHITE,
   },
   barVw: {
     backgroundColor: Colors.WHITE,
     width: 40,
-    height: '70%',
-    justifyContent: 'center'
+    height: "70%",
+    justifyContent: "center",
   },
   text2: {
     fontSize: 20,
-    fontWeight: '600',
-    textAlign: 'center',
+    fontWeight: "600",
+    textAlign: "center",
   },
   text3: {
     fontSize: 18,
-    fontWeight: '800',
+    fontWeight: "800",
   },
   dateVw: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 60
-  }
-})
+    flexDirection: "row",
+    alignItems: "center",
+    height: 60,
+  },
+});

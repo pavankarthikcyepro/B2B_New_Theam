@@ -94,9 +94,9 @@ const SortAndFilterComp = ({ visible = false, onRequestClose }) => {
                                 {/* // Right Content */}
                                 <View style={{ width: '65%', backgroundColor: Colors.WHITE }}>
                                     <RadioButton.Group onValueChange={newValue => setSelectedRadioIndex(newValue)} value={selectedRadioIndex}>
-                                        {radioDummyData.map((radioItem) => {
+                                        {radioDummyData.map((radioItem, index) => {
                                             return (
-                                                <View style={styles.radiobuttonVw}>
+                                                <View key={index} style={styles.radiobuttonVw}>
                                                     <RadioButton.Android value={radioItem.id} color={Colors.RED} uncheckedColor={Colors.GRAY} />
                                                     <Text style={[styles.radioText, { color: selectedRadioIndex == radioItem.id ? Colors.DARK_GRAY : Colors.GRAY }]}>{radioItem.name}</Text>
                                                 </View>

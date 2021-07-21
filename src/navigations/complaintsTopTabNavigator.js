@@ -4,6 +4,7 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import OpenScreen from "../scenes/mainScenes/Complaints/Open";
 import ClosedScreen from "../scenes/mainScenes/Complaints/Closed";
 import InprogressScreen from "../scenes/mainScenes/Complaints/Inprogress";
+import { DateRangeComp } from "../components/dateRangeComp";
 import { Colors } from "../styles";
 
 const ComplaintsTopTabNavigatorIdentifiers = {
