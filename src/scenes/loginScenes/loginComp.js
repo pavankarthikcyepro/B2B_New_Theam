@@ -21,13 +21,17 @@ import {
 } from "../../redux/loginSlice";
 import { AuthNavigator } from "../../navigations";
 import { IconButton } from "react-native-paper";
+import { AuthContext } from "../../utils/authContext";
 
 const ScreenWidth = Dimensions.get("window").width;
 
 const LoginScreen = ({ navigation }) => {
+
   const selector = useSelector((state) => state.loginReducer);
   const dispatch = useDispatch();
   const fadeAnima = useRef(new Animated.Value(0)).current;
+  const { signIn } = React.useContext(AuthContext);
+
 
   useEffect(() => {
     Animated.timing(fadeAnima, {
@@ -62,6 +66,7 @@ const LoginScreen = ({ navigation }) => {
     console.log("employeeId: ", employeeId);
     console.log("password: ", password);
 
+    signIn({ employeeId, password });
   };
 
   const forgotClicked = () => {

@@ -5,43 +5,72 @@ import { AuthNavigator, AppNavigator } from './navigations';
 import { Provider } from 'react-redux';
 import reduxStore from './redux/reduxStore';
 import * as AsyncStore from './asyncStore';
-import { useDispatch, useSelector } from 'react-redux';
+import { AuthContext } from './utils/authContext';
 
 const AppScreen = () => {
 
     const [state, dispatch] = React.useReducer((prevState, action) => {
         switch (action.type) {
             case "RESTORE_TOKEN":
-                break;
+                return {
+                    ...prevState,
+                    userToken: action.token,
+                    isLoading: false
+                }
             case "SIGN_IN":
-                break;
+                return {
+                    ...prevState,
+                    isSignout: false,
+                    userToken: action.token,
+                }
             case "SIGN_OUT":
-                break;
+                return {
+                    ...prevState,
+                    isSignout: true,
+                    userToken: null,
+                }
         }
+    }, {
+        isLoading: true,
+        isSignout: false,
+        userToken: null,
     })
 
-    // const selector = useSelector(state => state.routeReducer);
 
-    useEffect(() => {
+    useEffect(async () => {
 
-        let token = AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
-        if (token !== null) {
-            console.log('token1: ', token);
-        } else if (token) {
-            console.log('token2: ', token);
-        } else {
-            console.log('token3: ', token);
-        }
+        // Fetch the token from storage then navigate to our appropriate place
+        const checkUserToken = async () => {
 
+            let userToken = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
+            dispatch({ type: 'RESTORE_TOKEN', token: userToken });
+        };
+
+        checkUserToken();
     }, [])
 
+    const authContext = React.useMemo(
+        () => ({
+            signIn: async data => {
+                console.log('data: ', data);
+                dispatch({ type: 'SIGN_IN', token: 'dummy-auth-token' });
+            },
+            signOut: () => dispatch({ type: 'SIGN_OUT' }),
+            signUp: async data => {
+                dispatch({ type: 'SIGN_IN', token: 'dummy-auth-token' });
+            },
+        }),
+        []
+    );
+
     return (
-        <Provider store={reduxStore}>
-            <NavigationContainer>
-                <AppNavigator.MainStackDrawerNavigator />
-                {/* {selector.userToken ? <AppNavigator.MainStackDrawerNavigator /> : <AuthNavigator.AuthStackNavigator />} */}
-            </NavigationContainer>
-        </Provider>
+        <AuthContext.Provider value={authContext}>
+            <Provider store={reduxStore}>
+                <NavigationContainer>
+                    {state.userToken ? <AppNavigator.MainStackDrawerNavigator /> : <AuthNavigator.AuthStackNavigator />}
+                </NavigationContainer>
+            </Provider>
+        </AuthContext.Provider>
     )
 }
 
