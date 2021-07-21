@@ -8,8 +8,10 @@ import homeReducer from './homeSlice';
 import mytaskReducer from './mytaskSlice';
 import notificationReducer from './notificationSlice';
 import complaintsReducer from "./complaintsSlice";
+import routeReducer from './routeSlice';
 
 const reducer = combineReducers({
+  routeReducer,
   loginReducer: loginReducer,
   preEnquiryReducer: preEnquiryReducer,
   sideMenuReducer,

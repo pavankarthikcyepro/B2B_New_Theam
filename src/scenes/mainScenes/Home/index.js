@@ -12,6 +12,7 @@ import { AppNavigator } from '../../../navigations';
 import { dateSelected } from '../../../redux/homeSlice';
 import { DateRangeComp, DatePickerComponent, SortAndFilterComp } from '../../../components';
 
+
 const screenWidth = Dimensions.get('window').width;
 const itemWidth = (screenWidth - 30) / 2;
 
@@ -27,6 +28,7 @@ const HomeScreen = ({ navigation }) => {
   }
 
   const cardClicked = (index) => {
+
     if (index === 0) {
       navigation.navigate(AppNavigator.TabStackIdentifiers.ems)
     }
