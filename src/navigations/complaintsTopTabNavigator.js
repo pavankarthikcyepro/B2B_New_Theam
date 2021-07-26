@@ -28,23 +28,24 @@ const ComplaintsTopTabNavigator = () => {
         labelStyle: {
           fontSize: 14,
           fontWeight: "600",
+          textTransform: "none",
         },
       }}
     >
       <ComplaintsTopTab.Screen
         name={ComplaintsTopTabNavigatorIdentifiers.open}
         component={OpenScreen}
-        options={{ title: "open" }}
+        options={{ title: "Open" }}
       />
       <ComplaintsTopTab.Screen
         name={ComplaintsTopTabNavigatorIdentifiers.inprogress}
         component={InprogressScreen}
-        options={{ title: "inprogress" }}
+        options={{ title: "Inprogress" }}
       />
       <ComplaintsTopTab.Screen
         name={ComplaintsTopTabNavigatorIdentifiers.closed}
         component={ClosedScreen}
-        options={{ title: "closed" }}
+        options={{ title: "Closed" }}
       />
     </ComplaintsTopTab.Navigator>
   );

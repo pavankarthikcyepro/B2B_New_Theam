@@ -12,3 +12,4 @@ export const LIGHT_PINK = "#f5b8ef";
 export const BLUE = "#1462de";
 export const LIGHT_SKY_BLUE = "#87CEFA";
 export const CORAL = "#FF4040";
+export const MAROON = "#800000";

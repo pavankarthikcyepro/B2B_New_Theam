@@ -18,6 +18,7 @@ import HomeScreen from "../scenes/mainScenes/Home";
 import EMSScreen from "../scenes/mainScenes/EMS";
 import MyTasksScreen from "../scenes/mainScenes/MyTasks";
 
+import EventManagementScreen from "../scenes/mainScenes/eventManagementScreen";
 import SettingsScreen from "../scenes/mainScenes/settingsScreen";
 import UpcomingDeliveriesScreen from "../scenes/mainScenes/upcomingDeliveriesScreen";
 import ComplaintsScreen from "../scenes/mainScenes/complaintsScreen";
@@ -75,11 +76,12 @@ const NotficationIcon = ({ navigation, identifier }) => {
 };
 
 export const DrawerStackIdentifiers = {
-  home: 'HOME_SCREEN',
+  home: "HOME_SCREEN",
   upcomingDeliveries: "UPCOMING_DELIVERIES",
   complaint: "COMPLAINTS",
   settings: "SETTINGS",
   notification: "NOTIFICATION",
+  eventManagement: "EVENT_MANAGEMENT",
 };
 
 export const TabStackIdentifiers = {
@@ -90,7 +92,7 @@ export const TabStackIdentifiers = {
 
 export const EmsStackIdentifiers = {
   addPreEnq: "ADD_PRE_ENQUIRY",
-  confirmedPreEnq: 'CONFIRMED_PRE_ENQUIRY'
+  confirmedPreEnq: "CONFIRMED_PRE_ENQUIRY",
 };
 
 const HomeStack = createStackNavigator();
@@ -110,14 +112,21 @@ const HomeStackNavigator = ({ navigation }) => {
           headerRight: () => {
             return (
               <View style={{ flexDirection: "row" }}>
-                <NotficationIcon navigation={navigation} identifier={'NOTIF_1'} />
+                <NotficationIcon
+                  navigation={navigation}
+                  identifier={"NOTIF_1"}
+                />
               </View>
             );
           },
         }}
       />
 
-      <HomeStack.Screen name={"NOTIF_1"} component={NotificationScreen} options={{ title: "Notfications" }} />
+      <HomeStack.Screen
+        name={"NOTIF_1"}
+        component={NotificationScreen}
+        options={{ title: "Notfications" }}
+      />
     </HomeStack.Navigator>
   );
 };
@@ -140,22 +149,34 @@ const EmsStackNavigator = ({ navigation }) => {
             return (
               <View style={{ flexDirection: "row" }}>
                 <SearchIcon />
-                <NotficationIcon navigation={navigation} identifier={'NOTIF_2'} />
+                <NotficationIcon
+                  navigation={navigation}
+                  identifier={"NOTIF_2"}
+                />
               </View>
             );
           },
         }}
       />
 
-      <EmsStack.Screen name={"NOTIF_2"} component={NotificationScreen} options={{ title: "Notfications" }} />
-      <EmsStack.Screen name={EmsStackIdentifiers.addPreEnq} component={AddPreEnquiryScreen} options={{ title: "Pre-Enquiry" }} />
-      <EmsStack.Screen name={EmsStackIdentifiers.confirmedPreEnq} component={ConfirmedPreEnquiryScreen} options={{ title: "Pre-Enquiry" }} />
-
+      <EmsStack.Screen
+        name={"NOTIF_2"}
+        component={NotificationScreen}
+        options={{ title: "Notfications" }}
+      />
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.addPreEnq}
+        component={AddPreEnquiryScreen}
+        options={{ title: "Pre-Enquiry" }}
+      />
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.confirmedPreEnq}
+        component={ConfirmedPreEnquiryScreen}
+        options={{ title: "Pre-Enquiry" }}
+      />
     </EmsStack.Navigator>
   );
 };
-
-
 
 const MyTaskStack = createStackNavigator();
 
@@ -175,18 +196,24 @@ const MyTaskStackNavigator = ({ navigation }) => {
             return (
               <View style={{ flexDirection: "row" }}>
                 <SearchIcon />
-                <NotficationIcon navigation={navigation} identifier={'NOTIF_3'} />
+                <NotficationIcon
+                  navigation={navigation}
+                  identifier={"NOTIF_3"}
+                />
               </View>
             );
           },
         }}
       />
 
-      <MyTaskStack.Screen name={"NOTIF_3"} component={NotificationScreen} options={{ title: "Notfications" }} />
+      <MyTaskStack.Screen
+        name={"NOTIF_3"}
+        component={NotificationScreen}
+        options={{ title: "Notfications" }}
+      />
     </MyTaskStack.Navigator>
   );
 };
-
 
 const Tab = createBottomTabNavigator();
 
@@ -221,9 +248,21 @@ const TabNavigator = () => {
       }}
       initialRouteName={TabStackIdentifiers.home}
     >
-      <Tab.Screen name={TabStackIdentifiers.home} component={HomeStackNavigator} options={{ title: "Home" }} />
-      <Tab.Screen name={TabStackIdentifiers.ems} component={EmsStackNavigator} options={{ title: "EMS" }} />
-      <Tab.Screen name={TabStackIdentifiers.myTask} component={MyTaskStackNavigator} options={{ title: "My Tasks" }} />
+      <Tab.Screen
+        name={TabStackIdentifiers.home}
+        component={HomeStackNavigator}
+        options={{ title: "Home" }}
+      />
+      <Tab.Screen
+        name={TabStackIdentifiers.ems}
+        component={EmsStackNavigator}
+        options={{ title: "EMS" }}
+      />
+      <Tab.Screen
+        name={TabStackIdentifiers.myTask}
+        component={MyTaskStackNavigator}
+        options={{ title: "My Tasks" }}
+      />
     </Tab.Navigator>
   );
 };
@@ -236,19 +275,17 @@ const ComplaintStackNavigator = ({ navigation }) => {
       initialRouteName={"COMPLAINT_SCREEN"}
       screenOptions={screeOptionStyle}
     >
-
       <ComplaintStack.Screen
-        name={'COMPLAINT_SCREEN'}
+        name={"COMPLAINT_SCREEN"}
         component={ComplaintsScreen}
         options={{
           title: "Complaints",
           headerLeft: () => <MenuIcon navigation={navigation} />,
         }}
       />
-
     </ComplaintStack.Navigator>
-  )
-}
+  );
+};
 
 const UpcomingDeliveriestStack = createStackNavigator();
 
@@ -258,19 +295,17 @@ const UpcomingDeliveriestStackNavigator = ({ navigation }) => {
       initialRouteName={"UPCOMING_DELIVERIES_SCREEN"}
       screenOptions={screeOptionStyle}
     >
-
       <UpcomingDeliveriestStack.Screen
-        name={'UPCOMING_DELIVERIES_SCREEN'}
+        name={"UPCOMING_DELIVERIES_SCREEN"}
         component={UpcomingDeliveriesScreen}
         options={{
           title: "Upcoming Deliveries",
           headerLeft: () => <MenuIcon navigation={navigation} />,
         }}
       />
-
     </UpcomingDeliveriestStack.Navigator>
-  )
-}
+  );
+};
 
 const SettingsStack = createStackNavigator();
 
@@ -280,19 +315,37 @@ const SettingsStackNavigator = ({ navigation }) => {
       initialRouteName={"SETTINGS_SCREEN"}
       screenOptions={screeOptionStyle}
     >
-
       <SettingsStack.Screen
-        name={'SETTINGS_SCREEN'}
+        name={"SETTINGS_SCREEN"}
         component={SettingsScreen}
         options={{
           title: "Settings",
           headerLeft: () => <MenuIcon navigation={navigation} />,
         }}
       />
-
     </SettingsStack.Navigator>
-  )
-}
+  );
+};
+
+const EventManagementStack = createStackNavigator();
+
+const EventManagementStackNavigator = ({ navigation }) => {
+  return (
+    <EventManagementStack.Navigator
+      initialRouteName={"EVENT_MANAGEMENT"}
+      screenOptions={screeOptionStyle}
+    >
+      <ComplaintStack.Screen
+        name={"EVENT_MANAGEMENT"}
+        component={EventManagementScreen}
+        options={{
+          title: "Event Management",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+    </EventManagementStack.Navigator>
+  );
+};
 
 const MainDrawerNavigator = createDrawerNavigator();
 
@@ -305,11 +358,26 @@ const MainStackDrawerNavigator = () => {
       drawerContent={(props) => <SideMenuScreen {...props} />}
       initialRouteName={DrawerStackIdentifiers.home}
     >
-      <MainDrawerNavigator.Screen name={DrawerStackIdentifiers.home} component={TabNavigator} />
-      <MainDrawerNavigator.Screen name={DrawerStackIdentifiers.upcomingDeliveries} component={UpcomingDeliveriestStackNavigator} />
-      <MainDrawerNavigator.Screen name={DrawerStackIdentifiers.complaint} component={ComplaintStackNavigator} />
-      <MainDrawerNavigator.Screen name={DrawerStackIdentifiers.settings} component={SettingsStackNavigator} />
-
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.home}
+        component={TabNavigator}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.upcomingDeliveries}
+        component={UpcomingDeliveriestStackNavigator}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.complaint}
+        component={ComplaintStackNavigator}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.settings}
+        component={SettingsStackNavigator}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.eventManagement}
+        component={EventManagementStackNavigator}
+      />
     </MainDrawerNavigator.Navigator>
   );
 };
