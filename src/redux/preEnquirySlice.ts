@@ -1,4 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { client } from '../networking/client';
+import URL from "../networking/endpoints";
 
 const data = [
   {
@@ -39,12 +41,20 @@ const data = [
   },
 ];
 
+export const getPreEnquiryData = createAsyncThunk('PRE_ENQUIRY/getPreEnquiryData', async (inputData) => {
+
+  let url = URL.LEADS_LIST_API() + "?limit=10&offset=" + 0 + "&status=PREENQUIRY&empId=" + 2;
+  const response = await client.get(url);
+  return response
+})
+
 export const preEnquirySlice = createSlice({
   name: "PRE_ENQUIRY",
   initialState: {
     sampleDataAry: data,
     modelVisible: false,
-    sortAndFilterVisible: false
+    sortAndFilterVisible: false,
+    pageNum: 0
   },
   reducers: {
     callPressed: (state, action) => {
@@ -54,6 +64,17 @@ export const preEnquirySlice = createSlice({
       state.sortAndFilterVisible = !state.sortAndFilterVisible;
     }
   },
+  extraReducers: (builder) => {
+    builder.addCase(getPreEnquiryData.pending, (state) => {
+
+    })
+    builder.addCase(getPreEnquiryData.fulfilled, (state, action) => {
+      console.log('res: ', action.payload);
+    })
+    builder.addCase(getPreEnquiryData.rejected, (state) => {
+
+    })
+  }
 });
 
 export const { callPressed, sortAndFilterPressed } = preEnquirySlice.actions;

@@ -51,11 +51,14 @@ const AppScreen = () => {
 
     const authContext = React.useMemo(
         () => ({
-            signIn: async data => {
-                console.log('data: ', data);
-                dispatch({ type: 'SIGN_IN', token: 'dummy-auth-token' });
+            signIn: async (token) => {
+                console.log('token: ', token)
+                dispatch({ type: 'SIGN_IN', token: token });
             },
-            signOut: () => dispatch({ type: 'SIGN_OUT' }),
+            signOut: () => {
+                AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, "");
+                dispatch({ type: 'SIGN_OUT' });
+            },
             signUp: async data => {
                 dispatch({ type: 'SIGN_IN', token: 'dummy-auth-token' });
             },

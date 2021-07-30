@@ -14,13 +14,16 @@ import { Colors, GlobalStyle } from "../../styles";
 import VectorImage from "react-native-vector-image";
 import { useSelector, useDispatch } from "react-redux";
 import { AppNavigator } from "../../navigations";
+import { AuthContext } from "../../utils/authContext";
 
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 4;
 const profileBgWidth = profileWidth + 5;
 
 const SideMenuScreen = ({ navigation }) => {
+
   const selector = useSelector((state) => state.sideMenuReducer);
+  const { signOut } = React.useContext(AuthContext);
 
   const itemSelected = (item) => {
     switch (item.screen) {
@@ -45,6 +48,12 @@ const SideMenuScreen = ({ navigation }) => {
         break;
     }
   };
+
+  const signOutClicked = () => {
+
+    navigation.closeDrawer()
+    signOut();
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -120,7 +129,7 @@ const SideMenuScreen = ({ navigation }) => {
             fontWeight: "600",
             textTransform: "none",
           }}
-          onPress={() => console.log("Pressed")}
+          onPress={signOutClicked}
         >
           Sign Out
         </Button>

@@ -14,11 +14,14 @@ import { TextinputComp } from "../../components/textinputComp";
 import { ButtonComp } from "../../components/buttonComp";
 import { useSelector, useDispatch } from "react-redux";
 import {
+  clearState,
   updateEmployeeId,
   updatePassword,
   updateSecurePassword,
   showErrorMessage,
+  postUserData
 } from "../../redux/loginSlice";
+import { getMenuList } from "../../redux/homeSlice";
 import { AuthNavigator } from "../../navigations";
 import { IconButton } from "react-native-paper";
 import { AuthContext } from "../../utils/authContext";
@@ -32,7 +35,6 @@ const LoginScreen = ({ navigation }) => {
   const fadeAnima = useRef(new Animated.Value(0)).current;
   const { signIn } = React.useContext(AuthContext);
 
-
   useEffect(() => {
     Animated.timing(fadeAnima, {
       toValue: 1,
@@ -40,6 +42,15 @@ const LoginScreen = ({ navigation }) => {
       useNativeDriver: true,
     }).start();
   }, []);
+
+  useEffect(() => {
+
+    if (selector.status == "sucess") {
+      signIn(selector.authToken);
+      dispatch(getMenuList(selector.userName))
+      dispatch(clearState());
+    }
+  }, [selector.status])
 
   const loginClicked = () => {
     const employeeId = selector.employeeId;
@@ -63,10 +74,15 @@ const LoginScreen = ({ navigation }) => {
       return;
     }
 
-    console.log("employeeId: ", employeeId);
-    console.log("password: ", password);
+    // console.log("employeeId: ", employeeId);
+    // console.log("password: ", password);
 
-    signIn({ employeeId, password });
+    let object = {
+      "empname": employeeId,
+      "password": password
+    }
+
+    dispatch(postUserData(object));
   };
 
   const forgotClicked = () => {
@@ -133,6 +149,7 @@ const LoginScreen = ({ navigation }) => {
             title={"LOG IN"}
             width={ScreenWidth - 40}
             onPress={loginClicked}
+            disabled={selector.isLoading ? true : false}
           />
         </View>
 
