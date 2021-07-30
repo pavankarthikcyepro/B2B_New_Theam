@@ -2,48 +2,9 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { client } from '../networking/client';
 import URL from "../networking/endpoints";
 
-const data = [
-  {
-    id: 1,
-    name: "Mr. Sunil Prakash",
-    role: "Digital Marketing",
-    date: "19 May 2020",
-    vehicle: "Aura",
-    type: "HOT",
-    imageUrl: "https://image.flaticon.com/icons/png/512/3059/3059606.png",
-  },
-  {
-    id: 2,
-    name: "Mr. Sunil Prakash",
-    role: "Digital Marketing",
-    date: "19 May 2020",
-    vehicle: "Creta",
-    type: "WARM",
-    imageUrl: "https://image.flaticon.com/icons/png/512/3059/3059606.png",
-  },
-  {
-    id: 3,
-    name: "Mr. Sunil Prakash",
-    role: "Digital Marketing",
-    date: "19 May 2020",
-    vehicle: "Elentra",
-    type: "COLD",
-    imageUrl: "https://image.flaticon.com/icons/png/512/3059/3059606.png",
-  },
-  {
-    id: 4,
-    name: "Mr. Sunil Prakash",
-    role: "Digital Marketing",
-    date: "19 May 2020",
-    vehicle: "Elite i20",
-    type: "HOT",
-    imageUrl: "https://image.flaticon.com/icons/png/512/3059/3059606.png",
-  },
-];
+export const getPreEnquiryData = createAsyncThunk('PRE_ENQUIRY/getPreEnquiryData', async (endUrl) => {
 
-export const getPreEnquiryData = createAsyncThunk('PRE_ENQUIRY/getPreEnquiryData', async (inputData) => {
-
-  let url = URL.LEADS_LIST_API() + "?limit=10&offset=" + 0 + "&status=PREENQUIRY&empId=" + 2;
+  let url = URL.LEADS_LIST_API() + endUrl;
   const response = await client.get(url);
   return response
 })
@@ -51,10 +12,13 @@ export const getPreEnquiryData = createAsyncThunk('PRE_ENQUIRY/getPreEnquiryData
 export const preEnquirySlice = createSlice({
   name: "PRE_ENQUIRY",
   initialState: {
-    sampleDataAry: data,
+    pre_enquiry_list: [],
     modelVisible: false,
     sortAndFilterVisible: false,
-    pageNum: 0
+    pageNumber: 0,
+    totalPages: 1,
+    isLoading: false,
+    status: ""
   },
   reducers: {
     callPressed: (state, action) => {
@@ -66,13 +30,19 @@ export const preEnquirySlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(getPreEnquiryData.pending, (state) => {
-
+      state.isLoading = true;
     })
     builder.addCase(getPreEnquiryData.fulfilled, (state, action) => {
       console.log('res: ', action.payload);
+      const dmsEntityObj = action.payload?.dmsEntity;
+      if (dmsEntityObj) {
+        state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
+        state.pre_enquiry_list = dmsEntityObj.leadDtoPage.content;
+      }
+      state.isLoading = false;
     })
     builder.addCase(getPreEnquiryData.rejected, (state) => {
-
+      state.isLoading = false;
     })
   }
 });

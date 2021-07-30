@@ -97,6 +97,7 @@ export const loginSlice = createSlice({
                 const dataObj = action.payload;
                 AsyncStore.storeData(AsyncStore.Keys.USER_NAME, dataObj.userName);
                 AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, dataObj.idToken);
+                AsyncStore.storeData(AsyncStore.Keys.ORG_ID, dataObj.orgId);
                 AsyncStore.storeData(AsyncStore.Keys.REFRESH_TOKEN, dataObj.refreshToken);
                 state.status = 'sucess';
                 state.isLoading = false;

@@ -1,17 +1,15 @@
 import * as AsyncStore from '../asyncStore';
 
-export const client = async (url, { body, ...customConfig } = {}) => {
+export const client = async (authToken, url, { body, ...customConfig } = {}) => {
 
     const headers = {
         'Accept': "application/json",
         'Content-Type': 'application/json',
     }
 
-    let userToken = getAuthToken();
-    console.log('token: ', userToken)
-    // if (useDispatch) {
-    //     headers['auth-token'] = userToken;
-    // }
+    if (authToken) {
+        headers['auth-token'] = authToken;
+    }
 
     const config = {
         method: body ? 'POST' : 'GET',
@@ -25,7 +23,7 @@ export const client = async (url, { body, ...customConfig } = {}) => {
     if (body) {
         config.body = JSON.stringify(body)
     }
-    console.log('config: ', config);
+    // console.log('config: ', config);
 
     let data
     try {
@@ -37,23 +35,17 @@ export const client = async (url, { body, ...customConfig } = {}) => {
         }
         throw new Error(response.statusText)
     } catch (err) {
-        console.log('err: ', err);
+        console.log('err: ', err.message);
         return Promise.reject(err.message ? err.message : data)
     }
 }
 
-const getAuthToken = async () => {
+client.get = async function (endpoint, customConfig = {}) {
     let token = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
-    console.log('token: ', token);
-    return token
+    return client(token, endpoint, { ...customConfig, method: 'GET' })
 }
 
-client.get = function (endpoint, customConfig = {}) {
-    return client(endpoint, { ...customConfig, method: 'GET' })
+client.post = async function (endpoint, body, customConfig = {}) {
+    let token = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
+    return client(token, endpoint, { ...customConfig, body })
 }
-
-client.post = function (endpoint, body, customConfig = {}) {
-    return client(endpoint, { ...customConfig, body })
-}
-
-// 'x-access-token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwMGVmYzFiM2QxOWQ5OTRiMmY1Yjk0NCIsInJvbGUiOiJIT1NURUxfQURNSU4iLCJpYXQiOjE2MTE1OTQ3Nzl9.jBbCyKqtCHJ67VAhF1mzBGD-lpvG011lC2tpA0Fk0Ec'

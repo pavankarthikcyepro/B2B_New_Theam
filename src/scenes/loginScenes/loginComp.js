@@ -47,7 +47,6 @@ const LoginScreen = ({ navigation }) => {
 
     if (selector.status == "sucess") {
       signIn(selector.authToken);
-      dispatch(getMenuList(selector.userName))
       dispatch(clearState());
     }
   }, [selector.status])

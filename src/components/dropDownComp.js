@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { Modal, SafeAreaView, View, Text, StyleSheet, FlatList, Pressable } from 'react-native';
+import { Modal, SafeAreaView, View, Text, StyleSheet, FlatList, Pressable, Dimensions } from 'react-native';
 import { Colors } from '../styles';
 import { List, Divider, Button } from 'react-native-paper';
+
+const screenHeight = Dimensions.get('window').height;
+const tableHeight = screenHeight / 2;
 
 const testdata = ['First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth']
 const multipleTestData = [
@@ -28,7 +31,7 @@ const multipleTestData = [
 ]
 
 
-const DropDownComponant = ({ visible = false, multiple = false, data = [], selectedItems }) => {
+const DropDownComponant = ({ visible = false, multiple = false, headerTitle = "Select Data", data = [], selectedItems }) => {
 
     const [multipleData, setMultipleData] = useState(multipleTestData);
 
@@ -55,6 +58,12 @@ const DropDownComponant = ({ visible = false, multiple = false, data = [], selec
         }
     }
 
+    let estimateTableHeight = data.length * 50;
+    let faltListHeight = tableHeight;
+    if (estimateTableHeight < tableHeight) {
+        faltListHeight = null;
+    }
+
     return (
         <Modal
             animationType={'slide'}
@@ -67,7 +76,7 @@ const DropDownComponant = ({ visible = false, multiple = false, data = [], selec
                     <SafeAreaView >
                         <View style={styles.view1}>
                             <View style={styles.view2}>
-                                <Text style={styles.text1}>{'Select Data'}</Text>
+                                <Text style={styles.text1}>{headerTitle}</Text>
                                 {multiple ? <Button
                                     labelStyle={{ fontSize: 14, fontWeight: '400', color: Colors.RED, textTransform: 'none' }}
                                     onPress={() => closeModalWithSelectedItem({})}
@@ -98,7 +107,8 @@ const DropDownComponant = ({ visible = false, multiple = false, data = [], selec
                                     )
                                 }}
                             /> : <FlatList
-                                data={testdata}
+                                style={{ height: faltListHeight }}
+                                data={data}
                                 keyExtractor={(item, index) => index.toString()}
                                 renderItem={({ item, index }) => {
                                     return (
@@ -106,7 +116,7 @@ const DropDownComponant = ({ visible = false, multiple = false, data = [], selec
                                             <View>
                                                 <List.Item
                                                     titleStyle={{ fontSize: 16, fontWeight: '400' }}
-                                                    title={item}
+                                                    title={item.name}
                                                     titleNumberOfLines={1}
                                                     descriptionEllipsizeMode={'tail'}
                                                     description={""}

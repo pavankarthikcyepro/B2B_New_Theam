@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SafeAreaView, View, Text, StyleSheet, FlatList, Dimensions, Image, Pressable, Alert } from 'react-native';
 import { Colors } from '../../../styles';
 import { Searchbar } from 'react-native-paper';
@@ -9,9 +9,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FILTER } from '../../../assets/svg'
 import { DateItem } from '../../../pureComponents/dateItem';
 import { AppNavigator } from '../../../navigations';
-import { dateSelected, showDateModal } from '../../../redux/homeSlice';
+import { dateSelected, showDateModal, getCarModalList, getCustomerTypeList } from '../../../redux/homeSlice';
 import { DateRangeComp, DatePickerComponent, SortAndFilterComp } from '../../../components';
 import { DateModalComp } from "../../../components/dateModalComp";
+import { getMenuList } from '../../../redux/homeSlice';
+import * as AsyncStore from '../../../asyncStore';
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 30) / 2;
@@ -20,6 +22,26 @@ const HomeScreen = ({ navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
   const [datePickerVisible, setDatePickerVisible] = useState(false);
+
+  useEffect(() => {
+    getMenuListFromServer();
+    getCarModalListFromServer();
+    dispatch(getCustomerTypeList());
+  }, [])
+
+  const getMenuListFromServer = async () => {
+    let name = await AsyncStore.getData(AsyncStore.Keys.USER_NAME);
+    if (name) {
+      dispatch(getMenuList(name));
+    }
+  }
+
+  const getCarModalListFromServer = async () => {
+    let orgId = await AsyncStore.getData(AsyncStore.Keys.ORG_ID);
+    if (orgId) {
+      dispatch(getCarModalList(orgId));
+    }
+  }
 
   const dateClicked = (index) => {
 

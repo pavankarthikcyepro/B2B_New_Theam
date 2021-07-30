@@ -10,6 +10,7 @@ import notificationReducer from "./notificationSlice";
 import complaintsReducer from "./complaintsSlice";
 import routeReducer from "./routeSlice";
 import eventmanagementReducer from "./eventmanagementSlice";
+import addPreEnquiryReducer from './addPreEnquirySlice';
 
 const reducer = combineReducers({
   routeReducer,
@@ -21,6 +22,7 @@ const reducer = combineReducers({
   notificationReducer,
   complaintsReducer,
   eventmanagementReducer,
+  addPreEnquiryReducer
 });
 
 const store = configureStore({

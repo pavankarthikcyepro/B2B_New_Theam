@@ -1,5 +1,5 @@
-import React from 'react';
-import { SafeAreaView, StyleSheet, View, Text, FlatList, Pressable, Alert, Platform } from 'react-native';
+import React, { useEffect } from 'react';
+import { SafeAreaView, StyleSheet, View, Text, FlatList, Pressable, Alert, ActivityIndicator } from 'react-native';
 import { PreEnquiryItem } from '../../../pureComponents/preEnquiryItem';
 import { PageControlItem } from '../../../pureComponents/pageControlItem';
 import { Colors, GlobalStyle } from '../../../styles';
@@ -9,12 +9,25 @@ import VectorImage from 'react-native-vector-image';
 import { CREATE_NEW } from '../../../assets/svg';
 import { AppNavigator } from '../../../navigations';
 import { CallUserComponent, SortAndFilterComp } from '../../../components';
-import { callPressed, sortAndFilterPressed } from '../../../redux/preEnquirySlice'
+import { callPressed, sortAndFilterPressed, getPreEnquiryData } from '../../../redux/preEnquirySlice';
+import * as AsyncStore from '../../../asyncStore';
 
 const PreEnquiryScreen = ({ navigation }) => {
 
     const selector = useSelector(state => state.preEnquiryReducer);
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        getPreEnquiryListFromServer();
+    }, [])
+
+    const getPreEnquiryListFromServer = async () => {
+        let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
+        if (empId) {
+            let endUrl = "?limit=10&offset=" + selector.pageNumber + "&status=PREENQUIRY&empId=" + empId;
+            dispatch(getPreEnquiryData(endUrl))
+        }
+    }
 
     return (
         <SafeAreaView style={styles.conatiner}>
@@ -60,9 +73,9 @@ const PreEnquiryScreen = ({ navigation }) => {
                     </Pressable>
                 </View>
 
-                <View style={GlobalStyle.shadow}>
+                {selector.pre_enquiry_list.length > 0 ? <View style={GlobalStyle.shadow}>
                     <FlatList
-                        data={selector.sampleDataAry}
+                        data={selector.pre_enquiry_list}
                         keyExtractor={(item, index) => index.toString()}
                         renderItem={({ item, index }) => {
 
@@ -74,18 +87,21 @@ const PreEnquiryScreen = ({ navigation }) => {
                             return (
                                 < PreEnquiryItem
                                     bgColor={color}
-                                    name={item.name}
-                                    subName={item.role}
-                                    date={item.date}
-                                    type={item.type}
-                                    modelName={item.vehicle}
+                                    name={item.firstName + " " + item.lastName}
+                                    subName={item.enquirySource}
+                                    date={item.createdDate}
+                                    // type={item.type}
+                                    modelName={item.model}
                                     onPress={() => { }}
                                     onCallPress={() => dispatch(callPressed())}
                                 />
                             )
                         }}
                     />
-                </View>
+                </View> : <View style={styles.emptyListVw}>
+                    {selector.isLoading ? <ActivityIndicator animating={selector.isLoading} size="small" color={Colors.RED} />
+                        : <Text>{'No Data Found'}</Text>}
+                </View>}
 
                 <View style={[styles.addView, GlobalStyle.shadow]}>
                     <Pressable onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.addPreEnq)}>
@@ -118,5 +134,10 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 10,
         right: 10,
+    },
+    emptyListVw: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 })

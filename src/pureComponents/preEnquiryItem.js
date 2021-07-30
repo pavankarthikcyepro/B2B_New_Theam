@@ -6,7 +6,7 @@ import { Colors } from "../styles";
 export const PreEnquiryItem = ({
   name,
   subName,
-  type = "",
+  type = "COLD",
   date,
   modelName,
   bgColor = Colors.WHITE,
@@ -19,6 +19,10 @@ export const PreEnquiryItem = ({
   } else if (type === "WARM") {
     textColor = Colors.YELLOW;
   }
+
+  // var myDate = new Date(1601528702 * 1000).toLocaleString();
+  const myDate = new Date(date * 1000).toLocaleString();
+  // console.log('date: ', myDate)
 
   return (
     <Pressable onPress={onPress}>
@@ -35,8 +39,8 @@ export const PreEnquiryItem = ({
               {type.toUpperCase()}
             </Text>
           </Text>
-          <Text style={[styles.text1, { marginTop: 5 }]}>{subName}</Text>
-          <Text style={styles.text2}>{date}</Text>
+          <Text style={[styles.text3, { marginTop: 5 }]}>{subName}</Text>
+          <Text style={styles.text2}>{myDate}</Text>
         </View>
         <View style={styles.rightView}>
           <Button
@@ -79,8 +83,12 @@ const styles = StyleSheet.create({
   },
   text2: {
     marginTop: 5,
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "400",
     color: Colors.GRAY,
+  },
+  text3: {
+    fontSize: 14,
+    fontWeight: "400",
   },
 });

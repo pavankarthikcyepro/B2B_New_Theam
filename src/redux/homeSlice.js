@@ -44,8 +44,19 @@ const dates = [
 
 export const getMenuList = createAsyncThunk("HOME/getMenuList", async (name) => {
 
-  let url = URL.MENULIST_API() + name;
-  const response = client.get(url)
+  const response = client.get(URL.MENULIST_API(name))
+  return response;
+})
+
+export const getCarModalList = createAsyncThunk("HOME/getCarModalList", async (orgId) => {
+
+  const response = client.get(URL.VEHICLE_MODELS(orgId))
+  return response;
+})
+
+export const getCustomerTypeList = createAsyncThunk("HOME/getCustomerTypeList", async () => {
+
+  const response = client.get(URL.CUSTOMER_TYPE())
   return response;
 })
 
@@ -57,6 +68,8 @@ export const homeSlice = createSlice({
     tableData: data,
     datesData: dates,
     menuList: [],
+    vehicle_modal_list: [],
+    customer_type_list: [],
     dateSelectedIndex: 0,
     dateModalVisible: false,
   },
@@ -71,14 +84,32 @@ export const homeSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getMenuList.fulfilled, (state, action) => {
-        console.log('payload: ', action.payload);
+        // console.log('menu_list: ', action.payload);
         const dmsEntityObj = action.payload.dmsEntity;
         const empId = dmsEntityObj.loginEmployee.empId;
-        AsyncStore.storeData(AsyncStore.Keys.EMP_ID, empId);
+        AsyncStore.storeData(AsyncStore.Keys.EMP_ID, empId.toString());
         state.employeeId = empId;
       })
       .addCase(getMenuList.rejected, (state, action) => {
 
+      })
+      .addCase(getCarModalList.fulfilled, (state, action) => {
+        // console.log('vehicle_modal_list: ', action.payload);
+        const data = action.payload;
+        let modalList = [];
+        data.forEach(item => {
+          modalList.push({ id: item.vehicleId, name: item.model })
+        });
+        state.vehicle_modal_list = modalList;
+      })
+      .addCase(getCustomerTypeList.fulfilled, (state, action) => {
+        //console.log('customer_type_list: ', action.payload);
+        const data = action.payload;
+        let typeList = [];
+        data.forEach(item => {
+          typeList.push({ id: item.id, name: item.customerType })
+        });
+        state.customer_type_list = typeList;
       })
   }
 });

@@ -6,6 +6,26 @@ import { Colors, GlobalStyle } from '../../../styles';
 import { TextinputComp } from '../../../components/textinputComp';
 import { DropDownComponant } from '../../../components/dropDownComp';
 import { EmsStackIdentifiers } from '../../../navigations/appNavigator';
+import {
+    setCreateEnquiryCheckbox,
+    setFirstName,
+    setLastName,
+    setMobile,
+    setAlterMobile,
+    setEmail,
+    setPincode,
+    setCarModel,
+    setEnquiryType,
+    setCustomerType,
+    setSourceOfEnquiry,
+    setCompanyName,
+    showModelSelect,
+    showCustomerTypeSelect,
+    showEnquirySegmentSelect,
+    showSourceOfEnquirySelect
+} from '../../../redux/addPreEnquirySlice';
+import { useDispatch, useSelector } from 'react-redux';
+
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -14,8 +34,9 @@ const DropDownSelectionComponant = ({ label, value, onPress }) => {
     return (
         <Pressable onPress={onPress}>
             <View style={{ height: 70, backgroundColor: Colors.WHITE, justifyContent: 'flex-end' }}>
+                {/* <Text style={{ fontSize: 12, fontWeight: '400', color: Colors.GRAY }}>{label}</Text> */}
                 <View style={styles.view3}>
-                    <Text style={styles.text3}>{label}</Text>
+                    <Text style={[styles.text3, { color: value ? Colors.BLACK : Colors.GRAY }]}>{value ? value : label}</Text>
                     <IconButton
                         icon="menu-down"
                         color={Colors.BLACK}
@@ -31,31 +52,55 @@ const DropDownSelectionComponant = ({ label, value, onPress }) => {
 
 const AddPreEnquiryScreen = ({ navigation }) => {
 
-    const [checked, setChecked] = useState(false);
-    const [text, setText] = useState("");
-    const [dropdownVisible, setDropDownVisible] = useState(false);
-    const [multiDropdownVisible, setMultiDropDownVisible] = useState(false)
-
+    const selector = useSelector(state => state.addPreEnquiryReducer);
+    const { vehicle_modal_list, customer_type_list } = useSelector(state => state.homeReducer);
+    const dispatch = useDispatch();
 
 
     return (
         <SafeAreaView style={styles.container}>
 
+            {/* // select modal */}
             <DropDownComponant
-                visible={dropdownVisible}
-                multiple={false}
-                selectedItems={(items) => {
-                    console.log('selected: ', items);
-                    setDropDownVisible(false);
+                visible={selector.show_model_drop_down}
+                headerTitle={'Select Model'}
+                data={vehicle_modal_list}
+                selectedItems={(item) => {
+                    console.log('selected: ', item);
+                    dispatch(setCarModel(item.name))
                 }}
             />
 
+            {/* // select enquiry segment */}
             <DropDownComponant
-                visible={multiDropdownVisible}
-                multiple={true}
-                selectedItems={(items) => {
-                    console.log('selected: ', items);
-                    setMultiDropDownVisible(false);
+                visible={selector.show_enquiry_segment_drop_down}
+                headerTitle={'Select Enquiry Segment'}
+                data={selector.enquiry_type_list}
+                selectedItems={(item) => {
+                    console.log('selected: ', item);
+                    dispatch(setEnquiryType(item.name))
+                }}
+            />
+
+            {/* // customer type */}
+            <DropDownComponant
+                visible={selector.show_customer_type_drop_down}
+                headerTitle={'Select Customer Type'}
+                data={customer_type_list}
+                selectedItems={(item) => {
+                    console.log('selected: ', item);
+                    dispatch(setCustomerType(item.name))
+                }}
+            />
+
+            {/* // source of pre-enquiry */}
+            <DropDownComponant
+                visible={selector.show_source_type_drop_down}
+                headerTitle={'Select Source of Pre-Enquiry'}
+                data={selector.source_of_enquiry_type_list}
+                selectedItems={(item) => {
+                    console.log('selected: ', item);
+                    dispatch(setSourceOfEnquiry(item.name))
                 }}
             />
 
@@ -69,12 +114,10 @@ const AddPreEnquiryScreen = ({ navigation }) => {
                 <View style={styles.view1}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Checkbox.Android
-                            status={checked ? 'checked' : 'unchecked'}
+                            status={selector.create_enquiry_checked ? 'checked' : 'unchecked'}
                             uncheckedColor={Colors.DARK_GRAY}
                             color={Colors.RED}
-                            onPress={() => {
-                                setChecked(!checked);
-                            }}
+                            onPress={() => dispatch(setCreateEnquiryCheckbox())}
                         />
                         <Text style={styles.text2}>{'Create enquiry'}</Text>
                     </View>
@@ -89,67 +132,96 @@ const AddPreEnquiryScreen = ({ navigation }) => {
                 <View style={[{ borderRadius: 6, }]}>
                     <TextinputComp
                         style={{ height: 70 }}
-                        value={text}
-                        label={'First Name'}
-                        onChangeText={(text) => setText(text)}
+                        value={selector.firstName}
+                        label={'First Name*'}
+                        onChangeText={(text) => dispatch(setFirstName(text))}
                     />
                     <Text style={styles.devider}></Text>
 
                     <TextinputComp
                         style={{ height: 70 }}
-                        value={text}
+                        value={selector.lastName}
                         label={'Last Name'}
-                        onChangeText={(text) => setText(text)}
+                        onChangeText={(text) => dispatch(setLastName(text))}
                     />
                     <Text style={styles.devider}></Text>
 
                     <TextinputComp
                         style={{ height: 70 }}
-                        value={text}
-                        label={'Mobile Number'}
-                        onChangeText={(text) => setText(text)}
+                        value={selector.mobile}
+                        label={'Mobile Number*'}
+                        keyboardType={'phone-pad'}
+                        onChangeText={(text) => dispatch(setMobile(text))}
                     />
                     <Text style={styles.devider}></Text>
 
                     <TextinputComp
                         style={{ height: 70 }}
-                        value={text}
+                        value={selector.alterMobile}
                         label={'Alternate Mobile Number'}
-                        onChangeText={(text) => setText(text)}
+                        keyboardType={'phone-pad'}
+                        onChangeText={(text) => dispatch(setAlterMobile(text))}
                     />
                     <Text style={styles.devider}></Text>
 
                     <TextinputComp
                         style={{ height: 70 }}
-                        value={text}
+                        value={selector.email}
                         label={'Email-Id'}
-                        onChangeText={(text) => setText(text)}
+                        keyboardType={'email-address'}
+                        onChangeText={(text) => dispatch(setEmail(text))}
                     />
                     <Text style={styles.devider}></Text>
 
 
                     <DropDownSelectionComponant
-                        label={'Select Model'}
-                        onPress={() => setDropDownVisible(true)}
+                        label={'Select Model*'}
+                        value={selector.carModel}
+                        onPress={() => dispatch(showModelSelect())}
                     />
                     <DropDownSelectionComponant
-                        label={'Select Enquiry Segment'}
-                        onPress={() => setMultiDropDownVisible(true)}
+                        label={'Select Enquiry Segment*'}
+                        value={selector.enquiryType}
+                        onPress={() => dispatch(showEnquirySegmentSelect())}
                     />
                     <DropDownSelectionComponant
                         label={'Select Customer Type'}
-                        onPress={() => setDropDownVisible(true)}
+                        value={selector.customerType}
+                        onPress={() => dispatch(showCustomerTypeSelect())}
                     />
+
+                    {selector.customerType === "Corporate" || selector.customerType === "Government" || selector.customerType === "Retired" || selector.customerType === "Fleet" || selector.customerType === "Institution" ? <View>
+                        <TextinputComp
+                            style={{ height: 70 }}
+                            value={selector.companyName}
+                            label={'Company Name'}
+                            onChangeText={(text) => dispatch(setCompanyName(text))}
+                        />
+                        <Text style={styles.devider}></Text>
+                    </View> : null}
+
+                    {selector.customerType === "Other" ? <View>
+                        <TextinputComp
+                            style={{ height: 70 }}
+                            value={selector.companyName}
+                            label={'Other'}
+                            onChangeText={(text) => dispatch(setCompanyName(text))}
+                        />
+                        <Text style={styles.devider}></Text>
+                    </View> : null}
+
                     <DropDownSelectionComponant
-                        label={'Select Source of Pre-Enquiry'}
-                        onPress={() => setMultiDropDownVisible(true)}
+                        label={'Select Source of Pre-Enquiry*'}
+                        value={selector.sourceOfEnquiry}
+                        onPress={() => dispatch(showSourceOfEnquirySelect())}
                     />
 
                     <TextinputComp
                         style={{ height: 70 }}
-                        value={text}
+                        value={selector.pincode}
                         label={'Pincode'}
-                        onChangeText={(text) => setText(text)}
+                        keyboardType={'number-pad'}
+                        onChangeText={(text) => dispatch(setPincode(text))}
                     />
                     <Text style={styles.devider}></Text>
 
@@ -208,3 +280,12 @@ const styles = StyleSheet.create({
         width: '100%', height: 0.5, backgroundColor: Colors.GRAY
     }
 })
+
+{/* <DropDownComponant
+                visible={multiDropdownVisible}
+                multiple={true}
+                selectedItems={(items) => {
+                    console.log('selected: ', items);
+                    setMultiDropDownVisible(false);
+                }}
+            /> */}

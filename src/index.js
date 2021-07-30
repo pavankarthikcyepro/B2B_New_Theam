@@ -39,9 +39,7 @@ const AppScreen = () => {
 
     useEffect(async () => {
 
-        // Fetch the token from storage then navigate to our appropriate place
         const checkUserToken = async () => {
-
             let userToken = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
             dispatch({ type: 'RESTORE_TOKEN', token: userToken });
         };
@@ -52,7 +50,6 @@ const AppScreen = () => {
     const authContext = React.useMemo(
         () => ({
             signIn: async (token) => {
-                console.log('token: ', token)
                 dispatch({ type: 'SIGN_IN', token: token });
             },
             signOut: () => {
