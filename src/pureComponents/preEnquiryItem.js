@@ -3,6 +3,12 @@ import { View, StyleSheet, Text, Pressable } from "react-native";
 import { Button, IconButton } from "react-native-paper";
 import { Colors } from "../styles";
 
+const convertTimeStampToDateString = (timeStamp) => {
+  var date = new Date(timeStamp);
+  let resultString = date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear() + " " + date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+  return resultString;
+}
+
 export const PreEnquiryItem = ({
   name,
   subName,
@@ -20,9 +26,7 @@ export const PreEnquiryItem = ({
     textColor = Colors.YELLOW;
   }
 
-  // var myDate = new Date(1601528702 * 1000).toLocaleString();
-  const myDate = new Date(date * 1000).toLocaleString();
-  // console.log('date: ', myDate)
+  const myDate = convertTimeStampToDateString(date);
 
   return (
     <Pressable onPress={onPress}>

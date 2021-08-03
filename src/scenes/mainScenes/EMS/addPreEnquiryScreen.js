@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { SafeAreaView, ScrollView, View, Text, StyleSheet, Dimensions, Pressable } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { SafeAreaView, ScrollView, View, Text, StyleSheet, Dimensions, Pressable, Alert } from 'react-native';
 import { ButtonComp } from "../../../components/buttonComp";
 import { Checkbox, Button, IconButton } from 'react-native-paper';
 import { Colors, GlobalStyle } from '../../../styles';
@@ -7,6 +7,7 @@ import { TextinputComp } from '../../../components/textinputComp';
 import { DropDownComponant } from '../../../components/dropDownComp';
 import { EmsStackIdentifiers } from '../../../navigations/appNavigator';
 import {
+    clearState,
     setCreateEnquiryCheckbox,
     setFirstName,
     setLastName,
@@ -22,9 +23,12 @@ import {
     showModelSelect,
     showCustomerTypeSelect,
     showEnquirySegmentSelect,
-    showSourceOfEnquirySelect
+    showSourceOfEnquirySelect,
+    createPreEnquiry
 } from '../../../redux/addPreEnquirySlice';
 import { useDispatch, useSelector } from 'react-redux';
+import { isMobileNumber, isEmail } from '../../../utils/helperFunctions';
+import { sales_url } from '../../../networking/endpoints';
 
 
 const screenWidth = Dimensions.get('window').width;
@@ -56,6 +60,119 @@ const AddPreEnquiryScreen = ({ navigation }) => {
     const { vehicle_modal_list, customer_type_list } = useSelector(state => state.homeReducer);
     const dispatch = useDispatch();
 
+    useEffect(() => {
+        if (selector.status === "success") {
+            dispatch(clearState());
+            navigation.goBack();
+        } else if (selector.errorMsg) {
+            Alert.alert('', selector.errorMsg)
+        }
+    }, [selector.status, selector.errorMsg])
+
+    const submitClicked = () => {
+
+        if (selector.firstName.length == 0 || selector.mobile.length == 0 || selector.enquiryType.length == 0 || selector.sourceOfEnquiry == 0) {
+            Alert.alert('Please fill required fields');
+            return
+        }
+
+        if (!isMobileNumber(selector.mobile)) {
+            Alert.alert('Please enter valid mobile number');
+            return
+        }
+
+        if (selector.email.length > 0 && !isEmail(selector.email)) {
+            Alert.alert('Please enter valid email');
+            return
+        }
+
+        const owerName = "Kandukuri Sudheer Goud";
+        const eventName = "";
+
+        const dmsContactDtoObj = {
+            "branchId": "1",
+            "createdBy": owerName,
+            "customerType": selector.customerType,
+            "firstName": selector.firstName,
+            "lastName": selector.lastName,
+            "modifiedBy": owerName,
+            "orgId": "1",
+            "phone": selector.mobile,
+            "company": selector.companyName,
+            "email": selector.email,
+            "enquirySource": selector.sourceOfEnquiryId,
+            "ownerName": owerName,
+            "secondaryPhone": selector.alterMobile,
+            "status": "PREENQUIRY"
+        }
+
+        const dmsLeadDtoObj = {
+            "branchId": "1",
+            "createdBy": owerName,
+            "enquirySegment": selector.enquiryType,
+            "firstName": selector.firstName,
+            "lastName": selector.lastName,
+            "email": selector.email,
+            "leadStage": "PREENQUIRY",
+            "organizationId": "1",
+            "phone": selector.mobile,
+            "model": selector.carModel,
+            "sourceOfEnquiry": selector.sourceOfEnquiryId,
+            "eventCode": eventName,
+            "dmsAddresses": [
+                {
+                    "addressType": 'Communication',
+                    "houseNo": '',
+                    "street": '',
+                    "city": '',
+                    "district": '',
+                    "pincode": selector.pincode,
+                    "state": '',
+                    "village": '',
+                    "county": 'India',
+                    "rural": false,
+                    "urban": true,
+                    "id": 0
+                },
+                {
+                    "addressType": 'Permanent',
+                    "houseNo": '',
+                    "street": '',
+                    "city": '',
+                    "district": '',
+                    "pincode": selector.pincode,
+                    "state": '',
+                    "village": '',
+                    "county": 'India',
+                    "rural": false,
+                    "urban": true,
+                    "id": 0
+                }
+            ]
+        }
+
+        let url = sales_url;
+        let formData = {};
+        if (selector.customerType === "Individual") {
+            url = url + "/contact?allocateDse=" + selector.create_enquiry_checked;
+            formData = {
+                "dmsContactDto": dmsContactDtoObj,
+                "dmsLeadDto": dmsLeadDtoObj
+            }
+        } else {
+            url = url + "/account?allocateDse=" + selector.create_enquiry_checked;
+            formData = {
+                "dmsAccountDto": dmsContactDtoObj,
+                "dmsLeadDto": dmsLeadDtoObj
+            }
+        }
+
+        let dataObj = {
+            url: url,
+            body: formData
+        }
+        dispatch(createPreEnquiry(dataObj));
+    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -100,7 +217,7 @@ const AddPreEnquiryScreen = ({ navigation }) => {
                 data={selector.source_of_enquiry_type_list}
                 selectedItems={(item) => {
                     console.log('selected: ', item);
-                    dispatch(setSourceOfEnquiry(item.name))
+                    dispatch(setSourceOfEnquiry(item))
                 }}
             />
 
@@ -229,9 +346,10 @@ const AddPreEnquiryScreen = ({ navigation }) => {
 
                 <View style={styles.view2}>
                     <ButtonComp
+                        disabled={selector.isLoading}
                         title={"SUBMIT"}
                         width={screenWidth - 40}
-                        onPress={() => navigation.navigate(EmsStackIdentifiers.confirmedPreEnq)}
+                        onPress={submitClicked}
                     />
                 </View>
             </ScrollView>

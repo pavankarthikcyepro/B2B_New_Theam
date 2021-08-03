@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { client } from "../networking/client";
 
 export const EnquiryTypes = [
     {
@@ -74,30 +75,62 @@ export const SourceOfEnquiryTypes = [
     }
 ];
 
+interface Item {
+    name: string,
+    id: string
+}
+
+export const createPreEnquiry = createAsyncThunk('ADD_PRE_ENQUIRY_SLICE/createPreEnquiry', async (data) => {
+
+    const response = client.post(data['url'], data['body']);
+    return response;
+})
+
 export const addPreEnquirySlice = createSlice({
     name: "ADD_PRE_ENQUIRY_SLICE",
     initialState: {
         create_enquiry_checked: false,
-        firstName: "",
-        lastName: "",
-        mobile: "",
+        firstName: "Test_New",
+        lastName: "a1",
+        mobile: "8888888801",
         alterMobile: "",
-        email: "",
+        email: "test01@gmail.com",
         pincode: "",
         carModel: "",
         enquiryType: "",
         customerType: "",
         sourceOfEnquiry: "",
+        sourceOfEnquiryId: null,
         companyName: "",
-        isLoading: false,
         enquiry_type_list: EnquiryTypes,
         source_of_enquiry_type_list: SourceOfEnquiryTypes,
         show_model_drop_down: false,
         show_enquiry_segment_drop_down: false,
         show_customer_type_drop_down: false,
-        show_source_type_drop_down: false
+        show_source_type_drop_down: false,
+        isLoading: false,
+        status: "",
+        errorMsg: ""
     },
     reducers: {
+        clearState: (state) => {
+            state.create_enquiry_checked = false;
+            state.firstName = "";
+            state.lastName = "";
+            state.mobile = "";
+            state.alterMobile = "";
+            state.email = "";
+            state.pincode = "";
+            state.carModel = "";
+            state.enquiryType = "";
+            state.customerType = "";
+            state.sourceOfEnquiry = "";
+            state.sourceOfEnquiryId = null;
+            state.companyName = "";
+            state.isLoading = false;
+            state.status = "";
+            state.errorMsg = "";
+        },
         setCreateEnquiryCheckbox: (state, action) => {
             state.create_enquiry_checked = !state.create_enquiry_checked;
         },
@@ -131,8 +164,9 @@ export const addPreEnquirySlice = createSlice({
             state.customerType = action.payload;
             state.show_customer_type_drop_down = !state.show_customer_type_drop_down;
         },
-        setSourceOfEnquiry: (state, action: PayloadAction<string>) => {
-            state.sourceOfEnquiry = action.payload;
+        setSourceOfEnquiry: (state, action: PayloadAction<Item>) => {
+            state.sourceOfEnquiry = action.payload.name;
+            state.sourceOfEnquiryId = action.payload.id;
             state.show_source_type_drop_down = !state.show_source_type_drop_down;
         },
         setCompanyName: (state, action: PayloadAction<string>) => {
@@ -151,9 +185,32 @@ export const addPreEnquirySlice = createSlice({
             state.show_source_type_drop_down = !state.show_source_type_drop_down;
         }
     },
+    extraReducers: (builder) => {
+        builder
+            .addCase(createPreEnquiry.pending, (state, action) => {
+                state.isLoading = true;
+                state.status = "pending";
+                console.log('res1: ', action.payload);
+            })
+            .addCase(createPreEnquiry.fulfilled, (state, action) => {
+                console.log('res2: ', action.payload.success);
+                if (action.payload.success) {
+                    state.status = "success";
+                } else {
+                    state.errorMsg = action.payload.errorMessage;
+                }
+                state.isLoading = false;
+            })
+            .addCase(createPreEnquiry.rejected, (state, action) => {
+                state.isLoading = false;
+                state.status = "failed";
+                console.log('res3: ', action.payload);
+            })
+    }
 });
 
 export const {
+    clearState,
     setCreateEnquiryCheckbox,
     setFirstName,
     setLastName,
