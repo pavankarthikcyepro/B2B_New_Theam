@@ -110,7 +110,9 @@ export const addPreEnquirySlice = createSlice({
         show_source_type_drop_down: false,
         isLoading: false,
         status: "",
-        errorMsg: ""
+        errorMsg: "",
+        vehicle_modal_list: [],
+        customer_type_list: []
     },
     reducers: {
         clearState: (state) => {
@@ -183,6 +185,12 @@ export const addPreEnquirySlice = createSlice({
         },
         showSourceOfEnquirySelect: (state, action) => {
             state.show_source_type_drop_down = !state.show_source_type_drop_down;
+        },
+        setCustomerTypeList: (state, action) => {
+            state.customer_type_list = JSON.parse(action.payload);
+        },
+        setCarModalList: (state, action) => {
+            state.vehicle_modal_list = JSON.parse(action.payload);
         }
     },
     extraReducers: (builder) => {
@@ -226,6 +234,8 @@ export const {
     showModelSelect,
     showCustomerTypeSelect,
     showEnquirySegmentSelect,
-    showSourceOfEnquirySelect
+    showSourceOfEnquirySelect,
+    setCustomerTypeList,
+    setCarModalList
 } = addPreEnquirySlice.actions;
 export default addPreEnquirySlice.reducer;

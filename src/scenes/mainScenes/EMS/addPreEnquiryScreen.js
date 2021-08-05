@@ -24,11 +24,14 @@ import {
     showCustomerTypeSelect,
     showEnquirySegmentSelect,
     showSourceOfEnquirySelect,
-    createPreEnquiry
+    createPreEnquiry,
+    setCustomerTypeList,
+    setCarModalList
 } from '../../../redux/addPreEnquirySlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { isMobileNumber, isEmail } from '../../../utils/helperFunctions';
 import { sales_url } from '../../../networking/endpoints';
+import realm from '../../../database/realm';
 
 
 const screenWidth = Dimensions.get('window').width;
@@ -57,8 +60,23 @@ const DropDownSelectionComponant = ({ label, value, onPress }) => {
 const AddPreEnquiryScreen = ({ navigation }) => {
 
     const selector = useSelector(state => state.addPreEnquiryReducer);
-    const { vehicle_modal_list, customer_type_list } = useSelector(state => state.homeReducer);
+    //const { vehicle_modal_list, customer_type_list } = useSelector(state => state.homeReducer);
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        getCustomerTypeListFromDB();
+        getCarModalListFromDB();
+    }, [])
+
+    const getCustomerTypeListFromDB = () => {
+        const data = realm.objects('CUSTOMER_TYPE_TABLE');
+        dispatch(setCustomerTypeList(JSON.stringify(data)));
+    }
+
+    const getCarModalListFromDB = () => {
+        const data = realm.objects('CAR_MODAL_LIST_TABLE');
+        dispatch(setCarModalList(JSON.stringify(data)));
+    }
 
     useEffect(() => {
         if (selector.status === "success") {
@@ -181,7 +199,7 @@ const AddPreEnquiryScreen = ({ navigation }) => {
             <DropDownComponant
                 visible={selector.show_model_drop_down}
                 headerTitle={'Select Model'}
-                data={vehicle_modal_list}
+                data={selector.vehicle_modal_list}
                 selectedItems={(item) => {
                     console.log('selected: ', item);
                     dispatch(setCarModel(item.name))
@@ -203,7 +221,7 @@ const AddPreEnquiryScreen = ({ navigation }) => {
             <DropDownComponant
                 visible={selector.show_customer_type_drop_down}
                 headerTitle={'Select Customer Type'}
-                data={customer_type_list}
+                data={selector.customer_type_list}
                 selectedItems={(item) => {
                     console.log('selected: ', item);
                     dispatch(setCustomerType(item.name))

@@ -35,7 +35,7 @@ export const client = async (authToken, url, { body, ...customConfig } = {}) => 
         }
         throw new Error(response.statusText)
     } catch (err) {
-        console.log('err: ', err.message);
+        console.log('err: ', err.message ? err.message : err);
         return Promise.reject(err.message ? err.message : data)
     }
 }

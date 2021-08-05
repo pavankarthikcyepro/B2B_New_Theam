@@ -9,8 +9,9 @@ import VectorImage from 'react-native-vector-image';
 import { CREATE_NEW } from '../../../assets/svg';
 import { AppNavigator } from '../../../navigations';
 import { CallUserComponent, SortAndFilterComp } from '../../../components';
-import { callPressed, sortAndFilterPressed, getPreEnquiryData } from '../../../redux/preEnquirySlice';
+import { callPressed, sortAndFilterPressed, getPreEnquiryData, setPreEnquiryList } from '../../../redux/preEnquirySlice';
 import * as AsyncStore from '../../../asyncStore';
+import realm from '../../../database/realm';
 
 const PreEnquiryScreen = ({ navigation }) => {
 
@@ -18,8 +19,15 @@ const PreEnquiryScreen = ({ navigation }) => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        getPreEnquiryListFromServer();
+
+        // getPreEnquiryListFromServer();
+        getPreEnquiryListFromDB();
     }, [])
+
+    const getPreEnquiryListFromDB = () => {
+        const data = realm.objects('PRE_ENQUIRY_TABLE');
+        dispatch(setPreEnquiryList(JSON.stringify(data)));
+    }
 
     const getPreEnquiryListFromServer = async () => {
         let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);

@@ -26,6 +26,9 @@ export const preEnquirySlice = createSlice({
     },
     sortAndFilterPressed: (state, action) => {
       state.sortAndFilterVisible = !state.sortAndFilterVisible;
+    },
+    setPreEnquiryList: (state, action) => {
+      state.pre_enquiry_list = JSON.parse(action.payload);
     }
   },
   extraReducers: (builder) => {
@@ -47,5 +50,5 @@ export const preEnquirySlice = createSlice({
   }
 });
 
-export const { callPressed, sortAndFilterPressed } = preEnquirySlice.actions;
+export const { callPressed, sortAndFilterPressed, setPreEnquiryList } = preEnquirySlice.actions;
 export default preEnquirySlice.reducer;

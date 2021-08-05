@@ -8,6 +8,7 @@ import {
   Pressable,
   Animated,
   Image,
+  Modal
 } from "react-native";
 import { Colors } from "../../styles";
 import { TextinputComp } from "../../components/textinputComp";
@@ -19,12 +20,18 @@ import {
   updatePassword,
   updateSecurePassword,
   showErrorMessage,
-  postUserData
+  postUserData,
+  showLoader,
+  getPreEnquiryData,
+  getMenuList,
+  getCustomerTypeList,
+  getCarModalList
 } from "../../redux/loginSlice";
-import { getMenuList } from "../../redux/homeSlice";
 import { AuthNavigator } from "../../navigations";
 import { IconButton } from "react-native-paper";
 import { AuthContext } from "../../utils/authContext";
+import { LoaderComponent } from '../../components';
+import * as AsyncStore from '../../asyncStore';
 
 const ScreenWidth = Dimensions.get("window").width;
 
@@ -46,12 +53,44 @@ const LoginScreen = ({ navigation }) => {
   useEffect(() => {
 
     if (selector.status == "sucess") {
-      signIn(selector.authToken);
-      dispatch(clearState());
+      //signIn(selector.authToken);
+      dispatch(showLoader());
+      AsyncStore.storeData(AsyncStore.Keys.USER_NAME, selector.userData.userName);
+      AsyncStore.storeData(AsyncStore.Keys.ORG_ID, selector.userData.orgId);
+      AsyncStore.storeData(AsyncStore.Keys.REFRESH_TOKEN, selector.userData.refreshToken);
+      AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, selector.userData.idToken).then(() => {
+        dispatch(getMenuList(selector.userData.userName));
+        dispatch(getCustomerTypeList());
+        dispatch(getCarModalList(selector.userData.orgId))
+      });
     }
   }, [selector.status])
 
+  useEffect(() => {
+
+    if (selector.offlineStatus == "completed") {
+      setTimeout(() => {
+        dispatch(showLoader());
+        signIn(selector.authToken);
+        dispatch(clearState());
+      }, 3000);
+    }
+  }, [selector.offlineStatus])
+
+  useEffect(() => {
+
+    if (selector.menuListStatus == "completed") {
+      getPreEnquiryListFromServer();
+    }
+  }, [selector.menuListStatus])
+
+  const getPreEnquiryListFromServer = async () => {
+    let endUrl = "?limit=10&offset=" + "0" + "&status=PREENQUIRY&empId=" + selector.empId;
+    dispatch(getPreEnquiryData(endUrl))
+  }
+
   const loginClicked = () => {
+
     const employeeId = selector.employeeId;
     const password = selector.password;
 
@@ -99,6 +138,12 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+
+      <LoaderComponent
+        visible={selector.showLoader}
+        onRequestClose={() => { }}
+      />
+
       <View style={{ flex: 1 }}>
         <Image
           style={{ width: "100%", height: 400 }}
