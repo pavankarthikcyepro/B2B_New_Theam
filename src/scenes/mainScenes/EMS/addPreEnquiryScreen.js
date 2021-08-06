@@ -32,30 +32,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { isMobileNumber, isEmail } from '../../../utils/helperFunctions';
 import { sales_url } from '../../../networking/endpoints';
 import realm from '../../../database/realm';
-
+import { AppNavigator } from '../../../navigations';
+import { DropDownSelectionItem } from '../../../pureComponents/dropDownSelectionItem';
 
 const screenWidth = Dimensions.get('window').width;
-
-
-const DropDownSelectionComponant = ({ label, value, onPress }) => {
-    return (
-        <Pressable onPress={onPress}>
-            <View style={{ height: 70, backgroundColor: Colors.WHITE, justifyContent: 'flex-end' }}>
-                {/* <Text style={{ fontSize: 12, fontWeight: '400', color: Colors.GRAY }}>{label}</Text> */}
-                <View style={styles.view3}>
-                    <Text style={[styles.text3, { color: value ? Colors.BLACK : Colors.GRAY }]}>{value ? value : label}</Text>
-                    <IconButton
-                        icon="menu-down"
-                        color={Colors.BLACK}
-                        size={30}
-                        onPress={() => { }}
-                    />
-                </View>
-                <Text style={{ width: '100%', height: 0.5, backgroundColor: Colors.GRAY }}></Text>
-            </View>
-        </Pressable>
-    )
-}
 
 const AddPreEnquiryScreen = ({ navigation }) => {
 
@@ -89,6 +69,8 @@ const AddPreEnquiryScreen = ({ navigation }) => {
 
     const submitClicked = () => {
 
+        navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq)
+        return;
         if (selector.firstName.length == 0 || selector.mobile.length == 0 || selector.enquiryType.length == 0 || selector.sourceOfEnquiry == 0) {
             Alert.alert('Please fill required fields');
             return
@@ -242,6 +224,7 @@ const AddPreEnquiryScreen = ({ navigation }) => {
             <ScrollView
                 automaticallyAdjustContentInsets={true}
                 bounces={true}
+                showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ padding: 10 }}
                 style={{ flex: 1 }}
             >
@@ -266,7 +249,7 @@ const AddPreEnquiryScreen = ({ navigation }) => {
 
                 <View style={[{ borderRadius: 6, }]}>
                     <TextinputComp
-                        style={{ height: 70 }}
+                        style={styles.textInputComp}
                         value={selector.firstName}
                         label={'First Name*'}
                         onChangeText={(text) => dispatch(setFirstName(text))}
@@ -274,7 +257,7 @@ const AddPreEnquiryScreen = ({ navigation }) => {
                     <Text style={styles.devider}></Text>
 
                     <TextinputComp
-                        style={{ height: 70 }}
+                        style={styles.textInputComp}
                         value={selector.lastName}
                         label={'Last Name'}
                         onChangeText={(text) => dispatch(setLastName(text))}
@@ -282,7 +265,7 @@ const AddPreEnquiryScreen = ({ navigation }) => {
                     <Text style={styles.devider}></Text>
 
                     <TextinputComp
-                        style={{ height: 70 }}
+                        style={styles.textInputComp}
                         value={selector.mobile}
                         label={'Mobile Number*'}
                         keyboardType={'phone-pad'}
@@ -291,7 +274,7 @@ const AddPreEnquiryScreen = ({ navigation }) => {
                     <Text style={styles.devider}></Text>
 
                     <TextinputComp
-                        style={{ height: 70 }}
+                        style={styles.textInputComp}
                         value={selector.alterMobile}
                         label={'Alternate Mobile Number'}
                         keyboardType={'phone-pad'}
@@ -300,7 +283,7 @@ const AddPreEnquiryScreen = ({ navigation }) => {
                     <Text style={styles.devider}></Text>
 
                     <TextinputComp
-                        style={{ height: 70 }}
+                        style={styles.textInputComp}
                         value={selector.email}
                         label={'Email-Id'}
                         keyboardType={'email-address'}
@@ -309,17 +292,17 @@ const AddPreEnquiryScreen = ({ navigation }) => {
                     <Text style={styles.devider}></Text>
 
 
-                    <DropDownSelectionComponant
+                    <DropDownSelectionItem
                         label={'Select Model*'}
                         value={selector.carModel}
                         onPress={() => dispatch(showModelSelect())}
                     />
-                    <DropDownSelectionComponant
+                    <DropDownSelectionItem
                         label={'Select Enquiry Segment*'}
                         value={selector.enquiryType}
                         onPress={() => dispatch(showEnquirySegmentSelect())}
                     />
-                    <DropDownSelectionComponant
+                    <DropDownSelectionItem
                         label={'Select Customer Type'}
                         value={selector.customerType}
                         onPress={() => dispatch(showCustomerTypeSelect())}
@@ -327,7 +310,7 @@ const AddPreEnquiryScreen = ({ navigation }) => {
 
                     {selector.customerType === "Corporate" || selector.customerType === "Government" || selector.customerType === "Retired" || selector.customerType === "Fleet" || selector.customerType === "Institution" ? <View>
                         <TextinputComp
-                            style={{ height: 70 }}
+                            style={styles.textInputComp}
                             value={selector.companyName}
                             label={'Company Name'}
                             onChangeText={(text) => dispatch(setCompanyName(text))}
@@ -337,7 +320,7 @@ const AddPreEnquiryScreen = ({ navigation }) => {
 
                     {selector.customerType === "Other" ? <View>
                         <TextinputComp
-                            style={{ height: 70 }}
+                            style={styles.textInputComp}
                             value={selector.companyName}
                             label={'Other'}
                             onChangeText={(text) => dispatch(setCompanyName(text))}
@@ -345,14 +328,14 @@ const AddPreEnquiryScreen = ({ navigation }) => {
                         <Text style={styles.devider}></Text>
                     </View> : null}
 
-                    <DropDownSelectionComponant
+                    <DropDownSelectionItem
                         label={'Select Source of Pre-Enquiry*'}
                         value={selector.sourceOfEnquiry}
                         onPress={() => dispatch(showSourceOfEnquirySelect())}
                     />
 
                     <TextinputComp
-                        style={{ height: 70 }}
+                        style={styles.textInputComp}
                         value={selector.pincode}
                         label={'Pincode'}
                         keyboardType={'number-pad'}
@@ -399,21 +382,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     },
-    view3: {
-        width: '100%', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: Colors.WHITE
-    },
     text2: {
         fontSize: 14,
         fontWeight: '600'
     },
-    text3: {
-        paddingLeft: 15,
-        fontSize: 16,
-        fontWeight: '400',
-        color: Colors.GRAY
-    },
     devider: {
         width: '100%', height: 0.5, backgroundColor: Colors.GRAY
+    },
+    textInputComp: {
+        height: 65
     }
 })
 

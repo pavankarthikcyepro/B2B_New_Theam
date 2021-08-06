@@ -100,7 +100,7 @@ const PreEnquiryScreen = ({ navigation }) => {
                                     date={item.createdDate}
                                     // type={item.type}
                                     modelName={item.model}
-                                    onPress={() => { }}
+                                    onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.detailsOverview)}
                                     onCallPress={() => dispatch(callPressed())}
                                 />
                             )
