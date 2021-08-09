@@ -7,7 +7,7 @@ import {
   ScrollView,
   TextInput,
 } from "react-native";
-import { Checkbox, List } from "react-native-paper";
+import { Checkbox, List, IconButton } from "react-native-paper";
 import { Colors, GlobalStyle } from "../../../styles";
 import VectorImage from "react-native-vector-image";
 import {
@@ -25,10 +25,8 @@ import { DropDownComponant } from "../../../components";
 import { DropDownSelectionItem } from "../../../pureComponents/dropDownSelectionItem";
 
 const DetailsOverviewScreen = () => {
-  const selector = useSelector((state) => state.addPreEnquiryReducer);
   const [expanded, setExpanded] = React.useState(true);
   const [text, setText] = React.useState("");
-  const dispatch = useDispatch();
 
   const handlePress = () => {
     setExpanded(!expanded);
@@ -38,16 +36,17 @@ const DetailsOverviewScreen = () => {
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
       <ScrollView>
         <View style={{ flexDirection: "row" }}>
-          <Text style={{ fontWeight: "700", fontSize: 28, margin: 10 }}>
+          <Text style={{ fontWeight: "600", fontSize: 28, margin: 10 }}>
             Details Overview
           </Text>
-          {/* <View style={{ flexDirection: "row", alignItems: "center" }}> */}
-          <Checkbox.Android
-            status={selector.create_enquiry_checked ? "checked" : "unchecked"}
-            uncheckedColor={Colors.DARK_GRAY}
-            color={Colors.RED}
-            onPress={() => dispatch()}
-          />
+          <View style={{ paddingLeft: 60, marginTop: 8 }}>
+            <IconButton
+              icon="checkbox-blank-outline"
+              color={Colors.DARK_GRAY}
+              size={30}
+              onPress={() => console.log("Pressed")}
+            />
+          </View>
         </View>
 
         {/* // 1. Personal Intro */}
@@ -122,68 +121,68 @@ const DetailsOverviewScreen = () => {
                     onChangeText={(text) => setText(text)}
                   />
 
-                  <View style={{ flex: 1, flexDirection: "row" }}>
-                    <View style={{ width: "50%" }}>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        value={"1974-05-04"}
-                        label={"Date Of Birth"}
-                        onChangeText={(text) => setText(text)}
-                        showRightIcon={true}
-                        rightIconObj={{
-                          name: "calendar-range",
-                          color: Colors.GRAY,
-                        }}
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-
-                    <TextinputComp
-                      style={{ height: 65, width: "50%" }}
-                      value={"47"}
-                      label={"Age*"}
-                      onChangeText={(text) => setText(text)}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <View style={{ width: "50%" }}>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        value={"1998-10-12"}
-                        label={"Anniversary Date"}
-                        onChangeText={(text) => setText(text)}
-                        showRightIcon={true}
-                        rightIconObj={{
-                          name: "calendar-range",
-                          color: Colors.GRAY,
-                        }}
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-
-                    <Text style={GlobalStyle.underline}></Text>
+                  {/* <View style={{ flex: 1, flexDirection: "row" }}> */}
+                  <View style={{ width: "100%" }}>
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
-                      value={"9658745866"}
-                      label={"Mobile Number*"}
+                      value={"1974-05-04"}
+                      label={"Date Of Birth"}
                       onChangeText={(text) => setText(text)}
+                      showRightIcon={true}
+                      rightIconObj={{
+                        name: "calendar-range",
+                        color: Colors.GRAY,
+                      }}
                     />
                     <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      value={text}
-                      label={"Alternate Mobile Number*"}
-                      onChangeText={(text) => setText(text)}
-                    />
-
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      value={"sarat@gmail.com"}
-                      label={"Email ID*"}
-                      onChangeText={(text) => setText(text)}
-                    />
                   </View>
+
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    value={"47"}
+                    label={"Age*"}
+                    onChangeText={(text) => setText(text)}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <View style={{ width: "100%" }}>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      value={"1998-10-12"}
+                      label={"Anniversary Date"}
+                      onChangeText={(text) => setText(text)}
+                      showRightIcon={true}
+                      rightIconObj={{
+                        name: "calendar-range",
+                        color: Colors.GRAY,
+                      }}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    value={"9658745866"}
+                    label={"Mobile Number*"}
+                    onChangeText={(text) => setText(text)}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    value={text}
+                    label={"Alternate Mobile Number*"}
+                    onChangeText={(text) => setText(text)}
+                  />
+
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    value={"sarat@gmail.com"}
+                    label={"Email ID*"}
+                    onChangeText={(text) => setText(text)}
+                  />
                 </View>
+                {/* </View> */}
               </List.Accordion>
             </View>
           </View>
