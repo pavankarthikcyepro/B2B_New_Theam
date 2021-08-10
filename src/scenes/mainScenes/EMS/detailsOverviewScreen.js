@@ -27,7 +27,8 @@ import {
     setAccordian,
     setDatePicker,
     setDropDown,
-    setPersonalIntro
+    setPersonalIntro,
+    updateSelectedDropDownData
 } from '../../../redux/enquiryDetailsOverViewSlice';
 
 const CustomerAccordianHeaderView = ({ leftIcon, title, isSelected, onPress }) => {
@@ -68,10 +69,10 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 visible={selector.showDropDownpicker}
                 headerTitle={selector.dropDownTitle}
                 data={selector.dropDownData}
-                keyId={'Test1'}
+                keyId={selector.dropDownKeyId}
                 selectedItems={(item, keyId) => {
                     console.log("selected: ", item, keyId);
-                    dispatch(setDropDown())
+                    dispatch(updateSelectedDropDownData({ id: item.id, name: item.name, keyId: keyId }))
                 }}
             />
 

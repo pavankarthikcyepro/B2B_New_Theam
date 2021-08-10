@@ -28,6 +28,12 @@ interface PersonalIntroModel {
     text: string
 }
 
+interface DropDownModel {
+    id: string,
+    name: string,
+    keyId: string
+}
+
 const enquiryDetailsOverViewSlice = createSlice({
     name: "ENQUIRY_DETAILS_OVERVIEW_SLICE",
     initialState: {
@@ -70,10 +76,24 @@ const enquiryDetailsOverViewSlice = createSlice({
                 case "SALUTATION":
                     state.dropDownData = salutationData;
                     state.dropDownTitle = "Select Salutation";
+                    state.dropDownKeyId = "SALUTATION";
                     break;
                 case "GENDER":
                     state.dropDownData = genderData;
                     state.dropDownTitle = "Select Gender";
+                    state.dropDownKeyId = "GENDER";
+                    break;
+            }
+            state.showDropDownpicker = !state.showDropDownpicker;
+        },
+        updateSelectedDropDownData: (state, action: PayloadAction<DropDownModel>) => {
+            const { id, name, keyId } = action.payload;
+            switch (keyId) {
+                case "SALUTATION":
+                    state.salutaion = name;
+                    break;
+                case "GENDER":
+                    state.gender = name;
                     break;
             }
             state.showDropDownpicker = !state.showDropDownpicker;
@@ -118,6 +138,7 @@ export const {
     setDatePicker,
     setEditable,
     setDropDown,
-    setPersonalIntro
+    setPersonalIntro,
+    updateSelectedDropDownData
 } = enquiryDetailsOverViewSlice.actions;
 export default enquiryDetailsOverViewSlice.reducer;
