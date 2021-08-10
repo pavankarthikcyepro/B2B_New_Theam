@@ -8,6 +8,7 @@ const ClosedScreen = ({ navigation }) => {
   return (
     <View>
       <Text>Closed</Text>
+      <Text>yamunacd</Text>
     </View>
   );
 };

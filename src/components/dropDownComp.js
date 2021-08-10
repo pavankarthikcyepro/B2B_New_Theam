@@ -30,7 +30,7 @@ const multipleTestData = [
 ]
 
 
-const DropDownComponant = ({ visible = false, multiple = false, headerTitle = "Select Data", data = [], selectedItems }) => {
+const DropDownComponant = ({ visible = false, multiple = false, headerTitle = "Select Data", data = [], selectedItems, keyId = "" }) => {
 
     const [multipleData, setMultipleData] = useState(multipleTestData);
 
@@ -51,9 +51,9 @@ const DropDownComponant = ({ visible = false, multiple = false, headerTitle = "S
                     itemsSelected.push(value);
                 }
             })
-            selectedItems(itemsSelected)
+            selectedItems(itemsSelected, keyId)
         } else {
-            selectedItems(item)
+            selectedItems(item, keyId)
         }
     }
 
