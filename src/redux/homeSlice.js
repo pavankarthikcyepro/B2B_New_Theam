@@ -84,7 +84,7 @@ export const homeSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getMenuList.fulfilled, (state, action) => {
-        // console.log('menu_list: ', action.payload);
+        //console.log('menu_list: ', action.payload);
         const dmsEntityObj = action.payload.dmsEntity;
         const empId = dmsEntityObj.loginEmployee.empId;
         AsyncStore.storeData(AsyncStore.Keys.EMP_ID, empId.toString());

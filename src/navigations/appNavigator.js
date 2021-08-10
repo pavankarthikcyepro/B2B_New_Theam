@@ -26,6 +26,7 @@ import SideMenuScreen from "../scenes/mainScenes/sideMenuScreen";
 import NotificationScreen from "../scenes/mainScenes/notificationsScreen";
 import AddPreEnquiryScreen from "../scenes/mainScenes/EMS/addPreEnquiryScreen";
 import ConfirmedPreEnquiryScreen from "../scenes/mainScenes/EMS/confirmedPreEnquiryScreen";
+import DetailsOverviewScreen from "../scenes/mainScenes/EMS/detailsOverviewScreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -93,6 +94,7 @@ export const TabStackIdentifiers = {
 export const EmsStackIdentifiers = {
   addPreEnq: "ADD_PRE_ENQUIRY",
   confirmedPreEnq: "CONFIRMED_PRE_ENQUIRY",
+  detailsOverview: 'DETAILS_OVERVIEW'
 };
 
 const HomeStack = createStackNavigator();
@@ -173,6 +175,11 @@ const EmsStackNavigator = ({ navigation }) => {
         name={EmsStackIdentifiers.confirmedPreEnq}
         component={ConfirmedPreEnquiryScreen}
         options={{ title: "Pre-Enquiry" }}
+      />
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.detailsOverview}
+        component={DetailsOverviewScreen}
+        options={{ title: "Details OverView" }}
       />
     </EmsStack.Navigator>
   );

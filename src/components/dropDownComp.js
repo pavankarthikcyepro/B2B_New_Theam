@@ -6,7 +6,6 @@ import { List, Divider, Button } from 'react-native-paper';
 const screenHeight = Dimensions.get('window').height;
 const tableHeight = screenHeight / 2;
 
-const testdata = ['First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth']
 const multipleTestData = [
     {
         id: "1",

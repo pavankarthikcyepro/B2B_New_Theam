@@ -15,6 +15,8 @@ import VectorImage from "react-native-vector-image";
 import { useSelector, useDispatch } from "react-redux";
 import { AppNavigator } from "../../navigations";
 import { AuthContext } from "../../utils/authContext";
+import realm from "../../database/realm";
+import * as AsyncStore from '../../asyncStore';
 
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 4;
@@ -51,7 +53,9 @@ const SideMenuScreen = ({ navigation }) => {
 
   const signOutClicked = () => {
 
+    AsyncStore.storeData(AsyncStore.Keys.USER_NAME, "");
     navigation.closeDrawer()
+    //realm.close();
     signOut();
   }
 

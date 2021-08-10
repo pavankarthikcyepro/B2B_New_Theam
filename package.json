@@ -32,6 +32,7 @@
     "react-native-vector-icons": "^8.1.0",
     "react-native-vector-image": "^0.3.2",
     "react-redux": "^7.2.4",
+    "realm": "^10.6.1",
     "redux": "^4.1.0",
     "yarn-install": "^1.0.0"
   },

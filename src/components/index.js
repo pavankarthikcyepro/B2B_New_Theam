@@ -6,5 +6,7 @@ import { DateRangeComp } from "./dateRangeComp";
 import { DropDownComponant } from "./dropDownComp";
 import { TextinputComp } from "./textinputComp";
 import { SortAndFilterComp } from "./sortAndFilterComp";
+import LoaderComponent from "./loaderComp";
 
-export { ButtonComp, CallUserComponent, DatePickerComponent, DateRangeComp, DropDownComponant, TextinputComp, SortAndFilterComp };
+
+export { ButtonComp, CallUserComponent, DatePickerComponent, DateRangeComp, DropDownComponant, TextinputComp, SortAndFilterComp, LoaderComponent };
