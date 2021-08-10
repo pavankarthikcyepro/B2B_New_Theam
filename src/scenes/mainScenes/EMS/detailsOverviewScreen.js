@@ -24,12 +24,13 @@ import { TextinputComp, DropDownComponant, DatePickerComponent } from "../../../
 import { DropDownSelectionItem } from "../../../pureComponents/dropDownSelectionItem";
 import {
     setEditable,
-    setAccordian,
     setDatePicker,
     setDropDown,
     setPersonalIntro,
+    setCommunicationAddress,
     updateSelectedDropDownData
 } from '../../../redux/enquiryDetailsOverViewSlice';
+import { RadioTextItem } from '../../../pureComponents';
 
 const CustomerAccordianHeaderView = ({ leftIcon, title, isSelected, onPress }) => {
     return (
@@ -60,12 +61,22 @@ const DetailsOverviewScreen = ({ navigation }) => {
     const dispatch = useDispatch();
     const selector = useSelector(state => state.enquiryDetailsOverViewReducer);
     const [text, setText] = React.useState("");
+    const [openAccordian, setOpenAccordian] = useState(0);
+    const [value, setValue] = React.useState('first');
 
+
+    const updateAccordian = (index) => {
+        if (index != openAccordian) {
+            setOpenAccordian(index);
+        } else {
+            setOpenAccordian(0);
+        }
+    }
 
     return (
         <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
 
-            <DropDownComponant
+            {selector.showDropDownpicker && <DropDownComponant
                 visible={selector.showDropDownpicker}
                 headerTitle={selector.dropDownTitle}
                 data={selector.dropDownData}
@@ -74,21 +85,21 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     console.log("selected: ", item, keyId);
                     dispatch(updateSelectedDropDownData({ id: item.id, name: item.name, keyId: keyId }))
                 }}
-            />
+            />}
 
-            <DatePickerComponent
+            {selector.showDatepicker && <DatePickerComponent
                 visible={selector.showDatepicker}
                 mode={'date'}
                 value={new Date(Date.now())}
                 onChange={(event, selectedDate) => {
                     console.log('date: ', selectedDate)
                     if (Platform.OS === "android") {
-                        setDatePickerVisible(false)
+                        // setDatePickerVisible(false)
                     }
                     dispatch(setDatePicker());
                 }}
                 onRequestClose={() => dispatch(setDatePicker())}
-            />
+            />}
 
             <View style={styles.view1}>
                 <Text style={styles.titleText}>{'Details Overview'}</Text>
@@ -115,10 +126,10 @@ const DetailsOverviewScreen = ({ navigation }) => {
                         <CustomerAccordianHeaderView
                             title={'Personal Intro'}
                             leftIcon={"account-edit"}
-                            isSelected={selector.openAccordian == 1 ? true : false}
-                            onPress={() => dispatch(setAccordian(1))}
+                            isSelected={openAccordian == 1 ? true : false}
+                            onPress={() => updateAccordian(1)}
                         />
-                        <View style={{ width: "100%", height: selector.openAccordian == 1 ? null : 0, overflow: 'hidden' }}>
+                        <View style={{ width: "100%", height: openAccordian == 1 ? null : 0, overflow: 'hidden' }}>
                             <DropDownSelectionItem
                                 label={"Salutation*"}
                                 value={selector.salutaion}
@@ -147,7 +158,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                             <DropDownSelectionItem
                                 label={"Relation*"}
                                 value={selector.relation}
-                                onPress={() => { }}
+                                onPress={() => dispatch(setDropDown("RELATION"))}
                             />
                             <Text style={GlobalStyle.underline}></Text>
                             <TextinputComp
@@ -212,131 +223,153 @@ const DetailsOverviewScreen = ({ navigation }) => {
                         <CustomerAccordianHeaderView
                             title={'Communicaton Address'}
                             leftIcon={"account-edit"}
-                            isSelected={selector.openAccordian == 2 ? true : false}
-                            onPress={() => dispatch(setAccordian(2))}
+                            isSelected={openAccordian == 2 ? true : false}
+                            onPress={() => updateAccordian(2)}
                         />
-                        <View style={{ width: "100%", height: selector.openAccordian == 2 ? null : 0, overflow: 'hidden' }}>
+                        <View style={{ width: "100%", height: openAccordian == 2 ? null : 0, overflow: 'hidden' }}>
                             <TextinputComp
                                 style={{ height: 65, width: "100%" }}
-                                label={"Communication Details"}
-                                onChangeText={(text) => { }}
-                            />
-                            <Text style={GlobalStyle.underline}></Text>
-                            <TextinputComp
-                                style={{ height: 65, width: "100%" }}
-                                value={"507002"}
+                                value={selector.pincode}
                                 label={"Pincode*"}
-                                onChangeText={(text) => { }}
+                                onChangeText={(text) => dispatch(setCommunicationAddress({ key: "PINCODE", text: text }))}
                             />
+                            <Text style={GlobalStyle.underline}></Text>
+                            <View style={styles.radioGroupBcVw}>
+                                <RadioTextItem
+                                    label={'Urban'}
+                                    value={'urban'}
+                                    status={selector.urban_or_rural === 1 ? true : false}
+                                    onPress={() => dispatch(setCommunicationAddress({ key: "RURAL_URBAN", text: "1" }))}
+                                />
+                                <RadioTextItem
+                                    label={'Rural'}
+                                    value={'rural'}
+                                    status={selector.urban_or_rural === 2 ? true : false}
+                                    onPress={() => dispatch(setCommunicationAddress({ key: "RURAL_URBAN", text: "2" }))}
+                                />
+                            </View>
                             <Text style={GlobalStyle.underline}></Text>
                             <TextinputComp
                                 style={{ height: 65, width: "100%" }}
-                                value={"Urban"}
-                                onChangeText={(text) => { }}
-                            />
-                            <Text style={GlobalStyle.underline}></Text>
-                            <TextinputComp
-                                style={{ height: 65, width: "100%" }}
-                                value={"Rural"}
-                                onChangeText={(text) => { }}
-                            />
-                            <Text style={GlobalStyle.underline}></Text>
-                            <TextinputComp
-                                style={{ height: 65, width: "100%" }}
+                                value={selector.houseNum}
                                 label={"H.No*"}
-                                onChangeText={(text) => { }}
+                                onChangeText={(text) => dispatch(setCommunicationAddress({ key: "HOUSE_NO", text: text }))}
                             />
                             <Text style={GlobalStyle.underline}></Text>
                             <TextinputComp
                                 style={{ height: 65, width: "100%" }}
+                                value={selector.streetName}
                                 label={"Street Name*"}
-                                onChangeText={(text) => { }}
+                                onChangeText={(text) => dispatch(setCommunicationAddress({ key: "STREET_NAME", text: text }))}
                             />
                             <Text style={GlobalStyle.underline}></Text>
                             <TextinputComp
                                 style={{ height: 65, width: "100%" }}
-                                value={"ead"}
+                                value={selector.village}
                                 label={"Village*"}
-                                onChangeText={(text) => { }}
+                                onChangeText={(text) => dispatch(setCommunicationAddress({ key: "VILLAGE", text: text }))}
                             />
                             <Text style={GlobalStyle.underline}></Text>
                             <TextinputComp
                                 style={{ height: 65, width: "100%" }}
-                                value={"aedfas"}
-                                onChangeText={(text) => { }}
+                                value={selector.city}
+                                label={"City*"}
+                                onChangeText={(text) => dispatch(setCommunicationAddress({ key: "CITY", text: text }))}
                             />
                             <Text style={GlobalStyle.underline}></Text>
                             <TextinputComp
                                 style={{ height: 65, width: "100%" }}
-                                value={"Khammam*"}
-                                onChangeText={(text) => { }}
+                                value={selector.district}
+                                label={"District*"}
+                                onChangeText={(text) => dispatch(setCommunicationAddress({ key: "DISTRICT", text: text }))}
                             />
                             <Text style={GlobalStyle.underline}></Text>
                             <TextinputComp
                                 style={{ height: 65, width: "100%" }}
-                                value={"Telangana*"}
-                                onChangeText={(text) => { }}
-                            />
-                            <Text style={GlobalStyle.underline}></Text>
-                            <TextinputComp
-                                style={{ height: 65, width: "100%" }}
-                                label={"Permanent Address*"}
-                                onChangeText={(text) => { }}
+                                value={selector.state}
+                                label={"State*"}
+                                onChangeText={(text) => dispatch(setCommunicationAddress({ key: "STATE", text: text }))}
                             />
 
-                            <TextinputComp
-                                style={{ height: 65, width: "100%" }}
-                                value={"507002"}
-                                label={"Pincode*"}
-                                onChangeText={(text) => { }}
-                            />
-                            <TextinputComp
-                                style={{ height: 65, width: "100%" }}
-                                value={"Urban"}
-                                onChangeText={(text) => { }}
-                            />
-                            <TextinputComp
-                                style={{ height: 65, width: "100%" }}
-                                value={"Rural"}
-                                onChangeText={(text) => { }}
-                            />
-                            <TextinputComp
-                                style={{ height: 65, width: "100%" }}
-                                label={"H.No*"}
-                                onChangeText={(text) => { }}
-                            />
-                            <Text style={GlobalStyle.underline}></Text>
-                            <TextinputComp
-                                style={{ height: 65, width: "100%" }}
-                                label={"Street Name*"}
-                                onChangeText={(text) => { }}
-                            />
-                            <Text style={GlobalStyle.underline}></Text>
-                            <TextinputComp
-                                style={{ height: 65, width: "100%" }}
-                                value={"ead"}
-                                label={"Village*"}
-                                onChangeText={(text) => { }}
-                            />
-                            <Text style={GlobalStyle.underline}></Text>
-                            <TextinputComp
-                                style={{ height: 65, width: "100%" }}
-                                value={"aedfas"}
-                                onChangeText={(text) => { }}
-                            />
-                            <Text style={GlobalStyle.underline}></Text>
-                            <TextinputComp
-                                style={{ height: 65, width: "100%" }}
-                                value={"Khammam*"}
-                                onChangeText={(text) => { }}
-                            />
-                            <Text style={GlobalStyle.underline}></Text>
-                            <TextinputComp
-                                style={{ height: 65, width: "100%" }}
-                                value={"Telangana*"}
-                                onChangeText={(text) => { }}
-                            />
-                            <Text style={GlobalStyle.underline}></Text>
+                            {/* // Permanent Addresss */}
+                            <View style={styles.radioGroupBcVw}>
+                                <Text style={styles.permanentAddText}>{'Permanent Address'}</Text>
+                                <Checkbox.Android
+                                    uncheckedColor={Colors.GRAY}
+                                    color={Colors.RED}
+                                    status={selector.permanent_address ? 'checked' : 'unchecked'}
+                                    onPress={() => dispatch(setCommunicationAddress({ key: "PERMANENT_ADDRESS", text: "" }))}
+                                />
+                            </View>
+
+                            {selector.permanent_address && <View>
+                                <TextinputComp
+                                    style={{ height: 65, width: "100%" }}
+                                    value={selector.p_pincode}
+                                    label={"Pincode*"}
+                                    onChangeText={(text) => dispatch(setCommunicationAddress({ key: "P_PINCODE", text: text }))}
+                                />
+                                <Text style={GlobalStyle.underline}></Text>
+
+                                <View style={styles.radioGroupBcVw}>
+                                    <RadioTextItem
+                                        label={'Urban'}
+                                        value={'urban'}
+                                        status={selector.p_urban_or_rural === 1 ? true : false}
+                                        onPress={() => dispatch(setCommunicationAddress({ key: "P_RURAL_URBAN", text: "1" }))}
+                                    />
+                                    <RadioTextItem
+                                        label={'Rural'}
+                                        value={'rural'}
+                                        status={selector.p_urban_or_rural === 2 ? true : false}
+                                        onPress={() => dispatch(setCommunicationAddress({ key: "P_RURAL_URBAN", text: "2" }))}
+                                    />
+                                </View>
+                                <Text style={GlobalStyle.underline}></Text>
+
+                                <TextinputComp
+                                    style={{ height: 65, width: "100%" }}
+                                    label={"H.No*"}
+                                    value={selector.p_houseNum}
+                                    onChangeText={(text) => dispatch(setCommunicationAddress({ key: "P_HOUSE_NO", text: text }))}
+                                />
+                                <Text style={GlobalStyle.underline}></Text>
+                                <TextinputComp
+                                    style={{ height: 65, width: "100%" }}
+                                    label={"Street Name*"}
+                                    value={selector.p_streetName}
+                                    onChangeText={(text) => dispatch(setCommunicationAddress({ key: "P_PINCODE", text: text }))}
+                                />
+                                <Text style={GlobalStyle.underline}></Text>
+                                <TextinputComp
+                                    style={{ height: 65, width: "100%" }}
+                                    value={selector.p_village}
+                                    label={"Village*"}
+                                    onChangeText={(text) => dispatch(setCommunicationAddress({ key: "P_PINCODE", text: text }))}
+                                />
+                                <Text style={GlobalStyle.underline}></Text>
+                                <TextinputComp
+                                    style={{ height: 65, width: "100%" }}
+                                    value={selector.p_city}
+                                    label={"City*"}
+                                    onChangeText={(text) => dispatch(setCommunicationAddress({ key: "P_PINCODE", text: text }))}
+                                />
+                                <Text style={GlobalStyle.underline}></Text>
+                                <TextinputComp
+                                    style={{ height: 65, width: "100%" }}
+                                    value={selector.p_district}
+                                    label={"District*"}
+                                    onChangeText={(text) => dispatch(setCommunicationAddress({ key: "P_PINCODE", text: text }))}
+                                />
+                                <Text style={GlobalStyle.underline}></Text>
+                                <TextinputComp
+                                    style={{ height: 65, width: "100%" }}
+                                    value={selector.p_state}
+                                    label={"State*"}
+                                    onChangeText={(text) => dispatch(setCommunicationAddress({ key: "P_PINCODE", text: text }))}
+                                />
+                                <Text style={GlobalStyle.underline}></Text>
+                            </View>}
                         </View>
                     </View>
 
@@ -345,10 +378,10 @@ const DetailsOverviewScreen = ({ navigation }) => {
                         <CustomerAccordianHeaderView
                             title={'Modal Selection'}
                             leftIcon={"account-edit"}
-                            isSelected={selector.openAccordian == 3 ? true : false}
-                            onPress={() => dispatch(setAccordian(3))}
+                            isSelected={openAccordian == 3 ? true : false}
+                            onPress={() => updateAccordian(3)}
                         />
-                        <View style={{ width: "100%", height: selector.openAccordian == 3 ? null : 0, overflow: 'hidden' }}>
+                        <View style={{ width: "100%", height: openAccordian == 3 ? null : 0, overflow: 'hidden' }}>
                             <DropDownSelectionItem
                                 label={"Model*"}
                                 value={"Aura"}
@@ -382,10 +415,10 @@ const DetailsOverviewScreen = ({ navigation }) => {
                         <CustomerAccordianHeaderView
                             title={'Customer Profile'}
                             leftIcon={"account-edit"}
-                            isSelected={selector.openAccordian == 4 ? true : false}
-                            onPress={() => dispatch(setAccordian(4))}
+                            isSelected={openAccordian == 4 ? true : false}
+                            onPress={() => updateAccordian(4)}
                         />
-                        <View style={{ width: "100%", height: selector.openAccordian == 4 ? null : 0, overflow: 'hidden' }}>
+                        <View style={{ width: "100%", height: openAccordian == 4 ? null : 0, overflow: 'hidden' }}>
                             <TextinputComp
                                 style={{ height: 65, width: "100%" }}
                                 value={"Soft"}
@@ -470,10 +503,10 @@ const DetailsOverviewScreen = ({ navigation }) => {
                         <CustomerAccordianHeaderView
                             title={'Financial Details'}
                             leftIcon={"account-edit"}
-                            isSelected={selector.openAccordian == 5 ? true : false}
-                            onPress={() => dispatch(setAccordian(5))}
+                            isSelected={openAccordian == 5 ? true : false}
+                            onPress={() => updateAccordian(5)}
                         />
-                        <View style={{ width: "100%", height: selector.openAccordian == 5 ? null : 0, overflow: 'hidden' }}>
+                        <View style={{ width: "100%", height: openAccordian == 5 ? null : 0, overflow: 'hidden' }}>
                             <DropDownSelectionItem
                                 label={"Retail Finance*"}
                                 value={"Cash"}
@@ -487,10 +520,10 @@ const DetailsOverviewScreen = ({ navigation }) => {
                         <CustomerAccordianHeaderView
                             title={'Upload Documents'}
                             leftIcon={"account-edit"}
-                            isSelected={selector.openAccordian == 6 ? true : false}
-                            onPress={() => dispatch(setAccordian(6))}
+                            isSelected={openAccordian == 6 ? true : false}
+                            onPress={() => updateAccordian(6)}
                         />
-                        <View style={{ width: "100%", height: selector.openAccordian == 6 ? null : 0, overflow: 'hidden' }}>
+                        <View style={{ width: "100%", height: openAccordian == 6 ? null : 0, overflow: 'hidden' }}>
                             <TextinputComp
                                 style={{ height: 65, width: "100%" }}
                                 value={text}
@@ -525,10 +558,10 @@ const DetailsOverviewScreen = ({ navigation }) => {
                         <CustomerAccordianHeaderView
                             title={'Customer Need Analysis'}
                             leftIcon={"account-edit"}
-                            isSelected={selector.openAccordian == 7 ? true : false}
-                            onPress={() => dispatch(setAccordian(7))}
+                            isSelected={openAccordian == 7 ? true : false}
+                            onPress={() => updateAccordian(7)}
                         />
-                        <View style={{ width: "100%", height: selector.openAccordian == 7 ? null : 0, overflow: 'hidden' }}>
+                        <View style={{ width: "100%", height: openAccordian == 7 ? null : 0, overflow: 'hidden' }}>
                             <TextinputComp
                                 style={{ height: 65, width: "100%" }}
                                 value={text}
@@ -667,6 +700,17 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: '500',
         color: Colors.BLACK,
+    },
+    radioGroupBcVw: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        height: 65,
+        paddingLeft: 12,
+        backgroundColor: Colors.WHITE
+    },
+    permanentAddText: {
+        fontSize: 16,
+        fontWeight: '600'
     }
 });
 

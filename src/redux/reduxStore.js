@@ -1,4 +1,4 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
 import { combineReducers } from "redux";
 
 import loginReducer from "./loginSlice";
@@ -30,6 +30,11 @@ const reducer = combineReducers({
 
 const store = configureStore({
   reducer,
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+    immutableCheck: false,
+    serializableCheck: false
+  }),
+  devTools: false
 });
 
 export default store;

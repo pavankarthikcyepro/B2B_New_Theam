@@ -1,8 +1,15 @@
 # B2B_New_Theam
 
-To display the svg icons run below command before run "npx react-native run-ios" or "npx react-native run-android"
+    # steps to run this project :-
 
-    -> yarn react-native-vector-image generate
+    -> 1. npm install
+    -> 2. cd ios/ pod install (if you are running in ios only otherwise skip this step)
+    -> 3. yarn react-native-vector-image generate
+    -> 4. npx react-native run-ios (or) npx react-native run-android
+
+# configure redux Store
+
+    -> https://redux-toolkit.js.org/api/configureStore
 
 # For date select:
 

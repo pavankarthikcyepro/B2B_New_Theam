@@ -23,6 +23,17 @@ const salutationData = [
     }
 ]
 
+const relationTypeData = [
+    {
+        id: 1,
+        name: 'S/O'
+    },
+    {
+        id: 2,
+        name: 'D/0'
+    }
+]
+
 interface PersonalIntroModel {
     key: string,
     text: string
@@ -57,7 +68,26 @@ const enquiryDetailsOverViewSlice = createSlice({
         anniversaryDate: "",
         relation: "",
         gender: "",
-        salutaion: ""
+        salutaion: "",
+        // Communication Address
+        pincode: "",
+        urban_or_rural: 0, // 1: urban, 2: 
+        houseNum: "",
+        streetName: "",
+        village: "",
+        city: "",
+        state: "",
+        district: "",
+
+        permanent_address: true,
+        p_pincode: "",
+        p_urban_or_rural: 0, // 1: urban, 2: 
+        p_houseNum: "",
+        p_streetName: "",
+        p_village: "",
+        p_city: "",
+        p_state: "",
+        p_district: "",
     },
     reducers: {
         setEditable: (state, action) => {
@@ -65,6 +95,7 @@ const enquiryDetailsOverViewSlice = createSlice({
             state.enableEdit = !state.enableEdit;
         },
         setAccordian: (state, action) => {
+            console.log('payload: ', action.payload);
             if (action.payload != state.openAccordian) {
                 state.openAccordian = action.payload;
             } else {
@@ -83,6 +114,11 @@ const enquiryDetailsOverViewSlice = createSlice({
                     state.dropDownTitle = "Select Gender";
                     state.dropDownKeyId = "GENDER";
                     break;
+                case "RELATION":
+                    state.dropDownData = relationTypeData;
+                    state.dropDownTitle = "Select Relation";
+                    state.dropDownKeyId = "RELATION";
+                    break;
             }
             state.showDropDownpicker = !state.showDropDownpicker;
         },
@@ -95,10 +131,14 @@ const enquiryDetailsOverViewSlice = createSlice({
                 case "GENDER":
                     state.gender = name;
                     break;
+                case "RELATION":
+                    state.relation = name;
+                    break;
             }
             state.showDropDownpicker = !state.showDropDownpicker;
         },
         setDatePicker: (state, action) => {
+            console.log('datepicker payload: ', action.payload);
             state.showDatepicker = !state.showDatepicker;
         },
         setPersonalIntro: (state, action: PayloadAction<PersonalIntroModel>) => {
@@ -130,6 +170,38 @@ const enquiryDetailsOverViewSlice = createSlice({
                     break;
             }
         },
+        setCommunicationAddress: (state, action: PayloadAction<PersonalIntroModel>) => {
+            const { key, text } = action.payload;
+            switch (key) {
+                case "PINCODE":
+                    state.pincode = text;
+                    break;
+                case "RURAL_URBAN":
+                    state.urban_or_rural = Number(text);
+                    break;
+                case "HOUSE_NO":
+                    state.houseNum = text;
+                    break;
+                case "STREET_NAME":
+                    state.streetName = text;
+                    break;
+                case "VILLAGE":
+                    state.village = text;
+                    break;
+                case "CITY":
+                    state.city = text;
+                    break;
+                case "DISTRICT":
+                    state.district = text;
+                    break;
+                case "STATE":
+                    state.state = text;
+                    break;
+                case "PERMANENT_ADDRESS":
+                    state.permanent_address = !state.permanent_address;
+                    break;
+            }
+        }
     }
 });
 
@@ -139,6 +211,7 @@ export const {
     setEditable,
     setDropDown,
     setPersonalIntro,
+    setCommunicationAddress,
     updateSelectedDropDownData
 } = enquiryDetailsOverViewSlice.actions;
 export default enquiryDetailsOverViewSlice.reducer;
