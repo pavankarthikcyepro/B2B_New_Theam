@@ -73,6 +73,13 @@ const DetailsOverviewScreen = ({ navigation }) => {
         }
     }
 
+    const dateSelected = (isoDate) => {
+        const date = new Date(isoDate);
+        const finalDate = (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
+        console.log('date: ', finalDate)
+        dispatch(setDatePicker());
+    }
+
     return (
         <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
 
@@ -96,7 +103,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     if (Platform.OS === "android") {
                         // setDatePickerVisible(false)
                     }
-                    dispatch(setDatePicker());
+                    dateSelected(selectedDate);
                 }}
                 onRequestClose={() => dispatch(setDatePicker())}
             />}
@@ -338,35 +345,35 @@ const DetailsOverviewScreen = ({ navigation }) => {
                                     style={{ height: 65, width: "100%" }}
                                     label={"Street Name*"}
                                     value={selector.p_streetName}
-                                    onChangeText={(text) => dispatch(setCommunicationAddress({ key: "P_PINCODE", text: text }))}
+                                    onChangeText={(text) => dispatch(setCommunicationAddress({ key: "P_STREET_NAME", text: text }))}
                                 />
                                 <Text style={GlobalStyle.underline}></Text>
                                 <TextinputComp
                                     style={{ height: 65, width: "100%" }}
                                     value={selector.p_village}
                                     label={"Village*"}
-                                    onChangeText={(text) => dispatch(setCommunicationAddress({ key: "P_PINCODE", text: text }))}
+                                    onChangeText={(text) => dispatch(setCommunicationAddress({ key: "P_VILLAGE", text: text }))}
                                 />
                                 <Text style={GlobalStyle.underline}></Text>
                                 <TextinputComp
                                     style={{ height: 65, width: "100%" }}
                                     value={selector.p_city}
                                     label={"City*"}
-                                    onChangeText={(text) => dispatch(setCommunicationAddress({ key: "P_PINCODE", text: text }))}
+                                    onChangeText={(text) => dispatch(setCommunicationAddress({ key: "P_CITY", text: text }))}
                                 />
                                 <Text style={GlobalStyle.underline}></Text>
                                 <TextinputComp
                                     style={{ height: 65, width: "100%" }}
                                     value={selector.p_district}
                                     label={"District*"}
-                                    onChangeText={(text) => dispatch(setCommunicationAddress({ key: "P_PINCODE", text: text }))}
+                                    onChangeText={(text) => dispatch(setCommunicationAddress({ key: "P_DISTRICT", text: text }))}
                                 />
                                 <Text style={GlobalStyle.underline}></Text>
                                 <TextinputComp
                                     style={{ height: 65, width: "100%" }}
                                     value={selector.p_state}
                                     label={"State*"}
-                                    onChangeText={(text) => dispatch(setCommunicationAddress({ key: "P_PINCODE", text: text }))}
+                                    onChangeText={(text) => dispatch(setCommunicationAddress({ key: "P_STATE", text: text }))}
                                 />
                                 <Text style={GlobalStyle.underline}></Text>
                             </View>}

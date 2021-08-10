@@ -138,7 +138,6 @@ const enquiryDetailsOverViewSlice = createSlice({
             state.showDropDownpicker = !state.showDropDownpicker;
         },
         setDatePicker: (state, action) => {
-            console.log('datepicker payload: ', action.payload);
             state.showDatepicker = !state.showDatepicker;
         },
         setPersonalIntro: (state, action: PayloadAction<PersonalIntroModel>) => {
@@ -199,6 +198,30 @@ const enquiryDetailsOverViewSlice = createSlice({
                     break;
                 case "PERMANENT_ADDRESS":
                     state.permanent_address = !state.permanent_address;
+                    break;
+                case "P_PINCODE":
+                    state.p_pincode = text;
+                    break;
+                case "P_RURAL_URBAN":
+                    state.p_urban_or_rural = Number(text);
+                    break;
+                case "P_HOUSE_NO":
+                    state.p_houseNum = text;
+                    break;
+                case "P_STREET_NAME":
+                    state.p_streetName = text;
+                    break;
+                case "P_VILLAGE":
+                    state.p_village = text;
+                    break;
+                case "P_CITY":
+                    state.p_city = text;
+                    break;
+                case "P_DISTRICT":
+                    state.p_district = text;
+                    break;
+                case "P_STATE":
+                    state.p_state = text;
                     break;
             }
         }
