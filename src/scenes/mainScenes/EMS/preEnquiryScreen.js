@@ -72,6 +72,7 @@ const PreEnquiryScreen = ({ navigation }) => {
                     <PageControlItem
                         pageNumber={1}
                         totalPages={10}
+                        
                     />
                     <Pressable onPress={() => dispatch(sortAndFilterPressed())}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
