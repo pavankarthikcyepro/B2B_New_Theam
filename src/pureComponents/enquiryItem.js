@@ -4,14 +4,12 @@ import { Button, IconButton } from "react-native-paper";
 import { Colors } from "../styles";
 
 export const EnquiryItem = ({
-  firstName,
-  enquirySource,
-  type = "Hot",
-  date,
-  model,
+  name,
+  subName,
+  type = "COLD",
+  modelName,
   bgColor = Colors.WHITE,
   onPress,
-  onCallPress,
 }) => {
   let textColor = Colors.GREEN;
   if (type === "HOT") {
@@ -25,7 +23,7 @@ export const EnquiryItem = ({
       <View style={[styles.container, { backgroundColor: bgColor }]}>
         <View style={styles.leftView}>
           <Text style={styles.text1}>
-            {firstName + " "}{" "}
+            {name + " "}{" "}
             <Text
               style={[
                 styles.text1,
@@ -35,8 +33,8 @@ export const EnquiryItem = ({
               {type.toUpperCase()}
             </Text>
           </Text>
-          <Text style={[styles.text3, { marginTop: 5 }]}>{enquirySource}</Text>
-          <Text style={styles.text2}>{date}</Text>
+          <Text style={[styles.text3, { marginTop: 5 }]}>{subName}</Text>
+          <Text style={styles.text2}>{myDate}</Text>
         </View>
         <View style={styles.rightView}>
           <Button
@@ -45,20 +43,18 @@ export const EnquiryItem = ({
             labelStyle={{ fontSize: 12, fontWeight: "600" }}
             onPress={() => console.log("Pressed")}
           >
-            {model}
+            {modelName}
           </Button>
           <IconButton
             icon="phone"
             color={Colors.GREEN}
             size={20}
-            onPress={onCallPress}
           />
         </View>
       </View>
     </Pressable>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {

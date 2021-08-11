@@ -1,8 +1,8 @@
 import React from "react";
-import { SafeAreaView, Text, StyleSheet, View, FlatList } from "react-native";
+import { SafeAreaView, StyleSheet, View, FlatList } from "react-native";
 import { PageControlItem } from "../../../pureComponents/pageControlItem";
 import { IconButton } from "react-native-paper";
-import { EnquiryItem } from "../../../pureComponents/enquiryItem";
+import { PreEnquiryItem } from "../../../pureComponents/preEnquiryItem";
 import { useDispatch, useSelector } from "react-redux";
 import { Colors } from "../../../styles";
 
@@ -31,13 +31,12 @@ const EnquiryScreen = () => {
             }
 
             return (
-              <EnquiryItem
+              <PreEnquiryItem
                 bgColor={color}
-                firstName={item.firstName + " " + item.lastName}
-                enquirySource={item.enquirySource}
+                name={item.firstName + " " + item.lastName}
+                subName={item.enquirySource}
                 date={item.createdDate}
-                type={item.type}
-                model={item.model}
+                modelName={item.model}
               />
             );
           }}
