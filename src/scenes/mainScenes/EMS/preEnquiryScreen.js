@@ -72,7 +72,7 @@ const PreEnquiryScreen = ({ navigation }) => {
                     <PageControlItem
                         pageNumber={1}
                         totalPages={10}
-                        
+
                     />
                     <Pressable onPress={() => dispatch(sortAndFilterPressed())}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -101,7 +101,7 @@ const PreEnquiryScreen = ({ navigation }) => {
                                     date={item.createdDate}
                                     // type={item.type}
                                     modelName={item.model}
-                                    onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.detailsOverview)}
+                                    onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq)}
                                     onCallPress={() => dispatch(callPressed())}
                                 />
                             )

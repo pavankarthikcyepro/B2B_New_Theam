@@ -1,7 +1,7 @@
 import React from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import PreEnquiryScreen from "../scenes/mainScenes/EMS/preEnquiryScreen";
-import EnquiryScreen from "../scenes/mainScenes/EMS/equiryScreen";
+import EnquiryScreen from "../scenes/mainScenes/EMS/enquiryScreen";
 import { Colors } from "../styles";
 
 const EmsTopTabNavigatorIdentifiers = {

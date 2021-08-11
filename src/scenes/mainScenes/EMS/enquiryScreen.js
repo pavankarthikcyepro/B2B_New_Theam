@@ -4,9 +4,10 @@ import { PageControlItem } from "../../../pureComponents/pageControlItem";
 import { IconButton } from "react-native-paper";
 import { PreEnquiryItem } from "../../../pureComponents/preEnquiryItem";
 import { useDispatch, useSelector } from "react-redux";
-import { Colors } from "../../../styles";
+import { Colors, GlobalStyle } from "../../../styles";
+import { AppNavigator } from '../../../navigations';
 
-const EnquiryScreen = () => {
+const EnquiryScreen = ({ navigation }) => {
   const selector = useSelector((state) => state.enquiryReducer);
   const dispatch = useDispatch();
 
@@ -21,26 +22,29 @@ const EnquiryScreen = () => {
             style={{ padding: 0, marginLeft: 150 }}
           />
         </View>
-        <FlatList
-          data={selector.enquiry_list}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item, index }) => {
-            let color = Colors.WHITE;
-            if (index % 2 != 0) {
-              color = Colors.LIGHT_GRAY;
-            }
+        <View style={GlobalStyle.shadow}>
+          <FlatList
+            data={selector.enquiry_list}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item, index }) => {
+              let color = Colors.WHITE;
+              if (index % 2 != 0) {
+                color = Colors.LIGHT_GRAY;
+              }
 
-            return (
-              <PreEnquiryItem
-                bgColor={color}
-                name={item.firstName + " " + item.lastName}
-                subName={item.enquirySource}
-                date={item.createdDate}
-                modelName={item.model}
-              />
-            );
-          }}
-        />
+              return (
+                <PreEnquiryItem
+                  bgColor={color}
+                  name={item.firstName + " " + item.lastName}
+                  subName={item.enquirySource}
+                  date={item.createdDate}
+                  modelName={item.model}
+                  onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.detailsOverview)}
+                />
+              );
+            }}
+          />
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -54,6 +58,7 @@ const styles = StyleSheet.create({
   },
   view1: {
     marginBottom: 5,
+    paddingHorizontal: 10,
   },
   view2: {
     flexDirection: "row",

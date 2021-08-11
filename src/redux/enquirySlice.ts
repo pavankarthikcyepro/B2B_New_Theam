@@ -73,7 +73,7 @@ const DataList = [
     dateOfBirth: null,
     enquirySource: "Field",
     enquiryDate: 1624270085672,
-    model: "Aura",
+    model: "Test",
     enquirySegment: "Personal",
     phone: "1234569870",
     leadStage: "PREENQUIRY",

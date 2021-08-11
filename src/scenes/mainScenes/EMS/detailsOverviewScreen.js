@@ -5,9 +5,10 @@ import {
   View,
   Text,
   ScrollView,
-  Pressable
+  Pressable,
+  TouchableOpacity
 } from "react-native";
-import { Checkbox, IconButton } from "react-native-paper";
+import { Provider, Checkbox, IconButton } from "react-native-paper";
 import { Colors, GlobalStyle } from "../../../styles";
 import VectorImage from "react-native-vector-image";
 import {
@@ -36,6 +37,7 @@ import {
   setFinancialDetails
 } from '../../../redux/enquiryDetailsOverViewSlice';
 import { RadioTextItem } from '../../../pureComponents';
+import { ImagePickerComponent } from "../../../components";
 
 const CustomerAccordianHeaderView = ({ leftIcon, title, isSelected, onPress }) => {
   return (
@@ -61,14 +63,30 @@ const CustomerAccordianHeaderView = ({ leftIcon, title, isSelected, onPress }) =
   )
 }
 
+const ImageSelectItem = ({ name, onPress }) => {
+  return (
+    <TouchableOpacity onPress={onPress}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Text style={{ fontSize: 14, fontWeight: '400', color: Colors.BLUE }}>{name}</Text>
+        <IconButton
+          icon={'file-upload'}
+          color={Colors.GRAY}
+          size={20}
+          style={{ paddingRight: 0 }}
+        />
+      </View>
+    </TouchableOpacity>
+  )
+}
+
 const DetailsOverviewScreen = ({ navigation }) => {
 
   const dispatch = useDispatch();
   const selector = useSelector(state => state.enquiryDetailsOverViewReducer);
   const [text, setText] = React.useState("");
   const [openAccordian, setOpenAccordian] = useState(0);
-  const [value, setValue] = React.useState('first');
-
+  const [imageUri, setImageUri] = useState('');
+  const [visible, setVisible] = React.useState(false);
 
   const updateAccordian = (index) => {
     if (index != openAccordian) {
@@ -78,8 +96,35 @@ const DetailsOverviewScreen = ({ navigation }) => {
     }
   }
 
+  const selectPanCard = () => {
+    setVisible(true);
+    // let options = {
+    //   title: 'You can choose one image',
+    //   maxWidth: 256,
+    //   maxHeight: 256,
+    //   noData: true,
+    //   mediaType: 'mixed',
+    //   storageOptions: {
+    //     skipBackup: true,
+    //   }
+    // };
+
+    // launchImageLibrary(options, (res) => {
+    //   console.log('res: ', res)
+    //   if (res.assets) {
+    //     let data = res.assets[0];
+    //     console.log('data: ', data)
+    //   }
+    // })
+  }
+
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
+
+      <ImagePickerComponent
+        visible={visible}
+        onRequestClose={() => setVisible(false)}
+      />
 
       {selector.showDropDownpicker && <DropDownComponant
         visible={selector.showDropDownpicker}
@@ -582,6 +627,9 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 onChangeText={(text) => setText(text)}
               />
               <Text style={GlobalStyle.underline}></Text>
+              <View style={{ minHeight: 50, paddingLeft: 12, backgroundColor: Colors.WHITE }}>
+                <ImageSelectItem name={'Upload Pan'} onPress={selectPanCard} />
+              </View>
               <TextinputComp
                 style={{ height: 65, width: "100%" }}
                 value={text}
@@ -589,6 +637,9 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 onChangeText={(text) => setText(text)}
               />
               <Text style={GlobalStyle.underline}></Text>
+              <View style={{ minHeight: 50, paddingLeft: 12, backgroundColor: Colors.WHITE }}>
+                <ImageSelectItem name={'Upload Adhar'} onPress={() => { }} />
+              </View>
             </View>
           </View>
 

@@ -7,6 +7,10 @@
     -> 3. yarn react-native-vector-image generate
     -> 4. npx react-native run-ios (or) npx react-native run-android
 
+# to select images
+
+    -> "react-native-image-picker": "^4.0.6"
+
 # configure redux Store
 
     -> https://redux-toolkit.js.org/api/configureStore
