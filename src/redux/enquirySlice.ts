@@ -31,7 +31,7 @@ const DataList = [
     dateOfBirth: null,
     enquirySource: "Field",
     enquiryDate: 1624270085672,
-    model: "Aura",
+    model: "Aasfeura",
     enquirySegment: "Personal",
     phone: "1234569870",
     leadStage: "PREENQUIRY",
@@ -86,6 +86,7 @@ const DataList = [
     leadStatus: null,
   },
 ];
+
 const enquirySlice = createSlice({
   name: "ENQUIRY",
   initialState: {
@@ -96,5 +97,6 @@ const enquirySlice = createSlice({
 
   reducers: {},
 });
-export const {} = enquirySlice.actions;
+
+export const { } = enquirySlice.actions;
 export default enquirySlice.reducer;
