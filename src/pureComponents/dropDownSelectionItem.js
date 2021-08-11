@@ -13,7 +13,7 @@ export const DropDownSelectionItem = ({ label, value, onPress }) => {
                     <IconButton
                         icon="menu-down"
                         color={Colors.BLACK}
-                        size={30}
+                        size={25}
                         onPress={() => { }}
                     />
                 </View>

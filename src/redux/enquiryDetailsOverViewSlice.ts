@@ -129,7 +129,17 @@ const enquiryDetailsOverViewSlice = createSlice({
         kms_travelled_month: "",
         who_drives: "",
         members: "",
-        prime_expectation_from_car: ""
+        prime_expectation_from_car: "",
+        // financial details
+        retail_finance: "",
+        finance_category: "",
+        down_payment: "",
+        loan_amount: "",
+        bank_or_finance: "",
+        rate_of_interest: "",
+        loan_of_tenure: "",
+        emi: "",
+        approx_annual_income: ""
     },
     reducers: {
         setEditable: (state, action) => {
@@ -263,6 +273,21 @@ const enquiryDetailsOverViewSlice = createSlice({
                 case "TRANSMISSION_TYPE":
                     state.transmission_type = name;
                     break;
+                case "RETAIL_FINANCE":
+                    state.retail_finance = name;
+                    break;
+                case "FINANCE_CATEGORY":
+                    state.finance_category = name;
+                    break;
+                case "BANK_FINANCE":
+                    state.bank_or_finance = name;
+                    break;
+                case "LOAN_OF_TENURE":
+                    state.loan_of_tenure = name;
+                    break;
+                case "APPROX_ANNUAL_INCOME":
+                    state.approx_annual_income = name;
+                    break;
             }
             state.showDropDownpicker = !state.showDropDownpicker;
         },
@@ -345,6 +370,36 @@ const enquiryDetailsOverViewSlice = createSlice({
             }
             state.showDropDownpicker = !state.showDropDownpicker;
         },
+        setFinancialDropDown: (state, action) => {
+            switch (action.payload) {
+                case "RETAIL_FINANCE":
+                    state.dropDownData = dummyData;
+                    state.dropDownTitle = "Finance Detail";
+                    state.dropDownKeyId = "RETAIL_FINANCE";
+                    break;
+                case "FINANCE_CATEGORY":
+                    state.dropDownData = dummyData;
+                    state.dropDownTitle = "Finance Detail";
+                    state.dropDownKeyId = "FINANCE_CATEGORY";
+                    break;
+                case "BANK_FINANCE":
+                    state.dropDownData = dummyData;
+                    state.dropDownTitle = "Finance Detail";
+                    state.dropDownKeyId = "BANK_FINANCE";
+                    break;
+                case "LOAN_OF_TENURE":
+                    state.dropDownData = dummyData;
+                    state.dropDownTitle = "Finance Detail";
+                    state.dropDownKeyId = "LOAN_OF_TENURE";
+                    break;
+                case "APPROX_ANNUAL_INCOME":
+                    state.dropDownData = dummyData;
+                    state.dropDownTitle = "Finance Detail";
+                    state.dropDownKeyId = "APPROX_ANNUAL_INCOME";
+                    break;
+            }
+            state.showDropDownpicker = !state.showDropDownpicker;
+        },
         updateModelDropDownData: (state, action: PayloadAction<DropDownModel>) => {
             const { id, name, keyId } = action.payload;
             switch (keyId) {
@@ -418,6 +473,23 @@ const enquiryDetailsOverViewSlice = createSlice({
                     state.designation = text;
                     break;
             }
+        },
+        setFinancialDetails: (state, action: PayloadAction<PersonalIntroModel>) => {
+            const { key, text } = action.payload;
+            switch (key) {
+                case "DOWN_PAYMENT":
+                    state.down_payment = text;
+                    break;
+                case "LOAN_AMOUNT":
+                    state.loan_amount = text;
+                    break;
+                case "RATE_OF_INTEREST":
+                    state.rate_of_interest = text;
+                    break;
+                case "EMI":
+                    state.emi = text;
+                    break;
+            }
         }
     }
 });
@@ -440,6 +512,8 @@ export const {
     setCustomerProfile,
     updateSelectedDropDownData,
     updateSelectedDate,
-    setModelDropDown
+    setModelDropDown,
+    setFinancialDropDown,
+    setFinancialDetails
 } = enquiryDetailsOverViewSlice.actions;
 export default enquiryDetailsOverViewSlice.reducer;
