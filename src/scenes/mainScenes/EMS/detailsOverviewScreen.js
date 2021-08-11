@@ -28,7 +28,9 @@ import {
     setDropDown,
     setPersonalIntro,
     setCommunicationAddress,
-    updateSelectedDropDownData
+    setCustomerProfile,
+    updateSelectedDropDownData,
+    updateSelectedDate
 } from '../../../redux/enquiryDetailsOverViewSlice';
 import { RadioTextItem } from '../../../pureComponents';
 
@@ -73,13 +75,6 @@ const DetailsOverviewScreen = ({ navigation }) => {
         }
     }
 
-    const dateSelected = (isoDate) => {
-        const date = new Date(isoDate);
-        const finalDate = (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
-        console.log('date: ', finalDate)
-        dispatch(setDatePicker());
-    }
-
     return (
         <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
 
@@ -103,7 +98,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     if (Platform.OS === "android") {
                         // setDatePickerVisible(false)
                     }
-                    dateSelected(selectedDate);
+                    dispatch(updateSelectedDate({ key: "", text: selectedDate }));
                 }}
                 onRequestClose={() => dispatch(setDatePicker())}
             />}
@@ -201,7 +196,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                                 value={selector.dateOfBirth}
                                 label={"Date Of Birth"}
                                 disabled={true}
-                                onPressIn={() => dispatch(setDatePicker())}
+                                onPressIn={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
                                 showRightIcon={true}
                                 rightIconObj={{
                                     name: "calendar-range",
@@ -214,7 +209,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                                 value={selector.anniversaryDate}
                                 label={"Anniversary Date"}
                                 disabled={true}
-                                onPressIn={() => dispatch(setDatePicker())}
+                                onPressIn={() => dispatch(setDatePicker("ANNIVERSARY_DATE"))}
                                 showRightIcon={true}
                                 rightIconObj={{
                                     name: "calendar-range",
@@ -428,80 +423,77 @@ const DetailsOverviewScreen = ({ navigation }) => {
                         <View style={{ width: "100%", height: openAccordian == 4 ? null : 0, overflow: 'hidden' }}>
                             <TextinputComp
                                 style={{ height: 65, width: "100%" }}
-                                value={"Soft"}
+                                value={selector.occupation}
                                 label={"Occupation*"}
-                                onChangeText={(text) => setText(text)}
+                                onChangeText={(text) => dispatch(setCustomerProfile({ key: "OCCUPATION", text: text }))}
                             />
                             <Text style={GlobalStyle.underline}></Text>
                             <TextinputComp
                                 style={{ height: 65, width: "100%" }}
-                                value={"adsf"}
+                                value={selector.designation}
                                 label={"Designation*"}
-                                onChangeText={(text) => setText(text)}
+                                onChangeText={(text) => dispatch(setCustomerProfile({ key: "DESIGNATION", text: text }))}
                             />
                             <Text style={GlobalStyle.underline}></Text>
 
                             <DropDownSelectionItem
                                 label={"Enquiry Segment*"}
-                                value={"Personal"}
-                                onPress={() => { }}
+                                value={selector.enquiry_segment}
+                                onPress={() => dispatch(setDropDown("ENQUIRY_SEGMENT"))}
                             />
                             <DropDownSelectionItem
                                 label={"Customer Type*"}
-                                value={"Individual"}
-                                onPress={() => { }}
+                                value={selector.customer_type}
+                                onPress={() => dispatch(setDropDown("CUSTOMER_TYPE"))}
                             />
                             <DropDownSelectionItem
                                 label={"Source Of Enquiry*"}
-                                value={"Field"}
-                                onPress={() => { }}
+                                value={selector.source_of_enquiry}
+                                onPress={() => dispatch(setDropDown("SOURCE_OF_ENQUIRY"))}
                             />
-                            {/* <View style={{ flex: 1, flexDirection: "row" }}> */}
-                            <View style={{ width: "100%" }}>
-                                <TextinputComp
-                                    style={{ height: 65, width: "100%" }}
-                                    label={"Expected Date"}
-                                    value={"2021-08-04"}
-                                    onChangeText={(text) => setText(text)}
-                                    showRightIcon={true}
-                                    rightIconObj={{
-                                        name: "calendar-range",
-                                        color: Colors.GRAY,
-                                    }}
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
-                                {/* </View> */}
-                                <DropDownSelectionItem
-                                    label={"Enquiry Category*"}
-                                    value={"Hot"}
-                                    onPress={() => { }}
-                                />
-                                <DropDownSelectionItem
-                                    label={"Buyer Type*"}
-                                    value={"First Time Buyer"}
-                                    onPress={() => { }}
-                                />
-                                <DropDownSelectionItem
-                                    label={"KMs Travelled in Month*"}
-                                    value={"<500"}
-                                    onPress={() => { }}
-                                />
-                                <DropDownSelectionItem
-                                    label={"Who Drives*"}
-                                    value={"Driver"}
-                                    onPress={() => { }}
-                                />
-                                <DropDownSelectionItem
-                                    label={"Members Text*"}
-                                    value={"2"}
-                                    onPress={() => { }}
-                                />
-                                <DropDownSelectionItem
-                                    label={"What is prime expectation from the car*"}
-                                    value={"Features"}
-                                    onPress={() => { }}
-                                />
-                            </View>
+                            <TextinputComp
+                                style={{ height: 65, width: "100%" }}
+                                label={"Expected Date"}
+                                value={selector.expected_date}
+                                disabled={true}
+                                onPressIn={() => dispatch(setDatePicker("EXPECTED_DATE"))}
+                                showRightIcon={true}
+                                rightIconObj={{
+                                    name: "calendar-range",
+                                    color: Colors.GRAY,
+                                }}
+                            />
+                            <Text style={GlobalStyle.underline}></Text>
+                            <DropDownSelectionItem
+                                label={"Enquiry Category*"}
+                                value={selector.enquiry_category}
+                                onPress={() => dispatch(setDropDown("ENQUIRY_CATEGORY"))}
+                            />
+                            <DropDownSelectionItem
+                                label={"Buyer Type*"}
+                                value={selector.buyer_type}
+                                onPress={() => dispatch(setDropDown("BUYER_TYPE"))}
+                            />
+                            <DropDownSelectionItem
+                                label={"KMs Travelled in Month*"}
+                                value={selector.kms_travelled_month}
+                                onPress={() => dispatch(setDropDown("KMS_TRAVELLED"))}
+                            />
+                            <DropDownSelectionItem
+                                label={"Who Drives*"}
+                                value={selector.who_drives}
+                                onPress={() => dispatch(setDropDown("WHO_DRIVES"))}
+                            />
+                            <DropDownSelectionItem
+                                label={"Members*"}
+                                value={selector.members}
+                                onPress={() => dispatch(setDropDown("MEMBERS"))}
+                            />
+                            <DropDownSelectionItem
+                                label={"What is prime expectation from the car*"}
+                                value={selector.prime_expectation_from_car}
+                                onPress={() => dispatch(setDropDown("PRIME_EXPECTATION_CAR"))}
+                            />
                         </View>
                     </View>
 
