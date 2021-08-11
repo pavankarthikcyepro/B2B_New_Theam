@@ -1,4 +1,4 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
 import { combineReducers } from "redux";
 
 import loginReducer from "./loginSlice";
@@ -12,7 +12,7 @@ import routeReducer from "./routeSlice";
 import eventmanagementReducer from "./eventmanagementSlice";
 import addPreEnquiryReducer from './addPreEnquirySlice';
 import enquiryDetailsOverViewReducer from './enquiryDetailsOverViewSlice';
-
+import enquiryReducer from "./enquirySlice";
 
 const reducer = combineReducers({
   routeReducer,
@@ -25,11 +25,17 @@ const reducer = combineReducers({
   complaintsReducer,
   eventmanagementReducer,
   addPreEnquiryReducer,
-  enquiryDetailsOverViewReducer
+  enquiryDetailsOverViewReducer,
+  enquiryReducer
 });
 
 const store = configureStore({
   reducer,
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+    immutableCheck: false,
+    serializableCheck: false
+  }),
+  devTools: false
 });
 
 export default store;
