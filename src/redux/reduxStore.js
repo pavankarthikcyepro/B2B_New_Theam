@@ -12,7 +12,7 @@ import routeReducer from "./routeSlice";
 import eventmanagementReducer from "./eventmanagementSlice";
 import addPreEnquiryReducer from './addPreEnquirySlice';
 import enquiryDetailsOverViewReducer from './enquiryDetailsOverViewSlice';
-
+import enquiryReducer from "./enquirySlice";
 
 const reducer = combineReducers({
   routeReducer,
@@ -25,7 +25,8 @@ const reducer = combineReducers({
   complaintsReducer,
   eventmanagementReducer,
   addPreEnquiryReducer,
-  enquiryDetailsOverViewReducer
+  enquiryDetailsOverViewReducer,
+  enquiryReducer
 });
 
 const store = configureStore({

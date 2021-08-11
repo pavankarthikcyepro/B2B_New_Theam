@@ -1,6 +1,7 @@
 import React from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import PreEnquiryScreen from "../scenes/mainScenes/EMS/preEnquiryScreen";
+import EnquiryScreen from "../scenes/mainScenes/EMS/equiryScreen";
 import { Colors } from "../styles";
 
 const EmsTopTabNavigatorIdentifiers = {
@@ -31,11 +32,11 @@ const EMSTopTabNavigator = () => {
         component={PreEnquiryScreen}
         options={{ title: "Pre-Enquiry" }}
       />
-      {/* <EMSTopTab.Screen
+      <EMSTopTab.Screen
         name={EmsTopTabNavigatorIdentifiers.enquiry}
-        component={PreEnquiryScreen}
-        options={{ title: "Pre-Enquiry" }}
-      /> */}
+        component={EnquiryScreen}
+        options={{ title: "Enquiry" }}
+      />
     </EMSTopTab.Navigator>
   );
 };
