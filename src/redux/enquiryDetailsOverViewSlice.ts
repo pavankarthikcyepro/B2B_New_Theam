@@ -111,6 +111,12 @@ const enquiryDetailsOverViewSlice = createSlice({
         p_city: "",
         p_state: "",
         p_district: "",
+        // Model Selection
+        model: "",
+        varient: "",
+        color: "",
+        fuel_type: "",
+        transmission_type: "",
         // Customer Profile
         occupation: "",
         designation: "",
@@ -242,6 +248,21 @@ const enquiryDetailsOverViewSlice = createSlice({
                 case "PRIME_EXPECTATION_CAR":
                     state.prime_expectation_from_car = name;
                     break;
+                case "MODEL":
+                    state.model = name;
+                    break;
+                case "VARIENT":
+                    state.varient = name;
+                    break;
+                case "COLOR":
+                    state.color = name;
+                    break;
+                case "FUEL_TYPE":
+                    state.fuel_type = name;
+                    break;
+                case "TRANSMISSION_TYPE":
+                    state.transmission_type = name;
+                    break;
             }
             state.showDropDownpicker = !state.showDropDownpicker;
         },
@@ -293,6 +314,43 @@ const enquiryDetailsOverViewSlice = createSlice({
                     state.anniversaryDate = text;
                     break;
             }
+        },
+        setModelDropDown: (state, action) => {
+            switch (action.payload) {
+                case "MODEL":
+                    state.dropDownData = salutationData;
+                    state.dropDownTitle = "Select Model";
+                    state.dropDownKeyId = "MODEL";
+                    break;
+                case "VARIENT":
+                    state.dropDownData = salutationData;
+                    state.dropDownTitle = "Select Varient";
+                    state.dropDownKeyId = "VARIENT";
+                    break;
+                case "COLOR":
+                    state.dropDownData = salutationData;
+                    state.dropDownTitle = "Select Color";
+                    state.dropDownKeyId = "COLOR";
+                    break;
+                case "FUEL_TYPE":
+                    state.dropDownData = salutationData;
+                    state.dropDownTitle = "Select Fuel Type";
+                    state.dropDownKeyId = "FUEL_TYPE";
+                    break;
+                case "TRANSMISSION_TYPE":
+                    state.dropDownData = salutationData;
+                    state.dropDownTitle = "Select Transmission Type";
+                    state.dropDownKeyId = "TRANSMISSION_TYPE";
+                    break;
+            }
+            state.showDropDownpicker = !state.showDropDownpicker;
+        },
+        updateModelDropDownData: (state, action: PayloadAction<DropDownModel>) => {
+            const { id, name, keyId } = action.payload;
+            switch (keyId) {
+
+            }
+            state.showDropDownpicker = !state.showDropDownpicker;
         },
         setCommunicationAddress: (state, action: PayloadAction<PersonalIntroModel>) => {
             const { key, text } = action.payload;
@@ -381,6 +439,7 @@ export const {
     setCommunicationAddress,
     setCustomerProfile,
     updateSelectedDropDownData,
-    updateSelectedDate
+    updateSelectedDate,
+    setModelDropDown
 } = enquiryDetailsOverViewSlice.actions;
 export default enquiryDetailsOverViewSlice.reducer;

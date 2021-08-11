@@ -30,7 +30,8 @@ import {
     setCommunicationAddress,
     setCustomerProfile,
     updateSelectedDropDownData,
-    updateSelectedDate
+    updateSelectedDate,
+    setModelDropDown
 } from '../../../redux/enquiryDetailsOverViewSlice';
 import { RadioTextItem } from '../../../pureComponents';
 
@@ -386,28 +387,28 @@ const DetailsOverviewScreen = ({ navigation }) => {
                         <View style={{ width: "100%", height: openAccordian == 3 ? null : 0, overflow: 'hidden' }}>
                             <DropDownSelectionItem
                                 label={"Model*"}
-                                value={"Aura"}
-                                onPress={() => { }}
+                                value={selector.model}
+                                onPress={() => dispatch(setModelDropDown("MODEL"))}
                             />
                             <DropDownSelectionItem
                                 label={"Varient*"}
-                                value={"1.2 AMT KAPPA S"}
-                                onPress={() => { }}
+                                value={selector.varient}
+                                onPress={() => dispatch(setModelDropDown("VARIENT"))}
                             />
                             <DropDownSelectionItem
                                 label={"Color*"}
-                                value={"Fiery red"}
-                                onPress={() => { }}
+                                value={selector.color}
+                                onPress={() => dispatch(setModelDropDown("COLOR"))}
                             />
                             <DropDownSelectionItem
                                 label={"Fuel Type*"}
-                                value={"Petrol"}
-                                onPress={() => { }}
+                                value={selector.fuel_type}
+                                onPress={() => dispatch(setModelDropDown("FUEL_TYPE"))}
                             />
                             <DropDownSelectionItem
                                 label={"Transmission Type*"}
-                                value={"Automatic"}
-                                onPress={() => { }}
+                                value={selector.transmission_type}
+                                onPress={() => dispatch(setModelDropDown("TRANSMISSION_TYPE"))}
                             />
                         </View>
                     </View>
