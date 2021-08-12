@@ -710,7 +710,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
               <DropDownSelectionItem
                 label={"Retail Finance*"}
                 value={"Cash"}
-                onPress={() => {}}
+                onPress={() => { }}
               />
             </View>
           </View>
@@ -774,21 +774,24 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 overflow: "hidden",
               }}
             >
-              <TextinputComp
-                style={{ height: 65, width: "100%" }}
-                value={text}
-                label={"Looking for any other Brand*"}
-                onChangeText={(text) => setText(text)}
-              />
+              <View style={styles.view2}>
+                <Text style={styles.looking_any_text}>{'Looking for any other brand'}</Text>
+                <Checkbox.Android
+                  status={selector.c_looking_for_any_other_brand ? 'checked' : 'unchecked'}
+                  uncheckedColor={Colors.DARK_GRAY}
+                  color={Colors.RED}
+                  onPress={() => dispatch(setCustomerNeedAnalysis({ key: "CHECK_BOX", text: "" }))}
+                />
+              </View>
               <DropDownSelectionItem
                 label={"Make"}
                 value={selector.make}
-                onPress={() => dispatch(setCustomerNeedDropDown("MAKE"))}
+                onPress={() => dispatch(setCustomerNeedDropDown("C_MAKE"))}
               />
               <DropDownSelectionItem
                 label={"Model*"}
                 value={selector.model}
-                onPress={() => dispatch(setModelDropDown("MODEL"))}
+                onPress={() => dispatch(setModelDropDown("C_MODEL"))}
               />
               <TextinputComp
                 style={{ height: 65, width: "100%" }}
@@ -815,12 +818,12 @@ const DetailsOverviewScreen = ({ navigation }) => {
               <DropDownSelectionItem
                 label={"Fuel Type*"}
                 value={selector.fuel_type}
-                onPress={() => dispatch(setModelDropDown("FUEL_TYPE"))}
+                onPress={() => dispatch(setModelDropDown("C_FUEL_TYPE"))}
               />
               <DropDownSelectionItem
                 label={"Transmission Type*"}
                 value={selector.transmission_type}
-                onPress={() => dispatch(setModelDropDown("TRANSMISSION_TYPE"))}
+                onPress={() => dispatch(setModelDropDown("C_TRANSMISSION_TYPE"))}
               />
               <TextinputComp
                 style={{ height: 65, width: "100%" }}
@@ -837,15 +840,9 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 style={{ height: 65, width: "100%" }}
                 value={selector.on_road_price}
                 label={"On Road Price"}
-                onChangeText={(text) =>
-                  dispatch(
-                    setCustomerNeedAnalysis({
-                      key: "ON_ROAD_PRICE",
-                      text: text,
-                    })
-                  )
-                }
+                onChangeText={(text) => dispatch(setCustomerNeedAnalysis({ key: "ON_ROAD_PRICE", text: text }))}
               />
+              <Text style={GlobalStyle.underline}></Text>
               <TextinputComp
                 style={{ height: 65, width: "100%" }}
                 value={selector.dealership_name}
@@ -962,6 +959,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
+  view2: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.WHITE,
+    paddingTop: 20,
+    paddingLeft: 12
+  },
+  looking_any_text: {
+    fontSize: 16,
+    fontWeight: '500'
+  }
 });
 
 // left={(props) => (

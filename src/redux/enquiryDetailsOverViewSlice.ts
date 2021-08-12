@@ -141,18 +141,19 @@ const enquiryDetailsOverViewSlice = createSlice({
     emi: "",
     approx_annual_income: "",
     // Customer Need Analysis
-    make: "",
-    //model: "",
-    variant: "",
-    //color: "",
-    //fuel_type:'',
-    //transmission_type:'',
-    price_range: "",
-    on_road_price: "",
-    dealership_name: "",
-    dealership_location: "",
-    dealership_pending_reason: "",
-    voice_of_customer_remarks: "",
+    c_looking_for_any_other_brand: false,
+    c_make: "",
+    c_model: "",
+    c_variant: "",
+    c_color: "",
+    c_fuel_type: '',
+    c_transmission_type: '',
+    c_price_range: "",
+    c_on_road_price: "",
+    c_dealership_name: "",
+    c_dealership_location: "",
+    c_dealership_pending_reason: "",
+    c_voice_of_customer_remarks: "",
   },
   reducers: {
     setEditable: (state, action) => {
@@ -304,6 +305,18 @@ const enquiryDetailsOverViewSlice = createSlice({
         case "APPROX_ANNUAL_INCOME":
           state.approx_annual_income = name;
           break;
+        case "C_MAKE":
+          state.c_make = name;
+          break;
+        case "C_MODEL":
+          state.c_model = name;
+          break;
+        case "C_FUEL_TYPE":
+          state.c_fuel_type = name;
+          break;
+        case "C_TRANSMISSION_TYPE":
+          state.c_transmission_type = name;
+          break;
       }
       state.showDropDownpicker = !state.showDropDownpicker;
     },
@@ -425,10 +438,25 @@ const enquiryDetailsOverViewSlice = createSlice({
 
     setCustomerNeedDropDown: (state, action) => {
       switch (action.payload) {
-        case "MAKE":
+        case "C_MAKE":
           state.dropDownData = dummyData;
-          state.dropDownTitle = "Make";
-          state.dropDownKeyId = "MAKE";
+          state.dropDownTitle = "Select Make";
+          state.dropDownKeyId = "C_MAKE";
+          break;
+        case "C_MODEL":
+          state.dropDownData = dummyData;
+          state.dropDownTitle = "Select Model";
+          state.dropDownKeyId = "C_MODEL";
+          break;
+        case "C_FUEL_TYPE":
+          state.dropDownData = dummyData;
+          state.dropDownTitle = "Select Fuel Type";
+          state.dropDownKeyId = "C_FUEL_TYPE";
+          break;
+        case "C_TRANSMISSION_TYPE":
+          state.dropDownData = dummyData;
+          state.dropDownTitle = "Select Transmission Type";
+          state.dropDownKeyId = "C_TRANSMISSION_TYPE";
           break;
       }
       state.showDropDownpicker = !state.showDropDownpicker;
@@ -536,33 +564,36 @@ const enquiryDetailsOverViewSlice = createSlice({
     ) => {
       const { key, text } = action.payload;
       switch (key) {
+        case "CHECK_BOX":
+          state.c_looking_for_any_other_brand = !state.c_looking_for_any_other_brand;
+          break;
         case "VARIANT":
-          state.variant = text;
+          state.c_variant = text;
           break;
         case "COLOR":
-          state.color = text;
+          state.c_color = text;
           break;
         case "PRICE_RANGE":
-          state.price_range = text;
+          state.c_price_range = text;
           break;
         case "ON_ROAD_PRICE":
-          state.on_road_price = text;
+          state.c_on_road_price = text;
           break;
 
         case "DEALERSHIP_NAME":
-          state.dealership_name = text;
+          state.c_dealership_name = text;
           break;
 
         case "DEALERSHIP_LOCATION":
-          state.dealership_location = text;
+          state.c_dealership_location = text;
           break;
 
         case "DEALERSHIP_PENDING_REASON":
-          state.dealership_pending_reason = text;
+          state.c_dealership_pending_reason = text;
           break;
 
         case "VOICE_OF_CUSTOMER_REMARKS":
-          state.voice_of_customer_remarks = text;
+          state.c_voice_of_customer_remarks = text;
           break;
       }
     },
