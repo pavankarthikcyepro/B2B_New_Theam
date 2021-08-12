@@ -116,7 +116,7 @@ const SideMenuScreen = ({ navigation }) => {
                 <List.Item
                   title={item.title}
                   titleStyle={{ fontSize: 16, fontWeight: "600" }}
-                  left={(props) => <List.Icon {...props} icon="folder" />}
+                  left={(props) => <List.Icon {...props} icon="folder" style={{ margin: 0 }} />}
                 />
                 {/* // <VectorImage source={item.icon} width={20} height={20} /> */}
                 <Divider />

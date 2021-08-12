@@ -80,6 +80,8 @@ const enquiryDetailsOverViewSlice = createSlice({
     dropDownKeyId: "",
     datePickerKeyId: "",
     enableEdit: false,
+    showImagePicker: false,
+    imagePickerKeyId: "",
     // Personal Intro
     firstName: "",
     lastName: "",
@@ -154,19 +156,16 @@ const enquiryDetailsOverViewSlice = createSlice({
     c_dealership_location: "",
     c_dealership_pending_reason: "",
     c_voice_of_customer_remarks: "",
+    // Upload Documents
+    pan_number: "",
+    pan_image: null,
+    adhaar_number: "",
+    adhaar_image: null
   },
   reducers: {
     setEditable: (state, action) => {
       console.log("pressed");
       state.enableEdit = !state.enableEdit;
-    },
-    setAccordian: (state, action) => {
-      console.log("payload: ", action.payload);
-      if (action.payload != state.openAccordian) {
-        state.openAccordian = action.payload;
-      } else {
-        state.openAccordian = 0;
-      }
     },
     setDropDown: (state, action) => {
       switch (action.payload) {
@@ -233,10 +232,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       }
       state.showDropDownpicker = !state.showDropDownpicker;
     },
-    updateSelectedDropDownData: (
-      state,
-      action: PayloadAction<DropDownModel>
-    ) => {
+    updateSelectedDropDownData: (state, action: PayloadAction<DropDownModel>) => {
       const { id, name, keyId } = action.payload;
       switch (keyId) {
         case "SALUTATION":
@@ -429,13 +425,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       }
       state.showDropDownpicker = !state.showDropDownpicker;
     },
-    updateModelDropDownData: (state, action: PayloadAction<DropDownModel>) => {
-      const { id, name, keyId } = action.payload;
-      switch (keyId) {
-      }
-      state.showDropDownpicker = !state.showDropDownpicker;
-    },
-
     setCustomerNeedDropDown: (state, action) => {
       switch (action.payload) {
         case "C_MAKE":
@@ -470,10 +459,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       }
       state.showDropDownpicker = !state.showDropDownpicker;
     },
-    setCommunicationAddress: (
-      state,
-      action: PayloadAction<PersonalIntroModel>
-    ) => {
+    setCommunicationAddress: (state, action: PayloadAction<PersonalIntroModel>) => {
       const { key, text } = action.payload;
       switch (key) {
         case "PINCODE":
@@ -557,11 +543,7 @@ const enquiryDetailsOverViewSlice = createSlice({
           break;
       }
     },
-
-    setCustomerNeedAnalysis: (
-      state,
-      action: PayloadAction<PersonalIntroModel>
-    ) => {
+    setCustomerNeedAnalysis: (state, action: PayloadAction<PersonalIntroModel>) => {
       const { key, text } = action.payload;
       switch (key) {
         case "CHECK_BOX":
@@ -597,6 +579,25 @@ const enquiryDetailsOverViewSlice = createSlice({
           break;
       }
     },
+    setImagePicker: (state, action) => {
+      state.imagePickerKeyId = action.payload;
+      state.showImagePicker = !state.showImagePicker;
+    },
+    setUploadDocuments: (state, action: PayloadAction<PersonalIntroModel>) => {
+      const { key, text } = action.payload;
+      switch (key) {
+        case "PAN":
+          state.pan_number = text;
+          break;
+        case "ADHAR":
+          state.adhaar_number = text;
+          break;
+        case "UPLOAD_PAN":
+          break;
+        case "UPLOAD_ADHAR":
+          break;
+      }
+    }
   },
 });
 
@@ -612,7 +613,6 @@ const dateSelected = (isoDate) => {
 };
 
 export const {
-  setAccordian,
   setDatePicker,
   setEditable,
   setDropDown,
@@ -626,5 +626,7 @@ export const {
   setFinancialDetails,
   setCustomerNeedAnalysis,
   setCustomerNeedDropDown,
+  setImagePicker,
+  setUploadDocuments
 } = enquiryDetailsOverViewSlice.actions;
 export default enquiryDetailsOverViewSlice.reducer;

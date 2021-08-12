@@ -3,6 +3,7 @@ import { SafeAreaView, StyleSheet, Modal, View, TouchableOpacity, Platform, Perm
 import { Colors } from '../styles';
 import { Portal, Text, Button, Divider } from 'react-native-paper';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import { showToast, showToastAlert } from '../utils/toast';
 
 const NameItem = ({ title, titleStyle, onPress }) => {
     return (
@@ -14,7 +15,7 @@ const NameItem = ({ title, titleStyle, onPress }) => {
     )
 }
 
-const ImagePickerComponent = ({ visible, onRequestClose }) => {
+const ImagePickerComponent = ({ visible, keyId = "", onDismiss, selectedImage }) => {
 
 
     const requestCameraPermission = async () => {
@@ -58,6 +59,8 @@ const ImagePickerComponent = ({ visible, onRequestClose }) => {
 
     const cameraClicked = async () => {
 
+        onDismiss();
+
         let options = {
             mediaType: 'photo',
             noData: true,
@@ -73,40 +76,49 @@ const ImagePickerComponent = ({ visible, onRequestClose }) => {
         let isStoragePermitted = await requestExternalWritePermission();
         if (isCameraPermitted && isStoragePermitted) {
             launchCamera(options, (res) => {
-                console.log('response: ', res)
-                if (res.assets) {
-                    let data = res.assets[0];
-                    let object = {
-                        "fileName": data.fileName,
-                        "fileSize": data.fileSize,
-                        "height": data.height,
-                        "type": data.type,
-                        "uri": data.uri,
-                        "width": data.width
-                    }
-                    console.log('object: ', object);
-                }
-                else if (res.didCancel) {
-
-                }
-                else if (res.errorCode) {
-                    switch (res.errorCode) {
-                        case "camera_unavailable":
-                            break;
-                        case "permission":
-                            break;
-                        case "others":
-                            break;
-                    }
-                }
-                else if (res.errorMessage) {
-
-                }
+                handleResponse(res);
             })
         }
     }
 
+    const handleResponse = (res) => {
+        // console.log('res: ', res);
+        if (res.assets) {
+            let data = res.assets[0];
+            let imageObject = {
+                "fileName": data.fileName,
+                "fileSize": data.fileSize,
+                "height": data.height,
+                "type": data.type,
+                "uri": data.uri,
+                "width": data.width
+            }
+            selectedImage(imageObject, keyId);
+        }
+        else if (res.didCancel) {
+            console.log('user cancelled!');
+        }
+        else if (res.errorCode) {
+            switch (res.errorCode) {
+                case "camera_unavailable":
+                    showToastAlert("Camera unavailable");
+                    break;
+                case "permission":
+                    showToastAlert("Permission denied");
+                    break;
+                case "others":
+                    showToastAlert("Something wrong");
+                    break;
+            }
+        }
+        else if (res.errorMessage) {
+            showToast(res.errorMessage);
+        }
+    }
+
     const galleryClicked = () => {
+
+        onDismiss();
 
         let options = {
             title: 'You can choose one image',
@@ -122,20 +134,16 @@ const ImagePickerComponent = ({ visible, onRequestClose }) => {
         };
 
         launchImageLibrary(options, (res) => {
-            console.log('res: ', res)
-            if (res.assets) {
-                let data = res.assets[0];
-                console.log('data: ', data);
-            }
+            handleResponse(res);
         })
     }
 
     return (
         <Modal
-            animationType={'slide'}
+            animationType={'fade'}
             transparent={true}
             visible={visible}
-            onRequestClose={onRequestClose}
+            onRequestClose={onDismiss}
         >
             <View style={styles.conatiner}>
                 <View style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10, backgroundColor: Colors.WHITE }}>
@@ -149,7 +157,7 @@ const ImagePickerComponent = ({ visible, onRequestClose }) => {
                             <Divider />
                             <NameItem title={'Camera'} onPress={cameraClicked} />
                             <Divider />
-                            <NameItem title={'Cancel'} titleStyle={{ color: Colors.RED }} onPress={onRequestClose} />
+                            <NameItem title={'Cancel'} titleStyle={{ color: Colors.RED }} onPress={onDismiss} />
                         </View>
                     </SafeAreaView>
                 </View>

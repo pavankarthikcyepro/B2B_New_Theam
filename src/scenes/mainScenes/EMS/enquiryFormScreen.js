@@ -40,7 +40,9 @@ import {
   setFinancialDropDown,
   setFinancialDetails,
   setCustomerNeedAnalysis,
-  setCustomerNeedDropDown
+  setCustomerNeedDropDown,
+  setImagePicker,
+  setUploadDocuments
 } from '../../../redux/enquiryFormReducer';
 import { RadioTextItem } from '../../../pureComponents';
 import { ImagePickerComponent } from "../../../components";
@@ -106,12 +108,10 @@ const ImageSelectItem = ({ name, onPress }) => {
 }
 
 const DetailsOverviewScreen = ({ navigation }) => {
+
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.enquiryFormReducer);
-  const [text, setText] = React.useState("");
   const [openAccordian, setOpenAccordian] = useState(0);
-  const [imageUri, setImageUri] = useState('');
-  const [visible, setVisible] = React.useState(false);
 
   const updateAccordian = (index) => {
     if (index != openAccordian) {
@@ -121,34 +121,16 @@ const DetailsOverviewScreen = ({ navigation }) => {
     }
   };
 
-  const selectPanCard = () => {
-    setVisible(true);
-    // let options = {
-    //   title: 'You can choose one image',
-    //   maxWidth: 256,
-    //   maxHeight: 256,
-    //   noData: true,
-    //   mediaType: 'mixed',
-    //   storageOptions: {
-    //     skipBackup: true,
-    //   }
-    // };
-
-    // launchImageLibrary(options, (res) => {
-    //   console.log('res: ', res)
-    //   if (res.assets) {
-    //     let data = res.assets[0];
-    //     console.log('data: ', data)
-    //   }
-    // })
-  }
-
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
 
       <ImagePickerComponent
-        visible={visible}
-        onRequestClose={() => setVisible(false)}
+        visible={selector.showImagePicker}
+        keyId={selector.imagePickerKeyId}
+        selectedImage={(data, keyId) => {
+          console.log('imageObj: ', data, keyId);
+        }}
+        onDismiss={() => dispatch(setImagePicker(""))}
       />
 
       {
@@ -200,7 +182,8 @@ const DetailsOverviewScreen = ({ navigation }) => {
         style={{ flex: 1 }}
       >
         <View style={styles.baseVw}>
-          <View style={[styles.accordianBckVw, { marginTop: 0 }, GlobalStyle.shadow]}>
+          {/* // Personal Intro */}
+          <View style={[styles.accordianBckVw, GlobalStyle.shadow]}>
             <CustomerAccordianHeaderView
               title={"Personal Intro"}
               leftIcon={"account-edit"}
@@ -225,7 +208,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 onPress={() => dispatch(setDropDown("GENDER"))}
               />
               <TextinputComp
-                style={{ height: 65, width: "100%" }}
+                style={styles.textInputStyle}
                 value={selector.firstName}
                 label={"First Name*"}
                 onChangeText={(text) =>
@@ -234,7 +217,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
               />
               <Text style={GlobalStyle.underline}></Text>
               <TextinputComp
-                style={{ height: 65, width: "100%" }}
+                style={styles.textInputStyle}
                 value={selector.lastName}
                 label={"Last Name*"}
                 onChangeText={(text) =>
@@ -250,7 +233,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
               />
               <Text style={GlobalStyle.underline}></Text>
               <TextinputComp
-                style={{ height: 65, width: "100%" }}
+                style={styles.textInputStyle}
                 value={selector.relationName}
                 label={"Relation Name*"}
                 onChangeText={(text) =>
@@ -260,7 +243,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 }
               />
               <TextinputComp
-                style={{ height: 65, width: "100%" }}
+                style={styles.textInputStyle}
                 value={selector.mobile}
                 label={"Mobile Number*"}
                 onChangeText={(text) =>
@@ -269,7 +252,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
               />
               <Text style={GlobalStyle.underline}></Text>
               <TextinputComp
-                style={{ height: 65, width: "100%" }}
+                style={styles.textInputStyle}
                 value={selector.alterMobile}
                 label={"Alternate Mobile Number*"}
                 onChangeText={(text) =>
@@ -280,7 +263,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
               />
               <Text style={GlobalStyle.underline}></Text>
               <TextinputComp
-                style={{ height: 65, width: "100%" }}
+                style={styles.textInputStyle}
                 value={selector.email}
                 label={"Email ID*"}
                 onChangeText={(text) =>
@@ -290,7 +273,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
               <Text style={GlobalStyle.underline}></Text>
 
               <TextinputComp
-                style={{ height: 65, width: "100%" }}
+                style={styles.textInputStyle}
                 value={selector.dateOfBirth}
                 label={"Date Of Birth"}
                 disabled={true}
@@ -303,7 +286,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
               />
               <Text style={GlobalStyle.underline}></Text>
               <TextinputComp
-                style={{ height: 65, width: "100%" }}
+                style={styles.textInputStyle}
                 value={selector.anniversaryDate}
                 label={"Anniversary Date"}
                 disabled={true}
@@ -317,6 +300,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
               <Text style={GlobalStyle.underline}></Text>
             </View>
           </View>
+          <View style={styles.space}></View>
 
           {/* // 2.Communication Address */}
           <View style={[styles.accordianBckVw, GlobalStyle.shadow]}>
@@ -326,15 +310,9 @@ const DetailsOverviewScreen = ({ navigation }) => {
               isSelected={openAccordian == 2 ? true : false}
               onPress={() => updateAccordian(2)}
             />
-            <View
-              style={{
-                width: "100%",
-                height: openAccordian == 2 ? null : 0,
-                overflow: "hidden",
-              }}
-            >
+            <View style={{ width: "100%", height: openAccordian == 2 ? null : 0, overflow: "hidden" }}>
               <TextinputComp
-                style={{ height: 65, width: "100%" }}
+                style={styles.textInputStyle}
                 value={selector.pincode}
                 label={"Pincode*"}
                 onChangeText={(text) =>
@@ -374,7 +352,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
               </View>
               <Text style={GlobalStyle.underline}></Text>
               <TextinputComp
-                style={{ height: 65, width: "100%" }}
+                style={styles.textInputStyle}
                 value={selector.houseNum}
                 label={"H.No*"}
                 onChangeText={(text) =>
@@ -385,7 +363,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
               />
               <Text style={GlobalStyle.underline}></Text>
               <TextinputComp
-                style={{ height: 65, width: "100%" }}
+                style={styles.textInputStyle}
                 value={selector.streetName}
                 label={"Street Name*"}
                 onChangeText={(text) =>
@@ -399,7 +377,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
               />
               <Text style={GlobalStyle.underline}></Text>
               <TextinputComp
-                style={{ height: 65, width: "100%" }}
+                style={styles.textInputStyle}
                 value={selector.village}
                 label={"Village*"}
                 onChangeText={(text) =>
@@ -410,7 +388,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
               />
               <Text style={GlobalStyle.underline}></Text>
               <TextinputComp
-                style={{ height: 65, width: "100%" }}
+                style={styles.textInputStyle}
                 value={selector.city}
                 label={"City*"}
                 onChangeText={(text) =>
@@ -419,7 +397,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
               />
               <Text style={GlobalStyle.underline}></Text>
               <TextinputComp
-                style={{ height: 65, width: "100%" }}
+                style={styles.textInputStyle}
                 value={selector.district}
                 label={"District*"}
                 onChangeText={(text) =>
@@ -430,7 +408,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
               />
               <Text style={GlobalStyle.underline}></Text>
               <TextinputComp
-                style={{ height: 65, width: "100%" }}
+                style={styles.textInputStyle}
                 value={selector.state}
                 label={"State*"}
                 onChangeText={(text) =>
@@ -463,7 +441,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
               {selector.permanent_address && (
                 <View>
                   <TextinputComp
-                    style={{ height: 65, width: "100%" }}
+                    style={styles.textInputStyle}
                     value={selector.p_pincode}
                     label={"Pincode*"}
                     onChangeText={(text) =>
@@ -508,7 +486,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   <Text style={GlobalStyle.underline}></Text>
 
                   <TextinputComp
-                    style={{ height: 65, width: "100%" }}
+                    style={styles.textInputStyle}
                     label={"H.No*"}
                     value={selector.p_houseNum}
                     onChangeText={(text) =>
@@ -522,7 +500,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   />
                   <Text style={GlobalStyle.underline}></Text>
                   <TextinputComp
-                    style={{ height: 65, width: "100%" }}
+                    style={styles.textInputStyle}
                     label={"Street Name*"}
                     value={selector.p_streetName}
                     onChangeText={(text) =>
@@ -536,7 +514,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   />
                   <Text style={GlobalStyle.underline}></Text>
                   <TextinputComp
-                    style={{ height: 65, width: "100%" }}
+                    style={styles.textInputStyle}
                     value={selector.p_village}
                     label={"Village*"}
                     onChangeText={(text) =>
@@ -550,7 +528,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   />
                   <Text style={GlobalStyle.underline}></Text>
                   <TextinputComp
-                    style={{ height: 65, width: "100%" }}
+                    style={styles.textInputStyle}
                     value={selector.p_city}
                     label={"City*"}
                     onChangeText={(text) =>
@@ -561,7 +539,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   />
                   <Text style={GlobalStyle.underline}></Text>
                   <TextinputComp
-                    style={{ height: 65, width: "100%" }}
+                    style={styles.textInputStyle}
                     value={selector.p_district}
                     label={"District*"}
                     onChangeText={(text) =>
@@ -575,7 +553,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   />
                   <Text style={GlobalStyle.underline}></Text>
                   <TextinputComp
-                    style={{ height: 65, width: "100%" }}
+                    style={styles.textInputStyle}
                     value={selector.p_state}
                     label={"State*"}
                     onChangeText={(text) =>
@@ -592,6 +570,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
               )}
             </View>
           </View>
+          <View style={styles.space}></View>
 
           {/* // 3.Modal Selction */}
           <View style={[styles.accordianBckVw], GlobalStyle.shadow}>
@@ -601,13 +580,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
               isSelected={openAccordian == 3 ? true : false}
               onPress={() => updateAccordian(3)}
             />
-            <View
-              style={{
-                width: "100%",
-                height: openAccordian == 3 ? null : 0,
-                overflow: "hidden",
-              }}
-            >
+            <View style={{ width: "100%", height: openAccordian == 3 ? null : 0, overflow: 'hidden' }}>
               <DropDownSelectionItem
                 label={"Model*"}
                 value={selector.model}
@@ -635,6 +608,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
               />
             </View>
           </View>
+          <View style={styles.space}></View>
 
           {/* // 4.Customer Profile */}
           <View style={[styles.accordianBckVw], GlobalStyle.shadow}>
@@ -644,15 +618,9 @@ const DetailsOverviewScreen = ({ navigation }) => {
               isSelected={openAccordian == 4 ? true : false}
               onPress={() => updateAccordian(4)}
             />
-            <View
-              style={{
-                width: "100%",
-                height: openAccordian == 4 ? null : 0,
-                overflow: "hidden",
-              }}
-            >
+            <View style={{ width: "100%", height: openAccordian == 4 ? null : 0, overflow: 'hidden' }}>
               <TextinputComp
-                style={{ height: 65, width: "100%" }}
+                style={styles.textInputStyle}
                 value={selector.occupation}
                 label={"Occupation*"}
                 onChangeText={(text) =>
@@ -663,7 +631,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
               />
               <Text style={GlobalStyle.underline}></Text>
               <TextinputComp
-                style={{ height: 65, width: "100%" }}
+                style={styles.textInputStyle}
                 value={selector.designation}
                 label={"Designation*"}
                 onChangeText={(text) =>
@@ -690,7 +658,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 onPress={() => dispatch(setDropDown("SOURCE_OF_ENQUIRY"))}
               />
               <TextinputComp
-                style={{ height: 65, width: "100%" }}
+                style={styles.textInputStyle}
                 label={"Expected Date"}
                 value={selector.expected_date}
                 disabled={true}
@@ -734,6 +702,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
               />
             </View>
           </View>
+          <View style={styles.space}></View>
 
           {/* // 5.Financial Details */}
           <View style={[styles.accordianBckVw], GlobalStyle.shadow}>
@@ -747,16 +716,67 @@ const DetailsOverviewScreen = ({ navigation }) => {
               style={{
                 width: "100%",
                 height: openAccordian == 5 ? null : 0,
-                overflow: "hidden",
+                overflow: 'hidden'
               }}
             >
               <DropDownSelectionItem
                 label={"Retail Finance*"}
+                value={selector.retail_finance}
+                onPress={() => dispatch(setFinancialDropDown("RETAIL_FINANCE"))}
+              />
+              <DropDownSelectionItem
+                label={"Finance Category*"}
+                value={selector.finance_category}
+                onPress={() => dispatch(setFinancialDropDown("FINANCE_CATEGORY"))}
+              />
+              <TextinputComp
+                style={{ height: 65, width: "100%" }}
+                label={"Down Payment*"}
+                value={selector.down_payment}
+                onChangeText={(text) => dispatch(setFinancialDetails({ key: "DOWN_PAYMENT", text: text }))}
+              />
+              <Text style={GlobalStyle.underline}></Text>
+              <TextinputComp
+                style={{ height: 65, width: "100%" }}
+                label={"Loan Amount*"}
+                value={selector.loan_amount}
+                onChangeText={(text) => dispatch(setFinancialDetails({ key: "LOAN_AMOUNT", text: text }))}
+              />
+              <Text style={GlobalStyle.underline}></Text>
+              <DropDownSelectionItem
+                label={"Bank/Financer*"}
+                value={selector.bank_or_finance}
+                onPress={() => dispatch(setFinancialDropDown("BANK_FINANCE"))}
+              />
+              <TextinputComp
+                style={{ height: 65, width: "100%" }}
+                label={"Rate of Interest*"}
+                value={selector.rate_of_interest}
+                onChangeText={(text) => dispatch(setFinancialDetails({ key: "RATE_OF_INTEREST", text: text }))}
+              />
+              <Text style={GlobalStyle.underline}></Text>
+              <DropDownSelectionItem
+                label={"Loan of Tenure(Months)*"}
+                value={selector.loan_of_tenure}
+                onPress={() => dispatch(setFinancialDropDown("LOAN_OF_TENURE"))}
+              />
+              <TextinputComp
+                style={{ height: 65, width: "100%" }}
+                label={"EMI*"}
+                value={selector.emi}
+                onChangeText={(text) => dispatch(setFinancialDetails({ key: "EMI", text: text }))}
+              />
+              <Text style={GlobalStyle.underline}></Text>
+              <DropDownSelectionItem
+                label={"Approx Annual Income*"}
+                value={selector.approx_annual_income}
+                onPress={() => dispatch(setFinancialDropDown("APPROX_ANNUAL_INCOME"))}
                 value={"Cash"}
                 onPress={() => { }}
               />
             </View>
           </View>
+          <View style={styles.space}></View>
 
           {/* // 6.Upload Documents */}
           <View style={[styles.accordianBckVw], GlobalStyle.shadow}>
@@ -770,31 +790,32 @@ const DetailsOverviewScreen = ({ navigation }) => {
               style={{
                 width: "100%",
                 height: openAccordian == 6 ? null : 0,
-                overflow: "hidden",
+                overflow: 'hidden'
               }}
             >
               <TextinputComp
-                style={{ height: 65, width: "100%" }}
-                value={text}
+                style={styles.textInputStyle}
+                value={selector.pan_number}
                 label={"Pan Number*"}
-                onChangeText={(text) => setText(text)}
+                onChangeText={(text) => dispatch(setUploadDocuments({ key: "PAN", text: text }))}
               />
               <Text style={GlobalStyle.underline}></Text>
               <View style={{ minHeight: 50, paddingLeft: 12, backgroundColor: Colors.WHITE }}>
-                <ImageSelectItem name={'Upload Pan'} onPress={selectPanCard} />
+                <ImageSelectItem name={'Upload Pan'} onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))} />
               </View>
               <TextinputComp
-                style={{ height: 65, width: "100%" }}
-                value={text}
+                style={styles.textInputStyle}
+                value={selector.adhaar_number}
                 label={"Aadhaar Number*"}
-                onChangeText={(text) => setText(text)}
+                onChangeText={(text) => dispatch(setUploadDocuments({ key: "ADHAR", text: text }))}
               />
               <Text style={GlobalStyle.underline}></Text>
               <View style={{ minHeight: 50, paddingLeft: 12, backgroundColor: Colors.WHITE }}>
-                <ImageSelectItem name={'Upload Adhar'} onPress={() => { }} />
+                <ImageSelectItem name={'Upload Adhar'} onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))} />
               </View>
             </View>
           </View>
+          <View style={styles.space}></View>
 
           {/* // 7.Customer Need Analysis */}
           <View style={[styles.accordianBckVw, GlobalStyle.shadow]}>
@@ -808,7 +829,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
               style={{
                 width: "100%",
                 height: openAccordian == 7 ? null : 0,
-                overflow: "hidden",
+                overflow: 'hidden'
               }}
             >
               <View style={styles.view2}>
@@ -831,7 +852,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 onPress={() => dispatch(setModelDropDown("C_MODEL"))}
               />
               <TextinputComp
-                style={{ height: 65, width: "100%" }}
+                style={styles.textInputStyle}
                 value={selector.variant}
                 label={"Variant"}
                 onChangeText={(text) =>
@@ -842,7 +863,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
               />
               <Text style={GlobalStyle.underline}></Text>
               <TextinputComp
-                style={{ height: 65, width: "100%" }}
+                style={styles.textInputStyle}
                 value={selector.color}
                 label={"Color"}
                 onChangeText={(text) =>
@@ -863,7 +884,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 onPress={() => dispatch(setModelDropDown("C_TRANSMISSION_TYPE"))}
               />
               <TextinputComp
-                style={{ height: 65, width: "100%" }}
+                style={styles.textInputStyle}
                 value={selector.price_range}
                 label={"Price Range"}
                 onChangeText={(text) =>
@@ -874,14 +895,14 @@ const DetailsOverviewScreen = ({ navigation }) => {
               />
               <Text style={GlobalStyle.underline}></Text>
               <TextinputComp
-                style={{ height: 65, width: "100%" }}
+                style={styles.textInputStyle}
                 value={selector.on_road_price}
                 label={"On Road Price"}
                 onChangeText={(text) => dispatch(setCustomerNeedAnalysis({ key: "ON_ROAD_PRICE", text: text }))}
               />
               <Text style={GlobalStyle.underline}></Text>
               <TextinputComp
-                style={{ height: 65, width: "100%" }}
+                style={styles.textInputStyle}
                 value={selector.dealership_name}
                 label={"DealerShip Name"}
                 onChangeText={(text) =>
@@ -895,7 +916,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
               />
               <Text style={GlobalStyle.underline}></Text>
               <TextinputComp
-                style={{ height: 65, width: "100%" }}
+                style={styles.textInputStyle}
                 value={selector.dealership_location}
                 label={"DealerShip Location"}
                 onChangeText={(text) =>
@@ -909,7 +930,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
               />
               <Text style={GlobalStyle.underline}></Text>
               <TextinputComp
-                style={{ height: 65, width: "100%" }}
+                style={styles.textInputStyle}
                 value={selector.dealership_pending_reason}
                 label={"Dealership Pending Reason"}
                 onChangeText={(text) =>
@@ -923,7 +944,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
               />
               <Text style={GlobalStyle.underline}></Text>
               <TextinputComp
-                style={{ height: 65, width: "100%" }}
+                style={styles.textInputStyle}
                 value={selector.voice_of_customer_remarks}
                 label={"Voice of Customer Remarks "}
                 onChangeText={(text) =>
@@ -963,6 +984,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     elevation: 3,
   },
+  textInputStyle: {
+    height: 65,
+    width: "100%"
+  },
+  space: {
+    height: 10
+  },
   view1: {
     height: 60,
     flexDirection: "row",
@@ -976,8 +1004,8 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   accordianBckVw: {
-    marginVertical: 5,
-    borderRadius: 10,
+    // marginVertical: 5,
+    // borderRadius: 10,
     backgroundColor: Colors.LIGHT_GRAY,
   },
   accordianTitleStyle: {
