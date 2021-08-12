@@ -26,7 +26,8 @@ import SideMenuScreen from "../scenes/mainScenes/sideMenuScreen";
 import NotificationScreen from "../scenes/mainScenes/notificationsScreen";
 import AddPreEnquiryScreen from "../scenes/mainScenes/EMS/addPreEnquiryScreen";
 import ConfirmedPreEnquiryScreen from "../scenes/mainScenes/EMS/confirmedPreEnquiryScreen";
-import DetailsOverviewScreen from "../scenes/mainScenes/EMS/detailsOverviewScreen";
+import DetailsOverviewScreen from "../scenes/mainScenes/EMS/enquiryFormScreen";
+import PreBookingFormScreen from "../scenes/mainScenes/PreBooking/prebookingFormScreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -83,6 +84,7 @@ export const DrawerStackIdentifiers = {
   settings: "SETTINGS",
   notification: "NOTIFICATION",
   eventManagement: "EVENT_MANAGEMENT",
+  preBooking: "PRE_BOOKING"
 };
 
 export const TabStackIdentifiers = {
@@ -354,6 +356,26 @@ const EventManagementStackNavigator = ({ navigation }) => {
   );
 };
 
+const PreBookingStack = createStackNavigator();
+
+const PreBookingStackNavigator = ({ navigation }) => {
+  return (
+    <PreBookingStack.Navigator
+      initialRouteName={"PRE_BOOKING"}
+      screenOptions={screeOptionStyle}
+    >
+      <PreBookingStack.Screen
+        name={"PRE_BOOKING"}
+        component={PreBookingFormScreen}
+        options={{
+          title: "Pre Booking Form",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+    </PreBookingStack.Navigator>
+  );
+};
+
 const MainDrawerNavigator = createDrawerNavigator();
 
 const MainStackDrawerNavigator = () => {
@@ -384,6 +406,11 @@ const MainStackDrawerNavigator = () => {
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.eventManagement}
         component={EventManagementStackNavigator}
+      />
+
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.preBooking}
+        component={PreBookingStackNavigator}
       />
     </MainDrawerNavigator.Navigator>
   );

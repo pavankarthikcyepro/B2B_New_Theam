@@ -6,13 +6,13 @@ import { Searchbar } from 'react-native-paper';
 import { IconButton } from 'react-native-paper';
 import VectorImage from 'react-native-vector-image';
 import { useDispatch, useSelector } from 'react-redux';
-import { FILTER } from '../../../assets/svg'
+import { FILTER } from '../../../assets/svg';
 import { DateItem } from '../../../pureComponents/dateItem';
 import { AppNavigator } from '../../../navigations';
-import { dateSelected, showDateModal, getCarModalList, getCustomerTypeList } from '../../../redux/homeSlice';
+import { dateSelected, showDateModal, getCarModalList, getCustomerTypeList } from '../../../redux/homeReducer';
 import { DateRangeComp, DatePickerComponent, SortAndFilterComp } from '../../../components';
 import { DateModalComp } from "../../../components/dateModalComp";
-import { getMenuList } from '../../../redux/homeSlice';
+import { getMenuList } from '../../../redux/homeReducer';
 import * as AsyncStore from '../../../asyncStore';
 
 const screenWidth = Dimensions.get("window").width;

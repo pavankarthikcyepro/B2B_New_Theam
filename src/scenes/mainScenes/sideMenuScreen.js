@@ -48,6 +48,9 @@ const SideMenuScreen = ({ navigation }) => {
           AppNavigator.DrawerStackIdentifiers.eventManagement
         );
         break;
+      case 104:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.preBooking);
+        break;
     }
   };
 

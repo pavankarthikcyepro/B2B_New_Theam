@@ -41,7 +41,7 @@ import {
   setFinancialDetails,
   setCustomerNeedAnalysis,
   setCustomerNeedDropDown
-} from '../../../redux/enquiryDetailsOverViewSlice';
+} from '../../../redux/enquiryFormReducer';
 import { RadioTextItem } from '../../../pureComponents';
 import { ImagePickerComponent } from "../../../components";
 
@@ -107,7 +107,7 @@ const ImageSelectItem = ({ name, onPress }) => {
 
 const DetailsOverviewScreen = ({ navigation }) => {
   const dispatch = useDispatch();
-  const selector = useSelector((state) => state.enquiryDetailsOverViewReducer);
+  const selector = useSelector((state) => state.enquiryFormReducer);
   const [text, setText] = React.useState("");
   const [openAccordian, setOpenAccordian] = useState(0);
   const [imageUri, setImageUri] = useState('');
@@ -776,12 +776,6 @@ const DetailsOverviewScreen = ({ navigation }) => {
               <TextinputComp
                 style={{ height: 65, width: "100%" }}
                 value={text}
-                label={"Pan*"}
-                onChangeText={(text) => setText(text)}
-              />
-              <TextinputComp
-                style={{ height: 65, width: "100%" }}
-                value={text}
                 label={"Pan Number*"}
                 onChangeText={(text) => setText(text)}
               />
@@ -789,12 +783,6 @@ const DetailsOverviewScreen = ({ navigation }) => {
               <View style={{ minHeight: 50, paddingLeft: 12, backgroundColor: Colors.WHITE }}>
                 <ImageSelectItem name={'Upload Pan'} onPress={selectPanCard} />
               </View>
-              <TextinputComp
-                style={{ height: 65, width: "100%" }}
-                value={text}
-                label={"Aadhaar*"}
-                onChangeText={(text) => setText(text)}
-              />
               <TextinputComp
                 style={{ height: 65, width: "100%" }}
                 value={text}

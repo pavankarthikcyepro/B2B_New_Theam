@@ -27,7 +27,7 @@ import {
     createPreEnquiry,
     setCustomerTypeList,
     setCarModalList
-} from '../../../redux/addPreEnquirySlice';
+} from '../../../redux/addPreEnquiryReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { isMobileNumber, isEmail } from '../../../utils/helperFunctions';
 import { sales_url } from '../../../networking/endpoints';

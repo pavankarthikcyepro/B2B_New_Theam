@@ -26,7 +26,7 @@ import {
   getMenuList,
   getCustomerTypeList,
   getCarModalList
-} from "../../redux/loginSlice";
+} from "../../redux/loginReducer";
 import { AuthNavigator } from "../../navigations";
 import { IconButton } from "react-native-paper";
 import { AuthContext } from "../../utils/authContext";

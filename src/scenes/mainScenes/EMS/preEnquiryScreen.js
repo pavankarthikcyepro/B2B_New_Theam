@@ -9,7 +9,7 @@ import VectorImage from 'react-native-vector-image';
 import { CREATE_NEW } from '../../../assets/svg';
 import { AppNavigator } from '../../../navigations';
 import { CallUserComponent, SortAndFilterComp } from '../../../components';
-import { callPressed, sortAndFilterPressed, getPreEnquiryData, setPreEnquiryList } from '../../../redux/preEnquirySlice';
+import { callPressed, sortAndFilterPressed, getPreEnquiryData, setPreEnquiryList } from '../../../redux/preEnquiryReducer';
 import * as AsyncStore from '../../../asyncStore';
 import realm from '../../../database/realm';
 
