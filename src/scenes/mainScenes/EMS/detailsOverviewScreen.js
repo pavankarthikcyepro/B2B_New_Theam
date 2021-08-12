@@ -172,7 +172,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
         style={{ flex: 1 }}
       >
         <View style={styles.baseVw}>
-          <View style={[styles.accordianBckVw, { marginTop: 0 }]}>
+          <View style={[styles.accordianBckVw, { marginTop: 0 }, GlobalStyle.shadow]}>
             <CustomerAccordianHeaderView
               title={'Personal Intro'}
               leftIcon={"account-edit"}
@@ -269,7 +269,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
           </View>
 
           {/* // 2.Communication Address */}
-          <View style={[styles.accordianBckVw]}>
+          <View style={[styles.accordianBckVw, GlobalStyle.shadow]}>
             <CustomerAccordianHeaderView
               title={'Communicaton Address'}
               leftIcon={"account-edit"}
@@ -424,7 +424,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
           </View>
 
           {/* // 3.Modal Selction */}
-          <View style={[styles.accordianBckVw]}>
+          <View style={[styles.accordianBckVw], GlobalStyle.shadow}>
             <CustomerAccordianHeaderView
               title={'Modal Selection'}
               leftIcon={"account-edit"}
@@ -461,7 +461,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
           </View>
 
           {/* // 4.Customer Profile */}
-          <View style={[styles.accordianBckVw]}>
+          <View style={[styles.accordianBckVw], GlobalStyle.shadow}>
             <CustomerAccordianHeaderView
               title={'Customer Profile'}
               leftIcon={"account-edit"}
@@ -546,7 +546,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
           </View>
 
           {/* // 5.Financial Details */}
-          <View style={[styles.accordianBckVw]}>
+          <View style={[styles.accordianBckVw], GlobalStyle.shadow}>
             <CustomerAccordianHeaderView
               title={'Financial Details'}
               leftIcon={"account-edit"}
@@ -612,7 +612,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
           </View>
 
           {/* // 6.Upload Documents */}
-          <View style={[styles.accordianBckVw]}>
+          <View style={[styles.accordianBckVw], GlobalStyle.shadow}>
             <CustomerAccordianHeaderView
               title={'Upload Documents'}
               leftIcon={"account-edit"}
@@ -644,7 +644,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
           </View>
 
           {/* // 7.Customer Need Analysis */}
-          <View style={[styles.accordianBckVw, {}]}>
+          <View style={[styles.accordianBckVw, GlobalStyle.shadow]}>
             <CustomerAccordianHeaderView
               title={'Customer Need Analysis'}
               leftIcon={"account-edit"}
