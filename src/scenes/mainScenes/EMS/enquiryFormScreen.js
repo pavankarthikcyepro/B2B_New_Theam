@@ -45,68 +45,8 @@ import {
   setImagePicker,
   setUploadDocuments
 } from '../../../redux/enquiryFormReducer';
-import { RadioTextItem } from '../../../pureComponents';
+import { RadioTextItem, CustomerAccordianHeaderItem, ImageSelectItem } from '../../../pureComponents';
 import { ImagePickerComponent } from "../../../components";
-
-const CustomerAccordianHeaderView = ({
-  leftIcon,
-  title,
-  isSelected,
-  onPress,
-}) => {
-  return (
-    <Pressable onPress={onPress}>
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          height: 50,
-          backgroundColor: isSelected ? Colors.RED : Colors.WHITE,
-        }}
-      >
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <IconButton
-            icon={leftIcon}
-            color={isSelected ? Colors.WHITE : Colors.RED}
-            size={20}
-            style={{ paddingRight: 0 }}
-          />
-          <Text
-            style={[
-              styles.accordianTitleStyle,
-              { color: isSelected ? Colors.WHITE : Colors.DARK_GRAY },
-            ]}
-          >
-            {title}
-          </Text>
-        </View>
-        <IconButton
-          icon={"menu-down"}
-          color={isSelected ? Colors.WHITE : Colors.BLACK}
-          size={25}
-          style={{ marginLeft: 10 }}
-        />
-      </View>
-    </Pressable>
-  );
-};
-
-const ImageSelectItem = ({ name, onPress }) => {
-  return (
-    <TouchableOpacity onPress={onPress}>
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Text style={{ fontSize: 14, fontWeight: '400', color: Colors.BLUE }}>{name}</Text>
-        <IconButton
-          icon={'file-upload'}
-          color={Colors.GRAY}
-          size={20}
-          style={{ paddingRight: 0 }}
-        />
-      </View>
-    </TouchableOpacity>
-  )
-}
 
 const DetailsOverviewScreen = ({ navigation }) => {
 
@@ -196,10 +136,10 @@ const DetailsOverviewScreen = ({ navigation }) => {
           <View style={styles.baseVw}>
             {/* // Personal Intro */}
             <View style={[styles.accordianBckVw, GlobalStyle.shadow]}>
-              <CustomerAccordianHeaderView
+              <CustomerAccordianHeaderItem
                 title={"Personal Intro"}
                 leftIcon={"account-edit"}
-                isSelected={openAccordian == 1 ? true : false}
+                selected={openAccordian == 1 ? true : false}
                 onPress={() => updateAccordian(1)}
               />
               <View
@@ -316,10 +256,10 @@ const DetailsOverviewScreen = ({ navigation }) => {
 
             {/* // 2.Communication Address */}
             <View style={[styles.accordianBckVw, GlobalStyle.shadow]}>
-              <CustomerAccordianHeaderView
+              <CustomerAccordianHeaderItem
                 title={"Communicaton Address"}
                 leftIcon={"account-edit"}
-                isSelected={openAccordian == 2 ? true : false}
+                selected={openAccordian == 2 ? true : false}
                 onPress={() => updateAccordian(2)}
               />
               <View style={{ width: "100%", height: openAccordian == 2 ? null : 0, overflow: "hidden" }}>
@@ -586,10 +526,10 @@ const DetailsOverviewScreen = ({ navigation }) => {
 
             {/* // 3.Modal Selction */}
             <View style={[styles.accordianBckVw], GlobalStyle.shadow}>
-              <CustomerAccordianHeaderView
+              <CustomerAccordianHeaderItem
                 title={"Modal Selection"}
                 leftIcon={"account-edit"}
-                isSelected={openAccordian == 3 ? true : false}
+                selected={openAccordian == 3 ? true : false}
                 onPress={() => updateAccordian(3)}
               />
               <View style={{ width: "100%", height: openAccordian == 3 ? null : 0, overflow: 'hidden' }}>
@@ -624,10 +564,10 @@ const DetailsOverviewScreen = ({ navigation }) => {
 
             {/* // 4.Customer Profile */}
             <View style={[styles.accordianBckVw], GlobalStyle.shadow}>
-              <CustomerAccordianHeaderView
+              <CustomerAccordianHeaderItem
                 title={"Customer Profile"}
                 leftIcon={"account-edit"}
-                isSelected={openAccordian == 4 ? true : false}
+                selected={openAccordian == 4 ? true : false}
                 onPress={() => updateAccordian(4)}
               />
               <View style={{ width: "100%", height: openAccordian == 4 ? null : 0, overflow: 'hidden' }}>
@@ -718,10 +658,10 @@ const DetailsOverviewScreen = ({ navigation }) => {
 
             {/* // 5.Financial Details */}
             <View style={[styles.accordianBckVw], GlobalStyle.shadow}>
-              <CustomerAccordianHeaderView
+              <CustomerAccordianHeaderItem
                 title={"Financial Details"}
                 leftIcon={"account-edit"}
-                isSelected={openAccordian == 5 ? true : false}
+                selected={openAccordian == 5 ? true : false}
                 onPress={() => updateAccordian(5)}
               />
               <View
@@ -792,10 +732,10 @@ const DetailsOverviewScreen = ({ navigation }) => {
 
             {/* // 6.Upload Documents */}
             <View style={[styles.accordianBckVw], GlobalStyle.shadow}>
-              <CustomerAccordianHeaderView
+              <CustomerAccordianHeaderItem
                 title={"Upload Documents"}
                 leftIcon={"account-edit"}
-                isSelected={openAccordian == 6 ? true : false}
+                selected={openAccordian == 6 ? true : false}
                 onPress={() => updateAccordian(6)}
               />
               <View
@@ -831,10 +771,10 @@ const DetailsOverviewScreen = ({ navigation }) => {
 
             {/* // 7.Customer Need Analysis */}
             <View style={[styles.accordianBckVw, GlobalStyle.shadow]}>
-              <CustomerAccordianHeaderView
+              <CustomerAccordianHeaderItem
                 title={"Customer Need Analysis"}
                 leftIcon={"account-edit"}
-                isSelected={openAccordian == 7 ? true : false}
+                selected={openAccordian == 7 ? true : false}
                 onPress={() => updateAccordian(7)}
               />
               <View
@@ -1020,11 +960,6 @@ const styles = StyleSheet.create({
     // marginVertical: 5,
     // borderRadius: 10,
     backgroundColor: Colors.LIGHT_GRAY,
-  },
-  accordianTitleStyle: {
-    fontSize: 18,
-    fontWeight: "500",
-    color: Colors.BLACK,
   },
   radioGroupBcVw: {
     flexDirection: "row",

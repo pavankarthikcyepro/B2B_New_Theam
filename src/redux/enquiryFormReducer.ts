@@ -450,15 +450,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       }
       state.showDropDownpicker = !state.showDropDownpicker;
     },
-    updateCustomerNeedDropDownData: (
-      state,
-      action: PayloadAction<DropDownModel>
-    ) => {
-      const { id, name, keyId } = action.payload;
-      switch (keyId) {
-      }
-      state.showDropDownpicker = !state.showDropDownpicker;
-    },
     setCommunicationAddress: (state, action: PayloadAction<PersonalIntroModel>) => {
       const { key, text } = action.payload;
       switch (key) {

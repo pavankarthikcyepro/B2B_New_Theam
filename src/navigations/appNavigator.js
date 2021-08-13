@@ -28,6 +28,7 @@ import AddPreEnquiryScreen from "../scenes/mainScenes/EMS/addPreEnquiryScreen";
 import ConfirmedPreEnquiryScreen from "../scenes/mainScenes/EMS/confirmedPreEnquiryScreen";
 import DetailsOverviewScreen from "../scenes/mainScenes/EMS/enquiryFormScreen";
 import PreBookingFormScreen from "../scenes/mainScenes/PreBooking/prebookingFormScreen";
+import PreBookingScreen from "../scenes/mainScenes/PreBooking/prebookingScreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -98,6 +99,11 @@ export const EmsStackIdentifiers = {
   confirmedPreEnq: "CONFIRMED_PRE_ENQUIRY",
   detailsOverview: 'DETAILS_OVERVIEW'
 };
+
+export const PreBookingStackIdentifiers = {
+  preBooking: "PRE_BOOKING",
+  preBookingForm: "PRE_BOOKING_FORM"
+}
 
 const HomeStack = createStackNavigator();
 
@@ -361,15 +367,23 @@ const PreBookingStack = createStackNavigator();
 const PreBookingStackNavigator = ({ navigation }) => {
   return (
     <PreBookingStack.Navigator
-      initialRouteName={"PRE_BOOKING"}
+      initialRouteName={PreBookingStackIdentifiers.preBooking}
       screenOptions={screeOptionStyle}
     >
       <PreBookingStack.Screen
-        name={"PRE_BOOKING"}
+        name={PreBookingStackIdentifiers.preBooking}
+        component={PreBookingScreen}
+        options={{
+          title: "Pre Booking",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+
+      <PreBookingStack.Screen
+        name={PreBookingStackIdentifiers.preBookingForm}
         component={PreBookingFormScreen}
         options={{
           title: "Pre Booking Form",
-          headerLeft: () => <MenuIcon navigation={navigation} />,
         }}
       />
     </PreBookingStack.Navigator>
