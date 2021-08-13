@@ -70,12 +70,12 @@ const prebookingFormSlice = createSlice({
     datePickerKeyId: "",
     enableEdit: false,
     // Customer Details
-    firstName: "",
-    lastName: "",
+    first_name: "",
+    last_name: "",
     age: "",
     mobile: "",
     email: "",
-    dateOfBirth: "",
+    date_of_birth: "",
     gender: "",
     salutation: "",
     enquiry_segment: "",
@@ -150,7 +150,7 @@ const prebookingFormSlice = createSlice({
       const selectedDate = dateSelected(text);
       switch (state.datePickerKeyId) {
         case "DATE_OF_BIRTH":
-          state.dateOfBirth = selectedDate;
+          state.date_of_birth = selectedDate;
           break;
       }
       state.showDatepicker = !state.showDatepicker;
@@ -159,12 +159,11 @@ const prebookingFormSlice = createSlice({
       const { key, text } = action.payload;
       switch (key) {
         case "FIRST_NAME":
-          state.firstName = text;
+          state.first_name = text;
           break;
         case "LAST_NAME":
-          state.lastName = text;
+          state.last_name = text;
           break;
-
         case "MOBILE":
           state.mobile = text;
           break;
@@ -172,7 +171,7 @@ const prebookingFormSlice = createSlice({
           state.email = text;
           break;
         case "DOB":
-          state.dateOfBirth = text;
+          state.date_of_birth = text;
           break;
       }
     },

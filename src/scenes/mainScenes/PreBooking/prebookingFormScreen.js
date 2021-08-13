@@ -102,8 +102,9 @@ const ImageSelectItem = ({ name, onPress }) => {
 };
 
 const PrebookingFormScreen = ({ navigation }) => {
+
   const dispatch = useDispatch();
-  const selector = useSelector((state) => state.enquiryFormReducer);
+  const selector = useSelector((state) => state.preBookingFormReducer);
   const [text, setText] = React.useState("");
   const [openAccordian, setOpenAccordian] = useState(0);
   const [imageUri, setImageUri] = useState("");
@@ -206,7 +207,7 @@ const PrebookingFormScreen = ({ navigation }) => {
               />
               <TextinputComp
                 style={{ height: 65, width: "100%" }}
-                value={selector.firstName}
+                value={selector.first_name}
                 label={"First Name*"}
                 keyboardType={"default"}
                 onChangeText={(text) =>
@@ -218,7 +219,7 @@ const PrebookingFormScreen = ({ navigation }) => {
               <Text style={GlobalStyle.underline}></Text>
               <TextinputComp
                 style={{ height: 65, width: "100%" }}
-                value={selector.LAST_NAME}
+                value={selector.last_name}
                 label={"Last Name*"}
                 keyboardType={"default"}
                 onChangeText={(text) =>
@@ -263,7 +264,7 @@ const PrebookingFormScreen = ({ navigation }) => {
               />
               <TextinputComp
                 style={{ height: 65, width: "100%" }}
-                value={selector.dateOfBirth}
+                value={selector.date_of_birth}
                 label={"Date Of Birth"}
                 disabled={true}
                 onPressIn={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
