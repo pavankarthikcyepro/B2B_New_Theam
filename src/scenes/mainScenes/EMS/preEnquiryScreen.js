@@ -82,7 +82,7 @@ const PreEnquiryScreen = ({ navigation }) => {
                     </Pressable>
                 </View>
 
-                {selector.pre_enquiry_list.length > 0 ? <View style={GlobalStyle.shadow}>
+                {selector.pre_enquiry_list.length > 0 ? <View style={[GlobalStyle.shadow, { backgroundColor: 'white' }]}>
                     <FlatList
                         data={selector.pre_enquiry_list}
                         keyExtractor={(item, index) => index.toString()}
@@ -114,7 +114,9 @@ const PreEnquiryScreen = ({ navigation }) => {
 
                 <View style={[styles.addView, GlobalStyle.shadow]}>
                     <Pressable onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.addPreEnq)}>
+                        {/* <View style={[GlobalStyle.shadow, { height: 60, width: 60, borderRadius: 30, shadowRadius: 5 }]}> */}
                         <VectorImage source={CREATE_NEW} width={60} height={60} />
+                        {/* </View> */}
                     </Pressable>
                 </View>
 
@@ -143,10 +145,21 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 10,
         right: 10,
+        backgroundColor: 'white'
     },
     emptyListVw: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    customShadow: {
+        shadowColor: Colors.DARK_GRAY,
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowRadius: 2,
+        shadowOpacity: 0.5,
+        elevation: 3,
     }
 })

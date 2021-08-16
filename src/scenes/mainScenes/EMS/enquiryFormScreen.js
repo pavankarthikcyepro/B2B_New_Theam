@@ -31,22 +31,19 @@ import { DropDownSelectionItem } from "../../../pureComponents/dropDownSelection
 import {
   setEditable,
   setDatePicker,
-  setDropDown,
   setPersonalIntro,
   setCommunicationAddress,
   setCustomerProfile,
-  updateSelectedDropDownData,
   updateSelectedDate,
-  setModelDropDown,
-  setFinancialDropDown,
   setFinancialDetails,
   setCustomerNeedAnalysis,
-  setCustomerNeedDropDown,
   setImagePicker,
-  setUploadDocuments
+  setUploadDocuments,
+  setDropDownData
 } from '../../../redux/enquiryFormReducer';
-import { RadioTextItem, CustomerAccordianHeaderItem, ImageSelectItem } from '../../../pureComponents';
+import { RadioTextItem, CustomerAccordianHeaderItem, ImageSelectItem, DateSelectItem } from '../../../pureComponents';
 import { ImagePickerComponent } from "../../../components";
+import { Dropdown } from 'sharingan-rn-modal-dropdown';
 
 const DetailsOverviewScreen = ({ navigation }) => {
 
@@ -76,19 +73,6 @@ const DetailsOverviewScreen = ({ navigation }) => {
       />
 
       {
-        selector.showDropDownpicker && <DropDownComponant
-          visible={selector.showDropDownpicker}
-          headerTitle={selector.dropDownTitle}
-          data={selector.dropDownData}
-          keyId={selector.dropDownKeyId}
-          selectedItems={(item, keyId) => {
-            console.log("selected: ", item, keyId);
-            dispatch(updateSelectedDropDownData({ id: item.id, name: item.name, keyId: keyId }))
-          }}
-        />
-      }
-
-      {
         selector.showDatepicker && <DatePickerComponent
           visible={selector.showDatepicker}
           mode={'date'}
@@ -96,9 +80,14 @@ const DetailsOverviewScreen = ({ navigation }) => {
           onChange={(event, selectedDate) => {
             console.log('date: ', selectedDate)
             if (Platform.OS === "android") {
-              // setDatePickerVisible(false)
+              if (!selectedDate) {
+                dispatch(updateSelectedDate({ key: "NONE", text: selectedDate }));
+              } else {
+                dispatch(updateSelectedDate({ key: "", text: selectedDate }));
+              }
+            } else {
+              dispatch(updateSelectedDate({ key: "", text: selectedDate }));
             }
-            dispatch(updateSelectedDate({ key: "", text: selectedDate }));
           }}
           onRequestClose={() => dispatch(setDatePicker())}
         />
@@ -149,16 +138,28 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   overflow: "hidden",
                 }}
               >
-                <DropDownSelectionItem
-                  label={"Salutation*"}
-                  value={selector.salutaion}
-                  onPress={() => dispatch(setDropDown("SALUTATION"))}
-                />
-                <DropDownSelectionItem
-                  label={"Gender*"}
-                  value={selector.gender}
-                  onPress={() => dispatch(setDropDown("GENDER"))}
-                />
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Salutation"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={true}
+                    value={selector.salutaion}
+                    onChange={(value) => dispatch(setDropDownData({ key: "SALUTATION", value: value }))}
+                  />
+                </View>
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Gender"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.gender}
+                    onChange={(value) => dispatch(setDropDownData({ key: "GENDER", value: value }))}
+                  />
+                </View>
+
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.firstName}
@@ -178,12 +179,17 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 />
                 <Text style={GlobalStyle.underline}></Text>
 
-                <DropDownSelectionItem
-                  label={"Relation*"}
-                  value={selector.relation}
-                  onPress={() => dispatch(setDropDown("RELATION"))}
-                />
-                <Text style={GlobalStyle.underline}></Text>
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Relation"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.relation}
+                    onChange={(value) => dispatch(setDropDownData({ key: "RELATION", value: value }))}
+                  />
+                </View>
+
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.relationName}
@@ -223,33 +229,16 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   }
                 />
                 <Text style={GlobalStyle.underline}></Text>
-
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.dateOfBirth}
+                <DateSelectItem
                   label={"Date Of Birth"}
-                  disabled={true}
-                  onPressIn={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
-                  showRightIcon={true}
-                  rightIconObj={{
-                    name: "calendar-range",
-                    color: Colors.GRAY,
-                  }}
+                  value={selector.dateOfBirth}
+                  onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
                 />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.anniversaryDate}
+                <DateSelectItem
                   label={"Anniversary Date"}
-                  disabled={true}
-                  onPressIn={() => dispatch(setDatePicker("ANNIVERSARY_DATE"))}
-                  showRightIcon={true}
-                  rightIconObj={{
-                    name: "calendar-range",
-                    color: Colors.GRAY,
-                  }}
+                  value={selector.anniversaryDate}
+                  onPress={() => dispatch(setDatePicker("ANNIVERSARY_DATE"))}
                 />
-                <Text style={GlobalStyle.underline}></Text>
               </View>
             </View>
             <View style={styles.space}></View>
@@ -533,31 +522,62 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 onPress={() => updateAccordian(3)}
               />
               <View style={{ width: "100%", height: openAccordian == 3 ? null : 0, overflow: 'hidden' }}>
-                <DropDownSelectionItem
-                  label={"Model*"}
-                  value={selector.model}
-                  onPress={() => dispatch(setModelDropDown("MODEL"))}
-                />
-                <DropDownSelectionItem
-                  label={"Varient*"}
-                  value={selector.varient}
-                  onPress={() => dispatch(setModelDropDown("VARIENT"))}
-                />
-                <DropDownSelectionItem
-                  label={"Color*"}
-                  value={selector.color}
-                  onPress={() => dispatch(setModelDropDown("COLOR"))}
-                />
-                <DropDownSelectionItem
-                  label={"Fuel Type*"}
-                  value={selector.fuel_type}
-                  onPress={() => dispatch(setModelDropDown("FUEL_TYPE"))}
-                />
-                <DropDownSelectionItem
-                  label={"Transmission Type*"}
-                  value={selector.transmission_type}
-                  onPress={() => dispatch(setModelDropDown("TRANSMISSION_TYPE"))}
-                />
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Model"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.model}
+                    onChange={(value) => dispatch(setDropDownData({ key: "MODEL", value: value }))}
+                  />
+                </View>
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Varient"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.varient}
+                    onChange={(value) => dispatch(setDropDownData({ key: "VARIENT", value: value }))}
+                  />
+                </View>
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Color"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.color}
+                    onChange={(value) => dispatch(setDropDownData({ key: "COLOR", value: value }))}
+                  />
+                </View>
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Fuel Type"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.fuel_type}
+                    onChange={(value) => dispatch(setDropDownData({ key: "FUEL_TYPE", value: value }))}
+                  />
+                </View>
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Transmission Type"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.transmission_type}
+                    onChange={(value) => dispatch(setDropDownData({ key: "TRANSMISSION_TYPE", value: value }))}
+                  />
+                </View>
+
               </View>
             </View>
             <View style={styles.space}></View>
@@ -594,64 +614,111 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 />
                 <Text style={GlobalStyle.underline}></Text>
 
-                <DropDownSelectionItem
-                  label={"Enquiry Segment*"}
-                  value={selector.enquiry_segment}
-                  onPress={() => dispatch(setDropDown("ENQUIRY_SEGMENT"))}
-                />
-                <DropDownSelectionItem
-                  label={"Customer Type*"}
-                  value={selector.customer_type}
-                  onPress={() => dispatch(setDropDown("CUSTOMER_TYPE"))}
-                />
-                <DropDownSelectionItem
-                  label={"Source Of Enquiry*"}
-                  value={selector.source_of_enquiry}
-                  onPress={() => dispatch(setDropDown("SOURCE_OF_ENQUIRY"))}
-                />
-                <TextinputComp
-                  style={styles.textInputStyle}
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Enquiry Segment"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.enquiry_segment}
+                    onChange={(value) => dispatch(setDropDownData({ key: "ENQUIRY_SEGMENT", value: value }))}
+                  />
+                </View>
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Customer Type"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.customer_type}
+                    onChange={(value) => dispatch(setDropDownData({ key: "CUSTOMER_TYPE", value: value }))}
+                  />
+                </View>
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Source Of Enquiry"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.source_of_enquiry}
+                    onChange={(value) => dispatch(setDropDownData({ key: "SOURCE_OF_ENQUIRY", value: value }))}
+                  />
+                </View>
+
+                <DateSelectItem
                   label={"Expected Date"}
                   value={selector.expected_date}
-                  disabled={true}
-                  onPressIn={() => dispatch(setDatePicker("EXPECTED_DATE"))}
-                  showRightIcon={true}
-                  rightIconObj={{
-                    name: "calendar-range",
-                    color: Colors.GRAY,
-                  }}
+                  onPress={() => dispatch(setDatePicker("EXPECTED_DATE"))}
                 />
-                <Text style={GlobalStyle.underline}></Text>
-                <DropDownSelectionItem
-                  label={"Enquiry Category*"}
-                  value={selector.enquiry_category}
-                  onPress={() => dispatch(setDropDown("ENQUIRY_CATEGORY"))}
-                />
-                <DropDownSelectionItem
-                  label={"Buyer Type*"}
-                  value={selector.buyer_type}
-                  onPress={() => dispatch(setDropDown("BUYER_TYPE"))}
-                />
-                <DropDownSelectionItem
-                  label={"KMs Travelled in Month*"}
-                  value={selector.kms_travelled_month}
-                  onPress={() => dispatch(setDropDown("KMS_TRAVELLED"))}
-                />
-                <DropDownSelectionItem
-                  label={"Who Drives*"}
-                  value={selector.who_drives}
-                  onPress={() => dispatch(setDropDown("WHO_DRIVES"))}
-                />
-                <DropDownSelectionItem
-                  label={"Members*"}
-                  value={selector.members}
-                  onPress={() => dispatch(setDropDown("MEMBERS"))}
-                />
-                <DropDownSelectionItem
-                  label={"What is prime expectation from the car*"}
-                  value={selector.prime_expectation_from_car}
-                  onPress={() => dispatch(setDropDown("PRIME_EXPECTATION_CAR"))}
-                />
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Enquiry Category"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.enquiry_category}
+                    onChange={(value) => dispatch(setDropDownData({ key: "ENQUIRY_CATEGORY", value: value }))}
+                  />
+                </View>
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Buyer Type"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.buyer_type}
+                    onChange={(value) => dispatch(setDropDownData({ key: "BUYER_TYPE", value: value }))}
+                  />
+                </View>
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="KMs Travelled in Month"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.kms_travelled_month}
+                    onChange={(value) => dispatch(setDropDownData({ key: "KMS_TRAVELLED", value: value }))}
+                  />
+                </View>
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Who Drives"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.who_drives}
+                    onChange={(value) => dispatch(setDropDownData({ key: "WHO_DRIVES", value: value }))}
+                  />
+                </View>
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Members"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.members}
+                    onChange={(value) => dispatch(setDropDownData({ key: "MEMBERS", value: value }))}
+                  />
+                </View>
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="What is prime expectation from the car"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.prime_expectation_from_car}
+                    onChange={(value) => dispatch(setDropDownData({ key: "PRIME_EXPECTATION_CAR", value: value }))}
+                  />
+                </View>
+
               </View>
             </View>
             <View style={styles.space}></View>
@@ -671,16 +738,29 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   overflow: 'hidden'
                 }}
               >
-                <DropDownSelectionItem
-                  label={"Retail Finance*"}
-                  value={selector.retail_finance}
-                  onPress={() => dispatch(setFinancialDropDown("RETAIL_FINANCE"))}
-                />
-                <DropDownSelectionItem
-                  label={"Finance Category*"}
-                  value={selector.finance_category}
-                  onPress={() => dispatch(setFinancialDropDown("FINANCE_CATEGORY"))}
-                />
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Retail Finance"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.retail_finance}
+                    onChange={(value) => dispatch(setDropDownData({ key: "RETAIL_FINANCE", value: value }))}
+                  />
+                </View>
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Finance Category"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.finance_category}
+                    onChange={(value) => dispatch(setDropDownData({ key: "FINANCE_CATEGORY", value: value }))}
+                  />
+                </View>
+
                 <TextinputComp
                   style={{ height: 65, width: "100%" }}
                   label={"Down Payment*"}
@@ -695,11 +775,17 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   onChangeText={(text) => dispatch(setFinancialDetails({ key: "LOAN_AMOUNT", text: text }))}
                 />
                 <Text style={GlobalStyle.underline}></Text>
-                <DropDownSelectionItem
-                  label={"Bank/Financer*"}
-                  value={selector.bank_or_finance}
-                  onPress={() => dispatch(setFinancialDropDown("BANK_FINANCE"))}
-                />
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Bank/Financer"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.bank_or_finance}
+                    onChange={(value) => dispatch(setDropDownData({ key: "BANK_FINANCE", value: value }))}
+                  />
+                </View>
+
                 <TextinputComp
                   style={{ height: 65, width: "100%" }}
                   label={"Rate of Interest*"}
@@ -707,11 +793,17 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   onChangeText={(text) => dispatch(setFinancialDetails({ key: "RATE_OF_INTEREST", text: text }))}
                 />
                 <Text style={GlobalStyle.underline}></Text>
-                <DropDownSelectionItem
-                  label={"Loan of Tenure(Months)*"}
-                  value={selector.loan_of_tenure}
-                  onPress={() => dispatch(setFinancialDropDown("LOAN_OF_TENURE"))}
-                />
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Loan of Tenure(Months)"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.loan_of_tenure}
+                    onChange={(value) => dispatch(setDropDownData({ key: "LOAN_OF_TENURE", value: value }))}
+                  />
+                </View>
+
                 <TextinputComp
                   style={{ height: 65, width: "100%" }}
                   label={"EMI*"}
@@ -719,13 +811,17 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   onChangeText={(text) => dispatch(setFinancialDetails({ key: "EMI", text: text }))}
                 />
                 <Text style={GlobalStyle.underline}></Text>
-                <DropDownSelectionItem
-                  label={"Approx Annual Income*"}
-                  value={selector.approx_annual_income}
-                  onPress={() => dispatch(setFinancialDropDown("APPROX_ANNUAL_INCOME"))}
-                  value={"Cash"}
-                  onPress={() => { }}
-                />
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Approx Annual Income"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.approx_annual_income}
+                    onChange={(value) => dispatch(setDropDownData({ key: "APPROX_ANNUAL_INCOME", value: value }))}
+                  />
+                </View>
+
               </View>
             </View>
             <View style={styles.space}></View>
@@ -752,7 +848,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   onChangeText={(text) => dispatch(setUploadDocuments({ key: "PAN", text: text }))}
                 />
                 <Text style={GlobalStyle.underline}></Text>
-                <View style={{ minHeight: 50, paddingLeft: 12, backgroundColor: Colors.WHITE }}>
+                <View style={styles.select_image_bck_vw}>
                   <ImageSelectItem name={'Upload Pan'} onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))} />
                 </View>
                 <TextinputComp
@@ -762,7 +858,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   onChangeText={(text) => dispatch(setUploadDocuments({ key: "ADHAR", text: text }))}
                 />
                 <Text style={GlobalStyle.underline}></Text>
-                <View style={{ minHeight: 50, paddingLeft: 12, backgroundColor: Colors.WHITE }}>
+                <View style={styles.select_image_bck_vw}>
                   <ImageSelectItem name={'Upload Adhar'} onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))} />
                 </View>
               </View>
@@ -793,48 +889,73 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     onPress={() => dispatch(setCustomerNeedAnalysis({ key: "CHECK_BOX", text: "" }))}
                   />
                 </View>
-                <DropDownSelectionItem
-                  label={"Make"}
-                  value={selector.make}
-                  onPress={() => dispatch(setCustomerNeedDropDown("C_MAKE"))}
-                />
-                <DropDownSelectionItem
-                  label={"Model*"}
-                  value={selector.model}
-                  onPress={() => dispatch(setModelDropDown("C_MODEL"))}
-                />
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.variant}
-                  label={"Variant"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCustomerNeedAnalysis({ key: "VARIANT", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.color}
-                  label={"Color"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCustomerNeedAnalysis({ key: "COLOR", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <DropDownSelectionItem
-                  label={"Fuel Type*"}
-                  value={selector.fuel_type}
-                  onPress={() => dispatch(setModelDropDown("C_FUEL_TYPE"))}
-                />
-                <DropDownSelectionItem
-                  label={"Transmission Type*"}
-                  value={selector.transmission_type}
-                  onPress={() => dispatch(setModelDropDown("C_TRANSMISSION_TYPE"))}
-                />
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Make"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.make}
+                    onChange={(value) => dispatch(setDropDownData({ key: "C_MAKE", value: value }))}
+                  />
+                </View>
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Model"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.model}
+                    onChange={(value) => dispatch(setDropDownData({ key: "C_MODEL", value: value }))}
+                  />
+                </View>
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Variant"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.variant}
+                    onChange={(value) => dispatch(setDropDownData({ key: "C_VARIANT", value: value }))}
+                  />
+                </View>
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Color"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.color}
+                    onChange={(value) => dispatch(setDropDownData({ key: "C_COLOR", value: value }))}
+                  />
+                </View>
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Fuel Type"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.fuel_type}
+                    onChange={(value) => dispatch(setDropDownData({ key: "C_FUEL_TYPE", value: value }))}
+                  />
+                </View>
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Transmission Type"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.transmission_type}
+                    onChange={(value) => dispatch(setDropDownData({ key: "C_TRANSMISSION_TYPE", value: value }))}
+                  />
+                </View>
+
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.price_range}
@@ -944,6 +1065,11 @@ const styles = StyleSheet.create({
   space: {
     height: 10
   },
+  drop_down_view_style: {
+    paddingTop: 5,
+    flex: 1,
+    backgroundColor: Colors.WHITE
+  },
   view1: {
     height: 60,
     flexDirection: "row",
@@ -959,7 +1085,7 @@ const styles = StyleSheet.create({
   accordianBckVw: {
     // marginVertical: 5,
     // borderRadius: 10,
-    backgroundColor: Colors.LIGHT_GRAY,
+    backgroundColor: Colors.WHITE,
   },
   radioGroupBcVw: {
     flexDirection: "row",
@@ -982,6 +1108,9 @@ const styles = StyleSheet.create({
   looking_any_text: {
     fontSize: 16,
     fontWeight: '500'
+  },
+  select_image_bck_vw: {
+    minHeight: 50, paddingLeft: 12, backgroundColor: Colors.WHITE
   }
 });
 

@@ -7,6 +7,11 @@
     -> 3. yarn react-native-vector-image generate
     -> 4. npx react-native run-ios (or) npx react-native run-android
 
+# to display toast message:
+
+    -> react-native-simple-toast
+    -> react-native-snackbar
+
 # to select images
 
     -> "react-native-image-picker": "^4.0.6"

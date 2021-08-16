@@ -36,8 +36,10 @@ const TextinputComp = ({ value, mode = 'flat', label, disabled, placeholder, err
                 onChangeText={onChangeText}
                 secureTextEntry={isSecure}
                 right={rightIconComp}
+                spellCheck={false}
                 theme={{ colors: { primary: Colors.GRAY, underlineColor: 'transparent' } }}
-                onPressIn={onPressIn}
+                // onPressIn={onPressIn}
+                onFocus={onPressIn}
             />
             {error ? <HelperText type="error" visible={true} padding={'none'} style={{ color: Colors.RED }}>
                 {errorMsg}

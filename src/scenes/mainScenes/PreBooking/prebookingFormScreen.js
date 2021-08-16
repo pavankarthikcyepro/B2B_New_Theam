@@ -16,27 +16,54 @@ import {
 import { DropDownSelectionItem } from "../../../pureComponents/dropDownSelectionItem";
 import {
   setDatePicker,
-  setDropDown,
   setCustomerDetails,
   updateSelectedDropDownData,
   updateSelectedDate,
   setCommunicationAddress,
-  setModelDropDown,
   setFinancialDetails,
-  setFinancialDropDown,
   setCommitmentDetails,
-  setBookingPaymentDetails
+  setBookingPaymentDetails,
+  setDropDownData,
+  setDocumentUploadDetails,
+  setImagePicker
 } from "../../../redux/preBookingFormReducer";
-import { RadioTextItem, CustomerAccordianHeaderItem, ImageSelectItem } from "../../../pureComponents";
+import { RadioTextItem, CustomerAccordianHeaderItem, ImageSelectItem, DateSelectItem } from "../../../pureComponents";
 import { ImagePickerComponent } from "../../../components";
 import { Checkbox, IconButton } from "react-native-paper";
+import { Dropdown } from 'sharingan-rn-modal-dropdown';
 
+const data = [
+  {
+    value: '1',
+    label: 'Tiger Nixon',
+    employee_salary: '320800',
+    employee_age: '61',
+  },
+  {
+    value: '2',
+    label: 'Garrett Winters',
+    employee_salary: '170750',
+    employee_age: '63',
+
+  },
+  {
+    value: '3',
+    label: 'Ashton Cox',
+    employee_salary: '86000',
+    employee_age: '66',
+  }
+]
 
 const PrebookingFormScreen = ({ navigation }) => {
 
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.preBookingFormReducer);
   const [openAccordian, setOpenAccordian] = useState(0);
+
+  const [valueSS, setValueSS] = useState('');
+  const onChangeSS = (value) => {
+    setValueSS(value);
+  };
 
   const updateAccordian = (index) => {
     if (index != openAccordian) {
@@ -48,6 +75,15 @@ const PrebookingFormScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
+
+      <ImagePickerComponent
+        visible={selector.showImagePicker}
+        keyId={selector.imagePickerKeyId}
+        selectedImage={(data, keyId) => {
+          console.log('imageObj: ', data, keyId);
+        }}
+        onDismiss={() => dispatch(setImagePicker(""))}
+      />
 
       {selector.showDropDownpicker && (
         <DropDownComponant
@@ -96,7 +132,7 @@ const PrebookingFormScreen = ({ navigation }) => {
         <View style={styles.baseVw}>
 
           {/* // 1.Customer Details */}
-          <View style={[styles.accordianBckVw, { marginTop: 0 }, GlobalStyle.shadow,]} >
+          <View style={[styles.accordianBckVw, GlobalStyle.shadow, { backgroundColor: 'white' }]} >
             <CustomerAccordianHeaderItem
               title={"Customer Details"}
               leftIcon={"account-edit"}
@@ -110,11 +146,17 @@ const PrebookingFormScreen = ({ navigation }) => {
                 overflow: "hidden",
               }}
             >
-              <DropDownSelectionItem
-                label={"Salutation*"}
-                value={selector.salutation}
-                onPress={() => dispatch(setDropDown("SALUTATION"))}
-              />
+              <View style={styles.drop_down_view_style}>
+                <Dropdown
+                  label="Salutation"
+                  data={selector.dropDownData}
+                  required={true}
+                  floating={true}
+                  value={selector.salutation}
+                  onChange={(value) => dispatch(setDropDownData({ key: "SALUTATION", value: value }))}
+                />
+              </View>
+
               <TextinputComp
                 style={{ height: 65, width: "100%" }}
                 value={selector.first_name}
@@ -147,40 +189,47 @@ const PrebookingFormScreen = ({ navigation }) => {
                 onChangeText={(text) => dispatch(setCustomerDetails({ key: "EMAIL", text: text }))}
               />
               <Text style={GlobalStyle.underline}></Text>
-              <DropDownSelectionItem
-                label={"Enquiry Segment*"}
-                value={selector.enquiry_segment}
-                onPress={() => dispatch(setDropDown("ENQUIRY_SEGMENT"))}
-              />
-              <DropDownSelectionItem
-                label={"Customer Type*"}
-                value={selector.customer_type}
-                onPress={() => dispatch(setDropDown("CUSTOMER_TYPE"))}
-              />
-              <DropDownSelectionItem
-                label={"Gender*"}
-                value={selector.gender}
-                onPress={() => dispatch(setDropDown("GENDER"))}
-              />
-              <TextinputComp
-                style={{ height: 65, width: "100%" }}
-                value={selector.date_of_birth}
+              <View style={styles.drop_down_view_style}>
+                <Dropdown
+                  label="Enquiry Segment"
+                  data={selector.dropDownData}
+                  required={true}
+                  floating={true}
+                  value={selector.enquiry_segment}
+                  onChange={(value) => dispatch(setDropDownData({ key: "ENQUIRY_SEGMENT", value: value }))}
+                />
+              </View>
+              <View style={styles.drop_down_view_style}>
+                <Dropdown
+                  label="Customer Type"
+                  data={selector.dropDownData}
+                  required={true}
+                  floating={true}
+                  value={selector.customer_type}
+                  onChange={(value) => dispatch(setDropDownData({ key: "CUSTOMER_TYPE", value: value }))}
+                />
+              </View>
+              <View style={styles.drop_down_view_style}>
+                <Dropdown
+                  label="Gender"
+                  data={selector.dropDownData}
+                  required={true}
+                  floating={true}
+                  value={selector.gender}
+                  onChange={(value) => dispatch(setDropDownData({ key: "GENDER", value: value }))}
+                />
+              </View>
+              <DateSelectItem
                 label={"Date Of Birth"}
-                disabled={true}
-                onPressIn={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
-                showRightIcon={true}
-                rightIconObj={{
-                  name: "calendar-range",
-                  color: Colors.GRAY,
-                }}
+                value={selector.date_of_birth}
+                onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
               />
-              <Text style={GlobalStyle.underline}></Text>
             </View>
           </View>
           <View style={styles.space}></View>
 
           {/* // 2.Communication Address */}
-          <View style={[styles.accordianBckVw, GlobalStyle.shadow]}>
+          <View style={[styles.accordianBckVw, GlobalStyle.shadow, { backgroundColor: 'white' }]}>
             <CustomerAccordianHeaderItem
               title={"Communicaton Address"}
               leftIcon={"account-edit"}
@@ -448,8 +497,9 @@ const PrebookingFormScreen = ({ navigation }) => {
           </View>
           <View style={styles.space}></View>
 
+
           {/* // 3.Modal Selction */}
-          <View style={[styles.accordianBckVw], GlobalStyle.shadow}>
+          <View style={[styles.accordianBckVw, GlobalStyle.shadow, { backgroundColor: 'white' }]}>
             <CustomerAccordianHeaderItem
               title={"Modal Selection"}
               leftIcon={"account-edit"}
@@ -457,37 +507,68 @@ const PrebookingFormScreen = ({ navigation }) => {
               onPress={() => updateAccordian(3)}
             />
             <View style={{ width: "100%", height: openAccordian == 3 ? null : 0, overflow: 'hidden' }}>
-              <DropDownSelectionItem
-                label={"Model*"}
-                value={selector.model}
-                onPress={() => dispatch(setModelDropDown("MODEL"))}
-              />
-              <DropDownSelectionItem
-                label={"Varient*"}
-                value={selector.varient}
-                onPress={() => dispatch(setModelDropDown("VARIENT"))}
-              />
-              <DropDownSelectionItem
-                label={"Color*"}
-                value={selector.color}
-                onPress={() => dispatch(setModelDropDown("COLOR"))}
-              />
-              <DropDownSelectionItem
-                label={"Fuel Type*"}
-                value={selector.fuel_type}
-                onPress={() => dispatch(setModelDropDown("FUEL_TYPE"))}
-              />
-              <DropDownSelectionItem
-                label={"Transmission Type*"}
-                value={selector.transmission_type}
-                onPress={() => dispatch(setModelDropDown("TRANSMISSION_TYPE"))}
-              />
+
+              <View style={styles.drop_down_view_style}>
+                <Dropdown
+                  label="Model"
+                  data={selector.dropDownData}
+                  required={true}
+                  floating={true}
+                  value={selector.model}
+                  onChange={(value) => dispatch(setDropDownData({ key: "MODEL", value: value }))}
+                />
+              </View>
+
+              <View style={styles.drop_down_view_style}>
+                <Dropdown
+                  label="Varient"
+                  data={selector.dropDownData}
+                  required={true}
+                  floating={true}
+                  value={selector.varient}
+                  onChange={(value) => dispatch(setDropDownData({ key: "VARIENT", value: value }))}
+                />
+              </View>
+
+              <View style={styles.drop_down_view_style}>
+                <Dropdown
+                  label="Color"
+                  data={selector.dropDownData}
+                  required={true}
+                  floating={true}
+                  value={selector.color}
+                  onChange={(value) => dispatch(setDropDownData({ key: "COLOR", value: value }))}
+                />
+              </View>
+
+              <View style={styles.drop_down_view_style}>
+                <Dropdown
+                  label="Fuel Type"
+                  data={selector.dropDownData}
+                  required={true}
+                  floating={true}
+                  value={selector.fuel_type}
+                  onChange={(value) => dispatch(setDropDownData({ key: "FUEL_TYPE", value: value }))}
+                />
+              </View>
+
+              <View style={styles.drop_down_view_style}>
+                <Dropdown
+                  label="Transmission Type"
+                  data={selector.dropDownData}
+                  required={true}
+                  floating={true}
+                  value={selector.transmission_type}
+                  onChange={(value) => dispatch(setDropDownData({ key: "TRANSMISSION_TYPE", value: value }))}
+                />
+              </View>
+
             </View>
           </View>
           <View style={styles.space}></View>
 
           {/* // 4.Financial Details */}
-          <View style={[styles.accordianBckVw], GlobalStyle.shadow}>
+          <View style={[styles.accordianBckVw, GlobalStyle.shadow, { backgroundColor: 'white' }]}>
             <CustomerAccordianHeaderItem
               title={"Financial Details"}
               leftIcon={"account-edit"}
@@ -501,16 +582,30 @@ const PrebookingFormScreen = ({ navigation }) => {
                 overflow: 'hidden'
               }}
             >
-              <DropDownSelectionItem
-                label={"Retail Finance*"}
-                value={selector.retail_finance}
-                onPress={() => dispatch(setFinancialDropDown("RETAIL_FINANCE"))}
-              />
-              <DropDownSelectionItem
-                label={"Finance Category*"}
-                value={selector.finance_category}
-                onPress={() => dispatch(setFinancialDropDown("FINANCE_CATEGORY"))}
-              />
+
+              <View style={styles.drop_down_view_style}>
+                <Dropdown
+                  label="Retail Finance"
+                  data={selector.dropDownData}
+                  required={true}
+                  floating={true}
+                  value={selector.retail_finance}
+                  onChange={(value) => dispatch(setDropDownData({ key: "RETAIL_FINANCE", value: value }))}
+                />
+              </View>
+
+              <View style={styles.drop_down_view_style}>
+                <Dropdown
+                  label="Finance Category"
+                  data={selector.dropDownData}
+                  required={true}
+                  floating={true}
+                  value={selector.finance_category}
+                  onChange={(value) => dispatch(setDropDownData({ key: "FINANCE_CATEGORY", value: value }))}
+                />
+              </View>
+
+
               <TextinputComp
                 style={{ height: 65, width: "100%" }}
                 label={"Down Payment*"}
@@ -525,11 +620,18 @@ const PrebookingFormScreen = ({ navigation }) => {
                 onChangeText={(text) => dispatch(setFinancialDetails({ key: "LOAN_AMOUNT", text: text }))}
               />
               <Text style={GlobalStyle.underline}></Text>
-              <DropDownSelectionItem
-                label={"Bank/Financer*"}
-                value={selector.bank_or_finance}
-                onPress={() => dispatch(setFinancialDropDown("BANK_FINANCE"))}
-              />
+
+              <View style={styles.drop_down_view_style}>
+                <Dropdown
+                  label="Bank/Financer"
+                  data={selector.dropDownData}
+                  required={true}
+                  floating={true}
+                  value={selector.bank_or_finance}
+                  onChange={(value) => dispatch(setDropDownData({ key: "BANK_FINANCE", value: value }))}
+                />
+              </View>
+
               <TextinputComp
                 style={{ height: 65, width: "100%" }}
                 label={"Rate of Interest*"}
@@ -537,11 +639,18 @@ const PrebookingFormScreen = ({ navigation }) => {
                 onChangeText={(text) => dispatch(setFinancialDetails({ key: "RATE_OF_INTEREST", text: text }))}
               />
               <Text style={GlobalStyle.underline}></Text>
-              <DropDownSelectionItem
-                label={"Loan of Tenure(Months)*"}
-                value={selector.loan_of_tenure}
-                onPress={() => dispatch(setFinancialDropDown("LOAN_OF_TENURE"))}
-              />
+
+              <View style={styles.drop_down_view_style}>
+                <Dropdown
+                  label="Loan of Tenure(Months)"
+                  data={selector.dropDownData}
+                  required={true}
+                  floating={true}
+                  value={selector.loan_of_tenure}
+                  onChange={(value) => dispatch(setDropDownData({ key: "LOAN_OF_TENURE", value: value }))}
+                />
+              </View>
+
               <TextinputComp
                 style={{ height: 65, width: "100%" }}
                 label={"EMI*"}
@@ -549,19 +658,24 @@ const PrebookingFormScreen = ({ navigation }) => {
                 onChangeText={(text) => dispatch(setFinancialDetails({ key: "EMI", text: text }))}
               />
               <Text style={GlobalStyle.underline}></Text>
-              <DropDownSelectionItem
-                label={"Approx Annual Income*"}
-                value={selector.approx_annual_income}
-                onPress={() => dispatch(setFinancialDropDown("APPROX_ANNUAL_INCOME"))}
-                value={"Cash"}
-                onPress={() => { }}
-              />
+
+              <View style={styles.drop_down_view_style}>
+                <Dropdown
+                  label="Approx Annual Income"
+                  data={selector.dropDownData}
+                  required={true}
+                  floating={true}
+                  value={selector.approx_annual_income}
+                  onChange={(value) => dispatch(setDropDownData({ key: "APPROX_ANNUAL_INCOME", value: value }))}
+                />
+              </View>
+
             </View>
           </View>
           <View style={styles.space}></View>
 
           {/* // 5.Document Upload */}
-          <View style={[styles.accordianBckVw], GlobalStyle.shadow}>
+          <View style={[styles.accordianBckVw, GlobalStyle.shadow, { backgroundColor: 'white' }]}>
             <CustomerAccordianHeaderItem
               title={"Document Upload"}
               leftIcon={"account-edit"}
@@ -569,12 +683,54 @@ const PrebookingFormScreen = ({ navigation }) => {
               onPress={() => updateAccordian(5)}
             />
             <View style={{ width: '100%', height: openAccordian == 5 ? null : 0, overflow: 'hidden' }}>
+
+              <View style={styles.drop_down_view_style}>
+                <Dropdown
+                  label="Form60/PAN"
+                  data={selector.dropDownData}
+                  required={true}
+                  floating={true}
+                  value={selector.form_or_pan}
+                  onChange={(value) => dispatch(setDropDownData({ key: "FORM_60_PAN", value: value }))}
+                />
+              </View>
+              <TextinputComp
+                style={styles.textInputStyle}
+                value={selector.adhaar_number}
+                label={"Aadhaar Number*"}
+                onChangeText={(text) => dispatch(setDocumentUploadDetails({ key: "ADHAR", text: text }))}
+              />
+              <Text style={GlobalStyle.underline}></Text>
+              <View style={styles.select_image_bck_vw}>
+                <ImageSelectItem name={'Upload Adhar'} onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))} />
+              </View>
+              <TextinputComp
+                style={styles.textInputStyle}
+                value={selector.relationship_proof}
+                label={"Relationship Number*"}
+                onChangeText={(text) => dispatch(setDocumentUploadDetails({ key: "RELATIONSHIP_PROOF", text: text }))}
+              />
+              <Text style={GlobalStyle.underline}></Text>
+              <View style={styles.select_image_bck_vw}>
+                <ImageSelectItem name={'Relationship Proof'} onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))} />
+              </View>
+              <View style={styles.drop_down_view_style}>
+                <Dropdown
+                  label="Customer Type Category"
+                  data={selector.dropDownData}
+                  required={true}
+                  floating={true}
+                  value={selector.customer_type_category}
+                  onChange={(value) => dispatch(setDropDownData({ key: "CUSTOMER_TYPE_CATEGORY", value: value }))}
+                />
+              </View>
+
             </View>
           </View>
           <View style={styles.space}></View>
 
           {/* // 6.Price Confirmation */}
-          <View style={[styles.accordianBckVw], GlobalStyle.shadow}>
+          <View style={[styles.accordianBckVw, GlobalStyle.shadow, { backgroundColor: 'white' }]}>
             <CustomerAccordianHeaderItem
               title={"Price Confirmation"}
               leftIcon={"account-edit"}
@@ -587,7 +743,7 @@ const PrebookingFormScreen = ({ navigation }) => {
           <View style={styles.space}></View>
 
           {/* // 7.Offer Price */}
-          <View style={[styles.accordianBckVw], GlobalStyle.shadow}>
+          <View style={[styles.accordianBckVw, GlobalStyle.shadow, { backgroundColor: 'white' }]}>
             <CustomerAccordianHeaderItem
               title={"Offer Price"}
               leftIcon={"account-edit"}
@@ -600,7 +756,7 @@ const PrebookingFormScreen = ({ navigation }) => {
           <View style={styles.space}></View>
 
           {/* // 8.Booking Payment Mode */}
-          <View style={[styles.accordianBckVw], GlobalStyle.shadow}>
+          <View style={[styles.accordianBckVw, GlobalStyle.shadow, { backgroundColor: 'white' }]}>
             <CustomerAccordianHeaderItem
               title={"Booking Payment Mode"}
               leftIcon={"account-edit"}
@@ -615,22 +771,35 @@ const PrebookingFormScreen = ({ navigation }) => {
                 onChangeText={(text) => dispatch(setBookingPaymentDetails({ key: "BOOKING_AMOUNT", text: text }))}
               />
               <Text style={GlobalStyle.underline}></Text>
-              <DropDownSelectionItem
-                label={"Payment At*"}
-                value={selector.payment_at}
-                onPress={() => dispatch(setDropDown("PAYMENT_AT"))}
-              />
-              <DropDownSelectionItem
-                label={"Booking Payment Mode*"}
-                value={selector.booking_payment_mode}
-                onPress={() => dispatch(setDropDown("BOOKING_PAYMENT_MODE"))}
-              />
+
+              <View style={styles.drop_down_view_style}>
+                <Dropdown
+                  label="Payment At"
+                  data={selector.dropDownData}
+                  required={true}
+                  floating={true}
+                  value={selector.payment_at}
+                  onChange={(value) => dispatch(setDropDownData({ key: "PAYMENT_AT", value: value }))}
+                />
+              </View>
+
+              <View style={styles.drop_down_view_style}>
+                <Dropdown
+                  label="Booking Payment Mode"
+                  data={selector.dropDownData}
+                  required={true}
+                  floating={true}
+                  value={selector.booking_payment_mode}
+                  onChange={(value) => dispatch(setDropDownData({ key: "BOOKING_PAYMENT_MODE", value: value }))}
+                />
+              </View>
+
             </View>
           </View>
           <View style={styles.space}></View>
 
           {/* // 9.Commitment */}
-          <View style={[styles.accordianBckVw], GlobalStyle.shadow}>
+          <View style={[styles.accordianBckVw, GlobalStyle.shadow, { backgroundColor: 'white' }]}>
             <CustomerAccordianHeaderItem
               title={"Commitment"}
               leftIcon={"account-edit"}
@@ -638,19 +807,11 @@ const PrebookingFormScreen = ({ navigation }) => {
               onPress={() => updateAccordian(9)}
             />
             <View style={{ width: '100%', height: openAccordian == 9 ? null : 0, overflow: 'hidden' }}>
-              <TextinputComp
-                style={styles.textInputStyle}
-                value={selector.customer_preferred_date}
+              <DateSelectItem
                 label={"Customer Preferred Date*"}
-                disabled={true}
-                onPressIn={() => dispatch(setDatePicker("CUSTOMER_PREFERRED_DATE"))}
-                showRightIcon={true}
-                rightIconObj={{
-                  name: "calendar-range",
-                  color: Colors.GRAY,
-                }}
+                value={selector.customer_preferred_date}
+                onPress={() => dispatch(setDatePicker("CUSTOMER_PREFERRED_DATE"))}
               />
-              <Text style={GlobalStyle.underline}></Text>
               <TextinputComp
                 style={{ height: 65, width: "100%" }}
                 label={"Occasion*"}
@@ -658,19 +819,11 @@ const PrebookingFormScreen = ({ navigation }) => {
                 onChangeText={(text) => dispatch(setCommitmentDetails({ key: "OCCASION", text: text }))}
               />
               <Text style={GlobalStyle.underline}></Text>
-              <TextinputComp
-                style={styles.textInputStyle}
-                value={selector.tentative_delivery_date}
+              <DateSelectItem
                 label={"Tentative Delivery Date*"}
-                disabled={true}
-                onPressIn={() => dispatch(setDatePicker("TENTATIVE_DELIVERY_DATE"))}
-                showRightIcon={true}
-                rightIconObj={{
-                  name: "calendar-range",
-                  color: Colors.GRAY,
-                }}
+                value={selector.tentative_delivery_date}
+                onPress={() => dispatch(setDatePicker("TENTATIVE_DELIVERY_DATE"))}
               />
-              <Text style={GlobalStyle.underline}></Text>
               <TextinputComp
                 style={{ height: 65, width: "100%" }}
                 label={"Delivery Location*"}
@@ -697,6 +850,11 @@ const styles = StyleSheet.create({
   baseVw: {
     paddingHorizontal: 10,
   },
+  drop_down_view_style: {
+    paddingTop: 5,
+    flex: 1,
+    backgroundColor: Colors.WHITE
+  },
   shadow: {
     shadowColor: Colors.DARK_GRAY,
     shadowOffset: {
@@ -720,7 +878,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   accordianBckVw: {
-    backgroundColor: Colors.LIGHT_GRAY,
+    backgroundColor: Colors.WHITE,
   },
   textInputStyle: {
     height: 65,
@@ -756,4 +914,7 @@ const styles = StyleSheet.create({
   space: {
     height: 10
   },
+  select_image_bck_vw: {
+    minHeight: 50, paddingLeft: 12, backgroundColor: Colors.WHITE
+  }
 });
