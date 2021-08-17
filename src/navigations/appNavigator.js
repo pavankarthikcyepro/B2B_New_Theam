@@ -29,6 +29,7 @@ import ConfirmedPreEnquiryScreen from "../scenes/mainScenes/EMS/confirmedPreEnqu
 import DetailsOverviewScreen from "../scenes/mainScenes/EMS/enquiryFormScreen";
 import PreBookingFormScreen from "../scenes/mainScenes/PreBooking/prebookingFormScreen";
 import PreBookingScreen from "../scenes/mainScenes/PreBooking/prebookingScreen";
+import HomeVisitScreen from "../scenes/mainScenes/MyTasks/homeVisitScreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -103,6 +104,11 @@ export const EmsStackIdentifiers = {
 export const PreBookingStackIdentifiers = {
   preBooking: "PRE_BOOKING",
   preBookingForm: "PRE_BOOKING_FORM"
+}
+
+export const MyTasksStackIdentifiers = {
+  mytasks: "MY_TASKS",
+  homeVisit: "HOME_VISIT"
 }
 
 const HomeStack = createStackNavigator();
@@ -198,11 +204,11 @@ const MyTaskStack = createStackNavigator();
 const MyTaskStackNavigator = ({ navigation }) => {
   return (
     <MyTaskStack.Navigator
-      initialRouteName={"MY_TASKS"}
+      initialRouteName={MyTasksStackIdentifiers.mytasks}
       screenOptions={screeOptionStyle}
     >
       <MyTaskStack.Screen
-        name="MY_TASKS"
+        name={MyTasksStackIdentifiers.mytasks}
         component={MyTasksScreen}
         options={{
           title: "My Tasks",
@@ -226,6 +232,13 @@ const MyTaskStackNavigator = ({ navigation }) => {
         component={NotificationScreen}
         options={{ title: "Notfications" }}
       />
+
+      <MyTaskStack.Screen
+        name={MyTasksStackIdentifiers.homeVisit}
+        component={HomeVisitScreen}
+        options={{ title: "Home Visit" }}
+      />
+
     </MyTaskStack.Navigator>
   );
 };

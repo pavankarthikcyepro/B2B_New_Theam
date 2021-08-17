@@ -6,10 +6,12 @@ import {
   StyleSheet,
   FlatList,
   Dimensions,
+  Pressable
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { MyTaskItem } from "../../../pureComponents/myTaskItem";
 import { useDispatch, useSelector } from "react-redux";
+import { AppNavigator } from "../../../navigations";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -29,13 +31,15 @@ const MyTasksScreen = ({ navigation }) => {
           renderItem={({ item, index }) => {
             return (
               <View style={[styles.listBgVw]}>
-                <MyTaskItem
-                  taskName={item.taskName}
-                  status={item.taskStatus}
-                  created={item.createdOn}
-                  dmsLead={item.dmsLead}
-                  phone={item.phoneNo}
-                />
+                <Pressable onPress={() => navigation.navigate(AppNavigator.MyTasksStackIdentifiers.homeVisit)}>
+                  <MyTaskItem
+                    taskName={item.taskName}
+                    status={item.taskStatus}
+                    created={item.createdOn}
+                    dmsLead={item.dmsLead}
+                    phone={item.phoneNo}
+                  />
+                </Pressable>
               </View>
             );
           }}

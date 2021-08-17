@@ -48,19 +48,19 @@ const TextinputComp = ({ value, mode = 'flat', label, disabled, placeholder, err
     );
 }
 
-TextinputComp.prototype = {
-    mode: PropTypes.oneOf(['flat', 'outlined']),
-    value: PropTypes.string.isRequired,
-    label: PropTypes.string,
-    disabled: PropTypes.bool,
-    placeholder: PropTypes.string,
-    error: PropTypes.bool,
-    multiline: PropTypes.bool,
-    numberOfLines: PropTypes.number,
-    editable: PropTypes.bool,
-    keyboardType: PropTypes.oneOf(['default', 'number-pad', 'decimal-pad', 'numeric', 'email-address', 'phone-pad']),
-    isSecure: PropTypes.bool,
-    showRightIcon: PropTypes.bool
-}
+// TextinputComp.prototype = {
+//     mode: PropTypes.oneOf(['flat', 'outlined']),
+//     value: PropTypes.string.isRequired,
+//     label: PropTypes.string,
+//     disabled: PropTypes.bool,
+//     placeholder: PropTypes.string,
+//     error: PropTypes.bool,
+//     multiline: PropTypes.bool,
+//     numberOfLines: PropTypes.number,
+//     editable: PropTypes.bool,
+//     keyboardType: PropTypes.oneOf(['default', 'number-pad', 'decimal-pad', 'numeric', 'email-address', 'phone-pad']),
+//     isSecure: PropTypes.bool,
+//     showRightIcon: PropTypes.bool
+// }
 
 export { TextinputComp };
