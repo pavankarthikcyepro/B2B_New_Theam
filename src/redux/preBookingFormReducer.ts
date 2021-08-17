@@ -1,5 +1,24 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+const dropDownData = [
+  {
+    value: "1",
+    label: "Tiger Nixon",
+  },
+  {
+    value: "2",
+    label: "Garrett Winters",
+  },
+  {
+    value: "3",
+    label: "Jhon Wick 1",
+  },
+  {
+    value: "4",
+    label: "Jhon Wick 2",
+  },
+];
+
 const dummyData = [
   {
     id: 1,
@@ -50,6 +69,11 @@ interface CustomerDetailModel {
   text: string;
 }
 
+interface DropDownModelNew {
+  key: string;
+  value: string;
+}
+
 interface DropDownModel {
   id: string;
   name: string;
@@ -63,10 +87,12 @@ const prebookingFormSlice = createSlice({
     isLoading: false,
     showDatepicker: false,
     showDropDownpicker: false,
-    dropDownData: genderData,
+    dropDownData: dropDownData,
     dropDownTitle: "",
     dropDownKeyId: "",
     datePickerKeyId: "",
+    showImagePicker: false,
+    imagePickerKeyId: "",
     // Customer Details
     first_name: "",
     last_name: "",
@@ -146,100 +172,81 @@ const prebookingFormSlice = createSlice({
     additional_offer_1: "",
     additional_offer_2: "",
     after_discount: "",
+    // Documents Upload
+    form_or_pan: "",
+    customer_type_category: "",
+    adhaar_number: "",
+    relationship_proof: "",
   },
   reducers: {
-    setDropDown: (state, action) => {
-      switch (action.payload) {
+    setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
+      const { key, value } = action.payload;
+      switch (key) {
         case "SALUTATION":
-          state.dropDownData = salutationData;
-          state.dropDownTitle = "Select Salutation";
-          state.dropDownKeyId = "SALUTATION";
-          break;
-        case "GENDER":
-          state.dropDownData = genderData;
-          state.dropDownTitle = "Select Gender";
-          state.dropDownKeyId = "GENDER";
+          state.salutation = value;
           break;
         case "ENQUIRY_SEGMENT":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "Select Enquiry Segment";
-          state.dropDownKeyId = "ENQUIRY_SEGMENT";
+          state.enquiry_segment = value;
           break;
         case "CUSTOMER_TYPE":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "Select Customer Type";
-          state.dropDownKeyId = "CUSTOMER_TYPE";
-          break;
-        case "PAYMENT_AT":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "Payment At";
-          state.dropDownKeyId = "PAYMENT_AT";
-          break;
-        case "BOOKING_PAYMENT_MODE":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "Booking Payment Mode";
-          state.dropDownKeyId = "BOOKING_PAYMENT_MODE";
-          break;
-        case "INSURANCE_TYPE":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "Insurance Type";
-          state.dropDownKeyId = "INSURANCE_TYPE";
-          break;
-        case "WARRANTY":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "warranty";
-          state.dropDownKeyId = "WARRANTY";
-          break;
-      }
-      state.showDropDownpicker = !state.showDropDownpicker;
-    },
-    updateSelectedDropDownData: (
-      state,
-      action: PayloadAction<DropDownModel>
-    ) => {
-      const { id, name, keyId } = action.payload;
-      switch (keyId) {
-        case "SALUTATION":
-          state.salutation = name;
+          state.customer_type = value;
           break;
         case "GENDER":
-          state.gender = name;
-          break;
-        case "ENQUIRY_SEGMENT":
-          state.enquiry_segment = name;
-          break;
-        case "CUSTOMER_TYPE":
-          state.customer_type = name;
+          state.gender = value;
           break;
         case "MODEL":
-          state.model = name;
+          state.model = value;
           break;
         case "VARIENT":
-          state.varient = name;
+          state.varient = value;
           break;
         case "COLOR":
-          state.color = name;
+          state.color = value;
           break;
         case "FUEL_TYPE":
-          state.fuel_type = name;
+          state.fuel_type = value;
           break;
         case "TRANSMISSION_TYPE":
-          state.transmission_type = name;
+          state.transmission_type = value;
+          break;
+        case "RETAIL_FINANCE":
+          state.retail_finance = value;
+          break;
+        case "FINANCE_CATEGORY":
+          state.finance_category = value;
+          break;
+        case "BANK_FINANCE":
+          state.bank_or_finance = value;
+          break;
+        case "LOAN_OF_TENURE":
+          state.loan_of_tenure = value;
+          break;
+        case "APPROX_ANNUAL_INCOME":
+          state.approx_annual_income = value;
           break;
         case "PAYMENT_AT":
-          state.payment_at = name;
+          state.payment_at = value;
           break;
         case "BOOKING_PAYMENT_MODE":
-          state.booking_payment_mode = name;
+          state.booking_payment_mode = value;
+          break;
+        case "FORM_60_PAN":
+          state.form_or_pan = value;
+          break;
+        case "CUSTOMER_TYPE_CATEGORY":
+          state.customer_type_category = value;
           break;
         case "INSURANCE_TYPE":
-          state.insurance_type = name;
+          state.insurance_type = value;
           break;
         case "WARRANTY":
-          state.warranty = name;
+          state.warranty = value;
           break;
       }
-      state.showDropDownpicker = !state.showDropDownpicker;
+    },
+    setImagePicker: (state, action) => {
+      state.imagePickerKeyId = action.payload;
+      state.showImagePicker = !state.showImagePicker;
     },
     setDatePicker: (state, action) => {
       state.datePickerKeyId = action.payload;
@@ -339,66 +346,6 @@ const prebookingFormSlice = createSlice({
           state.p_state = text;
           break;
       }
-    },
-    setModelDropDown: (state, action) => {
-      switch (action.payload) {
-        case "MODEL":
-          state.dropDownData = salutationData;
-          state.dropDownTitle = "Select Model";
-          state.dropDownKeyId = "MODEL";
-          break;
-        case "VARIENT":
-          state.dropDownData = salutationData;
-          state.dropDownTitle = "Select Varient";
-          state.dropDownKeyId = "VARIENT";
-          break;
-        case "COLOR":
-          state.dropDownData = salutationData;
-          state.dropDownTitle = "Select Color";
-          state.dropDownKeyId = "COLOR";
-          break;
-        case "FUEL_TYPE":
-          state.dropDownData = salutationData;
-          state.dropDownTitle = "Select Fuel Type";
-          state.dropDownKeyId = "FUEL_TYPE";
-          break;
-        case "TRANSMISSION_TYPE":
-          state.dropDownData = salutationData;
-          state.dropDownTitle = "Select Transmission Type";
-          state.dropDownKeyId = "TRANSMISSION_TYPE";
-          break;
-      }
-      state.showDropDownpicker = !state.showDropDownpicker;
-    },
-    setFinancialDropDown: (state, action) => {
-      switch (action.payload) {
-        case "RETAIL_FINANCE":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "Finance Detail";
-          state.dropDownKeyId = "RETAIL_FINANCE";
-          break;
-        case "FINANCE_CATEGORY":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "Finance Detail";
-          state.dropDownKeyId = "FINANCE_CATEGORY";
-          break;
-        case "BANK_FINANCE":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "Finance Detail";
-          state.dropDownKeyId = "BANK_FINANCE";
-          break;
-        case "LOAN_OF_TENURE":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "Finance Detail";
-          state.dropDownKeyId = "LOAN_OF_TENURE";
-          break;
-        case "APPROX_ANNUAL_INCOME":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "Finance Detail";
-          state.dropDownKeyId = "APPROX_ANNUAL_INCOME";
-          break;
-      }
-      state.showDropDownpicker = !state.showDropDownpicker;
     },
     setFinancialDetails: (
       state,
@@ -521,6 +468,20 @@ const prebookingFormSlice = createSlice({
           break;
       }
     },
+    setDocumentUploadDetails: (
+      state,
+      action: PayloadAction<CustomerDetailModel>
+    ) => {
+      const { key, text } = action.payload;
+      switch (key) {
+        case "ADHAR":
+          state.adhaar_number = text;
+          break;
+        case "RELATIONSHIP_PROOF":
+          state.relationship_proof = text;
+          break;
+      }
+    },
   },
 });
 
@@ -537,17 +498,16 @@ const dateSelected = (isoDate) => {
 
 export const {
   setDatePicker,
-  setDropDown,
-  updateSelectedDropDownData,
   updateSelectedDate,
   setCustomerDetails,
   setCommunicationAddress,
-  setModelDropDown,
   setFinancialDetails,
-  setFinancialDropDown,
   setCommitmentDetails,
   setBookingPaymentDetails,
   setPriceConformationDetails,
   setOfferPriceDetails,
+  setDropDownData,
+  setDocumentUploadDetails,
+  setImagePicker,
 } = prebookingFormSlice.actions;
 export default prebookingFormSlice.reducer;

@@ -22,7 +22,7 @@ const EnquiryScreen = ({ navigation }) => {
             style={{ padding: 0, marginLeft: 150 }}
           />
         </View>
-        <View style={GlobalStyle.shadow}>
+        <View style={[GlobalStyle.shadow, { backgroundColor: 'white' }]}>
           <FlatList
             data={selector.enquiry_list}
             keyExtractor={(item, index) => index.toString()}

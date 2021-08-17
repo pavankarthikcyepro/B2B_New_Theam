@@ -1,64 +1,32 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-const dummyData = [
+const dropDownData = [
   {
-    id: 1,
-    name: "First",
+    value: '1',
+    label: 'Tiger Nixon',
   },
   {
-    id: 2,
-    name: "Second",
+    value: '2',
+    label: 'Garrett Winters',
   },
   {
-    id: 3,
-    name: "Third",
+    value: '3',
+    label: 'Jhon Wick 1',
   },
   {
-    id: 4,
-    name: "Fourth",
-  },
-  {
-    id: 5,
-    name: "Fifth",
-  },
-];
-
-const genderData = [
-  {
-    id: 1,
-    name: "Male",
-  },
-  {
-    id: 2,
-    name: "Female",
-  },
-];
-
-const salutationData = [
-  {
-    id: 1,
-    name: "Mr",
-  },
-  {
-    id: 2,
-    name: "Mrs",
-  },
-];
-
-const relationTypeData = [
-  {
-    id: 1,
-    name: "S/O",
-  },
-  {
-    id: 2,
-    name: "D/0",
-  },
-];
+    value: '4',
+    label: 'Jhon Wick 2',
+  }
+]
 
 interface PersonalIntroModel {
   key: string;
   text: string;
+}
+
+interface DropDownModelNew {
+  key: string;
+  value: string;
 }
 
 interface DropDownModel {
@@ -74,10 +42,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     isLoading: false,
     openAccordian: 0,
     showDatepicker: false,
-    showDropDownpicker: false,
-    dropDownData: genderData,
-    dropDownTitle: "",
-    dropDownKeyId: "",
+    dropDownData: dropDownData,
     datePickerKeyId: "",
     enableEdit: false,
     showImagePicker: false,
@@ -167,163 +132,105 @@ const enquiryDetailsOverViewSlice = createSlice({
       console.log("pressed");
       state.enableEdit = !state.enableEdit;
     },
-    setDropDown: (state, action) => {
-      switch (action.payload) {
+    setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
+      const { key, value } = action.payload;
+      switch (key) {
         case "SALUTATION":
-          state.dropDownData = salutationData;
-          state.dropDownTitle = "Select Salutation";
-          state.dropDownKeyId = "SALUTATION";
+          state.salutaion = value;
           break;
         case "GENDER":
-          state.dropDownData = genderData;
-          state.dropDownTitle = "Select Gender";
-          state.dropDownKeyId = "GENDER";
+          state.gender = value;
           break;
         case "RELATION":
-          state.dropDownData = relationTypeData;
-          state.dropDownTitle = "Select Relation";
-          state.dropDownKeyId = "RELATION";
-          break;
-        case "ENQUIRY_SEGMENT":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "Select Enquiry Segment";
-          state.dropDownKeyId = "ENQUIRY_SEGMENT";
-          break;
-        case "CUSTOMER_TYPE":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "Select Customer Type";
-          state.dropDownKeyId = "CUSTOMER_TYPE";
-          break;
-        case "SOURCE_OF_ENQUIRY":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "Select Source Of Enquiry";
-          state.dropDownKeyId = "SOURCE_OF_ENQUIRY";
-          break;
-        case "ENQUIRY_CATEGORY":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "Select Enquiry Category";
-          state.dropDownKeyId = "ENQUIRY_CATEGORY";
-          break;
-        case "BUYER_TYPE":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "Select Buyer Type";
-          state.dropDownKeyId = "BUYER_TYPE";
-          break;
-        case "KMS_TRAVELLED":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "Select Kms Travelled In Month";
-          state.dropDownKeyId = "KMS_TRAVELLED";
-          break;
-        case "WHO_DRIVES":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "Who Drives?";
-          state.dropDownKeyId = "WHO_DRIVES";
-          break;
-        case "MEMBERS":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "Select Members";
-          state.dropDownKeyId = "MEMBERS";
-          break;
-        case "PRIME_EXPECTATION_CAR":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "What is Prime Expectation from the car";
-          state.dropDownKeyId = "PRIME_EXPECTATION_CAR";
-          break;
-      }
-      state.showDropDownpicker = !state.showDropDownpicker;
-    },
-    updateSelectedDropDownData: (state, action: PayloadAction<DropDownModel>) => {
-      const { id, name, keyId } = action.payload;
-      switch (keyId) {
-        case "SALUTATION":
-          state.salutaion = name;
-          break;
-        case "GENDER":
-          state.gender = name;
-          break;
-        case "RELATION":
-          state.relation = name;
-          break;
-        case "ENQUIRY_SEGMENT":
-          state.enquiry_segment = name;
-          break;
-        case "CUSTOMER_TYPE":
-          state.customer_type = name;
-          break;
-        case "SOURCE_OF_ENQUIRY":
-          state.source_of_enquiry = name;
-          break;
-        case "ENQUIRY_CATEGORY":
-          state.enquiry_category = name;
-          break;
-        case "BUYER_TYPE":
-          state.buyer_type = name;
-          break;
-        case "KMS_TRAVELLED":
-          state.kms_travelled_month = name;
-          break;
-        case "WHO_DRIVES":
-          state.who_drives = name;
-          break;
-        case "MEMBERS":
-          state.members = name;
-          break;
-        case "PRIME_EXPECTATION_CAR":
-          state.prime_expectation_from_car = name;
+          state.relation = value;
           break;
         case "MODEL":
-          state.model = name;
+          state.model = value;
           break;
         case "VARIENT":
-          state.varient = name;
+          state.varient = value;
           break;
         case "COLOR":
-          state.color = name;
+          state.color = value;
           break;
         case "FUEL_TYPE":
-          state.fuel_type = name;
+          state.fuel_type = value;
           break;
         case "TRANSMISSION_TYPE":
-          state.transmission_type = name;
+          state.transmission_type = value;
+          break;
+        case "ENQUIRY_SEGMENT":
+          state.enquiry_segment = value;
+          break;
+        case "CUSTOMER_TYPE":
+          state.customer_type = value;
+          break;
+        case "SOURCE_OF_ENQUIRY":
+          state.source_of_enquiry = value;
+          break;
+        case "ENQUIRY_CATEGORY":
+          state.enquiry_category = value;
+          break;
+        case "BUYER_TYPE":
+          state.buyer_type = value;
+          break;
+        case "KMS_TRAVELLED":
+          state.kms_travelled_month = value;
+          break;
+        case "WHO_DRIVES":
+          state.who_drives = value;
+          break;
+        case "MEMBERS":
+          state.members = value;
+          break;
+        case "PRIME_EXPECTATION_CAR":
+          state.prime_expectation_from_car = value;
           break;
         case "RETAIL_FINANCE":
-          state.retail_finance = name;
+          state.retail_finance = value;
           break;
         case "FINANCE_CATEGORY":
-          state.finance_category = name;
+          state.finance_category = value;
           break;
         case "BANK_FINANCE":
-          state.bank_or_finance = name;
+          state.bank_or_finance = value;
           break;
         case "LOAN_OF_TENURE":
-          state.loan_of_tenure = name;
+          state.loan_of_tenure = value;
           break;
         case "APPROX_ANNUAL_INCOME":
-          state.approx_annual_income = name;
+          state.approx_annual_income = value;
           break;
         case "C_MAKE":
-          state.c_make = name;
+          state.c_make = value;
           break;
         case "C_MODEL":
-          state.c_model = name;
+          state.c_model = value;
+          break;
+        case "C_VARIANT":
+          state.c_variant = value;
+          break;
+        case "C_COLOR":
+          state.c_color = value;
           break;
         case "C_FUEL_TYPE":
-          state.c_fuel_type = name;
+          state.fuel_type = value;
           break;
         case "C_TRANSMISSION_TYPE":
-          state.c_transmission_type = name;
+          state.transmission_type = value;
           break;
       }
-      state.showDropDownpicker = !state.showDropDownpicker;
     },
     setDatePicker: (state, action) => {
+      console.log('coming here')
       state.datePickerKeyId = action.payload;
       state.showDatepicker = !state.showDatepicker;
     },
     updateSelectedDate: (state, action: PayloadAction<PersonalIntroModel>) => {
       const { key, text } = action.payload;
       const selectedDate = dateSelected(text);
-      switch (state.datePickerKeyId) {
+      const keyId = key ? key : state.datePickerKeyId;
+      switch (keyId) {
         case "DATE_OF_BIRTH":
           state.dateOfBirth = selectedDate;
           break;
@@ -332,6 +239,9 @@ const enquiryDetailsOverViewSlice = createSlice({
           break;
         case "EXPECTED_DATE":
           state.expected_date = selectedDate;
+          break;
+        case "NONE":
+          console.log('NONE')
           break;
       }
       state.showDatepicker = !state.showDatepicker;
@@ -364,91 +274,6 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.anniversaryDate = text;
           break;
       }
-    },
-    setModelDropDown: (state, action) => {
-      switch (action.payload) {
-        case "MODEL":
-          state.dropDownData = salutationData;
-          state.dropDownTitle = "Select Model";
-          state.dropDownKeyId = "MODEL";
-          break;
-        case "VARIENT":
-          state.dropDownData = salutationData;
-          state.dropDownTitle = "Select Varient";
-          state.dropDownKeyId = "VARIENT";
-          break;
-        case "COLOR":
-          state.dropDownData = salutationData;
-          state.dropDownTitle = "Select Color";
-          state.dropDownKeyId = "COLOR";
-          break;
-        case "FUEL_TYPE":
-          state.dropDownData = salutationData;
-          state.dropDownTitle = "Select Fuel Type";
-          state.dropDownKeyId = "FUEL_TYPE";
-          break;
-        case "TRANSMISSION_TYPE":
-          state.dropDownData = salutationData;
-          state.dropDownTitle = "Select Transmission Type";
-          state.dropDownKeyId = "TRANSMISSION_TYPE";
-          break;
-      }
-      state.showDropDownpicker = !state.showDropDownpicker;
-    },
-    setFinancialDropDown: (state, action) => {
-      switch (action.payload) {
-        case "RETAIL_FINANCE":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "Finance Detail";
-          state.dropDownKeyId = "RETAIL_FINANCE";
-          break;
-        case "FINANCE_CATEGORY":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "Finance Detail";
-          state.dropDownKeyId = "FINANCE_CATEGORY";
-          break;
-        case "BANK_FINANCE":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "Finance Detail";
-          state.dropDownKeyId = "BANK_FINANCE";
-          break;
-        case "LOAN_OF_TENURE":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "Finance Detail";
-          state.dropDownKeyId = "LOAN_OF_TENURE";
-          break;
-        case "APPROX_ANNUAL_INCOME":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "Finance Detail";
-          state.dropDownKeyId = "APPROX_ANNUAL_INCOME";
-          break;
-      }
-      state.showDropDownpicker = !state.showDropDownpicker;
-    },
-    setCustomerNeedDropDown: (state, action) => {
-      switch (action.payload) {
-        case "C_MAKE":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "Select Make";
-          state.dropDownKeyId = "C_MAKE";
-          break;
-        case "C_MODEL":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "Select Model";
-          state.dropDownKeyId = "C_MODEL";
-          break;
-        case "C_FUEL_TYPE":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "Select Fuel Type";
-          state.dropDownKeyId = "C_FUEL_TYPE";
-          break;
-        case "C_TRANSMISSION_TYPE":
-          state.dropDownData = dummyData;
-          state.dropDownTitle = "Select Transmission Type";
-          state.dropDownKeyId = "C_TRANSMISSION_TYPE";
-          break;
-      }
-      state.showDropDownpicker = !state.showDropDownpicker;
     },
     setCommunicationAddress: (state, action: PayloadAction<PersonalIntroModel>) => {
       const { key, text } = action.payload;
@@ -599,25 +424,21 @@ const dateSelected = (isoDate) => {
   const date = new Date(isoDate);
   const finalDate =
     date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
-  console.log("date: ", finalDate);
+  //console.log("date: ", finalDate);
   return finalDate;
 };
 
 export const {
   setDatePicker,
   setEditable,
-  setDropDown,
   setPersonalIntro,
   setCommunicationAddress,
   setCustomerProfile,
-  updateSelectedDropDownData,
   updateSelectedDate,
-  setModelDropDown,
-  setFinancialDropDown,
   setFinancialDetails,
   setCustomerNeedAnalysis,
-  setCustomerNeedDropDown,
   setImagePicker,
-  setUploadDocuments
+  setUploadDocuments,
+  setDropDownData
 } = enquiryDetailsOverViewSlice.actions;
 export default enquiryDetailsOverViewSlice.reducer;

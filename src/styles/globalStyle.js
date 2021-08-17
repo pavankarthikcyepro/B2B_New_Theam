@@ -13,6 +13,7 @@ export const GlobalStyle = StyleSheet.create({
         shadowRadius: 2,
         shadowOpacity: 0.5,
         elevation: 3,
+        backgroundColor: "#0000"
     },
     underline: {
         backgroundColor: 'rgba(208, 212, 214, 0.7)',

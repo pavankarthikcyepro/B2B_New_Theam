@@ -6,9 +6,9 @@ import { Colors, GlobalStyle } from '../styles';
 export const DropDownSelectionItem = ({ label, value, onPress }) => {
     return (
         <Pressable onPress={onPress}>
-            <View style={{ height: 65, backgroundColor: Colors.WHITE, justifyContent: 'flex-end' }}>
-                <Text style={{ fontSize: 12, marginLeft: 15, fontWeight: '400', color: Colors.GRAY }}>{value ? label : ""}</Text>
-                <View style={styles.view3}>
+            <View style={styles.container}>
+                <Text style={styles.label}>{value ? label : ""}</Text>
+                <View style={[styles.view3, { paddingBottom: value ? 0 : 20 }]}>
                     <Text style={[styles.text3, { color: value ? Colors.BLACK : Colors.GRAY }]}>{value ? value : label}</Text>
                     <IconButton
                         icon="menu-down"
@@ -24,6 +24,8 @@ export const DropDownSelectionItem = ({ label, value, onPress }) => {
 }
 
 const styles = StyleSheet.create({
+    container: { height: 65, backgroundColor: Colors.WHITE, justifyContent: 'flex-end' },
+    label: { fontSize: 12, marginLeft: 12, fontWeight: '400', color: Colors.GRAY },
     view3: {
         width: '100%',
         height: 40,
@@ -33,7 +35,7 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.WHITE
     },
     text3: {
-        paddingLeft: 15,
+        paddingLeft: 12,
         fontSize: 16,
         fontWeight: '400',
         color: Colors.GRAY

@@ -18,7 +18,7 @@ const PreBookingScreen = ({ navigation }) => {
                 <View style={styles.view2}>
                     <PageControlItem pageNumber={1} totalPages={7} />
                 </View>
-                <View style={GlobalStyle.shadow}>
+                <View style={[GlobalStyle.shadow, { backgroundColor: Colors.WHITE }]}>
                     <FlatList
                         data={selector.enquiry_list}
                         keyExtractor={(item, index) => index.toString()}

@@ -2,11 +2,11 @@ import React from "react";
 import { View, StyleSheet, Text, Pressable } from "react-native";
 import { Button, IconButton } from "react-native-paper";
 import { Colors } from "../styles";
+import moment from 'moment';
 
 const convertTimeStampToDateString = (timeStamp) => {
-  var date = new Date(timeStamp);
-  let resultString = date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear() + " " + date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
-  return resultString;
+  const date = moment().format("DD/MM/YYYY h:mm a");
+  return date;
 }
 
 export const PreEnquiryItem = ({
