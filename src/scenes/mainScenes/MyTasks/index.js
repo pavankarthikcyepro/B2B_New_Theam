@@ -2,10 +2,10 @@ import React from "react";
 import {
   SafeAreaView,
   View,
-  Text,
   StyleSheet,
   FlatList,
   Dimensions,
+  Pressable
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { MyTaskItem } from "../../../pureComponents/myTaskItem";
@@ -28,15 +28,22 @@ const MyTasksScreen = ({ navigation }) => {
           }}
           renderItem={({ item, index }) => {
             return (
-              <View style={[styles.listBgVw]}>
-                <MyTaskItem
-                  taskName={item.taskName}
-                  status={item.taskStatus}
-                  created={item.createdOn}
-                  dmsLead={item.dmsLead}
-                  phone={item.phoneNo}
-                />
-              </View>
+              
+                <View style={[styles.listBgVw]}>
+                  <MyTaskItem
+                    taskName={item.taskName}
+                    status={item.taskStatus}
+                    created={item.createdOn}
+                    dmsLead={item.dmsLead}
+                    phone={item.phoneNo}
+                    onPress={() =>
+                      navigation.navigate(
+                        AppNavigator.MyTaskStackIdentifiers.testDrive
+                      )
+                    }
+                  />
+                </View>
+              
             );
           }}
         />

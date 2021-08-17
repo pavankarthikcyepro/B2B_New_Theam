@@ -27,6 +27,7 @@ import NotificationScreen from "../scenes/mainScenes/notificationsScreen";
 import AddPreEnquiryScreen from "../scenes/mainScenes/EMS/addPreEnquiryScreen";
 import ConfirmedPreEnquiryScreen from "../scenes/mainScenes/EMS/confirmedPreEnquiryScreen";
 import DetailsOverviewScreen from "../scenes/mainScenes/EMS/detailsOverviewScreen";
+import TestDriveScreen from "../scenes/mainScenes/testDriveScreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -75,7 +76,9 @@ const NotficationIcon = ({ navigation, identifier }) => {
     />
   );
 };
-
+export const MyTaskStackIdentifiers = {
+  testDrive: "TEST DRIVE",
+};
 export const DrawerStackIdentifiers = {
   home: "HOME_SCREEN",
   upcomingDeliveries: "UPCOMING_DELIVERIES",
@@ -94,7 +97,7 @@ export const TabStackIdentifiers = {
 export const EmsStackIdentifiers = {
   addPreEnq: "ADD_PRE_ENQUIRY",
   confirmedPreEnq: "CONFIRMED_PRE_ENQUIRY",
-  detailsOverview: 'DETAILS_OVERVIEW'
+  detailsOverview: "DETAILS_OVERVIEW",
 };
 
 const HomeStack = createStackNavigator();
@@ -217,6 +220,11 @@ const MyTaskStackNavigator = ({ navigation }) => {
         name={"NOTIF_3"}
         component={NotificationScreen}
         options={{ title: "Notfications" }}
+      />
+      <MyTaskStack.Screen
+        name={MyTaskStackIdentifiers.testDrive}
+        component={TestDriveScreen}
+        options={{ title: "Test Drive" }}
       />
     </MyTaskStack.Navigator>
   );
