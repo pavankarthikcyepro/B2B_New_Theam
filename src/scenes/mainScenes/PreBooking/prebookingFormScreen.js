@@ -11,7 +11,6 @@ import { DropDownSelectionItem } from "../../../pureComponents/dropDownSelection
 import {
   setDatePicker,
   setCustomerDetails,
-  updateSelectedDropDownData,
   updateSelectedDate,
   setCommunicationAddress,
   setFinancialDetails,
@@ -54,6 +53,17 @@ const data = [
   },
 ];
 
+const rupeeSymbol = "\u20B9";
+
+const TextAndAmountComp = ({ title, amount, titleStyle = {}, amoutStyle = {} }) => {
+  return (
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 12, minHeight: 40, paddingVertical: 5, alignItems: 'center' }}>
+      <Text style={[{ fontSize: 14, fontWeight: '400', maxWidth: "70%" }, titleStyle]}>{title}</Text>
+      <Text style={[{ fontSize: 14, fontWeight: '400' }, amoutStyle]}>{rupeeSymbol + " " + amount}</Text>
+    </View>
+  )
+}
+
 const PrebookingFormScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.preBookingFormReducer);
@@ -74,6 +84,7 @@ const PrebookingFormScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
+
       <ImagePickerComponent
         visible={selector.showImagePicker}
         keyId={selector.imagePickerKeyId}
@@ -82,25 +93,6 @@ const PrebookingFormScreen = ({ navigation }) => {
         }}
         onDismiss={() => dispatch(setImagePicker(""))}
       />
-
-      {selector.showDropDownpicker && (
-        <DropDownComponant
-          visible={selector.showDropDownpicker}
-          headerTitle={selector.dropDownTitle}
-          data={selector.dropDownData}
-          keyId={selector.dropDownKeyId}
-          selectedItems={(item, keyId) => {
-            console.log("selected: ", item, keyId);
-            dispatch(
-              updateSelectedDropDownData({
-                id: item.id,
-                name: item.name,
-                keyId: keyId,
-              })
-            );
-          }}
-        />
-      )}
 
       {selector.showDatepicker && (
         <DatePickerComponent
@@ -894,8 +886,11 @@ const PrebookingFormScreen = ({ navigation }) => {
                 overflow: "hidden",
               }}
             >
+
+              <TextAndAmountComp title={"Ex-Showroom Price:"} amount={"0.00"} />
               <View style={styles.radioGroupBcVw}>
                 <Checkbox.Android
+                  style={{ margin: 0, padding: 0 }}
                   uncheckedColor={Colors.GRAY}
                   color={Colors.RED}
                   status={
@@ -914,199 +909,81 @@ const PrebookingFormScreen = ({ navigation }) => {
                   {"Any Other Vehicle Registration on Your Name"}
                 </Text>
               </View>
-              {selector.permanent_address && (
-                <View>
-                  <TextinputComp
-                    style={{ height: 65, width: "100%" }}
-                    label={"EX-Showroom Price"}
-                    value={selector.showroom_price}
-                    disabled={true}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setPriceConformationDetails({
-                          key: "SHOWROOM_PRICE",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={GlobalStyle.underline}></Text>
-                  <TextinputComp
-                    style={{ height: 65, width: "100%" }}
-                    label={"Life Tax:"}
-                    value={selector.life_tax}
-                    disabled={true}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setPriceConformationDetails({
-                          key: "LIFE_TAX",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={GlobalStyle.underline}></Text>
-                  <TextinputComp
-                    style={{ height: 65, width: "100%" }}
-                    label={"Registration Charges:"}
-                    disabled={true}
-                    value={selector.registration_charges}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setPriceConformationDetails({
-                          key: "RESGISTRATION_CHARGES",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={GlobalStyle.underline}></Text>
+              <TextAndAmountComp title={"Life Tax:"} amount={"0.00"} />
+              <Text style={GlobalStyle.underline}></Text>
 
-                  <View style={styles.symbolview}>
-                    <View style={{ width: "70%" }}>
-                      <DropDownSelectionItem
-                        label={"Insurance Type"}
-                        value={selector.insurance_type}
-                        onPress={() =>
-                          dispatch(setDropDownData("INSURANCE_TYPE"))
-                        }
-                      />
-                    </View>
-                    <Text style={styles.shadowText}>{"\u20B9"} 0.00</Text>
+              <TextAndAmountComp title={"Registration Charges:"} amount={"0.00"} />
+              <Text style={GlobalStyle.underline}></Text>
+
+
+              <View style={styles.symbolview}>
+                <View style={{ width: "70%" }}>
+                  <View style={styles.drop_down_view_style}>
+                    <Dropdown
+                      label="Insurance Type"
+                      data={selector.dropDownData}
+                      required={true}
+                      floating={true}
+                      value={selector.insurance_type}
+                      onChange={(value) =>
+                        dispatch(
+                          setDropDownData({
+                            key: "INSURANCE_TYPE",
+                            value: value,
+                          })
+                        )
+                      }
+                    />
                   </View>
-                  <Text style={GlobalStyle.underline}></Text>
-
-                  <View style={styles.symbolview}>
-                    <View style={{ width: "70%" }}>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Add-on Insurance:"}
-                        disabled={true}
-                        value={selector.add_on_insurance}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setPriceConformationDetails({
-                              key: "ADD_ON_INSURANCE",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                    </View>
-                    <Text style={styles.shadowText}>{"\u20B9"} 0.00</Text>
-                  </View>
-                  <Text style={GlobalStyle.underline}></Text>
-
-                  <View style={styles.symbolview}>
-                    <View style={{ width: "70%" }}>
-                      <DropDownSelectionItem
-                        label={"Warranty"}
-                        value={selector.warranty}
-                        onPress={() => dispatch(setDropDownData("WARRANTY"))}
-                      />
-                    </View>
-                    <Text style={styles.shadowText}>{"\u20B9"} 0.00</Text>
-                  </View>
-                  <Text style={GlobalStyle.underline}></Text>
-
-                  <TextinputComp
-                    style={{ height: 65, width: "100%" }}
-                    label={"Handling Charges:"}
-                    disabled={true}
-                    value={selector.handling_charges}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setPriceConformationDetails({
-                          key: "HANDLING_CHARGES",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={GlobalStyle.underline}></Text>
-                  <TextinputComp
-                    style={{ height: 65, width: "100%" }}
-                    label={"Essential Kit:"}
-                    disabled={true}
-                    value={selector.essential_kit}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setPriceConformationDetails({
-                          key: "ESSENTIAL_KIT",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={GlobalStyle.underline}></Text>
-                  <TextinputComp
-                    style={{ height: 65, width: "100%" }}
-                    label={"TCS(>10Lakhs -> %):"}
-                    disabled={true}
-                    value={selector.tcs}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setPriceConformationDetails({
-                          key: "TCS",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={GlobalStyle.underline}></Text>
-                  <View style={styles.symbolview}>
-                    <View style={{ width: "70%" }}>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Paid Accessories:"}
-                        disabled={true}
-                        value={selector.paid_accessories}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setPriceConformationDetails({
-                              key: "PAID_ACCESSORIES",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                    </View>
-                    <Text style={styles.shadowText}>{"\u20B9"} 0.00</Text>
-                  </View>
-                  <Text style={GlobalStyle.underline}></Text>
-
-                  <TextinputComp
-                    style={{ height: 65, width: "100%" }}
-                    label={"Fast Tag:"}
-                    disabled={true}
-                    value={selector.fast_tag}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setPriceConformationDetails({
-                          key: "FAST_TAG",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={GlobalStyle.underline}></Text>
-                  <TextinputComp
-                    style={{ height: 65, width: "100%", fontWeight: "bold" }}
-                    label={"On Road Price:"}
-                    disabled={true}
-                    value={selector.on_road_price}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setPriceConformationDetails({
-                          key: "ON-ROAD-PRICE",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={GlobalStyle.underline}></Text>
                 </View>
-              )}
+                <Text style={styles.shadowText}>{rupeeSymbol + " 0.00"}</Text>
+              </View>
+
+              <TextAndAmountComp title={"Add-on Insurance:"} amount={"0.00"} />
+              <Text style={GlobalStyle.underline}></Text>
+
+              <View style={styles.symbolview}>
+                <View style={{ width: "70%" }}>
+                  <View style={styles.drop_down_view_style}>
+                    <Dropdown
+                      label="Warranty"
+                      data={selector.dropDownData}
+                      required={true}
+                      floating={true}
+                      value={selector.warranty}
+                      onChange={(value) =>
+                        dispatch(
+                          setDropDownData({
+                            key: "WARRANTY",
+                            value: value,
+                          })
+                        )
+                      }
+                    />
+                  </View>
+                </View>
+                <Text style={styles.shadowText}>{"\u20B9"} 0.00</Text>
+              </View>
+              <Text style={GlobalStyle.underline}></Text>
+
+              <TextAndAmountComp title={"Handling Charges:"} amount={"0.00"} />
+              <Text style={GlobalStyle.underline}></Text>
+
+              <TextAndAmountComp title={"Essential Kit:"} amount={"0.00"} />
+              <Text style={GlobalStyle.underline}></Text>
+
+              <TextAndAmountComp title={"TCS(>10Lakhs -> %):"} amount={"0.00"} />
+              <Text style={GlobalStyle.underline}></Text>
+
+              <TextAndAmountComp title={"Paid Accessories:"} amount={"0.00"} />
+              <Text style={GlobalStyle.underline}></Text>
+
+              <TextAndAmountComp title={"Fast Tag:"} amount={"0.00"} />
+              <Text style={GlobalStyle.underline}></Text>
+
+              <TextAndAmountComp title={"On Road Price:"} amount={"0.00"} titleStyle={{ fontSize: 18, fontWeight: '800' }} amoutStyle={{ fontSize: 18, fontWeight: '800' }} />
+              <Text style={GlobalStyle.underline}></Text>
+
             </View>
           </View>
           <View style={styles.space}></View>
@@ -1142,7 +1019,7 @@ const PrebookingFormScreen = ({ navigation }) => {
                   dispatch(
                     setOfferPriceDetails({
                       key: "CONSUMER_OFFER",
-                      text: "\u20B9",
+                      text: text,
                     })
                   )
                 }
@@ -1156,7 +1033,7 @@ const PrebookingFormScreen = ({ navigation }) => {
                   dispatch(
                     setOfferPriceDetails({
                       key: "EXCHANGE_OFFER",
-                      text: "\u20B9",
+                      text: text,
                     })
                   )
                 }
@@ -1170,7 +1047,7 @@ const PrebookingFormScreen = ({ navigation }) => {
                   dispatch(
                     setOfferPriceDetails({
                       key: "CORPORATE_OFFER",
-                      text: "\u20B9",
+                      text: text,
                     })
                   )
                 }
@@ -1184,7 +1061,7 @@ const PrebookingFormScreen = ({ navigation }) => {
                   dispatch(
                     setOfferPriceDetails({
                       key: "PROMOTIONAL_OFFER",
-                      text: "\u20B9",
+                      text: text,
                     })
                   )
                 }
@@ -1198,7 +1075,7 @@ const PrebookingFormScreen = ({ navigation }) => {
                   dispatch(
                     setOfferPriceDetails({
                       key: "CASH_DISCOUNT",
-                      text: "\u20B9",
+                      text: text,
                     })
                   )
                 }
@@ -1212,7 +1089,7 @@ const PrebookingFormScreen = ({ navigation }) => {
                   dispatch(
                     setOfferPriceDetails({
                       key: "FOR_ACCESSORIES",
-                      text: "\u20B9",
+                      text: text,
                     })
                   )
                 }
@@ -1226,7 +1103,7 @@ const PrebookingFormScreen = ({ navigation }) => {
                   dispatch(
                     setOfferPriceDetails({
                       key: "ADDITIONAL_OFFER_1",
-                      text: "\u20B9",
+                      text: text,
                     })
                   )
                 }
@@ -1240,27 +1117,14 @@ const PrebookingFormScreen = ({ navigation }) => {
                   dispatch(
                     setOfferPriceDetails({
                       key: "ADDITIONAL_OFFER_2",
-                      text: "\u20B9",
+                      text: text,
                     })
                   )
                 }
               />
               <Text style={GlobalStyle.underline}></Text>
 
-              <TextinputComp
-                style={{ height: 65, width: "100%", fontWeight: "bold" }}
-                label={"On Road Price After Discount:"}
-                disabled={true}
-                value={selector.After_discount}
-                onChangeText={(text) =>
-                  dispatch(
-                    setOfferPriceDetails({
-                      key: "AFTER_DISCOUNT",
-                      text: "\u20B9",
-                    })
-                  )
-                }
-              />
+              <TextAndAmountComp title={"On Road Price After Discount:"} amount={"0.00"} titleStyle={{ fontSize: 18, fontWeight: '800' }} amoutStyle={{ fontSize: 18, fontWeight: '800' }} />
               <Text style={GlobalStyle.underline}></Text>
             </View>
           </View>
@@ -1458,7 +1322,7 @@ const styles = StyleSheet.create({
   radioGroupBcVw: {
     flexDirection: "row",
     alignItems: "center",
-    height: 65,
+    height: 35,
     paddingLeft: 12,
     backgroundColor: Colors.WHITE,
   },
@@ -1481,23 +1345,23 @@ const styles = StyleSheet.create({
     height: 10,
   },
   checkboxAddText: {
-    fontSize: 14,
-    fontWeight: "600",
+    fontSize: 12,
+    fontWeight: "400",
   },
   symbolview: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    flex: 1,
     width: "100%",
-    paddingRight: 20,
+    paddingRight: 12,
     backgroundColor: Colors.WHITE,
   },
   shadowText: {
-    height: 65,
     width: "30%",
     backgroundColor: Colors.WHITE,
     textAlign: "right",
-    textAlignVertical: "center",
+    fontSize: 14,
+    fontWeight: '400'
   },
   select_image_bck_vw: {
     minHeight: 50,
