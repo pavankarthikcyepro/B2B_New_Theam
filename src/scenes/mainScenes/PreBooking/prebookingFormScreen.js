@@ -11,12 +11,13 @@ import { DropDownSelectionItem } from "../../../pureComponents/dropDownSelection
 import {
   setDatePicker,
   setCustomerDetails,
-  updateSelectedDropDownData,
   updateSelectedDate,
   setCommunicationAddress,
   setFinancialDetails,
   setCommitmentDetails,
   setBookingPaymentDetails,
+  setPriceConformationDetails,
+  setOfferPriceDetails,
   setDropDownData,
   setDocumentUploadDetails,
   setImagePicker,
@@ -52,6 +53,17 @@ const data = [
   },
 ];
 
+const rupeeSymbol = "\u20B9";
+
+const TextAndAmountComp = ({ title, amount, titleStyle = {}, amoutStyle = {} }) => {
+  return (
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 12, minHeight: 40, paddingVertical: 5, alignItems: 'center' }}>
+      <Text style={[{ fontSize: 14, fontWeight: '400', maxWidth: "70%" }, titleStyle]}>{title}</Text>
+      <Text style={[{ fontSize: 14, fontWeight: '400' }, amoutStyle]}>{rupeeSymbol + " " + amount}</Text>
+    </View>
+  )
+}
+
 const PrebookingFormScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.preBookingFormReducer);
@@ -80,25 +92,6 @@ const PrebookingFormScreen = ({ navigation }) => {
         }}
         onDismiss={() => dispatch(setImagePicker(""))}
       />
-
-      {selector.showDropDownpicker && (
-        <DropDownComponant
-          visible={selector.showDropDownpicker}
-          headerTitle={selector.dropDownTitle}
-          data={selector.dropDownData}
-          keyId={selector.dropDownKeyId}
-          selectedItems={(item, keyId) => {
-            console.log("selected: ", item, keyId);
-            dispatch(
-              updateSelectedDropDownData({
-                id: item.id,
-                name: item.name,
-                keyId: keyId,
-              })
-            );
-          }}
-        />
-      )}
 
       {selector.showDatepicker && (
         <DatePickerComponent
@@ -891,7 +884,106 @@ const PrebookingFormScreen = ({ navigation }) => {
                 height: openAccordian == 6 ? null : 0,
                 overflow: "hidden",
               }}
-            ></View>
+            >
+
+              <TextAndAmountComp title={"Ex-Showroom Price:"} amount={"0.00"} />
+              <View style={styles.radioGroupBcVw}>
+                <Checkbox.Android
+                  style={{ margin: 0, padding: 0 }}
+                  uncheckedColor={Colors.GRAY}
+                  color={Colors.RED}
+                  status={
+                    selector.vechicle_registration ? "checked" : "unchecked"
+                  }
+                  onPress={() =>
+                    dispatch(
+                      setPriceConformationDetails({
+                        key: "VECHILE_REGISTRATION",
+                        text: "",
+                      })
+                    )
+                  }
+                />
+                <Text style={styles.checkboxAddText}>
+                  {"Any Other Vehicle Registration on Your Name"}
+                </Text>
+              </View>
+              <TextAndAmountComp title={"Life Tax:"} amount={"0.00"} />
+              <Text style={GlobalStyle.underline}></Text>
+
+              <TextAndAmountComp title={"Registration Charges:"} amount={"0.00"} />
+              <Text style={GlobalStyle.underline}></Text>
+
+
+              <View style={styles.symbolview}>
+                <View style={{ width: "70%" }}>
+                  <View style={styles.drop_down_view_style}>
+                    <Dropdown
+                      label="Insurance Type"
+                      data={selector.dropDownData}
+                      required={true}
+                      floating={true}
+                      value={selector.insurance_type}
+                      onChange={(value) =>
+                        dispatch(
+                          setDropDownData({
+                            key: "INSURANCE_TYPE",
+                            value: value,
+                          })
+                        )
+                      }
+                    />
+                  </View>
+                </View>
+                <Text style={styles.shadowText}>{rupeeSymbol + " 0.00"}</Text>
+              </View>
+
+              <TextAndAmountComp title={"Add-on Insurance:"} amount={"0.00"} />
+              <Text style={GlobalStyle.underline}></Text>
+
+              <View style={styles.symbolview}>
+                <View style={{ width: "70%" }}>
+                  <View style={styles.drop_down_view_style}>
+                    <Dropdown
+                      label="Warranty"
+                      data={selector.dropDownData}
+                      required={true}
+                      floating={true}
+                      value={selector.warranty}
+                      onChange={(value) =>
+                        dispatch(
+                          setDropDownData({
+                            key: "WARRANTY",
+                            value: value,
+                          })
+                        )
+                      }
+                    />
+                  </View>
+                </View>
+                <Text style={styles.shadowText}>{"\u20B9"} 0.00</Text>
+              </View>
+              <Text style={GlobalStyle.underline}></Text>
+
+              <TextAndAmountComp title={"Handling Charges:"} amount={"0.00"} />
+              <Text style={GlobalStyle.underline}></Text>
+
+              <TextAndAmountComp title={"Essential Kit:"} amount={"0.00"} />
+              <Text style={GlobalStyle.underline}></Text>
+
+              <TextAndAmountComp title={"TCS(>10Lakhs -> %):"} amount={"0.00"} />
+              <Text style={GlobalStyle.underline}></Text>
+
+              <TextAndAmountComp title={"Paid Accessories:"} amount={"0.00"} />
+              <Text style={GlobalStyle.underline}></Text>
+
+              <TextAndAmountComp title={"Fast Tag:"} amount={"0.00"} />
+              <Text style={GlobalStyle.underline}></Text>
+
+              <TextAndAmountComp title={"On Road Price:"} amount={"0.00"} titleStyle={{ fontSize: 18, fontWeight: '800' }} amoutStyle={{ fontSize: 18, fontWeight: '800' }} />
+              <Text style={GlobalStyle.underline}></Text>
+
+            </View>
           </View>
           <View style={styles.space}></View>
 
@@ -915,7 +1007,125 @@ const PrebookingFormScreen = ({ navigation }) => {
                 height: openAccordian == 7 ? null : 0,
                 overflow: "hidden",
               }}
-            ></View>
+            >
+              <Text style={GlobalStyle.underline}></Text>
+
+              <TextinputComp
+                style={{ height: 65, width: "100%" }}
+                label={"Consumer Offer:"}
+                value={selector.consumer_offer}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "CONSUMER_OFFER",
+                      text: text,
+                    })
+                  )
+                }
+              />
+              <Text style={GlobalStyle.underline}></Text>
+              <TextinputComp
+                style={{ height: 65, width: "100%" }}
+                label={"Exchange Offer:"}
+                value={selector.exchange_offer}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "EXCHANGE_OFFER",
+                      text: text,
+                    })
+                  )
+                }
+              />
+              <Text style={GlobalStyle.underline}></Text>
+              <TextinputComp
+                style={{ height: 65, width: "100%" }}
+                label={"Coporate Offer:"}
+                value={selector.corporate_offer}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "CORPORATE_OFFER",
+                      text: text,
+                    })
+                  )
+                }
+              />
+              <Text style={GlobalStyle.underline}></Text>
+              <TextinputComp
+                style={{ height: 65, width: "100%" }}
+                label={"Promotional Offer:"}
+                value={selector.promotional_offer}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "PROMOTIONAL_OFFER",
+                      text: text,
+                    })
+                  )
+                }
+              />
+              <Text style={GlobalStyle.underline}></Text>
+              <TextinputComp
+                style={{ height: 65, width: "100%" }}
+                label={"Cash Discount:"}
+                value={selector.cash_discount}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "CASH_DISCOUNT",
+                      text: text,
+                    })
+                  )
+                }
+              />
+              <Text style={GlobalStyle.underline}></Text>
+              <TextinputComp
+                style={{ height: 65, width: "100%" }}
+                label={"Foc Accessories:"}
+                value={selector.for_accessories}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "FOR_ACCESSORIES",
+                      text: text,
+                    })
+                  )
+                }
+              />
+              <Text style={GlobalStyle.underline}></Text>
+              <TextinputComp
+                style={{ height: 65, width: "100%" }}
+                label={"Additional Offer 1:"}
+                value={selector.additional_offer_1}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "ADDITIONAL_OFFER_1",
+                      text: text,
+                    })
+                  )
+                }
+              />
+              <Text style={GlobalStyle.underline}></Text>
+              <TextinputComp
+                style={{ height: 65, width: "100%" }}
+                label={"Additional Offer 2:"}
+                value={selector.additional_offer_2}
+                onChangeText={(text) =>
+                  dispatch(
+                    setOfferPriceDetails({
+                      key: "ADDITIONAL_OFFER_2",
+                      text: text,
+                    })
+                  )
+                }
+              />
+              <Text style={GlobalStyle.underline}></Text>
+
+              <TextAndAmountComp title={"On Road Price After Discount:"} amount={"0.00"} titleStyle={{ fontSize: 18, fontWeight: '800' }} amoutStyle={{ fontSize: 18, fontWeight: '800' }} />
+              <Text style={GlobalStyle.underline}></Text>
+            </View>
           </View>
           <View style={styles.space}></View>
 
@@ -1111,7 +1321,7 @@ const styles = StyleSheet.create({
   radioGroupBcVw: {
     flexDirection: "row",
     alignItems: "center",
-    height: 65,
+    height: 35,
     paddingLeft: 12,
     backgroundColor: Colors.WHITE,
   },
@@ -1132,6 +1342,25 @@ const styles = StyleSheet.create({
   },
   space: {
     height: 10,
+  },
+  checkboxAddText: {
+    fontSize: 12,
+    fontWeight: "400",
+  },
+  symbolview: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    paddingRight: 12,
+    backgroundColor: Colors.WHITE,
+  },
+  shadowText: {
+    width: "30%",
+    backgroundColor: Colors.WHITE,
+    textAlign: "right",
+    fontSize: 14,
+    fontWeight: '400'
   },
   select_image_bck_vw: {
     minHeight: 50,
