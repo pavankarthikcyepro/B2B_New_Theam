@@ -54,8 +54,8 @@ const slice = createSlice({
     employee_remarks: "",
     model: "",
     varient: "",
-    actualStartTime: "",
-    actualEndTime: "",
+    actual_start_time: "",
+    actual_end_time: "",
   },
   reducers: {
     setEnquiryFollowUpDetails: (
@@ -96,11 +96,11 @@ const slice = createSlice({
       const { key, text } = action.payload;
       const selectedDate = dateSelected(text);
       switch (state.datePickerKeyId) {
-        case "ACTUALSTARTTIME":
-          state.actualStartTime = selectedDate;
+        case "ACTUAL_START_TIME":
+          state.actual_start_time = selectedDate;
           break;
-        case "ACTUALENDTIME":
-          state.actualEndTime = selectedDate;
+        case "ACTUAL_END_TIME":
+          state.actual_end_time = selectedDate;
           break;
       }
       state.showDatepicker = !state.showDatepicker;

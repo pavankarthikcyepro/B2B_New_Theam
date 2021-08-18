@@ -40,13 +40,11 @@ const data = [
   },
 ];
 const EnquiryFollowUpScreen = ({ navigation }) => {
-
   const selector = useSelector((state) => state.enquiryFollowUpReducer);
   const dispatch = useDispatch();
 
   return (
     <SafeAreaView style={[styles.container]}>
-
       {selector.showDatepicker && (
         <DatePickerComponent
           visible={selector.showDatepicker}
@@ -55,7 +53,7 @@ const EnquiryFollowUpScreen = ({ navigation }) => {
           onChange={(event, selectedDate) => {
             console.log("date: ", selectedDate);
             if (Platform.OS === "android") {
-              // setDatePickerVisible(false)
+              //setDatePickerVisible(false);
             }
             dispatch(updateSelectedDate({ key: "", text: selectedDate }));
           }}
@@ -64,15 +62,32 @@ const EnquiryFollowUpScreen = ({ navigation }) => {
       )}
 
       <View style={[{ padding: 15 }, GlobalStyle.shadow]}>
-        <View style={{ width: "100%", height: 65, backgroundColor: Colors.WHITE }}>
+        <View
+          style={{
+            width: "100%",
+            height: 100,
+            backgroundColor: Colors.WHITE,
+          }}
+        >
           <Dropdown
             label="Model"
             data={selector.dropDownData}
             required={true}
             floating={true}
+            color={Colors.RED}
             value={selector.model}
             onChange={(value) =>
               dispatch(setDropDownData({ key: "MODEL", value: value }))
+            }
+          />
+          <Dropdown
+            label="Varient"
+            data={selector.dropDownData}
+            required={true}
+            floating={true}
+            value={selector.Varient}
+            onChange={(value) =>
+              dispatch(setDropDownData({ key: "VARIENT", value: value }))
             }
           />
         </View>
@@ -81,9 +96,7 @@ const EnquiryFollowUpScreen = ({ navigation }) => {
           label={"Reason"}
           value={selector.reason}
           onChangeText={(text) => {
-            dispatch(
-              setEnquiryFollowUpDetails({ key: "REASON", text: text })
-            );
+            dispatch(setEnquiryFollowUpDetails({ key: "REASON", text: text }));
           }}
         />
         <Text style={GlobalStyle.underline}></Text>
@@ -117,14 +130,16 @@ const EnquiryFollowUpScreen = ({ navigation }) => {
         <Text style={GlobalStyle.underline}></Text>
         <DateSelectItem
           label={"Actual Start Time"}
-          value={selector.actualStartTime}
+          value={selector.actual_start_time}
           onPress={() => dispatch(setDatePicker("ACTUAL_START_TIME"))}
         />
+        <Text style={GlobalStyle.underline}></Text>
         <DateSelectItem
           label={"Actual End Time"}
-          value={selector.actualEndTime}
+          value={selector.actual_end_time}
           onPress={() => dispatch(setDatePicker("ACTUAL_END_TIME"))}
         />
+        <Text style={GlobalStyle.underline}></Text>
       </View>
 
       <View style={styles.view1}>
@@ -144,6 +159,8 @@ const EnquiryFollowUpScreen = ({ navigation }) => {
         >
           Close
         </Button>
+      </View>
+      <View style={styles.view1}>
         <Button
           mode="contained"
           color={Colors.RED}
@@ -177,12 +194,15 @@ const styles = StyleSheet.create({
   },
   view1: {
     marginTop: 10,
+    width: "100%",
+
     flexDirection: "row",
-    justifyContent: "space-evenly",
+    justifyContent: "space-around",
     alignItems: "center",
   },
+
   drop_down_view_style: {
-    paddingTop: 5,
+    paddingTop: 10,
     height: 65,
     width: "100%",
     flex: 1,
