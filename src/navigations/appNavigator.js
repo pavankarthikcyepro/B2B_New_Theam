@@ -30,6 +30,7 @@ import DetailsOverviewScreen from "../scenes/mainScenes/EMS/enquiryFormScreen";
 import PreBookingFormScreen from "../scenes/mainScenes/PreBooking/prebookingFormScreen";
 import PreBookingScreen from "../scenes/mainScenes/PreBooking/prebookingScreen";
 import HomeVisitScreen from "../scenes/mainScenes/MyTasks/homeVisitScreen";
+import TestEnquiryFormScreen from "../scenes/mainScenes/EMS/testEnquiryFormScreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
