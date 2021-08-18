@@ -1,0 +1,128 @@
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+const dropDownData = [
+  {
+    value: "1",
+    label: "Tiger Nixon",
+  },
+  {
+    value: "2",
+    label: "Garrett Winters",
+  },
+  {
+    value: "3",
+    label: "Jhon Wick 1",
+  },
+  {
+    value: "4",
+    label: "Jhon Wick 2",
+  },
+];
+
+interface EnquiryFollowUpTextModel {
+  key: string;
+  text: string;
+}
+interface DropDownModelNew {
+  key: string;
+
+  value: string;
+}
+
+interface PersonalIntroModel {
+  key: string;
+  text: string;
+}
+interface CustomerDetailModel {
+  key: string;
+  text: string;
+}
+const slice = createSlice({
+  name: "ENQUIRY_FOLLOW_UP_SLICE",
+  initialState: {
+    showDatepicker: false,
+    showDropDownpicker: false,
+    dropDownData: dropDownData,
+    dropDownTitle: "",
+    dropDownKeyId: "",
+    datePickerKeyId: "",
+    showImagePicker: false,
+    imagePickerKeyId: "",
+    //*enquiry follow up *//
+    reason: "",
+    customer_remarks: "",
+    employee_remarks: "",
+    model: "",
+    varient: "",
+    actualStartTime: "",
+    actualEndTime: "",
+  },
+  reducers: {
+    setEnquiryFollowUpDetails: (
+      state,
+      action: PayloadAction<EnquiryFollowUpTextModel>
+    ) => {
+      const { key, text } = action.payload;
+      switch (key) {
+        case "REASON":
+          state.reason = text;
+          break;
+        case "CUSTOMER_REMARKS":
+          state.customer_remarks = text;
+          break;
+        case "EMPLOYEE_REMARKS":
+          state.employee_remarks = text;
+          break;
+      }
+    },
+
+    setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
+      const { key, value } = action.payload;
+      switch (key) {
+        case "MODEL":
+          state.model = value;
+          break;
+        case "VARIENT":
+          state.varient = value;
+          break;
+      }
+    },
+
+    setDatePicker: (state, action) => {
+      state.datePickerKeyId = action.payload;
+      state.showDatepicker = !state.showDatepicker;
+    },
+    updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
+      const { key, text } = action.payload;
+      const selectedDate = dateSelected(text);
+      switch (state.datePickerKeyId) {
+        case "ACTUALSTARTTIME":
+          state.actualStartTime = selectedDate;
+          break;
+        case "ACTUALENDTIME":
+          state.actualEndTime = selectedDate;
+          break;
+      }
+      state.showDatepicker = !state.showDatepicker;
+    },
+  },
+});
+
+const dateSelected = (isoDate) => {
+  if (!isoDate) {
+    return "";
+  }
+  const date = new Date(isoDate);
+  const finalDate =
+    date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
+  console.log("date: ", finalDate);
+  return finalDate;
+};
+
+export const {
+  setEnquiryFollowUpDetails,
+  setDatePicker,
+  setDropDownData,
+  updateSelectedDate,
+} = slice.actions;
+export default slice.reducer;

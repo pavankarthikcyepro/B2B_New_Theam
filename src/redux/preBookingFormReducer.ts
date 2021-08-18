@@ -2,22 +2,22 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const dropDownData = [
   {
-    value: '1',
-    label: 'Tiger Nixon',
+    value: "1",
+    label: "Tiger Nixon",
   },
   {
-    value: '2',
-    label: 'Garrett Winters',
+    value: "2",
+    label: "Garrett Winters",
   },
   {
-    value: '3',
-    label: 'Jhon Wick 1',
+    value: "3",
+    label: "Jhon Wick 1",
   },
   {
-    value: '4',
-    label: 'Jhon Wick 2',
-  }
-]
+    value: "4",
+    label: "Jhon Wick 2",
+  },
+];
 
 const dummyData = [
   {
@@ -152,7 +152,7 @@ const prebookingFormSlice = createSlice({
     form_or_pan: "",
     customer_type_category: "",
     adhaar_number: "",
-    relationship_proof: ""
+    relationship_proof: "",
   },
   reducers: {
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
@@ -258,7 +258,10 @@ const prebookingFormSlice = createSlice({
           break;
       }
     },
-    setCommunicationAddress: (state, action: PayloadAction<CustomerDetailModel>) => {
+    setCommunicationAddress: (
+      state,
+      action: PayloadAction<CustomerDetailModel>
+    ) => {
       const { key, text } = action.payload;
       switch (key) {
         case "PINCODE":
@@ -314,7 +317,10 @@ const prebookingFormSlice = createSlice({
           break;
       }
     },
-    setFinancialDetails: (state, action: PayloadAction<CustomerDetailModel>) => {
+    setFinancialDetails: (
+      state,
+      action: PayloadAction<CustomerDetailModel>
+    ) => {
       const { key, text } = action.payload;
       switch (key) {
         case "DOWN_PAYMENT":
@@ -331,7 +337,10 @@ const prebookingFormSlice = createSlice({
           break;
       }
     },
-    setBookingPaymentDetails: (state, action: PayloadAction<CustomerDetailModel>) => {
+    setBookingPaymentDetails: (
+      state,
+      action: PayloadAction<CustomerDetailModel>
+    ) => {
       const { key, text } = action.payload;
       switch (key) {
         case "BOOKING_AMOUNT":
@@ -339,7 +348,10 @@ const prebookingFormSlice = createSlice({
           break;
       }
     },
-    setCommitmentDetails: (state, action: PayloadAction<CustomerDetailModel>) => {
+    setCommitmentDetails: (
+      state,
+      action: PayloadAction<CustomerDetailModel>
+    ) => {
       const { key, text } = action.payload;
       switch (key) {
         case "OCCASION":
@@ -350,7 +362,10 @@ const prebookingFormSlice = createSlice({
           break;
       }
     },
-    setDocumentUploadDetails: (state, action: PayloadAction<CustomerDetailModel>) => {
+    setDocumentUploadDetails: (
+      state,
+      action: PayloadAction<CustomerDetailModel>
+    ) => {
       const { key, text } = action.payload;
       switch (key) {
         case "ADHAR":
@@ -360,7 +375,7 @@ const prebookingFormSlice = createSlice({
           state.relationship_proof = text;
           break;
       }
-    }
+    },
   },
 });
 
@@ -385,6 +400,6 @@ export const {
   setBookingPaymentDetails,
   setDropDownData,
   setDocumentUploadDetails,
-  setImagePicker
+  setImagePicker,
 } = prebookingFormSlice.actions;
 export default prebookingFormSlice.reducer;

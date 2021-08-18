@@ -6,7 +6,7 @@ import {
   StyleSheet,
   FlatList,
   Dimensions,
-  Pressable
+  Pressable,
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { MyTaskItem } from "../../../pureComponents/myTaskItem";
@@ -31,7 +31,15 @@ const MyTasksScreen = ({ navigation }) => {
           renderItem={({ item, index }) => {
             return (
               <View style={[styles.listBgVw]}>
-                <Pressable onPress={() => navigation.navigate(AppNavigator.MyTasksStackIdentifiers.homeVisit)}>
+                {/* <Pressable onPress={() => navigation.navigate(AppNavigator.MyTasksStackIdentifiers.homeVisit)}> */}
+
+                <Pressable
+                  onPress={() =>
+                    navigation.navigate(
+                      AppNavigator.MyTasksStackIdentifiers.enquiryFollowUp
+                    )
+                  }
+                >
                   <MyTaskItem
                     taskName={item.taskName}
                     status={item.taskStatus}
