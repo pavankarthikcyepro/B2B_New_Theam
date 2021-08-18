@@ -7,20 +7,13 @@ import { useSelector, useDispatch } from "react-redux";
 
 import { DropDownSelectionItem } from "../../../pureComponents/dropDownSelectionItem";
 import { DropDownComponant, DatePickerComponent } from "../../../components";
-// import {
-//   setDatePicker,
-//   setEnquiryFollowUpDetails,
-//   updateSelectedDropDownData,
-//   updateSelectedDate,
-//   setDropDownData,
-// } from "../../../redux/enquiryFollowUpReducer";
 import {
   setDatePicker,
   setEnquiryFollowUpDetails,
-  updateSelectedDropDownData,
   updateSelectedDate,
   setDropDownData,
-} from "../../../redux/preBookingFormReducer";
+} from "../../../redux/enquiryFollowUpReducer";
+
 import { DateSelectItem } from "../../../pureComponents";
 import { Dropdown } from "sharingan-rn-modal-dropdown";
 
@@ -47,12 +40,13 @@ const data = [
   },
 ];
 const EnquiryFollowUpScreen = ({ navigation }) => {
-  const [text, setText] = React.useState("");
+
   const selector = useSelector((state) => state.enquiryFollowUpReducer);
   const dispatch = useDispatch();
 
   return (
     <SafeAreaView style={[styles.container]}>
+
       {selector.showDatepicker && (
         <DatePickerComponent
           visible={selector.showDatepicker}
@@ -69,22 +63,9 @@ const EnquiryFollowUpScreen = ({ navigation }) => {
         />
       )}
 
-      <View style={{ padding: 15 }}>
-        <View
-          style={[
-            GlobalStyle.shadow,
-            { backgroundColor: Colors.WHITE, width: "100%" },
-          ]}
-        >
-          <View
-            style={{
-              flex: 1,
-              width: "100%",
-              height: 65,
-              backgroundColor: Colors.RED,
-            }}
-          >
-            {/* <Dropdown
+      <View style={[{ padding: 15 }, GlobalStyle.shadow]}>
+        <View style={{ width: "100%", height: 65, backgroundColor: Colors.WHITE }}>
+          <Dropdown
             label="Model"
             data={selector.dropDownData}
             required={true}
@@ -93,58 +74,57 @@ const EnquiryFollowUpScreen = ({ navigation }) => {
             onChange={(value) =>
               dispatch(setDropDownData({ key: "MODEL", value: value }))
             }
-          /> */}
-          </View>
-          <TextinputComp
-            style={styles.textInputStyle}
-            label={"Reason"}
-            value={selector.reason}
-            onChangeText={(text) => {
-              dispatch(
-                setEnquiryFollowUpDetails({ key: "REASON", text: text })
-              );
-            }}
-          />
-          <Text style={GlobalStyle.underline}></Text>
-          <TextinputComp
-            style={styles.textInputStyle}
-            label={"Customer Remarks"}
-            value={selector.customer_remarks}
-            onChangeText={(text) =>
-              dispatch(
-                setEnquiryFollowUpDetails({
-                  key: "CUSTOMER_REMARKS",
-                  text: text,
-                })
-              )
-            }
-          />
-          <Text style={GlobalStyle.underline}></Text>
-          <TextinputComp
-            style={styles.textInputStyle}
-            label={"Employee Remarks*"}
-            value={selector.employee_remarks}
-            onChangeText={(text) =>
-              dispatch(
-                setEnquiryFollowUpDetails({
-                  key: "EMPLOYEE_REMARKS",
-                  text: text,
-                })
-              )
-            }
-          />
-          <Text style={GlobalStyle.underline}></Text>
-          <DateSelectItem
-            label={"Actual Start Time"}
-            value={selector.actualStartTime}
-            onPress={() => dispatch(setDatePicker("ACTUAL_START_TIME"))}
-          />
-          <DateSelectItem
-            label={"Actual End Time"}
-            value={selector.actualEndTime}
-            onPress={() => dispatch(setDatePicker("ACTUAL_END_TIME"))}
           />
         </View>
+        <TextinputComp
+          style={styles.textInputStyle}
+          label={"Reason"}
+          value={selector.reason}
+          onChangeText={(text) => {
+            dispatch(
+              setEnquiryFollowUpDetails({ key: "REASON", text: text })
+            );
+          }}
+        />
+        <Text style={GlobalStyle.underline}></Text>
+        <TextinputComp
+          style={styles.textInputStyle}
+          label={"Customer Remarks"}
+          value={selector.customer_remarks}
+          onChangeText={(text) =>
+            dispatch(
+              setEnquiryFollowUpDetails({
+                key: "CUSTOMER_REMARKS",
+                text: text,
+              })
+            )
+          }
+        />
+        <Text style={GlobalStyle.underline}></Text>
+        <TextinputComp
+          style={styles.textInputStyle}
+          label={"Employee Remarks*"}
+          value={selector.employee_remarks}
+          onChangeText={(text) =>
+            dispatch(
+              setEnquiryFollowUpDetails({
+                key: "EMPLOYEE_REMARKS",
+                text: text,
+              })
+            )
+          }
+        />
+        <Text style={GlobalStyle.underline}></Text>
+        <DateSelectItem
+          label={"Actual Start Time"}
+          value={selector.actualStartTime}
+          onPress={() => dispatch(setDatePicker("ACTUAL_START_TIME"))}
+        />
+        <DateSelectItem
+          label={"Actual End Time"}
+          value={selector.actualEndTime}
+          onPress={() => dispatch(setDatePicker("ACTUAL_END_TIME"))}
+        />
       </View>
 
       <View style={styles.view1}>
@@ -191,17 +171,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  container1: {
-    paddingTop: 30,
-    marginLeft: 20,
-    marginRight: 20,
-    flex: 1,
-  },
   textInputStyle: {
     height: 65,
     width: "100%",
   },
-
   view1: {
     marginTop: 10,
     flexDirection: "row",
