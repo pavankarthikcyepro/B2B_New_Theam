@@ -62,13 +62,7 @@ const EnquiryFollowUpScreen = ({ navigation }) => {
       )}
 
       <View style={[{ padding: 15 }, GlobalStyle.shadow]}>
-        <View
-          style={{
-            width: "100%",
-            height: 100,
-            backgroundColor: Colors.WHITE,
-          }}
-        >
+        <View style={styles.drop_down_view_style}>
           <Dropdown
             label="Model"
             data={selector.dropDownData}
@@ -80,6 +74,8 @@ const EnquiryFollowUpScreen = ({ navigation }) => {
               dispatch(setDropDownData({ key: "MODEL", value: value }))
             }
           />
+        </View>
+        <View style={styles.drop_down_view_style}>
           <Dropdown
             label="Varient"
             data={selector.dropDownData}
@@ -91,6 +87,7 @@ const EnquiryFollowUpScreen = ({ navigation }) => {
             }
           />
         </View>
+
         <TextinputComp
           style={styles.textInputStyle}
           label={"Reason"}
@@ -144,6 +141,7 @@ const EnquiryFollowUpScreen = ({ navigation }) => {
 
       <View style={styles.view1}>
         <Button
+          style={{ width: 120 }}
           mode="contained"
           color={Colors.RED}
           labelStyle={{ textTransform: "none" }}
@@ -152,6 +150,7 @@ const EnquiryFollowUpScreen = ({ navigation }) => {
           Update
         </Button>
         <Button
+          style={{ width: 120 }}
           mode="contained"
           color={Colors.RED}
           labelStyle={{ textTransform: "none" }}
@@ -162,6 +161,7 @@ const EnquiryFollowUpScreen = ({ navigation }) => {
       </View>
       <View style={styles.view1}>
         <Button
+          style={{ width: 120 }}
           mode="contained"
           color={Colors.RED}
           labelStyle={{ textTransform: "none" }}
@@ -170,6 +170,7 @@ const EnquiryFollowUpScreen = ({ navigation }) => {
           Cancel
         </Button>
         <Button
+          style={{ width: 120 }}
           mode="contained"
           color={Colors.RED}
           labelStyle={{ textTransform: "none" }}
@@ -200,12 +201,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     alignItems: "center",
   },
-
   drop_down_view_style: {
-    paddingTop: 10,
     height: 65,
     width: "100%",
-    flex: 1,
     backgroundColor: Colors.WHITE,
   },
 });
