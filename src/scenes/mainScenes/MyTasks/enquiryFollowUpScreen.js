@@ -85,15 +85,15 @@ const EnquiryFollowUpScreen = ({ navigation }) => {
             }}
           >
             {/* <Dropdown
-              label="Model"
-              data={selector.dropDownData}
-              required={true}
-              floating={true}
-              value={selector.model}
-              onChange={(value) =>
-                dispatch(setDropDownData({ key: "MODEL", value: value }))
-              }
-            /> */}
+            label="Model"
+            data={selector.dropDownData}
+            required={true}
+            floating={true}
+            value={selector.model}
+            onChange={(value) =>
+              dispatch(setDropDownData({ key: "MODEL", value: value }))
+            }
+          /> */}
           </View>
           <TextinputComp
             style={styles.textInputStyle}
