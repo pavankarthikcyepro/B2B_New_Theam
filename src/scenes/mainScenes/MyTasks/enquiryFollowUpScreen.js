@@ -196,7 +196,6 @@ const styles = StyleSheet.create({
   view1: {
     marginTop: 10,
     width: "100%",
-
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
