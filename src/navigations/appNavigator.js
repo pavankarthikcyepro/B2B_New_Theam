@@ -30,6 +30,7 @@ import DetailsOverviewScreen from "../scenes/mainScenes/EMS/enquiryFormScreen";
 import PreBookingFormScreen from "../scenes/mainScenes/PreBooking/prebookingFormScreen";
 import PreBookingScreen from "../scenes/mainScenes/PreBooking/prebookingScreen";
 import HomeVisitScreen from "../scenes/mainScenes/MyTasks/homeVisitScreen";
+import TestDriveScreen from "../scenes/mainScenes/MyTasks/testDriveScreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -86,7 +87,7 @@ export const DrawerStackIdentifiers = {
   settings: "SETTINGS",
   notification: "NOTIFICATION",
   eventManagement: "EVENT_MANAGEMENT",
-  preBooking: "PRE_BOOKING"
+  preBooking: "PRE_BOOKING",
 };
 
 export const TabStackIdentifiers = {
@@ -98,18 +99,19 @@ export const TabStackIdentifiers = {
 export const EmsStackIdentifiers = {
   addPreEnq: "ADD_PRE_ENQUIRY",
   confirmedPreEnq: "CONFIRMED_PRE_ENQUIRY",
-  detailsOverview: 'DETAILS_OVERVIEW'
+  detailsOverview: "DETAILS_OVERVIEW",
 };
 
 export const PreBookingStackIdentifiers = {
   preBooking: "PRE_BOOKING",
-  preBookingForm: "PRE_BOOKING_FORM"
-}
+  preBookingForm: "PRE_BOOKING_FORM",
+};
 
 export const MyTasksStackIdentifiers = {
   mytasks: "MY_TASKS",
-  homeVisit: "HOME_VISIT"
-}
+  homeVisit: "HOME_VISIT",
+  testDrive: "TEST_DRIVE",
+};
 
 const HomeStack = createStackNavigator();
 
@@ -238,7 +240,11 @@ const MyTaskStackNavigator = ({ navigation }) => {
         component={HomeVisitScreen}
         options={{ title: "Home Visit" }}
       />
-
+      <MyTaskStack.Screen
+        name={MyTasksStackIdentifiers.testDrive}
+        component={TestDriveScreen}
+        options={{ title: "Test Drive" }}
+      />
     </MyTaskStack.Navigator>
   );
 };

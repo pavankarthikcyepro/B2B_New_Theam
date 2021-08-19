@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet,Pressable } from 'react-native';
 import { Colors } from '../styles'
 
 const NameComp = ({ label, value }) => {
@@ -12,9 +12,10 @@ const NameComp = ({ label, value }) => {
     )
 }
 
-export const MyTaskItem = ({ taskName, status, created, dmsLead, phone }) => {
+export const MyTaskItem = ({ taskName, status, created, dmsLead, phone}) => {
 
     return (
+       
         <View style={{ alignSelf: 'stretch' }}>
             <NameComp label={'Task Name   : '} value={taskName} />
             <NameComp label={'Task Status : '} value={status} />
@@ -22,6 +23,7 @@ export const MyTaskItem = ({ taskName, status, created, dmsLead, phone }) => {
             <NameComp label={'DMS Lead    : '} value={dmsLead} />
             <NameComp label={'Phone No    : '} value={phone} />
         </View>
+        
     )
 }
 
