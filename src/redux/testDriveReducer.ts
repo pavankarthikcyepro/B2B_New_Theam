@@ -19,7 +19,6 @@ const dropDownData = [
   },
 ];
 
-
 interface CustomerDetailModel {
   key: string;
   text: string;
@@ -30,32 +29,31 @@ interface DropDownModelNew {
   value: string;
 }
 
-
-
 const testDriveSlice = createSlice({
   name: "TEST_DRIVE_SLICE",
   initialState: {
     status: "",
     isLoading: false,
     showDatepicker: false,
-    showDropDownpicker: false,
-    // dropDownData: dropDownData,
-    dropDownTitle: "",
-    dropDownKeyId: "",
+    dropDownData: dropDownData,
     datePickerKeyId: "",
     showImagePicker: false,
-    imagePickerKeyId: "",
     // Customer Details
     name: "",
     mobile: "",
     email: "",
-    date_of_birth: "",
     model: "",
     varient: "",
     fuel_type: "",
     transmission_type: "",
-    listofdse_employees: "",
-    listof_drivers: "",
+    address_type_is_showroom: "",
+    customer_having_driving_licence: "",
+    customer_preferred_date: "",
+    selected_dse_employee: "",
+    selected_driver: "",
+    customer_preferred_time: "",
+    actual_start_time: "",
+    actual_end_time: ""
   },
   reducers: {
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
@@ -67,22 +65,20 @@ const testDriveSlice = createSlice({
         case "VARIENT":
           state.varient = value;
           break;
-
         case "FUEL_TYPE":
           state.fuel_type = value;
           break;
         case "TRANSMISSION_TYPE":
           state.transmission_type = value;
           break;
-        case "LISTOFDSE_EMPLOYEES":
-          state.listofdse_employees = value;
+        case "LIST_OF_DSE_EMPLOYEES":
+          state.selected_dse_employee = value;
           break;
-        case "LISTOF_DRIVERS":
-          state.listof_drivers = value;
+        case "LIST_OF_DRIVERS":
+          state.selected_driver = value;
           break;
       }
     },
-   
     setDatePicker: (state, action) => {
       state.datePickerKeyId = action.payload;
       state.showDatepicker = !state.showDatepicker;
@@ -91,8 +87,17 @@ const testDriveSlice = createSlice({
       const { key, text } = action.payload;
       const selectedDate = dateSelected(text);
       switch (state.datePickerKeyId) {
-        case "DATE_OF_BIRTH":
-          state.date_of_birth = selectedDate;
+        case "PREFERRED_DATE":
+          state.customer_preferred_date = selectedDate;
+          break;
+        case "CUSTOMER_PREFERRED_TIME":
+          state.customer_preferred_time = selectedDate;
+          break;
+        case "ACTUAL_START_TIME":
+          state.actual_start_time = selectedDate;
+          break;
+        case "ACTUAL_END_TIME":
+          state.actual_end_time = selectedDate;
           break;
       }
       state.showDatepicker = !state.showDatepicker;
@@ -111,6 +116,12 @@ const testDriveSlice = createSlice({
           break;
         case "EMAIL":
           state.email = text;
+          break;
+        case "CHOOSE_ADDRESS":
+          state.address_type_is_showroom = text;
+          break;
+        case "CUSTOMER_HAVING_DRIVING_LICENCE":
+          state.address_type_is_showroom = text;
           break;
       }
     },

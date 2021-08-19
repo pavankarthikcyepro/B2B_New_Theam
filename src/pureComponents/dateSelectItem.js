@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
         color: Colors.GRAY
     },
     view3: {
-        width: '100%',
+        maxWidth: '100%',
         height: 40,
         flexDirection: 'row',
         justifyContent: 'space-between',
