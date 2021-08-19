@@ -21,26 +21,6 @@ import { Dropdown } from "sharingan-rn-modal-dropdown";
 import { RadioButton } from "react-native-paper";
 import { Button } from "react-native-paper";
 
-const data = [
-  {
-    value: "1",
-    label: "Tiger Nixon",
-    employee_salary: "320800",
-    employee_age: "61",
-  },
-  {
-    value: "2",
-    label: "Garrett Winters",
-    employee_salary: "170750",
-    employee_age: "63",
-  },
-  {
-    value: "3",
-    label: "Ashton Cox",
-    employee_salary: "86000",
-    employee_age: "66",
-  },
-];
 
 const TestDriveScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -337,7 +317,6 @@ const styles = StyleSheet.create({
   },
   view1: {
     marginTop: 50,
-    paddingLeft: 100,
     flexDirection: "row",
     justifyContent: "space-evenly",
     alignItems: "center",
