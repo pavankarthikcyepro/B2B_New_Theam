@@ -31,17 +31,12 @@ const MyTasksScreen = ({ navigation }) => {
           renderItem={({ item, index }) => {
             return (
               <View style={[styles.listBgVw]}>
-                {/* <Pressable
-                  onPress={() =>
-                    navigation.navigate(
-                      AppNavigator.MyTasksStackIdentifiers.homeVisit
-                    )
-                  }
-                > */}
+                {/* <Pressable onPress={() => navigation.navigate(AppNavigator.MyTasksStackIdentifiers.homeVisit)}> */}
+
                 <Pressable
                   onPress={() =>
                     navigation.navigate(
-                      AppNavigator.MyTasksStackIdentifiers.testDrive
+                      AppNavigator.MyTasksStackIdentifiers.enquiryFollowUp
                     )
                   }
                 >

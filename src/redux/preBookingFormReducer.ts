@@ -2,22 +2,22 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const dropDownData = [
   {
-    value: '1',
-    label: 'Tiger Nixon',
+    value: "1",
+    label: "Tiger Nixon",
   },
   {
-    value: '2',
-    label: 'Garrett Winters',
+    value: "2",
+    label: "Garrett Winters",
   },
   {
-    value: '3',
-    label: 'Jhon Wick 1',
+    value: "3",
+    label: "Jhon Wick 1",
   },
   {
-    value: '4',
-    label: 'Jhon Wick 2',
-  }
-]
+    value: "4",
+    label: "Jhon Wick 2",
+  },
+];
 
 const dummyData = [
   {
@@ -148,11 +148,35 @@ const prebookingFormSlice = createSlice({
     occasion: "",
     tentative_delivery_date: "",
     delivery_location: "",
+    //Price Conformation
+    showroom_price: "",
+    vechicle_registration: true,
+    life_tax: "",
+    registration_charges: "",
+    insurance_type: "",
+    add_on_insurance: "",
+    warranty: "",
+    handling_charges: "",
+    essential_kit: "",
+    tcs: "",
+    paid_accessories: "",
+    fast_tag: "",
+    on_road_price: "",
+    //offerprice
+    consumer_offer: "",
+    exchange_offer: "",
+    corporate_offer: "",
+    promotional_offer: "",
+    cash_discount: "",
+    for_accessories: "",
+    additional_offer_1: "",
+    additional_offer_2: "",
+    after_discount: "",
     // Documents Upload
     form_or_pan: "",
     customer_type_category: "",
     adhaar_number: "",
-    relationship_proof: ""
+    relationship_proof: "",
   },
   reducers: {
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
@@ -212,6 +236,12 @@ const prebookingFormSlice = createSlice({
         case "CUSTOMER_TYPE_CATEGORY":
           state.customer_type_category = value;
           break;
+        case "INSURANCE_TYPE":
+          state.insurance_type = value;
+          break;
+        case "WARRANTY":
+          state.warranty = value;
+          break;
       }
     },
     setImagePicker: (state, action) => {
@@ -258,7 +288,10 @@ const prebookingFormSlice = createSlice({
           break;
       }
     },
-    setCommunicationAddress: (state, action: PayloadAction<CustomerDetailModel>) => {
+    setCommunicationAddress: (
+      state,
+      action: PayloadAction<CustomerDetailModel>
+    ) => {
       const { key, text } = action.payload;
       switch (key) {
         case "PINCODE":
@@ -314,7 +347,10 @@ const prebookingFormSlice = createSlice({
           break;
       }
     },
-    setFinancialDetails: (state, action: PayloadAction<CustomerDetailModel>) => {
+    setFinancialDetails: (
+      state,
+      action: PayloadAction<CustomerDetailModel>
+    ) => {
       const { key, text } = action.payload;
       switch (key) {
         case "DOWN_PAYMENT":
@@ -331,7 +367,86 @@ const prebookingFormSlice = createSlice({
           break;
       }
     },
-    setBookingPaymentDetails: (state, action: PayloadAction<CustomerDetailModel>) => {
+    setPriceConformationDetails: (
+      state,
+      action: PayloadAction<CustomerDetailModel>
+    ) => {
+      const { key, text } = action.payload;
+      switch (key) {
+        case "SHOWROOM_PRICE":
+          state.showroom_price = text;
+          break;
+        case "VECHILE_REGISTRATION":
+          state.vechicle_registration = !state.vechicle_registration;
+          break;
+        case "LIFE_TAX":
+          state.life_tax = text;
+          break;
+        case "RESGISTRATION_CHARGES":
+          state.registration_charges = text;
+          break;
+        case "ADD_ON_INSURANCE":
+          state.add_on_insurance = text;
+          break;
+        case "HANDLING_CHARGES":
+          state.handling_charges = text;
+          break;
+        case "ESSENTIAL_KIT":
+          state.essential_kit = text;
+          break;
+        case "TCS":
+          state.tcs = text;
+          break;
+        case "PAID_ACCSSORIES":
+          state.paid_accessories = text;
+          break;
+        case "FAST_TAG":
+          state.fast_tag = text;
+          break;
+        case "ON_PRICE_ROAD":
+          state.on_road_price = text;
+          break;
+      }
+    },
+    setOfferPriceDetails: (
+      state,
+      action: PayloadAction<CustomerDetailModel>
+    ) => {
+      const { key, text } = action.payload;
+      switch (key) {
+        case "CONSUMER_OFFER":
+          state.consumer_offer = text;
+          break;
+        case "EXCHANGE_OFFER":
+          state.exchange_offer = text;
+          break;
+        case "CORPORATE_OFFER":
+          state.corporate_offer = text;
+          break;
+        case "PROMOTIONAL_OFFER":
+          state.promotional_offer = text;
+          break;
+        case "CASH_DISCOUNT":
+          state.cash_discount = text;
+          break;
+        case "FOR_ACCESSORIES":
+          state.for_accessories = text;
+          break;
+        case "ADDITIONAL_OFFER_1":
+          state.additional_offer_1 = text;
+          break;
+        case "ADDITIONAL_OFFER_2":
+          state.additional_offer_2 = text;
+          break;
+        case "AFTER_DISCOUNT":
+          state.after_discount = text;
+          break;
+      }
+    },
+    setBookingPaymentDetails: (
+      state,
+      action: PayloadAction<CustomerDetailModel>
+    ) => {
       const { key, text } = action.payload;
       switch (key) {
         case "BOOKING_AMOUNT":
@@ -339,7 +454,10 @@ const prebookingFormSlice = createSlice({
           break;
       }
     },
-    setCommitmentDetails: (state, action: PayloadAction<CustomerDetailModel>) => {
+    setCommitmentDetails: (
+      state,
+      action: PayloadAction<CustomerDetailModel>
+    ) => {
       const { key, text } = action.payload;
       switch (key) {
         case "OCCASION":
@@ -350,7 +468,10 @@ const prebookingFormSlice = createSlice({
           break;
       }
     },
-    setDocumentUploadDetails: (state, action: PayloadAction<CustomerDetailModel>) => {
+    setDocumentUploadDetails: (
+      state,
+      action: PayloadAction<CustomerDetailModel>
+    ) => {
       const { key, text } = action.payload;
       switch (key) {
         case "ADHAR":
@@ -360,7 +481,7 @@ const prebookingFormSlice = createSlice({
           state.relationship_proof = text;
           break;
       }
-    }
+    },
   },
 });
 
@@ -383,8 +504,10 @@ export const {
   setFinancialDetails,
   setCommitmentDetails,
   setBookingPaymentDetails,
+  setPriceConformationDetails,
+  setOfferPriceDetails,
   setDropDownData,
   setDocumentUploadDetails,
-  setImagePicker
+  setImagePicker,
 } = prebookingFormSlice.actions;
 export default prebookingFormSlice.reducer;

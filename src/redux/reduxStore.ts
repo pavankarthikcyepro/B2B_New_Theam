@@ -10,13 +10,14 @@ import notificationReducer from "./notificationReducer";
 import complaintsReducer from "./complaintsReducer";
 import routeReducer from "./routeReducer";
 import eventmanagementReducer from "./eventManagementReducer";
-import addPreEnquiryReducer from './addPreEnquiryReducer';
-import enquiryFormReducer from './enquiryFormReducer';
+import addPreEnquiryReducer from "./addPreEnquiryReducer";
+import enquiryFormReducer from "./enquiryFormReducer";
 import enquiryReducer from "./enquiryReducer";
 import preBookingFormReducer from "./preBookingFormReducer";
 import preBookingReducer from "./preBookingReducer";
 import homeVisitReducer from "./homeVisitReducer";
 import testDriveReducer from "./testDriveReducer";
+import enquiryFollowUpReducer from "./enquiryFollowUpReducer";
 
 const reducer = combineReducers({
   routeReducer,
@@ -34,16 +35,18 @@ const reducer = combineReducers({
   preBookingFormReducer,
   preBookingReducer,
   homeVisitReducer,
-  testDriveReducer
+  testDriveReducer,
+  enquiryFollowUpReducer,
 });
 
 const store = configureStore({
   reducer,
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware({
-    immutableCheck: false,
-    serializableCheck: false
-  }),
-  devTools: false
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      immutableCheck: false,
+      serializableCheck: false,
+    }),
+  devTools: false,
 });
 
 export default store;
