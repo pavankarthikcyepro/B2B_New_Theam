@@ -28,7 +28,7 @@ const OpenScreen = ({ navigation }) => {
           }}
           renderItem={({ item, index }) => {
             return (
-              <View style={[styles.listBgVw, GlobalStyle.shadow]}>
+              <View style={[styles.listBgVw]}>
                 <ComplaintsItem
                   complaintFactor={item.complaintFactor}
                   name={item.name}

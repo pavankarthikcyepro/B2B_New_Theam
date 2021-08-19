@@ -14,7 +14,7 @@ import {
   updateSelectedDate,
   setDropDownData,
 } from "../../../redux/testDriveReducer";
-import { DateSelectItem } from "../../../pureComponents";
+import { DateSelectItem, RadioTextItem } from "../../../pureComponents";
 import { Dropdown } from "sharingan-rn-modal-dropdown";
 import { RadioButton } from "react-native-paper";
 import { Button } from "react-native-paper";
@@ -32,15 +32,21 @@ const TestDriveScreen = ({ navigation }) => {
       {selector.showDatepicker && (
         <DatePickerComponent
           visible={selector.showDatepicker}
-          mode={"time"}
+          mode={selector.date_picker_mode}
           value={new Date(Date.now())}
           onChange={(event, selectedDate) => {
             console.log("date: ", selectedDate);
             if (Platform.OS === "android") {
+              if (!selectedDate) {
+                dispatch(updateSelectedDate({ key: "NONE", text: selectedDate }));
+              } else {
+                dispatch(updateSelectedDate({ key: "", text: selectedDate }));
+              }
+            } else {
+              dispatch(updateSelectedDate({ key: "", text: selectedDate }));
             }
-            dispatch(updateSelectedDate({ key: "", text: selectedDate }));
           }}
-          onRequestClose={() => dispatch(setDatePicker())}
+          onRequestClose={() => dispatch(updateSelectedDate({ key: "NONE", text: "" }))}
         />
       )}
 
@@ -94,7 +100,7 @@ const TestDriveScreen = ({ navigation }) => {
             <Text style={GlobalStyle.underline}></Text>
             <Dropdown
               label="Model"
-              data={selector.dropDownData}
+              data={selector.drop_down_data}
               floating={true}
               value={selector.model}
               onChange={(value) =>
@@ -103,7 +109,7 @@ const TestDriveScreen = ({ navigation }) => {
             />
             <Dropdown
               label="Fuel Type"
-              data={selector.dropDownData}
+              data={selector.drop_down_data}
               floating={true}
               value={selector.fuel_type}
               onChange={(value) =>
@@ -112,7 +118,7 @@ const TestDriveScreen = ({ navigation }) => {
             />
             <Dropdown
               label="Transmission Type"
-              data={selector.dropDownData}
+              data={selector.drop_down_data}
               floating={true}
               value={selector.transmission_type}
               onChange={(value) =>
@@ -121,7 +127,7 @@ const TestDriveScreen = ({ navigation }) => {
             />
             <Dropdown
               label="Varient"
-              data={selector.dropDownData}
+              data={selector.drop_down_data}
               floating={true}
               value={selector.varient}
               onChange={(value) =>
@@ -131,44 +137,48 @@ const TestDriveScreen = ({ navigation }) => {
             <Text style={{ padding: 10, justifyContent: "center" }}>
               {"Choose address:"}
             </Text>
-            <View style={{ flexDirection: "row" }}>
-              <RadioButton.Android
-                status={selector.address_type_is_showroom === "true" ? "checked" : "unchecked"}
-                onPress={() => dispatch(setDropDownData({ key: "CHOOSE_ADDRESS", value: "true", }))}
+            <View style={{ flexDirection: "row", paddingLeft: 12, paddingBottom: 5 }}>
+              <RadioTextItem
+                label={"Showroom address"}
+                value={"Showroom address"}
+                status={selector.address_type_is_showroom === "true" ? true : false}
+                onPress={() => dispatch(setTestDriveDetails({ key: "CHOOSE_ADDRESS", text: "true", }))}
               />
-              <Text style={{ marginTop: 8 }}>{"Showroom address"}</Text>
-              <RadioButton.Android
-                status={selector.address_type_is_showroom === "false" ? "checked" : "unchecked"}
-                onPress={() => dispatch(setDropDownData({ key: "CHOOSE_ADDRESS", value: "false", }))}
+              <RadioTextItem
+                label={"Customer address"}
+                value={"Customer address"}
+                status={selector.address_type_is_showroom === "false" ? true : false}
+                onPress={() => dispatch(setTestDriveDetails({ key: "CHOOSE_ADDRESS", text: "false", }))}
               />
-              <Text style={{ marginTop: 8 }}>{"Customer address"}</Text>
             </View>
 
             <Text style={GlobalStyle.underline}></Text>
             <Text style={{ padding: 10 }}>
               {"Do Customer have Driving License?"}
             </Text>
-            <View style={{ flexDirection: "row" }}>
-              <RadioButton.Android
-                status={selector.customer_having_driving_licence === "true" ? "checked" : "unchecked"}
-                onPress={() => dispatch(setDropDownData({ key: "CUSTOMER_HAVING_DRIVING_LICENCE", value: "false", }))}
+            <View style={{ flexDirection: "row", paddingLeft: 12, paddingBottom: 5 }}>
+              <RadioTextItem
+                label={"Yes"}
+                value={"Yes"}
+                status={selector.customer_having_driving_licence === "true" ? true : false}
+                onPress={() => dispatch(setTestDriveDetails({ key: "CUSTOMER_HAVING_DRIVING_LICENCE", text: "true", }))}
               />
-              <Text style={{ marginTop: 8 }}>{"Yes"}</Text>
-              <RadioButton.Android
-                status={selector.customer_having_driving_licence === "false" ? "checked" : "unchecked"}
-                onPress={() => dispatch(setDropDownData({ key: "CUSTOMER_HAVING_DRIVING_LICENCE", value: "false", }))}
+              <RadioTextItem
+                label={"No"}
+                value={"No"}
+                status={selector.customer_having_driving_licence === "false" ? true : false}
+                onPress={() => dispatch(setTestDriveDetails({ key: "CUSTOMER_HAVING_DRIVING_LICENCE", text: "false", }))}
               />
-              <Text style={{ marginTop: 8 }}>{"No"}</Text>
             </View>
             <Text style={GlobalStyle.underline}></Text>
             <DateSelectItem
               label={"Customer Preffered Date"}
               value={selector.customer_preferred_date}
-              onPress={() => dispatch(setDatePicker("PREFERRED_DATE"))}
+              onPress={() => dispatch(setDatePicker({ key: "PREFERRED_DATE", mode: "date" }))}
             />
             <Dropdown
               label="List of DSE employees:"
-              data={selector.dropDownData}
+              data={selector.drop_down_data}
               floating={true}
               value={selector.selected_dse_employee}
               onChange={(value) =>
@@ -179,7 +189,7 @@ const TestDriveScreen = ({ navigation }) => {
             />
             <Dropdown
               label="List of Drivers:"
-              data={selector.dropDownData}
+              data={selector.drop_down_data}
               floating={true}
               value={selector.selected_driver}
               onChange={(value) =>
@@ -191,17 +201,17 @@ const TestDriveScreen = ({ navigation }) => {
             <DateSelectItem
               label={"Customer Preffered Time (24 hours Format)"}
               value={selector.customer_preferred_time}
-              onPress={() => dispatch(setDatePicker("CUSTOMER_PREFERRED_TIME"))}
+              onPress={() => dispatch(setDatePicker({ key: "CUSTOMER_PREFERRED_TIME", mode: "time" }))}
             />
             <DateSelectItem
               label={"Actual start Time (24 hours Format)"}
               value={selector.actual_start_time}
-              onPress={() => dispatch(setDatePicker("ACTUAL_START_TIME"))}
+              onPress={() => dispatch(setDatePicker({ key: "ACTUAL_START_TIME", mode: "time" }))}
             />
             <DateSelectItem
               label={"Actual End Time (24 hours Format)"}
               value={selector.actual_end_time}
-              onPress={() => dispatch(setDatePicker("ACTUAL_END_TIME"))}
+              onPress={() => dispatch(setDatePicker({ key: "ACTUAL_END_TIME", mode: "time" }))}
             />
             <View style={styles.space}></View>
             <Text style={{ padding: 10 }}>{"Allotment ID"}</Text>
@@ -217,6 +227,7 @@ const TestDriveScreen = ({ navigation }) => {
         <View style={styles.view1}>
           <Button
             mode="contained"
+            style={{ width: 120 }}
             color={Colors.RED}
             labelStyle={{ textTransform: "none" }}
             onPress={() => console.log("Pressed")}
@@ -225,6 +236,7 @@ const TestDriveScreen = ({ navigation }) => {
           </Button>
           <Button
             mode="contained"
+            style={{ width: 120 }}
             color={Colors.RED}
             labelStyle={{ textTransform: "none" }}
             onPress={() => console.log("Pressed")}

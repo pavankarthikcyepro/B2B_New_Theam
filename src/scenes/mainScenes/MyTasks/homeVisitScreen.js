@@ -6,10 +6,9 @@ import { Button } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
 import { setHomeVisitDetails } from "../../../redux/homeVisitReducer";
 
-const ScreenWidth = Dimensions.get("window").width;
 
 const HomeVisitScreen = () => {
-  const [text, setText] = React.useState("");
+
   const selector = useSelector((state) => state.homeVisitReducer);
   const dispatch = useDispatch();
 
@@ -54,6 +53,7 @@ const HomeVisitScreen = () => {
       <View style={styles.view1}>
         <Button
           mode="contained"
+          style={{ width: 120 }}
           color={Colors.RED}
           labelStyle={{ textTransform: "none" }}
           onPress={() => console.log("Pressed")}
@@ -62,6 +62,7 @@ const HomeVisitScreen = () => {
         </Button>
         <Button
           mode="contained"
+          style={{ width: 120 }}
           color={Colors.RED}
           labelStyle={{ textTransform: "none" }}
           onPress={() => console.log("Pressed")}

@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import moment from 'moment';
 
 const dropDownData = [
   {
@@ -29,13 +30,19 @@ interface DropDownModelNew {
   value: string;
 }
 
+interface DatePickerModel {
+  key: string;
+  mode: string;
+}
+
 const testDriveSlice = createSlice({
   name: "TEST_DRIVE_SLICE",
   initialState: {
     status: "",
     isLoading: false,
     showDatepicker: false,
-    dropDownData: dropDownData,
+    date_picker_mode: "date",
+    drop_down_data: dropDownData,
     datePickerKeyId: "",
     showImagePicker: false,
     // Customer Details
@@ -79,13 +86,20 @@ const testDriveSlice = createSlice({
           break;
       }
     },
-    setDatePicker: (state, action) => {
-      state.datePickerKeyId = action.payload;
+    setDatePicker: (state, action: PayloadAction<DatePickerModel>) => {
+      const { key, mode } = action.payload;
+      state.datePickerKeyId = key;
+      state.date_picker_mode = mode;
       state.showDatepicker = !state.showDatepicker;
     },
     updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
-      const selectedDate = dateSelected(text);
+      let selectedDate = "";
+      if (state.date_picker_mode === "date") {
+        selectedDate = convertToDate(text);
+      } else {
+        selectedDate = convertToTime(text);
+      }
       switch (state.datePickerKeyId) {
         case "PREFERRED_DATE":
           state.customer_preferred_date = selectedDate;
@@ -99,13 +113,13 @@ const testDriveSlice = createSlice({
         case "ACTUAL_END_TIME":
           state.actual_end_time = selectedDate;
           break;
+        case "NONE":
+          console.log('NONE')
+          break;
       }
       state.showDatepicker = !state.showDatepicker;
     },
-    setTestDriveDetails: (
-      state,
-      action: PayloadAction<CustomerDetailModel>
-    ) => {
+    setTestDriveDetails: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
       switch (key) {
         case "MOBILE":
@@ -121,23 +135,24 @@ const testDriveSlice = createSlice({
           state.address_type_is_showroom = text;
           break;
         case "CUSTOMER_HAVING_DRIVING_LICENCE":
-          state.address_type_is_showroom = text;
+          state.customer_having_driving_licence = text;
           break;
       }
     },
   },
 });
 
-const dateSelected = (isoDate) => {
-  if (!isoDate) {
-    return "";
-  }
-  const date = new Date(isoDate);
-  const finalDate =
-    date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
-  console.log("date: ", finalDate);
-  return finalDate;
-};
+
+
+const convertToTime = (isoDate) => {
+  const date = moment(isoDate).format("h:mm a");
+  return date;
+}
+
+const convertToDate = (isoDate) => {
+  const date = moment(isoDate).format("DD/MM/YYYY");
+  return date;
+}
 
 export const {
   setDatePicker,

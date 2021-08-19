@@ -48,7 +48,7 @@ const EnquiryFollowUpScreen = ({ navigation }) => {
       {selector.showDatepicker && (
         <DatePickerComponent
           visible={selector.showDatepicker}
-          mode={"date"}
+          mode={"time"}
           value={new Date(Date.now())}
           onChange={(event, selectedDate) => {
             console.log("date: ", selectedDate);

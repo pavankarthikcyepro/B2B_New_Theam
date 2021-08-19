@@ -6,10 +6,10 @@ import {
   Text,
   ScrollView,
   Pressable,
-  TouchableOpacity,
+  ActivityIndicator,
   KeyboardAvoidingView,
 } from "react-native";
-import { Provider, Checkbox, IconButton } from "react-native-paper";
+import { DefaultTheme, Checkbox, IconButton } from "react-native-paper";
 import { Colors, GlobalStyle } from "../../../styles";
 import VectorImage from "react-native-vector-image";
 import {
@@ -50,10 +50,25 @@ import {
 import { ImagePickerComponent } from "../../../components";
 import { Dropdown } from "sharingan-rn-modal-dropdown";
 
+const theme = {
+  ...DefaultTheme,
+  // Specify custom property
+  roundness: 0,
+  // Specify custom property in nested object
+  colors: {
+    // background: "#ffffff",
+  }
+};
+
 const DetailsOverviewScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.enquiryFormReducer);
   const [openAccordian, setOpenAccordian] = useState(0);
+  const [componentAppear, setComponentAppear] = useState(false);
+
+  useEffect(() => {
+    setComponentAppear(true);
+  }, [])
 
   const updateAccordian = (index) => {
     if (index != openAccordian) {
@@ -62,6 +77,14 @@ const DetailsOverviewScreen = ({ navigation }) => {
       setOpenAccordian(0);
     }
   };
+
+  if (!componentAppear) {
+    return (
+      <View style={styles.initialContainer}>
+        <ActivityIndicator size="small" color={Colors.RED} />
+      </View>
+    )
+  }
 
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
@@ -83,9 +106,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
             console.log("date: ", selectedDate);
             if (Platform.OS === "android") {
               if (!selectedDate) {
-                dispatch(
-                  updateSelectedDate({ key: "NONE", text: selectedDate })
-                );
+                dispatch(updateSelectedDate({ key: "NONE", text: selectedDate }));
               } else {
                 dispatch(updateSelectedDate({ key: "", text: selectedDate }));
               }
@@ -139,15 +160,19 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 style={{
                   width: "100%",
                   height: openAccordian == 1 ? null : 0,
-                  overflow: "hidden",
+                  overflow: 'scroll',
                 }}
               >
                 <View style={styles.drop_down_view_style}>
                   <Dropdown
+                    // mainContainerStyle={{ backgroundColor: Colors.YELLOW }}
+                    // parentDDContainerStyle={{ backgroundColor: Colors.RED }}
+                    // itemContainerStyle={{ backgroundColor: Colors.BLUE }}
                     label="Salutation"
                     data={selector.dropDownData}
                     required={true}
-                    floating={true}
+                    floating={false}
+                    // paperTheme={theme}
                     value={selector.salutaion}
                     onChange={(value) =>
                       dispatch(
@@ -163,6 +188,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     data={selector.dropDownData}
                     required={true}
                     floating={false}
+                    // paperTheme={theme}
                     value={selector.gender}
                     onChange={(value) =>
                       dispatch(setDropDownData({ key: "GENDER", value: value }))
@@ -1242,6 +1268,11 @@ export default DetailsOverviewScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  initialContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   baseVw: {
     paddingHorizontal: 10,

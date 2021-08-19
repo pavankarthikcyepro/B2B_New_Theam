@@ -5,7 +5,7 @@ import { Colors } from "../styles";
 import moment from 'moment';
 
 const convertTimeStampToDateString = (timeStamp) => {
-  const date = moment().format("DD/MM/YYYY h:mm a");
+  const date = moment(timeStamp).format("DD/MM/YYYY h:mm a");
   return date;
 }
 

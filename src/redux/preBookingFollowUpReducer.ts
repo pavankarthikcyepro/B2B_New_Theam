@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import moment from 'moment';
 
 interface PreBookingFollowUpModel {
   key: string;
@@ -16,8 +17,8 @@ const preBookingFollowUpSlice = createSlice({
     reason: "",
     customer_remarks: "",
     employee_remarks: "",
-    actual_start_date: "",
-    actual_end_date: "",
+    actual_start_time: "",
+    actual_end_time: "",
   },
   reducers: {
     setPreBookingFollowUpDetails: (
@@ -46,13 +47,13 @@ const preBookingFollowUpSlice = createSlice({
       action: PayloadAction<PreBookingFollowUpModel>
     ) => {
       const { key, text } = action.payload;
-      const selectedDate = dateSelected(text);
+      const selectedDate = convertDateToTime(text);
       switch (state.datePickerKeyId) {
-        case "ACTUAL_START_DATE":
-          state.actual_start_date = selectedDate;
+        case "ACTUAL_START_TIME":
+          state.actual_start_time = selectedDate;
           break;
-        case "ACTUAL_END_DATE":
-          state.actual_end_date = selectedDate;
+        case "ACTUAL_END_TIME":
+          state.actual_end_time = selectedDate;
           break;
       }
       state.showDatepicker = !state.showDatepicker;
@@ -60,16 +61,10 @@ const preBookingFollowUpSlice = createSlice({
   },
 });
 
-const dateSelected = (isoDate) => {
-  if (!isoDate) {
-    return "";
-  }
-  const date = new Date(isoDate);
-  const finalDate =
-    date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
-  console.log("date: ", finalDate);
-  return finalDate;
-};
+const convertDateToTime = (isoDate) => {
+  const date = moment(isoDate).format("h:mm a");
+  return date;
+}
 
 export const {
   setDatePicker,

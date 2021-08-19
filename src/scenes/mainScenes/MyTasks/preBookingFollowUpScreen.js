@@ -14,7 +14,7 @@ import { DateSelectItem } from "../../../pureComponents";
 const ScreenWidth = Dimensions.get("window").width;
 
 const PreBookingFollowUpScreen = () => {
-  const [text, setText] = React.useState("");
+
   const selector = useSelector((state) => state.preBookingFollowUpReducer);
   const dispatch = useDispatch();
 
@@ -23,7 +23,7 @@ const PreBookingFollowUpScreen = () => {
       {selector.showDatepicker && (
         <DatePickerComponent
           visible={selector.showDatepicker}
-          mode={"date"}
+          mode={"time"}
           value={new Date(Date.now())}
           onChange={(event, selectedDate) => {
             console.log("date: ", selectedDate);
@@ -39,7 +39,7 @@ const PreBookingFollowUpScreen = () => {
               dispatch(updateSelectedDate({ key: "", text: selectedDate }));
             }
           }}
-          onRequestClose={() => dispatch(setDatePicker())}
+          onRequestClose={() => dispatch(updateSelectedDate({ key: "NONE", text: "" }))}
         />
       )}
 
@@ -87,13 +87,13 @@ const PreBookingFollowUpScreen = () => {
 
           <DateSelectItem
             label={"Actual Start Time"}
-            value={selector.actual_start_date}
+            value={selector.actual_start_time}
             onPress={() => dispatch(setDatePicker("ACTUAL_START_TIME"))}
           />
           <Text style={GlobalStyle.underline}></Text>
           <DateSelectItem
             label={"Actual End Time"}
-            value={selector.actual_end_date}
+            value={selector.actual_end_time}
             onPress={() => dispatch(setDatePicker("ACTUAL_END_TIME"))}
           />
           <Text style={GlobalStyle.underline}></Text>

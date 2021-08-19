@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView, StyleSheet, View, Text, ScrollView } from "react-native";
+import { SafeAreaView, StyleSheet, View, Text, ScrollView, ActivityIndicator } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -68,11 +68,11 @@ const PrebookingFormScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.preBookingFormReducer);
   const [openAccordian, setOpenAccordian] = useState(0);
+  const [componentAppear, setComponentAppear] = useState(false);
 
-  const [valueSS, setValueSS] = useState("");
-  const onChangeSS = (value) => {
-    setValueSS(value);
-  };
+  useEffect(() => {
+    setComponentAppear(true);
+  }, [])
 
   const updateAccordian = (index) => {
     if (index != openAccordian) {
@@ -81,6 +81,14 @@ const PrebookingFormScreen = ({ navigation }) => {
       setOpenAccordian(0);
     }
   };
+
+  if (!componentAppear) {
+    return (
+      <View style={styles.initialContainer}>
+        <ActivityIndicator size="small" color={Colors.RED} />
+      </View>
+    )
+  }
 
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
@@ -1275,6 +1283,11 @@ export default PrebookingFormScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  initialContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   baseVw: {
     paddingHorizontal: 10,

@@ -28,7 +28,7 @@ const EventListScreen = ({ navigation }) => {
           }}
           renderItem={({ item, index }) => {
             return (
-              <View style={[styles.listBgVw, GlobalStyle.shadow]}>
+              <View style={[styles.listBgVw]}>
                 <EventManagementItem
                   eventid={item.eventID}
                   eventName={item.eventName}

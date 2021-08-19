@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import moment from 'moment';
 
 const dropDownData = [
   {
@@ -58,10 +59,7 @@ const slice = createSlice({
     actual_end_time: "",
   },
   reducers: {
-    setEnquiryFollowUpDetails: (
-      state,
-      action: PayloadAction<EnquiryFollowUpTextModel>
-    ) => {
+    setEnquiryFollowUpDetails: (state, action: PayloadAction<EnquiryFollowUpTextModel>) => {
       const { key, text } = action.payload;
       switch (key) {
         case "REASON":
@@ -75,7 +73,6 @@ const slice = createSlice({
           break;
       }
     },
-
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
       const { key, value } = action.payload;
       switch (key) {
@@ -87,14 +84,13 @@ const slice = createSlice({
           break;
       }
     },
-
     setDatePicker: (state, action) => {
       state.datePickerKeyId = action.payload;
       state.showDatepicker = !state.showDatepicker;
     },
     updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
-      const selectedDate = dateSelected(text);
+      const selectedDate = convertToTime(text);
       switch (state.datePickerKeyId) {
         case "ACTUAL_START_TIME":
           state.actual_start_time = selectedDate;
@@ -108,16 +104,10 @@ const slice = createSlice({
   },
 });
 
-const dateSelected = (isoDate) => {
-  if (!isoDate) {
-    return "";
-  }
-  const date = new Date(isoDate);
-  const finalDate =
-    date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
-  console.log("date: ", finalDate);
-  return finalDate;
-};
+const convertToTime = (isoDate) => {
+  const date = moment(isoDate).format("h:mm a");
+  return date;
+}
 
 export const {
   setEnquiryFollowUpDetails,

@@ -20,7 +20,7 @@ const MyTasksScreen = ({ navigation }) => {
 
   const itemClicked = (taskName) => {
     const trimName = taskName.toLowerCase().trim();
-    const finalTaskName = trimName.replaceAll(" ", "");
+    const finalTaskName = trimName.replace(/ /g, "");
     switch (finalTaskName) {
       case "testdrive":
         navigation.navigate(AppNavigator.MyTasksStackIdentifiers.testDrive);
