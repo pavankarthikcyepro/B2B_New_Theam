@@ -31,6 +31,9 @@ import PreBookingFormScreen from "../scenes/mainScenes/PreBooking/prebookingForm
 import PreBookingScreen from "../scenes/mainScenes/PreBooking/prebookingScreen";
 import HomeVisitScreen from "../scenes/mainScenes/MyTasks/homeVisitScreen";
 import PreBookingFollowUpScreen from "../scenes/mainScenes/MyTasks/preBookingFollowUpScreen";
+import TestDriveScreen from "../scenes/mainScenes/MyTasks/testDriveScreen";
+import EnquiryFollowUpScreen from "../scenes/mainScenes/MyTasks/enquiryFollowUpScreen";
+import TestEnquiryFormScreen from "../scenes/mainScenes/EMS/testEnquiryFormScreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -111,6 +114,8 @@ export const MyTasksStackIdentifiers = {
   mytasks: "MY_TASKS",
   homeVisit: "HOME_VISIT",
   preBookingFollowUp: "PREBOOKING_FOLLOWUP",
+  testDrive: "TEST_DRIVE",
+  enquiryFollowUp: "ENQUIRY_FOLLOW_UP",
 };
 
 const HomeStack = createStackNavigator();
@@ -244,6 +249,18 @@ const MyTaskStackNavigator = ({ navigation }) => {
         name={MyTasksStackIdentifiers.preBookingFollowUp}
         component={PreBookingFollowUpScreen}
         options={{ title: "Prekbooking Followup" }}
+      />
+
+      <MyTaskStack.Screen
+        name={MyTasksStackIdentifiers.testDrive}
+        component={TestDriveScreen}
+        options={{ title: "Test Drive" }}
+      />
+
+      <MyTaskStack.Screen
+        name={MyTasksStackIdentifiers.enquiryFollowUp}
+        component={EnquiryFollowUpScreen}
+        options={{ title: "Enquiry Follow Up" }}
       />
     </MyTaskStack.Navigator>
   );

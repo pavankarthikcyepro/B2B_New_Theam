@@ -84,7 +84,6 @@ const PrebookingFormScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
-
       <ImagePickerComponent
         visible={selector.showImagePicker}
         keyId={selector.imagePickerKeyId}

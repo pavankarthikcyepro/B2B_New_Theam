@@ -11,13 +11,8 @@ const preBookingFollowUpSlice = createSlice({
     status: "",
     isLoading: false,
     showDatepicker: false,
-    showDropDownpicker: false,
-    dropDownTitle: "",
-    dropDownKeyId: "",
     datePickerKeyId: "",
     dropDownData: "",
-
-    //PreBookingFollowUp
     reason: "",
     customer_remarks: "",
     employee_remarks: "",

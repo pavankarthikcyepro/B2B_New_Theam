@@ -7,7 +7,7 @@ import {
   ScrollView,
   Pressable,
   TouchableOpacity,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
 } from "react-native";
 import { Provider, Checkbox, IconButton } from "react-native-paper";
 import { Colors, GlobalStyle } from "../../../styles";
@@ -39,14 +39,18 @@ import {
   setCustomerNeedAnalysis,
   setImagePicker,
   setUploadDocuments,
-  setDropDownData
-} from '../../../redux/enquiryFormReducer';
-import { RadioTextItem, CustomerAccordianHeaderItem, ImageSelectItem, DateSelectItem } from '../../../pureComponents';
+  setDropDownData,
+} from "../../../redux/enquiryFormReducer";
+import {
+  RadioTextItem,
+  CustomerAccordianHeaderItem,
+  ImageSelectItem,
+  DateSelectItem,
+} from "../../../pureComponents";
 import { ImagePickerComponent } from "../../../components";
-import { Dropdown } from 'sharingan-rn-modal-dropdown';
+import { Dropdown } from "sharingan-rn-modal-dropdown";
 
 const DetailsOverviewScreen = ({ navigation }) => {
-
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.enquiryFormReducer);
   const [openAccordian, setOpenAccordian] = useState(0);
@@ -60,28 +64,28 @@ const DetailsOverviewScreen = ({ navigation }) => {
   };
 
   return (
-
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
-
       <ImagePickerComponent
         visible={selector.showImagePicker}
         keyId={selector.imagePickerKeyId}
         selectedImage={(data, keyId) => {
-          console.log('imageObj: ', data, keyId);
+          console.log("imageObj: ", data, keyId);
         }}
         onDismiss={() => dispatch(setImagePicker(""))}
       />
 
-      {
-        selector.showDatepicker && <DatePickerComponent
+      {selector.showDatepicker && (
+        <DatePickerComponent
           visible={selector.showDatepicker}
-          mode={'date'}
+          mode={"date"}
           value={new Date(Date.now())}
           onChange={(event, selectedDate) => {
-            console.log('date: ', selectedDate)
+            console.log("date: ", selectedDate);
             if (Platform.OS === "android") {
               if (!selectedDate) {
-                dispatch(updateSelectedDate({ key: "NONE", text: selectedDate }));
+                dispatch(
+                  updateSelectedDate({ key: "NONE", text: selectedDate })
+                );
               } else {
                 dispatch(updateSelectedDate({ key: "", text: selectedDate }));
               }
@@ -91,7 +95,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
           }}
           onRequestClose={() => dispatch(setDatePicker())}
         />
-      }
+      )}
 
       <View style={styles.view1}>
         <Text style={styles.titleText}>{"Details Overview"}</Text>
@@ -107,8 +111,8 @@ const DetailsOverviewScreen = ({ navigation }) => {
       <KeyboardAvoidingView
         style={{
           flex: 1,
-          flexDirection: 'column',
-          justifyContent: 'center',
+          flexDirection: "column",
+          justifyContent: "center",
         }}
         behavior={Platform.OS == "ios" ? "padding" : "height"}
         enabled
@@ -119,7 +123,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
           bounces={true}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ padding: 10 }}
-          keyboardShouldPersistTaps={'handled'}
+          keyboardShouldPersistTaps={"handled"}
           style={{ flex: 1 }}
         >
           <View style={styles.baseVw}>
@@ -145,7 +149,11 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={true}
                     value={selector.salutaion}
-                    onChange={(value) => dispatch(setDropDownData({ key: "SALUTATION", value: value }))}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({ key: "SALUTATION", value: value })
+                      )
+                    }
                   />
                 </View>
 
@@ -156,7 +164,9 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.gender}
-                    onChange={(value) => dispatch(setDropDownData({ key: "GENDER", value: value }))}
+                    onChange={(value) =>
+                      dispatch(setDropDownData({ key: "GENDER", value: value }))
+                    }
                   />
                 </View>
 
@@ -165,7 +175,9 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   value={selector.firstName}
                   label={"First Name*"}
                   onChangeText={(text) =>
-                    dispatch(setPersonalIntro({ key: "FIRST_NAME", text: text }))
+                    dispatch(
+                      setPersonalIntro({ key: "FIRST_NAME", text: text })
+                    )
                   }
                 />
                 <Text style={GlobalStyle.underline}></Text>
@@ -186,7 +198,11 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.relation}
-                    onChange={(value) => dispatch(setDropDownData({ key: "RELATION", value: value }))}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({ key: "RELATION", value: value })
+                      )
+                    }
                   />
                 </View>
 
@@ -251,7 +267,13 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 selected={openAccordian == 2 ? true : false}
                 onPress={() => updateAccordian(2)}
               />
-              <View style={{ width: "100%", height: openAccordian == 2 ? null : 0, overflow: "hidden" }}>
+              <View
+                style={{
+                  width: "100%",
+                  height: openAccordian == 2 ? null : 0,
+                  overflow: "hidden",
+                }}
+              >
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.pincode}
@@ -333,7 +355,9 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   value={selector.city}
                   label={"City*"}
                   onChangeText={(text) =>
-                    dispatch(setCommunicationAddress({ key: "CITY", text: text }))
+                    dispatch(
+                      setCommunicationAddress({ key: "CITY", text: text })
+                    )
                   }
                 />
                 <Text style={GlobalStyle.underline}></Text>
@@ -367,7 +391,9 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   <Checkbox.Android
                     uncheckedColor={Colors.GRAY}
                     color={Colors.RED}
-                    status={selector.permanent_address ? "checked" : "unchecked"}
+                    status={
+                      selector.permanent_address ? "checked" : "unchecked"
+                    }
                     onPress={() =>
                       dispatch(
                         setCommunicationAddress({
@@ -514,15 +540,20 @@ const DetailsOverviewScreen = ({ navigation }) => {
             <View style={styles.space}></View>
 
             {/* // 3.Modal Selction */}
-            <View style={[styles.accordianBckVw], GlobalStyle.shadow}>
+            <View style={([styles.accordianBckVw], GlobalStyle.shadow)}>
               <CustomerAccordianHeaderItem
                 title={"Modal Selection"}
                 leftIcon={"account-edit"}
                 selected={openAccordian == 3 ? true : false}
                 onPress={() => updateAccordian(3)}
               />
-              <View style={{ width: "100%", height: openAccordian == 3 ? null : 0, overflow: 'hidden' }}>
-
+              <View
+                style={{
+                  width: "100%",
+                  height: openAccordian == 3 ? null : 0,
+                  overflow: "hidden",
+                }}
+              >
                 <View style={styles.drop_down_view_style}>
                   <Dropdown
                     label="Model"
@@ -530,7 +561,9 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.model}
-                    onChange={(value) => dispatch(setDropDownData({ key: "MODEL", value: value }))}
+                    onChange={(value) =>
+                      dispatch(setDropDownData({ key: "MODEL", value: value }))
+                    }
                   />
                 </View>
 
@@ -541,7 +574,11 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.varient}
-                    onChange={(value) => dispatch(setDropDownData({ key: "VARIENT", value: value }))}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({ key: "VARIENT", value: value })
+                      )
+                    }
                   />
                 </View>
 
@@ -552,7 +589,9 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.color}
-                    onChange={(value) => dispatch(setDropDownData({ key: "COLOR", value: value }))}
+                    onChange={(value) =>
+                      dispatch(setDropDownData({ key: "COLOR", value: value }))
+                    }
                   />
                 </View>
 
@@ -563,7 +602,11 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.fuel_type}
-                    onChange={(value) => dispatch(setDropDownData({ key: "FUEL_TYPE", value: value }))}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({ key: "FUEL_TYPE", value: value })
+                      )
+                    }
                   />
                 </View>
 
@@ -574,23 +617,35 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.transmission_type}
-                    onChange={(value) => dispatch(setDropDownData({ key: "TRANSMISSION_TYPE", value: value }))}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({
+                          key: "TRANSMISSION_TYPE",
+                          value: value,
+                        })
+                      )
+                    }
                   />
                 </View>
-
               </View>
             </View>
             <View style={styles.space}></View>
 
             {/* // 4.Customer Profile */}
-            <View style={[styles.accordianBckVw], GlobalStyle.shadow}>
+            <View style={([styles.accordianBckVw], GlobalStyle.shadow)}>
               <CustomerAccordianHeaderItem
                 title={"Customer Profile"}
                 leftIcon={"account-edit"}
                 selected={openAccordian == 4 ? true : false}
                 onPress={() => updateAccordian(4)}
               />
-              <View style={{ width: "100%", height: openAccordian == 4 ? null : 0, overflow: 'hidden' }}>
+              <View
+                style={{
+                  width: "100%",
+                  height: openAccordian == 4 ? null : 0,
+                  overflow: "hidden",
+                }}
+              >
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.occupation}
@@ -621,7 +676,14 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.enquiry_segment}
-                    onChange={(value) => dispatch(setDropDownData({ key: "ENQUIRY_SEGMENT", value: value }))}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({
+                          key: "ENQUIRY_SEGMENT",
+                          value: value,
+                        })
+                      )
+                    }
                   />
                 </View>
 
@@ -632,7 +694,11 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.customer_type}
-                    onChange={(value) => dispatch(setDropDownData({ key: "CUSTOMER_TYPE", value: value }))}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({ key: "CUSTOMER_TYPE", value: value })
+                      )
+                    }
                   />
                 </View>
 
@@ -643,7 +709,14 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.source_of_enquiry}
-                    onChange={(value) => dispatch(setDropDownData({ key: "SOURCE_OF_ENQUIRY", value: value }))}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({
+                          key: "SOURCE_OF_ENQUIRY",
+                          value: value,
+                        })
+                      )
+                    }
                   />
                 </View>
 
@@ -660,7 +733,14 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.enquiry_category}
-                    onChange={(value) => dispatch(setDropDownData({ key: "ENQUIRY_CATEGORY", value: value }))}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({
+                          key: "ENQUIRY_CATEGORY",
+                          value: value,
+                        })
+                      )
+                    }
                   />
                 </View>
 
@@ -671,7 +751,11 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.buyer_type}
-                    onChange={(value) => dispatch(setDropDownData({ key: "BUYER_TYPE", value: value }))}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({ key: "BUYER_TYPE", value: value })
+                      )
+                    }
                   />
                 </View>
 
@@ -682,7 +766,11 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.kms_travelled_month}
-                    onChange={(value) => dispatch(setDropDownData({ key: "KMS_TRAVELLED", value: value }))}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({ key: "KMS_TRAVELLED", value: value })
+                      )
+                    }
                   />
                 </View>
 
@@ -693,7 +781,11 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.who_drives}
-                    onChange={(value) => dispatch(setDropDownData({ key: "WHO_DRIVES", value: value }))}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({ key: "WHO_DRIVES", value: value })
+                      )
+                    }
                   />
                 </View>
 
@@ -704,7 +796,11 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.members}
-                    onChange={(value) => dispatch(setDropDownData({ key: "MEMBERS", value: value }))}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({ key: "MEMBERS", value: value })
+                      )
+                    }
                   />
                 </View>
 
@@ -715,16 +811,22 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.prime_expectation_from_car}
-                    onChange={(value) => dispatch(setDropDownData({ key: "PRIME_EXPECTATION_CAR", value: value }))}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({
+                          key: "PRIME_EXPECTATION_CAR",
+                          value: value,
+                        })
+                      )
+                    }
                   />
                 </View>
-
               </View>
             </View>
             <View style={styles.space}></View>
 
             {/* // 5.Financial Details */}
-            <View style={[styles.accordianBckVw], GlobalStyle.shadow}>
+            <View style={([styles.accordianBckVw], GlobalStyle.shadow)}>
               <CustomerAccordianHeaderItem
                 title={"Financial Details"}
                 leftIcon={"account-edit"}
@@ -735,10 +837,9 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 style={{
                   width: "100%",
                   height: openAccordian == 5 ? null : 0,
-                  overflow: 'hidden'
+                  overflow: "hidden",
                 }}
               >
-
                 <View style={styles.drop_down_view_style}>
                   <Dropdown
                     label="Retail Finance"
@@ -746,7 +847,11 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.retail_finance}
-                    onChange={(value) => dispatch(setDropDownData({ key: "RETAIL_FINANCE", value: value }))}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({ key: "RETAIL_FINANCE", value: value })
+                      )
+                    }
                   />
                 </View>
 
@@ -757,7 +862,14 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.finance_category}
-                    onChange={(value) => dispatch(setDropDownData({ key: "FINANCE_CATEGORY", value: value }))}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({
+                          key: "FINANCE_CATEGORY",
+                          value: value,
+                        })
+                      )
+                    }
                   />
                 </View>
 
@@ -765,14 +877,22 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={{ height: 65, width: "100%" }}
                   label={"Down Payment*"}
                   value={selector.down_payment}
-                  onChangeText={(text) => dispatch(setFinancialDetails({ key: "DOWN_PAYMENT", text: text }))}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setFinancialDetails({ key: "DOWN_PAYMENT", text: text })
+                    )
+                  }
                 />
                 <Text style={GlobalStyle.underline}></Text>
                 <TextinputComp
                   style={{ height: 65, width: "100%" }}
                   label={"Loan Amount*"}
                   value={selector.loan_amount}
-                  onChangeText={(text) => dispatch(setFinancialDetails({ key: "LOAN_AMOUNT", text: text }))}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setFinancialDetails({ key: "LOAN_AMOUNT", text: text })
+                    )
+                  }
                 />
                 <Text style={GlobalStyle.underline}></Text>
                 <View style={styles.drop_down_view_style}>
@@ -782,7 +902,11 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.bank_or_finance}
-                    onChange={(value) => dispatch(setDropDownData({ key: "BANK_FINANCE", value: value }))}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({ key: "BANK_FINANCE", value: value })
+                      )
+                    }
                   />
                 </View>
 
@@ -790,7 +914,14 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={{ height: 65, width: "100%" }}
                   label={"Rate of Interest*"}
                   value={selector.rate_of_interest}
-                  onChangeText={(text) => dispatch(setFinancialDetails({ key: "RATE_OF_INTEREST", text: text }))}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setFinancialDetails({
+                        key: "RATE_OF_INTEREST",
+                        text: text,
+                      })
+                    )
+                  }
                 />
                 <Text style={GlobalStyle.underline}></Text>
                 <View style={styles.drop_down_view_style}>
@@ -800,7 +931,11 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.loan_of_tenure}
-                    onChange={(value) => dispatch(setDropDownData({ key: "LOAN_OF_TENURE", value: value }))}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({ key: "LOAN_OF_TENURE", value: value })
+                      )
+                    }
                   />
                 </View>
 
@@ -808,7 +943,9 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={{ height: 65, width: "100%" }}
                   label={"EMI*"}
                   value={selector.emi}
-                  onChangeText={(text) => dispatch(setFinancialDetails({ key: "EMI", text: text }))}
+                  onChangeText={(text) =>
+                    dispatch(setFinancialDetails({ key: "EMI", text: text }))
+                  }
                 />
                 <Text style={GlobalStyle.underline}></Text>
                 <View style={styles.drop_down_view_style}>
@@ -818,16 +955,22 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.approx_annual_income}
-                    onChange={(value) => dispatch(setDropDownData({ key: "APPROX_ANNUAL_INCOME", value: value }))}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({
+                          key: "APPROX_ANNUAL_INCOME",
+                          value: value,
+                        })
+                      )
+                    }
                   />
                 </View>
-
               </View>
             </View>
             <View style={styles.space}></View>
 
             {/* // 6.Upload Documents */}
-            <View style={[styles.accordianBckVw], GlobalStyle.shadow}>
+            <View style={([styles.accordianBckVw], GlobalStyle.shadow)}>
               <CustomerAccordianHeaderItem
                 title={"Upload Documents"}
                 leftIcon={"account-edit"}
@@ -838,28 +981,38 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 style={{
                   width: "100%",
                   height: openAccordian == 6 ? null : 0,
-                  overflow: 'hidden'
+                  overflow: "hidden",
                 }}
               >
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.pan_number}
                   label={"Pan Number*"}
-                  onChangeText={(text) => dispatch(setUploadDocuments({ key: "PAN", text: text }))}
+                  onChangeText={(text) =>
+                    dispatch(setUploadDocuments({ key: "PAN", text: text }))
+                  }
                 />
                 <Text style={GlobalStyle.underline}></Text>
                 <View style={styles.select_image_bck_vw}>
-                  <ImageSelectItem name={'Upload Pan'} onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))} />
+                  <ImageSelectItem
+                    name={"Upload Pan"}
+                    onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
+                  />
                 </View>
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.adhaar_number}
                   label={"Aadhaar Number*"}
-                  onChangeText={(text) => dispatch(setUploadDocuments({ key: "ADHAR", text: text }))}
+                  onChangeText={(text) =>
+                    dispatch(setUploadDocuments({ key: "ADHAR", text: text }))
+                  }
                 />
                 <Text style={GlobalStyle.underline}></Text>
                 <View style={styles.select_image_bck_vw}>
-                  <ImageSelectItem name={'Upload Adhar'} onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))} />
+                  <ImageSelectItem
+                    name={"Upload Adhar"}
+                    onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
+                  />
                 </View>
               </View>
             </View>
@@ -877,16 +1030,26 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 style={{
                   width: "100%",
                   height: openAccordian == 7 ? null : 0,
-                  overflow: 'hidden'
+                  overflow: "hidden",
                 }}
               >
                 <View style={styles.view2}>
-                  <Text style={styles.looking_any_text}>{'Looking for any other brand'}</Text>
+                  <Text style={styles.looking_any_text}>
+                    {"Looking for any other brand"}
+                  </Text>
                   <Checkbox.Android
-                    status={selector.c_looking_for_any_other_brand ? 'checked' : 'unchecked'}
+                    status={
+                      selector.c_looking_for_any_other_brand
+                        ? "checked"
+                        : "unchecked"
+                    }
                     uncheckedColor={Colors.DARK_GRAY}
                     color={Colors.RED}
-                    onPress={() => dispatch(setCustomerNeedAnalysis({ key: "CHECK_BOX", text: "" }))}
+                    onPress={() =>
+                      dispatch(
+                        setCustomerNeedAnalysis({ key: "CHECK_BOX", text: "" })
+                      )
+                    }
                   />
                 </View>
 
@@ -897,7 +1060,9 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.make}
-                    onChange={(value) => dispatch(setDropDownData({ key: "C_MAKE", value: value }))}
+                    onChange={(value) =>
+                      dispatch(setDropDownData({ key: "C_MAKE", value: value }))
+                    }
                   />
                 </View>
 
@@ -908,7 +1073,11 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.model}
-                    onChange={(value) => dispatch(setDropDownData({ key: "C_MODEL", value: value }))}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({ key: "C_MODEL", value: value })
+                      )
+                    }
                   />
                 </View>
 
@@ -919,7 +1088,11 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.variant}
-                    onChange={(value) => dispatch(setDropDownData({ key: "C_VARIANT", value: value }))}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({ key: "C_VARIANT", value: value })
+                      )
+                    }
                   />
                 </View>
 
@@ -930,7 +1103,11 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.color}
-                    onChange={(value) => dispatch(setDropDownData({ key: "C_COLOR", value: value }))}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({ key: "C_COLOR", value: value })
+                      )
+                    }
                   />
                 </View>
 
@@ -941,7 +1118,11 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.fuel_type}
-                    onChange={(value) => dispatch(setDropDownData({ key: "C_FUEL_TYPE", value: value }))}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({ key: "C_FUEL_TYPE", value: value })
+                      )
+                    }
                   />
                 </View>
 
@@ -952,7 +1133,14 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.transmission_type}
-                    onChange={(value) => dispatch(setDropDownData({ key: "C_TRANSMISSION_TYPE", value: value }))}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({
+                          key: "C_TRANSMISSION_TYPE",
+                          value: value,
+                        })
+                      )
+                    }
                   />
                 </View>
 
@@ -962,7 +1150,10 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   label={"Price Range"}
                   onChangeText={(text) =>
                     dispatch(
-                      setCustomerNeedAnalysis({ key: "PRICE_RANGE", text: text })
+                      setCustomerNeedAnalysis({
+                        key: "PRICE_RANGE",
+                        text: text,
+                      })
                     )
                   }
                 />
@@ -971,7 +1162,14 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.on_road_price}
                   label={"On Road Price"}
-                  onChangeText={(text) => dispatch(setCustomerNeedAnalysis({ key: "ON_ROAD_PRICE", text: text }))}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setCustomerNeedAnalysis({
+                        key: "ON_ROAD_PRICE",
+                        text: text,
+                      })
+                    )
+                  }
                 />
                 <Text style={GlobalStyle.underline}></Text>
                 <TextinputComp
@@ -1035,7 +1233,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView >
+    </SafeAreaView>
   );
 };
 
@@ -1060,15 +1258,15 @@ const styles = StyleSheet.create({
   },
   textInputStyle: {
     height: 65,
-    width: "100%"
+    width: "100%",
   },
   space: {
-    height: 10
+    height: 10,
   },
   drop_down_view_style: {
     paddingTop: 5,
     flex: 1,
-    backgroundColor: Colors.WHITE
+    backgroundColor: Colors.WHITE,
   },
   view1: {
     height: 60,
@@ -1099,19 +1297,21 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   view2: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: Colors.WHITE,
     paddingTop: 20,
-    paddingLeft: 12
+    paddingLeft: 12,
   },
   looking_any_text: {
     fontSize: 16,
-    fontWeight: '500'
+    fontWeight: "500",
   },
   select_image_bck_vw: {
-    minHeight: 50, paddingLeft: 12, backgroundColor: Colors.WHITE
-  }
+    minHeight: 50,
+    paddingLeft: 12,
+    backgroundColor: Colors.WHITE,
+  },
 });
 
 // left={(props) => (
