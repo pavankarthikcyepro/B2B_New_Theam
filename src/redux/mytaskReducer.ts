@@ -30,7 +30,7 @@ const datalist = [
     phoneNo: "+91 8488464949",
   },
   {
-    taskName: "Enguiry Follow Up",
+    taskName: "Enquiry Follow Up",
     taskStatus: "ASSIGNED",
     createdOn: "Tue Jun 29 2021",
     dmsLead: "GSGHS Vshsj",
@@ -46,5 +46,5 @@ export const mytaskSlice = createSlice({
   reducers: {},
 });
 
-export const {} = mytaskSlice.actions;
+export const { } = mytaskSlice.actions;
 export default mytaskSlice.reducer;

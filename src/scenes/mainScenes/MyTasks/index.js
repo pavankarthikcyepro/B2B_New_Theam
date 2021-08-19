@@ -18,6 +18,28 @@ const screenWidth = Dimensions.get("window").width;
 const MyTasksScreen = ({ navigation }) => {
   const selector = useSelector((state) => state.mytaskReducer);
 
+  const itemClicked = (taskName) => {
+    const trimName = taskName.toLowerCase().trim();
+    const finalTaskName = trimName.replaceAll(" ", "");
+    switch (finalTaskName) {
+      case "testdrive":
+        navigation.navigate(AppNavigator.MyTasksStackIdentifiers.testDrive);
+        break;
+      case "proceedtobooking":
+        navigation.navigate(AppNavigator.MyTasksStackIdentifiers.preBookingFollowUp);
+        break;
+      case "prebookingfollowup":
+        navigation.navigate(AppNavigator.MyTasksStackIdentifiers.preBookingFollowUp);
+        break;
+      case "homevisit":
+        navigation.navigate(AppNavigator.MyTasksStackIdentifiers.homeVisit);
+        break;
+      case "enquiryfollowup":
+        navigation.navigate(AppNavigator.MyTasksStackIdentifiers.enquiryFollowUp);
+        break;
+    }
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.view1}>
@@ -30,24 +52,19 @@ const MyTasksScreen = ({ navigation }) => {
           }}
           renderItem={({ item, index }) => {
             return (
-              <View style={[styles.listBgVw]}>
-                {/* <Pressable onPress={() => navigation.navigate(AppNavigator.MyTasksStackIdentifiers.homeVisit)}> */}
-
-                <Pressable
-                  onPress={() =>
-                    navigation.navigate(
-                      AppNavigator.MyTasksStackIdentifiers.enquiryFollowUp
-                    )
-                  }
-                >
-                  <MyTaskItem
-                    taskName={item.taskName}
-                    status={item.taskStatus}
-                    created={item.createdOn}
-                    dmsLead={item.dmsLead}
-                    phone={item.phoneNo}
-                  />
-                </Pressable>
+              <View style={{ flex: 1, width: '100%' }}>
+                <View style={[styles.listBgVw]}>
+                  <Pressable onPress={() => itemClicked(item.taskName)}>
+                    <MyTaskItem
+                      taskName={item.taskName}
+                      status={item.taskStatus}
+                      created={item.createdOn}
+                      dmsLead={item.dmsLead}
+                      phone={item.phoneNo}
+                    />
+                  </Pressable>
+                </View>
+                <Text style={GlobalStyle.underline}></Text>
               </View>
             );
           }}
@@ -65,13 +82,13 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.LIGHT_GRAY,
   },
   view1: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
     marginTop: 10,
   },
   listBgVw: {
-    width: screenWidth - 40,
+    width: '100%',
     backgroundColor: Colors.WHITE,
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
     paddingVertical: 5,
   },
   separator: {
