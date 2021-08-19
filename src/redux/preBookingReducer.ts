@@ -1,14 +1,10 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const slice = createSlice({
-    name: "PRE_BOOKING_SLICE",
-    initialState: {
+  name: "PRE_BOOKING_SLICE",
+  initialState: {},
+  reducers: {},
+});
 
-    },
-    reducers: {
-
-    }
-})
-
-export const { } = slice.actions;
+export const {} = slice.actions;
 export default slice.reducer;
