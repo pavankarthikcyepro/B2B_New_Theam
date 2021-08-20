@@ -20,25 +20,31 @@ const MyTasksScreen = ({ navigation }) => {
 
   const itemClicked = (taskName) => {
     const trimName = taskName.toLowerCase().trim();
-    const finalTaskName = trimName.replaceAll(" ", "");
+    const finalTaskName = trimName.replace(/ /g, "");
     switch (finalTaskName) {
       case "testdrive":
         navigation.navigate(AppNavigator.MyTasksStackIdentifiers.testDrive);
         break;
       case "proceedtobooking":
-        navigation.navigate(AppNavigator.MyTasksStackIdentifiers.preBookingFollowUp);
+        navigation.navigate(
+          AppNavigator.MyTasksStackIdentifiers.preBookingFollowUp
+        );
         break;
       case "prebookingfollowup":
-        navigation.navigate(AppNavigator.MyTasksStackIdentifiers.preBookingFollowUp);
+        navigation.navigate(
+          AppNavigator.MyTasksStackIdentifiers.preBookingFollowUp
+        );
         break;
       case "homevisit":
         navigation.navigate(AppNavigator.MyTasksStackIdentifiers.homeVisit);
         break;
       case "enquiryfollowup":
-        navigation.navigate(AppNavigator.MyTasksStackIdentifiers.enquiryFollowUp);
+        navigation.navigate(
+          AppNavigator.MyTasksStackIdentifiers.enquiryFollowUp
+        );
         break;
     }
-  }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -52,7 +58,7 @@ const MyTasksScreen = ({ navigation }) => {
           }}
           renderItem={({ item, index }) => {
             return (
-              <View style={{ flex: 1, width: '100%' }}>
+              <View style={{ flex: 1, width: "100%" }}>
                 <View style={[styles.listBgVw]}>
                   <Pressable onPress={() => itemClicked(item.taskName)}>
                     <MyTaskItem
@@ -86,7 +92,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   listBgVw: {
-    width: '100%',
+    width: "100%",
     backgroundColor: Colors.WHITE,
     paddingHorizontal: 10,
     paddingVertical: 5,

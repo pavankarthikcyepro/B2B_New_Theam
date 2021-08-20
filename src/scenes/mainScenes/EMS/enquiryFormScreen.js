@@ -219,6 +219,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.mobile}
+                  keyboardType={"numeric"}
                   label={"Mobile Number*"}
                   onChangeText={(text) =>
                     dispatch(setPersonalIntro({ key: "MOBILE", text: text }))
@@ -228,6 +229,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.alterMobile}
+                  keyboardType={"numeric"}
                   label={"Alternate Mobile Number*"}
                   onChangeText={(text) =>
                     dispatch(
@@ -239,6 +241,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.email}
+                  keyboardType={"email-address"}
                   label={"Email ID*"}
                   onChangeText={(text) =>
                     dispatch(setPersonalIntro({ key: "EMAIL", text: text }))
@@ -277,6 +280,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.pincode}
+                  keyboardType={"numeric"}
                   label={"Pincode*"}
                   onChangeText={(text) =>
                     dispatch(
@@ -318,6 +322,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.houseNum}
                   label={"H.No*"}
+                  keyboardType={"numeric"}
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({ key: "HOUSE_NO", text: text })
@@ -411,6 +416,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                       style={styles.textInputStyle}
                       value={selector.p_pincode}
                       label={"Pincode*"}
+                      keyboardType={"numeric"}
                       onChangeText={(text) =>
                         dispatch(
                           setCommunicationAddress({
@@ -455,6 +461,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     <TextinputComp
                       style={styles.textInputStyle}
                       label={"H.No*"}
+                      keyboardType={"numeric"}
                       value={selector.p_houseNum}
                       onChangeText={(text) =>
                         dispatch(
@@ -877,6 +884,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={{ height: 65, width: "100%" }}
                   label={"Down Payment*"}
                   value={selector.down_payment}
+                  keyboardType={"numeric"}
                   onChangeText={(text) =>
                     dispatch(
                       setFinancialDetails({ key: "DOWN_PAYMENT", text: text })
@@ -887,6 +895,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 <TextinputComp
                   style={{ height: 65, width: "100%" }}
                   label={"Loan Amount*"}
+                  keyboardType={"numeric"}
                   value={selector.loan_amount}
                   onChangeText={(text) =>
                     dispatch(
@@ -914,6 +923,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={{ height: 65, width: "100%" }}
                   label={"Rate of Interest*"}
                   value={selector.rate_of_interest}
+                  keyboardType={"numeric"}
                   onChangeText={(text) =>
                     dispatch(
                       setFinancialDetails({
@@ -943,6 +953,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={{ height: 65, width: "100%" }}
                   label={"EMI*"}
                   value={selector.emi}
+                  keyboardType={"numeric"}
                   onChangeText={(text) =>
                     dispatch(setFinancialDetails({ key: "EMI", text: text }))
                   }
@@ -1148,6 +1159,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.price_range}
                   label={"Price Range"}
+                  keyboardType={"numeric"}
                   onChangeText={(text) =>
                     dispatch(
                       setCustomerNeedAnalysis({
@@ -1162,6 +1174,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.on_road_price}
                   label={"On Road Price"}
+                  keyboardType={"numeric"}
                   onChangeText={(text) =>
                     dispatch(
                       setCustomerNeedAnalysis({

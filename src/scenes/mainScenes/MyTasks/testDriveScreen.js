@@ -19,16 +19,13 @@ import { Dropdown } from "sharingan-rn-modal-dropdown";
 import { RadioButton } from "react-native-paper";
 import { Button } from "react-native-paper";
 
-
 const TestDriveScreen = ({ navigation }) => {
-
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.testDriveReducer);
   const [checked, setChecked] = React.useState("first");
 
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
-
       {selector.showDatepicker && (
         <DatePickerComponent
           visible={selector.showDatepicker}
@@ -76,7 +73,6 @@ const TestDriveScreen = ({ navigation }) => {
               style={{ height: 65, width: "100%" }}
               value={selector.name}
               label={"Name"}
-              keyboardType={"default"}
               onChangeText={(text) =>
                 dispatch(setTestDriveDetails({ key: "NAME", text: text }))
               }
@@ -116,7 +112,9 @@ const TestDriveScreen = ({ navigation }) => {
               floating={true}
               value={selector.transmission_type}
               onChange={(value) =>
-                dispatch(setDropDownData({ key: "TRANSMISSION_TYPE", value: value }))
+                dispatch(
+                  setDropDownData({ key: "TRANSMISSION_TYPE", value: value })
+                )
               }
             />
             <Dropdown
@@ -125,7 +123,7 @@ const TestDriveScreen = ({ navigation }) => {
               floating={true}
               value={selector.varient}
               onChange={(value) =>
-                dispatch(setDropDownData({ key: "VARIENT", value: value, }))
+                dispatch(setDropDownData({ key: "VARIENT", value: value }))
               }
             />
             <Text style={{ padding: 10, justifyContent: "center" }}>
@@ -133,13 +131,29 @@ const TestDriveScreen = ({ navigation }) => {
             </Text>
             <View style={{ flexDirection: "row" }}>
               <RadioButton.Android
-                status={selector.address_type_is_showroom === "true" ? "checked" : "unchecked"}
-                onPress={() => dispatch(setDropDownData({ key: "CHOOSE_ADDRESS", value: "true", }))}
+                status={
+                  selector.address_type_is_showroom === "true"
+                    ? "checked"
+                    : "unchecked"
+                }
+                onPress={() =>
+                  dispatch(
+                    setDropDownData({ key: "CHOOSE_ADDRESS", value: "true" })
+                  )
+                }
               />
               <Text style={{ marginTop: 8 }}>{"Showroom address"}</Text>
               <RadioButton.Android
-                status={selector.address_type_is_showroom === "false" ? "checked" : "unchecked"}
-                onPress={() => dispatch(setDropDownData({ key: "CHOOSE_ADDRESS", value: "false", }))}
+                status={
+                  selector.address_type_is_showroom === "false"
+                    ? "checked"
+                    : "unchecked"
+                }
+                onPress={() =>
+                  dispatch(
+                    setDropDownData({ key: "CHOOSE_ADDRESS", value: "false" })
+                  )
+                }
               />
               <Text style={{ marginTop: 8 }}>{"Customer address"}</Text>
             </View>
@@ -150,13 +164,35 @@ const TestDriveScreen = ({ navigation }) => {
             </Text>
             <View style={{ flexDirection: "row" }}>
               <RadioButton.Android
-                status={selector.customer_having_driving_licence === "true" ? "checked" : "unchecked"}
-                onPress={() => dispatch(setDropDownData({ key: "CUSTOMER_HAVING_DRIVING_LICENCE", value: "false", }))}
+                status={
+                  selector.customer_having_driving_licence === "true"
+                    ? "checked"
+                    : "unchecked"
+                }
+                onPress={() =>
+                  dispatch(
+                    setDropDownData({
+                      key: "CUSTOMER_HAVING_DRIVING_LICENCE",
+                      value: "false",
+                    })
+                  )
+                }
               />
               <Text style={{ marginTop: 8 }}>{"Yes"}</Text>
               <RadioButton.Android
-                status={selector.customer_having_driving_licence === "false" ? "checked" : "unchecked"}
-                onPress={() => dispatch(setDropDownData({ key: "CUSTOMER_HAVING_DRIVING_LICENCE", value: "false", }))}
+                status={
+                  selector.customer_having_driving_licence === "false"
+                    ? "checked"
+                    : "unchecked"
+                }
+                onPress={() =>
+                  dispatch(
+                    setDropDownData({
+                      key: "CUSTOMER_HAVING_DRIVING_LICENCE",
+                      value: "false",
+                    })
+                  )
+                }
               />
               <Text style={{ marginTop: 8 }}>{"No"}</Text>
             </View>
@@ -173,7 +209,10 @@ const TestDriveScreen = ({ navigation }) => {
               value={selector.selected_dse_employee}
               onChange={(value) =>
                 dispatch(
-                  setDropDownData({ key: "LIST_OF_DSE_EMPLOYEES", value: value })
+                  setDropDownData({
+                    key: "LIST_OF_DSE_EMPLOYEES",
+                    value: value,
+                  })
                 )
               }
             />
