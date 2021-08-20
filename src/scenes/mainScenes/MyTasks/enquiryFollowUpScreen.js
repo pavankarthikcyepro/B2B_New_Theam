@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView, View, Text, StyleSheet, Dimensions } from "react-native";
+import { SafeAreaView, View, Text, StyleSheet, Dimensions, KeyboardAvoidingView, ScrollView } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { TextinputComp } from "../../../components";
 import { Button } from "react-native-paper";
@@ -61,124 +61,140 @@ const EnquiryFollowUpScreen = ({ navigation }) => {
         />
       )}
 
-      <View style={[{ padding: 15 }, GlobalStyle.shadow]}>
-        <View style={styles.drop_down_view_style}>
-          <Dropdown
-            label="Model"
-            data={selector.dropDownData}
-            required={true}
-            floating={true}
-            color={Colors.RED}
-            value={selector.model}
-            onChange={(value) =>
-              dispatch(setDropDownData({ key: "MODEL", value: value }))
-            }
-          />
-        </View>
-        <View style={styles.drop_down_view_style}>
-          <Dropdown
-            label="Varient"
-            data={selector.dropDownData}
-            required={true}
-            floating={true}
-            value={selector.Varient}
-            onChange={(value) =>
-              dispatch(setDropDownData({ key: "VARIENT", value: value }))
-            }
-          />
-        </View>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS == "ios" ? "padding" : "height"}
+        enabled
+        keyboardVerticalOffset={100}
+      >
+        <ScrollView
+          automaticallyAdjustContentInsets={true}
+          bounces={true}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ padding: 15 }}
+          keyboardShouldPersistTaps={"handled"}
+          style={{ flex: 1 }}
+        >
+          <View style={[GlobalStyle.shadow]}>
+            <View style={styles.drop_down_view_style}>
+              <Dropdown
+                label="Model"
+                data={selector.dropDownData}
+                required={true}
+                floating={true}
+                color={Colors.RED}
+                value={selector.model}
+                onChange={(value) =>
+                  dispatch(setDropDownData({ key: "MODEL", value: value }))
+                }
+              />
+            </View>
+            <View style={styles.drop_down_view_style}>
+              <Dropdown
+                label="Varient"
+                data={selector.dropDownData}
+                required={true}
+                floating={true}
+                value={selector.Varient}
+                onChange={(value) =>
+                  dispatch(setDropDownData({ key: "VARIENT", value: value }))
+                }
+              />
+            </View>
 
-        <TextinputComp
-          style={styles.textInputStyle}
-          label={"Reason"}
-          value={selector.reason}
-          onChangeText={(text) => {
-            dispatch(setEnquiryFollowUpDetails({ key: "REASON", text: text }));
-          }}
-        />
-        <Text style={GlobalStyle.underline}></Text>
-        <TextinputComp
-          style={styles.textInputStyle}
-          label={"Customer Remarks"}
-          value={selector.customer_remarks}
-          onChangeText={(text) =>
-            dispatch(
-              setEnquiryFollowUpDetails({
-                key: "CUSTOMER_REMARKS",
-                text: text,
-              })
-            )
-          }
-        />
-        <Text style={GlobalStyle.underline}></Text>
-        <TextinputComp
-          style={styles.textInputStyle}
-          label={"Employee Remarks*"}
-          value={selector.employee_remarks}
-          onChangeText={(text) =>
-            dispatch(
-              setEnquiryFollowUpDetails({
-                key: "EMPLOYEE_REMARKS",
-                text: text,
-              })
-            )
-          }
-        />
-        <Text style={GlobalStyle.underline}></Text>
-        <DateSelectItem
-          label={"Actual Start Time"}
-          value={selector.actual_start_time}
-          onPress={() => dispatch(setDatePicker("ACTUAL_START_TIME"))}
-        />
-        <Text style={GlobalStyle.underline}></Text>
-        <DateSelectItem
-          label={"Actual End Time"}
-          value={selector.actual_end_time}
-          onPress={() => dispatch(setDatePicker("ACTUAL_END_TIME"))}
-        />
-        <Text style={GlobalStyle.underline}></Text>
-      </View>
+            <TextinputComp
+              style={styles.textInputStyle}
+              label={"Reason"}
+              value={selector.reason}
+              onChangeText={(text) => {
+                dispatch(setEnquiryFollowUpDetails({ key: "REASON", text: text }));
+              }}
+            />
+            <Text style={GlobalStyle.underline}></Text>
+            <TextinputComp
+              style={styles.textInputStyle}
+              label={"Customer Remarks"}
+              value={selector.customer_remarks}
+              onChangeText={(text) =>
+                dispatch(
+                  setEnquiryFollowUpDetails({
+                    key: "CUSTOMER_REMARKS",
+                    text: text,
+                  })
+                )
+              }
+            />
+            <Text style={GlobalStyle.underline}></Text>
+            <TextinputComp
+              style={styles.textInputStyle}
+              label={"Employee Remarks*"}
+              value={selector.employee_remarks}
+              onChangeText={(text) =>
+                dispatch(
+                  setEnquiryFollowUpDetails({
+                    key: "EMPLOYEE_REMARKS",
+                    text: text,
+                  })
+                )
+              }
+            />
+            <Text style={GlobalStyle.underline}></Text>
+            <DateSelectItem
+              label={"Actual Start Time"}
+              value={selector.actual_start_time}
+              onPress={() => dispatch(setDatePicker("ACTUAL_START_TIME"))}
+            />
+            <Text style={GlobalStyle.underline}></Text>
+            <DateSelectItem
+              label={"Actual End Time"}
+              value={selector.actual_end_time}
+              onPress={() => dispatch(setDatePicker("ACTUAL_END_TIME"))}
+            />
+            <Text style={GlobalStyle.underline}></Text>
+          </View>
+          <View style={styles.view1}>
+            <Button
+              style={{ width: 120 }}
+              mode="contained"
+              color={Colors.RED}
+              labelStyle={{ textTransform: "none" }}
+              onPress={() => console.log("Pressed")}
+            >
+              Update
+            </Button>
+            <Button
+              style={{ width: 120 }}
+              mode="contained"
+              color={Colors.RED}
+              labelStyle={{ textTransform: "none" }}
+              onPress={() => console.log("Pressed")}
+            >
+              Close
+            </Button>
+          </View>
+          <View style={styles.view1}>
+            <Button
+              style={{ width: 120 }}
+              mode="contained"
+              color={Colors.RED}
+              labelStyle={{ textTransform: "none" }}
+              onPress={() => console.log("Pressed")}
+            >
+              Cancel
+            </Button>
+            <Button
+              style={{ width: 120 }}
+              mode="contained"
+              color={Colors.RED}
+              labelStyle={{ textTransform: "none" }}
+              onPress={() => console.log("Pressed")}
+            >
+              Reschedule
+            </Button>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
 
-      <View style={styles.view1}>
-        <Button
-          style={{ width: 120 }}
-          mode="contained"
-          color={Colors.RED}
-          labelStyle={{ textTransform: "none" }}
-          onPress={() => console.log("Pressed")}
-        >
-          Update
-        </Button>
-        <Button
-          style={{ width: 120 }}
-          mode="contained"
-          color={Colors.RED}
-          labelStyle={{ textTransform: "none" }}
-          onPress={() => console.log("Pressed")}
-        >
-          Close
-        </Button>
-      </View>
-      <View style={styles.view1}>
-        <Button
-          style={{ width: 120 }}
-          mode="contained"
-          color={Colors.RED}
-          labelStyle={{ textTransform: "none" }}
-          onPress={() => console.log("Pressed")}
-        >
-          Cancel
-        </Button>
-        <Button
-          style={{ width: 120 }}
-          mode="contained"
-          color={Colors.RED}
-          labelStyle={{ textTransform: "none" }}
-          onPress={() => console.log("Pressed")}
-        >
-          Reschedule
-        </Button>
-      </View>
     </SafeAreaView>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, ScrollView, View, Text, StyleSheet, Dimensions, Pressable, Alert } from 'react-native';
+import { SafeAreaView, ScrollView, View, Text, StyleSheet, Dimensions, KeyboardAvoidingView, Alert } from 'react-native';
 import { ButtonComp } from "../../../components/buttonComp";
 import { Checkbox, Button, IconButton } from 'react-native-paper';
 import { Colors, GlobalStyle } from '../../../styles';
@@ -69,8 +69,6 @@ const AddPreEnquiryScreen = ({ navigation }) => {
 
     const submitClicked = () => {
 
-        navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq)
-        return;
         if (selector.firstName.length == 0 || selector.mobile.length == 0 || selector.enquiryType.length == 0 || selector.sourceOfEnquiry == 0) {
             Alert.alert('Please fill required fields');
             return
@@ -221,139 +219,146 @@ const AddPreEnquiryScreen = ({ navigation }) => {
                 }}
             />
 
-            <ScrollView
-                automaticallyAdjustContentInsets={true}
-                bounces={true}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ padding: 10 }}
+            <KeyboardAvoidingView
                 style={{ flex: 1 }}
+                behavior={Platform.OS == "ios" ? "padding" : "height"}
+                enabled
+                keyboardVerticalOffset={100}
             >
-                <Text style={styles.text1}>{'Create New Pre-Enquiry'}</Text>
-                <View style={styles.view1}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Checkbox.Android
-                            status={selector.create_enquiry_checked ? 'checked' : 'unchecked'}
-                            uncheckedColor={Colors.DARK_GRAY}
-                            color={Colors.RED}
-                            onPress={() => dispatch(setCreateEnquiryCheckbox())}
-                        />
-                        <Text style={styles.text2}>{'Create enquiry'}</Text>
+                <ScrollView
+                    automaticallyAdjustContentInsets={true}
+                    bounces={true}
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{ padding: 10 }}
+                    style={{ flex: 1 }}
+                >
+                    <Text style={styles.text1}>{'Create New Pre-Enquiry'}</Text>
+                    <View style={styles.view1}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Checkbox.Android
+                                status={selector.create_enquiry_checked ? 'checked' : 'unchecked'}
+                                uncheckedColor={Colors.DARK_GRAY}
+                                color={Colors.RED}
+                                onPress={() => dispatch(setCreateEnquiryCheckbox())}
+                            />
+                            <Text style={styles.text2}>{'Create enquiry'}</Text>
+                        </View>
+                        <Button
+                            labelStyle={{ fontSize: 12, fontWeight: '400', color: Colors.BLUE, textTransform: 'none' }}
+                            onPress={() => { }}
+                        >
+                            Reset
+                        </Button>
                     </View>
-                    <Button
-                        labelStyle={{ fontSize: 12, fontWeight: '400', color: Colors.BLUE, textTransform: 'none' }}
-                        onPress={() => { }}
-                    >
-                        Reset
-                    </Button>
-                </View>
 
-                <View style={[{ borderRadius: 6, }]}>
-                    <TextinputComp
-                        style={styles.textInputComp}
-                        value={selector.firstName}
-                        label={'First Name*'}
-                        onChangeText={(text) => dispatch(setFirstName(text))}
-                    />
-                    <Text style={styles.devider}></Text>
-
-                    <TextinputComp
-                        style={styles.textInputComp}
-                        value={selector.lastName}
-                        label={'Last Name'}
-                        onChangeText={(text) => dispatch(setLastName(text))}
-                    />
-                    <Text style={styles.devider}></Text>
-
-                    <TextinputComp
-                        style={styles.textInputComp}
-                        value={selector.mobile}
-                        label={'Mobile Number*'}
-                        keyboardType={'phone-pad'}
-                        onChangeText={(text) => dispatch(setMobile(text))}
-                    />
-                    <Text style={styles.devider}></Text>
-
-                    <TextinputComp
-                        style={styles.textInputComp}
-                        value={selector.alterMobile}
-                        label={'Alternate Mobile Number'}
-                        keyboardType={'phone-pad'}
-                        onChangeText={(text) => dispatch(setAlterMobile(text))}
-                    />
-                    <Text style={styles.devider}></Text>
-
-                    <TextinputComp
-                        style={styles.textInputComp}
-                        value={selector.email}
-                        label={'Email-Id'}
-                        keyboardType={'email-address'}
-                        onChangeText={(text) => dispatch(setEmail(text))}
-                    />
-                    <Text style={styles.devider}></Text>
-
-
-                    <DropDownSelectionItem
-                        label={'Select Model*'}
-                        value={selector.carModel}
-                        onPress={() => dispatch(showModelSelect())}
-                    />
-                    <DropDownSelectionItem
-                        label={'Select Enquiry Segment*'}
-                        value={selector.enquiryType}
-                        onPress={() => dispatch(showEnquirySegmentSelect())}
-                    />
-                    <DropDownSelectionItem
-                        label={'Select Customer Type'}
-                        value={selector.customerType}
-                        onPress={() => dispatch(showCustomerTypeSelect())}
-                    />
-
-                    {selector.customerType === "Corporate" || selector.customerType === "Government" || selector.customerType === "Retired" || selector.customerType === "Fleet" || selector.customerType === "Institution" ? <View>
+                    <View style={[{ borderRadius: 6, }]}>
                         <TextinputComp
                             style={styles.textInputComp}
-                            value={selector.companyName}
-                            label={'Company Name'}
-                            onChangeText={(text) => dispatch(setCompanyName(text))}
+                            value={selector.firstName}
+                            label={'First Name*'}
+                            onChangeText={(text) => dispatch(setFirstName(text))}
                         />
                         <Text style={styles.devider}></Text>
-                    </View> : null}
 
-                    {selector.customerType === "Other" ? <View>
                         <TextinputComp
                             style={styles.textInputComp}
-                            value={selector.companyName}
-                            label={'Other'}
-                            onChangeText={(text) => dispatch(setCompanyName(text))}
+                            value={selector.lastName}
+                            label={'Last Name'}
+                            onChangeText={(text) => dispatch(setLastName(text))}
                         />
                         <Text style={styles.devider}></Text>
-                    </View> : null}
 
-                    <DropDownSelectionItem
-                        label={'Select Source of Pre-Enquiry*'}
-                        value={selector.sourceOfEnquiry}
-                        onPress={() => dispatch(showSourceOfEnquirySelect())}
-                    />
+                        <TextinputComp
+                            style={styles.textInputComp}
+                            value={selector.mobile}
+                            label={'Mobile Number*'}
+                            keyboardType={'phone-pad'}
+                            onChangeText={(text) => dispatch(setMobile(text))}
+                        />
+                        <Text style={styles.devider}></Text>
 
-                    <TextinputComp
-                        style={styles.textInputComp}
-                        value={selector.pincode}
-                        label={'Pincode'}
-                        keyboardType={'number-pad'}
-                        onChangeText={(text) => dispatch(setPincode(text))}
-                    />
-                    <Text style={styles.devider}></Text>
+                        <TextinputComp
+                            style={styles.textInputComp}
+                            value={selector.alterMobile}
+                            label={'Alternate Mobile Number'}
+                            keyboardType={'phone-pad'}
+                            onChangeText={(text) => dispatch(setAlterMobile(text))}
+                        />
+                        <Text style={styles.devider}></Text>
 
-                </View>
+                        <TextinputComp
+                            style={styles.textInputComp}
+                            value={selector.email}
+                            label={'Email-Id'}
+                            keyboardType={'email-address'}
+                            onChangeText={(text) => dispatch(setEmail(text))}
+                        />
+                        <Text style={styles.devider}></Text>
 
-                <View style={styles.view2}>
-                    <ButtonComp
-                        disabled={selector.isLoading}
-                        title={"SUBMIT"}
-                        width={screenWidth - 40}
-                        onPress={submitClicked}
-                    />
-                </View>
-            </ScrollView>
+
+                        <DropDownSelectionItem
+                            label={'Select Model*'}
+                            value={selector.carModel}
+                            onPress={() => dispatch(showModelSelect())}
+                        />
+                        <DropDownSelectionItem
+                            label={'Select Enquiry Segment*'}
+                            value={selector.enquiryType}
+                            onPress={() => dispatch(showEnquirySegmentSelect())}
+                        />
+                        <DropDownSelectionItem
+                            label={'Select Customer Type'}
+                            value={selector.customerType}
+                            onPress={() => dispatch(showCustomerTypeSelect())}
+                        />
+
+                        {selector.customerType === "Corporate" || selector.customerType === "Government" || selector.customerType === "Retired" || selector.customerType === "Fleet" || selector.customerType === "Institution" ? <View>
+                            <TextinputComp
+                                style={styles.textInputComp}
+                                value={selector.companyName}
+                                label={'Company Name'}
+                                onChangeText={(text) => dispatch(setCompanyName(text))}
+                            />
+                            <Text style={styles.devider}></Text>
+                        </View> : null}
+
+                        {selector.customerType === "Other" ? <View>
+                            <TextinputComp
+                                style={styles.textInputComp}
+                                value={selector.companyName}
+                                label={'Other'}
+                                onChangeText={(text) => dispatch(setCompanyName(text))}
+                            />
+                            <Text style={styles.devider}></Text>
+                        </View> : null}
+
+                        <DropDownSelectionItem
+                            label={'Select Source of Pre-Enquiry*'}
+                            value={selector.sourceOfEnquiry}
+                            onPress={() => dispatch(showSourceOfEnquirySelect())}
+                        />
+
+                        <TextinputComp
+                            style={styles.textInputComp}
+                            value={selector.pincode}
+                            label={'Pincode'}
+                            keyboardType={'number-pad'}
+                            onChangeText={(text) => dispatch(setPincode(text))}
+                        />
+                        <Text style={styles.devider}></Text>
+
+                    </View>
+
+                    <View style={styles.view2}>
+                        <ButtonComp
+                            disabled={selector.isLoading}
+                            title={"SUBMIT"}
+                            width={screenWidth - 40}
+                            onPress={submitClicked}
+                        />
+                    </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
         </SafeAreaView >
     )
 }

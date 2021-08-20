@@ -149,7 +149,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
         >
           <View style={styles.baseVw}>
             {/* // Personal Intro */}
-            <View style={[styles.accordianBckVw, GlobalStyle.shadow]}>
+            <View style={[styles.accordianBckVw, GlobalStyle.shadow, { backgroundColor: "white" }]}>
               <CustomerAccordianHeaderItem
                 title={"Personal Intro"}
                 leftIcon={"account-edit"}
@@ -160,7 +160,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 style={{
                   width: "100%",
                   height: openAccordian == 1 ? null : 0,
-                  overflow: 'scroll',
+                  overflow: 'hidden',
                 }}
               >
                 <View style={styles.drop_down_view_style}>
@@ -286,7 +286,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
             <View style={styles.space}></View>
 
             {/* // 2.Communication Address */}
-            <View style={[styles.accordianBckVw, GlobalStyle.shadow]}>
+            <View style={[styles.accordianBckVw, GlobalStyle.shadow, { backgroundColor: "white" }]}>
               <CustomerAccordianHeaderItem
                 title={"Communicaton Address"}
                 leftIcon={"account-edit"}
@@ -566,7 +566,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
             <View style={styles.space}></View>
 
             {/* // 3.Modal Selction */}
-            <View style={([styles.accordianBckVw], GlobalStyle.shadow)}>
+            <View style={[styles.accordianBckVw, GlobalStyle.shadow, { backgroundColor: "white" }]}>
               <CustomerAccordianHeaderItem
                 title={"Modal Selection"}
                 leftIcon={"account-edit"}
@@ -658,7 +658,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
             <View style={styles.space}></View>
 
             {/* // 4.Customer Profile */}
-            <View style={([styles.accordianBckVw], GlobalStyle.shadow)}>
+            <View style={[styles.accordianBckVw, GlobalStyle.shadow, { backgroundColor: "white" }]}>
               <CustomerAccordianHeaderItem
                 title={"Customer Profile"}
                 leftIcon={"account-edit"}
@@ -852,7 +852,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
             <View style={styles.space}></View>
 
             {/* // 5.Financial Details */}
-            <View style={([styles.accordianBckVw], GlobalStyle.shadow)}>
+            <View style={[styles.accordianBckVw, GlobalStyle.shadow, { backgroundColor: "white" }]}>
               <CustomerAccordianHeaderItem
                 title={"Financial Details"}
                 leftIcon={"account-edit"}
@@ -996,7 +996,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
             <View style={styles.space}></View>
 
             {/* // 6.Upload Documents */}
-            <View style={([styles.accordianBckVw], GlobalStyle.shadow)}>
+            <View style={[styles.accordianBckVw, GlobalStyle.shadow, { backgroundColor: "white" }]}>
               <CustomerAccordianHeaderItem
                 title={"Upload Documents"}
                 leftIcon={"account-edit"}
@@ -1045,7 +1045,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
             <View style={styles.space}></View>
 
             {/* // 7.Customer Need Analysis */}
-            <View style={[styles.accordianBckVw, GlobalStyle.shadow]}>
+            <View style={[styles.accordianBckVw, GlobalStyle.shadow, { backgroundColor: "white" }]}>
               <CustomerAccordianHeaderItem
                 title={"Customer Need Analysis"}
                 leftIcon={"account-edit"}
