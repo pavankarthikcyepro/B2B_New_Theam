@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
 } from "react-native";
-import { DefaultTheme, Checkbox, IconButton } from "react-native-paper";
+import { DefaultTheme, Checkbox, IconButton, List } from "react-native-paper";
 import { Colors, GlobalStyle } from "../../../styles";
 import VectorImage from "react-native-vector-image";
 import {
@@ -40,6 +40,8 @@ import {
   setImagePicker,
   setUploadDocuments,
   setDropDownData,
+  setAdditionalBuyerDetails,
+  setReplacementBuyerDetails
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
@@ -63,16 +65,16 @@ const theme = {
 const DetailsOverviewScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.enquiryFormReducer);
-  const [openAccordian, setOpenAccordian] = useState(0);
+  const [openAccordian, setOpenAccordian] = useState("0");
   const [componentAppear, setComponentAppear] = useState(false);
 
   useEffect(() => {
     setComponentAppear(true);
   }, [])
 
-  const updateAccordian = (index) => {
-    if (index != openAccordian) {
-      setOpenAccordian(index);
+  const updateAccordian = (selectedIndex) => {
+    if (selectedIndex != openAccordian) {
+      setOpenAccordian(selectedIndex);
     } else {
       setOpenAccordian(0);
     }
@@ -148,20 +150,211 @@ const DetailsOverviewScreen = ({ navigation }) => {
           style={{ flex: 1 }}
         >
           <View style={styles.baseVw}>
-            {/* // Personal Intro */}
-            <View style={[styles.accordianBckVw, GlobalStyle.shadow, { backgroundColor: "white" }]}>
-              <CustomerAccordianHeaderItem
-                title={"Personal Intro"}
-                leftIcon={"account-edit"}
-                selected={openAccordian == 1 ? true : false}
-                onPress={() => updateAccordian(1)}
-              />
-              <View
-                style={{
-                  width: "100%",
-                  height: openAccordian == 1 ? null : 0,
-                  overflow: 'hidden',
-                }}
+            {/* 1.Customer Profile */}
+            <List.AccordionGroup expandedId={openAccordian} onAccordionPress={(expandedId) => updateAccordian(expandedId)}>
+              <List.Accordion
+                id={"1"}
+                title={"Customer Profile"}
+                titleStyle={{ color: openAccordian === "1" ? Colors.WHITE : Colors.BLACK, fontSize: 16, fontWeight: '600' }}
+                style={{ backgroundColor: openAccordian === "1" ? Colors.RED : Colors.WHITE }}
+              >
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.occupation}
+                  label={"Occupation*"}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setCustomerProfile({ key: "OCCUPATION", text: text })
+                    )
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.designation}
+                  label={"Designation*"}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setCustomerProfile({ key: "DESIGNATION", text: text })
+                    )
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Enquiry Segment"
+                    data={selector.enquiry_segment_types_data}
+                    required={true}
+                    floating={false}
+                    value={selector.enquiry_segment}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({
+                          key: "ENQUIRY_SEGMENT",
+                          value: value,
+                        })
+                      )
+                    }
+                  />
+                </View>
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Customer Type"
+                    data={selector.customer_types_data}
+                    required={true}
+                    floating={false}
+                    value={selector.customer_type}
+                    onChange={(value) => dispatch(setDropDownData({ key: "CUSTOMER_TYPE", value: value }))}
+                  />
+                </View>
+                {(selector.customer_type === "fleet" || selector.customer_type === "institution") ? <View>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.company_name}
+                    label={"Company Name"}
+                    onChangeText={(text) => dispatch(setCustomerProfile({ key: "COMPANY_NAME", text: text, }))}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                </View> : null}
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Source Of Enquiry"
+                    data={selector.source_types_data}
+                    required={true}
+                    floating={false}
+                    value={selector.source_of_enquiry}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({
+                          key: "SOURCE_OF_ENQUIRY",
+                          value: value,
+                        })
+                      )
+                    }
+                  />
+                </View>
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Sub Source Of Enquiry"
+                    data={selector.sub_source_types_data}
+                    required={true}
+                    floating={false}
+                    value={selector.sub_source_of_enquiry}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({
+                          key: "SUB_SOURCE_OF_ENQUIRY",
+                          value: value,
+                        })
+                      )
+                    }
+                  />
+                </View>
+
+                <DateSelectItem
+                  label={"Expected Delivery Date"}
+                  value={selector.expected_delivery_date}
+                  onPress={() => dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))}
+                />
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Enquiry Category"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.enquiry_category}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({
+                          key: "ENQUIRY_CATEGORY",
+                          value: value,
+                        })
+                      )
+                    }
+                  />
+                </View>
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Buyer Type"
+                    data={selector.buyer_types_data}
+                    required={true}
+                    floating={false}
+                    value={selector.buyer_type}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({ key: "BUYER_TYPE", value: value })
+                      )
+                    }
+                  />
+                </View>
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="KMs Travelled in Month"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.kms_travelled_month}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({ key: "KMS_TRAVELLED", value: value })
+                      )
+                    }
+                  />
+                </View>
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Who Drives"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.who_drives}
+                    onChange={(value) =>
+                      dispatch(
+                        setDropDownData({ key: "WHO_DRIVES", value: value })
+                      )
+                    }
+                  />
+                </View>
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="How many members in your family"
+                    data={selector.family_member_types_data}
+                    required={true}
+                    floating={false}
+                    value={selector.members}
+                    onChange={(value) => dispatch(setDropDownData({ key: "MEMBERS", value: value }))}
+                  />
+                </View>
+
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="What is prime expectation from the car"
+                    data={selector.prime_exception_types_data}
+                    required={true}
+                    floating={false}
+                    value={selector.prime_expectation_from_car}
+                    onChange={(value) =>
+                      dispatch(setDropDownData({ key: "PRIME_EXPECTATION_CAR", value: value, }))
+                    }
+                  />
+                </View>
+              </List.Accordion>
+              <View style={styles.space}></View>
+              {/* 2. Personal Intro */}
+              <List.Accordion
+                id={"2"}
+                title="Personal Intro"
+                titleStyle={{ color: openAccordian === "2" ? Colors.WHITE : Colors.BLACK, fontSize: 16, fontWeight: '600' }}
+                style={{ backgroundColor: openAccordian === "2" ? Colors.RED : Colors.WHITE }}
               >
                 <View style={styles.drop_down_view_style}>
                   <Dropdown
@@ -174,15 +367,11 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     floating={false}
                     // paperTheme={theme}
                     value={selector.salutaion}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({ key: "SALUTATION", value: value })
-                      )
-                    }
+                    onChange={(value) => dispatch(setDropDownData({ key: "SALUTATION", value: value }))}
                   />
                 </View>
 
-                <View style={styles.drop_down_view_style}>
+                {selector.enquiry_segment == "personal" ? <View style={styles.drop_down_view_style}>
                   <Dropdown
                     label="Gender"
                     data={selector.dropDownData}
@@ -190,33 +379,24 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     floating={false}
                     // paperTheme={theme}
                     value={selector.gender}
-                    onChange={(value) =>
-                      dispatch(setDropDownData({ key: "GENDER", value: value }))
-                    }
+                    onChange={(value) => dispatch(setDropDownData({ key: "GENDER", value: value }))}
                   />
-                </View>
+                </View> : null}
 
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.firstName}
                   label={"First Name*"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setPersonalIntro({ key: "FIRST_NAME", text: text })
-                    )
-                  }
+                  onChangeText={(text) => dispatch(setPersonalIntro({ key: "FIRST_NAME", text: text }))}
                 />
                 <Text style={GlobalStyle.underline}></Text>
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.lastName}
                   label={"Last Name*"}
-                  onChangeText={(text) =>
-                    dispatch(setPersonalIntro({ key: "LAST_NAME", text: text }))
-                  }
+                  onChangeText={(text) => dispatch(setPersonalIntro({ key: "LAST_NAME", text: text }))}
                 />
                 <Text style={GlobalStyle.underline}></Text>
-
                 <View style={styles.drop_down_view_style}>
                   <Dropdown
                     label="Relation"
@@ -224,91 +404,63 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.relation}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({ key: "RELATION", value: value })
-                      )
-                    }
+                    onChange={(value) => dispatch(setDropDownData({ key: "RELATION", value: value }))}
                   />
                 </View>
-
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.relationName}
                   label={"Relation Name*"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setPersonalIntro({ key: "RELATION_NAME", text: text })
-                    )
-                  }
+                  onChangeText={(text) => dispatch(setPersonalIntro({ key: "RELATION_NAME", text: text }))}
                 />
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.mobile}
                   label={"Mobile Number*"}
-                  onChangeText={(text) =>
-                    dispatch(setPersonalIntro({ key: "MOBILE", text: text }))
-                  }
+                  onChangeText={(text) => dispatch(setPersonalIntro({ key: "MOBILE", text: text }))}
                 />
                 <Text style={GlobalStyle.underline}></Text>
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.alterMobile}
                   label={"Alternate Mobile Number*"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setPersonalIntro({ key: "ALTER_MOBILE", text: text })
-                    )
-                  }
+                  onChangeText={(text) => dispatch(setPersonalIntro({ key: "ALTER_MOBILE", text: text }))}
                 />
                 <Text style={GlobalStyle.underline}></Text>
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.email}
                   label={"Email ID*"}
-                  onChangeText={(text) =>
-                    dispatch(setPersonalIntro({ key: "EMAIL", text: text }))
-                  }
+                  onChangeText={(text) => dispatch(setPersonalIntro({ key: "EMAIL", text: text }))}
                 />
                 <Text style={GlobalStyle.underline}></Text>
-                <DateSelectItem
-                  label={"Date Of Birth"}
-                  value={selector.dateOfBirth}
-                  onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
-                />
-                <DateSelectItem
-                  label={"Anniversary Date"}
-                  value={selector.anniversaryDate}
-                  onPress={() => dispatch(setDatePicker("ANNIVERSARY_DATE"))}
-                />
-              </View>
-            </View>
-            <View style={styles.space}></View>
+                {selector.enquiry_segment == "personal" ? <View>
+                  <DateSelectItem
+                    label={"Date Of Birth"}
+                    value={selector.dateOfBirth}
+                    onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
+                  />
+                  <DateSelectItem
+                    label={"Anniversary Date"}
+                    value={selector.anniversaryDate}
+                    onPress={() => dispatch(setDatePicker("ANNIVERSARY_DATE"))}
+                  />
+                </View> : null}
 
-            {/* // 2.Communication Address */}
-            <View style={[styles.accordianBckVw, GlobalStyle.shadow, { backgroundColor: "white" }]}>
-              <CustomerAccordianHeaderItem
-                title={"Communicaton Address"}
-                leftIcon={"account-edit"}
-                selected={openAccordian == 2 ? true : false}
-                onPress={() => updateAccordian(2)}
-              />
-              <View
-                style={{
-                  width: "100%",
-                  height: openAccordian == 2 ? null : 0,
-                  overflow: "hidden",
-                }}
+              </List.Accordion>
+              <View style={styles.space}></View>
+              {/* // 3.Communication Address */}
+              <List.Accordion
+                id={"3"}
+                title={"Communication Address"}
+                titleStyle={{ color: openAccordian === "3" ? Colors.WHITE : Colors.BLACK, fontSize: 16, fontWeight: '600' }}
+                style={{ backgroundColor: openAccordian === "3" ? Colors.RED : Colors.WHITE }}
               >
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.pincode}
                   label={"Pincode*"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({ key: "PINCODE", text: text })
-                    )
-                  }
+                  onChangeText={(text) => dispatch(setCommunicationAddress({ key: "PINCODE", text: text }))}
                 />
                 <Text style={GlobalStyle.underline}></Text>
                 <View style={styles.radioGroupBcVw}>
@@ -402,183 +554,150 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.state}
                   label={"State*"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({ key: "STATE", text: text })
-                    )
-                  }
+                  onChangeText={(text) => dispatch(setCommunicationAddress({ key: "STATE", text: text }))}
                 />
 
                 {/* // Permanent Addresss */}
                 <View style={styles.radioGroupBcVw}>
-                  <Text style={styles.permanentAddText}>
-                    {"Permanent Address"}
-                  </Text>
+                  <Text style={styles.permanentAddText}>{"Permanent Address"}</Text>
                   <Checkbox.Android
                     uncheckedColor={Colors.GRAY}
                     color={Colors.RED}
-                    status={
-                      selector.permanent_address ? "checked" : "unchecked"
-                    }
+                    status={selector.permanent_address ? "checked" : "unchecked"}
+                    onPress={() => dispatch(setCommunicationAddress({ key: "PERMANENT_ADDRESS", text: "" }))}
+                  />
+                </View>
+
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.p_pincode}
+                  label={"Pincode*"}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setCommunicationAddress({
+                        key: "P_PINCODE",
+                        text: text,
+                      })
+                    )
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
+
+                <View style={styles.radioGroupBcVw}>
+                  <RadioTextItem
+                    label={"Urban"}
+                    value={"urban"}
+                    status={selector.p_urban_or_rural === 1 ? true : false}
                     onPress={() =>
                       dispatch(
                         setCommunicationAddress({
-                          key: "PERMANENT_ADDRESS",
-                          text: "",
+                          key: "P_RURAL_URBAN",
+                          text: "1",
+                        })
+                      )
+                    }
+                  />
+                  <RadioTextItem
+                    label={"Rural"}
+                    value={"rural"}
+                    status={selector.p_urban_or_rural === 2 ? true : false}
+                    onPress={() =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "P_RURAL_URBAN",
+                          text: "2",
                         })
                       )
                     }
                   />
                 </View>
+                <Text style={GlobalStyle.underline}></Text>
 
-                {selector.permanent_address && (
-                  <View>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.p_pincode}
-                      label={"Pincode*"}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCommunicationAddress({
-                            key: "P_PINCODE",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  label={"H.No*"}
+                  value={selector.p_houseNum}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setCommunicationAddress({
+                        key: "P_HOUSE_NO",
+                        text: text,
+                      })
+                    )
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  label={"Street Name*"}
+                  value={selector.p_streetName}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setCommunicationAddress({
+                        key: "P_STREET_NAME",
+                        text: text,
+                      })
+                    )
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.p_village}
+                  label={"Village*"}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setCommunicationAddress({
+                        key: "P_VILLAGE",
+                        text: text,
+                      })
+                    )
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.p_city}
+                  label={"City*"}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setCommunicationAddress({ key: "P_CITY", text: text })
+                    )
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.p_district}
+                  label={"District*"}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setCommunicationAddress({
+                        key: "P_DISTRICT",
+                        text: text,
+                      })
+                    )
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.p_state}
+                  label={"State*"}
+                  onChangeText={(text) =>
+                    dispatch(setCommunicationAddress({ key: "P_STATE", text: text, }))
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
 
-                    <View style={styles.radioGroupBcVw}>
-                      <RadioTextItem
-                        label={"Urban"}
-                        value={"urban"}
-                        status={selector.p_urban_or_rural === 1 ? true : false}
-                        onPress={() =>
-                          dispatch(
-                            setCommunicationAddress({
-                              key: "P_RURAL_URBAN",
-                              text: "1",
-                            })
-                          )
-                        }
-                      />
-                      <RadioTextItem
-                        label={"Rural"}
-                        value={"rural"}
-                        status={selector.p_urban_or_rural === 2 ? true : false}
-                        onPress={() =>
-                          dispatch(
-                            setCommunicationAddress({
-                              key: "P_RURAL_URBAN",
-                              text: "2",
-                            })
-                          )
-                        }
-                      />
-                    </View>
-                    <Text style={GlobalStyle.underline}></Text>
-
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      label={"H.No*"}
-                      value={selector.p_houseNum}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCommunicationAddress({
-                            key: "P_HOUSE_NO",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      label={"Street Name*"}
-                      value={selector.p_streetName}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCommunicationAddress({
-                            key: "P_STREET_NAME",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.p_village}
-                      label={"Village*"}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCommunicationAddress({
-                            key: "P_VILLAGE",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.p_city}
-                      label={"City*"}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCommunicationAddress({ key: "P_CITY", text: text })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.p_district}
-                      label={"District*"}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCommunicationAddress({
-                            key: "P_DISTRICT",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.p_state}
-                      label={"State*"}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCommunicationAddress({
-                            key: "P_STATE",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>
-                )}
-              </View>
-            </View>
-            <View style={styles.space}></View>
-
-            {/* // 3.Modal Selction */}
-            <View style={[styles.accordianBckVw, GlobalStyle.shadow, { backgroundColor: "white" }]}>
-              <CustomerAccordianHeaderItem
+              </List.Accordion>
+              <View style={styles.space}></View>
+              {/* // 4.Modal Selection */}
+              <List.Accordion
+                id={"4"}
                 title={"Modal Selection"}
-                leftIcon={"account-edit"}
-                selected={openAccordian == 3 ? true : false}
-                onPress={() => updateAccordian(3)}
-              />
-              <View
-                style={{
-                  width: "100%",
-                  height: openAccordian == 3 ? null : 0,
-                  overflow: "hidden",
-                }}
+                titleStyle={{ color: openAccordian === "4" ? Colors.WHITE : Colors.BLACK, fontSize: 16, fontWeight: '600' }}
+                style={{ backgroundColor: openAccordian === "4" ? Colors.RED : Colors.WHITE }}
               >
                 <View style={styles.drop_down_view_style}>
                   <Dropdown
@@ -587,9 +706,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.model}
-                    onChange={(value) =>
-                      dispatch(setDropDownData({ key: "MODEL", value: value }))
-                    }
+                    onChange={(value) => dispatch(setDropDownData({ key: "MODEL", value: value }))}
                   />
                 </View>
 
@@ -600,11 +717,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.varient}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({ key: "VARIENT", value: value })
-                      )
-                    }
+                    onChange={(value) => dispatch(setDropDownData({ key: "VARIENT", value: value }))}
                   />
                 </View>
 
@@ -615,9 +728,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.color}
-                    onChange={(value) =>
-                      dispatch(setDropDownData({ key: "COLOR", value: value }))
-                    }
+                    onChange={(value) => dispatch(setDropDownData({ key: "COLOR", value: value }))}
                   />
                 </View>
 
@@ -628,11 +739,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     required={true}
                     floating={false}
                     value={selector.fuel_type}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({ key: "FUEL_TYPE", value: value })
-                      )
-                    }
+                    onChange={(value) => dispatch(setDropDownData({ key: "FUEL_TYPE", value: value }))}
                   />
                 </View>
 
@@ -653,218 +760,14 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     }
                   />
                 </View>
-              </View>
-            </View>
-            <View style={styles.space}></View>
-
-            {/* // 4.Customer Profile */}
-            <View style={[styles.accordianBckVw, GlobalStyle.shadow, { backgroundColor: "white" }]}>
-              <CustomerAccordianHeaderItem
-                title={"Customer Profile"}
-                leftIcon={"account-edit"}
-                selected={openAccordian == 4 ? true : false}
-                onPress={() => updateAccordian(4)}
-              />
-              <View
-                style={{
-                  width: "100%",
-                  height: openAccordian == 4 ? null : 0,
-                  overflow: "hidden",
-                }}
-              >
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.occupation}
-                  label={"Occupation*"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCustomerProfile({ key: "OCCUPATION", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.designation}
-                  label={"Designation*"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCustomerProfile({ key: "DESIGNATION", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Enquiry Segment"
-                    data={selector.dropDownData}
-                    required={true}
-                    floating={false}
-                    value={selector.enquiry_segment}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({
-                          key: "ENQUIRY_SEGMENT",
-                          value: value,
-                        })
-                      )
-                    }
-                  />
-                </View>
-
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Customer Type"
-                    data={selector.dropDownData}
-                    required={true}
-                    floating={false}
-                    value={selector.customer_type}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({ key: "CUSTOMER_TYPE", value: value })
-                      )
-                    }
-                  />
-                </View>
-
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Source Of Enquiry"
-                    data={selector.dropDownData}
-                    required={true}
-                    floating={false}
-                    value={selector.source_of_enquiry}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({
-                          key: "SOURCE_OF_ENQUIRY",
-                          value: value,
-                        })
-                      )
-                    }
-                  />
-                </View>
-
-                <DateSelectItem
-                  label={"Expected Date"}
-                  value={selector.expected_date}
-                  onPress={() => dispatch(setDatePicker("EXPECTED_DATE"))}
-                />
-
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Enquiry Category"
-                    data={selector.dropDownData}
-                    required={true}
-                    floating={false}
-                    value={selector.enquiry_category}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({
-                          key: "ENQUIRY_CATEGORY",
-                          value: value,
-                        })
-                      )
-                    }
-                  />
-                </View>
-
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Buyer Type"
-                    data={selector.dropDownData}
-                    required={true}
-                    floating={false}
-                    value={selector.buyer_type}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({ key: "BUYER_TYPE", value: value })
-                      )
-                    }
-                  />
-                </View>
-
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="KMs Travelled in Month"
-                    data={selector.dropDownData}
-                    required={true}
-                    floating={false}
-                    value={selector.kms_travelled_month}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({ key: "KMS_TRAVELLED", value: value })
-                      )
-                    }
-                  />
-                </View>
-
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Who Drives"
-                    data={selector.dropDownData}
-                    required={true}
-                    floating={false}
-                    value={selector.who_drives}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({ key: "WHO_DRIVES", value: value })
-                      )
-                    }
-                  />
-                </View>
-
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Members"
-                    data={selector.dropDownData}
-                    required={true}
-                    floating={false}
-                    value={selector.members}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({ key: "MEMBERS", value: value })
-                      )
-                    }
-                  />
-                </View>
-
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="What is prime expectation from the car"
-                    data={selector.dropDownData}
-                    required={true}
-                    floating={false}
-                    value={selector.prime_expectation_from_car}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({
-                          key: "PRIME_EXPECTATION_CAR",
-                          value: value,
-                        })
-                      )
-                    }
-                  />
-                </View>
-              </View>
-            </View>
-            <View style={styles.space}></View>
-
-            {/* // 5.Financial Details */}
-            <View style={[styles.accordianBckVw, GlobalStyle.shadow, { backgroundColor: "white" }]}>
-              <CustomerAccordianHeaderItem
+              </List.Accordion>
+              <View style={styles.space}></View>
+              {/* // 5.Financial Details*/}
+              <List.Accordion
+                id={"5"}
                 title={"Financial Details"}
-                leftIcon={"account-edit"}
-                selected={openAccordian == 5 ? true : false}
-                onPress={() => updateAccordian(5)}
-              />
-              <View
-                style={{
-                  width: "100%",
-                  height: openAccordian == 5 ? null : 0,
-                  overflow: "hidden",
-                }}
+                titleStyle={{ color: openAccordian === "5" ? Colors.WHITE : Colors.BLACK, fontSize: 16, fontWeight: '600' }}
+                style={{ backgroundColor: openAccordian === "5" ? Colors.RED : Colors.WHITE }}
               >
                 <View style={styles.drop_down_view_style}>
                   <Dropdown
@@ -991,24 +894,14 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     }
                   />
                 </View>
-              </View>
-            </View>
-            <View style={styles.space}></View>
-
-            {/* // 6.Upload Documents */}
-            <View style={[styles.accordianBckVw, GlobalStyle.shadow, { backgroundColor: "white" }]}>
-              <CustomerAccordianHeaderItem
+              </List.Accordion>
+              <View style={styles.space}></View>
+              {/* // 6.Upload Documents */}
+              <List.Accordion
+                id={"6"}
                 title={"Upload Documents"}
-                leftIcon={"account-edit"}
-                selected={openAccordian == 6 ? true : false}
-                onPress={() => updateAccordian(6)}
-              />
-              <View
-                style={{
-                  width: "100%",
-                  height: openAccordian == 6 ? null : 0,
-                  overflow: "hidden",
-                }}
+                titleStyle={{ color: openAccordian === "6" ? Colors.WHITE : Colors.BLACK, fontSize: 16, fontWeight: '600' }}
+                style={{ backgroundColor: openAccordian === "6" ? Colors.RED : Colors.WHITE }}
               >
                 <TextinputComp
                   style={styles.textInputStyle}
@@ -1040,24 +933,14 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
                   />
                 </View>
-              </View>
-            </View>
-            <View style={styles.space}></View>
-
-            {/* // 7.Customer Need Analysis */}
-            <View style={[styles.accordianBckVw, GlobalStyle.shadow, { backgroundColor: "white" }]}>
-              <CustomerAccordianHeaderItem
+              </List.Accordion>
+              <View style={styles.space}></View>
+              {/* // 7.Customer Need Analysis */}
+              <List.Accordion
+                id={"7"}
                 title={"Customer Need Analysis"}
-                leftIcon={"account-edit"}
-                selected={openAccordian == 7 ? true : false}
-                onPress={() => updateAccordian(7)}
-              />
-              <View
-                style={{
-                  width: "100%",
-                  height: openAccordian == 7 ? null : 0,
-                  overflow: "hidden",
-                }}
+                titleStyle={{ color: openAccordian === "7" ? Colors.WHITE : Colors.BLACK, fontSize: 16, fontWeight: '600' }}
+                style={{ backgroundColor: openAccordian === "7" ? Colors.RED : Colors.WHITE }}
               >
                 <View style={styles.view2}>
                   <Text style={styles.looking_any_text}>
@@ -1216,46 +1099,235 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.dealership_location}
                   label={"DealerShip Location"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCustomerNeedAnalysis({
-                        key: "DEALERSHIP_LOCATION",
-                        text: text,
-                      })
-                    )
-                  }
+                  onChangeText={(text) => dispatch(setCustomerNeedAnalysis({ key: "DEALERSHIP_LOCATION", text: text }))}
                 />
                 <Text style={GlobalStyle.underline}></Text>
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.dealership_pending_reason}
                   label={"Dealership Pending Reason"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCustomerNeedAnalysis({
-                        key: "DEALERSHIP_PENDING_REASON",
-                        text: text,
-                      })
-                    )
-                  }
+                  onChangeText={(text) => dispatch(setCustomerNeedAnalysis({ key: "DEALERSHIP_PENDING_REASON", text: text }))}
                 />
                 <Text style={GlobalStyle.underline}></Text>
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.voice_of_customer_remarks}
                   label={"Voice of Customer Remarks "}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCustomerNeedAnalysis({
-                        key: "VOICE_OF_CUSTOMER_REMARKS",
-                        text: text,
-                      })
-                    )
-                  }
+                  onChangeText={(text) => dispatch(setCustomerNeedAnalysis({ key: "VOICE_OF_CUSTOMER_REMARKS", text: text, }))}
                 />
                 <Text style={GlobalStyle.underline}></Text>
-              </View>
-            </View>
+              </List.Accordion>
+              {selector.buyer_type == "additional_buyer" || selector.buyer_type == "replacement_buyer" ?
+                <View style={styles.space}></View> : null}
+              {/* // 8.Additional Buyer */}
+              {selector.buyer_type == "additional_buyer" ? <List.Accordion
+                id={"8"}
+                title={"Additional Buyer"}
+                titleStyle={{ color: openAccordian === "8" ? Colors.WHITE : Colors.BLACK, fontSize: 16, fontWeight: '600' }}
+                style={{ backgroundColor: openAccordian === "8" ? Colors.RED : Colors.WHITE }}
+              >
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Make"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.a_make}
+                    onChange={(value) => dispatch(setDropDownData({ key: "A_MAKE", value: value, }))}
+                  />
+                </View>
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Model"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.a_model}
+                    onChange={(value) => dispatch(setDropDownData({ key: "A_MODEL", value: value }))}
+                  />
+                </View>
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.a_varient}
+                  label={"Varient"}
+                  onChangeText={(text) => dispatch(setAdditionalBuyerDetails({ key: "A_VARIENT", text: text, }))}
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.a_color}
+                  label={"Color"}
+                  onChangeText={(text) => dispatch(setAdditionalBuyerDetails({ key: "A_COLOR", text: text, }))}
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.a_reg_no}
+                  label={"Reg. No."}
+                  onChangeText={(text) => dispatch(setAdditionalBuyerDetails({ key: "A_REG_NO", text: text, }))}
+                />
+                <Text style={GlobalStyle.underline}></Text>
+              </List.Accordion> : null}
+
+              {/* // 9.Additional Buyer */}
+              {selector.buyer_type == "replacement_buyer" ? <List.Accordion
+                id={"9"}
+                title={"Replacement Buyer"}
+                titleStyle={{ color: openAccordian === "9" ? Colors.WHITE : Colors.BLACK, fontSize: 16, fontWeight: '600' }}
+                style={{ backgroundColor: openAccordian === "9" ? Colors.RED : Colors.WHITE }}
+              >
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.r_reg_no}
+                  label={"Reg. No."}
+                  onChangeText={(text) => dispatch(setReplacementBuyerDetails({ key: "R_REG_NO", text: text, }))}
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                <View style={styles.select_image_bck_vw}>
+                  <ImageSelectItem
+                    name={"Upload Reg Doc"}
+                    onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
+                  />
+                </View>
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Make"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.r_make}
+                    onChange={(value) => dispatch(setDropDownData({ key: "A_MAKE", value: value, }))}
+                  />
+                </View>
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Model"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.r_model}
+                    onChange={(value) => dispatch(setDropDownData({ key: "R_MODEL", value: value }))}
+                  />
+                </View>
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Fuel Type"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.r_fuel_type}
+                    onChange={(value) => dispatch(setDropDownData({ key: "R_FUEL_TYPE", value: value, }))}
+                  />
+                </View>
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Transmission Type"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.r_transmission_type}
+                    onChange={(value) => dispatch(setDropDownData({ key: "R_TRANSMISSION_TYPE", value: value }))}
+                  />
+                </View>
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.r_varient}
+                  label={"Varient"}
+                  onChangeText={(text) => dispatch(setReplacementBuyerDetails({ key: "R_VARIENT", text: text, }))}
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.r_color}
+                  label={"Color"}
+                  onChangeText={(text) => dispatch(setReplacementBuyerDetails({ key: "R_COLOR", text: text, }))}
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                <DateSelectItem
+                  label={"Mth.Yr. of MFG"}
+                  value={selector.r_mfg_year}
+                  onPress={() => dispatch(setDatePicker("R_MFG_YEAR"))}
+                />
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.r_kms_driven_or_odometer_reading}
+                  label={"Kms-Driven/Odometer Reading"}
+                  onChangeText={(text) => dispatch(setReplacementBuyerDetails({ key: "R_KMS_DRIVEN_OR_ODOMETER_READING", text: text, }))}
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.r_hypothication_name}
+                  label={"Hypothication Name"}
+                  onChangeText={(text) => dispatch(setReplacementBuyerDetails({ key: "A_COLOR", text: text, }))}
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.r_hypothication_branch}
+                  label={"Hypothication Branch"}
+                  onChangeText={(text) => dispatch(setReplacementBuyerDetails({ key: "A_COLOR", text: text, }))}
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.r_expected_price}
+                  label={"Expected Price"}
+                  onChangeText={(text) => dispatch(setReplacementBuyerDetails({ key: "R_EXP_PRICE", text: text, }))}
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                <DateSelectItem
+                  label={"Registration Date"}
+                  value={selector.r_registration_date}
+                  onPress={() => dispatch(setDatePicker("R_REG_DATE"))}
+                />
+                <DateSelectItem
+                  label={"Registration Validity Date"}
+                  value={selector.r_registration_validity_date}
+                  onPress={() => dispatch(setDatePicker("R_REG_VALIDITY_DATE"))}
+                />
+                <View style={styles.select_image_bck_vw}>
+                  <ImageSelectItem
+                    name={"Upload Insurence"}
+                    onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
+                  />
+                </View>
+                <DateSelectItem
+                  label={"Insurence Policy Expiry Date"}
+                  value={selector.r_insurence_expiry_date}
+                  onPress={() => dispatch(setDatePicker("R_INSURENCE_POLICIY_EXPIRY_DATE"))}
+                />
+                <View style={styles.drop_down_view_style}>
+                  <Dropdown
+                    label="Insurence Type"
+                    data={selector.dropDownData}
+                    required={true}
+                    floating={false}
+                    value={selector.r_insurence_type}
+                    onChange={(value) => dispatch(setDropDownData({ key: "A_MODEL", value: value }))}
+                  />
+                </View>
+                <DateSelectItem
+                  label={"Insurence From Date"}
+                  value={selector.r_insurence_from_date}
+                  onPress={() => dispatch(setDatePicker("R_INSURENCE_FROM_DATE"))}
+                />
+                <DateSelectItem
+                  label={"Insurence To Date"}
+                  value={selector.r_insurence_to_date}
+                  onPress={() => dispatch(setDatePicker("R_INSURENCE_TO_DATE"))}
+                />
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.r_insurence_company_name}
+                  label={"Insurence Company Name"}
+                  onChangeText={(text) => dispatch(setReplacementBuyerDetails({ key: "R_INSURENCE_CMPNY_NAME", text: text, }))}
+                />
+                <Text style={GlobalStyle.underline}></Text>
+              </List.Accordion> : null}
+
+            </List.AccordionGroup>
+
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -1348,3 +1420,8 @@ const styles = StyleSheet.create({
 // left={(props) => (
 //   <VectorImage height={25} width={25} source={PERSONAL_DETAILS} />
 // )}
+
+
+{/* <View style={[styles.accordianBckVw, GlobalStyle.shadow, { backgroundColor: "white" }]}>
+
+</View> */}

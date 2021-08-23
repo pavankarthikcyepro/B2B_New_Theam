@@ -26,7 +26,7 @@ import SideMenuScreen from "../scenes/mainScenes/sideMenuScreen";
 import NotificationScreen from "../scenes/mainScenes/notificationsScreen";
 import AddPreEnquiryScreen from "../scenes/mainScenes/EMS/addPreEnquiryScreen";
 import ConfirmedPreEnquiryScreen from "../scenes/mainScenes/EMS/confirmedPreEnquiryScreen";
-import DetailsOverviewScreen from "../scenes/mainScenes/EMS/enquiryFormScreen";
+import EnquiryFormScreen from "../scenes/mainScenes/EMS/enquiryFormScreen";
 import PreBookingFormScreen from "../scenes/mainScenes/PreBooking/prebookingFormScreen";
 import PreBookingScreen from "../scenes/mainScenes/PreBooking/prebookingScreen";
 import HomeVisitScreen from "../scenes/mainScenes/MyTasks/homeVisitScreen";
@@ -199,7 +199,7 @@ const EmsStackNavigator = ({ navigation }) => {
       />
       <EmsStack.Screen
         name={EmsStackIdentifiers.detailsOverview}
-        component={DetailsOverviewScreen}
+        component={EnquiryFormScreen}
         options={{ title: "Details OverView" }}
       />
     </EmsStack.Navigator>
