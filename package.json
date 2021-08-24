@@ -39,6 +39,7 @@
     "realm": "^10.6.1",
     "redux": "^4.1.0",
     "sharingan-rn-modal-dropdown": "^1.4.0",
+    "util": "^0.12.4",
     "yarn-install": "^1.0.0"
   },
   "devDependencies": {

@@ -128,7 +128,6 @@ const enquiryDetailsOverViewSlice = createSlice({
     loan_of_tenure: "",
     emi: "",
     leashing_name: "",
-
     approx_annual_income: "",
     // Customer Need Analysis
     c_looking_for_any_other_brand_checked: false,
@@ -472,7 +471,7 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.location = text;
           break;
         case "LEASHING_NAME":
-          state.location = text;
+          state.leashing_name = text;
           break;
       }
     },

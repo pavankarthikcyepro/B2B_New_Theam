@@ -150,8 +150,9 @@ const DetailsOverviewScreen = ({ navigation }) => {
           style={{ flex: 1 }}
         >
           <View style={styles.baseVw}>
-            {/* 1.Customer Profile */}
+
             <List.AccordionGroup expandedId={openAccordian} onAccordionPress={(expandedId) => updateAccordian(expandedId)}>
+              {/* 1.Customer Profile */}
               <List.Accordion
                 id={"1"}
                 title={"Customer Profile"}
