@@ -14,7 +14,6 @@ import { DateSelectItem } from "../../../pureComponents";
 const ScreenWidth = Dimensions.get("window").width;
 
 const PreBookingFollowUpScreen = () => {
-
   const selector = useSelector((state) => state.preBookingFollowUpReducer);
   const dispatch = useDispatch();
 
@@ -39,7 +38,9 @@ const PreBookingFollowUpScreen = () => {
               dispatch(updateSelectedDate({ key: "", text: selectedDate }));
             }
           }}
-          onRequestClose={() => dispatch(updateSelectedDate({ key: "NONE", text: "" }))}
+          onRequestClose={() =>
+            dispatch(updateSelectedDate({ key: "NONE", text: "" }))
+          }
         />
       )}
 
@@ -48,6 +49,7 @@ const PreBookingFollowUpScreen = () => {
           <TextinputComp
             style={styles.textInputStyle}
             label={"Reason"}
+            keyboardType={"default"}
             value={selector.reason}
             onChangeText={(text) => {
               dispatch(
@@ -59,6 +61,7 @@ const PreBookingFollowUpScreen = () => {
           <TextinputComp
             style={styles.textInputStyle}
             label={"Customer Remarks"}
+            keyboardType={"default"}
             value={selector.customer_remarks}
             onChangeText={(text) =>
               dispatch(
@@ -73,6 +76,7 @@ const PreBookingFollowUpScreen = () => {
           <TextinputComp
             style={styles.textInputStyle}
             label={"Employee Remarks"}
+            keyboardType={"default"}
             value={selector.employee_remarks}
             onChangeText={(text) =>
               dispatch(

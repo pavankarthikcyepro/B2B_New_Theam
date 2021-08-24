@@ -6,9 +6,7 @@ import { Button } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
 import { setHomeVisitDetails } from "../../../redux/homeVisitReducer";
 
-
 const HomeVisitScreen = () => {
-
   const selector = useSelector((state) => state.homeVisitReducer);
   const dispatch = useDispatch();
 
@@ -19,6 +17,7 @@ const HomeVisitScreen = () => {
           <TextinputComp
             style={styles.textInputStyle}
             label={"Reason"}
+            keyboardType={"default"}
             value={selector.reason}
             onChangeText={(text) => {
               dispatch(setHomeVisitDetails({ key: "REASON", text: text }));
@@ -28,6 +27,7 @@ const HomeVisitScreen = () => {
           <TextinputComp
             style={styles.textInputStyle}
             label={"Customer Remarks"}
+            keyboardType={"default"}
             value={selector.customer_remarks}
             onChangeText={(text) =>
               dispatch(
@@ -39,6 +39,7 @@ const HomeVisitScreen = () => {
           <TextinputComp
             style={styles.textInputStyle}
             label={"Employee Remarks"}
+            keyboardType={"default"}
             value={selector.employee_remarks}
             onChangeText={(text) =>
               dispatch(

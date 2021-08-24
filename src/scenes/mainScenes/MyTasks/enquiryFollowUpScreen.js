@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView, View, Text, StyleSheet, Dimensions, KeyboardAvoidingView, ScrollView } from "react-native";
+import {
+  SafeAreaView,
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  KeyboardAvoidingView,
+  ScrollView,
+} from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { TextinputComp } from "../../../components";
 import { Button } from "react-native-paper";
@@ -105,15 +113,19 @@ const EnquiryFollowUpScreen = ({ navigation }) => {
             <TextinputComp
               style={styles.textInputStyle}
               label={"Reason"}
+              keyboardType={"default"}
               value={selector.reason}
               onChangeText={(text) => {
-                dispatch(setEnquiryFollowUpDetails({ key: "REASON", text: text }));
+                dispatch(
+                  setEnquiryFollowUpDetails({ key: "REASON", text: text })
+                );
               }}
             />
             <Text style={GlobalStyle.underline}></Text>
             <TextinputComp
               style={styles.textInputStyle}
               label={"Customer Remarks"}
+              keyboardType={"default"}
               value={selector.customer_remarks}
               onChangeText={(text) =>
                 dispatch(
@@ -128,6 +140,7 @@ const EnquiryFollowUpScreen = ({ navigation }) => {
             <TextinputComp
               style={styles.textInputStyle}
               label={"Employee Remarks*"}
+              keyboardType={"default"}
               value={selector.employee_remarks}
               onChangeText={(text) =>
                 dispatch(
@@ -194,7 +207,6 @@ const EnquiryFollowUpScreen = ({ navigation }) => {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-
     </SafeAreaView>
   );
 };

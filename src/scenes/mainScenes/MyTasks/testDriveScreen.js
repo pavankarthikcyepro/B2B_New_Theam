@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView, StyleSheet, View, Text, ScrollView, KeyboardAvoidingView } from "react-native";
+import {
+  SafeAreaView,
+  StyleSheet,
+  View,
+  Text,
+  ScrollView,
+  KeyboardAvoidingView,
+} from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -19,16 +26,13 @@ import { Dropdown } from "sharingan-rn-modal-dropdown";
 import { RadioButton } from "react-native-paper";
 import { Button } from "react-native-paper";
 
-
 const TestDriveScreen = ({ navigation }) => {
-
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.testDriveReducer);
   const [checked, setChecked] = React.useState("first");
 
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
-
       {selector.showDatepicker && (
         <DatePickerComponent
           visible={selector.showDatepicker}
@@ -38,7 +42,9 @@ const TestDriveScreen = ({ navigation }) => {
             console.log("date: ", selectedDate);
             if (Platform.OS === "android") {
               if (!selectedDate) {
-                dispatch(updateSelectedDate({ key: "NONE", text: selectedDate }));
+                dispatch(
+                  updateSelectedDate({ key: "NONE", text: selectedDate })
+                );
               } else {
                 dispatch(updateSelectedDate({ key: "", text: selectedDate }));
               }
@@ -46,7 +52,9 @@ const TestDriveScreen = ({ navigation }) => {
               dispatch(updateSelectedDate({ key: "", text: selectedDate }));
             }
           }}
-          onRequestClose={() => dispatch(updateSelectedDate({ key: "NONE", text: "" }))}
+          onRequestClose={() =>
+            dispatch(updateSelectedDate({ key: "NONE", text: "" }))
+          }
         />
       )}
 
@@ -128,7 +136,9 @@ const TestDriveScreen = ({ navigation }) => {
                 floating={true}
                 value={selector.transmission_type}
                 onChange={(value) =>
-                  dispatch(setDropDownData({ key: "TRANSMISSION_TYPE", value: value }))
+                  dispatch(
+                    setDropDownData({ key: "TRANSMISSION_TYPE", value: value })
+                  )
                 }
               />
               <Dropdown
@@ -137,24 +147,48 @@ const TestDriveScreen = ({ navigation }) => {
                 floating={true}
                 value={selector.varient}
                 onChange={(value) =>
-                  dispatch(setDropDownData({ key: "VARIENT", value: value, }))
+                  dispatch(setDropDownData({ key: "VARIENT", value: value }))
                 }
               />
               <Text style={{ padding: 10, justifyContent: "center" }}>
                 {"Choose address:"}
               </Text>
-              <View style={{ flexDirection: "row", paddingLeft: 12, paddingBottom: 5 }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  paddingLeft: 12,
+                  paddingBottom: 5,
+                }}
+              >
                 <RadioTextItem
                   label={"Showroom address"}
                   value={"Showroom address"}
-                  status={selector.address_type_is_showroom === "true" ? true : false}
-                  onPress={() => dispatch(setTestDriveDetails({ key: "CHOOSE_ADDRESS", text: "true", }))}
+                  status={
+                    selector.address_type_is_showroom === "true" ? true : false
+                  }
+                  onPress={() =>
+                    dispatch(
+                      setTestDriveDetails({
+                        key: "CHOOSE_ADDRESS",
+                        text: "true",
+                      })
+                    )
+                  }
                 />
                 <RadioTextItem
                   label={"Customer address"}
                   value={"Customer address"}
-                  status={selector.address_type_is_showroom === "false" ? true : false}
-                  onPress={() => dispatch(setTestDriveDetails({ key: "CHOOSE_ADDRESS", text: "false", }))}
+                  status={
+                    selector.address_type_is_showroom === "false" ? true : false
+                  }
+                  onPress={() =>
+                    dispatch(
+                      setTestDriveDetails({
+                        key: "CHOOSE_ADDRESS",
+                        text: "false",
+                      })
+                    )
+                  }
                 />
               </View>
 
@@ -162,25 +196,57 @@ const TestDriveScreen = ({ navigation }) => {
               <Text style={{ padding: 10 }}>
                 {"Do Customer have Driving License?"}
               </Text>
-              <View style={{ flexDirection: "row", paddingLeft: 12, paddingBottom: 5 }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  paddingLeft: 12,
+                  paddingBottom: 5,
+                }}
+              >
                 <RadioTextItem
                   label={"Yes"}
                   value={"Yes"}
-                  status={selector.customer_having_driving_licence === "true" ? true : false}
-                  onPress={() => dispatch(setTestDriveDetails({ key: "CUSTOMER_HAVING_DRIVING_LICENCE", text: "true", }))}
+                  status={
+                    selector.customer_having_driving_licence === "true"
+                      ? true
+                      : false
+                  }
+                  onPress={() =>
+                    dispatch(
+                      setTestDriveDetails({
+                        key: "CUSTOMER_HAVING_DRIVING_LICENCE",
+                        text: "true",
+                      })
+                    )
+                  }
                 />
                 <RadioTextItem
                   label={"No"}
                   value={"No"}
-                  status={selector.customer_having_driving_licence === "false" ? true : false}
-                  onPress={() => dispatch(setTestDriveDetails({ key: "CUSTOMER_HAVING_DRIVING_LICENCE", text: "false", }))}
+                  status={
+                    selector.customer_having_driving_licence === "false"
+                      ? true
+                      : false
+                  }
+                  onPress={() =>
+                    dispatch(
+                      setTestDriveDetails({
+                        key: "CUSTOMER_HAVING_DRIVING_LICENCE",
+                        text: "false",
+                      })
+                    )
+                  }
                 />
               </View>
               <Text style={GlobalStyle.underline}></Text>
               <DateSelectItem
                 label={"Customer Preffered Date"}
                 value={selector.customer_preferred_date}
-                onPress={() => dispatch(setDatePicker({ key: "PREFERRED_DATE", mode: "date" }))}
+                onPress={() =>
+                  dispatch(
+                    setDatePicker({ key: "PREFERRED_DATE", mode: "date" })
+                  )
+                }
               />
               <Dropdown
                 label="List of DSE employees:"
@@ -189,7 +255,10 @@ const TestDriveScreen = ({ navigation }) => {
                 value={selector.selected_dse_employee}
                 onChange={(value) =>
                   dispatch(
-                    setDropDownData({ key: "LIST_OF_DSE_EMPLOYEES", value: value })
+                    setDropDownData({
+                      key: "LIST_OF_DSE_EMPLOYEES",
+                      value: value,
+                    })
                   )
                 }
               />
@@ -207,17 +276,32 @@ const TestDriveScreen = ({ navigation }) => {
               <DateSelectItem
                 label={"Customer Preffered Time (24 hours Format)"}
                 value={selector.customer_preferred_time}
-                onPress={() => dispatch(setDatePicker({ key: "CUSTOMER_PREFERRED_TIME", mode: "time" }))}
+                onPress={() =>
+                  dispatch(
+                    setDatePicker({
+                      key: "CUSTOMER_PREFERRED_TIME",
+                      mode: "time",
+                    })
+                  )
+                }
               />
               <DateSelectItem
                 label={"Actual start Time (24 hours Format)"}
                 value={selector.actual_start_time}
-                onPress={() => dispatch(setDatePicker({ key: "ACTUAL_START_TIME", mode: "time" }))}
+                onPress={() =>
+                  dispatch(
+                    setDatePicker({ key: "ACTUAL_START_TIME", mode: "time" })
+                  )
+                }
               />
               <DateSelectItem
                 label={"Actual End Time (24 hours Format)"}
                 value={selector.actual_end_time}
-                onPress={() => dispatch(setDatePicker({ key: "ACTUAL_END_TIME", mode: "time" }))}
+                onPress={() =>
+                  dispatch(
+                    setDatePicker({ key: "ACTUAL_END_TIME", mode: "time" })
+                  )
+                }
               />
               <View style={styles.space}></View>
               <Text style={{ padding: 10 }}>{"Allotment ID"}</Text>
