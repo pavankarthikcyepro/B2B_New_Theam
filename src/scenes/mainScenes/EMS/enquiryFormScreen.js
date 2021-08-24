@@ -772,7 +772,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 <View style={styles.drop_down_view_style}>
                   <Dropdown
                     label="Retail Finance"
-                    data={selector.dropDownData}
+                    data={selector.finance_types_data}
                     required={true}
                     floating={false}
                     value={selector.retail_finance}
@@ -784,116 +784,118 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   />
                 </View>
 
-                <View style={styles.drop_down_view_style}>
+                {selector.retail_finance === "out_house" ? <View>
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    label={"Bank/Finance Name"}
+                    value={selector.bank_or_finance_name}
+                    onChangeText={(text) => dispatch(setFinancialDetails({ key: "BANK_R_FINANCE_NAME", text: text }))}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    label={"Location"}
+                    value={selector.location}
+                    onChangeText={(text) => dispatch(setFinancialDetails({ key: "LOCATION", text: text }))}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                </View> : null}
+
+                {selector.retail_finance === "leashing" && <View>
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    label={"Leashing Name"}
+                    value={selector.leashing_name}
+                    onChangeText={(text) => dispatch(setFinancialDetails({ key: "LEASHING_NAME", text: text }))}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                </View>}
+
+                {selector.retail_finance === "in_house" && <View style={styles.drop_down_view_style}>
                   <Dropdown
                     label="Finance Category"
                     data={selector.dropDownData}
                     required={true}
                     floating={false}
                     value={selector.finance_category}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({
-                          key: "FINANCE_CATEGORY",
-                          value: value,
-                        })
-                      )
-                    }
+                    onChange={(value) => dispatch(setDropDownData({ key: "FINANCE_CATEGORY", value: value, }))}
                   />
-                </View>
+                </View>}
 
-                <TextinputComp
-                  style={{ height: 65, width: "100%" }}
-                  label={"Down Payment*"}
-                  value={selector.down_payment}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setFinancialDetails({ key: "DOWN_PAYMENT", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={{ height: 65, width: "100%" }}
-                  label={"Loan Amount*"}
-                  value={selector.loan_amount}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setFinancialDetails({ key: "LOAN_AMOUNT", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Bank/Financer"
-                    data={selector.dropDownData}
-                    required={true}
-                    floating={false}
-                    value={selector.bank_or_finance}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({ key: "BANK_FINANCE", value: value })
-                      )
+                {selector.retail_finance === "in_house" && <View>
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    label={"Down Payment*"}
+                    value={selector.down_payment}
+                    onChangeText={(text) =>
+                      dispatch(setFinancialDetails({ key: "DOWN_PAYMENT", text: text }))
                     }
                   />
-                </View>
+                  <Text style={GlobalStyle.underline}></Text>
+                </View>}
 
-                <TextinputComp
-                  style={{ height: 65, width: "100%" }}
-                  label={"Rate of Interest*"}
-                  value={selector.rate_of_interest}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setFinancialDetails({
-                        key: "RATE_OF_INTEREST",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Loan of Tenure(Months)"
-                    data={selector.dropDownData}
-                    required={true}
-                    floating={false}
-                    value={selector.loan_of_tenure}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({ key: "LOAN_OF_TENURE", value: value })
-                      )
-                    }
+                {(selector.retail_finance === "in_house" || selector.retail_finance === "out_house") && <View>
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    label={"Loan Amount*"}
+                    value={selector.loan_amount}
+                    onChangeText={(text) => dispatch(setFinancialDetails({ key: "LOAN_AMOUNT", text: text }))}
                   />
-                </View>
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    label={"Rate of Interest*"}
+                    value={selector.rate_of_interest}
+                    onChangeText={(text) => dispatch(setFinancialDetails({ key: "RATE_OF_INTEREST", text: text, }))}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                </View>}
 
-                <TextinputComp
-                  style={{ height: 65, width: "100%" }}
-                  label={"EMI*"}
-                  value={selector.emi}
-                  onChangeText={(text) =>
-                    dispatch(setFinancialDetails({ key: "EMI", text: text }))
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Approx Annual Income"
-                    data={selector.dropDownData}
-                    required={true}
-                    floating={false}
-                    value={selector.approx_annual_income}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({
-                          key: "APPROX_ANNUAL_INCOME",
-                          value: value,
-                        })
-                      )
-                    }
+                {selector.retail_finance === "in_house" && <View>
+                  <View style={styles.drop_down_view_style}>
+                    <Dropdown
+                      label="Bank/Financer"
+                      data={selector.dropDownData}
+                      required={true}
+                      floating={false}
+                      value={selector.bank_or_finance}
+                      onChange={(value) =>
+                        dispatch(setDropDownData({ key: "BANK_FINANCE", value: value }))
+                      }
+                    />
+                  </View>
+
+                  <View style={styles.drop_down_view_style}>
+                    <Dropdown
+                      label="Loan of Tenure(Months)"
+                      data={selector.dropDownData}
+                      required={true}
+                      floating={false}
+                      value={selector.loan_of_tenure}
+                      onChange={(value) => dispatch(setDropDownData({ key: "LOAN_OF_TENURE", value: value }))}
+                    />
+                  </View>
+
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    label={"EMI*"}
+                    value={selector.emi}
+                    onChangeText={(text) => dispatch(setFinancialDetails({ key: "EMI", text: text }))}
                   />
-                </View>
+                  <Text style={GlobalStyle.underline}></Text>
+                  <View style={styles.drop_down_view_style}>
+                    <Dropdown
+                      label="Approx Annual Income"
+                      data={selector.dropDownData}
+                      required={true}
+                      floating={false}
+                      value={selector.approx_annual_income}
+                      onChange={(value) => dispatch(setDropDownData({ key: "APPROX_ANNUAL_INCOME", value: value }))}
+                    />
+                  </View>
+                </View>}
+
               </List.Accordion>
               <View style={styles.space}></View>
               {/* // 6.Upload Documents */}
@@ -943,172 +945,148 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 style={{ backgroundColor: openAccordian === "7" ? Colors.RED : Colors.WHITE }}
               >
                 <View style={styles.view2}>
-                  <Text style={styles.looking_any_text}>
-                    {"Looking for any other brand"}
-                  </Text>
+                  <Text style={styles.looking_any_text}>{"Looking for any other brand"}</Text>
                   <Checkbox.Android
-                    status={
-                      selector.c_looking_for_any_other_brand
-                        ? "checked"
-                        : "unchecked"
-                    }
+                    status={selector.c_looking_for_any_other_brand_checked ? "checked" : "unchecked"}
                     uncheckedColor={Colors.DARK_GRAY}
                     color={Colors.RED}
-                    onPress={() =>
-                      dispatch(
-                        setCustomerNeedAnalysis({ key: "CHECK_BOX", text: "" })
-                      )
-                    }
+                    onPress={() => dispatch(setCustomerNeedAnalysis({ key: "CHECK_BOX", text: "" }))}
                   />
                 </View>
 
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Make"
-                    data={selector.dropDownData}
-                    required={true}
-                    floating={false}
-                    value={selector.make}
-                    onChange={(value) =>
-                      dispatch(setDropDownData({ key: "C_MAKE", value: value }))
-                    }
-                  />
-                </View>
+                {selector.c_looking_for_any_other_brand_checked && <View>
+                  <View style={styles.drop_down_view_style}>
+                    <Dropdown
+                      label="Make"
+                      data={selector.dropDownData}
+                      required={true}
+                      floating={false}
+                      value={selector.make}
+                      onChange={(value) => dispatch(setDropDownData({ key: "C_MAKE", value: value }))}
+                    />
+                  </View>
 
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Model"
-                    data={selector.dropDownData}
-                    required={true}
-                    floating={false}
-                    value={selector.model}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({ key: "C_MODEL", value: value })
-                      )
-                    }
-                  />
-                </View>
+                  <View style={styles.drop_down_view_style}>
+                    <Dropdown
+                      label="Model"
+                      data={selector.dropDownData}
+                      required={true}
+                      floating={false}
+                      value={selector.model}
+                      onChange={(value) => dispatch(setDropDownData({ key: "C_MODEL", value: value }))}
+                    />
+                  </View>
 
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Variant"
-                    data={selector.dropDownData}
-                    required={true}
-                    floating={false}
-                    value={selector.variant}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({ key: "C_VARIANT", value: value })
-                      )
-                    }
-                  />
-                </View>
+                  <View style={styles.drop_down_view_style}>
+                    <Dropdown
+                      label="Variant"
+                      data={selector.dropDownData}
+                      required={true}
+                      floating={false}
+                      value={selector.variant}
+                      onChange={(value) => dispatch(setDropDownData({ key: "C_VARIANT", value: value }))}
+                    />
+                  </View>
 
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Color"
-                    data={selector.dropDownData}
-                    required={true}
-                    floating={false}
-                    value={selector.color}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({ key: "C_COLOR", value: value })
-                      )
-                    }
-                  />
-                </View>
+                  <View style={styles.drop_down_view_style}>
+                    <Dropdown
+                      label="Color"
+                      data={selector.dropDownData}
+                      required={true}
+                      floating={false}
+                      value={selector.color}
+                      onChange={(value) =>
+                        dispatch(
+                          setDropDownData({ key: "C_COLOR", value: value })
+                        )
+                      }
+                    />
+                  </View>
 
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Fuel Type"
-                    data={selector.dropDownData}
-                    required={true}
-                    floating={false}
-                    value={selector.fuel_type}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({ key: "C_FUEL_TYPE", value: value })
-                      )
-                    }
-                  />
-                </View>
+                  <View style={styles.drop_down_view_style}>
+                    <Dropdown
+                      label="Fuel Type"
+                      data={selector.dropDownData}
+                      required={true}
+                      floating={false}
+                      value={selector.fuel_type}
+                      onChange={(value) =>
+                        dispatch(
+                          setDropDownData({ key: "C_FUEL_TYPE", value: value })
+                        )
+                      }
+                    />
+                  </View>
 
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Transmission Type"
-                    data={selector.dropDownData}
-                    required={true}
-                    floating={false}
-                    value={selector.transmission_type}
-                    onChange={(value) =>
+                  <View style={styles.drop_down_view_style}>
+                    <Dropdown
+                      label="Transmission Type"
+                      data={selector.dropDownData}
+                      required={true}
+                      floating={false}
+                      value={selector.transmission_type}
+                      onChange={(value) =>
+                        dispatch(
+                          setDropDownData({
+                            key: "C_TRANSMISSION_TYPE",
+                            value: value,
+                          })
+                        )
+                      }
+                    />
+                  </View>
+
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.price_range}
+                    label={"Price Range"}
+                    onChangeText={(text) => dispatch(setCustomerNeedAnalysis({ key: "PRICE_RANGE", text: text, }))}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.on_road_price}
+                    label={"On Road Price"}
+                    onChangeText={(text) =>
                       dispatch(
-                        setDropDownData({
-                          key: "C_TRANSMISSION_TYPE",
-                          value: value,
+                        setCustomerNeedAnalysis({
+                          key: "ON_ROAD_PRICE",
+                          text: text,
                         })
                       )
                     }
                   />
-                </View>
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.dealership_name}
+                    label={"DealerShip Name"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCustomerNeedAnalysis({
+                          key: "DEALERSHIP_NAME",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.dealership_location}
+                    label={"DealerShip Location"}
+                    onChangeText={(text) => dispatch(setCustomerNeedAnalysis({ key: "DEALERSHIP_LOCATION", text: text }))}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.dealership_pending_reason}
+                    label={"Dealership Pending Reason"}
+                    onChangeText={(text) => dispatch(setCustomerNeedAnalysis({ key: "DEALERSHIP_PENDING_REASON", text: text }))}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                </View>}
 
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.price_range}
-                  label={"Price Range"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCustomerNeedAnalysis({
-                        key: "PRICE_RANGE",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.on_road_price}
-                  label={"On Road Price"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCustomerNeedAnalysis({
-                        key: "ON_ROAD_PRICE",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.dealership_name}
-                  label={"DealerShip Name"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCustomerNeedAnalysis({
-                        key: "DEALERSHIP_NAME",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.dealership_location}
-                  label={"DealerShip Location"}
-                  onChangeText={(text) => dispatch(setCustomerNeedAnalysis({ key: "DEALERSHIP_LOCATION", text: text }))}
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.dealership_pending_reason}
-                  label={"Dealership Pending Reason"}
-                  onChangeText={(text) => dispatch(setCustomerNeedAnalysis({ key: "DEALERSHIP_PENDING_REASON", text: text }))}
-                />
-                <Text style={GlobalStyle.underline}></Text>
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.voice_of_customer_remarks}
@@ -1255,20 +1233,34 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   onChangeText={(text) => dispatch(setReplacementBuyerDetails({ key: "R_KMS_DRIVEN_OR_ODOMETER_READING", text: text, }))}
                 />
                 <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.r_hypothication_name}
-                  label={"Hypothication Name"}
-                  onChangeText={(text) => dispatch(setReplacementBuyerDetails({ key: "A_COLOR", text: text, }))}
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.r_hypothication_branch}
-                  label={"Hypothication Branch"}
-                  onChangeText={(text) => dispatch(setReplacementBuyerDetails({ key: "A_COLOR", text: text, }))}
-                />
-                <Text style={GlobalStyle.underline}></Text>
+
+                <View style={styles.view2}>
+                  <Text style={styles.looking_any_text}>{"Hopothication"}</Text>
+                  <Checkbox.Android
+                    status={selector.r_hypothication_checked ? "checked" : "unchecked"}
+                    uncheckedColor={Colors.DARK_GRAY}
+                    color={Colors.RED}
+                    onPress={() => dispatch(setReplacementBuyerDetails({ key: "R_HYPOTHICATION_CHECKED", text: "" }))}
+                  />
+                </View>
+
+                {selector.r_hypothication_checked && <View>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.r_hypothication_name}
+                    label={"Hypothication Name"}
+                    onChangeText={(text) => dispatch(setReplacementBuyerDetails({ key: "A_COLOR", text: text, }))}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.r_hypothication_branch}
+                    label={"Hypothication Branch"}
+                    onChangeText={(text) => dispatch(setReplacementBuyerDetails({ key: "A_COLOR", text: text, }))}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                </View>}
+
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.r_expected_price}
@@ -1286,44 +1278,71 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   value={selector.r_registration_validity_date}
                   onPress={() => dispatch(setDatePicker("R_REG_VALIDITY_DATE"))}
                 />
-                <View style={styles.select_image_bck_vw}>
+                <View style={styles.view2}>
+                  <Text style={styles.looking_any_text}>{"Insurence"}</Text>
+                  <Checkbox.Android
+                    status={selector.r_insurence_checked ? "checked" : "unchecked"}
+                    uncheckedColor={Colors.DARK_GRAY}
+                    color={Colors.RED}
+                    onPress={() => dispatch(setReplacementBuyerDetails({ key: "R_INSURENCE_CHECKED", text: "" }))}
+                  />
+                </View>
+                {selector.r_insurence_checked && <View>
+                  <View style={styles.view2}>
+                    <Text style={styles.looking_any_text}>{"Insurence Document"}</Text>
+                    <Checkbox.Android
+                      status={selector.r_insurence_document_checked ? "checked" : "unchecked"}
+                      uncheckedColor={Colors.DARK_GRAY}
+                      color={Colors.RED}
+                      onPress={() => dispatch(setReplacementBuyerDetails({ key: "R_INSURENCE_DOC_CHECKED", text: "" }))}
+                    />
+                  </View>
+                </View>}
+                {selector.r_insurence_document_checked && <View style={styles.select_image_bck_vw}>
                   <ImageSelectItem
                     name={"Upload Insurence"}
                     onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
                   />
-                </View>
-                <DateSelectItem
-                  label={"Insurence Policy Expiry Date"}
-                  value={selector.r_insurence_expiry_date}
-                  onPress={() => dispatch(setDatePicker("R_INSURENCE_POLICIY_EXPIRY_DATE"))}
-                />
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Insurence Type"
-                    data={selector.dropDownData}
-                    required={true}
-                    floating={false}
-                    value={selector.r_insurence_type}
-                    onChange={(value) => dispatch(setDropDownData({ key: "A_MODEL", value: value }))}
+                </View>}
+                {!selector.r_insurence_checked && <View>
+                  <DateSelectItem
+                    label={"Insurence Policy Expiry Date"}
+                    value={selector.r_insurence_expiry_date}
+                    onPress={() => dispatch(setDatePicker("R_INSURENCE_POLICIY_EXPIRY_DATE"))}
                   />
-                </View>
-                <DateSelectItem
-                  label={"Insurence From Date"}
-                  value={selector.r_insurence_from_date}
-                  onPress={() => dispatch(setDatePicker("R_INSURENCE_FROM_DATE"))}
-                />
-                <DateSelectItem
-                  label={"Insurence To Date"}
-                  value={selector.r_insurence_to_date}
-                  onPress={() => dispatch(setDatePicker("R_INSURENCE_TO_DATE"))}
-                />
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.r_insurence_company_name}
-                  label={"Insurence Company Name"}
-                  onChangeText={(text) => dispatch(setReplacementBuyerDetails({ key: "R_INSURENCE_CMPNY_NAME", text: text, }))}
-                />
-                <Text style={GlobalStyle.underline}></Text>
+                </View>}
+                {selector.r_insurence_checked && !selector.r_insurence_document_checked && <View>
+                  <View style={styles.drop_down_view_style}>
+                    <Dropdown
+                      label="Insurence Type"
+                      data={selector.dropDownData}
+                      required={true}
+                      floating={false}
+                      value={selector.r_insurence_type}
+                      onChange={(value) => dispatch(setDropDownData({ key: "A_MODEL", value: value }))}
+                    />
+                  </View>
+                  <DateSelectItem
+                    label={"Insurence From Date"}
+                    value={selector.r_insurence_from_date}
+                    onPress={() => dispatch(setDatePicker("R_INSURENCE_FROM_DATE"))}
+                  />
+                  <DateSelectItem
+                    label={"Insurence To Date"}
+                    value={selector.r_insurence_to_date}
+                    onPress={() => dispatch(setDatePicker("R_INSURENCE_TO_DATE"))}
+                  />
+                </View>}
+
+                {!selector.r_insurence_document_checked && <View>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.r_insurence_company_name}
+                    label={"Insurence Company Name"}
+                    onChangeText={(text) => dispatch(setReplacementBuyerDetails({ key: "R_INSURENCE_CMPNY_NAME", text: text, }))}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                </View>}
               </List.Accordion> : null}
 
             </List.AccordionGroup>

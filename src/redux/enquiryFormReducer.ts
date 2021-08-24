@@ -5,7 +5,8 @@ import {
   Enquiry_Sub_Source_Type_Data,
   Buyer_Type_Data,
   How_Many_Family_Members_Data,
-  Prime_Exception_Types_Data
+  Prime_Exception_Types_Data,
+  Finance_Types
 } from '../jsonData/enquiryFormScreenJsonData';
 
 const dropDownData = [
@@ -58,6 +59,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     buyer_types_data: Buyer_Type_Data,
     family_member_types_data: How_Many_Family_Members_Data,
     prime_exception_types_data: Prime_Exception_Types_Data,
+    finance_types_data: Finance_Types,
     datePickerKeyId: "",
     enableEdit: false,
     showImagePicker: false,
@@ -119,13 +121,17 @@ const enquiryDetailsOverViewSlice = createSlice({
     finance_category: "",
     down_payment: "",
     loan_amount: "",
+    bank_or_finance_name: "",
+    location: "",
     bank_or_finance: "",
     rate_of_interest: "",
     loan_of_tenure: "",
     emi: "",
+    leashing_name: "",
+
     approx_annual_income: "",
     // Customer Need Analysis
-    c_looking_for_any_other_brand: false,
+    c_looking_for_any_other_brand_checked: false,
     c_make: "",
     c_model: "",
     c_variant: "",
@@ -459,13 +465,22 @@ const enquiryDetailsOverViewSlice = createSlice({
         case "EMI":
           state.emi = text;
           break;
+        case "BANK_R_FINANCE_NAME":
+          state.bank_or_finance_name = text;
+          break;
+        case "LOCATION":
+          state.location = text;
+          break;
+        case "LEASHING_NAME":
+          state.location = text;
+          break;
       }
     },
     setCustomerNeedAnalysis: (state, action: PayloadAction<PersonalIntroModel>) => {
       const { key, text } = action.payload;
       switch (key) {
         case "CHECK_BOX":
-          state.c_looking_for_any_other_brand = !state.c_looking_for_any_other_brand;
+          state.c_looking_for_any_other_brand_checked = !state.c_looking_for_any_other_brand_checked;
           break;
         case "VARIANT":
           state.c_variant = text;
@@ -555,6 +570,15 @@ const enquiryDetailsOverViewSlice = createSlice({
           break;
         case "R_INSURENCE_CMPNY_NAME":
           state.r_expected_price = text;
+          break;
+        case "R_HYPOTHICATION_CHECKED":
+          state.r_hypothication_checked = !state.r_hypothication_checked;
+          break;
+        case "R_INSURENCE_CHECKED":
+          state.r_insurence_checked = !state.r_insurence_checked;
+          break;
+        case "R_INSURENCE_DOC_CHECKED":
+          state.r_insurence_document_checked = !state.r_insurence_document_checked;
           break;
       }
     }

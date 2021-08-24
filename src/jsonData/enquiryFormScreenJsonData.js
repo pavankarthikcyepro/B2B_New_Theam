@@ -167,4 +167,23 @@ export const Prime_Exception_Types_Data = [
         value: '4',
         label: 'Value for money',
     }
-]
+];
+
+export const Finance_Types = [
+    {
+        value: 'in_house',
+        label: 'In House',
+    },
+    {
+        value: 'out_house',
+        label: 'Out House',
+    },
+    {
+        value: 'cash',
+        label: 'Cash',
+    },
+    {
+        value: 'leashing',
+        label: 'Leashing',
+    },
+];
