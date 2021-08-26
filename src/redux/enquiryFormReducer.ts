@@ -1,32 +1,47 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   Enquiry_Segment_Data,
-  Customer_Type_Data_Obj,
+  Customer_Type_Data,
   Enquiry_Sub_Source_Type_Data,
+  Enquiry_Category_Type_Data,
   Buyer_Type_Data,
+  Additional_Type_Data,
+  Kms_Travelled_Type_Data,
+  Who_Drive_Type_Data,
   How_Many_Family_Members_Data,
   Prime_Exception_Types_Data,
-  Finance_Types
-} from '../jsonData/enquiryFormScreenJsonData';
+  Salutation_Types,
+  Gender_Types,
+  Relation_Types,
+  Model_Types,
+  Variant_Types,
+  Color_Types,
+  Fuel_Types,
+  Transmission_Types,
+  Finance_Types,
+  Finance_Category_Types,
+  Bank_Financer_Types,
+  Approx_Auual_Income_Types,
+} from "../jsonData/enquiryFormScreenJsonData";
 
 const dropDownData = [
   {
-    value: '1',
-    label: 'Tiger Nixon',
+    value: "1",
+    label: "Tiger Nixon",
   },
   {
-    value: '2',
-    label: 'Garrett Winters',
+    value: "2",
+    label: "Garrett Winters",
   },
   {
-    value: '3',
-    label: 'Jhon Wick 1',
+    value: "3",
+    label: "Jhon Wick 1",
   },
   {
-    value: '4',
-    label: 'Jhon Wick 2',
-  }
-]
+    value: "4",
+    label: "Jhon Wick 2",
+  },
+];
 
 interface PersonalIntroModel {
   key: string;
@@ -53,13 +68,32 @@ const enquiryDetailsOverViewSlice = createSlice({
     showDatepicker: false,
     dropDownData: dropDownData,
     enquiry_segment_types_data: Enquiry_Segment_Data,
-    customer_types_data: [],
+    enquiry_category_types_data: Enquiry_Category_Type_Data,
+    customer_types_data: Customer_Type_Data,
+    kms_travelled_types_data: Kms_Travelled_Type_Data,
+    who_drive_types_data: Who_Drive_Type_Data,
     source_types_data: [],
     sub_source_types_data: Enquiry_Sub_Source_Type_Data,
     buyer_types_data: Buyer_Type_Data,
+    additional_types_data: Additional_Type_Data,
     family_member_types_data: How_Many_Family_Members_Data,
     prime_exception_types_data: Prime_Exception_Types_Data,
     finance_types_data: Finance_Types,
+    //personal Intro
+    saluation_types_data: Salutation_Types,
+    gender_types_data: Gender_Types,
+    relation_types_data: Relation_Types,
+    //Model Selection
+    transmission_types_data: Transmission_Types,
+    fuel_types_data: Fuel_Types,
+    color_types_data: Color_Types,
+    varient_types_data: Variant_Types,
+    model_types_data: Model_Types,
+    //Finance Details
+    approx_annual_income_types_data: Approx_Auual_Income_Types,
+    bank_financer_types_data: Bank_Financer_Types,
+    finance_category_types_data: Finance_Category_Types,
+
     datePickerKeyId: "",
     enableEdit: false,
     showImagePicker: false,
@@ -135,8 +169,8 @@ const enquiryDetailsOverViewSlice = createSlice({
     c_model: "",
     c_variant: "",
     c_color: "",
-    c_fuel_type: '',
-    c_transmission_type: '',
+    c_fuel_type: "",
+    c_transmission_type: "",
     c_price_range: "",
     c_on_road_price: "",
     c_dealership_name: "",
@@ -176,7 +210,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     r_insurence_type: "",
     r_insurence_from_date: "",
     r_insurence_to_date: "",
-    r_insurence_document_checked: false
+    r_insurence_document_checked: false,
   },
   reducers: {
     setEditable: (state, action) => {
@@ -211,9 +245,9 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.transmission_type = value;
           break;
         case "ENQUIRY_SEGMENT":
-          console.log('selected: ', value);
+          console.log("selected: ", value);
           state.enquiry_segment = value;
-          state.customer_types_data = Customer_Type_Data_Obj[value];
+          state.customer_types_data = Customer_Type_Data;
           state.customer_type = "";
           break;
         case "CUSTOMER_TYPE":
@@ -297,7 +331,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       }
     },
     setDatePicker: (state, action) => {
-      console.log('coming here')
+      console.log("coming here");
       state.datePickerKeyId = action.payload;
       state.showDatepicker = !state.showDatepicker;
     },
@@ -334,7 +368,7 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.r_insurence_to_date = selectedDate;
           break;
         case "NONE":
-          console.log('NONE')
+          console.log("NONE");
           break;
       }
       state.showDatepicker = !state.showDatepicker;
@@ -368,7 +402,10 @@ const enquiryDetailsOverViewSlice = createSlice({
           break;
       }
     },
-    setCommunicationAddress: (state, action: PayloadAction<PersonalIntroModel>) => {
+    setCommunicationAddress: (
+      state,
+      action: PayloadAction<PersonalIntroModel>
+    ) => {
       const { key, text } = action.payload;
       switch (key) {
         case "PINCODE":
@@ -396,7 +433,6 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.state = text;
           break;
         case "PERMANENT_ADDRESS":
-
           state.permanent_address = !state.permanent_address;
           if (state.permanent_address) {
             state.p_pincode = state.pincode;
@@ -475,11 +511,15 @@ const enquiryDetailsOverViewSlice = createSlice({
           break;
       }
     },
-    setCustomerNeedAnalysis: (state, action: PayloadAction<PersonalIntroModel>) => {
+    setCustomerNeedAnalysis: (
+      state,
+      action: PayloadAction<PersonalIntroModel>
+    ) => {
       const { key, text } = action.payload;
       switch (key) {
         case "CHECK_BOX":
-          state.c_looking_for_any_other_brand_checked = !state.c_looking_for_any_other_brand_checked;
+          state.c_looking_for_any_other_brand_checked =
+            !state.c_looking_for_any_other_brand_checked;
           break;
         case "VARIANT":
           state.c_variant = text;
@@ -577,10 +617,11 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.r_insurence_checked = !state.r_insurence_checked;
           break;
         case "R_INSURENCE_DOC_CHECKED":
-          state.r_insurence_document_checked = !state.r_insurence_document_checked;
+          state.r_insurence_document_checked =
+            !state.r_insurence_document_checked;
           break;
       }
-    }
+    },
   },
 });
 
@@ -608,6 +649,6 @@ export const {
   setUploadDocuments,
   setDropDownData,
   setAdditionalBuyerDetails,
-  setReplacementBuyerDetails
+  setReplacementBuyerDetails,
 } = enquiryDetailsOverViewSlice.actions;
 export default enquiryDetailsOverViewSlice.reducer;

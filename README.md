@@ -30,21 +30,21 @@
     -> "react-redux": "^7.2.4",
     -> "redux": "^4.1.0",
 
-# To use vector icons: 
+# To use vector icons:
 
     -> react-native-vector-icons
 
-# To display the vector icons used: 
+# To display the vector icons used:
 
-    -> react-native-vector-image 
+    -> react-native-vector-image
     -> @klarna/react-native-vector-drawable
- 
-# To display top tab navigation, used: 
 
-    -> @react-navigation/material-top-tabs 
+# To display top tab navigation, used:
+
+    -> @react-navigation/material-top-tabs
     -> react-native-tab-view@^2.16.0
- 
-# For navigation, used: 
+
+# For navigation, used:
 
     -> @react-navigation/native
     -> @react-navigation/stack

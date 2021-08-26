@@ -1,6 +1,27 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Salutation_Types, Enquiry_Segment_Types, Marital_Status_Types } from '../jsonData/prebookingFormScreenJsonData';
-import { Customer_Type_Data_Obj, Finance_Types } from '../jsonData/enquiryFormScreenJsonData';
+import {
+  Form_Types,
+  Insurance_Types,
+  Warranty_Types,
+  Payment_At_Types,
+  Booking_Payment_Types,
+} from "../jsonData/prebookingFormScreenJsonData";
+import {
+  Salutation_Types,
+  Enquiry_Segment_Data,
+  Customer_Type_Data,
+  Gender_Types,
+  Marital_Status_Types,
+  Model_Types,
+  Variant_Types,
+  Color_Types,
+  Fuel_Types,
+  Transmission_Types,
+  Finance_Types,
+  Finance_Category_Types,
+  Bank_Financer_Types,
+  Approx_Auual_Income_Types,
+} from "../jsonData/enquiryFormScreenJsonData";
 
 const dropDownData = [
   {
@@ -45,16 +66,37 @@ const prebookingFormSlice = createSlice({
     showDatepicker: false,
     showDropDownpicker: false,
     dropDownData: dropDownData,
-    salutation_types_data: Salutation_Types,
-    enquiry_segment_types_data: Enquiry_Segment_Types,
-    customer_types_data: Customer_Type_Data_Obj["personal"],
-    marital_status_types_data: Marital_Status_Types,
-    finance_types_data: Finance_Types,
+
     dropDownTitle: "",
     dropDownKeyId: "",
     datePickerKeyId: "",
     showImagePicker: false,
     imagePickerKeyId: "",
+
+    //Customer Details
+    salutation_types_data: Salutation_Types,
+    gender_types_data: Gender_Types,
+    form_types_data: Form_Types,
+    enquiry_segment_types_data: Enquiry_Segment_Data,
+    customer_types_data: Customer_Type_Data,
+    marital_status_types_data: Marital_Status_Types,
+    //Model Selection
+    transmission_types_data: Transmission_Types,
+    fuel_types_data: Fuel_Types,
+    color_types_data: Color_Types,
+    varient_types_data: Variant_Types,
+    model_types_data: Model_Types,
+    //Price Confirmation
+    warranty_types_data: Warranty_Types,
+    insurance_types_data: Insurance_Types,
+    // Booking Payment Mode
+    payment_at_types_data: Payment_At_Types,
+    booking_payment_types_data: Booking_Payment_Types,
+    //Finance Details
+    finance_types_data: Finance_Types,
+    approx_annual_income_types_data: Approx_Auual_Income_Types,
+    bank_financer_types_data: Bank_Financer_Types,
+    finance_category_types_data: Finance_Category_Types,
     // Customer Details
     first_name: "",
     last_name: "",
@@ -153,7 +195,7 @@ const prebookingFormSlice = createSlice({
           break;
         case "ENQUIRY_SEGMENT":
           state.enquiry_segment = value;
-          state.customer_types_data = Customer_Type_Data_Obj[value];
+          state.customer_types_data = Customer_Type_Data;
           state.customer_type = null;
           break;
         case "CUSTOMER_TYPE":

@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView, StyleSheet, View, Text, ScrollView, ActivityIndicator } from "react-native";
+import {
+  SafeAreaView,
+  StyleSheet,
+  View,
+  Text,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -55,14 +62,37 @@ const data = [
 
 const rupeeSymbol = "\u20B9";
 
-const TextAndAmountComp = ({ title, amount, titleStyle = {}, amoutStyle = {} }) => {
+const TextAndAmountComp = ({
+  title,
+  amount,
+  titleStyle = {},
+  amoutStyle = {},
+}) => {
   return (
-    <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 12, minHeight: 40, paddingVertical: 5, alignItems: 'center' }}>
-      <Text style={[{ fontSize: 14, fontWeight: '400', maxWidth: "70%" }, titleStyle]}>{title}</Text>
-      <Text style={[{ fontSize: 14, fontWeight: '400' }, amoutStyle]}>{rupeeSymbol + " " + amount}</Text>
+    <View
+      style={{
+        flexDirection: "row",
+        justifyContent: "space-between",
+        paddingHorizontal: 12,
+        minHeight: 40,
+        paddingVertical: 5,
+        alignItems: "center",
+      }}
+    >
+      <Text
+        style={[
+          { fontSize: 14, fontWeight: "400", maxWidth: "70%" },
+          titleStyle,
+        ]}
+      >
+        {title}
+      </Text>
+      <Text style={[{ fontSize: 14, fontWeight: "400" }, amoutStyle]}>
+        {rupeeSymbol + " " + amount}
+      </Text>
     </View>
-  )
-}
+  );
+};
 
 const PrebookingFormScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -72,7 +102,7 @@ const PrebookingFormScreen = ({ navigation }) => {
 
   useEffect(() => {
     setComponentAppear(true);
-  }, [])
+  }, []);
 
   const updateAccordian = (selectedIndex) => {
     if (selectedIndex != openAccordian) {
@@ -87,7 +117,7 @@ const PrebookingFormScreen = ({ navigation }) => {
       <View style={styles.initialContainer}>
         <ActivityIndicator size="small" color={Colors.RED} />
       </View>
-    )
+    );
   }
 
   return (
@@ -127,13 +157,23 @@ const PrebookingFormScreen = ({ navigation }) => {
         style={{ flex: 1 }}
       >
         <View style={styles.baseVw}>
-          <List.AccordionGroup expandedId={openAccordian} onAccordionPress={(expandedId) => updateAccordian(expandedId)}>
+          <List.AccordionGroup
+            expandedId={openAccordian}
+            onAccordionPress={(expandedId) => updateAccordian(expandedId)}
+          >
             {/* // 1.Customer Details */}
             <List.Accordion
               id={"1"}
               title={"Customer Details"}
-              titleStyle={{ color: openAccordian === "1" ? Colors.WHITE : Colors.BLACK, fontSize: 16, fontWeight: '600' }}
-              style={{ backgroundColor: openAccordian === "1" ? Colors.RED : Colors.WHITE }}
+              titleStyle={{
+                color: openAccordian === "1" ? Colors.WHITE : Colors.BLACK,
+                fontSize: 16,
+                fontWeight: "600",
+              }}
+              style={{
+                backgroundColor:
+                  openAccordian === "1" ? Colors.RED : Colors.WHITE,
+              }}
             >
               <View style={styles.drop_down_view_style}>
                 <Dropdown
@@ -221,48 +261,50 @@ const PrebookingFormScreen = ({ navigation }) => {
                 />
               </View>
 
-              {selector.enquiry_segment === "personal" && <View>
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Gender"
-                    data={selector.dropDownData}
-                    required={true}
-                    floating={true}
-                    value={selector.gender}
-                    onChange={(value) =>
-                      dispatch(setDropDownData({ key: "GENDER", value: value }))
-                    }
-                  />
-                </View>
-                <DateSelectItem
-                  label={"Date Of Birth"}
-                  value={selector.date_of_birth}
-                  onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
-                />
-                <TextinputComp
-                  style={{ height: 65, width: "100%" }}
-                  value={selector.age}
-                  label={"Age"}
-                  keyboardType={"number-pad"}
-                  onChangeText={(text) =>
-                    dispatch(setCustomerDetails({ key: "AGE", text: text }))
+              <View style={styles.drop_down_view_style}>
+                <Dropdown
+                  label="Gender"
+                  data={selector.gender_types_data}
+                  required={true}
+                  floating={true}
+                  value={selector.gender}
+                  onChange={(value) =>
+                    dispatch(setDropDownData({ key: "GENDER", value: value }))
                   }
                 />
-                <Text style={GlobalStyle.underline}></Text>
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Marital Status"
-                    data={selector.marital_status_types_data}
-                    required={true}
-                    floating={true}
-                    value={selector.marital_status}
-                    onChange={(value) =>
-                      dispatch(setDropDownData({ key: "MARITAL_STATUS", value: value }))
-                    }
-                  />
-                </View>
-              </View>}
-
+              </View>
+              <DateSelectItem
+                label={"Date Of Birth"}
+                value={selector.date_of_birth}
+                onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
+              />
+              <TextinputComp
+                style={{ height: 65, width: "100%" }}
+                value={selector.age}
+                label={"Age"}
+                keyboardType={"number-pad"}
+                onChangeText={(text) =>
+                  dispatch(setCustomerDetails({ key: "AGE", text: text }))
+                }
+              />
+              <Text style={GlobalStyle.underline}></Text>
+              <View style={styles.drop_down_view_style}>
+                <Dropdown
+                  label="Marital Status"
+                  data={selector.marital_status_types_data}
+                  required={true}
+                  floating={true}
+                  value={selector.marital_status}
+                  onChange={(value) =>
+                    dispatch(
+                      setDropDownData({
+                        key: "MARITAL_STATUS",
+                        value: value,
+                      })
+                    )
+                  }
+                />
+              </View>
             </List.Accordion>
             <View style={styles.space}></View>
 
@@ -270,13 +312,21 @@ const PrebookingFormScreen = ({ navigation }) => {
             <List.Accordion
               id={"2"}
               title={"Communication Address"}
-              titleStyle={{ color: openAccordian === "2" ? Colors.WHITE : Colors.BLACK, fontSize: 16, fontWeight: '600' }}
-              style={{ backgroundColor: openAccordian === "2" ? Colors.RED : Colors.WHITE }}
+              titleStyle={{
+                color: openAccordian === "2" ? Colors.WHITE : Colors.BLACK,
+                fontSize: 16,
+                fontWeight: "600",
+              }}
+              style={{
+                backgroundColor:
+                  openAccordian === "2" ? Colors.RED : Colors.WHITE,
+              }}
             >
               <TextinputComp
                 style={styles.textInputStyle}
                 value={selector.pincode}
                 label={"Pincode*"}
+                keyboardType={"number-pad"}
                 onChangeText={(text) =>
                   dispatch(
                     setCommunicationAddress({ key: "PINCODE", text: text })
@@ -316,6 +366,7 @@ const PrebookingFormScreen = ({ navigation }) => {
               <TextinputComp
                 style={styles.textInputStyle}
                 value={selector.house_number}
+                keyboardType={"number-pad"}
                 label={"H.No*"}
                 onChangeText={(text) =>
                   dispatch(
@@ -402,6 +453,7 @@ const PrebookingFormScreen = ({ navigation }) => {
                 style={styles.textInputStyle}
                 value={selector.p_pincode}
                 label={"Pincode*"}
+                keyboardType={"number-pad"}
                 onChangeText={(text) =>
                   dispatch(
                     setCommunicationAddress({
@@ -446,6 +498,7 @@ const PrebookingFormScreen = ({ navigation }) => {
               <TextinputComp
                 style={styles.textInputStyle}
                 label={"H.No*"}
+                keyboardType={"number-pad"}
                 value={selector.p_houseNum}
                 onChangeText={(text) =>
                   dispatch(
@@ -531,13 +584,20 @@ const PrebookingFormScreen = ({ navigation }) => {
             <List.Accordion
               id={"3"}
               title={"Modal Selection"}
-              titleStyle={{ color: openAccordian === "3" ? Colors.WHITE : Colors.BLACK, fontSize: 16, fontWeight: '600' }}
-              style={{ backgroundColor: openAccordian === "3" ? Colors.RED : Colors.WHITE }}
+              titleStyle={{
+                color: openAccordian === "3" ? Colors.WHITE : Colors.BLACK,
+                fontSize: 16,
+                fontWeight: "600",
+              }}
+              style={{
+                backgroundColor:
+                  openAccordian === "3" ? Colors.RED : Colors.WHITE,
+              }}
             >
               <View style={styles.drop_down_view_style}>
                 <Dropdown
                   label="Model"
-                  data={selector.dropDownData}
+                  data={selector.model_types_data}
                   required={true}
                   floating={true}
                   value={selector.model}
@@ -550,7 +610,7 @@ const PrebookingFormScreen = ({ navigation }) => {
               <View style={styles.drop_down_view_style}>
                 <Dropdown
                   label="Varient"
-                  data={selector.dropDownData}
+                  data={selector.varient_types_data}
                   required={true}
                   floating={true}
                   value={selector.varient}
@@ -562,7 +622,7 @@ const PrebookingFormScreen = ({ navigation }) => {
               <View style={styles.drop_down_view_style}>
                 <Dropdown
                   label="Color"
-                  data={selector.dropDownData}
+                  data={selector.color_types_data}
                   required={true}
                   floating={true}
                   value={selector.color}
@@ -575,7 +635,7 @@ const PrebookingFormScreen = ({ navigation }) => {
               <View style={styles.drop_down_view_style}>
                 <Dropdown
                   label="Fuel Type"
-                  data={selector.dropDownData}
+                  data={selector.fuel_types_data}
                   required={true}
                   floating={true}
                   value={selector.fuel_type}
@@ -589,7 +649,7 @@ const PrebookingFormScreen = ({ navigation }) => {
               <View style={styles.drop_down_view_style}>
                 <Dropdown
                   label="Transmission Type"
-                  data={selector.dropDownData}
+                  data={selector.transmission_types_data}
                   required={true}
                   floating={true}
                   value={selector.transmission_type}
@@ -610,8 +670,15 @@ const PrebookingFormScreen = ({ navigation }) => {
             <List.Accordion
               id={"4"}
               title={"Financial Details"}
-              titleStyle={{ color: openAccordian === "4" ? Colors.WHITE : Colors.BLACK, fontSize: 16, fontWeight: '600' }}
-              style={{ backgroundColor: openAccordian === "4" ? Colors.RED : Colors.WHITE }}
+              titleStyle={{
+                color: openAccordian === "4" ? Colors.WHITE : Colors.BLACK,
+                fontSize: 16,
+                fontWeight: "600",
+              }}
+              style={{
+                backgroundColor:
+                  openAccordian === "4" ? Colors.RED : Colors.WHITE,
+              }}
             >
               <View style={styles.drop_down_view_style}>
                 <Dropdown
@@ -628,133 +695,190 @@ const PrebookingFormScreen = ({ navigation }) => {
                 />
               </View>
 
-              {selector.retail_finance === "out_house" ? <View>
-                <TextinputComp
-                  style={{ height: 65, width: "100%" }}
-                  label={"Bank/Finance Name"}
-                  value={selector.bank_or_finance_name}
-                  onChangeText={(text) => dispatch(setFinancialDetails({ key: "BANK_R_FINANCE_NAME", text: text }))}
-                />
-                <Text style={GlobalStyle.underline}></Text>
-
-                <TextinputComp
-                  style={{ height: 65, width: "100%" }}
-                  label={"Location"}
-                  value={selector.location}
-                  onChangeText={(text) => dispatch(setFinancialDetails({ key: "LOCATION", text: text }))}
-                />
-                <Text style={GlobalStyle.underline}></Text>
-              </View> : null}
-
-              {selector.retail_finance === "leashing" && <View>
-                <TextinputComp
-                  style={{ height: 65, width: "100%" }}
-                  label={"Leashing Name"}
-                  value={selector.leashing_name}
-                  onChangeText={(text) => dispatch(setFinancialDetails({ key: "LEASHING_NAME", text: text }))}
-                />
-                <Text style={GlobalStyle.underline}></Text>
-              </View>}
-
-              {selector.retail_finance === "in_house" && <View style={styles.drop_down_view_style}>
-                <Dropdown
-                  label="Finance Category"
-                  data={selector.dropDownData}
-                  required={true}
-                  floating={false}
-                  value={selector.finance_category}
-                  onChange={(value) => dispatch(setDropDownData({ key: "FINANCE_CATEGORY", value: value, }))}
-                />
-              </View>}
-
-              {selector.retail_finance === "in_house" && <View>
-                <TextinputComp
-                  style={{ height: 65, width: "100%" }}
-                  label={"Down Payment*"}
-                  value={selector.down_payment}
-                  onChangeText={(text) =>
-                    dispatch(setFinancialDetails({ key: "DOWN_PAYMENT", text: text }))
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-              </View>}
-
-              {(selector.retail_finance === "in_house" || selector.retail_finance === "out_house") && <View>
-                <TextinputComp
-                  style={{ height: 65, width: "100%" }}
-                  label={"Loan Amount*"}
-                  value={selector.loan_amount}
-                  onChangeText={(text) => dispatch(setFinancialDetails({ key: "LOAN_AMOUNT", text: text }))}
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={{ height: 65, width: "100%" }}
-                  label={"Rate of Interest*"}
-                  value={selector.rate_of_interest}
-                  onChangeText={(text) => dispatch(setFinancialDetails({ key: "RATE_OF_INTEREST", text: text, }))}
-                />
-                <Text style={GlobalStyle.underline}></Text>
-              </View>}
-
-
-              {selector.retail_finance === "in_house" && <View>
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Bank/Financer"
-                    data={selector.dropDownData}
-                    required={true}
-                    floating={true}
-                    value={selector.bank_or_finance}
-                    onChange={(value) =>
+              {selector.retail_finance === "out_house" ? (
+                <View>
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    label={"Bank/Finance Name"}
+                    value={selector.bank_or_finance_name}
+                    onChangeText={(text) =>
                       dispatch(
-                        setDropDownData({ key: "BANK_FINANCE", value: value })
+                        setFinancialDetails({
+                          key: "BANK_R_FINANCE_NAME",
+                          text: text,
+                        })
                       )
                     }
                   />
-                </View>
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Loan of Tenure(Months)"
-                    data={selector.dropDownData}
-                    required={true}
-                    floating={true}
-                    value={selector.loan_of_tenure}
-                    onChange={(value) =>
+                  <Text style={GlobalStyle.underline}></Text>
+
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    label={"Location"}
+                    value={selector.location}
+                    onChangeText={(text) =>
                       dispatch(
-                        setDropDownData({ key: "LOAN_OF_TENURE", value: value })
+                        setFinancialDetails({ key: "LOCATION", text: text })
                       )
                     }
                   />
+                  <Text style={GlobalStyle.underline}></Text>
                 </View>
+              ) : null}
 
-                <TextinputComp
-                  style={{ height: 65, width: "100%" }}
-                  label={"EMI*"}
-                  value={selector.emi}
-                  onChangeText={(text) =>
-                    dispatch(setFinancialDetails({ key: "EMI", text: text }))
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
+              {selector.retail_finance === "leashing" && (
+                <View>
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    label={"Leashing Name"}
+                    value={selector.leashing_name}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setFinancialDetails({
+                          key: "LEASHING_NAME",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                </View>
+              )}
 
+              {selector.retail_finance === "in_house" && (
                 <View style={styles.drop_down_view_style}>
                   <Dropdown
-                    label="Approx Annual Income"
-                    data={selector.dropDownData}
+                    label="Finance Category"
+                    data={selector.finance_category_types_data}
                     required={true}
-                    floating={true}
-                    value={selector.approx_annual_income}
+                    floating={false}
+                    value={selector.finance_category}
                     onChange={(value) =>
                       dispatch(
                         setDropDownData({
-                          key: "APPROX_ANNUAL_INCOME",
+                          key: "FINANCE_CATEGORY",
                           value: value,
                         })
                       )
                     }
                   />
                 </View>
-              </View>}
+              )}
+
+              {selector.retail_finance === "in_house" && (
+                <View>
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    label={"Down Payment*"}
+                    value={selector.down_payment}
+                    keyboardType={"number-pad"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setFinancialDetails({ key: "DOWN_PAYMENT", text: text })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                </View>
+              )}
+
+              {(selector.retail_finance === "in_house" ||
+                selector.retail_finance === "out_house") && (
+                <View>
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    label={"Loan Amount*"}
+                    keyboardType={"number-pad"}
+                    value={selector.loan_amount}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setFinancialDetails({ key: "LOAN_AMOUNT", text: text })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    label={"Rate of Interest*"}
+                    keyboardType={"number-pad"}
+                    value={selector.rate_of_interest}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setFinancialDetails({
+                          key: "RATE_OF_INTEREST",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                </View>
+              )}
+
+              {selector.retail_finance === "in_house" && (
+                <View>
+                  <View style={styles.drop_down_view_style}>
+                    <Dropdown
+                      label="Bank/Financer"
+                      data={selector.bank_financer_types_data}
+                      required={true}
+                      floating={true}
+                      value={selector.bank_or_finance}
+                      onChange={(value) =>
+                        dispatch(
+                          setDropDownData({ key: "BANK_FINANCE", value: value })
+                        )
+                      }
+                    />
+                  </View>
+                  <View style={styles.drop_down_view_style}>
+                    <Dropdown
+                      label="Loan of Tenure(Months)"
+                      data={selector.dropDownData}
+                      required={true}
+                      floating={true}
+                      value={selector.loan_of_tenure}
+                      onChange={(value) =>
+                        dispatch(
+                          setDropDownData({
+                            key: "LOAN_OF_TENURE",
+                            value: value,
+                          })
+                        )
+                      }
+                    />
+                  </View>
+
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    label={"EMI*"}
+                    value={selector.emi}
+                    keyboardType={"number-pad"}
+                    onChangeText={(text) =>
+                      dispatch(setFinancialDetails({ key: "EMI", text: text }))
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+
+                  <View style={styles.drop_down_view_style}>
+                    <Dropdown
+                      label="Approx Annual Income"
+                      data={selector.approx_annual_income_types_data}
+                      required={true}
+                      floating={true}
+                      value={selector.approx_annual_income}
+                      onChange={(value) =>
+                        dispatch(
+                          setDropDownData({
+                            key: "APPROX_ANNUAL_INCOME",
+                            value: value,
+                          })
+                        )
+                      }
+                    />
+                  </View>
+                </View>
+              )}
             </List.Accordion>
             <View style={styles.space}></View>
 
@@ -762,13 +886,20 @@ const PrebookingFormScreen = ({ navigation }) => {
             <List.Accordion
               id={"5"}
               title={"Document Upload"}
-              titleStyle={{ color: openAccordian === "5" ? Colors.WHITE : Colors.BLACK, fontSize: 16, fontWeight: '600' }}
-              style={{ backgroundColor: openAccordian === "5" ? Colors.RED : Colors.WHITE }}
+              titleStyle={{
+                color: openAccordian === "5" ? Colors.WHITE : Colors.BLACK,
+                fontSize: 16,
+                fontWeight: "600",
+              }}
+              style={{
+                backgroundColor:
+                  openAccordian === "5" ? Colors.RED : Colors.WHITE,
+              }}
             >
               <View style={styles.drop_down_view_style}>
                 <Dropdown
                   label="Form60/PAN"
-                  data={selector.dropDownData}
+                  data={selector.form_types_data}
                   required={true}
                   floating={true}
                   value={selector.form_or_pan}
@@ -840,8 +971,15 @@ const PrebookingFormScreen = ({ navigation }) => {
             <List.Accordion
               id={"6"}
               title={"Price Confirmation"}
-              titleStyle={{ color: openAccordian === "6" ? Colors.WHITE : Colors.BLACK, fontSize: 16, fontWeight: '600' }}
-              style={{ backgroundColor: openAccordian === "6" ? Colors.RED : Colors.WHITE }}
+              titleStyle={{
+                color: openAccordian === "6" ? Colors.WHITE : Colors.BLACK,
+                fontSize: 16,
+                fontWeight: "600",
+              }}
+              style={{
+                backgroundColor:
+                  openAccordian === "6" ? Colors.RED : Colors.WHITE,
+              }}
             >
               <TextAndAmountComp title={"Ex-Showroom Price:"} amount={"0.00"} />
               <View style={styles.radioGroupBcVw}>
@@ -868,16 +1006,18 @@ const PrebookingFormScreen = ({ navigation }) => {
               <TextAndAmountComp title={"Life Tax:"} amount={"0.00"} />
               <Text style={GlobalStyle.underline}></Text>
 
-              <TextAndAmountComp title={"Registration Charges:"} amount={"0.00"} />
+              <TextAndAmountComp
+                title={"Registration Charges:"}
+                amount={"0.00"}
+              />
               <Text style={GlobalStyle.underline}></Text>
-
 
               <View style={styles.symbolview}>
                 <View style={{ width: "70%" }}>
                   <View style={styles.drop_down_view_style}>
                     <Dropdown
                       label="Insurance Type"
-                      data={selector.dropDownData}
+                      data={selector.insurance_types_data}
                       required={true}
                       floating={true}
                       value={selector.insurance_type}
@@ -903,7 +1043,7 @@ const PrebookingFormScreen = ({ navigation }) => {
                   <View style={styles.drop_down_view_style}>
                     <Dropdown
                       label="Warranty"
-                      data={selector.dropDownData}
+                      data={selector.warranty_types_data}
                       required={true}
                       floating={true}
                       value={selector.warranty}
@@ -928,7 +1068,10 @@ const PrebookingFormScreen = ({ navigation }) => {
               <TextAndAmountComp title={"Essential Kit:"} amount={"0.00"} />
               <Text style={GlobalStyle.underline}></Text>
 
-              <TextAndAmountComp title={"TCS(>10Lakhs -> %):"} amount={"0.00"} />
+              <TextAndAmountComp
+                title={"TCS(>10Lakhs -> %):"}
+                amount={"0.00"}
+              />
               <Text style={GlobalStyle.underline}></Text>
 
               <TextAndAmountComp title={"Paid Accessories:"} amount={"0.00"} />
@@ -937,7 +1080,12 @@ const PrebookingFormScreen = ({ navigation }) => {
               <TextAndAmountComp title={"Fast Tag:"} amount={"0.00"} />
               <Text style={GlobalStyle.underline}></Text>
 
-              <TextAndAmountComp title={"On Road Price:"} amount={"0.00"} titleStyle={{ fontSize: 18, fontWeight: '800' }} amoutStyle={{ fontSize: 18, fontWeight: '800' }} />
+              <TextAndAmountComp
+                title={"On Road Price:"}
+                amount={"0.00"}
+                titleStyle={{ fontSize: 18, fontWeight: "800" }}
+                amoutStyle={{ fontSize: 18, fontWeight: "800" }}
+              />
               <Text style={GlobalStyle.underline}></Text>
             </List.Accordion>
             <View style={styles.space}></View>
@@ -946,8 +1094,15 @@ const PrebookingFormScreen = ({ navigation }) => {
             <List.Accordion
               id={"7"}
               title={"Offer Price"}
-              titleStyle={{ color: openAccordian === "7" ? Colors.WHITE : Colors.BLACK, fontSize: 16, fontWeight: '600' }}
-              style={{ backgroundColor: openAccordian === "7" ? Colors.RED : Colors.WHITE }}
+              titleStyle={{
+                color: openAccordian === "7" ? Colors.WHITE : Colors.BLACK,
+                fontSize: 16,
+                fontWeight: "600",
+              }}
+              style={{
+                backgroundColor:
+                  openAccordian === "7" ? Colors.RED : Colors.WHITE,
+              }}
             >
               <TextinputComp
                 style={{ height: 65, width: "100%" }}
@@ -1062,7 +1217,12 @@ const PrebookingFormScreen = ({ navigation }) => {
               />
               <Text style={GlobalStyle.underline}></Text>
 
-              <TextAndAmountComp title={"On Road Price After Discount:"} amount={"0.00"} titleStyle={{ fontSize: 18, fontWeight: '800' }} amoutStyle={{ fontSize: 18, fontWeight: '800' }} />
+              <TextAndAmountComp
+                title={"On Road Price After Discount:"}
+                amount={"0.00"}
+                titleStyle={{ fontSize: 18, fontWeight: "800" }}
+                amoutStyle={{ fontSize: 18, fontWeight: "800" }}
+              />
               <Text style={GlobalStyle.underline}></Text>
             </List.Accordion>
             <View style={styles.space}></View>
@@ -1071,8 +1231,15 @@ const PrebookingFormScreen = ({ navigation }) => {
             <List.Accordion
               id={"8"}
               title={"Booking Payment Mode"}
-              titleStyle={{ color: openAccordian === "8" ? Colors.WHITE : Colors.BLACK, fontSize: 16, fontWeight: '600' }}
-              style={{ backgroundColor: openAccordian === "8" ? Colors.RED : Colors.WHITE }}
+              titleStyle={{
+                color: openAccordian === "8" ? Colors.WHITE : Colors.BLACK,
+                fontSize: 16,
+                fontWeight: "600",
+              }}
+              style={{
+                backgroundColor:
+                  openAccordian === "8" ? Colors.RED : Colors.WHITE,
+              }}
             >
               <TextinputComp
                 style={{ height: 65, width: "100%" }}
@@ -1092,7 +1259,7 @@ const PrebookingFormScreen = ({ navigation }) => {
               <View style={styles.drop_down_view_style}>
                 <Dropdown
                   label="Payment At"
-                  data={selector.dropDownData}
+                  data={selector.payment_at_types_data}
                   required={true}
                   floating={true}
                   value={selector.payment_at}
@@ -1107,7 +1274,7 @@ const PrebookingFormScreen = ({ navigation }) => {
               <View style={styles.drop_down_view_style}>
                 <Dropdown
                   label="Booking Payment Mode"
-                  data={selector.dropDownData}
+                  data={selector.booking_payment_types_data}
                   required={true}
                   floating={true}
                   value={selector.booking_payment_mode}
@@ -1128,8 +1295,15 @@ const PrebookingFormScreen = ({ navigation }) => {
             <List.Accordion
               id={"9"}
               title={"Commitment"}
-              titleStyle={{ color: openAccordian === "9" ? Colors.WHITE : Colors.BLACK, fontSize: 16, fontWeight: '600' }}
-              style={{ backgroundColor: openAccordian === "9" ? Colors.RED : Colors.WHITE }}
+              titleStyle={{
+                color: openAccordian === "9" ? Colors.WHITE : Colors.BLACK,
+                fontSize: 16,
+                fontWeight: "600",
+              }}
+              style={{
+                backgroundColor:
+                  openAccordian === "9" ? Colors.RED : Colors.WHITE,
+              }}
             >
               <DateSelectItem
                 label={"Customer Preferred Date*"}
@@ -1172,9 +1346,7 @@ const PrebookingFormScreen = ({ navigation }) => {
               <Text style={GlobalStyle.underline}></Text>
             </List.Accordion>
             <View style={styles.space}></View>
-
           </List.AccordionGroup>
-
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -1189,8 +1361,8 @@ const styles = StyleSheet.create({
   },
   initialContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
+    justifyContent: "center",
+    alignItems: "center",
   },
   baseVw: {
     paddingHorizontal: 10,
@@ -1276,7 +1448,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.WHITE,
     textAlign: "right",
     fontSize: 14,
-    fontWeight: '400'
+    fontWeight: "400",
   },
   select_image_bck_vw: {
     minHeight: 50,
