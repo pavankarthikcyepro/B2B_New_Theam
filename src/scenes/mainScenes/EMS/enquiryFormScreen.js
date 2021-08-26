@@ -152,10 +152,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
           style={{ flex: 1 }}
         >
           <View style={styles.baseVw}>
-            <List.AccordionGroup
-              expandedId={openAccordian}
-              onAccordionPress={(expandedId) => updateAccordian(expandedId)}
-            >
+            <List.AccordionGroup expandedId={openAccordian} onAccordionPress={(expandedId) => updateAccordian(expandedId)}>
               {/* 1.Customer Profile */}
               <List.Accordion
                 id={"1"}
@@ -174,6 +171,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.occupation}
                   label={"Occupation*"}
+                  keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
                       setCustomerProfile({ key: "OCCUPATION", text: text })
@@ -185,6 +183,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.designation}
                   label={"Designation*"}
+                  keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
                       setCustomerProfile({ key: "DESIGNATION", text: text })
@@ -226,12 +225,13 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   />
                 </View>
                 {selector.customer_type === "fleet" ||
-                selector.customer_type === "institution" ? (
+                  selector.customer_type === "institution" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
                       value={selector.company_name}
                       label={"Company Name"}
+                      keyboardType={"default"}
                       onChangeText={(text) =>
                         dispatch(
                           setCustomerProfile({
@@ -419,24 +419,29 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   />
                 </View>
 
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Gender"
-                    data={selector.gender_types_data}
-                    required={true}
-                    floating={false}
-                    // paperTheme={theme}
-                    value={selector.gender}
-                    onChange={(value) =>
-                      dispatch(setDropDownData({ key: "GENDER", value: value }))
-                    }
-                  />
-                </View>
+                {selector.enquiry_segment == "personal" ? (
+                  <View style={styles.drop_down_view_style}>
+                    <Dropdown
+                      label="Gender"
+                      data={selector.dropDownData}
+                      required={true}
+                      floating={false}
+                      // paperTheme={theme}
+                      value={selector.gender}
+                      onChange={(value) =>
+                        dispatch(
+                          setDropDownData({ key: "GENDER", value: value })
+                        )
+                      }
+                    />
+                  </View>
+                ) : null}
 
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.firstName}
                   label={"First Name*"}
+                  keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
                       setPersonalIntro({ key: "FIRST_NAME", text: text })
@@ -448,6 +453,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.lastName}
                   label={"Last Name*"}
+                  keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(setPersonalIntro({ key: "LAST_NAME", text: text }))
                   }
@@ -471,6 +477,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.relationName}
                   label={"Relation Name*"}
+                  keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
                       setPersonalIntro({ key: "RELATION_NAME", text: text })
@@ -481,6 +488,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.mobile}
                   label={"Mobile Number*"}
+                  keyboardType={"phone-pad"}
                   onChangeText={(text) =>
                     dispatch(setPersonalIntro({ key: "MOBILE", text: text }))
                   }
@@ -490,6 +498,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.alterMobile}
                   label={"Alternate Mobile Number*"}
+                  keyboardType={"phone-pad"}
                   onChangeText={(text) =>
                     dispatch(
                       setPersonalIntro({ key: "ALTER_MOBILE", text: text })
@@ -501,6 +510,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.email}
                   label={"Email ID*"}
+                  keyboardType={"email-address"}
                   onChangeText={(text) =>
                     dispatch(setPersonalIntro({ key: "EMAIL", text: text }))
                   }
@@ -542,6 +552,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.pincode}
                   label={"Pincode*"}
+                  keyboardType={"phone-pad"}
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({ key: "PINCODE", text: text })
@@ -582,6 +593,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.houseNum}
                   label={"H.No*"}
+                  keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({ key: "HOUSE_NO", text: text })
@@ -593,6 +605,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.streetName}
                   label={"Street Name*"}
+                  keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({
@@ -607,6 +620,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.village}
                   label={"Village*"}
+                  keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({ key: "VILLAGE", text: text })
@@ -618,6 +632,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.city}
                   label={"City*"}
+                  keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({ key: "CITY", text: text })
@@ -629,6 +644,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.district}
                   label={"District*"}
+                  keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({ key: "DISTRICT", text: text })
@@ -640,6 +656,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.state}
                   label={"State*"}
+                  keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({ key: "STATE", text: text })
@@ -673,6 +690,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.p_pincode}
                   label={"Pincode*"}
+                  keyboardType={"phone-pad"}
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({
@@ -717,6 +735,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 <TextinputComp
                   style={styles.textInputStyle}
                   label={"H.No*"}
+                  keyboardType={"default"}
                   value={selector.p_houseNum}
                   onChangeText={(text) =>
                     dispatch(
@@ -731,6 +750,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 <TextinputComp
                   style={styles.textInputStyle}
                   label={"Street Name*"}
+                  keyboardType={"default"}
                   value={selector.p_streetName}
                   onChangeText={(text) =>
                     dispatch(
@@ -746,6 +766,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.p_village}
                   label={"Village*"}
+                  keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({
@@ -760,6 +781,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.p_city}
                   label={"City*"}
+                  keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({ key: "P_CITY", text: text })
@@ -771,6 +793,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.p_district}
                   label={"District*"}
+                  keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({
@@ -785,6 +808,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.p_state}
                   label={"State*"}
+                  keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({ key: "P_STATE", text: text })
@@ -917,6 +941,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
                       label={"Bank/Finance Name"}
+                      keyboardType={"default"}
                       value={selector.bank_or_finance_name}
                       onChangeText={(text) =>
                         dispatch(
@@ -932,6 +957,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
                       label={"Location"}
+                      keyboardType={"default"}
                       value={selector.location}
                       onChangeText={(text) =>
                         dispatch(
@@ -948,6 +974,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
                       label={"Leashing Name"}
+                      keyboardType={"default"}
                       value={selector.leashing_name}
                       onChangeText={(text) =>
                         dispatch(
@@ -987,6 +1014,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
                       label={"Down Payment*"}
+                      keyboardType={"default"}
                       value={selector.down_payment}
                       onChangeText={(text) =>
                         dispatch(
@@ -1003,44 +1031,46 @@ const DetailsOverviewScreen = ({ navigation }) => {
 
                 {(selector.retail_finance === "in_house" ||
                   selector.retail_finance === "out_house") && (
-                  <View>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Loan Amount*"}
-                      value={selector.loan_amount}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setFinancialDetails({
-                            key: "LOAN_AMOUNT",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Rate of Interest*"}
-                      value={selector.rate_of_interest}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setFinancialDetails({
-                            key: "RATE_OF_INTEREST",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>
-                )}
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Loan Amount*"}
+                        keyboardType={"default"}
+                        value={selector.loan_amount}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setFinancialDetails({
+                              key: "LOAN_AMOUNT",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Rate of Interest*"}
+                        keyboardType={"default"}
+                        value={selector.rate_of_interest}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setFinancialDetails({
+                              key: "RATE_OF_INTEREST",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
 
                 {selector.retail_finance === "in_house" && (
                   <View>
                     <View style={styles.drop_down_view_style}>
                       <Dropdown
                         label="Bank/Financer"
-                        data={selector.bank_financer_types_data}
+                        data={selector.dropDownData}
                         required={true}
                         floating={false}
                         value={selector.bank_or_finance}
@@ -1076,6 +1106,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
                       label={"EMI*"}
+                      keyboardType={"default"}
                       value={selector.emi}
                       onChangeText={(text) =>
                         dispatch(
@@ -1087,7 +1118,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     <View style={styles.drop_down_view_style}>
                       <Dropdown
                         label="Approx Annual Income"
-                        data={selector.approx_annual_income_types_data}
+                        data={selector.dropDownData}
                         required={true}
                         floating={false}
                         value={selector.approx_annual_income}
@@ -1123,6 +1154,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.pan_number}
                   label={"Pan Number*"}
+                  keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(setUploadDocuments({ key: "PAN", text: text }))
                   }
@@ -1138,6 +1170,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.adhaar_number}
                   label={"Aadhaar Number*"}
+                  keyboardType={"phone-pad"}
                   onChangeText={(text) =>
                     dispatch(setUploadDocuments({ key: "ADHAR", text: text }))
                   }
@@ -1287,6 +1320,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                       style={styles.textInputStyle}
                       value={selector.price_range}
                       label={"Price Range"}
+                      keyboardType={"default"}
                       onChangeText={(text) =>
                         dispatch(
                           setCustomerNeedAnalysis({
@@ -1301,6 +1335,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                       style={styles.textInputStyle}
                       value={selector.on_road_price}
                       label={"On Road Price"}
+                      keyboardType={"default"}
                       onChangeText={(text) =>
                         dispatch(
                           setCustomerNeedAnalysis({
@@ -1315,6 +1350,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                       style={styles.textInputStyle}
                       value={selector.dealership_name}
                       label={"DealerShip Name"}
+                      keyboardType={"default"}
                       onChangeText={(text) =>
                         dispatch(
                           setCustomerNeedAnalysis({
@@ -1329,6 +1365,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                       style={styles.textInputStyle}
                       value={selector.dealership_location}
                       label={"DealerShip Location"}
+                      keyboardType={"default"}
                       onChangeText={(text) =>
                         dispatch(
                           setCustomerNeedAnalysis({
@@ -1343,6 +1380,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                       style={styles.textInputStyle}
                       value={selector.dealership_pending_reason}
                       label={"Dealership Pending Reason"}
+                      keyboardType={"default"}
                       onChangeText={(text) =>
                         dispatch(
                           setCustomerNeedAnalysis({
@@ -1360,6 +1398,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.voice_of_customer_remarks}
                   label={"Voice of Customer Remarks "}
+                  keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
                       setCustomerNeedAnalysis({
@@ -1372,7 +1411,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
               </List.Accordion>
               {selector.buyer_type == "additional_buyer" ||
-              selector.buyer_type == "replacement_buyer" ? (
+                selector.buyer_type == "replacement_buyer" ? (
                 <View style={styles.space}></View>
               ) : null}
               {/* // 8.Additional Buyer */}
@@ -1422,6 +1461,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     style={styles.textInputStyle}
                     value={selector.a_varient}
                     label={"Varient"}
+                    keyboardType={"default"}
                     onChangeText={(text) =>
                       dispatch(
                         setAdditionalBuyerDetails({
@@ -1436,6 +1476,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     style={styles.textInputStyle}
                     value={selector.a_color}
                     label={"Color"}
+                    keyboardType={"default"}
                     onChangeText={(text) =>
                       dispatch(
                         setAdditionalBuyerDetails({
@@ -1450,6 +1491,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     style={styles.textInputStyle}
                     value={selector.a_reg_no}
                     label={"Reg. No."}
+                    keyboardType={"default"}
                     onChangeText={(text) =>
                       dispatch(
                         setAdditionalBuyerDetails({
@@ -1482,6 +1524,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     style={styles.textInputStyle}
                     value={selector.r_reg_no}
                     label={"Reg. No."}
+                    keyboardType={"default"}
                     onChangeText={(text) =>
                       dispatch(
                         setReplacementBuyerDetails({
@@ -1561,6 +1604,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     style={styles.textInputStyle}
                     value={selector.r_varient}
                     label={"Varient"}
+                    keyboardType={"default"}
                     onChangeText={(text) =>
                       dispatch(
                         setReplacementBuyerDetails({
@@ -1575,6 +1619,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     style={styles.textInputStyle}
                     value={selector.r_color}
                     label={"Color"}
+                    keyboardType={"default"}
                     onChangeText={(text) =>
                       dispatch(
                         setReplacementBuyerDetails({
@@ -1594,6 +1639,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     style={styles.textInputStyle}
                     value={selector.r_kms_driven_or_odometer_reading}
                     label={"Kms-Driven/Odometer Reading"}
+                    keyboardType={"default"}
                     onChangeText={(text) =>
                       dispatch(
                         setReplacementBuyerDetails({
@@ -1634,6 +1680,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                         style={styles.textInputStyle}
                         value={selector.r_hypothication_name}
                         label={"Hypothication Name"}
+                        keyboardType={"default"}
                         onChangeText={(text) =>
                           dispatch(
                             setReplacementBuyerDetails({
@@ -1648,6 +1695,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                         style={styles.textInputStyle}
                         value={selector.r_hypothication_branch}
                         label={"Hypothication Branch"}
+                        keyboardType={"default"}
                         onChangeText={(text) =>
                           dispatch(
                             setReplacementBuyerDetails({
@@ -1665,6 +1713,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     style={styles.textInputStyle}
                     value={selector.r_expected_price}
                     label={"Expected Price"}
+                    keyboardType={"default"}
                     onChangeText={(text) =>
                       dispatch(
                         setReplacementBuyerDetails({
@@ -1795,6 +1844,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                         style={styles.textInputStyle}
                         value={selector.r_insurence_company_name}
                         label={"Insurence Company Name"}
+                        keyboardType={"default"}
                         onChangeText={(text) =>
                           dispatch(
                             setReplacementBuyerDetails({
