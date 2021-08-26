@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Colors } from '../styles'
+import { convertTimeStampToDateString } from "../utils/helperFunctions";
 
 const NameComp = ({ label, value, labelStyle = {}, valueStyle = {} }) => {
 
@@ -14,13 +15,15 @@ const NameComp = ({ label, value, labelStyle = {}, valueStyle = {} }) => {
 
 export const MyTaskItem = ({ taskName, status, created, dmsLead, phone }) => {
 
+    const date = convertTimeStampToDateString(created);
+
     return (
 
         <View style={{ flex: 1 }}>
             <NameComp label={'Task Name'} value={taskName} valueStyle={{ fontSize: 16, fontWeight: '600' }} />
             <NameComp label={'DMS Lead'} value={dmsLead} />
             <NameComp label={'Phone No'} value={phone} />
-            <NameComp label={'Created On'} value={created} valueStyle={{ fontSize: 14 }} />
+            <NameComp label={'Created On'} value={date} valueStyle={{ fontSize: 14 }} />
             <View style={styles.bckVw}>
                 <Text style={[styles.text1]}>{'Task Status'}</Text>
                 <View style={{ flexDirection: 'row' }}>

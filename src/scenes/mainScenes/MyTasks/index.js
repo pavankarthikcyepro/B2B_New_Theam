@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   View,
@@ -7,16 +7,41 @@ import {
   FlatList,
   Dimensions,
   Pressable,
+  ActivityIndicator
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { MyTaskItem } from "../../../pureComponents/myTaskItem";
 import { useDispatch, useSelector } from "react-redux";
 import { AppNavigator } from "../../../navigations";
+import { getMyTasksList } from "../../../redux/mytaskReducer";
+import * as AsyncStorage from "../../../asyncStore";
 
 const screenWidth = Dimensions.get("window").width;
 
 const MyTasksScreen = ({ navigation }) => {
   const selector = useSelector((state) => state.mytaskReducer);
+  const dispatch = useDispatch();
+  const [employeeId, setEmployeeId] = useState("");
+
+  useEffect(() => {
+    getMyTasksListFromServer();
+  }, []);
+
+  const getMyTasksListFromServer = async () => {
+    const empId = await AsyncStorage.getData(AsyncStorage.Keys.EMP_ID);
+    if (empId) {
+      const endUrl = `empId=${empId}&limit=10&offset=${selector.pageNumber}`;
+      dispatch(getMyTasksList(endUrl));
+      setEmployeeId(empId);
+    }
+  }
+
+  const getMoreMyTasksListFromServer = async () => {
+    if (employeeId) {
+      const endUrl = `empId=${employeeId}&limit=10&offset=${selector.pageNumber + 1}`;
+      dispatch(getMyTasksList(endUrl));
+    }
+  }
 
   const itemClicked = (taskName) => {
     const trimName = taskName.toLowerCase().trim();
@@ -46,13 +71,28 @@ const MyTasksScreen = ({ navigation }) => {
     }
   };
 
+  const renderFooter = () => {
+    return (
+      <View style={styles.footer}>
+        <Text style={styles.btnText}>Loading More...</Text>
+        {selector.isLoading ? (
+          <ActivityIndicator color={Colors.GRAY} />
+        ) : null}
+      </View>
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.view1}>
         <FlatList
           data={selector.tableData}
+          extraData={selector.tableData}
           keyExtractor={(item, index) => index.toString()}
           showsVerticalScrollIndicator={false}
+          onEndReachedThreshold={0}
+          onEndReached={getMoreMyTasksListFromServer}
+          ListFooterComponent={renderFooter}
           ItemSeparatorComponent={() => {
             return <View style={styles.separator}></View>;
           }}
@@ -63,10 +103,10 @@ const MyTasksScreen = ({ navigation }) => {
                   <Pressable onPress={() => itemClicked(item.taskName)}>
                     <MyTaskItem
                       taskName={item.taskName}
+                      dmsLead={item.leadDto.firstName + " " + item.leadDto.lastName}
+                      phone={item.leadDto.phone}
+                      created={item.leadDto.createdDate}
                       status={item.taskStatus}
-                      created={item.createdOn}
-                      dmsLead={item.dmsLead}
-                      phone={item.phoneNo}
                     />
                   </Pressable>
                 </View>
@@ -99,5 +139,16 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: 10,
+  },
+  footer: {
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  btnText: {
+    color: Colors.GRAY,
+    fontSize: 12,
+    textAlign: 'center',
+    marginBottom: 5
   },
 });

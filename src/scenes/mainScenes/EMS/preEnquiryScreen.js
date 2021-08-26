@@ -85,7 +85,7 @@ const PreEnquiryScreen = ({ navigation }) => {
                     </Pressable>
                 </View>
 
-                {selector.pre_enquiry_list.length > 0 ? <View style={[GlobalStyle.shadow, { backgroundColor: 'white' }]}>
+                {selector.pre_enquiry_list.length > 0 ? <View style={[GlobalStyle.shadow, { backgroundColor: 'white', flex: 1, marginBottom: 10 }]}>
                     <FlatList
                         data={selector.pre_enquiry_list}
                         keyExtractor={(item, index) => index.toString()}

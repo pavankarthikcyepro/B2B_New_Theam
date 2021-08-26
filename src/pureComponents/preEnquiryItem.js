@@ -2,12 +2,7 @@ import React from "react";
 import { View, StyleSheet, Text, Pressable } from "react-native";
 import { Button, IconButton } from "react-native-paper";
 import { Colors } from "../styles";
-import moment from 'moment';
-
-const convertTimeStampToDateString = (timeStamp) => {
-  const date = moment(timeStamp).format("DD/MM/YYYY h:mm a");
-  return date;
-}
+import { convertTimeStampToDateString } from "../utils/helperFunctions";
 
 export const PreEnquiryItem = ({
   name,

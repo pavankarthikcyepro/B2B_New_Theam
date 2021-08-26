@@ -1,49 +1,46 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { client } from '../networking/client';
+import URL from "../networking/endpoints";
 
-const datalist = [
-  {
-    taskName: "Proceed to Booking",
-    taskStatus: "ASSIGNED",
-    createdOn: "Tue Jun 29 2021",
-    dmsLead: "GSGHS Vshsj",
-    phoneNo: "+91 8488464949",
-  },
-  {
-    taskName: "Test Drive",
-    taskStatus: "SENT_FOR_APPROVAL",
-    createdOn: "Tue Jun 29 2021",
-    dmsLead: "GSGHS Vshsj",
-    phoneNo: "+91 8488464949",
-  },
-  {
-    taskName: "Pre Booking Follow Up",
-    taskStatus: "ASSIGNED",
-    createdOn: "Tue Jun 29 2021",
-    dmsLead: "GSGHS Vshsj",
-    phoneNo: "+91 8488464949",
-  },
-  {
-    taskName: "Home Visit",
-    taskStatus: "ASSIGNED",
-    createdOn: "Tue Jun 29 2021",
-    dmsLead: "GSGHS Vshsj",
-    phoneNo: "+91 8488464949",
-  },
-  {
-    taskName: "Enquiry Follow Up",
-    taskStatus: "ASSIGNED",
-    createdOn: "Tue Jun 29 2021",
-    dmsLead: "GSGHS Vshsj",
-    phoneNo: "+91 8488464949",
-  },
-];
+
+export const getMyTasksList = createAsyncThunk("MY_TASKS/getMyTasksList", async (endUrl) => {
+
+  const url = URL.MY_TASKS() + endUrl;
+  const response = await client.get(url);
+  return response;
+})
 
 export const mytaskSlice = createSlice({
   name: "MY_TASKS",
   initialState: {
-    tableData: datalist,
+    tableData: [],
+    pageNumber: 0,
+    totalPages: 1,
+    isLoading: false,
+    status: ""
   },
   reducers: {},
+  extraReducers: (builder) => {
+    builder.addCase(getMyTasksList.pending, (state) => {
+      state.isLoading = true;
+    })
+    builder.addCase(getMyTasksList.fulfilled, (state, action) => {
+      //console.log("payload: ", action.payload);
+      const dmsEntityObj = action.payload?.dmsEntity;
+      if (dmsEntityObj) {
+        state.totalPages = dmsEntityObj.myTasks.totalPages;
+        state.pageNumber = dmsEntityObj.myTasks.pageable.pageNumber;
+        const content = dmsEntityObj.myTasks.content;
+        state.tableData = state.pageNumber === 0 ? content : [...state.tableData, ...content];
+      }
+      state.isLoading = false;
+      state.status = "success";
+    })
+    builder.addCase(getMyTasksList.rejected, (state, action) => {
+      state.isLoading = false;
+      state.status = "failed";
+    })
+  }
 });
 
 export const { } = mytaskSlice.actions;

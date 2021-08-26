@@ -37,6 +37,7 @@ const URL = {
         return vehicleInfoService_url + "/api/vehicle_details/?organizationId=" + orgId;
     },
     CUSTOMER_TYPE: () => sales_url + "/master-data/customertype",
+    MY_TASKS: () => sales_url + "/workflow/assignedTasks?",
 }
 
 export default URL;

@@ -1,101 +1,43 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import URL from "../networking/endpoints";
+import { client } from '../networking/client';
 
-const DataList = [
-  {
-    universalId: "1-1-469f20c6-146e-409c-9029-3ff146cd544b",
-    leadId: 374,
-    firstName: "Yashvanth",
-    lastName: "One",
-    createdDate: 1624270138000,
-    dateOfBirth: null,
-    enquirySource: "Field",
-    enquiryDate: 1624270137881,
-    model: "Aura",
-    enquirySegment: "Personal",
-    phone: "1234569870",
-    leadStage: "PREENQUIRY",
-    customerType: "Self Employed",
-    alternativeNumber: "",
-    enquiryCategory: null,
-    createdBy: "Ummireddi Ganapathi Rao",
-    salesConsultant: null,
-    email: "",
-    leadStatus: null,
-  },
-  {
-    universalId: "1-1-a6dbd770-565f-4205-8b00-18273f41228f",
-    leadId: 373,
-    firstName: "Yashvanth",
-    lastName: "Three",
-    createdDate: 1624270086000,
-    dateOfBirth: null,
-    enquirySource: "Field",
-    enquiryDate: 1624270085672,
-    model: "Aasfeura",
-    enquirySegment: "Personal",
-    phone: "1234569870",
-    leadStage: "PREENQUIRY",
-    customerType: "Self Employed",
-    alternativeNumber: "",
-    enquiryCategory: null,
-    createdBy: "Ummireddi Ganapathi Rao",
-    salesConsultant: null,
-    email: "",
-    leadStatus: null,
-  },
-  {
-    universalId: "1-1-a6dbd770-565f-4205-8b00-18273f41228f",
-    leadId: 373,
-    firstName: "Yashvanth",
-    lastName: "Three",
-    createdDate: 1624270086000,
-    dateOfBirth: null,
-    enquirySource: "Field",
-    enquiryDate: 1624270085672,
-    model: "Aura",
-    enquirySegment: "Personal",
-    phone: "1234569870",
-    leadStage: "PREENQUIRY",
-    customerType: "Self Employed",
-    alternativeNumber: "",
-    enquiryCategory: null,
-    createdBy: "Ummireddi Ganapathi Rao",
-    salesConsultant: null,
-    email: "",
-    leadStatus: null,
-  },
-  {
-    universalId: "1-1-a6dbd770-565f-4205-8b00-18273f41228f",
-    leadId: 373,
-    firstName: "Yashvanth",
-    lastName: "Three",
-    createdDate: 1624270086000,
-    dateOfBirth: null,
-    enquirySource: "Field",
-    enquiryDate: 1624270085672,
-    model: "Test",
-    enquirySegment: "Personal",
-    phone: "1234569870",
-    leadStage: "PREENQUIRY",
-    customerType: "Self Employed",
-    alternativeNumber: "",
-    enquiryCategory: null,
-    createdBy: "Ummireddi Ganapathi Rao",
-    salesConsultant: null,
-    email: "",
-    leadStatus: null,
-  },
-];
+export const getEnquiryList = createAsyncThunk("ENQUIRY/getEnquiryList", async (endUrl) => {
+
+  let url = URL.LEADS_LIST_API() + endUrl;
+  const response = await client.get(url);
+  return response
+})
 
 const enquirySlice = createSlice({
   name: "ENQUIRY",
   initialState: {
-    enquiry_list: DataList,
+    enquiry_list: [],
     pageNumber: 0,
     totalPages: 1,
+    isLoading: false,
+    status: ""
   },
-
   reducers: {},
+  extraReducers: (builder) => {
+    builder.addCase(getEnquiryList.pending, (state) => {
+      state.isLoading = true;
+    })
+    builder.addCase(getEnquiryList.fulfilled, (state, action) => {
+      console.log('res: ', action.payload);
+      const dmsEntityObj = action.payload?.dmsEntity;
+      if (dmsEntityObj) {
+        state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
+        state.enquiry_list = dmsEntityObj.leadDtoPage.content;
+      }
+      state.isLoading = false;
+      state.status = "sucess";
+    })
+    builder.addCase(getEnquiryList.rejected, (state, action) => {
+      state.isLoading = false;
+      state.status = "failed";
+    })
+  }
 });
 
 export const { } = enquirySlice.actions;

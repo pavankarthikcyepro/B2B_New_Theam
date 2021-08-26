@@ -1,4 +1,5 @@
 import { Linking, Alert, Platform } from 'react-native';
+import moment from 'moment';
 
 export const isMobileNumber = (mobile) => {
 
@@ -36,4 +37,9 @@ export const callNumber = phone => {
             }
         })
         .catch(err => console.log(err));
+}
+
+export const convertTimeStampToDateString = (timeStamp) => {
+    const date = moment(timeStamp).format("DD/MM/YYYY h:mm a");
+    return date;
 }
