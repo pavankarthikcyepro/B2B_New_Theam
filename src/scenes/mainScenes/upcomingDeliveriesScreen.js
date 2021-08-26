@@ -13,6 +13,7 @@ import { UpcomingDeliveriesItem } from "../../pureComponents/upcomingDeliveriesI
 import { PageControlItem } from "../../pureComponents/pageControlItem";
 import { IconButton } from "react-native-paper";
 import { DateRangeComp } from "../../components/dateRangeComp";
+import { callNumber } from "../../utils/helperFunctions";
 
 const datalist = [
   {
@@ -106,9 +107,7 @@ const UpcomingDeliveriesScreen = () => {
                   onPress={() => {
                     console.log("onpress");
                   }}
-                  onCallPress={() => {
-                    console.log("icon pressed");
-                  }}
+                  onCallPress={() => callNumber('1234567890')}
                 />
               );
             }}

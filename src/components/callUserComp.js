@@ -2,6 +2,7 @@ import React from 'react';
 import { Modal, StyleSheet, View, Dimensions, Text, TouchableOpacity } from 'react-native';
 import { Colors } from '../styles';
 import { IconButton, Checkbox } from 'react-native-paper';
+import { callNumber } from '../utils/helperFunctions';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -25,7 +26,7 @@ const CallItem = ({ title, mobile, onPress }) => {
     )
 }
 
-const CallUserComponent = ({ visible = false, onRequestClose, onPress }) => {
+const CallUserComponent = ({ visible = false, onRequestClose }) => {
 
     const [checked, setChecked] = React.useState(false);
 
@@ -47,8 +48,8 @@ const CallUserComponent = ({ visible = false, onRequestClose, onPress }) => {
                             onPress={onRequestClose}
                         />
                     </View>
-                    <CallItem title={'SIM 1'} mobile={'9886525252'} onPress={onPress} />
-                    <CallItem title={'SIM 2'} mobile={'6765436353'} onPress={onPress} />
+                    <CallItem title={'SIM 1'} mobile={'9886525252'} onPress={() => callNumber('9886525252')} />
+                    <CallItem title={'SIM 2'} mobile={'6765436353'} onPress={() => callNumber('6765436353')} />
                     <View style={styles.view4}>
                         <Checkbox.Android
                             status={checked ? 'checked' : 'unchecked'}

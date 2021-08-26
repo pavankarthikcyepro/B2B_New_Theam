@@ -76,5 +76,10 @@
 	<string>$(PRODUCT_NAME) requires permission to select photos</string>
 	<key>NSCameraUsageDescription</key>
 	<string>$(PRODUCT_NAME) requires permission to capture photos</string>
+	<key>LSApplicationQueriesSchemes</key> 
+	<array> 
+  		<string>tel</string> 
+  		<string>telprompt</string> 
+	</array>
 </dict>
 </plist>

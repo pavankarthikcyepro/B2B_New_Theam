@@ -40,7 +40,10 @@ const PreEnquiryScreen = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.conatiner}>
 
-            <CallUserComponent visible={selector.modelVisible} onRequestClose={() => dispatch(callPressed())} />
+            <CallUserComponent
+                visible={selector.modelVisible}
+                onRequestClose={() => dispatch(callPressed())}
+            />
 
             <SortAndFilterComp
                 visible={selector.sortAndFilterVisible}

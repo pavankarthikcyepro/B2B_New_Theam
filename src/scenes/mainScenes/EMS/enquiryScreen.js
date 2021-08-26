@@ -40,6 +40,7 @@ const EnquiryScreen = ({ navigation }) => {
                   date={item.createdDate}
                   modelName={item.model}
                   onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.detailsOverview)}
+                  onCallPress={() => { console.log('call pressed') }}
                 />
               );
             }}
