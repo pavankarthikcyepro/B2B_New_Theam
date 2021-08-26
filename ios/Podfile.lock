@@ -257,7 +257,7 @@ PODS:
   - React-jsinspector (0.64.2)
   - react-native-image-picker (4.0.6):
     - React-Core
-  - react-native-safe-area-context (3.2.0):
+  - react-native-safe-area-context (3.3.0):
     - React-Core
   - react-native-simple-toast (1.1.3):
     - React-Core
@@ -329,7 +329,7 @@ PODS:
   - RealmJS (10.6.1):
     - GCDWebServer
     - React
-  - RNCAsyncStorage (1.15.5):
+  - RNCAsyncStorage (1.15.7):
     - React-Core
   - RNCMaskedView (0.1.11):
     - React
@@ -366,7 +366,7 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (3.4.0):
+  - RNScreens (3.6.0):
     - React-Core
     - React-RCTImage
   - RNSnackbar (2.4.0):
@@ -569,7 +569,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 80c46bd381fd06e418e0d4f53672dc1d1945c4c3
   React-jsinspector: cc614ec18a9ca96fd275100c16d74d62ee11f0ae
   react-native-image-picker: 7bda3c7297c3ea16f4f504ad6174aa7e548192ef
-  react-native-safe-area-context: e471852c5ed67eea4b10c5d9d43c1cebae3b231d
+  react-native-safe-area-context: 8465df05de8106c584b117f0e027e17174d6e02e
   react-native-simple-toast: b986e6c1befdc211af3df1bae293278a44e32990
   React-perflogger: 25373e382fed75ce768a443822f07098a15ab737
   React-RCTActionSheet: af7796ba49ffe4ca92e7277a5d992d37203f7da5
@@ -584,12 +584,12 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: a9904c6d0218fb9f8b19d6dd88607225927668f9
   ReactCommon: 149906e01aa51142707a10665185db879898e966
   RealmJS: 550ecbe8a0d55bd0e2abb79a63313d4da08bcf25
-  RNCAsyncStorage: 8324611026e8dc3706f829953aa6e3899f581589
+  RNCAsyncStorage: 7f72b8273be1f92076b16f68b333160d562eebad
   RNCMaskedView: f127cd9652acfa31b91dcff613e07ba18b774db6
   RNDateTimePicker: c9911be59b1f8670b9f244b85af3a7c295e175ed
   RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211
   RNReanimated: 9c13c86454bfd54dab7505c1a054470bfecd2563
-  RNScreens: 21b73c94c9117e1110a79ee0ee80c93ccefed8ce
+  RNScreens: eb0dfb2d6b21d2d7f980ad46b14eb306d2f1062e
   RNSnackbar: b6cbf294923b8d6c6056592bca87527c81a0130b
   RNVectorIcons: 31cebfcf94e8cf8686eb5303ae0357da64d7a5a4
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196

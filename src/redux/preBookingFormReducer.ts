@@ -1,4 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Salutation_Types, Enquiry_Segment_Types, Marital_Status_Types } from '../jsonData/prebookingFormScreenJsonData';
+import { Customer_Type_Data_Obj, Finance_Types } from '../jsonData/enquiryFormScreenJsonData';
 
 const dropDownData = [
   {
@@ -16,51 +18,6 @@ const dropDownData = [
   {
     value: "4",
     label: "Jhon Wick 2",
-  },
-];
-
-const dummyData = [
-  {
-    id: 1,
-    name: "First",
-  },
-  {
-    id: 2,
-    name: "Second",
-  },
-  {
-    id: 3,
-    name: "Third",
-  },
-  {
-    id: 4,
-    name: "Fourth",
-  },
-  {
-    id: 5,
-    name: "Fifth",
-  },
-];
-
-const genderData = [
-  {
-    id: 1,
-    name: "Male",
-  },
-  {
-    id: 2,
-    name: "Female",
-  },
-];
-
-const salutationData = [
-  {
-    id: 1,
-    name: "Mr",
-  },
-  {
-    id: 2,
-    name: "Mrs",
   },
 ];
 
@@ -88,6 +45,11 @@ const prebookingFormSlice = createSlice({
     showDatepicker: false,
     showDropDownpicker: false,
     dropDownData: dropDownData,
+    salutation_types_data: Salutation_Types,
+    enquiry_segment_types_data: Enquiry_Segment_Types,
+    customer_types_data: Customer_Type_Data_Obj["personal"],
+    marital_status_types_data: Marital_Status_Types,
+    finance_types_data: Finance_Types,
     dropDownTitle: "",
     dropDownKeyId: "",
     datePickerKeyId: "",
@@ -104,6 +66,7 @@ const prebookingFormSlice = createSlice({
     salutation: "",
     enquiry_segment: "",
     customer_type: "",
+    marital_status: "",
     // Communication Address
     pincode: "",
     urban_or_rural: 0, // 1: urban, 2:
@@ -114,7 +77,7 @@ const prebookingFormSlice = createSlice({
     state: "",
     district: "",
 
-    permanent_address: true,
+    permanent_address: false,
     p_pincode: "",
     p_urban_or_rural: 0, // 1: urban, 2:
     p_houseNum: "",
@@ -132,6 +95,8 @@ const prebookingFormSlice = createSlice({
     // financial details
     retail_finance: "",
     finance_category: "",
+    bank_or_finance_name: "",
+    location: "",
     down_payment: "",
     loan_amount: "",
     bank_or_finance: "",
@@ -139,6 +104,7 @@ const prebookingFormSlice = createSlice({
     loan_of_tenure: "",
     emi: "",
     approx_annual_income: "",
+    leashing_name: "",
     // Booking payment mod
     booking_amount: "",
     payment_at: "",
@@ -187,12 +153,17 @@ const prebookingFormSlice = createSlice({
           break;
         case "ENQUIRY_SEGMENT":
           state.enquiry_segment = value;
+          state.customer_types_data = Customer_Type_Data_Obj[value];
+          state.customer_type = null;
           break;
         case "CUSTOMER_TYPE":
           state.customer_type = value;
           break;
         case "GENDER":
           state.gender = value;
+          break;
+        case "MARITAL_STATUS":
+          state.marital_status = value;
           break;
         case "MODEL":
           state.model = value;
@@ -286,6 +257,9 @@ const prebookingFormSlice = createSlice({
         case "DOB":
           state.date_of_birth = text;
           break;
+        case "AGE":
+          state.age = text;
+          break;
       }
     },
     setCommunicationAddress: (
@@ -320,6 +294,16 @@ const prebookingFormSlice = createSlice({
           break;
         case "PERMANENT_ADDRESS":
           state.permanent_address = !state.permanent_address;
+          if (state.permanent_address) {
+            state.p_pincode = state.pincode;
+            state.p_urban_or_rural = state.urban_or_rural;
+            state.p_houseNum = state.house_number;
+            state.p_streetName = state.street_name;
+            state.p_village = state.village;
+            state.p_city = state.city;
+            state.p_district = state.district;
+            state.p_state = state.state;
+          }
           break;
         case "P_PINCODE":
           state.p_pincode = text;
@@ -364,6 +348,15 @@ const prebookingFormSlice = createSlice({
           break;
         case "EMI":
           state.emi = text;
+          break;
+        case "BANK_R_FINANCE_NAME":
+          state.bank_or_finance_name = text;
+          break;
+        case "LOCATION":
+          state.location = text;
+          break;
+        case "LEASHING_NAME":
+          state.leashing_name = text;
           break;
       }
     },

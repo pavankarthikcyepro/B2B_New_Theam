@@ -152,11 +152,8 @@ const DetailsOverviewScreen = ({ navigation }) => {
           style={{ flex: 1 }}
         >
           <View style={styles.baseVw}>
-            {/* 1.Customer Profile */}
-            <List.AccordionGroup
-              expandedId={openAccordian}
-              onAccordionPress={(expandedId) => updateAccordian(expandedId)}
-            >
+            <List.AccordionGroup expandedId={openAccordian} onAccordionPress={(expandedId) => updateAccordian(expandedId)}>
+              {/* 1.Customer Profile */}
               <List.Accordion
                 id={"1"}
                 title={"Customer Profile"}
@@ -228,7 +225,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   />
                 </View>
                 {selector.customer_type === "fleet" ||
-                selector.customer_type === "institution" ? (
+                  selector.customer_type === "institution" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -1034,39 +1031,39 @@ const DetailsOverviewScreen = ({ navigation }) => {
 
                 {(selector.retail_finance === "in_house" ||
                   selector.retail_finance === "out_house") && (
-                  <View>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Loan Amount*"}
-                      keyboardType={"default"}
-                      value={selector.loan_amount}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setFinancialDetails({
-                            key: "LOAN_AMOUNT",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Rate of Interest*"}
-                      keyboardType={"default"}
-                      value={selector.rate_of_interest}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setFinancialDetails({
-                            key: "RATE_OF_INTEREST",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>
-                )}
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Loan Amount*"}
+                        keyboardType={"default"}
+                        value={selector.loan_amount}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setFinancialDetails({
+                              key: "LOAN_AMOUNT",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Rate of Interest*"}
+                        keyboardType={"default"}
+                        value={selector.rate_of_interest}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setFinancialDetails({
+                              key: "RATE_OF_INTEREST",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
 
                 {selector.retail_finance === "in_house" && (
                   <View>
@@ -1414,7 +1411,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
               </List.Accordion>
               {selector.buyer_type == "additional_buyer" ||
-              selector.buyer_type == "replacement_buyer" ? (
+                selector.buyer_type == "replacement_buyer" ? (
                 <View style={styles.space}></View>
               ) : null}
               {/* // 8.Additional Buyer */}

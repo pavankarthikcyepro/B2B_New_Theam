@@ -128,6 +128,12 @@ export const Customer_Type_Data_Obj = {
             value: 'institution',
             label: 'Institution',
         }
+    ],
+    "handicaped": [
+        {
+            value: 'institution',
+            label: 'Institution',
+        }
     ]
 }
 
