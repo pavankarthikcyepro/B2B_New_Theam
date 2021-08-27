@@ -6,11 +6,22 @@ import { PreEnquiryItem } from "../../../pureComponents/preEnquiryItem";
 import { useDispatch, useSelector } from "react-redux";
 import { Colors, GlobalStyle } from "../../../styles";
 import { AppNavigator } from '../../../navigations';
+import * as AsyncStore from "../../../asyncStore";
 
 const PreBookingScreen = ({ navigation }) => {
 
     const selector = useSelector((state) => state.enquiryReducer);
     const dispatch = useDispatch();
+    const [employeeId, setEmployeeId] = useState("");
+
+    const getPreBookingListFromServer = async () => {
+        let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
+        if (empId) {
+            let endUrl = "?limit=10&offset=" + "0" + "&status=PREBOOKING&empId=" + empId;
+            dispatch(getPreBookingData(endUrl));
+            setEmployeeId(empId);
+        }
+    }
 
     return (
         <SafeAreaView style={styles.container}>
