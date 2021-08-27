@@ -8,6 +8,7 @@ import { Colors, GlobalStyle } from "../../../styles";
 import { AppNavigator } from '../../../navigations';
 import * as AsyncStore from '../../../asyncStore';
 import { getEnquiryList, getMoreEnquiryList } from "../../../redux/enquiryReducer";
+import { callNumber } from "../../../utils/helperFunctions";
 
 const EnquiryScreen = ({ navigation }) => {
   const selector = useSelector((state) => state.enquiryReducer);
@@ -87,7 +88,7 @@ const EnquiryScreen = ({ navigation }) => {
                   date={item.createdDate}
                   modelName={item.model}
                   onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.detailsOverview)}
-                  onCallPress={() => { console.log('call pressed') }}
+                  onCallPress={() => callNumber(item.phone)}
                 />
               );
             }}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   View,
@@ -26,6 +26,26 @@ const SideMenuScreen = ({ navigation }) => {
 
   const selector = useSelector((state) => state.sideMenuReducer);
   const { signOut } = React.useContext(AuthContext);
+  const [empName, setEmpName] = useState("");
+  const [email, setEmail] = useState("");
+  const [location, setLocation] = useState("");
+  const [role, setRole] = useState("");
+
+  useEffect(() => {
+    getLoginEmployeeData();
+  }, [])
+
+  const getLoginEmployeeData = async () => {
+
+    const jsonString = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    if (jsonString) {
+      const jsonObj = JSON.parse(jsonString);
+      setEmpName(jsonObj.empName);
+      setEmail(jsonObj.email);
+      setRole(jsonObj.hrmsRole);
+      setLocation(jsonObj.branchName);
+    }
+  }
 
   const itemSelected = (item) => {
     switch (item.screen) {
@@ -73,7 +93,7 @@ const SideMenuScreen = ({ navigation }) => {
             navigation.closeDrawer();
           }}
         />
-        <Text style={styles.nameStyle}>{"Welcome Ravinder,"}</Text>
+        <Text style={styles.nameStyle}>{"Welcome "}<Text style={[styles.nameStyle, { fontSize: 12 }]}>{empName + ","}</Text></Text>
       </View>
       <View style={styles.profileContainerView}>
         <View style={[styles.profileBgVw, GlobalStyle.shadow]}>
@@ -88,20 +108,20 @@ const SideMenuScreen = ({ navigation }) => {
         </View>
         <View style={{ marginTop: 15 }}>
           <Text style={[styles.nameStyle, { textAlign: "center" }]}>
-            {"Ravinder Katta"}
+            {empName}
           </Text>
-          <Text style={styles.text1}>{"Branch Manager, 40yrs"}</Text>
+          <Text style={styles.text1}>{role}</Text>
         </View>
 
         <View style={{ marginTop: 15 }}>
           <Text style={styles.text2}>
             {"Email: "}
             <Text style={[styles.text2, { color: Colors.SKY_BLUE }]}>
-              {"test@bharatgroupe.com"}
+              {email}
             </Text>
           </Text>
           <Text style={styles.text2}>
-            {"Office Location: " + "Hyd-Jubli Hills"}
+            {"Office Location: " + location}
           </Text>
         </View>
       </View>
@@ -172,6 +192,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
     fontSize: 16,
     fontWeight: "200",
+    textAlign: 'center',
     color: Colors.DARK_GRAY,
   },
   text2: {

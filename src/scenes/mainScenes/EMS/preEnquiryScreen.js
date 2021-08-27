@@ -11,6 +11,7 @@ import { CallUserComponent, SortAndFilterComp } from '../../../components';
 import { callPressed, sortAndFilterPressed, getPreEnquiryData, setPreEnquiryList, getMorePreEnquiryData } from '../../../redux/preEnquiryReducer';
 import * as AsyncStore from '../../../asyncStore';
 import realm from '../../../database/realm';
+import { callNumber } from '../../../utils/helperFunctions';
 
 const PreEnquiryScreen = ({ navigation }) => {
 
@@ -119,7 +120,7 @@ const PreEnquiryScreen = ({ navigation }) => {
                                         // type={item.type}
                                         modelName={item.model}
                                         onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq)}
-                                        onCallPress={() => dispatch(callPressed())}
+                                        onCallPress={() => callNumber(item.phone)}
                                     />
                                 )
                             }}

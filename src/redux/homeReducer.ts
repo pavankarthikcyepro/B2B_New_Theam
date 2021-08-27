@@ -88,6 +88,7 @@ export const homeSlice = createSlice({
         const dmsEntityObj = action.payload.dmsEntity;
         const empId = dmsEntityObj.loginEmployee.empId;
         AsyncStore.storeData(AsyncStore.Keys.EMP_ID, empId.toString());
+        AsyncStore.storeData(AsyncStore.Keys.LOGIN_EMPLOYEE, JSON.stringify(dmsEntityObj.loginEmployee));
         state.employeeId = empId;
       })
       .addCase(getMenuList.rejected, (state, action) => {
@@ -116,3 +117,42 @@ export const homeSlice = createSlice({
 
 export const { dateSelected, showDateModal } = homeSlice.actions;
 export default homeSlice.reducer;
+
+
+// const sampleData = [
+//   {
+//     "menuId": 81,
+//     "description": "EMS",
+//     "displayName": "EMS",
+//   },
+//   {
+//     "menuId": 100,
+//     "description": "Event Management",
+//     "displayName": "Event Management",
+//   },
+//   {
+//     "menuId": 115,
+//     "description": "Test Drive",
+//     "displayName": "Test Drive",
+//   },
+//   {
+//     "menuId": 117,
+//     "description": "Evaluator",
+//     "displayName": "Evaluator",
+//   },
+//   {
+//     "menuId": 119,
+//     "description": "My Tasks",
+//     "displayName": "My Tasks",
+//   },
+//   {
+//     "menuId": 123,
+//     "description": "Pre Booking",
+//     "displayName": "Pre Booking",
+//   },
+//   {
+//     "menuId": 125,
+//     "description": "Pre Delivery",
+//     "displayName": "Pre Delivery",
+//   }
+// ]
