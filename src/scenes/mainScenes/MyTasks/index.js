@@ -7,14 +7,16 @@ import {
   FlatList,
   Dimensions,
   Pressable,
-  ActivityIndicator
+  ActivityIndicator,
+  RefreshControl
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { MyTaskItem } from "../../../pureComponents/myTaskItem";
 import { useDispatch, useSelector } from "react-redux";
 import { AppNavigator } from "../../../navigations";
-import { getMyTasksList } from "../../../redux/mytaskReducer";
+import { getMyTasksList, getMoreMyTasksList } from "../../../redux/mytaskReducer";
 import * as AsyncStorage from "../../../asyncStore";
+import { EmptyListView } from "../../../pureComponents";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -30,16 +32,16 @@ const MyTasksScreen = ({ navigation }) => {
   const getMyTasksListFromServer = async () => {
     const empId = await AsyncStorage.getData(AsyncStorage.Keys.EMP_ID);
     if (empId) {
-      const endUrl = `empId=${empId}&limit=10&offset=${selector.pageNumber}`;
+      const endUrl = `empId=${empId}&limit=10&offset=${0}`;
       dispatch(getMyTasksList(endUrl));
       setEmployeeId(empId);
     }
   }
 
   const getMoreMyTasksListFromServer = async () => {
-    if (employeeId) {
+    if (employeeId && ((selector.pageNumber + 1) < selector.totalPages)) {
       const endUrl = `empId=${employeeId}&limit=10&offset=${selector.pageNumber + 1}`;
-      dispatch(getMyTasksList(endUrl));
+      dispatch(getMoreMyTasksList(endUrl));
     }
   }
 
@@ -72,15 +74,20 @@ const MyTasksScreen = ({ navigation }) => {
   };
 
   const renderFooter = () => {
+    if (!selector.isLoadingExtraData) { return null }
     return (
       <View style={styles.footer}>
         <Text style={styles.btnText}>Loading More...</Text>
-        {selector.isLoading ? (
-          <ActivityIndicator color={Colors.GRAY} />
-        ) : null}
+        <ActivityIndicator color={Colors.GRAY} />
       </View>
     );
   };
+
+  if (selector.tableData.length === 0) {
+    return (
+      <EmptyListView title={"No Data Found"} />
+    )
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -88,6 +95,13 @@ const MyTasksScreen = ({ navigation }) => {
         <FlatList
           data={selector.tableData}
           extraData={selector.tableData}
+          refreshControl={(
+            <RefreshControl
+              refreshing={selector.isLoading}
+              onRefresh={getMyTasksListFromServer}
+              progressViewOffset={200}
+            />
+          )}
           keyExtractor={(item, index) => index.toString()}
           showsVerticalScrollIndicator={false}
           onEndReachedThreshold={0}

@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react';
-import { SafeAreaView, StyleSheet, View, Text, FlatList, Pressable, Alert, ActivityIndicator } from 'react-native';
-import { PreEnquiryItem } from '../../../pureComponents/preEnquiryItem';
-import { PageControlItem } from '../../../pureComponents/pageControlItem';
+import React, { useEffect, useState } from 'react';
+import { SafeAreaView, StyleSheet, View, Text, FlatList, Pressable, Alert, ActivityIndicator, RefreshControl } from 'react-native';
+import { PreEnquiryItem, PageControlItem, EmptyListView } from '../../../pureComponents';
 import { Colors, GlobalStyle } from '../../../styles';
 import { useSelector, useDispatch } from 'react-redux';
 import { IconButton } from 'react-native-paper';
@@ -9,7 +8,7 @@ import VectorImage from 'react-native-vector-image';
 import { CREATE_NEW } from '../../../assets/svg';
 import { AppNavigator } from '../../../navigations';
 import { CallUserComponent, SortAndFilterComp } from '../../../components';
-import { callPressed, sortAndFilterPressed, getPreEnquiryData, setPreEnquiryList } from '../../../redux/preEnquiryReducer';
+import { callPressed, sortAndFilterPressed, getPreEnquiryData, setPreEnquiryList, getMorePreEnquiryData } from '../../../redux/preEnquiryReducer';
 import * as AsyncStore from '../../../asyncStore';
 import realm from '../../../database/realm';
 
@@ -17,11 +16,12 @@ const PreEnquiryScreen = ({ navigation }) => {
 
     const selector = useSelector(state => state.preEnquiryReducer);
     const dispatch = useDispatch();
+    const [employeeId, setEmployeeId] = useState("");
 
     useEffect(() => {
 
-        // getPreEnquiryListFromServer();
-        getPreEnquiryListFromDB();
+        getPreEnquiryListFromServer();
+        //getPreEnquiryListFromDB();
     }, [])
 
     const getPreEnquiryListFromDB = () => {
@@ -32,10 +32,28 @@ const PreEnquiryScreen = ({ navigation }) => {
     const getPreEnquiryListFromServer = async () => {
         let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
         if (empId) {
-            let endUrl = "?limit=10&offset=" + selector.pageNumber + "&status=PREENQUIRY&empId=" + empId;
-            dispatch(getPreEnquiryData(endUrl))
+            let endUrl = "?limit=10&offset=" + "0" + "&status=PREENQUIRY&empId=" + empId;
+            dispatch(getPreEnquiryData(endUrl));
+            setEmployeeId(empId);
         }
     }
+
+    const getMorePreEnquiryListFromServer = async () => {
+        if (employeeId && ((selector.pageNumber + 1) < selector.totalPages)) {
+            let endUrl = "?limit=10&offset=" + (selector.pageNumber + 1) + "&status=PREENQUIRY&empId=" + employeeId;
+            dispatch(getMorePreEnquiryData(endUrl))
+        }
+    }
+
+    const renderFooter = () => {
+        if (!selector.isLoadingExtraData) { return null }
+        return (
+            <View style={styles.footer}>
+                <Text style={styles.btnText}>Loading More...</Text>
+                <ActivityIndicator color={Colors.GRAY} />
+            </View>
+        );
+    };
 
     return (
         <SafeAreaView style={styles.conatiner}>
@@ -51,23 +69,6 @@ const PreEnquiryScreen = ({ navigation }) => {
                     dispatch(sortAndFilterPressed());
                 }}
             />
-
-            {/* {selector.modelVisible && <DatePickerComponent
-                visible={selector.modelVisible}
-                mode={'date'}
-                value={new Date(Date.now())}
-                onChange={(event, selectedDate) => {
-                    console.log('date: ', selectedDate)
-                    if (Platform.OS === "android") {
-                        dispatch(callPressed());
-                    }
-                }}
-                onRequestClose={() => {
-                    console.log('closed');
-                    dispatch(callPressed())
-                }}
-            />} */}
-
 
             <View style={{ flex: 1, paddingHorizontal: 10, paddingTop: 10 }}>
 
@@ -85,35 +86,45 @@ const PreEnquiryScreen = ({ navigation }) => {
                     </Pressable>
                 </View>
 
-                {selector.pre_enquiry_list.length > 0 ? <View style={[GlobalStyle.shadow, { backgroundColor: 'white', flex: 1, marginBottom: 10 }]}>
-                    <FlatList
-                        data={selector.pre_enquiry_list}
-                        keyExtractor={(item, index) => index.toString()}
-                        renderItem={({ item, index }) => {
-
-                            let color = Colors.WHITE;
-                            if (index % 2 != 0) {
-                                color = Colors.LIGHT_GRAY;
-                            }
-
-                            return (
-                                < PreEnquiryItem
-                                    bgColor={color}
-                                    name={item.firstName + " " + item.lastName}
-                                    subName={item.enquirySource}
-                                    date={item.createdDate}
-                                    // type={item.type}
-                                    modelName={item.model}
-                                    onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq)}
-                                    onCallPress={() => dispatch(callPressed())}
+                {selector.pre_enquiry_list.length === 0 ? <EmptyListView title={'No Data Found'} /> :
+                    <View style={[GlobalStyle.shadow, { backgroundColor: 'white', flex: 1, marginBottom: 10 }]}>
+                        <FlatList
+                            data={selector.pre_enquiry_list}
+                            extraData={selector.pre_enquiry_list}
+                            keyExtractor={(item, index) => index.toString()}
+                            refreshControl={(
+                                <RefreshControl
+                                    refreshing={selector.isLoading}
+                                    onRefresh={getPreEnquiryListFromServer}
+                                    progressViewOffset={200}
                                 />
-                            )
-                        }}
-                    />
-                </View> : <View style={styles.emptyListVw}>
-                    {selector.isLoading ? <ActivityIndicator animating={selector.isLoading} size="small" color={Colors.RED} />
-                        : <Text>{'No Data Found'}</Text>}
-                </View>}
+                            )}
+                            showsVerticalScrollIndicator={false}
+                            onEndReachedThreshold={0}
+                            onEndReached={getMorePreEnquiryListFromServer}
+                            ListFooterComponent={renderFooter}
+                            renderItem={({ item, index }) => {
+
+                                let color = Colors.WHITE;
+                                if (index % 2 != 0) {
+                                    color = Colors.LIGHT_GRAY;
+                                }
+
+                                return (
+                                    < PreEnquiryItem
+                                        bgColor={color}
+                                        name={item.firstName + " " + item.lastName}
+                                        subName={item.enquirySource}
+                                        date={item.createdDate}
+                                        // type={item.type}
+                                        modelName={item.model}
+                                        onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq)}
+                                        onCallPress={() => dispatch(callPressed())}
+                                    />
+                                )
+                            }}
+                        />
+                    </View>}
 
                 <View style={[styles.addView, GlobalStyle.shadow]}>
                     <Pressable onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.addPreEnq)}>
@@ -150,19 +161,15 @@ const styles = StyleSheet.create({
         right: 10,
         backgroundColor: 'white'
     },
-    emptyListVw: {
-        flex: 1,
+    footer: {
+        padding: 10,
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
     },
-    customShadow: {
-        shadowColor: Colors.DARK_GRAY,
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowRadius: 2,
-        shadowOpacity: 0.5,
-        elevation: 3,
-    }
+    btnText: {
+        color: Colors.GRAY,
+        fontSize: 12,
+        textAlign: 'center',
+        marginBottom: 5
+    },
 })

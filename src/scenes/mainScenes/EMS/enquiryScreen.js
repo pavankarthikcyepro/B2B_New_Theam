@@ -1,17 +1,18 @@
-import React, { useEffect } from "react";
-import { SafeAreaView, StyleSheet, View, FlatList } from "react-native";
+import React, { useEffect, useState } from "react";
+import { SafeAreaView, StyleSheet, View, FlatList, ActivityIndicator, Text, RefreshControl } from "react-native";
 import { PageControlItem } from "../../../pureComponents/pageControlItem";
 import { IconButton } from "react-native-paper";
-import { PreEnquiryItem } from "../../../pureComponents/preEnquiryItem";
+import { PreEnquiryItem, EmptyListView } from "../../../pureComponents";
 import { useDispatch, useSelector } from "react-redux";
 import { Colors, GlobalStyle } from "../../../styles";
 import { AppNavigator } from '../../../navigations';
 import * as AsyncStore from '../../../asyncStore';
-import { getEnquiryList } from "../../../redux/enquiryReducer";
+import { getEnquiryList, getMoreEnquiryList } from "../../../redux/enquiryReducer";
 
 const EnquiryScreen = ({ navigation }) => {
   const selector = useSelector((state) => state.enquiryReducer);
   const dispatch = useDispatch();
+  const [employeeId, setEmployeeId] = useState("");
 
   useEffect(() => {
     getEnquiryListFromServer();
@@ -20,11 +21,28 @@ const EnquiryScreen = ({ navigation }) => {
   const getEnquiryListFromServer = async () => {
     let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
     if (empId) {
-      let endUrl = "?limit=10&offset=" + selector.pageNumber + "&status=ENQUIRY&empId=" + empId;
-      dispatch(getEnquiryList(endUrl))
+      let endUrl = "?limit=10&offset=" + "0" + "&status=ENQUIRY&empId=" + empId;
+      dispatch(getEnquiryList(endUrl));
+      setEmployeeId(empId);
     }
   }
 
+  const getMoreEnquiryListFromServer = async () => {
+    if (employeeId && ((selector.pageNumber + 1) < selector.totalPages)) {
+      let endUrl = "?limit=10&offset=" + (selector.pageNumber + 1) + "&status=ENQUIRY&empId=" + employeeId;
+      dispatch(getMoreEnquiryList(endUrl));
+    }
+  }
+
+  const renderFooter = () => {
+    if (!selector.isLoadingExtraData) { return null }
+    return (
+      <View style={styles.footer}>
+        <Text style={styles.btnText}>Loading More...</Text>
+        <ActivityIndicator color={Colors.GRAY} />
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -36,30 +54,45 @@ const EnquiryScreen = ({ navigation }) => {
           style={{ padding: 0, marginLeft: 150 }}
         />
       </View>
-      <View style={[GlobalStyle.shadow, { backgroundColor: 'white', flex: 1, marginBottom: 10 }]}>
-        <FlatList
-          data={selector.enquiry_list}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item, index }) => {
-            let color = Colors.WHITE;
-            if (index % 2 != 0) {
-              color = Colors.LIGHT_GRAY;
-            }
 
-            return (
-              <PreEnquiryItem
-                bgColor={color}
-                name={item.firstName + " " + item.lastName}
-                subName={item.enquirySource}
-                date={item.createdDate}
-                modelName={item.model}
-                onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.detailsOverview)}
-                onCallPress={() => { console.log('call pressed') }}
+      {selector.enquiry_list.length === 0 ? <EmptyListView title={"No Data Found"} /> :
+        <View style={[GlobalStyle.shadow, { backgroundColor: 'white', flex: 1, marginBottom: 10 }]}>
+          <FlatList
+            data={selector.enquiry_list}
+            extraData={selector.enquiry_list}
+            keyExtractor={(item, index) => index.toString()}
+            refreshControl={(
+              <RefreshControl
+                refreshing={selector.isLoading}
+                onRefresh={getEnquiryListFromServer}
+                progressViewOffset={200}
               />
-            );
-          }}
-        />
-      </View>
+            )}
+            showsVerticalScrollIndicator={false}
+            onEndReachedThreshold={0}
+            onEndReached={getMoreEnquiryListFromServer}
+            ListFooterComponent={renderFooter}
+            renderItem={({ item, index }) => {
+
+              let color = Colors.WHITE;
+              if (index % 2 != 0) {
+                color = Colors.LIGHT_GRAY;
+              }
+
+              return (
+                <PreEnquiryItem
+                  bgColor={color}
+                  name={item.firstName + " " + item.lastName}
+                  subName={item.enquirySource}
+                  date={item.createdDate}
+                  modelName={item.model}
+                  onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.detailsOverview)}
+                  onCallPress={() => { console.log('call pressed') }}
+                />
+              );
+            }}
+          />
+        </View>}
     </SafeAreaView>
   );
 };
@@ -78,5 +111,16 @@ const styles = StyleSheet.create({
   },
   view2: {
     flexDirection: "row",
+  },
+  footer: {
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  btnText: {
+    color: Colors.GRAY,
+    fontSize: 12,
+    textAlign: 'center',
+    marginBottom: 5
   },
 });
