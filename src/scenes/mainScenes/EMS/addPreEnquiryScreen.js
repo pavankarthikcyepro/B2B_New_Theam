@@ -8,6 +8,7 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Alert,
+  Keyboard
 } from "react-native";
 import { ButtonComp } from "../../../components/buttonComp";
 import { Checkbox, Button, IconButton } from "react-native-paper";
@@ -28,8 +29,10 @@ import {
   showEnquirySegmentSelect,
   showSourceOfEnquirySelect,
   createPreEnquiry,
+  updatePreEnquiry,
   setCustomerTypeList,
   setCarModalList,
+  setExistingDetails
 } from "../../../redux/addPreEnquiryReducer";
 import { useDispatch, useSelector } from "react-redux";
 import { isMobileNumber, isEmail } from "../../../utils/helperFunctions";
@@ -41,22 +44,45 @@ import * as AsyncStore from "../../../asyncStore";
 
 const screenWidth = Dimensions.get("window").width;
 
-const AddPreEnquiryScreen = ({ navigation }) => {
+const AddPreEnquiryScreen = ({ route, navigation }) => {
+
   const selector = useSelector((state) => state.addPreEnquiryReducer);
   const { vehicle_modal_list, customer_type_list } = useSelector(state => state.homeReducer);
   const dispatch = useDispatch();
-  const [organizationId, setOrganizationId] = useState("");
+  const [organizationId, setOrganizationId] = useState(0);
+  const [branchId, setBranchId] = useState(0);
+  const [employeeName, setEmployeeName] = useState("");
+  const [existingPreEnquiryDetails, setExistingPreEnquiryDetails] = useState({});
+  const [fromEdit, setFromEdit] = useState(false);
 
-  useEffect(async () => {
 
-    let orgId = await AsyncStore.getData(AsyncStore.Keys.ORG_ID);
-    if (orgId) {
-      setOrganizationId(orgId);
-    }
-
+  useEffect(() => {
+    getAsyncstoreData();
+    setExistingData();
     // getCustomerTypeListFromDB();
     // getCarModalListFromDB();
   }, []);
+
+  const getAsyncstoreData = async () => {
+    const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      setOrganizationId(jsonObj.orgId);
+      setBranchId(jsonObj.branchId);
+      setEmployeeName(jsonObj.empName);
+    }
+  }
+
+  const setExistingData = () => {
+
+    if (route.params != null && route.params !== undefined) {
+      const preEnquiryDetails = route.params.preEnquiryDetails;
+      const fromEdit = route.params.fromEdit;
+      setExistingPreEnquiryDetails(preEnquiryDetails);
+      setFromEdit(fromEdit);
+      dispatch(setExistingDetails(preEnquiryDetails));
+    }
+  }
 
   const getCustomerTypeListFromDB = () => {
     const data = realm.objects("CUSTOMER_TYPE_TABLE");
@@ -70,7 +96,6 @@ const AddPreEnquiryScreen = ({ navigation }) => {
 
   useEffect(() => {
     if (selector.create_enquiry_response_obj.errorMessage === "") {
-      dispatch(clearState());
       //navigation.goBack();
       gotoConfirmPreEnquiryScreen(selector.create_enquiry_response_obj);
     } else if (selector.errorMsg) {
@@ -95,14 +120,18 @@ const AddPreEnquiryScreen = ({ navigation }) => {
     itemData.model = dms.model;
     itemData.enquirySegment = dms.enquirySegment;
     itemData.createdDate = dms.createddatetime;
-    itemData.enquirySource = dms.sourceOfEnquiry;
+    itemData.enquirySource = dms.enquirySource;
     itemData.pincode = dms.dmsAddresses ? dms.dmsAddresses[0].pincode : '';
     itemData.leadStage = dms.leadStage;
     itemData.universalId = dms.crmUniversalId;
     navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq, { itemData, fromCreatePreEnquiry: true })
+    dispatch(clearState());
   }
 
   const submitClicked = () => {
+
+    Keyboard.dismiss();
+
     if (
       selector.firstName.length == 0 ||
       selector.mobile.length == 0 ||
@@ -123,29 +152,36 @@ const AddPreEnquiryScreen = ({ navigation }) => {
       return;
     }
 
-    const owerName = "Kandukuri Sudheer Goud";
+    if (fromEdit) {
+      updatePreEneuquiryDetails();
+      return;
+    }
+
     const eventName = "";
 
     const dmsContactDtoObj = {
-      branchId: "1",
-      createdBy: owerName,
+      branchId: branchId,
+      createdBy: employeeName,
       customerType: selector.customerType,
       firstName: selector.firstName,
       lastName: selector.lastName,
-      modifiedBy: owerName,
+      modifiedBy: employeeName,
       orgId: organizationId,
       phone: selector.mobile,
       company: selector.companyName,
       email: selector.email,
       enquirySource: selector.sourceOfEnquiryId,
-      ownerName: owerName,
+      ownerName: employeeName,
       secondaryPhone: selector.alterMobile,
       status: "PREENQUIRY",
     };
 
+    // TODO:-
+    // "referencenumber": "PEQ11020421-391"
+
     const dmsLeadDtoObj = {
-      branchId: "1",
-      createdBy: owerName,
+      branchId: branchId,
+      createdBy: employeeName,
       enquirySegment: selector.enquiryType,
       firstName: selector.firstName,
       lastName: selector.lastName,
@@ -212,6 +248,63 @@ const AddPreEnquiryScreen = ({ navigation }) => {
     };
     dispatch(createPreEnquiry(dataObj));
   };
+
+  const updatePreEneuquiryDetails = () => {
+
+    let url = sales_url;
+    let dmsAccountOrContactDto = {};
+    let dmsLeadDto = {}
+
+    if (existingPreEnquiryDetails.hasOwnProperty("dmsContactDto")) {
+      url = url + "/contact?allocateDse=" + selector.create_enquiry_checked;
+      dmsAccountOrContactDto = { ...existingPreEnquiryDetails.dmsContactDto };
+    }
+    else if (existingPreEnquiryDetails.hasOwnProperty("dmsAccountDto")) {
+      url = url + "/account?allocateDse=" + selector.create_enquiry_checked;
+      dmsAccountOrContactDto = { ...existingPreEnquiryDetails.dmsAccountDto };
+    }
+
+    dmsAccountOrContactDto.firstName = selector.firstName;
+    dmsAccountOrContactDto.lastName = selector.lastName;
+    dmsAccountOrContactDto.email = selector.email;
+    dmsAccountOrContactDto.phone = selector.mobile;
+    dmsAccountOrContactDto.secondaryPhone = selector.alterMobile;
+    dmsAccountOrContactDto.model = selector.carModel;
+
+    if (existingPreEnquiryDetails.hasOwnProperty("dmsLeadDto")) {
+
+      dmsLeadDto = { ...existingPreEnquiryDetails.dmsLeadDto };
+      dmsLeadDto.firstName = selector.firstName;
+      dmsLeadDto.lastName = selector.lastName;
+      dmsLeadDto.email = selector.email;
+      dmsLeadDto.phone = selector.mobile;
+      dmsLeadDto.secondaryPhone = selector.alterMobile;
+      dmsLeadDto.model = selector.carModel;
+    }
+
+    let formData = {};
+    if (existingPreEnquiryDetails.hasOwnProperty("dmsContactDto")) {
+      formData = {
+        "dmsContactDto": dmsAccountOrContactDto,
+        "dmsLeadDto": dmsLeadDto,
+        "dmsEmployeeAllocationDtos": existingPreEnquiryDetails.dmsEmployeeAllocationDtos
+      }
+    } else {
+      formData = {
+        "dmsAccountDto": dmsAccountOrContactDto,
+        "dmsLeadDto": dmsLeadDto,
+        "dmsEmployeeAllocationDtos": existingPreEnquiryDetails.dmsEmployeeAllocationDtos
+      }
+    }
+
+    console.log("formData: ", formData);
+
+    let dataObj = {
+      url: url,
+      body: formData,
+    };
+    dispatch(updatePreEnquiry(dataObj));
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -340,6 +433,7 @@ const AddPreEnquiryScreen = ({ navigation }) => {
             <TextinputComp
               style={styles.textInputComp}
               value={selector.email}
+              editable={fromEdit}
               label={"Email-Id"}
               keyboardType={"email-address"}
               onChangeText={(text) => dispatch(setPreEnquiryDetails({ key: "EMAIL", text: text }))}
@@ -354,11 +448,13 @@ const AddPreEnquiryScreen = ({ navigation }) => {
             <DropDownSelectionItem
               label={"Select Enquiry Segment*"}
               value={selector.enquiryType}
+              disabled={fromEdit}
               onPress={() => dispatch(showEnquirySegmentSelect())}
             />
             <DropDownSelectionItem
               label={"Select Customer Type*"}
               value={selector.customerType}
+              disabled={fromEdit}
               onPress={() => dispatch(showCustomerTypeSelect())}
             />
 
@@ -371,6 +467,7 @@ const AddPreEnquiryScreen = ({ navigation }) => {
                 <TextinputComp
                   style={styles.textInputComp}
                   value={selector.companyName}
+                  editable={fromEdit}
                   label={"Company Name"}
                   keyboardType={"default"}
                   onChangeText={(text) => dispatch(setPreEnquiryDetails({ key: "COMPANY_NAME", text: text }))}
@@ -395,6 +492,7 @@ const AddPreEnquiryScreen = ({ navigation }) => {
             <DropDownSelectionItem
               label={"Select Source of Pre-Enquiry*"}
               value={selector.sourceOfEnquiry}
+              disabled={fromEdit}
               onPress={() => dispatch(showSourceOfEnquirySelect())}
             />
 
@@ -403,6 +501,7 @@ const AddPreEnquiryScreen = ({ navigation }) => {
               value={selector.pincode}
               label={"Pincode*"}
               keyboardType={"number-pad"}
+              disabled={fromEdit}
               onChangeText={(text) => dispatch(setPreEnquiryDetails({ key: "PINCODE", text: text }))}
             />
             <Text style={styles.devider}></Text>
@@ -411,7 +510,7 @@ const AddPreEnquiryScreen = ({ navigation }) => {
           <View style={styles.view2}>
             <ButtonComp
               disabled={selector.isLoading}
-              title={"SUBMIT"}
+              title={fromEdit ? "UPDATE" : "SUBMIT"}
               width={screenWidth - 40}
               onPress={submitClicked}
             />

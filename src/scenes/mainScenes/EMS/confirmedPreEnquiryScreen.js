@@ -6,16 +6,22 @@ import { Colors, GlobalStyle } from '../../../styles';
 import { TextinputComp } from '../../../components/textinputComp';
 import { DropDownComponant } from '../../../components/dropDownComp';
 import { convertTimeStampToDateString } from '../../../utils/helperFunctions';
+import { getPreEnquiryDetails } from '../../../redux/confirmedPreEnquiryReducer';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppNavigator } from '../../../navigations';
 
 const screenWidth = Dimensions.get('window').width;
 
-
 const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
+    const selector = useSelector(state => state.confirmedPreEnquiryReducer);
+    const dispatch = useDispatch();
     const { itemData, fromCreatePreEnquiry } = route.params;
-    const [checked, setChecked] = useState(false);
 
     useEffect(() => {
+
+        // api calls
+        dispatch(getPreEnquiryDetails(itemData.universalId));
 
         // Subscribe Listeners
         BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
@@ -24,12 +30,22 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         return () => {
             BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
         }
-    })
+    }, [])
 
     const handleBackButtonClick = () => {
         console.log("back pressed")
         navigation.popToTop();
         return true;
+    }
+
+    const editButton = () => {
+
+        if (!selector.isLoading) {
+            navigation.navigate(AppNavigator.EmsStackIdentifiers.addPreEnq, {
+                preEnquiryDetails: selector.pre_enquiry_details,
+                fromEdit: true
+            })
+        }
     }
 
     return (
@@ -54,7 +70,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                             icon="square-edit-outline"
                             color={Colors.DARK_GRAY}
                             size={25}
-                            onPress={() => console.log('Pressed')}
+                            onPress={editButton}
                         />
                     </View>
 

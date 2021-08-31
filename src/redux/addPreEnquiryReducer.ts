@@ -18,16 +18,22 @@ export const createPreEnquiry = createAsyncThunk('ADD_PRE_ENQUIRY_SLICE/createPr
     return response;
 })
 
+export const updatePreEnquiry = createAsyncThunk('ADD_PRE_ENQUIRY_SLICE/updatePreEnquiry', async (data) => {
+
+    const response = client.put(data['url'], data['body']);
+    return response;
+})
+
 export const addPreEnquirySlice = createSlice({
     name: "ADD_PRE_ENQUIRY_SLICE",
     initialState: {
         create_enquiry_checked: false,
-        firstName: "Test",
-        lastName: "a",
-        mobile: "8012345670",
+        firstName: "",
+        lastName: "",
+        mobile: "",
         alterMobile: "",
         email: "",
-        pincode: "500073",
+        pincode: "",
         carModel: "",
         enquiryType: "",
         customerType: "",
@@ -69,6 +75,7 @@ export const addPreEnquirySlice = createSlice({
             state.isLoading = false;
             state.status = "";
             state.errorMsg = "";
+            state.create_enquiry_response_obj = {}
         },
         setCreateEnquiryCheckbox: (state, action) => {
             state.create_enquiry_checked = !state.create_enquiry_checked;
@@ -122,7 +129,8 @@ export const addPreEnquirySlice = createSlice({
         },
         setEnquiryType: (state, action: PayloadAction<Item>) => {
             state.enquiryType = action.payload.name;
-            state.customer_type_list = CustomerTypesObj[action.payload.id];
+            state.customer_type_list = CustomerTypesObj[action.payload.name.toLowerCase()];
+            state.customerType = "";
             state.show_enquiry_segment_drop_down = !state.show_enquiry_segment_drop_down;
         },
         setCustomerType: (state, action: PayloadAction<string>) => {
@@ -151,6 +159,31 @@ export const addPreEnquirySlice = createSlice({
         },
         setCarModalList: (state, action) => {
             state.vehicle_modal_list = JSON.parse(action.payload);
+        },
+        setExistingDetails: (state, action) => {
+
+            const preEnquiryDetails = action.payload.dmsLeadDto;
+            let dmsAccountOrContactObj = {};
+            if (action.payload.dmsAccountDto) {
+                dmsAccountOrContactObj = action.payload.dmsAccountDto;
+            } else {
+                dmsAccountOrContactObj = action.payload.dmsContactDto;
+            }
+
+            state.firstName = preEnquiryDetails.firstName;
+            state.lastName = preEnquiryDetails.lastName;
+            state.mobile = preEnquiryDetails.phone;
+            state.alterMobile = dmsAccountOrContactObj["secondaryPhone"] || "";
+            state.email = preEnquiryDetails.email;
+            state.pincode = preEnquiryDetails.pincode;
+            state.carModel = preEnquiryDetails.model;
+            state.enquiryType = preEnquiryDetails.enquirySegment;
+            state.enquiry_type_list = CustomerTypesObj[preEnquiryDetails.enquirySegment.toLowerCase()];
+            state.customerType = dmsAccountOrContactObj["customerType"] || "";
+            state.sourceOfEnquiry = preEnquiryDetails.enquirySource;
+            state.sourceOfEnquiryId = preEnquiryDetails.sourceOfEnquiry;
+            state.companyName = dmsAccountOrContactObj["company"] || "";
+            state.other = "";
         }
     },
     extraReducers: (builder) => {
@@ -158,10 +191,9 @@ export const addPreEnquirySlice = createSlice({
             .addCase(createPreEnquiry.pending, (state, action) => {
                 state.isLoading = true;
                 state.status = "pending";
-                console.log('res1: ', action.payload);
             })
             .addCase(createPreEnquiry.fulfilled, (state, action) => {
-                console.log('res2: ', action.payload);
+                //console.log('res2: ', action.payload);
                 if (action.payload.success) {
                     state.status = "success";
                     state.create_enquiry_response_obj = action.payload
@@ -174,6 +206,24 @@ export const addPreEnquirySlice = createSlice({
                 state.isLoading = false;
                 state.status = "failed";
                 console.log('res3: ', action.payload);
+            })
+            .addCase(updatePreEnquiry.pending, (state, action) => {
+                state.isLoading = true;
+                state.status = "pending";
+            })
+            .addCase(updatePreEnquiry.fulfilled, (state, action) => {
+                console.log('res2: ', action.payload);
+                if (action.payload.success) {
+                    state.status = "success";
+                    state.create_enquiry_response_obj = action.payload
+                } else {
+                    state.errorMsg = action.payload.errorMessage;
+                }
+                state.isLoading = false;
+            })
+            .addCase(updatePreEnquiry.rejected, (state, action) => {
+                state.isLoading = false;
+                state.status = "failed";
             })
     }
 });
@@ -191,6 +241,7 @@ export const {
     showEnquirySegmentSelect,
     showSourceOfEnquirySelect,
     setCustomerTypeList,
-    setCarModalList
+    setCarModalList,
+    setExistingDetails
 } = addPreEnquirySlice.actions;
 export default addPreEnquirySlice.reducer;

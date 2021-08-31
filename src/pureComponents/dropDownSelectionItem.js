@@ -3,9 +3,9 @@ import { Pressable, View, Text, StyleSheet } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import { Colors, GlobalStyle } from '../styles';
 
-export const DropDownSelectionItem = ({ label, value, onPress }) => {
+export const DropDownSelectionItem = ({ label, value, onPress, disabled = false }) => {
     return (
-        <Pressable onPress={onPress}>
+        <Pressable onPress={onPress} disabled={disabled}>
             <View style={styles.container}>
                 <Text style={styles.label}>{value ? label : ""}</Text>
                 <View style={[styles.view3, { paddingBottom: value ? 0 : 20 }]}>
