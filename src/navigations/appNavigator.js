@@ -27,8 +27,8 @@ import NotificationScreen from "../scenes/mainScenes/notificationsScreen";
 import AddPreEnquiryScreen from "../scenes/mainScenes/EMS/addPreEnquiryScreen";
 import ConfirmedPreEnquiryScreen from "../scenes/mainScenes/EMS/confirmedPreEnquiryScreen";
 import EnquiryFormScreen from "../scenes/mainScenes/EMS/enquiryFormScreen";
-import PreBookingFormScreen from "../scenes/mainScenes/PreBooking/prebookingFormScreen";
-import PreBookingScreen from "../scenes/mainScenes/PreBooking/prebookingScreen";
+import PreBookingFormScreen from "../scenes/mainScenes/EMS/prebookingFormScreen";
+import PreBookingScreen from "../scenes/mainScenes/EMS/prebookingScreen";
 import HomeVisitScreen from "../scenes/mainScenes/MyTasks/homeVisitScreen";
 import PreBookingFollowUpScreen from "../scenes/mainScenes/MyTasks/preBookingFollowUpScreen";
 import TestDriveScreen from "../scenes/mainScenes/MyTasks/testDriveScreen";
@@ -103,6 +103,7 @@ export const EmsStackIdentifiers = {
   addPreEnq: "ADD_PRE_ENQUIRY",
   confirmedPreEnq: "CONFIRMED_PRE_ENQUIRY",
   detailsOverview: "DETAILS_OVERVIEW",
+  preBookingForm: "PRE_BOOKING_FORM"
 };
 
 export const PreBookingStackIdentifiers = {
@@ -200,7 +201,12 @@ const EmsStackNavigator = ({ navigation }) => {
       <EmsStack.Screen
         name={EmsStackIdentifiers.detailsOverview}
         component={EnquiryFormScreen}
-        options={{ title: "Details OverView" }}
+        options={{ title: "Enquiry Form" }}
+      />
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.preBookingForm}
+        component={PreBookingFormScreen}
+        options={{ title: "Pre-Booking Form" }}
       />
     </EmsStack.Navigator>
   );
@@ -458,10 +464,10 @@ const MainStackDrawerNavigator = () => {
         component={EventManagementStackNavigator}
       />
 
-      <MainDrawerNavigator.Screen
+      {/* <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.preBooking}
         component={PreBookingStackNavigator}
-      />
+      /> */}
     </MainDrawerNavigator.Navigator>
   );
 };

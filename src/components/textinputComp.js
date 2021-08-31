@@ -4,7 +4,7 @@ import { TextInput, HelperText } from 'react-native-paper';
 import { Colors } from '../styles';
 import PropTypes from 'prop-types';
 
-const TextinputComp = ({ value, mode = 'flat', label, disabled, placeholder, error, errorMsg = "", multiline, numberOfLines, editable, keyboardType = 'default', isSecure = false, showRightIcon = false, rightIconObj = {}, onChangeText, onRightIconPressed, style = {}, onPressIn }) => {
+const TextinputComp = ({ value, mode = 'flat', label, disabled, placeholder, error, errorMsg = "", multiline, numberOfLines, editable, keyboardType = 'default', isSecure = false, showRightIcon = false, maxLength = null, rightIconObj = {}, onChangeText, onRightIconPressed, style = {}, onPressIn }) => {
 
     let rightIconComp = null;
     if (showRightIcon) {
@@ -30,6 +30,7 @@ const TextinputComp = ({ value, mode = 'flat', label, disabled, placeholder, err
                 underlineColorAndroid={Colors.TEXT_INPUT_BORDER_COLOR}
                 underlineColor={Colors.LIGHT_GRAY}
                 outlineColor={Colors.BLACK}
+                maxLength={maxLength}
                 multiline={multiline}
                 numberOfLines={numberOfLines}
                 editable={editable}

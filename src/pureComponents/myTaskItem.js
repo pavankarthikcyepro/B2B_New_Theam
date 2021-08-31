@@ -24,7 +24,7 @@ export const MyTaskItem = ({ taskName, status, created, dmsLead, phone }) => {
             <NameComp label={'DMS Lead'} value={dmsLead} />
             <NameComp label={'Phone No'} value={phone} />
             <NameComp label={'Created On'} value={date} valueStyle={{ fontSize: 14 }} />
-            <View style={styles.bckVw}>
+            <View style={[styles.bckVw, { marginTop: 10 }]}>
                 <Text style={[styles.text1]}>{'Task Status'}</Text>
                 <View style={{ flexDirection: 'row' }}>
                     <Text style={[styles.text2]}>{":  "}</Text>
@@ -57,6 +57,6 @@ const styles = StyleSheet.create({
     bckVw: {
         flexDirection: "row",
         alignItems: 'center',
-        height: 28
+        height: 25
     }
 })

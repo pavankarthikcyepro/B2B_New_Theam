@@ -47,14 +47,15 @@ const EnquiryScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.view2}>
+      {/* <View style={styles.view2}>
         <PageControlItem pageNumber={1} totalPages={7} />
         <IconButton
           icon={"refresh"}
           size={25}
           style={{ padding: 0, marginLeft: 150 }}
         />
-      </View>
+      </View> */}
+      <View style={{ height: 10 }}></View>
 
       {selector.enquiry_list.length === 0 ? <EmptyListView title={"No Data Found"} /> :
         <View style={[GlobalStyle.shadow, { backgroundColor: 'white', flex: 1, marginBottom: 10 }]}>

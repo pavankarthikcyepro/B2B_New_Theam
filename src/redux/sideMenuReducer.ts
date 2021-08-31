@@ -27,12 +27,13 @@ const data = [
     icon: SCHEDULE_FILL,
     screen: 103,
   },
-  {
-    title: "Pre Booking",
-    icon: SCHEDULE_FILL,
-    screen: 104,
-  },
 ];
+
+// {
+//   title: "Pre Booking",
+//   icon: SCHEDULE_FILL,
+//   screen: 104,
+// },
 
 export const sideMenuSlice = createSlice({
   name: "SIDE_MENU",

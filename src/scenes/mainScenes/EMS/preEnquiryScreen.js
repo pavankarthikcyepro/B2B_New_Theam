@@ -74,11 +74,6 @@ const PreEnquiryScreen = ({ navigation }) => {
             <View style={{ flex: 1, paddingHorizontal: 10, paddingTop: 10 }}>
 
                 <View style={styles.view1}>
-                    <PageControlItem
-                        pageNumber={1}
-                        totalPages={10}
-
-                    />
                     <Pressable onPress={() => dispatch(sortAndFilterPressed())}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Text style={styles.text1}>{'Sort & Filter'}</Text>
@@ -119,7 +114,7 @@ const PreEnquiryScreen = ({ navigation }) => {
                                         date={item.createdDate}
                                         // type={item.type}
                                         modelName={item.model}
-                                        onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq)}
+                                        onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq, { itemData: item, fromCreatePreEnquiry: false })}
                                         onCallPress={() => callNumber(item.phone)}
                                     />
                                 )
@@ -148,7 +143,7 @@ const styles = StyleSheet.create({
     },
     view1: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-end',
         marginBottom: 5
     },
     text1: {

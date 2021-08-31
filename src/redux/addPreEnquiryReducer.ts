@@ -1,79 +1,11 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { client } from "../networking/client";
+import { EnquiryTypes, SourceOfEnquiryTypes, CustomerTypesObj } from "../jsonData/preEnquiryScreenJsonData";
 
-export const EnquiryTypes = [
-    {
-        "id": "1",
-        "name": "Personal"
-    },
-    {
-        "id": "2",
-        "name": "Commercial"
-    },
-    {
-        "id": "3",
-        "name": "Company"
-    }
-];
-
-export const SourceOfEnquiryTypes = [
-    {
-        id: 1,
-        name: 'ShowRoom',
-    },
-    {
-        id: 2,
-        name: 'Field',
-    },
-    {
-        id: 3,
-        name: 'Digital Marketing',
-    },
-    {
-        id: 4,
-        name: 'Event',
-    },
-    {
-        id: 5,
-        name: 'Social Network',
-    },
-    {
-        id: 6,
-        name: 'Reference',
-    },
-    {
-        id: 7,
-        name: 'Website',
-    },
-    {
-        id: 8,
-        name: 'App',
-    },
-    {
-        id: 9,
-        name: 'NewsPaper',
-    },
-    {
-        id: 10,
-        name: 'Leasing',
-    },
-    {
-        id: 11,
-        name: 'Workshop',
-    },
-    {
-        id: 12,
-        name: 'DSA',
-    },
-    {
-        id: 13,
-        name: 'Freelancer',
-    },
-    {
-        id: 14,
-        name: 'Other',
-    }
-];
+interface TextModel {
+    key: string,
+    text: string
+}
 
 interface Item {
     name: string,
@@ -90,18 +22,22 @@ export const addPreEnquirySlice = createSlice({
     name: "ADD_PRE_ENQUIRY_SLICE",
     initialState: {
         create_enquiry_checked: false,
-        firstName: "Test_New",
-        lastName: "a1",
-        mobile: "8888888801",
+        firstName: "Test",
+        lastName: "a",
+        mobile: "8012345670",
         alterMobile: "",
-        email: "test01@gmail.com",
-        pincode: "",
+        email: "",
+        pincode: "500073",
         carModel: "",
         enquiryType: "",
         customerType: "",
         sourceOfEnquiry: "",
         sourceOfEnquiryId: null,
         companyName: "",
+        other: "",
+        drop_down_data: [],
+        drop_down_key_id: "",
+        show_drop_down: false,
         enquiry_type_list: EnquiryTypes,
         source_of_enquiry_type_list: SourceOfEnquiryTypes,
         show_model_drop_down: false,
@@ -112,7 +48,8 @@ export const addPreEnquirySlice = createSlice({
         status: "",
         errorMsg: "",
         vehicle_modal_list: [],
-        customer_type_list: []
+        customer_type_list: [],
+        create_enquiry_response_obj: {},
     },
     reducers: {
         clearState: (state) => {
@@ -136,30 +73,56 @@ export const addPreEnquirySlice = createSlice({
         setCreateEnquiryCheckbox: (state, action) => {
             state.create_enquiry_checked = !state.create_enquiry_checked;
         },
-        setFirstName: (state, action: PayloadAction<string>) => {
-            state.firstName = action.payload;
+        showDropDown: (state, action) => {
+            switch (action.payload) {
+                case "ENQUIRY_SEGMENT":
+                    break;
+                case "CAR_MODEL":
+                    break;
+                case "CUSTOMER_TYPE":
+                    break;
+                case "SOURCE_OF_ENQUIRY":
+                    break;
+            }
+            state.drop_down_key_id = action.payload;
+            state.show_drop_down = !state.show_drop_down;
         },
-        setLastName: (state, action: PayloadAction<string>) => {
-            state.lastName = action.payload;
-        },
-        setMobile: (state, action: PayloadAction<string>) => {
-            state.mobile = action.payload;
-        },
-        setAlterMobile: (state, action: PayloadAction<string>) => {
-            state.alterMobile = action.payload;
-        },
-        setEmail: (state, action: PayloadAction<string>) => {
-            state.email = action.payload;
-        },
-        setPincode: (state, action: PayloadAction<string>) => {
-            state.pincode = action.payload;
+        setPreEnquiryDetails: (state, action: PayloadAction<TextModel>) => {
+            const { key, text } = action.payload;
+            switch (key) {
+                case "FIRST_NAME":
+                    state.firstName = text;
+                    break;
+                case "LAST_NAME":
+                    state.lastName = text;
+                    break;
+                case "MOBILE":
+                    state.mobile = text;
+                    break;
+                case "ALTER_MOBILE":
+                    state.alterMobile = text;
+                    break;
+                case "EMAIL":
+                    state.email = text;
+                    break;
+                case "COMPANY_NAME":
+                    state.companyName = text;
+                    break;
+                case "OTHER":
+                    state.other = text;
+                    break;
+                case "PINCODE":
+                    state.pincode = text;
+                    break;
+            }
         },
         setCarModel: (state, action: PayloadAction<string>) => {
             state.carModel = action.payload;
             state.show_model_drop_down = !state.show_model_drop_down;
         },
-        setEnquiryType: (state, action: PayloadAction<string>) => {
-            state.enquiryType = action.payload;
+        setEnquiryType: (state, action: PayloadAction<Item>) => {
+            state.enquiryType = action.payload.name;
+            state.customer_type_list = CustomerTypesObj[action.payload.id];
             state.show_enquiry_segment_drop_down = !state.show_enquiry_segment_drop_down;
         },
         setCustomerType: (state, action: PayloadAction<string>) => {
@@ -170,9 +133,6 @@ export const addPreEnquirySlice = createSlice({
             state.sourceOfEnquiry = action.payload.name;
             state.sourceOfEnquiryId = action.payload.id;
             state.show_source_type_drop_down = !state.show_source_type_drop_down;
-        },
-        setCompanyName: (state, action: PayloadAction<string>) => {
-            state.companyName = action.payload;
         },
         showModelSelect: (state, action) => {
             state.show_model_drop_down = !state.show_model_drop_down;
@@ -201,9 +161,10 @@ export const addPreEnquirySlice = createSlice({
                 console.log('res1: ', action.payload);
             })
             .addCase(createPreEnquiry.fulfilled, (state, action) => {
-                console.log('res2: ', action.payload.success);
+                console.log('res2: ', action.payload);
                 if (action.payload.success) {
                     state.status = "success";
+                    state.create_enquiry_response_obj = action.payload
                 } else {
                     state.errorMsg = action.payload.errorMessage;
                 }
@@ -220,17 +181,11 @@ export const addPreEnquirySlice = createSlice({
 export const {
     clearState,
     setCreateEnquiryCheckbox,
-    setFirstName,
-    setLastName,
-    setMobile,
-    setAlterMobile,
-    setEmail,
-    setPincode,
+    setPreEnquiryDetails,
     setCarModel,
     setEnquiryType,
     setCustomerType,
     setSourceOfEnquiry,
-    setCompanyName,
     showModelSelect,
     showCustomerTypeSelect,
     showEnquirySegmentSelect,

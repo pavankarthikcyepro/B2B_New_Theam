@@ -38,6 +38,7 @@ const URL = {
     },
     CUSTOMER_TYPE: () => sales_url + "/master-data/customertype",
     MY_TASKS: () => sales_url + "/workflow/assignedTasks?",
+    CONTACT_DETAILS: () => sales_url + "/lead/id/"
 }
 
 export default URL;

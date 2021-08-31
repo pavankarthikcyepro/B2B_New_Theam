@@ -1,18 +1,36 @@
-import React, { useState } from 'react';
-import { SafeAreaView, ScrollView, View, Text, StyleSheet, Dimensions, KeyboardAvoidingView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { SafeAreaView, ScrollView, View, Text, StyleSheet, Dimensions, KeyboardAvoidingView, BackHandler } from 'react-native';
 import { ButtonComp } from "../../../components/buttonComp";
 import { Checkbox, Button, IconButton, Divider } from 'react-native-paper';
 import { Colors, GlobalStyle } from '../../../styles';
 import { TextinputComp } from '../../../components/textinputComp';
 import { DropDownComponant } from '../../../components/dropDownComp';
+import { convertTimeStampToDateString } from '../../../utils/helperFunctions';
 
 const screenWidth = Dimensions.get('window').width;
 
 
-const ConfirmedPreEnquiryScreen = () => {
+const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
+    const { itemData, fromCreatePreEnquiry } = route.params;
     const [checked, setChecked] = useState(false);
-    const [text, setText] = useState("");
+
+    useEffect(() => {
+
+        // Subscribe Listeners
+        BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
+
+        // UnSubscribe Listeners
+        return () => {
+            BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
+        }
+    })
+
+    const handleBackButtonClick = () => {
+        console.log("back pressed")
+        navigation.popToTop();
+        return true;
+    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -43,54 +61,48 @@ const ConfirmedPreEnquiryScreen = () => {
                     <View style={[{ borderRadius: 6, }]}>
                         <TextinputComp
                             style={{ height: 70 }}
-                            value={"Ravinder Katta"}
+                            value={itemData.firstName + " " + itemData.lastName}
                             label={'Customer Name'}
                             editable={false}
-                            onChangeText={(text) => setText(text)}
                         />
                         <Text style={styles.devider}></Text>
                         <TextinputComp
                             style={{ height: 70 }}
-                            value={"345678956"}
+                            value={itemData.phone}
                             label={'Mobile Number'}
                             editable={false}
-                            onChangeText={(text) => setText(text)}
                         />
                         <Text style={styles.devider}></Text>
 
                         <TextinputComp
                             style={{ height: 70 }}
-                            value={"09/08/2021"}
+                            value={convertTimeStampToDateString(itemData.createdDate)}
                             label={'Date Created'}
                             editable={false}
-                            onChangeText={(text) => setText(text)}
                         />
                         <Text style={styles.devider}></Text>
 
                         <TextinputComp
                             style={{ height: 70 }}
-                            value={"Showroom"}
+                            value={itemData.enquirySource}
                             label={'Source of Pre-Enquiry'}
                             editable={false}
-                            onChangeText={(text) => setText(text)}
                         />
                         <Text style={styles.devider}></Text>
 
                         <TextinputComp
                             style={{ height: 70 }}
-                            value={"Creta"}
+                            value={itemData.model}
                             label={'Modal'}
                             editable={false}
-                            onChangeText={(text) => setText(text)}
                         />
                         <Text style={styles.devider}></Text>
 
                         <TextinputComp
                             style={{ height: 70 }}
-                            value={"Pre-enquiry"}
+                            value={itemData.leadStage}
                             label={'Status'}
                             editable={false}
-                            onChangeText={(text) => setText(text)}
                         />
                         <Text style={styles.devider}></Text>
 
@@ -99,15 +111,17 @@ const ConfirmedPreEnquiryScreen = () => {
                             <View style={styles.view3}>
                                 <Button
                                     mode="contained"
-                                    labelStyle={{ textTransform: 'none' }}
+                                    color={Colors.RED}
+                                    labelStyle={{ textTransform: 'none', color: Colors.WHITE }}
                                     onPress={() => console.log('Pressed')}
                                 >
                                     Create Enuqiry
                                 </Button>
                                 <Button
                                     mode="contained"
-                                    labelStyle={{ textTransform: 'none' }}
-                                    onPress={() => console.log('Pressed')}
+                                    color={Colors.BLACK}
+                                    labelStyle={{ textTransform: 'none', color: Colors.WHITE }}
+                                    onPress={() => navigation.popToTop()}
                                 >
                                     No Thanks
                                 </Button>
