@@ -25,6 +25,8 @@ const profileBgWidth = profileWidth + 5;
 const SideMenuScreen = ({ navigation }) => {
 
   const selector = useSelector((state) => state.sideMenuReducer);
+  const homeSelector = useSelector((state) => state.homeReducer);
+
   const { signOut } = React.useContext(AuthContext);
   const [empName, setEmpName] = useState("");
   const [email, setEmail] = useState("");
@@ -77,6 +79,7 @@ const SideMenuScreen = ({ navigation }) => {
   const signOutClicked = () => {
 
     AsyncStore.storeData(AsyncStore.Keys.USER_NAME, "");
+    AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, "");
     navigation.closeDrawer()
     //realm.close();
     signOut();

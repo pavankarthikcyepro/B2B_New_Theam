@@ -3,7 +3,7 @@ import { SafeAreaView, StyleSheet, Modal, View, TouchableOpacity, Platform, Perm
 import { Colors } from '../styles';
 import { Portal, Text, Button, Divider } from 'react-native-paper';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
-import { showToast, showToastAlert } from '../utils/toast';
+import { showToast, showToastRedAlert } from '../utils/toast';
 
 const NameItem = ({ title, titleStyle, onPress }) => {
     return (
@@ -101,13 +101,13 @@ const ImagePickerComponent = ({ visible, keyId = "", onDismiss, selectedImage })
         else if (res.errorCode) {
             switch (res.errorCode) {
                 case "camera_unavailable":
-                    showToastAlert("Camera unavailable");
+                    showToastRedAlert("Camera unavailable");
                     break;
                 case "permission":
-                    showToastAlert("Permission denied");
+                    showToastRedAlert("Permission denied");
                     break;
                 case "others":
-                    showToastAlert("Something wrong");
+                    showToastRedAlert("Something wrong");
                     break;
             }
         }
@@ -140,7 +140,7 @@ const ImagePickerComponent = ({ visible, keyId = "", onDismiss, selectedImage })
 
     return (
         <Modal
-            animationType={'fade'}
+            animationType={Platform.OS === "ios" ? 'slide' : 'fade'}
             transparent={true}
             visible={visible}
             onRequestClose={onDismiss}

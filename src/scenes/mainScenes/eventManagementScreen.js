@@ -1,13 +1,23 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { SafeAreaView, StyleSheet, View } from "react-native";
 import { EventManagementTopTabNavigator } from "../../navigations/eventManagementTopTabNavigator";
 import { DateRangeComp } from "../../components/dateRangeComp";
 
 const EventManagementScreen = ({ navigation }) => {
+
+
   return (
     <SafeAreaView style={styles.container}>
+
+
+
       <View style={styles.view1}>
-        <DateRangeComp fromDate={"01/01/2021"} toDate={"19/11/2021"} />
+        <DateRangeComp
+          fromDate={"01/01/2021"}
+          toDate={"19/11/2021"}
+          fromDateClicked={() => console.log("from date")}
+          toDateClicked={() => console.log("to date")}
+        />
       </View>
       <EventManagementTopTabNavigator />
     </SafeAreaView>

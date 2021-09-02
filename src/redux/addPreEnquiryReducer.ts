@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { client } from "../networking/client";
 import { EnquiryTypes, SourceOfEnquiryTypes, CustomerTypesObj } from "../jsonData/preEnquiryScreenJsonData";
+import { showToast } from "../utils/toast";
 
 interface TextModel {
     key: string,
@@ -12,16 +13,34 @@ interface Item {
     id: string
 }
 
-export const createPreEnquiry = createAsyncThunk('ADD_PRE_ENQUIRY_SLICE/createPreEnquiry', async (data) => {
+export const createPreEnquiry = createAsyncThunk('ADD_PRE_ENQUIRY_SLICE/createPreEnquiry', async (data, { rejectWithValue }) => {
 
-    const response = client.post(data['url'], data['body']);
-    return response;
+    const response = await client.post(data['url'], data['body']);
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
 })
 
-export const updatePreEnquiry = createAsyncThunk('ADD_PRE_ENQUIRY_SLICE/updatePreEnquiry', async (data) => {
+export const continueToCreatePreEnquiry = createAsyncThunk('ADD_PRE_ENQUIRY_SLICE/continueToCreatePreEnquiry', async (data, { rejectWithValue }) => {
 
-    const response = client.put(data['url'], data['body']);
-    return response;
+    const response = await client.post(data['url'], data['body']);
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const updatePreEnquiry = createAsyncThunk('ADD_PRE_ENQUIRY_SLICE/updatePreEnquiry', async (data, { rejectWithValue }) => {
+
+    const response = await client.put(data['url'], data['body']);
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
 })
 
 export const addPreEnquirySlice = createSlice({
@@ -194,15 +213,18 @@ export const addPreEnquirySlice = createSlice({
             })
             .addCase(createPreEnquiry.fulfilled, (state, action) => {
                 //console.log('res2: ', action.payload);
-                if (action.payload.success) {
-                    state.status = "success";
-                    state.create_enquiry_response_obj = action.payload
+                if (action.payload.errorMessage) {
+                    showToast(action.payload.errorMessage);
                 } else {
-                    state.errorMsg = action.payload.errorMessage;
+                    state.create_enquiry_response_obj = action.payload
                 }
                 state.isLoading = false;
             })
             .addCase(createPreEnquiry.rejected, (state, action) => {
+                const message = action.payload["message"] || "";
+                if (message) {
+                    showToast(message)
+                }
                 state.isLoading = false;
                 state.status = "failed";
                 console.log('res3: ', action.payload);
@@ -213,17 +235,19 @@ export const addPreEnquirySlice = createSlice({
             })
             .addCase(updatePreEnquiry.fulfilled, (state, action) => {
                 console.log('res2: ', action.payload);
-                if (action.payload.success) {
-                    state.status = "success";
-                    state.create_enquiry_response_obj = action.payload
+                if (action.payload.errorMessage) {
+                    showToast(action.payload.errorMessage);
                 } else {
-                    state.errorMsg = action.payload.errorMessage;
+                    state.create_enquiry_response_obj = action.payload
                 }
                 state.isLoading = false;
             })
             .addCase(updatePreEnquiry.rejected, (state, action) => {
                 state.isLoading = false;
                 state.status = "failed";
+            })
+            .addCase(continueToCreatePreEnquiry.fulfilled, (state, action) => {
+                console.log('continueToCreatePreEnquiry: ', action.payload);
             })
     }
 });

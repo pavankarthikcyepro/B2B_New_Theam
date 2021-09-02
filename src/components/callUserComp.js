@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, StyleSheet, View, Dimensions, Text, TouchableOpacity } from 'react-native';
+import { Modal, StyleSheet, View, Dimensions, Text, TouchableOpacity, Platform } from 'react-native';
 import { Colors } from '../styles';
 import { IconButton, Checkbox } from 'react-native-paper';
 import { callNumber } from '../utils/helperFunctions';
@@ -32,7 +32,7 @@ const CallUserComponent = ({ visible = false, onRequestClose }) => {
 
     return (
         <Modal
-            animationType={'slide'}
+            animationType={Platform.OS === "ios" ? 'slide' : 'fade'}
             transparent={true}
             visible={visible}
             onRequestClose={onRequestClose}

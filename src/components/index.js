@@ -8,6 +8,7 @@ import { TextinputComp } from "./textinputComp";
 import { SortAndFilterComp } from "./sortAndFilterComp";
 import LoaderComponent from "./loaderComp";
 import { ImagePickerComponent } from "./imagePickerComp";
+import { SelectEmployeeComponant } from "./selectEmployeeComp";
 
 
 export {
@@ -19,5 +20,6 @@ export {
     TextinputComp,
     SortAndFilterComp,
     LoaderComponent,
-    ImagePickerComponent
+    ImagePickerComponent,
+    SelectEmployeeComponant
 };

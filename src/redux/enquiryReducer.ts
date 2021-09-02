@@ -2,18 +2,26 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import URL from "../networking/endpoints";
 import { client } from '../networking/client';
 
-export const getEnquiryList = createAsyncThunk("ENQUIRY/getEnquiryList", async (endUrl) => {
+export const getEnquiryList = createAsyncThunk("ENQUIRY/getEnquiryList", async (endUrl, { rejectWithValue }) => {
 
   let url = URL.LEADS_LIST_API() + endUrl;
   const response = await client.get(url);
-  return response
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
 })
 
-export const getMoreEnquiryList = createAsyncThunk("ENQUIRY/getMoreEnquiryList", async (endUrl) => {
+export const getMoreEnquiryList = createAsyncThunk("ENQUIRY/getMoreEnquiryList", async (endUrl, { rejectWithValue }) => {
 
   let url = URL.LEADS_LIST_API() + endUrl;
   const response = await client.get(url);
-  return response
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
 })
 
 const enquirySlice = createSlice({

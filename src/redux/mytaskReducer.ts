@@ -3,18 +3,26 @@ import { client } from '../networking/client';
 import URL from "../networking/endpoints";
 
 
-export const getMyTasksList = createAsyncThunk("MY_TASKS/getMyTasksList", async (endUrl) => {
+export const getMyTasksList = createAsyncThunk("MY_TASKS/getMyTasksList", async (endUrl, { rejectWithValue }) => {
 
   const url = URL.MY_TASKS() + endUrl;
   const response = await client.get(url);
-  return response;
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
 })
 
-export const getMoreMyTasksList = createAsyncThunk("MY_TASKS/getMoreMyTasksList", async (endUrl) => {
+export const getMoreMyTasksList = createAsyncThunk("MY_TASKS/getMoreMyTasksList", async (endUrl, { rejectWithValue }) => {
 
   const url = URL.MY_TASKS() + endUrl;
   const response = await client.get(url);
-  return response;
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
 })
 
 export const mytaskSlice = createSlice({

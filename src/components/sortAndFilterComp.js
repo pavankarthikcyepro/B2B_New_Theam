@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, SafeAreaView, StyleSheet, View, Dimensions, Text, TouchableOpacity, FlatList, Pressable } from 'react-native';
+import { Modal, SafeAreaView, StyleSheet, View, Dimensions, Text, TouchableOpacity, FlatList, Pressable, Platform } from 'react-native';
 import { Colors, GlobalStyle } from '../styles';
 import { IconButton, Checkbox, Button, RadioButton } from 'react-native-paper';
 
@@ -54,7 +54,7 @@ const SortAndFilterComp = ({ visible = false, onRequestClose }) => {
 
     return (
         <Modal
-            animationType={'slide'}
+            animationType={Platform.OS === "ios" ? 'slide' : 'fade'}
             transparent={true}
             visible={visible}
             onRequestClose={onRequestClose}

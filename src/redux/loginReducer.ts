@@ -48,35 +48,55 @@ const initialState: LoginState = {
     menuListStatus: ""
 }
 
-export const postUserData = createAsyncThunk('LOGIN_SLICE/postUserData', async (inputData) => {
+export const postUserData = createAsyncThunk('LOGIN_SLICE/postUserData', async (inputData, { rejectWithValue }) => {
 
     const response = await client.post(URL.LOGIN(), inputData)
-    return response
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
 })
 
-export const getMenuList = createAsyncThunk("LOGIN_SLICE/getMenuList", async (name) => {
+export const getMenuList = createAsyncThunk("LOGIN_SLICE/getMenuList", async (name, { rejectWithValue }) => {
 
-    const response = client.get(URL.MENULIST_API(name))
-    return response;
+    const response = await client.get(URL.MENULIST_API(name))
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
 })
 
-export const getPreEnquiryData = createAsyncThunk('LOGIN_SLICE/getPreEnquiryData', async (endUrl) => {
+export const getPreEnquiryData = createAsyncThunk('LOGIN_SLICE/getPreEnquiryData', async (endUrl, { rejectWithValue }) => {
 
     let url = URL.LEADS_LIST_API() + endUrl;
     const response = await client.get(url);
-    return response
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
 })
 
-export const getCustomerTypeList = createAsyncThunk("LOGIN_SLICE/getCustomerTypeList", async () => {
+export const getCustomerTypeList = createAsyncThunk("LOGIN_SLICE/getCustomerTypeList", async (data, { rejectWithValue }) => {
 
-    const response = client.get(URL.CUSTOMER_TYPE())
-    return response;
+    const response = await client.get(URL.CUSTOMER_TYPE())
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
 })
 
-export const getCarModalList = createAsyncThunk("LOGIN_SLICE/getCarModalList", async (orgId) => {
+export const getCarModalList = createAsyncThunk("LOGIN_SLICE/getCarModalList", async (orgId, { rejectWithValue }) => {
 
-    const response = client.get(URL.VEHICLE_MODELS(orgId))
-    return response;
+    const response = await client.get(URL.VEHICLE_MODELS(orgId))
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
 })
 
 export const loginSlice = createSlice({

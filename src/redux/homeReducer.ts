@@ -42,23 +42,46 @@ const dates = [
   },
 ];
 
-export const getMenuList = createAsyncThunk("HOME/getMenuList", async (name) => {
+export const getMenuList = createAsyncThunk("HOME/getMenuList", async (name, { rejectWithValue }) => {
 
-  const response = client.get(URL.MENULIST_API(name))
-  return response;
+  const response = await client.get(URL.MENULIST_API(name))
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
 })
 
-export const getCarModalList = createAsyncThunk("HOME/getCarModalList", async (orgId) => {
+export const getCarModalList = createAsyncThunk("HOME/getCarModalList", async (orgId, { rejectWithValue }) => {
 
-  const response = client.get(URL.VEHICLE_MODELS(orgId))
-  return response;
+  const response = await client.get(URL.VEHICLE_MODELS(orgId))
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
 })
 
-export const getCustomerTypeList = createAsyncThunk("HOME/getCustomerTypeList", async () => {
+export const getCustomerTypeList = createAsyncThunk("HOME/getCustomerTypeList", async (data, { rejectWithValue }) => {
 
-  const response = client.get(URL.CUSTOMER_TYPE())
-  return response;
+  const response = await client.get(URL.CUSTOMER_TYPE())
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
 })
+
+const AVAILABLE_SCREENS = [
+  {
+    "menuId": 81,
+    "displayName": "EMS",
+  },
+  {
+    "menuId": 100,
+    "displayName": "Event Management",
+  }
+]
 
 export const homeSlice = createSlice({
   name: "HOME",
@@ -86,6 +109,19 @@ export const homeSlice = createSlice({
       .addCase(getMenuList.fulfilled, (state, action) => {
         //console.log('menu_list: ', action.payload);
         const dmsEntityObj = action.payload.dmsEntity;
+        const menuList = dmsEntityObj.menuList;
+
+        if (menuList.length > 0) {
+          let newMenuList = [];
+          menuList.forEach((item) => {
+            newMenuList.push({
+              screen: item.menuId,
+              title: item.displayName
+            })
+          });
+          state.menuList = newMenuList;
+        }
+
         const empId = dmsEntityObj.loginEmployee.empId;
         AsyncStore.storeData(AsyncStore.Keys.EMP_ID, empId.toString());
         AsyncStore.storeData(AsyncStore.Keys.LOGIN_EMPLOYEE, JSON.stringify(dmsEntityObj.loginEmployee));

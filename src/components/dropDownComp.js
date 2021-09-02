@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, SafeAreaView, View, Text, StyleSheet, FlatList, Pressable, Dimensions } from 'react-native';
+import { Modal, SafeAreaView, View, Text, StyleSheet, FlatList, Pressable, Dimensions, Platform } from 'react-native';
 import { Colors } from '../styles';
 import { List, Divider, Button } from 'react-native-paper';
 
@@ -65,7 +65,7 @@ const DropDownComponant = ({ visible = false, multiple = false, headerTitle = "S
 
     return (
         <Modal
-            animationType={'slide'}
+            animationType={Platform.OS === "ios" ? 'slide' : 'fade'}
             transparent={true}
             visible={visible}
             onRequestClose={() => { }}

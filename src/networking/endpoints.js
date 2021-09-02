@@ -40,7 +40,18 @@ const URL = {
     MY_TASKS: () => sales_url + "/workflow/assignedTasks?",
     CONTACT_DETAILS: (universalId) => {
         return sales_url + "/lead/id/" + universalId;
-    }
+    },
+    NO_THANKS: (leadId) => {
+        return roleManagement_url + `/nothanks?leadId=${leadId}`;
+    },
+    TASKS_PRE_ENQUIRY: () => sales_url + '/workflow/lead/universalId/',
+    ASSIGN_TASK: () => sales_url + "/dms/task",
+    CHANGE_ENQUIRY_STATUS: () => sales_url + "/dms/lead/stage/",
+    SOURCE_OF_ENQUIRY_ENQUIRY: (sourceOfEnquiryId) => {
+        return sales_url + "/employees/source-of-enquiry/" + `${sourceOfEnquiryId}`
+    },
+    SALES_CONSULTANT: () => sales_url + "/lead/sales-consultant/manual",
+    CREATE_CONTACT: () => sales_url + "",
 }
 
 export default URL;

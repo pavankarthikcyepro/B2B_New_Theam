@@ -1,24 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, ScrollView, View, Text, StyleSheet, Dimensions, KeyboardAvoidingView, BackHandler } from 'react-native';
+import { SafeAreaView, ScrollView, View, Text, StyleSheet, Alert, Dimensions, KeyboardAvoidingView, BackHandler } from 'react-native';
 import { ButtonComp } from "../../../components/buttonComp";
 import { Checkbox, Button, IconButton, Divider } from 'react-native-paper';
 import { Colors, GlobalStyle } from '../../../styles';
 import { TextinputComp } from '../../../components/textinputComp';
 import { DropDownComponant } from '../../../components/dropDownComp';
 import { convertTimeStampToDateString } from '../../../utils/helperFunctions';
-import { getPreEnquiryDetails } from '../../../redux/confirmedPreEnquiryReducer';
+import { getPreEnquiryDetails, noThanksApi, getaAllTasks, assignTaskApi, changeEnquiryStatusApi, getEmployeesListApi, updateEmployeeApi } from '../../../redux/confirmedPreEnquiryReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppNavigator } from '../../../navigations';
+import * as AsyncStore from "../../../asyncStore";
+import { LoaderComponent, SelectEmployeeComponant } from '../../../components';
 
-const screenWidth = Dimensions.get('window').width;
 
 const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
     const selector = useSelector(state => state.confirmedPreEnquiryReducer);
     const dispatch = useDispatch();
     const { itemData, fromCreatePreEnquiry } = route.params;
+    const [employeeId, setEmployeeId] = useState("");
+    const [showEmployeeSelectModel, setEmployeeSelectModel] = useState(false);
+    const [employeesData, setEmployeesData] = useState([]);
 
     useEffect(() => {
+
+        getAsyncStorageData();
 
         // api calls
         dispatch(getPreEnquiryDetails(itemData.universalId));
@@ -30,7 +36,87 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         return () => {
             BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
         }
-    }, [])
+    }, []);
+
+    useEffect(() => {
+
+        if (selector.employees_list.length === 0 && selector.employees_list_status === "success") {
+            const endUrl = `${itemData.universalId}` + '?' + 'stage=PreEnquiry';
+            dispatch(getaAllTasks(endUrl));
+        }
+        else if (selector.employees_list.length > 0 && selector.employees_list_status === "success") {
+            let newData = [];
+            selector.employees_list.forEach(element => {
+                const obj = {
+                    id: element.empId,
+                    name: element.empName,
+                    selected: false,
+                }
+                newData.push(obj);
+            });
+            setEmployeesData([...newData]);
+            setEmployeeSelectModel(true);
+        }
+    }, [selector.employees_list])
+
+    useEffect(() => {
+        if (selector.update_employee_status === "success") {
+            const endUrl = `${itemData.universalId}` + '?' + 'stage=PreEnquiry';
+            dispatch(getaAllTasks(endUrl));
+        }
+    }, [selector.update_employee_status])
+
+    useEffect(() => {
+        if (selector.all_pre_enquiry_tasks.length > 0 && employeeId) {
+            let arrTemp = selector.all_pre_enquiry_tasks.filter((obj, index) => {
+                return obj.taskName === 'Create Enquiry' && obj.assignee.empId == employeeId;
+            })
+            let filteredObj = arrTemp.length > 0 ? { ...arrTemp[0] } : undefined;
+            if (filteredObj !== undefined) {
+                filteredObj.taskStatus = "CLOSED";
+                // console.log("filteredObj: ", filteredObj);
+                dispatch(assignTaskApi(filteredObj));
+            }
+        }
+    }, [selector.all_pre_enquiry_tasks])
+
+    useEffect(() => {
+
+        if (selector.assign_task_status === "success") {
+            const endUrl = `${itemData.universalId}` + '?' + 'stage=ENQUIRY';
+            dispatch(changeEnquiryStatusApi(endUrl));
+        }
+    }, [selector.assign_task_status])
+
+    useEffect(() => {
+        if (selector.change_enquiry_status === "success") {
+            if (selector.change_enquiry_response) {
+                displayCreateEnquiryAlert(selector.change_enquiry_response);
+            }
+        }
+    }, [selector.change_enquiry_status, selector.change_enquiry_response])
+
+    const getAsyncStorageData = async () => {
+        let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
+        if (empId) {
+            setEmployeeId(empId);
+        }
+    }
+
+    displayCreateEnquiryAlert = (data) => {
+        Alert.alert(
+            'Enquiry Created Successfully',
+            "Enquiry Number: " + itemData.universalId + ", Allocated DSE: " + data.dmsEntity.task.assignee.empName,
+            [
+                {
+                    text: 'OK', onPress: () => {
+                        navigation.popToTop();
+                    }
+                }
+            ],
+            { cancelable: false }
+        );
+    }
 
     const handleBackButtonClick = () => {
         console.log("back pressed")
@@ -39,7 +125,6 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     }
 
     const editButton = () => {
-
         if (!selector.isLoading) {
             navigation.navigate(AppNavigator.EmsStackIdentifiers.addPreEnq, {
                 preEnquiryDetails: selector.pre_enquiry_details,
@@ -48,8 +133,42 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         }
     }
 
+    const createEnquiryClicked = () => {
+
+        if (selector.pre_enquiry_details) {
+            const id = selector.pre_enquiry_details.dmsLeadDto.sourceOfEnquiry;
+            dispatch(getEmployeesListApi(id));
+        }
+    }
+
+    const noThanksClicked = () => {
+        dispatch(noThanksApi(itemData.leadId));
+        navigation.popToTop();
+    }
+
+    const updateEmployee = (employeeObj) => {
+        console.log("employee: ", employeeObj)
+        let dmsLeadDto = { ...selector.pre_enquiry_details.dmsLeadDto };
+        dmsLeadDto.salesConsultant = employeeObj.name;
+        dispatch(updateEmployeeApi(dmsLeadDto));
+        setEmployeeSelectModel(false);
+    }
+
     return (
         <SafeAreaView style={styles.container}>
+
+            {/* <LoaderComponent
+                visible={selector.create_enquiry_loading}
+                onRequestClose={() => { }}
+            /> */}
+
+            <SelectEmployeeComponant
+                visible={showEmployeeSelectModel}
+                headerTitle={"Select Employee"}
+                data={employeesData}
+                selectedEmployee={(employee) => updateEmployee(employee)}
+                onRequestClose={() => setEmployeeSelectModel(false)}
+            />
 
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
@@ -129,7 +248,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                                     mode="contained"
                                     color={Colors.RED}
                                     labelStyle={{ textTransform: 'none', color: Colors.WHITE }}
-                                    onPress={() => console.log('Pressed')}
+                                    onPress={createEnquiryClicked}
                                 >
                                     Create Enuqiry
                                 </Button>
@@ -137,7 +256,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                                     mode="contained"
                                     color={Colors.BLACK}
                                     labelStyle={{ textTransform: 'none', color: Colors.WHITE }}
-                                    onPress={() => navigation.popToTop()}
+                                    onPress={noThanksClicked}
                                 >
                                     No Thanks
                                 </Button>

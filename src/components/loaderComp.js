@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, StyleSheet, View, Dimensions, Text, ActivityIndicator } from 'react-native';
+import { Modal, StyleSheet, View, Dimensions, Text, ActivityIndicator, Platform } from 'react-native';
 import { Colors } from '../styles';
 import { IconButton, Checkbox } from 'react-native-paper';
 
@@ -9,7 +9,7 @@ const LoaderComponent = ({ visible = false, onRequestClose }) => {
 
     return (
         <Modal
-            animationType={'slide'}
+            animationType={Platform.OS === "ios" ? 'slide' : 'fade'}
             transparent={true}
             visible={visible}
             onRequestClose={onRequestClose}
@@ -17,7 +17,7 @@ const LoaderComponent = ({ visible = false, onRequestClose }) => {
             <View style={styles.container}>
                 <View style={styles.view1}>
                     <ActivityIndicator size="large" color={Colors.RED} />
-                    <Text style={styles.text1}>{'We are fetching data from server, please wait until the process completed.'}</Text>
+                    {/* <Text style={styles.text1}>{'We are fetching data from server, please wait until the process completed.'}</Text> */}
                 </View>
             </View>
         </Modal>
@@ -34,8 +34,10 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     view1: {
-        width: screenWidth - 100,
-        height: 200,
+        // width: screenWidth - 100,
+        // height: 200,
+        width: 100,
+        height: 100,
         backgroundColor: Colors.WHITE,
         padding: 20,
         justifyContent: 'center',

@@ -2,18 +2,26 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { client } from '../networking/client';
 import URL from "../networking/endpoints";
 
-export const getPreEnquiryData = createAsyncThunk('PRE_ENQUIRY/getPreEnquiryData', async (endUrl) => {
+export const getPreEnquiryData = createAsyncThunk('PRE_ENQUIRY/getPreEnquiryData', async (endUrl, { rejectWithValue }) => {
 
   let url = URL.LEADS_LIST_API() + endUrl;
   const response = await client.get(url);
-  return response;
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
 })
 
-export const getMorePreEnquiryData = createAsyncThunk('PRE_ENQUIRY/getMorePreEnquiryData', async (endUrl) => {
+export const getMorePreEnquiryData = createAsyncThunk('PRE_ENQUIRY/getMorePreEnquiryData', async (endUrl, { rejectWithValue }) => {
 
   let url = URL.LEADS_LIST_API() + endUrl;
   const response = await client.get(url);
-  return response;
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
 })
 
 export const preEnquirySlice = createSlice({

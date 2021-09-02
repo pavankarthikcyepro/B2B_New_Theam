@@ -1,9 +1,27 @@
 import React from "react";
-import { View, Modal } from "react-native";
+import { View, Modal, Pressable, Text } from "react-native";
 import { TextinputComp } from "./textinputComp";
 import { Colors } from "../styles";
+import { IconButton } from "react-native-paper";
 
-const DateRangeComp = ({ fromDate, toDate }) => {
+const DateComp = ({ label, date }) => {
+  return (
+    <View style={{ borderColor: Colors.GRAY, borderWidth: 1, borderRadius: 4, backgroundColor: Colors.WHITE, paddingHorizontal: 5, height: 50, justifyContent: 'center' }}>
+      {date ? <Text style={{ fontSize: 12, fontWeight: '400', color: Colors.GRAY }}>{label}</Text> : null}
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Text style={{ fontSize: 14, fontWeight: '600', color: date ? Colors.BLACK : Colors.GRAY }}>{date ? date : label}</Text>
+        <IconButton
+          icon={"calendar-month"}
+          size={20}
+          style={{ margin: 0 }}
+          color={Colors.GRAY}
+        />
+      </View>
+    </View>
+  )
+}
+
+const DateRangeComp = ({ fromDate, fromDateClicked, toDate, toDateClicked }) => {
   return (
     <View
       style={{
@@ -13,33 +31,21 @@ const DateRangeComp = ({ fromDate, toDate }) => {
       }}
     >
       <View style={{ width: "48%" }}>
-        <TextinputComp
-          style={{ height: 40 }}
-          label={"From Date"}
-          value={fromDate}
-          mode={"outlined"}
-          disabled={false}
-          placeholder={"From Date"}
-          editable={false}
-          showRightIcon={true}
-          rightIconObj={{ name: "calendar-month", color: Colors.RED }}
-          onPressIn={() => {}}
-        />
+        <Pressable onPress={fromDateClicked}>
+          <DateComp
+            label={"From Date"}
+            date={""}
+          />
+        </Pressable>
       </View>
 
       <View style={{ width: "48%" }}>
-        <TextinputComp
-          style={{ height: 40 }}
-          label={"To Date"}
-          value={toDate}
-          mode={"outlined"}
-          disabled={false}
-          placeholder={"To Date"}
-          editable={false}
-          showRightIcon={true}
-          rightIconObj={{ name: "calendar-month", color: Colors.RED }}
-          onPressIn={() => {}}
-        />
+        <Pressable onPress={toDateClicked}>
+          <DateComp
+            label={"To Date"}
+            date={""}
+          />
+        </Pressable>
       </View>
     </View>
   );

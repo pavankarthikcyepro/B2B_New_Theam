@@ -31,7 +31,7 @@ const DatePickerComponent = ({ visible = false, onRequestClose, value, mode = "d
     else if (Platform.OS === 'ios') {
         return (
             <Modal
-                animationType={'slide'}
+                animationType={Platform.OS === "ios" ? 'slide' : 'fade'}
                 transparent={true}
                 visible={visible}
                 onRequestClose={onRequestClose}

@@ -7,6 +7,7 @@ import {
   Dimensions,
   Pressable,
   TouchableOpacity,
+  Platform
 } from "react-native";
 import { Colors } from "../styles";
 import { Button } from "react-native-paper";
@@ -17,7 +18,7 @@ const screenWidth = Dimensions.get("window").width;
 const DateModalComp = ({ visible = false, onRequestClose, submitCallback }) => {
   return (
     <Modal
-      animationType={"slide"}
+      animationType={Platform.OS === "ios" ? 'slide' : 'fade'}
       transparent={true}
       visible={visible}
       onRequestClose={onRequestClose}

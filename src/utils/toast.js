@@ -35,7 +35,7 @@ export const showToastSucess = (title) => {
 
 // ----------------------------------------
 
-export const showToastAlert = (title) => {
+export const showToastRedAlert = (title) => {
     if (Platform.OS === 'ios') {
         Snackbar.show({
             text: title,

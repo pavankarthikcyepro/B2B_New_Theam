@@ -23,27 +23,14 @@ export const client = async (authToken, url, methodType, body) => {
     }
     // console.log('config: ', config);
 
-    let data
     try {
-        console.log('API: ' + url + " : body: " + JSON.stringify(body));
+        console.log('API: ' + url);
+        // console.log("body: " + JSON.stringify(body));
         const response = await window.fetch(url, config)
-        data = await response.json()
-        if (response.ok) {
-            return data
-        }
-
-        // if (response.status === 400) {
-        //     return Promise.reject({
-        //         type: 'Error',
-        //         body: data,
-        //     })
-        // }
-
-        throw new Error(response.statusText)
+        return response;
     } catch (err) {
         console.error('err: ', err);
-        console.log('data: ', data);
-        return Promise.reject(err.message ? err.message : data)
+        return Promise.reject(err.message ? err.message : "something wrong")
     }
 }
 
