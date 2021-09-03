@@ -1,18 +1,17 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { client } from "../networking/client";
+import URL from "../networking/endpoints";
 import {
   Enquiry_Segment_Data,
-  Customer_Type_Data,
   Enquiry_Sub_Source_Type_Data,
-  Enquiry_Category_Type_Data,
-  Buyer_Type_Data,
   Additional_Type_Data,
   Kms_Travelled_Type_Data,
   Who_Drive_Type_Data,
   How_Many_Family_Members_Data,
   Prime_Exception_Types_Data,
   Salutation_Types,
-  Gender_Types,
-  Relation_Types,
+  Relation_Data_Obj,
+  Gender_Data_Obj,
   Model_Types,
   Variant_Types,
   Color_Types,
@@ -23,6 +22,7 @@ import {
   Bank_Financer_Types,
   Approx_Auual_Income_Types,
 } from "../jsonData/enquiryFormScreenJsonData";
+import { convertTimeStampToDateString } from "../utils/helperFunctions";
 
 const dropDownData = [
   {
@@ -43,6 +43,26 @@ const dropDownData = [
   },
 ];
 
+export const getEnquiryDetailsApi = createAsyncThunk("ENQUIRY_FORM_SLICE/getEnquiryDetailsApi", async (universalId, { rejectWithValue }) => {
+
+  const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getCustomerTypesApi = createAsyncThunk("ENQUIRY_FORM_SLICE/getCustomerTypesApi", async (universalId, { rejectWithValue }) => {
+
+  const response = await client.get(URL.GET_CUSTOMER_TYPES());
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 interface PersonalIntroModel {
   key: string;
   text: string;
@@ -51,6 +71,7 @@ interface PersonalIntroModel {
 interface DropDownModelNew {
   key: string;
   value: string;
+  id?: string;
 }
 
 interface DropDownModel {
@@ -59,8 +80,12 @@ interface DropDownModel {
   keyId: string;
 }
 
+const filterBasedOnSalutaion = (salutaionId) => {
+
+}
+
 const enquiryDetailsOverViewSlice = createSlice({
-  name: "ENQUIRY_DETAILS_OVERVIEW_SLICE",
+  name: "ENQUIRY_FORM_SLICE",
   initialState: {
     status: "",
     isLoading: false,
@@ -68,21 +93,18 @@ const enquiryDetailsOverViewSlice = createSlice({
     showDatepicker: false,
     dropDownData: dropDownData,
     enquiry_segment_types_data: Enquiry_Segment_Data,
-    enquiry_category_types_data: Enquiry_Category_Type_Data,
-    customer_types_data: Customer_Type_Data,
+    customer_types_data: [],
     kms_travelled_types_data: Kms_Travelled_Type_Data,
     who_drive_types_data: Who_Drive_Type_Data,
-    source_types_data: [],
     sub_source_types_data: Enquiry_Sub_Source_Type_Data,
-    buyer_types_data: Buyer_Type_Data,
     additional_types_data: Additional_Type_Data,
     family_member_types_data: How_Many_Family_Members_Data,
     prime_exception_types_data: Prime_Exception_Types_Data,
     finance_types_data: Finance_Types,
     //personal Intro
     saluation_types_data: Salutation_Types,
-    gender_types_data: Gender_Types,
-    relation_types_data: Relation_Types,
+    gender_types_data: [],
+    relation_types_data: [],
     //Model Selection
     transmission_types_data: Transmission_Types,
     fuel_types_data: Fuel_Types,
@@ -120,6 +142,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     mobile: "",
     alterMobile: "",
     email: "",
+    age: "",
     dateOfBirth: "",
     anniversaryDate: "",
     relation: "",
@@ -145,6 +168,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     p_state: "",
     p_district: "",
     // Model Selection
+    lead_product_id: "",
     model: "",
     varient: "",
     color: "",
@@ -211,6 +235,9 @@ const enquiryDetailsOverViewSlice = createSlice({
     r_insurence_from_date: "",
     r_insurence_to_date: "",
     r_insurence_document_checked: false,
+    // data variables
+    enquiry_details_response: null,
+    customer_types_response: null
   },
   reducers: {
     setEditable: (state, action) => {
@@ -218,10 +245,25 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.enableEdit = !state.enableEdit;
     },
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
-      const { key, value } = action.payload;
+      const { key, value, id } = action.payload;
       switch (key) {
+        case "ENQUIRY_SEGMENT":
+          console.log("selected: ", value);
+          state.enquiry_segment = value;
+          state.customer_type = "";
+          if (state.customer_types_response) {
+            state.customer_types_data = state.customer_types_response[value.toLowerCase()];
+          }
+          break;
+        case "CUSTOMER_TYPE":
+          state.customer_type = value;
+          break;
         case "SALUTATION":
           state.salutaion = value;
+          state.gender = "";
+          state.relation = "";
+          state.gender_types_data = Gender_Data_Obj[value.toLowerCase()];
+          state.relation_types_data = Relation_Data_Obj[value.toLowerCase()];
           break;
         case "GENDER":
           state.gender = value;
@@ -243,15 +285,6 @@ const enquiryDetailsOverViewSlice = createSlice({
           break;
         case "TRANSMISSION_TYPE":
           state.transmission_type = value;
-          break;
-        case "ENQUIRY_SEGMENT":
-          console.log("selected: ", value);
-          state.enquiry_segment = value;
-          state.customer_types_data = Customer_Type_Data;
-          state.customer_type = "";
-          break;
-        case "CUSTOMER_TYPE":
-          state.customer_type = value;
           break;
         case "SOURCE_OF_ENQUIRY":
           state.source_of_enquiry = value;
@@ -622,7 +655,170 @@ const enquiryDetailsOverViewSlice = createSlice({
           break;
       }
     },
+    updateDmsContactOrAccountDtoData: (state, action) => {
+
+      // dmsContactOrAccountDto
+      const dms_C_Or_A_Dto = action.payload;
+      state.dateOfBirth = dms_C_Or_A_Dto.dateOfBirth ? dms_C_Or_A_Dto.dateOfBirth : "";
+      state.email = dms_C_Or_A_Dto.email ? dms_C_Or_A_Dto.email : "";
+      state.firstName = dms_C_Or_A_Dto.firstName ? dms_C_Or_A_Dto.firstName : "";
+      state.lastName = dms_C_Or_A_Dto.lastName ? dms_C_Or_A_Dto.lastName : "";
+      state.mobile = dms_C_Or_A_Dto.phone ? dms_C_Or_A_Dto.phone : "";
+      state.alterMobile = dms_C_Or_A_Dto.secondaryPhone ? dms_C_Or_A_Dto.secondaryPhone : "";
+      state.gender = dms_C_Or_A_Dto.gender ? dms_C_Or_A_Dto.gender : "";
+      state.relation = dms_C_Or_A_Dto.relation ? dms_C_Or_A_Dto.relation : "";
+      state.salutaion = dms_C_Or_A_Dto.salutation ? dms_C_Or_A_Dto.salutation : "";
+      state.relationName = dms_C_Or_A_Dto.relationName ? dms_C_Or_A_Dto.relationName : "";
+      state.age = dms_C_Or_A_Dto.age ? dms_C_Or_A_Dto.age.toString() : "0";
+
+      if (state.salutaion) {
+        state.gender_types_data = Gender_Data_Obj[state.salutaion.toLowerCase()];
+        state.relation_types_data = Relation_Data_Obj[state.salutaion.toLowerCase()];
+      }
+
+      state.anniversaryDate = dms_C_Or_A_Dto.anniversaryDate ? dms_C_Or_A_Dto.anniversaryDate : "";
+      state.approx_annual_income = dms_C_Or_A_Dto.annualRevenue ? dms_C_Or_A_Dto.annualRevenue : "";
+      state.company_name = dms_C_Or_A_Dto.company ? dms_C_Or_A_Dto.company : "";
+      state.customer_type = dms_C_Or_A_Dto.customerType ? dms_C_Or_A_Dto.customerType : "";
+      state.designation = dms_C_Or_A_Dto.designation ? dms_C_Or_A_Dto.designation : "";
+      state.kms_travelled_month = dms_C_Or_A_Dto.kmsTravelledInMonth ? dms_C_Or_A_Dto.kmsTravelledInMonth : "";
+      state.members = dms_C_Or_A_Dto.membersInFamily ? dms_C_Or_A_Dto.membersInFamily : "";
+      state.occupation = dms_C_Or_A_Dto.occupation ? dms_C_Or_A_Dto.occupation : "";
+      state.prime_expectation_from_car = dms_C_Or_A_Dto.primeExpectationFromCar ? dms_C_Or_A_Dto.primeExpectationFromCar : "";
+      state.who_drives = dms_C_Or_A_Dto.whoDrives ? dms_C_Or_A_Dto.whoDrives : "";
+    },
+    updateDmsLeadDtoData: (state, action) => {
+
+      const dmsLeadDto = action.payload;
+      state.buyer_type = dmsLeadDto.buyerType ? dmsLeadDto.buyerType : "";
+      state.enquiry_category = dmsLeadDto.enquiryCategory ? dmsLeadDto.enquiryCategory : "";
+      state.enquiry_segment = dmsLeadDto.enquirySegment ? dmsLeadDto.enquirySegment : "";
+      if (state.customer_types_response && state.enquiry_segment) {
+        state.customer_types_data = state.customer_types_response[state.enquiry_segment.toLowerCase()];
+      }
+      state.source_of_enquiry = dmsLeadDto.enquirySource ? dmsLeadDto.enquirySource : "";
+      state.sub_source_of_enquiry = dmsLeadDto.subSource ? dmsLeadDto.subSource : "";
+      const deliveryDate = dmsLeadDto.dmsExpectedDeliveryDate ? dmsLeadDto.dmsExpectedDeliveryDate : "";
+      state.expected_delivery_date = convertTimeStampToDateString(deliveryDate, "DD/MM/YYYY");
+      state.model = dmsLeadDto.model ? dmsLeadDto.model : "";
+
+      // documentType: dmsLeadDto.documentType === null ? '' : dmsLeadDto.documentType,
+      // modeOfPayment: dmsLeadDto.modeOfPayment === null ? '' : dmsLeadDto.modeOfPayment,
+    },
+    updateDmsAddressData: (state, action) => {
+
+      const dmsAddresses = action.payload;
+      if (dmsAddresses.length == 2) {
+        dmsAddresses.forEach((address) => {
+          if (address.addressType === 'Communication') {
+
+            state.pincode = address.pincode ? address.pincode : "";
+            state.houseNum = address.houseNo ? address.houseNo : "";
+            state.streetName = address.street ? address.street : "";
+            state.village = address.village ? address.village : "";
+            state.city = address.city ? address.city : "";
+            state.district = address.district ? address.district : "";
+            state.state = address.state ? address.state : "";
+
+            let urbanOrRural = 0;
+            if (address.urban) {
+              urbanOrRural = 1;
+            } else if (address.rural) {
+              urbanOrRural = 2;
+            }
+            state.urban_or_rural = urbanOrRural;
+
+          } else if (address.addressType === 'Permanent') {
+
+            state.p_pincode = address.pincode ? address.pincode : "";
+            state.p_houseNum = address.houseNo ? address.houseNo : "";
+            state.p_streetName = address.street ? address.street : "";
+            state.p_village = address.village ? address.village : "";
+            state.p_city = address.city ? address.city : "";
+            state.p_district = address.district ? address.district : "";
+            state.p_state = address.state ? address.state : "";
+            let urbanOrRural = 0;
+            if (address.urban) {
+              urbanOrRural = 1;
+            } else if (address.rural) {
+              urbanOrRural = 2;
+            }
+            state.p_urban_or_rural = urbanOrRural;
+          }
+        });
+      }
+    },
+    updateModelSelectionData: (state, action) => {
+
+      const dmsLeadProducts = action.payload;
+      if (dmsLeadProducts.length > 0) {
+        const dataObj = dmsLeadProducts[0];
+        state.lead_product_id = dataObj.id ? dataObj.id : "";
+        state.model = dataObj.model ? dataObj.model : "";
+        state.varient = dataObj.variant ? dataObj.variant : "";
+        state.color = dataObj.color ? dataObj.color : "";
+        state.fuel_type = dataObj.fuel ? dataObj.fuel : "";
+        state.transmission_type = dataObj.transimmisionType ? dataObj.transimmisionType : "";
+      }
+    },
+    updateFinancialData: (state, action) => {
+      const dmsfinancedetails = action.payload;
+      if (dmsfinancedetails.length > 0) {
+        const dataObj = dmsfinancedetails[0];
+        state.retail_finance = dataObj.financeType ? dataObj.financeType : "";
+        state.finance_category = dataObj.financeCategory ? dataObj.financeCategory : "";
+        state.down_payment = dataObj.downPayment ? dataObj.downPayment : "";
+        state.loan_amount = dataObj.loanAmount ? dataObj.loanAmount : "";
+        // state.bank_or_finance
+        state.bank_or_finance_name = dataObj.financeCompany ? dataObj.financeCompany : "";
+        state.rate_of_interest = dataObj.rateOfInterest ? dataObj.rateOfInterest : "";
+        state.loan_of_tenure = dataObj.expectedTenureYears ? dataObj.expectedTenureYears : "";
+        state.emi = dataObj.emi ? dataObj.emi : "";
+        state.approx_annual_income = dataObj.annualIncome ? dataObj.annualIncome : "";
+        state.location = dataObj.location ? dataObj.location : "";
+        state.leashing_name = dataObj.financeCompany ? dataObj.financeCompany : "";
+      }
+    }
   },
+  extraReducers: (builder) => {
+    builder.addCase(getEnquiryDetailsApi.pending, (state) => {
+
+    })
+    builder.addCase(getEnquiryDetailsApi.fulfilled, (state, action) => {
+      console.log("S getEnquiryDetailsApi: ", JSON.stringify(action.payload));
+      if (action.payload.dmsEntity) {
+        state.enquiry_details_response = action.payload.dmsEntity;
+      }
+    })
+    builder.addCase(getEnquiryDetailsApi.rejected, (state, action) => {
+      console.log("F getEnquiryDetailsApi: ", JSON.stringify(action.payload));
+    })
+    builder.addCase(getCustomerTypesApi.fulfilled, (state, action) => {
+      console.log("S getCustomerTypesApi: ", JSON.stringify(action.payload));
+      if (action.payload) {
+        const customerTypes = action.payload;
+        let personalTypes = [];
+        let commercialTypes = [];
+        let companyTypes = [];
+        customerTypes.forEach(customer => {
+          const obj = { id: customer.id, name: customer.customerType }
+          if (customer.customerType === "Fleet") {
+            commercialTypes.push(obj);
+          } else if (customer.customerType === "Institution") {
+            companyTypes.push(obj);
+          } else {
+            personalTypes.push(obj);
+          }
+        });
+        const obj = {
+          "personal": personalTypes,
+          "commercial": commercialTypes,
+          "company": companyTypes
+        }
+        state.customer_types_response = obj;
+      }
+    })
+  }
 });
 
 const dateSelected = (isoDate) => {
@@ -650,5 +846,10 @@ export const {
   setDropDownData,
   setAdditionalBuyerDetails,
   setReplacementBuyerDetails,
+  updateDmsContactOrAccountDtoData,
+  updateDmsLeadDtoData,
+  updateDmsAddressData,
+  updateModelSelectionData,
+  updateFinancialData
 } = enquiryDetailsOverViewSlice.actions;
 export default enquiryDetailsOverViewSlice.reducer;

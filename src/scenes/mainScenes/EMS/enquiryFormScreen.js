@@ -27,7 +27,6 @@ import {
   DropDownComponant,
   DatePickerComponent,
 } from "../../../components";
-import { DropDownSelectionItem } from "../../../pureComponents/dropDownSelectionItem";
 import {
   setEditable,
   setDatePicker,
@@ -42,15 +41,34 @@ import {
   setDropDownData,
   setAdditionalBuyerDetails,
   setReplacementBuyerDetails,
+  getEnquiryDetailsApi,
+  updateDmsContactOrAccountDtoData,
+  updateDmsLeadDtoData,
+  updateDmsAddressData,
+  updateModelSelectionData,
+  updateFinancialData,
+  setDropDownDataNew,
+  getCustomerTypesApi
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
-  CustomerAccordianHeaderItem,
+  DropDownSelectionItem,
   ImageSelectItem,
   DateSelectItem,
 } from "../../../pureComponents";
 import { ImagePickerComponent } from "../../../components";
 import { Dropdown } from "sharingan-rn-modal-dropdown";
+import {
+  Salutation_Types,
+  Enquiry_Segment_Data,
+  Enquiry_Sub_Source_Type_Data,
+  Enquiry_Category_Type_Data,
+  Buyer_Type_Data,
+  Kms_Travelled_Type_Data,
+  Who_Drive_Type_Data,
+  How_Many_Family_Members_Data,
+  Prime_Exception_Types_Data
+} from "../../../jsonData/enquiryFormScreenJsonData";
 
 const theme = {
   ...DefaultTheme,
@@ -58,19 +76,63 @@ const theme = {
   roundness: 0,
   // Specify custom property in nested object
   colors: {
-    // background: "#ffffff",
+    ...DefaultTheme.colors,
+    background: Colors.WHITE,
   },
 };
 
-const DetailsOverviewScreen = ({ navigation }) => {
+const DetailsOverviewScreen = ({ route, navigation }) => {
+
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.enquiryFormReducer);
+  const { vehicle_modal_list } = useSelector(state => state.homeReducer);
   const [openAccordian, setOpenAccordian] = useState("0");
   const [componentAppear, setComponentAppear] = useState(false);
+  const { universalId } = route.params;
+  const [showDropDownModel, setShowDropDownModel] = useState(false);
+  const [dataForDropDown, setDataForDropDown] = useState([]);
+  const [dropDownKey, setDropDownKey] = useState("");
+  const [dropDownTitle, setDropDownTitle] = useState("Select Data");
+  const [carModelsData, setCarModelsData] = useState([]);
+  const [carVarientsData, setCarVarientsData] = useState([]);
+  const [carColorsData, setCarColorsData] = useState([]);
 
   useEffect(() => {
     setComponentAppear(true);
+    getEnquiryDetailsFromServer();
+    dispatch(getCustomerTypesApi());
   }, []);
+
+  useEffect(() => {
+    if (selector.enquiry_details_response) {
+
+      let dmsContactOrAccountDto;
+      if (selector.enquiry_details_response.hasOwnProperty("dmsAccountDto")) {
+        dmsContactOrAccountDto = selector.enquiry_details_response.dmsAccountDto;
+      }
+      else if (selector.enquiry_details_response.hasOwnProperty("dmsContactDto")) {
+        dmsContactOrAccountDto = selector.enquiry_details_response.dmsContactDto;
+      }
+      const dmsLeadDto = selector.enquiry_details_response.dmsLeadDto;
+
+      // Update dmsContactOrAccountDto
+      dispatch(updateDmsContactOrAccountDtoData(dmsContactOrAccountDto));
+      // Update updateDmsLeadDtoData
+      dispatch(updateDmsLeadDtoData(dmsLeadDto));
+      // Update Addresses
+      dispatch(updateDmsAddressData(dmsLeadDto.dmsAddresses));
+      // Updaet Model Selection
+      dispatch(updateModelSelectionData(dmsLeadDto.dmsLeadProducts));
+      // Update Finance Details
+      dispatch(updateFinancialData(dmsLeadDto.dmsfinancedetails));
+    }
+  }, [selector.enquiry_details_response])
+
+  const getEnquiryDetailsFromServer = () => {
+    if (universalId) {
+      dispatch(getEnquiryDetailsApi(universalId));
+    }
+  }
 
   const updateAccordian = (selectedIndex) => {
     if (selectedIndex != openAccordian) {
@@ -79,6 +141,56 @@ const DetailsOverviewScreen = ({ navigation }) => {
       setOpenAccordian(0);
     }
   };
+
+  const showDropDownModelMethod = (key, headerText) => {
+    switch (key) {
+      case "ENQUIRY_SEGMENT":
+        setDataForDropDown([...Enquiry_Segment_Data]);
+        break;
+      case "CUSTOMER_TYPE":
+        setDataForDropDown([...selector.customer_types_data]);
+        break;
+      case "SUB_SOURCE_OF_ENQUIRY":
+        setDataForDropDown([...Enquiry_Sub_Source_Type_Data]);
+        break;
+      case "ENQUIRY_CATEGORY":
+        setDataForDropDown([...Enquiry_Category_Type_Data]);
+        break;
+      case "BUYER_TYPE":
+        setDataForDropDown([...Buyer_Type_Data]);
+        break;
+      case "KMS_TRAVELLED":
+        setDataForDropDown([...Kms_Travelled_Type_Data]);
+        break;
+      case "WHO_DRIVES":
+        setDataForDropDown([...Who_Drive_Type_Data]);
+        break;
+      case "MEMBERS":
+        setDataForDropDown([...How_Many_Family_Members_Data]);
+        break;
+      case "PRIME_EXPECTATION_CAR":
+        setDataForDropDown([...Prime_Exception_Types_Data]);
+        break;
+      case "SALUTATION":
+        setDataForDropDown([...Salutation_Types]);
+        break;
+      case "GENDER":
+        setDataForDropDown([...selector.gender_types_data]);
+        break;
+      case "RELATION":
+        setDataForDropDown([...selector.relation_types_data]);
+        break;
+      case "":
+        setDataForDropDown([...Prime_Exception_Types_Data]);
+        break;
+      case "":
+        setDataForDropDown([...Prime_Exception_Types_Data]);
+        break;
+    }
+    setDropDownKey(key);
+    setDropDownTitle(headerText);
+    setShowDropDownModel(true);
+  }
 
   if (!componentAppear) {
     return (
@@ -97,6 +209,16 @@ const DetailsOverviewScreen = ({ navigation }) => {
           console.log("imageObj: ", data, keyId);
         }}
         onDismiss={() => dispatch(setImagePicker(""))}
+      />
+
+      <DropDownComponant
+        visible={showDropDownModel}
+        headerTitle={dropDownTitle}
+        data={dataForDropDown}
+        selectedItems={(item) => {
+          setShowDropDownModel(false);
+          dispatch(setDropDownData({ key: dropDownKey, value: item.name, id: item.id }));
+        }}
       />
 
       {selector.showDatepicker && (
@@ -192,40 +314,20 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 />
                 <Text style={GlobalStyle.underline}></Text>
 
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Enquiry Segment"
-                    data={selector.enquiry_segment_types_data}
-                    required={true}
-                    floating={false}
-                    value={selector.enquiry_segment}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({
-                          key: "ENQUIRY_SEGMENT",
-                          value: value,
-                        })
-                      )
-                    }
-                  />
-                </View>
+                <DropDownSelectionItem
+                  label={"Enquiry Segment*"}
+                  value={selector.enquiry_segment}
+                  onPress={() => showDropDownModelMethod("ENQUIRY_SEGMENT", "Select Enquiry Segment")}
+                />
 
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Customer Type"
-                    data={selector.customer_types_data}
-                    required={true}
-                    floating={false}
-                    value={selector.customer_type}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({ key: "CUSTOMER_TYPE", value: value })
-                      )
-                    }
-                  />
-                </View>
-                {selector.customer_type === "fleet" ||
-                  selector.customer_type === "institution" ? (
+                <DropDownSelectionItem
+                  label={"Customer Type"}
+                  value={selector.customer_type}
+                  onPress={() => showDropDownModelMethod("CUSTOMER_TYPE", "Select Customer Type")}
+                />
+
+                {selector.customer_type.toLowerCase() === "fleet" ||
+                  selector.customer_type.toLowerCase() === "institution" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -245,41 +347,19 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   </View>
                 ) : null}
 
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Source Of Enquiry"
-                    data={selector.source_types_data}
-                    required={true}
-                    floating={false}
-                    value={selector.source_of_enquiry}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({
-                          key: "SOURCE_OF_ENQUIRY",
-                          value: value,
-                        })
-                      )
-                    }
-                  />
-                </View>
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.source_of_enquiry}
+                  label={"Source Of Enquiry"}
+                  editable={false}
+                />
+                <Text style={GlobalStyle.underline}></Text>
 
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Sub Source Of Enquiry"
-                    data={selector.sub_source_types_data}
-                    required={true}
-                    floating={false}
-                    value={selector.sub_source_of_enquiry}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({
-                          key: "SUB_SOURCE_OF_ENQUIRY",
-                          value: value,
-                        })
-                      )
-                    }
-                  />
-                </View>
+                <DropDownSelectionItem
+                  label={"Sub Source Of Enquiry"}
+                  value={selector.sub_source_of_enquiry}
+                  onPress={() => showDropDownModelMethod("SUB_SOURCE_OF_ENQUIRY", "Sub Source Of Enquiry")}
+                />
 
                 <DateSelectItem
                   label={"Expected Delivery Date"}
@@ -289,101 +369,41 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   }
                 />
 
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Enquiry Category"
-                    data={selector.enquiry_category_types_data}
-                    required={true}
-                    floating={false}
-                    value={selector.enquiry_category}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({
-                          key: "ENQUIRY_CATEGORY",
-                          value: value,
-                        })
-                      )
-                    }
-                  />
-                </View>
+                <DropDownSelectionItem
+                  label={"Enquiry Category"}
+                  value={selector.enquiry_category}
+                  onPress={() => showDropDownModelMethod("ENQUIRY_CATEGORY", "Enquiry Category")}
+                />
 
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Buyer Type"
-                    data={selector.buyer_types_data}
-                    required={true}
-                    floating={false}
-                    value={selector.buyer_type}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({ key: "BUYER_TYPE", value: value })
-                      )
-                    }
-                  />
-                </View>
+                <DropDownSelectionItem
+                  label={"Buyer Type"}
+                  value={selector.buyer_type}
+                  onPress={() => showDropDownModelMethod("BUYER_TYPE", "Buyer Type")}
+                />
 
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="KMs Travelled in Month"
-                    data={selector.kms_travelled_types_data}
-                    required={true}
-                    floating={false}
-                    value={selector.kms_travelled_month}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({ key: "KMS_TRAVELLED", value: value })
-                      )
-                    }
-                  />
-                </View>
+                <DropDownSelectionItem
+                  label={"KMs Travelled in Month"}
+                  value={selector.kms_travelled_month}
+                  onPress={() => showDropDownModelMethod("KMS_TRAVELLED", "KMs Travelled in Month")}
+                />
 
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Who Drives"
-                    data={selector.who_drive_types_data}
-                    required={true}
-                    floating={false}
-                    value={selector.who_drives}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({ key: "WHO_DRIVES", value: value })
-                      )
-                    }
-                  />
-                </View>
+                <DropDownSelectionItem
+                  label={"Who Drives"}
+                  value={selector.who_drives}
+                  onPress={() => showDropDownModelMethod("WHO_DRIVES", "Who Drives")}
+                />
 
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="How many members in your family"
-                    data={selector.family_member_types_data}
-                    required={true}
-                    floating={false}
-                    value={selector.members}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({ key: "MEMBERS", value: value })
-                      )
-                    }
-                  />
-                </View>
+                <DropDownSelectionItem
+                  label={"How many members in your family?"}
+                  value={selector.members}
+                  onPress={() => showDropDownModelMethod("MEMBERS", "How many members in your family?")}
+                />
 
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="What is prime expectation from the car"
-                    data={selector.prime_exception_types_data}
-                    required={true}
-                    floating={false}
-                    value={selector.prime_expectation_from_car}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({
-                          key: "PRIME_EXPECTATION_CAR",
-                          value: value,
-                        })
-                      )
-                    }
-                  />
-                </View>
+                <DropDownSelectionItem
+                  label={"What is prime expectation from the car?"}
+                  value={selector.prime_expectation_from_car}
+                  onPress={() => showDropDownModelMethod("PRIME_EXPECTATION_CAR", "What is prime expectation from the car?")}
+                />
               </List.Accordion>
               <View style={styles.space}></View>
               {/* 2. Personal Intro */}
@@ -400,41 +420,19 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     openAccordian === "2" ? Colors.RED : Colors.WHITE,
                 }}
               >
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    // mainContainerStyle={{ backgroundColor: Colors.YELLOW }}
-                    // parentDDContainerStyle={{ backgroundColor: Colors.RED }}
-                    // itemContainerStyle={{ backgroundColor: Colors.BLUE }}
-                    label="Salutation"
-                    data={selector.saluation_types_data}
-                    required={true}
-                    floating={false}
-                    // paperTheme={theme}
-                    value={selector.salutaion}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({ key: "SALUTATION", value: value })
-                      )
-                    }
-                  />
-                </View>
 
-                {selector.enquiry_segment == "personal" ? (
-                  <View style={styles.drop_down_view_style}>
-                    <Dropdown
-                      label="Gender"
-                      data={selector.dropDownData}
-                      required={true}
-                      floating={false}
-                      // paperTheme={theme}
-                      value={selector.gender}
-                      onChange={(value) =>
-                        dispatch(
-                          setDropDownData({ key: "GENDER", value: value })
-                        )
-                      }
-                    />
-                  </View>
+                <DropDownSelectionItem
+                  label={"Salutation*"}
+                  value={selector.salutaion}
+                  onPress={() => showDropDownModelMethod("SALUTATION", "Select Salutation")}
+                />
+
+                {selector.enquiry_segment.toLowerCase() == "personal" ? (
+                  <DropDownSelectionItem
+                    label={"Gender"}
+                    value={selector.gender}
+                    onPress={() => showDropDownModelMethod("GENDER", "Gender")}
+                  />
                 ) : null}
 
                 <TextinputComp
@@ -459,20 +457,12 @@ const DetailsOverviewScreen = ({ navigation }) => {
                   }
                 />
                 <Text style={GlobalStyle.underline}></Text>
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Relation"
-                    data={selector.relation_types_data}
-                    required={true}
-                    floating={false}
-                    value={selector.relation}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({ key: "RELATION", value: value })
-                      )
-                    }
-                  />
-                </View>
+                <DropDownSelectionItem
+                  label={"Relation"}
+                  value={selector.relation}
+                  onPress={() => showDropDownModelMethod("RELATION", "Relation")}
+                />
+
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.relationName}
@@ -832,6 +822,11 @@ const DetailsOverviewScreen = ({ navigation }) => {
                     openAccordian === "4" ? Colors.RED : Colors.WHITE,
                 }}
               >
+                <DropDownSelectionItem
+                  label={"Model"}
+                  value={selector.model}
+                  onPress={() => showDropDownModelMethod("MODEL", "Select Model")}
+                />
                 <View style={styles.drop_down_view_style}>
                   <Dropdown
                     label="Model"
@@ -1410,12 +1405,12 @@ const DetailsOverviewScreen = ({ navigation }) => {
                 />
                 <Text style={GlobalStyle.underline}></Text>
               </List.Accordion>
-              {selector.buyer_type == "additional_buyer" ||
-                selector.buyer_type == "replacement_buyer" ? (
+              {selector.buyer_type == "Additional Buyer" ||
+                selector.buyer_type == "Replacement Buyer" ? (
                 <View style={styles.space}></View>
               ) : null}
               {/* // 8.Additional Buyer */}
-              {selector.buyer_type == "additional_buyer" ? (
+              {selector.buyer_type == "Additional Buyer" ? (
                 <List.Accordion
                   id={"8"}
                   title={"Additional Buyer"}
@@ -1506,7 +1501,7 @@ const DetailsOverviewScreen = ({ navigation }) => {
               ) : null}
 
               {/* // 9.Additional Buyer */}
-              {selector.buyer_type == "replacement_buyer" ? (
+              {selector.buyer_type == "Replacement Buyer" ? (
                 <List.Accordion
                   id={"9"}
                   title={"Replacement Buyer"}

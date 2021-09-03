@@ -1,17 +1,91 @@
 export const Enquiry_Segment_Data = [
   {
-    value: "personal",
-    label: "Personal",
+    id: "1",
+    name: "Personal",
   },
   {
-    value: "commercial",
-    label: "Commercial",
+    id: "2",
+    name: "Commercial",
   },
   {
-    value: "company",
-    label: "Company",
+    id: "3",
+    name: "Company",
   },
 ];
+
+export const Gender_Data_Obj = {
+  "mr": [
+    {
+      id: "1",
+      name: "Male",
+    },
+  ],
+  "mrs": [
+    {
+      id: "1",
+      name: "Female",
+    }
+  ],
+  "ms": [
+    {
+      id: "1",
+      name: "Female",
+    }
+  ],
+  "dr": [
+    {
+      id: "1",
+      name: "Male",
+    },
+    {
+      id: "2",
+      name: "Female",
+    },
+    {
+      id: "3",
+      name: "Transgender",
+    }
+  ]
+}
+
+export const Relation_Data_Obj = {
+  "mr": [
+    {
+      id: "1",
+      name: "S/O",
+    },
+  ],
+  "mrs": [
+    {
+      id: "1",
+      name: "W/O",
+    },
+    {
+      id: "2",
+      name: "D/O",
+    }
+  ],
+  "ms": [
+    {
+      id: "1",
+      name: "D/O",
+    }
+  ],
+  "dr": [
+    {
+      id: "1",
+      name: "S/O",
+    },
+    {
+      id: "2",
+      name: "W/O",
+    },
+    {
+      id: "3",
+      name: "D/O",
+    }
+  ]
+}
 
 export const Marital_Status_Types = [
   {
@@ -24,60 +98,17 @@ export const Marital_Status_Types = [
   },
 ];
 
-export const Customer_Type_Data = [
-  {
-    value: "Individual",
-    label: "Individual",
-  },
-  {
-    value: "Self Employed",
-    label: "Self Employed",
-  },
-  {
-    value: "Corporate",
-    label: "Corporate",
-  },
-  {
-    value: "Business",
-    label: "Business",
-  },
-  {
-    value: "Government",
-    label: "Government",
-  },
-  {
-    value: "Farmer",
-    label: "Farmer",
-  },
-  {
-    value: "Retired",
-    label: "Retired",
-  },
-  {
-    value: "Doctor",
-    label: "Doctor",
-  },
-  {
-    value: "Other",
-    label: "Other",
-  },
-  {
-    value: "CSD",
-    label: "CSD",
-  },
-];
-
 export const Buyer_Type_Data = [
   {
-    value: "first_time_buyer",
+    id: "first_time_buyer",
     label: "First Time Buyer",
   },
   {
-    value: "additional_buyer",
+    id: "additional_buyer",
     label: "Additional Buyer",
   },
   {
-    value: "replacement_buyer",
+    id: "replacement_buyer",
     label: "Replacement Buyer",
   },
 ];
@@ -158,151 +189,128 @@ export const Additional_Type_Data = [
 
 export const Enquiry_Sub_Source_Type_Data = [
   {
-    value: "1",
-    label: "Facebook",
+    id: "1",
+    name: "Facebook",
   },
   {
-    value: "2",
-    label: "Twitter",
+    id: "2",
+    name: "Twitter",
   },
   {
-    value: "3",
-    label: "Online Chat",
+    id: "3",
+    name: "Online Chat",
   },
 ];
 
 export const Kms_Travelled_Type_Data = [
   {
-    value: "1",
-    label: "<500",
+    id: "1",
+    name: "<500",
   },
   {
-    value: "2",
-    label: "500-1000",
+    id: "2",
+    name: "500-1000",
   },
   {
-    value: "3",
-    label: "1000-1500",
+    id: "3",
+    name: "1000-1500",
   },
   {
-    value: "4",
-    label: "1500-2000",
+    id: "4",
+    name: "1500-2000",
   },
   {
-    value: "5",
-    label: ">2000",
+    id: "5",
+    name: ">2000",
   },
 ];
 
 export const Who_Drive_Type_Data = [
   {
-    value: "1",
-    label: "Self",
+    id: "1",
+    name: "Self",
   },
   {
-    value: "2",
-    label: "Driver",
+    id: "2",
+    name: "Driver",
   },
 ];
 export const Enquiry_Category_Type_Data = [
   {
-    value: "1",
-    label: "Hot",
+    id: "1",
+    name: "Hot",
   },
   {
-    value: "2",
-    label: "Warm",
+    id: "2",
+    name: "Warm",
   },
   {
-    value: "3",
-    label: "Cold",
+    id: "3",
+    name: "Cold",
   },
 ];
 
 export const How_Many_Family_Members_Data = [
   {
-    value: "1",
-    label: "2",
+    id: "1",
+    name: "2",
   },
   {
-    value: "2",
-    label: "3-5",
+    id: "2",
+    name: "3-5",
   },
   {
-    value: "3",
-    label: "6-7",
+    id: "3",
+    name: "6-7",
   },
   {
-    value: "4",
-    label: ">7",
+    id: "4",
+    name: ">7",
   },
 ];
 
 export const Prime_Exception_Types_Data = [
   {
-    value: "1",
-    label: "Features",
+    id: "1",
+    name: "Features",
   },
   {
-    value: "2",
-    label: "Performance",
+    id: "2",
+    name: "Performance",
   },
   {
-    value: "3",
-    label: "Looks",
+    id: "3",
+    name: "Looks",
   },
   {
-    value: "4",
-    label: "Value for money",
+    id: "4",
+    name: "Value for money",
   },
 ];
 //Personal Intro
 export const Salutation_Types = [
   {
-    value: "1",
-    label: "Mr",
+    id: "1",
+    name: "Mr",
   },
   {
-    value: "2",
-    label: "Mrs",
+    id: "2",
+    name: "Mrs",
   },
   {
-    value: "3",
-    label: "Ms",
+    id: "3",
+    name: "Ms",
   },
   {
-    value: "4",
-    label: "Dr",
+    id: "4",
+    name: "Dr",
   },
   {
-    value: "5",
-    label: "M/S",
+    id: "5",
+    name: "M/S",
   },
 ];
-export const Gender_Types = [
-  {
-    value: "Male",
-    label: "Male",
-  },
-  {
-    value: "Female",
-    label: "Female",
-  },
-  {
-    value: "Transgender",
-    label: "Transgender",
-  },
-];
-export const Relation_Types = [
-  {
-    value: "1",
-    label: "S/O",
-  },
-  {
-    value: "2",
-    label: "D/O",
-  },
-];
+
 //Model Selection
 export const Transmission_Types = [
   {

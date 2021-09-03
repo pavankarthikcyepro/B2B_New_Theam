@@ -40,7 +40,7 @@ import { isMobileNumber, isEmail } from "../../../utils/helperFunctions";
 import { sales_url } from "../../../networking/endpoints";
 import realm from "../../../database/realm";
 import { AppNavigator } from "../../../navigations";
-import { DropDownSelectionItem } from "../../../pureComponents/dropDownSelectionItem";
+import { DropDownSelectionItem } from "../../../pureComponents";
 import * as AsyncStore from "../../../asyncStore";
 import { showToast, showToastRedAlert } from "../../../utils/toast";
 import URL from "../../../networking/endpoints";
@@ -57,10 +57,12 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   const [employeeName, setEmployeeName] = useState("");
   const [existingPreEnquiryDetails, setExistingPreEnquiryDetails] = useState({});
   const [fromEdit, setFromEdit] = useState(false);
+  const [dataForCarModels, setDataForCarModels] = useState([]);
 
   useEffect(() => {
     getAsyncstoreData();
     setExistingData();
+    updateCarModelsData();
     // getCustomerTypeListFromDB();
     // getCarModalListFromDB();
   }, []);
@@ -73,6 +75,16 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       setBranchId(jsonObj.branchId);
       setEmployeeName(jsonObj.empName);
     }
+  }
+
+  const updateCarModelsData = () => {
+    let modalList = [];
+    if (vehicle_modal_list.length > 0) {
+      vehicle_modal_list.forEach(item => {
+        modalList.push({ id: item.vehicleId, name: item.model })
+      });
+    }
+    setDataForCarModels([...modalList]);
   }
 
   const setExistingData = () => {
@@ -408,7 +420,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       <DropDownComponant
         visible={selector.show_model_drop_down}
         headerTitle={"Select Model"}
-        data={vehicle_modal_list}
+        data={dataForCarModels}
         selectedItems={(item) => {
           console.log("selected: ", item);
           dispatch(setCarModel(item.name));

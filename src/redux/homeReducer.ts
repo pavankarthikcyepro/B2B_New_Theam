@@ -132,12 +132,9 @@ export const homeSlice = createSlice({
       })
       .addCase(getCarModalList.fulfilled, (state, action) => {
         // console.log('vehicle_modal_list: ', action.payload);
-        const data = action.payload;
-        let modalList = [];
-        data.forEach(item => {
-          modalList.push({ id: item.vehicleId, name: item.model })
-        });
-        state.vehicle_modal_list = modalList;
+        if (action.payload) {
+          state.vehicle_modal_list = action.payload;
+        }
       })
       .addCase(getCustomerTypeList.fulfilled, (state, action) => {
         //console.log('customer_type_list: ', action.payload);

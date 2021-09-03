@@ -88,7 +88,7 @@ const EnquiryScreen = ({ navigation }) => {
                   subName={item.enquirySource}
                   date={item.createdDate}
                   modelName={item.model}
-                  onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.detailsOverview)}
+                  onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.detailsOverview, { universalId: item.universalId })}
                   onCallPress={() => callNumber(item.phone)}
                 />
               );

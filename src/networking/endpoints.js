@@ -52,6 +52,10 @@ const URL = {
     },
     SALES_CONSULTANT: () => sales_url + "/lead/sales-consultant/manual",
     CREATE_CONTACT: () => sales_url + "",
+    ENQUIRY_DETAILS: (universalId) => {
+        return sales_url + "/enquiry/lead/id/" + `${universalId}`;
+    },
+    GET_CUSTOMER_TYPES: () => sales_url + "/master-data/customertype"
 }
 
 export default URL;
