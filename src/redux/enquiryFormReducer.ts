@@ -273,9 +273,14 @@ const enquiryDetailsOverViewSlice = createSlice({
           break;
         case "MODEL":
           state.model = value;
+          state.varient = "";
+          state.color = "";
+          state.fuel_type = "";
+          state.transmission_type = "";
           break;
         case "VARIENT":
           state.varient = value;
+          state.color = "";
           break;
         case "COLOR":
           state.color = value;
@@ -778,6 +783,10 @@ const enquiryDetailsOverViewSlice = createSlice({
         state.location = dataObj.location ? dataObj.location : "";
         state.leashing_name = dataObj.financeCompany ? dataObj.financeCompany : "";
       }
+    },
+    updateFuelAndTransmissionType: (state, action) => {
+      state.fuel_type = action.payload.fuelType;
+      state.transmission_type = action.payload.transmissionType;
     }
   },
   extraReducers: (builder) => {
@@ -850,6 +859,7 @@ export const {
   updateDmsLeadDtoData,
   updateDmsAddressData,
   updateModelSelectionData,
-  updateFinancialData
+  updateFinancialData,
+  updateFuelAndTransmissionType
 } = enquiryDetailsOverViewSlice.actions;
 export default enquiryDetailsOverViewSlice.reducer;

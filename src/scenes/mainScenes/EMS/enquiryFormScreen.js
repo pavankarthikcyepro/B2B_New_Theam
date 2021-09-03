@@ -48,7 +48,8 @@ import {
   updateModelSelectionData,
   updateFinancialData,
   setDropDownDataNew,
-  getCustomerTypesApi
+  getCustomerTypesApi,
+  updateFuelAndTransmissionType
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
@@ -94,14 +95,25 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [dropDownKey, setDropDownKey] = useState("");
   const [dropDownTitle, setDropDownTitle] = useState("Select Data");
   const [carModelsData, setCarModelsData] = useState([]);
-  const [carVarientsData, setCarVarientsData] = useState([]);
+  const [selectedCarVarientsData, setSelectedCarVarientsData] = useState({ varientList: [], varientListForDropDown: [] });
   const [carColorsData, setCarColorsData] = useState([]);
 
   useEffect(() => {
     setComponentAppear(true);
     getEnquiryDetailsFromServer();
     dispatch(getCustomerTypesApi());
+    setCarModelsDataFromBase();
   }, []);
+
+  const setCarModelsDataFromBase = () => {
+    let modalList = [];
+    if (vehicle_modal_list.length > 0) {
+      vehicle_modal_list.forEach(item => {
+        modalList.push({ id: item.vehicleId, name: item.model })
+      });
+    }
+    setCarModelsData([...modalList]);
+  }
 
   useEffect(() => {
     if (selector.enquiry_details_response) {
@@ -180,16 +192,68 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       case "RELATION":
         setDataForDropDown([...selector.relation_types_data]);
         break;
-      case "":
-        setDataForDropDown([...Prime_Exception_Types_Data]);
+      case "MODEL":
+        setDataForDropDown([...carModelsData]);
         break;
-      case "":
-        setDataForDropDown([...Prime_Exception_Types_Data]);
+      case "VARIENT":
+        setDataForDropDown([...selectedCarVarientsData.varientListForDropDown]);
+        break;
+      case "COLOR":
+        setDataForDropDown([...carColorsData]);
         break;
     }
     setDropDownKey(key);
     setDropDownTitle(headerText);
     setShowDropDownModel(true);
+  }
+
+  const updateVariantModelsData = (selectedModel) => {
+
+    let arrTemp = vehicle_modal_list.filter(function (obj) {
+      return obj.model === selectedModel.name;
+    });
+
+    let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
+    if (carModelObj !== undefined) {
+      let newArray = [];
+      let mArray = carModelObj.varients;
+      if (mArray.length) {
+        mArray.forEach(item => {
+          newArray.push({
+            id: item.id,
+            name: item.name
+          })
+        })
+        setSelectedCarVarientsData({ varientList: [...mArray], varientListForDropDown: [...newArray] });
+      }
+    }
+  }
+
+  const updateColorsDataForSelectedVarient = (selectedVarient) => {
+
+    let arrTemp = selectedCarVarientsData.varientList.filter(function (obj) {
+      return obj.name === selectedVarient.name;
+    });
+
+    let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
+    if (carModelObj !== undefined) {
+      let newArray = [];
+      let mArray = carModelObj.vehicleImages;
+      if (mArray.length) {
+        mArray.map(item => {
+          newArray.push({
+            id: item.id,
+            name: item.color
+          })
+        })
+        const obj = {
+          fuelType: carModelObj.fuelType,
+          transmissionType: carModelObj.transmission_type
+        }
+        dispatch(updateFuelAndTransmissionType(obj));
+        setCarColorsData([...newArray]);
+      }
+    }
   }
 
   if (!componentAppear) {
@@ -216,6 +280,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         headerTitle={dropDownTitle}
         data={dataForDropDown}
         selectedItems={(item) => {
+          if (dropDownKey === "MODEL") {
+            updateVariantModelsData(item);
+          }
+          if (dropDownKey === "VARIENT") {
+            updateColorsDataForSelectedVarient(item);
+          }
           setShowDropDownModel(false);
           dispatch(setDropDownData({ key: dropDownKey, value: item.name, id: item.id }));
         }}
@@ -827,79 +897,35 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   value={selector.model}
                   onPress={() => showDropDownModelMethod("MODEL", "Select Model")}
                 />
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Model"
-                    data={selector.model_types_data}
-                    required={true}
-                    floating={false}
-                    value={selector.model}
-                    onChange={(value) =>
-                      dispatch(setDropDownData({ key: "MODEL", value: value }))
-                    }
-                  />
-                </View>
 
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Varient"
-                    data={selector.varient_types_data}
-                    required={true}
-                    floating={false}
-                    value={selector.varient}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({ key: "VARIENT", value: value })
-                      )
-                    }
-                  />
-                </View>
+                <DropDownSelectionItem
+                  label={"Varient"}
+                  value={selector.varient}
+                  onPress={() => showDropDownModelMethod("VARIENT", "Select Varient")}
+                />
 
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Color"
-                    data={selector.color_types_data}
-                    required={true}
-                    floating={false}
-                    value={selector.color}
-                    onChange={(value) =>
-                      dispatch(setDropDownData({ key: "COLOR", value: value }))
-                    }
-                  />
-                </View>
+                <DropDownSelectionItem
+                  label={"Color"}
+                  value={selector.color}
+                  onPress={() => showDropDownModelMethod("COLOR", "Select Color")}
+                />
 
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Fuel Type"
-                    data={selector.fuel_types_data}
-                    required={true}
-                    floating={false}
-                    value={selector.fuel_type}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({ key: "FUEL_TYPE", value: value })
-                      )
-                    }
-                  />
-                </View>
+                <TextinputComp
+                  style={{ height: 65, width: "100%" }}
+                  label={"Fuel Type"}
+                  editable={false}
+                  value={selector.fuel_type}
+                />
+                <Text style={GlobalStyle.underline}></Text>
 
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Transmission Type"
-                    data={selector.transmission_types_data}
-                    required={true}
-                    floating={false}
-                    value={selector.transmission_type}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({
-                          key: "TRANSMISSION_TYPE",
-                          value: value,
-                        })
-                      )
-                    }
-                  />
-                </View>
+                <TextinputComp
+                  style={{ height: 65, width: "100%" }}
+                  label={"Transmission Type"}
+                  editable={false}
+                  value={selector.transmission_type}
+                />
+                <Text style={GlobalStyle.underline}></Text>
+
               </List.Accordion>
               <View style={styles.space}></View>
               {/* // 5.Financial Details*/}
