@@ -68,7 +68,9 @@ import {
   Kms_Travelled_Type_Data,
   Who_Drive_Type_Data,
   How_Many_Family_Members_Data,
-  Prime_Exception_Types_Data
+  Prime_Exception_Types_Data,
+  Finance_Types,
+  Finance_Category_Types
 } from "../../../jsonData/enquiryFormScreenJsonData";
 
 const theme = {
@@ -199,6 +201,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         setDataForDropDown([...selectedCarVarientsData.varientListForDropDown]);
         break;
       case "COLOR":
+        setDataForDropDown([...carColorsData]);
+        break;
+      case "RETAIL_FINANCE":
+        setDataForDropDown([...Finance_Types]);
+        break;
+      case "FINANCE_CATEGORY":
+        setDataForDropDown([...Finance_Category_Types]);
+        break;
+      case "":
         setDataForDropDown([...carColorsData]);
         break;
     }
@@ -942,22 +953,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     openAccordian === "5" ? Colors.RED : Colors.WHITE,
                 }}
               >
-                <View style={styles.drop_down_view_style}>
-                  <Dropdown
-                    label="Retail Finance"
-                    data={selector.finance_types_data}
-                    required={true}
-                    floating={false}
-                    value={selector.retail_finance}
-                    onChange={(value) =>
-                      dispatch(
-                        setDropDownData({ key: "RETAIL_FINANCE", value: value })
-                      )
-                    }
-                  />
-                </View>
+                <DropDownSelectionItem
+                  label={"Retail Finance"}
+                  value={selector.retail_finance}
+                  onPress={() => showDropDownModelMethod("RETAIL_FINANCE", "Retail Finance")}
+                />
 
-                {selector.retail_finance === "out_house" ? (
+                {selector.retail_finance === "Out House" ? (
                   <View>
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
@@ -990,7 +992,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   </View>
                 ) : null}
 
-                {selector.retail_finance === "leashing" && (
+                {selector.retail_finance === "Leashing" && (
                   <View>
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
@@ -1010,27 +1012,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   </View>
                 )}
 
-                {selector.retail_finance === "in_house" && (
-                  <View style={styles.drop_down_view_style}>
-                    <Dropdown
-                      label="Finance Category"
-                      data={selector.finance_category_types_data}
-                      required={true}
-                      floating={false}
-                      value={selector.finance_category}
-                      onChange={(value) =>
-                        dispatch(
-                          setDropDownData({
-                            key: "FINANCE_CATEGORY",
-                            value: value,
-                          })
-                        )
-                      }
-                    />
-                  </View>
-                )}
 
-                {selector.retail_finance === "in_house" && (
+
+                {selector.retail_finance === "In House" && (
+                  <DropDownSelectionItem
+                    label={"Finance Category"}
+                    value={selector.finance_category}
+                    onPress={() => showDropDownModelMethod("FINANCE_CATEGORY", "Finance Category")}
+                  />)}
+
+                {selector.retail_finance === "In House" && (
                   <View>
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
@@ -1050,8 +1041,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   </View>
                 )}
 
-                {(selector.retail_finance === "in_house" ||
-                  selector.retail_finance === "out_house") && (
+                {(selector.retail_finance === "In House" ||
+                  selector.retail_finance === "Out House") && (
                     <View>
                       <TextinputComp
                         style={{ height: 65, width: "100%" }}
@@ -1086,7 +1077,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     </View>
                   )}
 
-                {selector.retail_finance === "in_house" && (
+                {selector.retail_finance === "In House" && (
                   <View>
                     <View style={styles.drop_down_view_style}>
                       <Dropdown

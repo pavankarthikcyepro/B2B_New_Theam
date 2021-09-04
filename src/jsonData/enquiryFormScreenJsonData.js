@@ -448,28 +448,28 @@ export const Variant_Types = [
 
 export const Finance_Category_Types = [
   {
-    value: "Farmer",
-    label: "Farmer",
+    name: "Farmer",
+    id: "Farmer",
   },
   {
-    value: "Public Limited",
-    label: "Public Limited",
+    name: "Public Limited",
+    id: "Public Limited",
   },
   {
-    value: "Private Limited/Limited Companies",
-    label: "Private Limited/Limited Companies",
+    name: "Private Limited/Limited Companies",
+    id: "Private Limited/Limited Companies",
   },
   {
-    value: "Firms(Trust/Society/Partnership Firm)",
-    label: "Firms(Trust/Society/Partnership Firm)",
+    name: "Firms(Partnership Firm/Trust/Society)",
+    id: "Firms(Partnership Firm/Trust/Society)",
   },
   {
-    value: "Salaried Individual",
-    label: "Salaried Individual",
+    name: "Salaried Individual",
+    id: "Salaried Individual",
   },
   {
-    value: "Self_Employed Individual",
-    label: "Self_Employed Individual",
+    name: "Self-Employed Individual",
+    id: "Self-Employed Individual",
   },
 ];
 export const Bank_Financer_Types = [
@@ -511,19 +511,19 @@ export const Approx_Auual_Income_Types = [
 
 export const Finance_Types = [
   {
-    value: "in_house",
-    label: "In House",
+    id: "in_house",
+    name: "In House",
   },
   {
-    value: "out_house",
-    label: "Out House",
+    id: "out_house",
+    name: "Out House",
   },
   {
-    value: "cash",
-    label: "Cash",
+    id: "cash",
+    name: "Cash",
   },
   {
-    value: "leashing",
-    label: "Leashing",
+    id: "leashing",
+    name: "Leashing",
   },
 ];
