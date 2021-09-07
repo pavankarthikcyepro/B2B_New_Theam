@@ -49,7 +49,9 @@ import {
   updateFinancialData,
   setDropDownDataNew,
   getCustomerTypesApi,
-  updateFuelAndTransmissionType
+  updateFuelAndTransmissionType,
+  updateCustomerNeedAnalysisData,
+  updateAdditionalOrReplacementBuyerData
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
@@ -70,7 +72,9 @@ import {
   How_Many_Family_Members_Data,
   Prime_Exception_Types_Data,
   Finance_Types,
-  Finance_Category_Types
+  Finance_Category_Types,
+  Bank_Financer_Types,
+  Approx_Auual_Income_Types
 } from "../../../jsonData/enquiryFormScreenJsonData";
 
 const theme = {
@@ -139,8 +143,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dispatch(updateModelSelectionData(dmsLeadDto.dmsLeadProducts));
       // Update Finance Details
       dispatch(updateFinancialData(dmsLeadDto.dmsfinancedetails));
+      // Update Customer Need Analysys
+      dispatch(updateCustomerNeedAnalysisData(dmsLeadDto.dmsLeadScoreCards));
+      // Update Additional ore Replacement Buyer Data
+      dispatch(updateAdditionalOrReplacementBuyerData(dmsLeadDto.dmsExchagedetails));
     }
   }, [selector.enquiry_details_response])
+
+  useEffect(() => {
+    if (selector.model_drop_down_data_update_statu === "update") {
+      updateVariantModelsData(selector.model, true, selector.varient);
+    }
+  }, [selector.model_drop_down_data_update_statu])
 
   const getEnquiryDetailsFromServer = () => {
     if (universalId) {
@@ -209,8 +223,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       case "FINANCE_CATEGORY":
         setDataForDropDown([...Finance_Category_Types]);
         break;
-      case "":
-        setDataForDropDown([...carColorsData]);
+      case "BANK_FINANCE":
+        setDataForDropDown([...Bank_Financer_Types]);
+        break;
+      case "APPROX_ANNUAL_INCOME":
+        setDataForDropDown([...Approx_Auual_Income_Types]);
         break;
     }
     setDropDownKey(key);
@@ -218,10 +235,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     setShowDropDownModel(true);
   }
 
-  const updateVariantModelsData = (selectedModel) => {
+  const updateVariantModelsData = (selectedModelName, fromInitialize, selectedVarientName) => {
+
+    if (!selectedModelName || selectedModelName.length === 0) { return }
 
     let arrTemp = vehicle_modal_list.filter(function (obj) {
-      return obj.model === selectedModel.name;
+      return obj.model === selectedModelName;
     });
 
     let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
@@ -236,14 +255,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           })
         })
         setSelectedCarVarientsData({ varientList: [...mArray], varientListForDropDown: [...newArray] });
+        if (fromInitialize) {
+          updateColorsDataForSelectedVarient(selectedVarientName, [...mArray])
+        }
       }
     }
   }
 
-  const updateColorsDataForSelectedVarient = (selectedVarient) => {
+  const updateColorsDataForSelectedVarient = (selectedVarientName, varientList) => {
 
-    let arrTemp = selectedCarVarientsData.varientList.filter(function (obj) {
-      return obj.name === selectedVarient.name;
+    if (!selectedVarientName || selectedVarientName.length === 0) { return }
+
+    let arrTemp = varientList.filter(function (obj) {
+      return obj.name === selectedVarientName;
     });
 
     let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
@@ -292,10 +316,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         data={dataForDropDown}
         selectedItems={(item) => {
           if (dropDownKey === "MODEL") {
-            updateVariantModelsData(item);
+            updateVariantModelsData(item.name, false);
           }
           if (dropDownKey === "VARIENT") {
-            updateColorsDataForSelectedVarient(item);
+            updateColorsDataForSelectedVarient(item.name, selectedCarVarientsData.varientList);
           }
           setShowDropDownModel(false);
           dispatch(setDropDownData({ key: dropDownKey, value: item.name, id: item.id }));
@@ -311,9 +335,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             console.log("date: ", selectedDate);
             if (Platform.OS === "android") {
               if (!selectedDate) {
-                dispatch(
-                  updateSelectedDate({ key: "NONE", text: selectedDate })
-                );
+                dispatch(updateSelectedDate({ key: "NONE", text: selectedDate }));
               } else {
                 dispatch(updateSelectedDate({ key: "", text: selectedDate }));
               }
@@ -1077,43 +1099,31 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     </View>
                   )}
 
+
+
                 {selector.retail_finance === "In House" && (
                   <View>
-                    <View style={styles.drop_down_view_style}>
-                      <Dropdown
-                        label="Bank/Financer"
-                        data={selector.dropDownData}
-                        required={true}
-                        floating={false}
-                        value={selector.bank_or_finance}
-                        onChange={(value) =>
-                          dispatch(
-                            setDropDownData({
-                              key: "BANK_FINANCE",
-                              value: value,
-                            })
-                          )
-                        }
-                      />
-                    </View>
+                    <DropDownSelectionItem
+                      label={"Bank/Financer"}
+                      value={selector.bank_or_finance}
+                      onPress={() => showDropDownModelMethod("BANK_FINANCE", "Bank/Financer")}
+                    />
 
-                    <View style={styles.drop_down_view_style}>
-                      <Dropdown
-                        label="Loan of Tenure(Months)"
-                        data={selector.dropDownData}
-                        required={true}
-                        floating={false}
-                        value={selector.loan_of_tenure}
-                        onChange={(value) =>
-                          dispatch(
-                            setDropDownData({
-                              key: "LOAN_OF_TENURE",
-                              value: value,
-                            })
-                          )
-                        }
-                      />
-                    </View>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Loan of Tenure(Months)"}
+                      keyboardType={"default"}
+                      value={selector.loan_of_tenure}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setFinancialDetails({
+                            key: "LOAN_OF_TENURE",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
 
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
@@ -1127,23 +1137,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       }
                     />
                     <Text style={GlobalStyle.underline}></Text>
-                    <View style={styles.drop_down_view_style}>
-                      <Dropdown
-                        label="Approx Annual Income"
-                        data={selector.dropDownData}
-                        required={true}
-                        floating={false}
-                        value={selector.approx_annual_income}
-                        onChange={(value) =>
-                          dispatch(
-                            setDropDownData({
-                              key: "APPROX_ANNUAL_INCOME",
-                              value: value,
-                            })
-                          )
-                        }
-                      />
-                    </View>
+
+                    <DropDownSelectionItem
+                      label={"Approx Annual Income"}
+                      value={selector.approx_annual_income}
+                      onPress={() => showDropDownModelMethod("APPROX_ANNUAL_INCOME", "Approx Annual Income")}
+                    />
                   </View>
                 )}
               </List.Accordion>
@@ -1232,107 +1231,48 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {selector.c_looking_for_any_other_brand_checked && (
                   <View>
-                    <View style={styles.drop_down_view_style}>
-                      <Dropdown
-                        label="Make"
-                        data={selector.dropDownData}
-                        required={true}
-                        floating={false}
-                        value={selector.make}
-                        onChange={(value) =>
-                          dispatch(
-                            setDropDownData({ key: "C_MAKE", value: value })
-                          )
-                        }
-                      />
-                    </View>
+                    <DropDownSelectionItem
+                      label={"Make"}
+                      value={selector.c_make}
+                      onPress={() => showDropDownModelMethod("C_MAKE", "Make")}
+                    />
+                    <DropDownSelectionItem
+                      label={"Model"}
+                      value={selector.c_model}
+                      onPress={() => showDropDownModelMethod("C_MODEL", "Model")}
+                    />
+                    <DropDownSelectionItem
+                      label={"Variant"}
+                      value={selector.c_variant}
+                      onPress={() => showDropDownModelMethod("C_VARIANT", "Variant")}
+                    />
+                    <DropDownSelectionItem
+                      label={"Color"}
+                      value={selector.c_color}
+                      onPress={() => showDropDownModelMethod("C_COLOR", "Color")}
+                    />
 
-                    <View style={styles.drop_down_view_style}>
-                      <Dropdown
-                        label="Model"
-                        data={selector.dropDownData}
-                        required={true}
-                        floating={false}
-                        value={selector.model}
-                        onChange={(value) =>
-                          dispatch(
-                            setDropDownData({ key: "C_MODEL", value: value })
-                          )
-                        }
-                      />
-                    </View>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Fuel Type"}
+                      editable={false}
+                      value={selector.c_fuel_type}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
 
-                    <View style={styles.drop_down_view_style}>
-                      <Dropdown
-                        label="Variant"
-                        data={selector.dropDownData}
-                        required={true}
-                        floating={false}
-                        value={selector.variant}
-                        onChange={(value) =>
-                          dispatch(
-                            setDropDownData({ key: "C_VARIANT", value: value })
-                          )
-                        }
-                      />
-                    </View>
-
-                    <View style={styles.drop_down_view_style}>
-                      <Dropdown
-                        label="Color"
-                        data={selector.dropDownData}
-                        required={true}
-                        floating={false}
-                        value={selector.color}
-                        onChange={(value) =>
-                          dispatch(
-                            setDropDownData({ key: "C_COLOR", value: value })
-                          )
-                        }
-                      />
-                    </View>
-
-                    <View style={styles.drop_down_view_style}>
-                      <Dropdown
-                        label="Fuel Type"
-                        data={selector.dropDownData}
-                        required={true}
-                        floating={false}
-                        value={selector.fuel_type}
-                        onChange={(value) =>
-                          dispatch(
-                            setDropDownData({
-                              key: "C_FUEL_TYPE",
-                              value: value,
-                            })
-                          )
-                        }
-                      />
-                    </View>
-
-                    <View style={styles.drop_down_view_style}>
-                      <Dropdown
-                        label="Transmission Type"
-                        data={selector.dropDownData}
-                        required={true}
-                        floating={false}
-                        value={selector.transmission_type}
-                        onChange={(value) =>
-                          dispatch(
-                            setDropDownData({
-                              key: "C_TRANSMISSION_TYPE",
-                              value: value,
-                            })
-                          )
-                        }
-                      />
-                    </View>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Transmission Type"}
+                      editable={false}
+                      value={selector.c_transmission_type}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
 
                     <TextinputComp
                       style={styles.textInputStyle}
-                      value={selector.price_range}
+                      value={selector.c_price_range}
                       label={"Price Range"}
-                      keyboardType={"default"}
+                      keyboardType={"number-pad"}
                       onChangeText={(text) =>
                         dispatch(
                           setCustomerNeedAnalysis({
@@ -1345,9 +1285,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <Text style={GlobalStyle.underline}></Text>
                     <TextinputComp
                       style={styles.textInputStyle}
-                      value={selector.on_road_price}
+                      value={selector.c_on_road_price}
                       label={"On Road Price"}
-                      keyboardType={"default"}
+                      keyboardType={"number-pad"}
                       onChangeText={(text) =>
                         dispatch(
                           setCustomerNeedAnalysis({
@@ -1360,7 +1300,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <Text style={GlobalStyle.underline}></Text>
                     <TextinputComp
                       style={styles.textInputStyle}
-                      value={selector.dealership_name}
+                      value={selector.c_dealership_name}
                       label={"DealerShip Name"}
                       keyboardType={"default"}
                       onChangeText={(text) =>
@@ -1375,7 +1315,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <Text style={GlobalStyle.underline}></Text>
                     <TextinputComp
                       style={styles.textInputStyle}
-                      value={selector.dealership_location}
+                      value={selector.c_dealership_location}
                       label={"DealerShip Location"}
                       keyboardType={"default"}
                       onChangeText={(text) =>
@@ -1390,7 +1330,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <Text style={GlobalStyle.underline}></Text>
                     <TextinputComp
                       style={styles.textInputStyle}
-                      value={selector.dealership_pending_reason}
+                      value={selector.c_dealership_pending_reason}
                       label={"Dealership Pending Reason"}
                       keyboardType={"default"}
                       onChangeText={(text) =>
@@ -1408,7 +1348,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 <TextinputComp
                   style={styles.textInputStyle}
-                  value={selector.voice_of_customer_remarks}
+                  value={selector.c_voice_of_customer_remarks}
                   label={"Voice of Customer Remarks "}
                   keyboardType={"default"}
                   onChangeText={(text) =>
@@ -1441,64 +1381,26 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       openAccordian === "8" ? Colors.RED : Colors.WHITE,
                   }}
                 >
-                  <View style={styles.drop_down_view_style}>
-                    <Dropdown
-                      label="Make"
-                      data={selector.additional_types_data}
-                      required={true}
-                      floating={false}
-                      value={selector.a_make}
-                      onChange={(value) =>
-                        dispatch(
-                          setDropDownData({ key: "A_MAKE", value: value })
-                        )
-                      }
-                    />
-                  </View>
-                  <View style={styles.drop_down_view_style}>
-                    <Dropdown
-                      label="Model"
-                      data={selector.model_types_data}
-                      required={true}
-                      floating={false}
-                      value={selector.a_model}
-                      onChange={(value) =>
-                        dispatch(
-                          setDropDownData({ key: "A_MODEL", value: value })
-                        )
-                      }
-                    />
-                  </View>
-                  <TextinputComp
-                    style={styles.textInputStyle}
-                    value={selector.a_varient}
+                  <DropDownSelectionItem
+                    label={"Make"}
+                    value={selector.a_make}
+                    onPress={() => showDropDownModelMethod("A_MAKE", "Make")}
+                  />
+                  <DropDownSelectionItem
+                    label={"Model"}
+                    value={selector.a_model}
+                    onPress={() => showDropDownModelMethod("A_MODEL", "Model")}
+                  />
+                  <DropDownSelectionItem
                     label={"Varient"}
-                    keyboardType={"default"}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setAdditionalBuyerDetails({
-                          key: "A_VARIENT",
-                          text: text,
-                        })
-                      )
-                    }
+                    value={selector.a_varient}
+                    onPress={() => showDropDownModelMethod("A_VARIENT", "Varient")}
                   />
-                  <Text style={GlobalStyle.underline}></Text>
-                  <TextinputComp
-                    style={styles.textInputStyle}
-                    value={selector.a_color}
+                  <DropDownSelectionItem
                     label={"Color"}
-                    keyboardType={"default"}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setAdditionalBuyerDetails({
-                          key: "A_COLOR",
-                          text: text,
-                        })
-                      )
-                    }
+                    value={selector.a_color}
+                    onPress={() => showDropDownModelMethod("A_COLOR", "Color")}
                   />
-                  <Text style={GlobalStyle.underline}></Text>
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.a_reg_no}
@@ -1553,95 +1455,50 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
                     />
                   </View>
-                  <View style={styles.drop_down_view_style}>
-                    <Dropdown
-                      label="Make"
-                      data={selector.additional_types_data}
-                      required={true}
-                      floating={false}
-                      value={selector.r_make}
-                      onChange={(value) =>
-                        dispatch(
-                          setDropDownData({ key: "A_MAKE", value: value })
-                        )
-                      }
-                    />
-                  </View>
-                  <View style={styles.drop_down_view_style}>
-                    <Dropdown
-                      label="Model"
-                      data={selector.model_types_data}
-                      required={true}
-                      floating={false}
-                      value={selector.r_model}
-                      onChange={(value) =>
-                        dispatch(
-                          setDropDownData({ key: "R_MODEL", value: value })
-                        )
-                      }
-                    />
-                  </View>
-                  <View style={styles.drop_down_view_style}>
-                    <Dropdown
-                      label="Fuel Type"
-                      data={selector.fuel_types_data}
-                      required={true}
-                      floating={false}
-                      value={selector.r_fuel_type}
-                      onChange={(value) =>
-                        dispatch(
-                          setDropDownData({ key: "R_FUEL_TYPE", value: value })
-                        )
-                      }
-                    />
-                  </View>
-                  <View style={styles.drop_down_view_style}>
-                    <Dropdown
-                      label="Transmission Type"
-                      data={selector.transmission_types_data}
-                      required={true}
-                      floating={false}
-                      value={selector.r_transmission_type}
-                      onChange={(value) =>
-                        dispatch(
-                          setDropDownData({
-                            key: "R_TRANSMISSION_TYPE",
-                            value: value,
-                          })
-                        )
-                      }
-                    />
-                  </View>
-                  <TextinputComp
-                    style={styles.textInputStyle}
-                    value={selector.r_varient}
+                  <DropDownSelectionItem
+                    label={"Make"}
+                    value={selector.r_make}
+                    onPress={() => showDropDownModelMethod("R_MAKE", "Make")}
+                  />
+                  <DropDownSelectionItem
+                    label={"Model"}
+                    value={selector.r_model}
+                    onPress={() => showDropDownModelMethod("R_MODEL", "Model")}
+                  />
+                  <DropDownSelectionItem
                     label={"Varient"}
-                    keyboardType={"default"}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setReplacementBuyerDetails({
-                          key: "R_VARIENT",
-                          text: text,
-                        })
-                      )
-                    }
+                    value={selector.r_varient}
+                    onPress={() => showDropDownModelMethod("R_VARIENT", "Varient")}
                   />
-                  <Text style={GlobalStyle.underline}></Text>
-                  <TextinputComp
-                    style={styles.textInputStyle}
-                    value={selector.r_color}
+
+                  <DropDownSelectionItem
                     label={"Color"}
-                    keyboardType={"default"}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setReplacementBuyerDetails({
-                          key: "R_COLOR",
-                          text: text,
-                        })
-                      )
-                    }
+                    value={selector.r_color}
+                    onPress={() => showDropDownModelMethod("R_COLOR", "Color")}
+                  />
+
+                  <DropDownSelectionItem
+                    label={"Fuel Type"}
+                    value={selector.r_model}
+                    onPress={() => showDropDownModelMethod("R_FUEL_TYPE", "Fuel Type")}
+                  />
+
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    label={"Fuel Type"}
+                    editable={false}
+                    value={selector.r_fuel_type}
                   />
                   <Text style={GlobalStyle.underline}></Text>
+
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    label={"Transmission Type"}
+                    editable={false}
+                    value={selector.r_transmission_type}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+
                   <DateSelectItem
                     label={"Mth.Yr. of MFG"}
                     value={selector.r_mfg_year}
@@ -1651,7 +1508,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     style={styles.textInputStyle}
                     value={selector.r_kms_driven_or_odometer_reading}
                     label={"Kms-Driven/Odometer Reading"}
-                    keyboardType={"default"}
+                    keyboardType={"number-pad"}
                     onChangeText={(text) =>
                       dispatch(
                         setReplacementBuyerDetails({
@@ -1725,7 +1582,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     style={styles.textInputStyle}
                     value={selector.r_expected_price}
                     label={"Expected Price"}
-                    keyboardType={"default"}
+                    keyboardType={"number-pad"}
                     onChangeText={(text) =>
                       dispatch(
                         setReplacementBuyerDetails({
@@ -1816,23 +1673,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   {selector.r_insurence_checked &&
                     !selector.r_insurence_document_checked && (
                       <View>
-                        <View style={styles.drop_down_view_style}>
-                          <Dropdown
-                            label="Insurence Type"
-                            data={selector.dropDownData}
-                            required={true}
-                            floating={false}
-                            value={selector.r_insurence_type}
-                            onChange={(value) =>
-                              dispatch(
-                                setDropDownData({
-                                  key: "A_MODEL",
-                                  value: value,
-                                })
-                              )
-                            }
-                          />
-                        </View>
+                        <DropDownSelectionItem
+                          label={"Insurence Type"}
+                          value={selector.r_insurence_type}
+                          onPress={() => showDropDownModelMethod("R_INSURENCE_TYPE", "Fuel Type")}
+                        />
                         <DateSelectItem
                           label={"Insurence From Date"}
                           value={selector.r_insurence_from_date}

@@ -40,7 +40,7 @@ export const callNumber = phone => {
 }
 
 export const convertTimeStampToDateString = (timeStamp, format) => {
-    if (!timeStamp) return "";
+    if (!timeStamp || timeStamp.length === 0) return "";
     format = format ? format : "DD/MM/YYYY h:mm a";
     const date = moment(timeStamp).format(format);
     return date;

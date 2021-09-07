@@ -174,6 +174,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     color: "",
     fuel_type: "",
     transmission_type: "",
+    model_drop_down_data_update_statu: "",
     // financial details
     retail_finance: "",
     finance_category: "",
@@ -259,11 +260,13 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.customer_type = value;
           break;
         case "SALUTATION":
+          if (state.salutaion !== value) {
+            state.gender = "";
+            state.relation = "";
+            state.gender_types_data = Gender_Data_Obj[value.toLowerCase()];
+            state.relation_types_data = Relation_Data_Obj[value.toLowerCase()];
+          }
           state.salutaion = value;
-          state.gender = "";
-          state.relation = "";
-          state.gender_types_data = Gender_Data_Obj[value.toLowerCase()];
-          state.relation_types_data = Relation_Data_Obj[value.toLowerCase()];
           break;
         case "GENDER":
           state.gender = value;
@@ -272,15 +275,19 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.relation = value;
           break;
         case "MODEL":
+          if (state.model !== value) {
+            state.varient = "";
+            state.color = "";
+            state.fuel_type = "";
+            state.transmission_type = "";
+          }
           state.model = value;
-          state.varient = "";
-          state.color = "";
-          state.fuel_type = "";
-          state.transmission_type = "";
           break;
         case "VARIENT":
+          if (state.varient !== value) {
+            state.color = "";
+          }
           state.varient = value;
-          state.color = "";
           break;
         case "COLOR":
           state.color = value;
@@ -324,9 +331,6 @@ const enquiryDetailsOverViewSlice = createSlice({
         case "BANK_FINANCE":
           state.bank_or_finance = value;
           break;
-        case "LOAN_OF_TENURE":
-          state.loan_of_tenure = value;
-          break;
         case "APPROX_ANNUAL_INCOME":
           state.approx_annual_income = value;
           break;
@@ -341,12 +345,6 @@ const enquiryDetailsOverViewSlice = createSlice({
           break;
         case "C_COLOR":
           state.c_color = value;
-          break;
-        case "C_FUEL_TYPE":
-          state.fuel_type = value;
-          break;
-        case "C_TRANSMISSION_TYPE":
-          state.transmission_type = value;
           break;
         case "A_MAKE":
           state.a_make = value;
@@ -375,7 +373,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     },
     updateSelectedDate: (state, action: PayloadAction<PersonalIntroModel>) => {
       const { key, text } = action.payload;
-      const selectedDate = dateSelected(text);
+      const selectedDate = convertTimeStampToDateString(text, "DD/MM/YYYY");
       const keyId = key ? key : state.datePickerKeyId;
       switch (keyId) {
         case "DATE_OF_BIRTH":
@@ -546,6 +544,9 @@ const enquiryDetailsOverViewSlice = createSlice({
           break;
         case "LEASHING_NAME":
           state.leashing_name = text;
+          break;
+        case "LOAN_OF_TENURE":
+          state.loan_of_tenure = text;
           break;
       }
     },
@@ -764,6 +765,7 @@ const enquiryDetailsOverViewSlice = createSlice({
         state.color = dataObj.color ? dataObj.color : "";
         state.fuel_type = dataObj.fuel ? dataObj.fuel : "";
         state.transmission_type = dataObj.transimmisionType ? dataObj.transimmisionType : "";
+        state.model_drop_down_data_update_statu = "update";
       }
     },
     updateFinancialData: (state, action) => {
@@ -772,9 +774,9 @@ const enquiryDetailsOverViewSlice = createSlice({
         const dataObj = dmsfinancedetails[0];
         state.retail_finance = dataObj.financeType ? dataObj.financeType : "";
         state.finance_category = dataObj.financeCategory ? dataObj.financeCategory : "";
-        state.down_payment = dataObj.downPayment ? dataObj.downPayment : "";
-        state.loan_amount = dataObj.loanAmount ? dataObj.loanAmount : "";
-        // state.bank_or_finance
+        state.down_payment = dataObj.downPayment ? dataObj.downPayment.toString() : "";
+        state.loan_amount = dataObj.loanAmount ? dataObj.loanAmount.toString() : "";
+        state.bank_or_finance = dataObj.financeCompany ? dataObj.financeCompany : "";
         state.bank_or_finance_name = dataObj.financeCompany ? dataObj.financeCompany : "";
         state.rate_of_interest = dataObj.rateOfInterest ? dataObj.rateOfInterest : "";
         state.loan_of_tenure = dataObj.expectedTenureYears ? dataObj.expectedTenureYears : "";
@@ -782,6 +784,75 @@ const enquiryDetailsOverViewSlice = createSlice({
         state.approx_annual_income = dataObj.annualIncome ? dataObj.annualIncome : "";
         state.location = dataObj.location ? dataObj.location : "";
         state.leashing_name = dataObj.financeCompany ? dataObj.financeCompany : "";
+      }
+    },
+    updateCustomerNeedAnalysisData: (state, action) => {
+      const dmsLeadScoreCards = action.payload;
+      if (dmsLeadScoreCards.length > 0) {
+        const dataObj = dmsLeadScoreCards[0];
+        state.c_looking_for_any_other_brand_checked = dataObj.lookingForAnyOtherBrand ? dataObj.lookingForAnyOtherBrand : false;
+        state.c_make = dataObj.brand ? dataObj.brand : "";
+        state.c_model = dataObj.model ? dataObj.model : "";
+        state.c_variant = dataObj.variant ? dataObj.variant : "";
+        state.c_color = dataObj.color ? dataObj.color : "";
+        state.c_fuel_type = dataObj.fuel ? dataObj.fuel : "";
+        // TODO:- Need to check transmission type in response
+        state.c_transmission_type = "";
+        state.c_price_range = dataObj.priceRange ? dataObj.priceRange : "";
+        state.c_on_road_price = dataObj.onRoadPriceanyDifference ? dataObj.onRoadPriceanyDifference : "";
+        state.c_dealership_name = dataObj.dealershipName ? dataObj.dealershipName : "";
+        state.c_dealership_location = dataObj.dealershipLocation ? dataObj.dealershipLocation : "";
+        state.c_dealership_pending_reason = dataObj.decisionPendingReason ? dataObj.decisionPendingReason : "";
+        state.c_voice_of_customer_remarks = dataObj.voiceofCustomerRemarks ? dataObj.voiceofCustomerRemarks : "";
+      }
+    },
+    updateAdditionalOrReplacementBuyerData: (state, action) => {
+      const dmsExchagedetails = action.payload;
+      if (dmsExchagedetails.length > 0) {
+        const dataObj = dmsExchagedetails[0];
+
+        if (dataObj.buyerType === "Additional Buyer") {
+          state.a_make = dataObj.brand ? dataObj.brand : "";
+          state.a_model = dataObj.model ? dataObj.model : "";
+          state.a_varient = dataObj.varient ? dataObj.varient : "";
+          state.a_color = dataObj.color ? dataObj.color : "";
+          state.a_reg_no = dataObj.regNo ? dataObj.regNo : "";
+        }
+        else if (dataObj.buyerType === "Replacement Buyer") {
+
+          state.r_reg_no = dataObj.regNo ? dataObj.regNo : "";
+          state.r_make = dataObj.brand ? dataObj.brand : "";
+          state.r_model = dataObj.model ? dataObj.model : "";
+          state.r_varient = dataObj.varient ? dataObj.varient : "";
+          state.r_color = dataObj.color ? dataObj.color : "";
+          state.r_fuel_type = dataObj.fuelType ? dataObj.fuelType : "";
+          state.r_transmission_type = dataObj.transmission ? dataObj.transmission : "";
+          const yearOfManfac = dataObj.yearofManufacture ? dataObj.yearofManufacture : "";
+          state.r_mfg_year = convertTimeStampToDateString(yearOfManfac, "DD/MM/YYYY");
+
+          state.r_kms_driven_or_odometer_reading = dataObj.kiloMeters ? dataObj.kiloMeters : "";
+          state.r_expected_price = dataObj.expectedPrice ? dataObj.expectedPrice.toString() : "";
+
+          state.r_hypothication_checked = dataObj.hypothicationRequirement ? dataObj.hypothicationRequirement : false;
+          state.r_hypothication_name = dataObj.hypothication ? dataObj.hypothication : "";
+          state.r_hypothication_branch = dataObj.hypothicationBranch ? dataObj.hypothicationBranch : "";
+
+          const registrationDate = dataObj.registrationDate ? dataObj.registrationDate : "";
+          state.r_registration_date = convertTimeStampToDateString(registrationDate, "DD/MM/YYYY");
+
+          const registrationValidityDate = dataObj.registrationValidityDate ? dataObj.registrationValidityDate : "";
+          state.r_registration_validity_date = convertTimeStampToDateString(registrationValidityDate, "DD/MM/YYYY");
+
+          state.r_insurence_checked = dataObj.insuranceAvailable ? (dataObj.insuranceAvailable === "true" ? true : false) : false;
+          state.r_insurence_document_checked = dataObj.insuranceDocumentAvailable ? dataObj.insuranceDocumentAvailable : false;
+          state.r_insurence_company_name = dataObj.insuranceCompanyName ? dataObj.insuranceCompanyName : "";
+          state.r_insurence_expiry_date = dataObj.insuranceExpiryDate ? dataObj.insuranceExpiryDate : "";
+          state.r_insurence_type = dataObj.insuranceType ? dataObj.insuranceType : "";
+          const insurenceFromDate = dataObj.insuranceFromDate ? dataObj.insuranceFromDate : "";
+          state.r_insurence_from_date = convertTimeStampToDateString(insurenceFromDate, "DD/MM/YYYY");
+          const insurenceToDate = dataObj.insuranceToDate ? dataObj.insuranceToDate : "";
+          state.r_insurence_to_date = convertTimeStampToDateString(insurenceToDate, "DD/MM/YYYY");
+        }
       }
     },
     updateFuelAndTransmissionType: (state, action) => {
@@ -830,17 +901,6 @@ const enquiryDetailsOverViewSlice = createSlice({
   }
 });
 
-const dateSelected = (isoDate) => {
-  if (!isoDate) {
-    return "";
-  }
-  const date = new Date(isoDate);
-  const finalDate =
-    date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
-  //console.log("date: ", finalDate);
-  return finalDate;
-};
-
 export const {
   setDatePicker,
   setEditable,
@@ -860,6 +920,8 @@ export const {
   updateDmsAddressData,
   updateModelSelectionData,
   updateFinancialData,
-  updateFuelAndTransmissionType
+  updateFuelAndTransmissionType,
+  updateCustomerNeedAnalysisData,
+  updateAdditionalOrReplacementBuyerData,
 } = enquiryDetailsOverViewSlice.actions;
 export default enquiryDetailsOverViewSlice.reducer;

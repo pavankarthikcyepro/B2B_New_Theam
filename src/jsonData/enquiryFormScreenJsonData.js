@@ -101,15 +101,15 @@ export const Marital_Status_Types = [
 export const Buyer_Type_Data = [
   {
     id: "first_time_buyer",
-    label: "First Time Buyer",
+    name: "First Time Buyer",
   },
   {
     id: "additional_buyer",
-    label: "Additional Buyer",
+    name: "Additional Buyer",
   },
   {
     id: "replacement_buyer",
-    label: "Replacement Buyer",
+    name: "Replacement Buyer",
   },
 ];
 export const Additional_Type_Data = [
@@ -474,38 +474,38 @@ export const Finance_Category_Types = [
 ];
 export const Bank_Financer_Types = [
   {
-    value: "ICICI Bank",
-    label: "ICICI Bank",
+    id: "ICICI Bank",
+    name: "ICICI Bank",
   },
   {
-    value: "HDFC Bank",
-    label: "HDFC Bank",
+    id: "HDFC Bank",
+    name: "HDFC Bank",
   },
   {
-    value: "SBI Bank",
-    label: "SBI Bank",
+    id: "SBI Bank",
+    name: "SBI Bank",
   },
 ];
 export const Approx_Auual_Income_Types = [
   {
-    value: "<2 Lakhs",
-    label: "<2 Lakhs",
+    id: "<2 Lakhs",
+    name: "<2 Lakhs",
   },
   {
-    value: "2-4 Lakhs",
-    label: "2-4 Lakhs",
+    id: "2-4 Lakhs",
+    name: "2-4 Lakhs",
   },
   {
-    value: "4-6 Lakhs",
-    label: "4-6 Lakhs",
+    id: "4-6 Lakhs",
+    name: "4-6 Lakhs",
   },
   {
-    value: "6-8 Lakhs",
-    label: "6-8 Lakhs",
+    id: "6-8 Lakhs",
+    name: "6-8 Lakhs",
   },
   {
-    value: ">8 Lakhs",
-    label: ">8 Lakhs",
+    id: ">8 Lakhs",
+    name: ">8 Lakhs",
   },
 ];
 
