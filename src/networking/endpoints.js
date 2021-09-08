@@ -55,6 +55,7 @@ const URL = {
     ENQUIRY_DETAILS: (universalId) => {
         return sales_url + "/enquiry/lead/id/" + `${universalId}`;
     },
+    UPDATE_ENQUIRY_DETAILS: () => sales_url + "/enquiry/lead",
     GET_CUSTOMER_TYPES: () => sales_url + "/master-data/customertype"
 }
 

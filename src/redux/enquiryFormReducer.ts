@@ -2,50 +2,24 @@ import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { client } from "../networking/client";
 import URL from "../networking/endpoints";
 import {
-  Enquiry_Segment_Data,
-  Enquiry_Sub_Source_Type_Data,
-  Additional_Type_Data,
-  Kms_Travelled_Type_Data,
-  Who_Drive_Type_Data,
-  How_Many_Family_Members_Data,
-  Prime_Exception_Types_Data,
-  Salutation_Types,
   Relation_Data_Obj,
   Gender_Data_Obj,
-  Model_Types,
-  Variant_Types,
-  Color_Types,
-  Fuel_Types,
-  Transmission_Types,
-  Finance_Types,
-  Finance_Category_Types,
-  Bank_Financer_Types,
-  Approx_Auual_Income_Types,
 } from "../jsonData/enquiryFormScreenJsonData";
 import { convertTimeStampToDateString } from "../utils/helperFunctions";
-
-const dropDownData = [
-  {
-    value: "1",
-    label: "Tiger Nixon",
-  },
-  {
-    value: "2",
-    label: "Garrett Winters",
-  },
-  {
-    value: "3",
-    label: "Jhon Wick 1",
-  },
-  {
-    value: "4",
-    label: "Jhon Wick 2",
-  },
-];
 
 export const getEnquiryDetailsApi = createAsyncThunk("ENQUIRY_FORM_SLICE/getEnquiryDetailsApi", async (universalId, { rejectWithValue }) => {
 
   const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const updateEnquiryDetailsApi = createAsyncThunk("ENQUIRY_FORM_SLICE/updateEnquiryDetailsApi", async (payload, { rejectWithValue }) => {
+
+  const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
   const json = await response.json()
   if (!response.ok) {
     return rejectWithValue(json);
@@ -80,10 +54,6 @@ interface DropDownModel {
   keyId: string;
 }
 
-const filterBasedOnSalutaion = (salutaionId) => {
-
-}
-
 const enquiryDetailsOverViewSlice = createSlice({
   name: "ENQUIRY_FORM_SLICE",
   initialState: {
@@ -91,30 +61,10 @@ const enquiryDetailsOverViewSlice = createSlice({
     isLoading: false,
     openAccordian: 0,
     showDatepicker: false,
-    dropDownData: dropDownData,
-    enquiry_segment_types_data: Enquiry_Segment_Data,
     customer_types_data: [],
-    kms_travelled_types_data: Kms_Travelled_Type_Data,
-    who_drive_types_data: Who_Drive_Type_Data,
-    sub_source_types_data: Enquiry_Sub_Source_Type_Data,
-    additional_types_data: Additional_Type_Data,
-    family_member_types_data: How_Many_Family_Members_Data,
-    prime_exception_types_data: Prime_Exception_Types_Data,
-    finance_types_data: Finance_Types,
     //personal Intro
-    saluation_types_data: Salutation_Types,
     gender_types_data: [],
     relation_types_data: [],
-    //Model Selection
-    transmission_types_data: Transmission_Types,
-    fuel_types_data: Fuel_Types,
-    color_types_data: Color_Types,
-    varient_types_data: Variant_Types,
-    model_types_data: Model_Types,
-    //Finance Details
-    approx_annual_income_types_data: Approx_Auual_Income_Types,
-    bank_financer_types_data: Bank_Financer_Types,
-    finance_category_types_data: Finance_Category_Types,
 
     datePickerKeyId: "",
     enableEdit: false,
@@ -191,7 +141,9 @@ const enquiryDetailsOverViewSlice = createSlice({
     // Customer Need Analysis
     c_looking_for_any_other_brand_checked: false,
     c_make: "",
+    c_make_other_name: "",
     c_model: "",
+    c_model_other_name: "",
     c_variant: "",
     c_color: "",
     c_fuel_type: "",
@@ -210,6 +162,8 @@ const enquiryDetailsOverViewSlice = createSlice({
     // Additional Buyer
     a_make: "",
     a_model: "",
+    a_make_other_name: "",
+    a_model_other_name: "",
     a_varient: "",
     a_color: "",
     a_reg_no: "",
@@ -219,6 +173,8 @@ const enquiryDetailsOverViewSlice = createSlice({
     r_color: "",
     r_make: "",
     r_model: "",
+    r_make_other_name: "",
+    r_model_other_name: "",
     r_fuel_type: "",
     r_transmission_type: "",
     r_mfg_year: "",
@@ -335,24 +291,33 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.approx_annual_income = value;
           break;
         case "C_MAKE":
+          if (state.c_make !== value) {
+            state.c_model = "";
+          }
           state.c_make = value;
           break;
         case "C_MODEL":
           state.c_model = value;
           break;
-        case "C_VARIANT":
-          state.c_variant = value;
+        case "C_FUEL_TYPE":
+          state.c_fuel_type = value;
           break;
-        case "C_COLOR":
-          state.c_color = value;
+        case "C_TRANSMISSION_TYPE":
+          state.c_transmission_type = value;
           break;
         case "A_MAKE":
+          if (state.a_make !== value) {
+            state.a_model = "";
+          }
           state.a_make = value;
           break;
         case "A_MODEL":
           state.a_model = value;
           break;
         case "R_MAKE":
+          if (state.r_make !== value) {
+            state.r_model = "";
+          }
           state.r_make = value;
           break;
         case "R_MODEL":
@@ -557,13 +522,18 @@ const enquiryDetailsOverViewSlice = createSlice({
       const { key, text } = action.payload;
       switch (key) {
         case "CHECK_BOX":
-          state.c_looking_for_any_other_brand_checked =
-            !state.c_looking_for_any_other_brand_checked;
+          state.c_looking_for_any_other_brand_checked = !state.c_looking_for_any_other_brand_checked;
           break;
-        case "VARIANT":
+        case "C_MAKE_OTHER_NAME":
+          state.c_make_other_name = text;
+          break;
+        case "C_MODEL_OTHER_NAME":
+          state.c_model_other_name = text;
+          break;
+        case "C_VARIANT":
           state.c_variant = text;
           break;
-        case "COLOR":
+        case "C_COLOR":
           state.c_color = text;
           break;
         case "PRICE_RANGE":
@@ -572,19 +542,15 @@ const enquiryDetailsOverViewSlice = createSlice({
         case "ON_ROAD_PRICE":
           state.c_on_road_price = text;
           break;
-
         case "DEALERSHIP_NAME":
           state.c_dealership_name = text;
           break;
-
         case "DEALERSHIP_LOCATION":
           state.c_dealership_location = text;
           break;
-
         case "DEALERSHIP_PENDING_REASON":
           state.c_dealership_pending_reason = text;
           break;
-
         case "VOICE_OF_CUSTOMER_REMARKS":
           state.c_voice_of_customer_remarks = text;
           break;
@@ -612,13 +578,20 @@ const enquiryDetailsOverViewSlice = createSlice({
     setAdditionalBuyerDetails: (state, action) => {
       const { key, text } = action.payload;
       switch (key) {
+        case "A_MAKE_OTHER_NAME":
+          state.a_make_other_name = text;
+          break;
+        case "A_MODEL_OTHER_NAME":
+          state.a_model_other_name = text;
+          break;
         case "A_VARIENT":
-          state.pan_number = text;
+          state.a_varient = text;
           break;
         case "A_COLOR":
-          state.adhaar_number = text;
+          state.a_color = text;
           break;
         case "A_REG_NO":
+          state.a_reg_no = text;
           break;
       }
     },
@@ -627,6 +600,12 @@ const enquiryDetailsOverViewSlice = createSlice({
       switch (key) {
         case "R_REG_NO":
           state.r_reg_no = text;
+          break;
+        case "R_MAKE_OTHER_NAME":
+          state.r_make_other_name = text;
+          break;
+        case "R_MODEL_OTHER_NAME":
+          state.r_model_other_name = text;
           break;
         case "R_VARIENT":
           state.r_varient = text;

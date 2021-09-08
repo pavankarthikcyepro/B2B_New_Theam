@@ -74,7 +74,10 @@ import {
   Finance_Types,
   Finance_Category_Types,
   Bank_Financer_Types,
-  Approx_Auual_Income_Types
+  Approx_Auual_Income_Types,
+  All_Car_Brands,
+  Transmission_Types,
+  Fuel_Types
 } from "../../../jsonData/enquiryFormScreenJsonData";
 
 const theme = {
@@ -103,6 +106,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [carModelsData, setCarModelsData] = useState([]);
   const [selectedCarVarientsData, setSelectedCarVarientsData] = useState({ varientList: [], varientListForDropDown: [] });
   const [carColorsData, setCarColorsData] = useState([]);
+  const [c_model_types, set_c_model_types] = useState([]);
+  const [r_model_types, set_r_model_types] = useState([]);
+  const [a_model_types, set_a_model_types] = useState([]);
 
   useEffect(() => {
     setComponentAppear(true);
@@ -229,6 +235,36 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       case "APPROX_ANNUAL_INCOME":
         setDataForDropDown([...Approx_Auual_Income_Types]);
         break;
+      case "C_MAKE":
+        setDataForDropDown([...All_Car_Brands]);
+        break;
+      case "C_MODEL":
+        setDataForDropDown([...c_model_types]);
+        break;
+      case "C_FUEL_TYPE":
+        setDataForDropDown([...Fuel_Types]);
+        break;
+      case "C_TRANSMISSION_TYPE":
+        setDataForDropDown([...Transmission_Types]);
+        break;
+      case "R_MAKE":
+        setDataForDropDown([...All_Car_Brands]);
+        break;
+      case "R_MODEL":
+        setDataForDropDown([...r_model_types]);
+        break;
+      case "R_FUEL_TYPE":
+        setDataForDropDown([...Fuel_Types]);
+        break;
+      case "R_TRANSMISSION_TYPE":
+        setDataForDropDown([...Transmission_Types]);
+        break;
+      case "A_MAKE":
+        setDataForDropDown([...All_Car_Brands]);
+        break;
+      case "A_MODEL":
+        setDataForDropDown([...a_model_types]);
+        break;
     }
     setDropDownKey(key);
     setDropDownTitle(headerText);
@@ -291,6 +327,25 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
   }
 
+  updateModelTypesForCustomerNeedAnalysis = (brandName, dropDownKey) => {
+
+    let modelsData = [];
+    All_Car_Brands.forEach((item) => {
+      if (item.name === brandName) {
+        modelsData = item.models
+      }
+    })
+    console.log("modelsData: ", modelsData)
+    switch (dropDownKey) {
+      case "C_MAKE":
+        return set_c_model_types([...modelsData]);
+      case "R_MAKE":
+        return set_r_model_types([...modelsData]);
+      case "A_MAKE":
+        return set_a_model_types([...modelsData]);
+    }
+  }
+
   if (!componentAppear) {
     return (
       <View style={styles.initialContainer}>
@@ -314,12 +369,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         visible={showDropDownModel}
         headerTitle={dropDownTitle}
         data={dataForDropDown}
+        onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
           if (dropDownKey === "MODEL") {
             updateVariantModelsData(item.name, false);
           }
-          if (dropDownKey === "VARIENT") {
+          else if (dropDownKey === "VARIENT") {
             updateColorsDataForSelectedVarient(item.name, selectedCarVarientsData.varientList);
+          }
+          else if (dropDownKey === "C_MAKE" || dropDownKey === "R_MAKE" || dropDownKey === "A_MAKE") {
+            updateModelTypesForCustomerNeedAnalysis(item.name, dropDownKey);
           }
           setShowDropDownModel(false);
           dispatch(setDropDownData({ key: dropDownKey, value: item.name, id: item.id }));
@@ -1236,37 +1295,88 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       value={selector.c_make}
                       onPress={() => showDropDownModelMethod("C_MAKE", "Make")}
                     />
+                    {selector.c_make === "Other" && (<View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Make Other Name"}
+                        editable={true}
+                        value={selector.c_make_other_name}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCustomerNeedAnalysis({
+                              key: "C_MAKE_OTHER_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>)}
                     <DropDownSelectionItem
                       label={"Model"}
                       value={selector.c_model}
                       onPress={() => showDropDownModelMethod("C_MODEL", "Model")}
                     />
-                    <DropDownSelectionItem
+                    {selector.c_model === "Other" && (<View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Model Other Name"}
+                        editable={true}
+                        value={selector.c_model_other_name}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCustomerNeedAnalysis({
+                              key: "C_MODEL_OTHER_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>)}
+
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
                       label={"Variant"}
+                      editable={true}
                       value={selector.c_variant}
-                      onPress={() => showDropDownModelMethod("C_VARIANT", "Variant")}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setCustomerNeedAnalysis({
+                            key: "C_VARIANT",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Color"}
+                      editable={true}
+                      value={selector.c_color}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setCustomerNeedAnalysis({
+                            key: "C_COLOR",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+
+                    <DropDownSelectionItem
+                      label={"Fuel Type"}
+                      value={selector.c_fuel_type}
+                      onPress={() => showDropDownModelMethod("C_FUEL_TYPE", "Variant")}
                     />
                     <DropDownSelectionItem
-                      label={"Color"}
-                      value={selector.c_color}
-                      onPress={() => showDropDownModelMethod("C_COLOR", "Color")}
-                    />
-
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Fuel Type"}
-                      editable={false}
-                      value={selector.c_fuel_type}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
                       label={"Transmission Type"}
-                      editable={false}
                       value={selector.c_transmission_type}
+                      onPress={() => showDropDownModelMethod("C_TRANSMISSION_TYPE", "Color")}
                     />
-                    <Text style={GlobalStyle.underline}></Text>
 
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -1386,21 +1496,74 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     value={selector.a_make}
                     onPress={() => showDropDownModelMethod("A_MAKE", "Make")}
                   />
+                  {selector.a_make === "Other" && (<View>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Make Other Name"}
+                      editable={true}
+                      value={selector.a_make_other_name}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setAdditionalBuyerDetails({
+                            key: "A_MAKE_OTHER_NAME",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>)}
                   <DropDownSelectionItem
                     label={"Model"}
                     value={selector.a_model}
                     onPress={() => showDropDownModelMethod("A_MODEL", "Model")}
                   />
-                  <DropDownSelectionItem
-                    label={"Varient"}
+                  {selector.a_model === "Other" && (<View>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Model Other Name"}
+                      editable={true}
+                      value={selector.a_model_other_name}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setAdditionalBuyerDetails({
+                            key: "A_MODEL_OTHER_NAME",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>)}
+
+                  <TextinputComp
+                    style={styles.textInputStyle}
                     value={selector.a_varient}
-                    onPress={() => showDropDownModelMethod("A_VARIENT", "Varient")}
+                    label={"Varient"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setAdditionalBuyerDetails({
+                          key: "A_VARIENT",
+                          text: text,
+                        })
+                      )
+                    }
                   />
-                  <DropDownSelectionItem
-                    label={"Color"}
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
                     value={selector.a_color}
-                    onPress={() => showDropDownModelMethod("A_COLOR", "Color")}
+                    label={"Color"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setAdditionalBuyerDetails({
+                          key: "A_COLOR",
+                          text: text,
+                        })
+                      )
+                    }
                   />
+                  <Text style={GlobalStyle.underline}></Text>
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.a_reg_no}
@@ -1419,7 +1582,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 </List.Accordion>
               ) : null}
 
-              {/* // 9.Additional Buyer */}
+              {/* // 9.Replacement Buyer */}
               {selector.buyer_type == "Replacement Buyer" ? (
                 <List.Accordion
                   id={"9"}
@@ -1460,44 +1623,88 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     value={selector.r_make}
                     onPress={() => showDropDownModelMethod("R_MAKE", "Make")}
                   />
+                  {selector.r_make === "Other" && (<View>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Make Other Name"}
+                      editable={true}
+                      value={selector.r_make_other_name}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setReplacementBuyerDetails({
+                            key: "R_MAKE_OTHER_NAME",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>)}
                   <DropDownSelectionItem
                     label={"Model"}
                     value={selector.r_model}
                     onPress={() => showDropDownModelMethod("R_MODEL", "Model")}
                   />
-                  <DropDownSelectionItem
-                    label={"Varient"}
-                    value={selector.r_varient}
-                    onPress={() => showDropDownModelMethod("R_VARIENT", "Varient")}
-                  />
+                  {selector.r_model === "Other" && (<View>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Model Other Name"}
+                      editable={true}
+                      value={selector.r_model_other_name}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setReplacementBuyerDetails({
+                            key: "R_MODEL_OTHER_NAME",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>)}
 
-                  <DropDownSelectionItem
-                    label={"Color"}
-                    value={selector.r_color}
-                    onPress={() => showDropDownModelMethod("R_COLOR", "Color")}
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    label={"Varient"}
+                    editable={true}
+                    value={selector.r_varient}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setReplacementBuyerDetails({
+                          key: "R_VARIENT",
+                          text: text,
+                        })
+                      )
+                    }
                   />
+                  <Text style={GlobalStyle.underline}></Text>
+
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    label={"Color"}
+                    editable={true}
+                    value={selector.r_color}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setReplacementBuyerDetails({
+                          key: "R_COLOR",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
 
                   <DropDownSelectionItem
                     label={"Fuel Type"}
-                    value={selector.r_model}
+                    value={selector.r_fuel_type}
                     onPress={() => showDropDownModelMethod("R_FUEL_TYPE", "Fuel Type")}
                   />
-
-                  <TextinputComp
-                    style={{ height: 65, width: "100%" }}
-                    label={"Fuel Type"}
-                    editable={false}
-                    value={selector.r_fuel_type}
-                  />
-                  <Text style={GlobalStyle.underline}></Text>
-
-                  <TextinputComp
-                    style={{ height: 65, width: "100%" }}
+                  <DropDownSelectionItem
                     label={"Transmission Type"}
-                    editable={false}
                     value={selector.r_transmission_type}
+                    onPress={() => showDropDownModelMethod("R_TRANSMISSION_TYPE", "Transmission Type")}
                   />
-                  <Text style={GlobalStyle.underline}></Text>
 
                   <DateSelectItem
                     label={"Mth.Yr. of MFG"}

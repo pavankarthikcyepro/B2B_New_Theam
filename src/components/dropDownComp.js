@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, SafeAreaView, View, Text, StyleSheet, FlatList, Pressable, Dimensions, Platform } from 'react-native';
 import { Colors } from '../styles';
-import { List, Divider, Button } from 'react-native-paper';
+import { List, Divider, Button, IconButton } from 'react-native-paper';
 
 const screenHeight = Dimensions.get('window').height;
 const tableHeight = screenHeight / 2;
@@ -30,7 +30,7 @@ const multipleTestData = [
 ]
 
 
-const DropDownComponant = ({ visible = false, multiple = false, headerTitle = "Select Data", data = [], selectedItems, keyId = "" }) => {
+const DropDownComponant = ({ visible = false, multiple = false, headerTitle = "Select Data", data = [], selectedItems, keyId = "", onRequestClose }) => {
 
     const [multipleData, setMultipleData] = useState(multipleTestData);
 
@@ -81,7 +81,12 @@ const DropDownComponant = ({ visible = false, multiple = false, headerTitle = "S
                                     onPress={() => closeModalWithSelectedItem({})}
                                 >
                                     Done
-                                </Button> : null}
+                                </Button> : <IconButton
+                                    icon="close-circle-outline"
+                                    color={Colors.GRAY}
+                                    size={25}
+                                    onPress={onRequestClose}
+                                />}
 
                             </View>
 
