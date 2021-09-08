@@ -192,6 +192,9 @@ const enquiryDetailsOverViewSlice = createSlice({
     r_insurence_from_date: "",
     r_insurence_to_date: "",
     r_insurence_document_checked: false,
+    // DROP SECTION
+    drop_reason: "",
+    drop_remarks: "",
     // data variables
     enquiry_details_response: null,
     customer_types_response: null
@@ -329,6 +332,8 @@ const enquiryDetailsOverViewSlice = createSlice({
         case "R_TRANSMISSION_TYPE":
           state.r_transmission_type = value;
           break;
+        case "DROP_REASON":
+          state.drop_reason = value;
       }
     },
     setDatePicker: (state, action) => {
@@ -640,6 +645,14 @@ const enquiryDetailsOverViewSlice = createSlice({
           break;
       }
     },
+    setEnquiryDropDetails: (state, action) => {
+      const { key, text } = action.payload;
+      switch (key) {
+        case "DROP_REMARKS":
+          state.drop_remarks = text;
+          break;
+      }
+    },
     updateDmsContactOrAccountDtoData: (state, action) => {
 
       // dmsContactOrAccountDto
@@ -894,6 +907,7 @@ export const {
   setDropDownData,
   setAdditionalBuyerDetails,
   setReplacementBuyerDetails,
+  setEnquiryDropDetails,
   updateDmsContactOrAccountDtoData,
   updateDmsLeadDtoData,
   updateDmsAddressData,

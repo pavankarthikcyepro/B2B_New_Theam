@@ -501,6 +501,83 @@ export const Finance_Types = [
   },
 ];
 
+export const Enquiry_Drop_Reasons = [
+  {
+    id: "1",
+    name: "Call Not Connected",
+  },
+  {
+    id: "2",
+    name: "Casual Enquiry",
+  },
+  {
+    id: "3",
+    name: "Duplicate Enquiry",
+  },
+  {
+    id: "4",
+    name: "Financial Problem",
+  },
+  {
+    id: "5",
+    name: "Looking for More Discount",
+  },
+  {
+    id: "6",
+    name: "Loan not approved",
+  },
+  {
+    id: "7",
+    name: "Lost to Competition",
+  },
+  {
+    id: "8",
+    name: "Lost to Co-dealer",
+  },
+  {
+    id: "9",
+    name: "Lost to Same dealer",
+  },
+  {
+    id: "10",
+    name: "Lost to Used vehicles",
+  },
+  {
+    id: "11",
+    name: "Lost to same dealer used vehicle",
+  },
+  {
+    id: "12",
+    name: "More Waiting Period",
+  },
+  {
+    id: "13",
+    name: "Not Happy with Exchange price",
+  },
+  {
+    id: "14",
+    name: "Out of Station",
+  },
+  {
+    id: "15",
+    name: "Out of stock",
+  },
+  {
+    id: "16",
+    name: "No response from Sales executive",
+  },
+  {
+    id: "17",
+    name: "Relogin",
+  }
+]
+
+
+
+
+
+
+
 export const All_Car_Brands = [
   {
     id: '1',

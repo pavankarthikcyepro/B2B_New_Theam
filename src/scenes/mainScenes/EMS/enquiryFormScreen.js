@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
 } from "react-native";
-import { DefaultTheme, Checkbox, IconButton, List } from "react-native-paper";
+import { DefaultTheme, Checkbox, IconButton, List, Button } from "react-native-paper";
 import { Colors, GlobalStyle } from "../../../styles";
 import VectorImage from "react-native-vector-image";
 import {
@@ -41,6 +41,7 @@ import {
   setDropDownData,
   setAdditionalBuyerDetails,
   setReplacementBuyerDetails,
+  setEnquiryDropDetails,
   getEnquiryDetailsApi,
   updateDmsContactOrAccountDtoData,
   updateDmsLeadDtoData,
@@ -77,7 +78,8 @@ import {
   Approx_Auual_Income_Types,
   All_Car_Brands,
   Transmission_Types,
-  Fuel_Types
+  Fuel_Types,
+  Enquiry_Drop_Reasons
 } from "../../../jsonData/enquiryFormScreenJsonData";
 
 const theme = {
@@ -109,6 +111,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [c_model_types, set_c_model_types] = useState([]);
   const [r_model_types, set_r_model_types] = useState([]);
   const [a_model_types, set_a_model_types] = useState([]);
+  const [showPreBookingBtn, setShowPreBookingBtn] = useState(false);
+  const [isDropSelected, setIsDropSelected] = useState(false);
 
   useEffect(() => {
     setComponentAppear(true);
@@ -138,6 +142,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         dmsContactOrAccountDto = selector.enquiry_details_response.dmsContactDto;
       }
       const dmsLeadDto = selector.enquiry_details_response.dmsLeadDto;
+      if (dmsLeadDto.leadStatus === "ENQUIRYCOMPLETED") {
+        setShowPreBookingBtn(true);
+      }
 
       // Update dmsContactOrAccountDto
       dispatch(updateDmsContactOrAccountDtoData(dmsContactOrAccountDto));
@@ -264,6 +271,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         break;
       case "A_MODEL":
         setDataForDropDown([...a_model_types]);
+        break;
+      case "DROP_REASON":
+        setDataForDropDown([...Enquiry_Drop_Reasons]);
         break;
     }
     setDropDownKey(key);
@@ -1923,8 +1933,87 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   )}
                 </List.Accordion>
               ) : null}
+
+              {isDropSelected ? (<View style={styles.space}></View>) : null}
+              {isDropSelected ? (
+                <List.Accordion
+                  id={"9"}
+                  title={"Enquiry Drop Section"}
+                  titleStyle={{
+                    color: openAccordian === "9" ? Colors.WHITE : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={{
+                    backgroundColor:
+                      openAccordian === "9" ? Colors.RED : Colors.WHITE,
+                  }}
+                >
+                  <DropDownSelectionItem
+                    label={"Drop Reason"}
+                    value={selector.drop_reason}
+                    onPress={() => showDropDownModelMethod("DROP_REASON", "Drop Reason")}
+                  />
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.drop_remarks}
+                    label={"Remarks"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setEnquiryDropDetails({
+                          key: "DROP_REMARKS",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                </List.Accordion>
+              ) : null}
             </List.AccordionGroup>
           </View>
+          {!isDropSelected && (
+            <View style={styles.actionBtnView}>
+              <Button
+                mode="contained"
+                style={{ width: 120 }}
+                color={Colors.RED}
+                labelStyle={{ textTransform: "none" }}
+                onPress={() => setIsDropSelected(true)}
+              >
+                Drop
+              </Button>
+              <Button
+                mode="contained"
+                style={{ width: 120 }}
+                color={Colors.BLACK}
+                labelStyle={{ textTransform: "none" }}
+                onPress={() => console.log("Pressed")}
+              >
+                Submit
+              </Button>
+            </View>
+          )}
+          {showPreBookingBtn && !isDropSelected && (<View style={styles.prebookingBtnView}>
+            <Button
+              mode="contained"
+              color={Colors.BLACK}
+              labelStyle={{ textTransform: "none" }}
+              onPress={() => console.log("Pressed")}
+            >
+              Proceed To PreBooking
+            </Button>
+          </View>)}
+          {isDropSelected && (<View style={styles.prebookingBtnView}>
+            <Button
+              mode="contained"
+              color={Colors.RED}
+              labelStyle={{ textTransform: "none" }}
+              onPress={() => console.log("Pressed")}
+            >
+              Proceed To Cancellation
+            </Button>
+          </View>)}
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -2010,6 +2099,18 @@ const styles = StyleSheet.create({
     minHeight: 50,
     paddingLeft: 12,
     backgroundColor: Colors.WHITE,
+  },
+  actionBtnView: {
+    marginTop: 30,
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+  },
+  prebookingBtnView: {
+    marginTop: 20,
+    flexDirection: "row",
+    justifyContent: 'center',
+    alignItems: "center",
   },
 });
 
