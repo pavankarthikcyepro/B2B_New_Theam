@@ -55,7 +55,9 @@ import {
   updateCustomerNeedAnalysisData,
   updateAdditionalOrReplacementBuyerData,
   dropEnquiryApi,
-  updateEnquiryDetailsApi
+  updateEnquiryDetailsApi,
+  uploadDocumentApi,
+  updateDmsAttachmentDetails
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
@@ -85,9 +87,10 @@ import {
   Enquiry_Drop_Reasons,
   Insurence_Types
 } from "../../../jsonData/enquiryFormScreenJsonData";
-import { showToast, showToastSucess } from "../../../utils/toast";
+import { showToast, showToastRedAlert, showToastSucess } from "../../../utils/toast";
 import * as AsyncStore from "../../../asyncStore";
 import { convertDateStringToMilliseconds } from "../../../utils/helperFunctions";
+import URL from "../../../networking/endpoints";
 
 const theme = {
   ...DefaultTheme,
@@ -120,7 +123,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [a_model_types, set_a_model_types] = useState([]);
   const [showPreBookingBtn, setShowPreBookingBtn] = useState(false);
   const [isDropSelected, setIsDropSelected] = useState(false);
-  const [userData, setUserData] = useState({ branchId: "", orgId: "", employeeId: "" })
+  const [userData, setUserData] = useState({ branchId: "", orgId: "", employeeId: "", employeeName: "" })
+  const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
 
   useEffect(() => {
     getAsyncstoreData();
@@ -134,7 +138,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
-      setUserData({ branchId: jsonObj.branchId, orgId: jsonObj.orgId, employeeId: jsonObj.empId })
+      setUserData({ branchId: jsonObj.branchId, orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName })
     }
   }
 
@@ -177,8 +181,27 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dispatch(updateCustomerNeedAnalysisData(dmsLeadDto.dmsLeadScoreCards));
       // Update Additional ore Replacement Buyer Data
       dispatch(updateAdditionalOrReplacementBuyerData(dmsLeadDto.dmsExchagedetails));
+      // Update Attachment details
+      saveAttachmentDetailsInLocalObject(dmsLeadDto.dmsAttachments);
+      dispatch(updateDmsAttachmentDetails(dmsLeadDto.dmsAttachments));
     }
   }, [selector.enquiry_details_response])
+
+  const saveAttachmentDetailsInLocalObject = (dmsAttachments) => {
+    if (dmsAttachments.length > 0) {
+      const dataObj = {};
+      dmsAttachments.forEach((item, index) => {
+        const obj = {
+          documentPath: item.documentPath,
+          documentType: item.documentType,
+          fileName: item.fileName,
+          keyName: item.keyName
+        }
+        dataObj[item.documentType] = obj;
+      })
+      setUploadedImagesDataObj({ ...dataObj })
+    }
+  }
 
   useEffect(() => {
     if (selector.model_drop_down_data_update_statu === "update") {
@@ -281,14 +304,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.dmsExpectedDeliveryDate = convertDateStringToMilliseconds(selector.expected_delivery_date);
     dataObj.model = selector.model;
     // dataObj.leadStatus = 'ENQUIRYCOMPLETED';
-
     dataObj.dmsAddresses = mapDMSAddress(dataObj.dmsAddresses);
     dataObj.dmsLeadProducts = mapLeadProducts(dataObj.dmsLeadProducts);
     dataObj.dmsfinancedetails = mapDmsFinanceDetails(dataObj.dmsfinancedetails);
     dataObj.dmsLeadScoreCards = mapDmsLeadScoreCards(dataObj.dmsLeadScoreCards);
     dataObj.dmsExchagedetails = mapExchangeDetails(dataObj.dmsExchagedetails);
-
-    // dataObj.dmsAttachments = mapDMSAttachments();
+    dataObj.dmsAttachments = mapDmsAttachments(dataObj.dmsAttachments);
     return dataObj;
   }
 
@@ -438,6 +459,66 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dmsExchagedetails[0] = dataObj;
     }
     return dmsExchagedetails;
+  }
+
+  const mapDmsAttachments = (prevDmsAttachments) => {
+
+    let dmsAttachments = [...prevDmsAttachments];
+    if (dmsAttachments.length > 0) {
+
+      dmsAttachments.forEach((item, index) => {
+
+        const dataObj = { ...item };
+        const photo = uploadedImagesDataObj[dataObj.documentType];
+
+        dataObj.branchId = userData.branchId;
+        dataObj.ownerName = userData.employeeName;
+        dataObj.orgId = userData.orgId;
+        dataObj.documentPath = photo.documentPath;
+        dataObj.keyName = photo.keyName;
+        dataObj.fileName = photo.fileName;
+        dataObj.createdBy = new Date().getTime();
+        dataObj.id = `${index}`;
+        dataObj.modifiedBy = userData.employeeName;
+        dataObj.ownerId = userData.employeeId;
+        switch (dataObj.documentType) {
+          case "pan":
+            dataObj.documentNumber = selector.pan_number;
+            break;
+          case "aadhar":
+            dataObj.documentNumber = selector.adhaar_number;
+            break;
+        }
+        dmsAttachments[index] = dataObj;
+      })
+
+    } else {
+      Object.keys(uploadedImagesDataObj).forEach((key, index) => {
+        const item = uploadedImagesDataObj[property];
+        let object = {};
+        object.branchId = userData.branchId;
+        object.ownerName = userData.employeeName;
+        object.orgId = userData.orgId;
+        object.documentType = item.documentType;
+        object.documentPath = item.documentPath;
+        object.keyName = item.keyName;
+        object.fileName = item.fileName;
+        object.createdBy = new Date().getTime();
+        object.id = `${index}`;
+        object.modifiedBy = userData.employeeName;
+        object.ownerId = userData.employeeId;
+        switch (item.documentType) {
+          case "pan":
+            pan.documentNumber = selector.pan_number;
+            break;
+          case "aadhar":
+            pan.documentNumber = selector.adhaar_number;
+            break;
+        }
+        dmsAttachments.push(object);
+      })
+    }
+    return dmsAttachments;
   }
 
   const proceedToPreBookingClicked = () => {
@@ -655,6 +736,68 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
   }
 
+  const uploadSelectedImage = async (selectedPhoto, keyId) => {
+
+    const photoUri = selectedPhoto.uri;
+    if (!photoUri) {
+      return;
+    }
+
+    const formData = new FormData();
+    const fileType = photoUri.substring(photoUri.lastIndexOf(".") + 1);
+    const fileNameArry = photoUri.substring(photoUri.lastIndexOf('/') + 1).split('.');
+    const fileName = fileNameArry.length > 0 ? fileNameArry[0] : "None";
+    formData.append('file', {
+      name: `${fileName}-.${fileType}`,
+      type: `image/${fileType}`,
+      uri: Platform.OS === 'ios' ? photoUri.replace('file://', '') : photoUri
+    });
+    formData.append("universalId", universalId);
+
+    switch (keyId) {
+      case "UPLOAD_PAN":
+        formData.append("documentType", "pan");
+        break;
+      case "UPLOAD_ADHAR":
+        formData.append("documentType", "aadhar");
+        break;
+      default:
+        formData.append("documentType", "default");
+        break;
+    }
+
+    await fetch(URL.UPLOAD_DOCUMENT(), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      body: formData
+    })
+      .then((response) => response.json())
+      .then((response) => {
+        console.log('response', response);
+        if (response) {
+          const dataObj = { ...uploadedImagesDataObj };
+          dataObj[response.documentType] = response;
+          setUploadedImagesDataObj({ ...dataObj });
+        }
+      })
+      .catch((error) => {
+        showToastRedAlert(error.message ? error.message : "Something went wrong");
+        console.error('error', error);
+      });
+
+    // dispatch(uploadDocumentApi(formData));
+  }
+
+  const DisplaySelectedImage = ({ fileName }) => {
+    return (
+      <View style={styles.selectedImageBckVw}>
+        <Text style={styles.selectedImageTextStyle}>{fileName}</Text>
+      </View>
+    )
+  }
+
   if (!componentAppear) {
     return (
       <View style={styles.initialContainer}>
@@ -670,6 +813,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         keyId={selector.imagePickerKeyId}
         selectedImage={(data, keyId) => {
           console.log("imageObj: ", data, keyId);
+          uploadSelectedImage(data, keyId);
         }}
         onDismiss={() => dispatch(setImagePicker(""))}
       />
@@ -1551,6 +1695,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
                   />
                 </View>
+                {uploadedImagesDataObj.pan ? <DisplaySelectedImage fileName={uploadedImagesDataObj.pan.fileName} /> : null}
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.adhaar_number}
@@ -1567,6 +1712,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
                   />
                 </View>
+                {uploadedImagesDataObj.aadhar ? <DisplaySelectedImage fileName={uploadedImagesDataObj.aadhar.fileName} /> : null}
               </List.Accordion>
               <View style={styles.space}></View>
               {/* // 7.Customer Need Analysis */}
@@ -2417,6 +2563,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: "center",
   },
+  selectedImageBckVw: {
+    paddingLeft: 12,
+    paddingRight: 15,
+    paddingBottom: 5,
+    backgroundColor: Colors.WHITE
+  },
+  selectedImageTextStyle: {
+    fontSize: 12,
+    fontWeight: '400',
+    color: Colors.DARK_GRAY
+  }
 });
 
 // left={(props) => (

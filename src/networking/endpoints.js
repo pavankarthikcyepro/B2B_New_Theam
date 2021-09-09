@@ -57,7 +57,8 @@ const URL = {
     },
     UPDATE_ENQUIRY_DETAILS: () => sales_url + "/enquiry/lead",
     GET_CUSTOMER_TYPES: () => sales_url + "/master-data/customertype",
-    DROP_ENQUIRY: () => sales_url + "/lead-drop"
+    DROP_ENQUIRY: () => sales_url + "/lead-drop",
+    UPLOAD_DOCUMENT: () => sales_url + "/documents"
 }
 
 export default URL;

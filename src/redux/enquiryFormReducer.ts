@@ -37,6 +37,28 @@ export const dropEnquiryApi = createAsyncThunk("ENQUIRY_FORM_SLICE/dropEnquiryAp
   return json;
 })
 
+export const uploadDocumentApi = createAsyncThunk("ENQUIRY_FORM_SLICE/uploadDocumentApi", async (payload, { rejectWithValue }) => {
+
+  const formData = payload["formData"];
+
+  await fetch(URL.UPLOAD_DOCUMENT(), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      'auth-token': ""
+    },
+    body: formData
+  })
+    .then((response) => response.json())
+    .then((response) => {
+      console.log('response', response);
+      return response;
+    })
+    .catch((error) => {
+      return rejectWithValue(error)
+    });
+})
+
 export const getCustomerTypesApi = createAsyncThunk("ENQUIRY_FORM_SLICE/getCustomerTypesApi", async (universalId, { rejectWithValue }) => {
 
   const response = await client.get(URL.GET_CUSTOMER_TYPES());
@@ -863,6 +885,21 @@ const enquiryDetailsOverViewSlice = createSlice({
         }
       }
     },
+    updateDmsAttachmentDetails: (state, action) => {
+      const dmsAttachments = action.payload;
+      if (dmsAttachments.length > 0) {
+        dmsAttachments.forEach((item, index) => {
+          switch (item.documentType) {
+            case "pan":
+              state.pan_number = item.documentNumber;
+              break;
+            case "aadhar":
+              state.adhaar_number = item.documentNumber;
+              break;
+          }
+        })
+      }
+    },
     updateFuelAndTransmissionType: (state, action) => {
       state.fuel_type = action.payload.fuelType;
       state.transmission_type = action.payload.transmissionType;
@@ -892,6 +929,12 @@ const enquiryDetailsOverViewSlice = createSlice({
       if (action.payload.status === "SUCCESS") {
         state.enquiry_drop_response_status = "success";
       }
+    })
+    builder.addCase(uploadDocumentApi.fulfilled, (state, action) => {
+      console.log("S uploadDocumentApi: ", JSON.stringify(action.payload));
+    })
+    builder.addCase(uploadDocumentApi.rejected, (state, action) => {
+      console.log("F uploadDocumentApi: ", JSON.stringify(action.payload));
     })
     builder.addCase(getCustomerTypesApi.fulfilled, (state, action) => {
       console.log("S getCustomerTypesApi: ", JSON.stringify(action.payload));
@@ -944,5 +987,6 @@ export const {
   updateFuelAndTransmissionType,
   updateCustomerNeedAnalysisData,
   updateAdditionalOrReplacementBuyerData,
+  updateDmsAttachmentDetails
 } = enquiryDetailsOverViewSlice.actions;
 export default enquiryDetailsOverViewSlice.reducer;
