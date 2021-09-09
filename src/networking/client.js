@@ -25,7 +25,7 @@ export const client = async (authToken, url, methodType, body) => {
 
     try {
         console.log('API: ' + url);
-        // console.log("body: " + JSON.stringify(body));
+        console.log("body: " + JSON.stringify(body));
         const response = await window.fetch(url, config)
         return response;
     } catch (err) {

@@ -6,6 +6,7 @@ import {
   Text,
   ScrollView,
   Pressable,
+  Keyboard,
   ActivityIndicator,
   KeyboardAvoidingView,
 } from "react-native";
@@ -52,7 +53,9 @@ import {
   getCustomerTypesApi,
   updateFuelAndTransmissionType,
   updateCustomerNeedAnalysisData,
-  updateAdditionalOrReplacementBuyerData
+  updateAdditionalOrReplacementBuyerData,
+  dropEnquiryApi,
+  updateEnquiryDetailsApi
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
@@ -79,8 +82,12 @@ import {
   All_Car_Brands,
   Transmission_Types,
   Fuel_Types,
-  Enquiry_Drop_Reasons
+  Enquiry_Drop_Reasons,
+  Insurence_Types
 } from "../../../jsonData/enquiryFormScreenJsonData";
+import { showToast, showToastSucess } from "../../../utils/toast";
+import * as AsyncStore from "../../../asyncStore";
+import { convertDateStringToMilliseconds } from "../../../utils/helperFunctions";
 
 const theme = {
   ...DefaultTheme,
@@ -113,13 +120,23 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [a_model_types, set_a_model_types] = useState([]);
   const [showPreBookingBtn, setShowPreBookingBtn] = useState(false);
   const [isDropSelected, setIsDropSelected] = useState(false);
+  const [userData, setUserData] = useState({ branchId: "", orgId: "", employeeId: "" })
 
   useEffect(() => {
+    getAsyncstoreData();
     setComponentAppear(true);
     getEnquiryDetailsFromServer();
     dispatch(getCustomerTypesApi());
     setCarModelsDataFromBase();
   }, []);
+
+  const getAsyncstoreData = async () => {
+    const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      setUserData({ branchId: jsonObj.branchId, orgId: jsonObj.orgId, employeeId: jsonObj.empId })
+    }
+  }
 
   const setCarModelsDataFromBase = () => {
     let modalList = [];
@@ -167,7 +184,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (selector.model_drop_down_data_update_statu === "update") {
       updateVariantModelsData(selector.model, true, selector.varient);
     }
-  }, [selector.model_drop_down_data_update_statu])
+  }, [selector.model_drop_down_data_update_statu]);
 
   const getEnquiryDetailsFromServer = () => {
     if (universalId) {
@@ -176,6 +193,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   }
 
   const updateAccordian = (selectedIndex) => {
+    Keyboard.dismiss();
     if (selectedIndex != openAccordian) {
       setOpenAccordian(selectedIndex);
     } else {
@@ -183,7 +201,285 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
   };
 
+  useEffect(() => {
+    if (selector.enquiry_drop_response_status === "success") {
+      showToastSucess("Sucessfully Enquiry Dropped.")
+      navigation.goBack();
+    }
+  }, [selector.enquiry_drop_response_status]);
+
+  const submitClicked = () => {
+
+    if (!selector.enquiry_details_response) {
+      return
+    }
+
+    let dmsContactOrAccountDto = {};
+    let dmsLeadDto = {};
+    let formData;
+
+    const dmsEntity = selector.enquiry_details_response;
+    if (dmsEntity.hasOwnProperty('dmsContactDto'))
+      dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsContactDto);
+    else if (dmsEntity.hasOwnProperty('dmsAccountDto'))
+      dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsAccountDto);
+
+    if (dmsEntity.hasOwnProperty('dmsLeadDto'))
+      dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
+
+    if (selector.enquiry_details_response.hasOwnProperty('dmsContactDto')) {
+      formData = {
+        "dmsContactDto": dmsContactOrAccountDto,
+        "dmsLeadDto": dmsLeadDto
+      }
+    } else {
+      formData = {
+        "dmsAccountDto": dmsContactOrAccountDto,
+        "dmsLeadDto": dmsLeadDto
+      }
+    }
+    dispatch(updateEnquiryDetailsApi(formData));
+  }
+
+  const mapContactOrAccountDto = (prevData) => {
+
+    let dataObj = { ...prevData };
+    dataObj.dateOfBirth = selector.dateOfBirth;
+    dataObj.email = selector.email;
+    dataObj.firstName = selector.firstName;
+    dataObj.lastName = selector.lastName;
+    dataObj.phone = selector.mobile;
+    dataObj.secondaryPhone = selector.alterMobile;
+    dataObj.gender = selector.gender;
+    dataObj.relation = selector.relation;
+    dataObj.salutation = selector.salutaion;
+    dataObj.relationName = selector.relationName;
+    dataObj.age = selector.age;
+
+    dataObj.occupation = selector.occupation;
+    dataObj.designation = selector.designation;
+    dataObj.customerType = selector.customer_type;
+    dataObj.anniversaryDate = selector.anniversaryDate;
+    dataObj.annualRevenue = selector.approx_annual_income;
+    dataObj.company = selector.company_name;
+    dataObj.companyName = selector.company_name;
+    dataObj.kmsTravelledInMonth = selector.kms_travelled_month;
+    dataObj.membersInFamily = selector.members;
+    dataObj.primeExpectationFromCar = selector.prime_expectation_from_car;
+    dataObj.whoDrives = selector.who_drives;
+    return dataObj;
+  }
+
+  const mapLeadDto = (prevData) => {
+
+    let dataObj = { ...prevData };
+    dataObj.buyerType = selector.buyer_type;
+    dataObj.enquiryCategory = selector.enquiry_category;
+    dataObj.enquirySegment = selector.enquiry_segment;
+    dataObj.enquirySource = selector.source_of_enquiry;
+    dataObj.subSource = selector.sub_source_of_enquiry;
+    dataObj.dmsExpectedDeliveryDate = convertDateStringToMilliseconds(selector.expected_delivery_date);
+    dataObj.model = selector.model;
+    // dataObj.leadStatus = 'ENQUIRYCOMPLETED';
+
+    dataObj.dmsAddresses = mapDMSAddress(dataObj.dmsAddresses);
+    dataObj.dmsLeadProducts = mapLeadProducts(dataObj.dmsLeadProducts);
+    dataObj.dmsfinancedetails = mapDmsFinanceDetails(dataObj.dmsfinancedetails);
+    dataObj.dmsLeadScoreCards = mapDmsLeadScoreCards(dataObj.dmsLeadScoreCards);
+    dataObj.dmsExchagedetails = mapExchangeDetails(dataObj.dmsExchagedetails);
+
+    // dataObj.dmsAttachments = mapDMSAttachments();
+    return dataObj;
+  }
+
+  const mapDMSAddress = (prevDmsAddresses) => {
+
+    let dmsAddresses = [...prevDmsAddresses];
+    if (dmsAddresses.length == 2) {
+      dmsAddresses.forEach((address, index) => {
+        let dataObj = { ...address };
+        if (address.addressType === 'Communication') {
+
+          dataObj.pincode = selector.pincode;
+          dataObj.houseNo = selector.houseNum;
+          dataObj.street = selector.streetName;
+          dataObj.village = selector.village;
+          dataObj.city = selector.city;
+          dataObj.district = selector.district;
+          dataObj.state = selector.state;
+          dataObj.urban = selector.urban_or_rural === 1 ? true : false;
+          dataObj.rural = selector.urban_or_rural === 2 ? true : false;
+
+        } else if (address.addressType === 'Permanent') {
+
+          dataObj.pincode = selector.p_pincode;
+          dataObj.houseNo = selector.p_houseNum;
+          dataObj.street = selector.p_streetName;
+          dataObj.village = selector.p_village;
+          dataObj.city = selector.p_city;
+          dataObj.district = selector.p_district;
+          dataObj.state = selector.p_state;
+          dataObj.urban = selector.p_urban_or_rural === 1 ? true : false;
+          dataObj.rural = selector.p_urban_or_rural === 2 ? true : false;
+        }
+        dmsAddresses[index] = dataObj;
+      });
+    }
+    return dmsAddresses;
+  }
+
+  const mapLeadProducts = (prevDmsLeadProducts) => {
+
+    let dmsLeadProducts = [...prevDmsLeadProducts];
+    if (dmsLeadProducts.length > 0) {
+      const dataObj = { ...dmsLeadProducts[0] };
+      dataObj.id = selector.lead_product_id;
+      dataObj.model = selector.model;
+      dataObj.variant = selector.varient;
+      dataObj.color = selector.color;
+      dataObj.fuel = selector.fuel_type;
+      dataObj.transimmisionType = selector.transmission_type;
+      dmsLeadProducts[0] = dataObj;
+    }
+    return dmsLeadProducts;
+  }
+
+  const mapDmsFinanceDetails = (prevDmsFinancedetails) => {
+
+    let dmsfinancedetails = [...prevDmsFinancedetails];
+    if (dmsfinancedetails.length > 0) {
+      const dataObj = { ...dmsfinancedetails[0] };
+      dataObj.financeType = selector.retail_finance;
+      dataObj.financeCategory = selector.finance_category;
+      dataObj.downPayment = selector.down_payment;
+      dataObj.loanAmount = selector.loan_amount ? Number(selector.loan_amount) : null;
+      dataObj.rateOfInterest = selector.rate_of_interest;
+      dataObj.expectedTenureYears = selector.loan_of_tenure;
+      dataObj.emi = selector.emi;
+      dataObj.annualIncome = selector.approx_annual_income;
+      dataObj.location = selector.location;
+      if (selector.retail_finance === "In House") {
+        dataObj.financeCompany = selector.bank_or_finance;
+      } else if (selector.retail_finance === "Out House") {
+        dataObj.financeCompany = selector.bank_or_finance_name;
+      } else if (selector.retail_finance === "Leashing") {
+        dataObj.financeCompany = selector.leashing_name;
+      }
+      dmsfinancedetails[0] = dataObj;
+    }
+    return dmsfinancedetails;
+  }
+
+  const mapDmsLeadScoreCards = (prevDmsLeadScoreCards) => {
+    let dmsLeadScoreCards = [...prevDmsLeadScoreCards];
+    if (dmsLeadScoreCards.length > 0) {
+      const dataObj = { ...dmsLeadScoreCards[0] };
+      dataObj.lookingForAnyOtherBrand = selector.c_looking_for_any_other_brand_checked;
+      dataObj.brand = selector.c_make;
+      dataObj.model = selector.c_model;
+      dataObj.otherMake = selector.c_make_other_name;
+      dataObj.otherModel = selector.c_model_other_name;
+      dataObj.variant = selector.c_variant;
+      dataObj.color = selector.c_color;
+      dataObj.fuel = selector.c_fuel_type;
+      dataObj.priceRange = selector.c_price_range;
+      dataObj.onRoadPriceanyDifference = selector.c_on_road_price;
+      dataObj.dealershipName = selector.c_dealership_name;
+      dataObj.dealershipLocation = selector.c_dealership_location;
+      dataObj.decisionPendingReason = selector.c_dealership_pending_reason;
+      dataObj.voiceofCustomerRemarks = selector.c_voice_of_customer_remarks;
+      dmsLeadScoreCards[0] = dataObj;
+    }
+    return dmsLeadScoreCards;
+  }
+
+  const mapExchangeDetails = (prevDmsExchagedetails) => {
+    let dmsExchagedetails = [...prevDmsExchagedetails];
+    if (dmsExchagedetails.length > 0) {
+      const dataObj = { ...dmsExchagedetails[0] };
+      if (selector.buyer_type === "Additional Buyer") {
+        dataObj.buyerType = selector.buyer_type;
+        dataObj.brand = selector.a_make;
+        dataObj.model = selector.a_model;
+        dataObj.varient = selector.a_varient;
+        dataObj.color = selector.a_color;
+        dataObj.regNo = selector.a_reg_no;
+      }
+      else if (selector.buyer_type === "Replacement Buyer") {
+
+        dataObj.buyerType = selector.buyer_type;
+        dataObj.regNo = selector.r_reg_no;
+        dataObj.brand = selector.r_make;
+        dataObj.model = selector.r_model;
+        dataObj.varient = selector.r_varient;
+        dataObj.color = selector.r_color;
+        dataObj.fuelType = selector.r_fuel_type;
+        dataObj.transmission = selector.r_transmission_type;
+        // Pending
+        dataObj.yearofManufacture = selector.r_mfg_year;
+        dataObj.kiloMeters = selector.r_kms_driven_or_odometer_reading;
+        dataObj.expectedPrice = selector.r_expected_price ? Number(selector.r_expected_price) : null;
+        dataObj.hypothicationRequirement = selector.r_hypothication_checked;
+        dataObj.hypothication = selector.r_hypothication_name;
+        dataObj.hypothicationBranch = selector.r_hypothication_branch;
+        // Pending
+        dataObj.registrationDate = selector.r_registration_date;
+        dataObj.registrationValidityDate = selector.r_registration_validity_date;
+        dataObj.insuranceAvailable = `${selector.r_insurence_checked}`;
+        dataObj.insuranceDocumentAvailable = selector.r_insurence_document_checked;
+        dataObj.insuranceCompanyName = selector.r_insurence_company_name;
+        // Pending
+        dataObj.insuranceExpiryDate = selector.r_insurence_expiry_date;
+        dataObj.insuranceType = selector.r_insurence_type;
+        // Pending
+        dataObj.insuranceFromDate = selector.r_insurence_from_date;
+        dataObj.insuranceToDate = selector.r_insurence_to_date;
+      }
+      dmsExchagedetails[0] = dataObj;
+    }
+    return dmsExchagedetails;
+  }
+
+  const proceedToPreBookingClicked = () => {
+
+  }
+
+  const proceedToCancelEnquiry = () => {
+
+    let leadId = "";
+    if (selector.enquiry_details_response) {
+      leadId = selector.enquiry_details_response.dmsLeadDto.id;
+    }
+
+    if (!leadId) {
+      showToast("lead id not found")
+      return
+    }
+
+    const payload = {
+      "dmsLeadDropInfo": {
+        "additionalRemarks": selector.drop_remarks,
+        "branchId": userData.branchId,
+        "brandName": "",
+        "dealerName": "",
+        "leadId": leadId,
+        "crmUniversalId": universalId,
+        "lostReason": selector.drop_reason,
+        "organizationId": userData.orgId,
+        "otherReason": "",
+        "droppedBy": userData.employeeId,
+        "location": "",
+        "model": "",
+        "stage": "ENQUIRY",
+        "status": "ENQUIRY"
+      }
+    }
+    dispatch(dropEnquiryApi(payload));
+  }
+
   const showDropDownModelMethod = (key, headerText) => {
+    Keyboard.dismiss();
+
     switch (key) {
       case "ENQUIRY_SEGMENT":
         setDataForDropDown([...Enquiry_Segment_Data]);
@@ -265,6 +561,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         break;
       case "R_TRANSMISSION_TYPE":
         setDataForDropDown([...Transmission_Types]);
+        break;
+      case "R_INSURENCE_TYPE":
+        setDataForDropDown([...Insurence_Types]);
         break;
       case "A_MAKE":
         setDataForDropDown([...All_Car_Brands]);
@@ -499,7 +798,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
 
                 {selector.customer_type.toLowerCase() === "fleet" ||
-                  selector.customer_type.toLowerCase() === "institution" ? (
+                  selector.customer_type.toLowerCase() === "institution" ||
+                  selector.customer_type.toLowerCase() === "corporate" ||
+                  selector.customer_type.toLowerCase() === "government" ||
+                  selector.customer_type.toLowerCase() === "retired" ||
+                  selector.customer_type.toLowerCase() === "other" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -650,6 +953,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.mobile}
                   label={"Mobile Number*"}
+                  maxLength={10}
                   keyboardType={"phone-pad"}
                   onChangeText={(text) =>
                     dispatch(setPersonalIntro({ key: "MOBILE", text: text }))
@@ -661,6 +965,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   value={selector.alterMobile}
                   label={"Alternate Mobile Number*"}
                   keyboardType={"phone-pad"}
+                  maxLength={10}
                   onChangeText={(text) =>
                     dispatch(
                       setPersonalIntro({ key: "ALTER_MOBILE", text: text })
@@ -678,7 +983,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   }
                 />
                 <Text style={GlobalStyle.underline}></Text>
-                {selector.enquiry_segment == "personal" ? (
+                {selector.enquiry_segment.toLowerCase() == "personal" ? (
                   <View>
                     <DateSelectItem
                       label={"Date Of Birth"}
@@ -1770,7 +2075,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         onChangeText={(text) =>
                           dispatch(
                             setReplacementBuyerDetails({
-                              key: "A_COLOR",
+                              key: "R_HYPOTHICATION_NAME",
                               text: text,
                             })
                           )
@@ -1785,7 +2090,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         onChangeText={(text) =>
                           dispatch(
                             setReplacementBuyerDetails({
-                              key: "A_COLOR",
+                              key: "R_HYPOTHICATION_BRANCH",
                               text: text,
                             })
                           )
@@ -1988,7 +2293,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 style={{ width: 120 }}
                 color={Colors.BLACK}
                 labelStyle={{ textTransform: "none" }}
-                onPress={() => console.log("Pressed")}
+                onPress={submitClicked}
               >
                 Submit
               </Button>
@@ -1999,7 +2304,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               mode="contained"
               color={Colors.BLACK}
               labelStyle={{ textTransform: "none" }}
-              onPress={() => console.log("Pressed")}
+              onPress={proceedToPreBookingClicked}
             >
               Proceed To PreBooking
             </Button>
@@ -2009,7 +2314,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               mode="contained"
               color={Colors.RED}
               labelStyle={{ textTransform: "none" }}
-              onPress={() => console.log("Pressed")}
+              onPress={proceedToCancelEnquiry}
             >
               Proceed To Cancellation
             </Button>
@@ -2120,6 +2425,6 @@ const styles = StyleSheet.create({
 
 {
   /* <View style={[styles.accordianBckVw, GlobalStyle.shadow, { backgroundColor: "white" }]}>
-
+ 
 </View> */
 }

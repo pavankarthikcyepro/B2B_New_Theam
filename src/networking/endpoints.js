@@ -56,7 +56,8 @@ const URL = {
         return sales_url + "/enquiry/lead/id/" + `${universalId}`;
     },
     UPDATE_ENQUIRY_DETAILS: () => sales_url + "/enquiry/lead",
-    GET_CUSTOMER_TYPES: () => sales_url + "/master-data/customertype"
+    GET_CUSTOMER_TYPES: () => sales_url + "/master-data/customertype",
+    DROP_ENQUIRY: () => sales_url + "/lead-drop"
 }
 
 export default URL;

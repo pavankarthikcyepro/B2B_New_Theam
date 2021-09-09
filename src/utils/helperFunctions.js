@@ -45,3 +45,10 @@ export const convertTimeStampToDateString = (timeStamp, format) => {
     const date = moment(timeStamp).format(format);
     return date;
 }
+
+export const convertDateStringToMilliseconds = (dateString) => {
+    console.log("dateString: ", dateString);
+    if (!dateString) { return null }
+    const milliseconds = Date.parse(dateString);
+    return milliseconds;
+}

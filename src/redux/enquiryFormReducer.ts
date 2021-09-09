@@ -27,6 +27,16 @@ export const updateEnquiryDetailsApi = createAsyncThunk("ENQUIRY_FORM_SLICE/upda
   return json;
 })
 
+export const dropEnquiryApi = createAsyncThunk("ENQUIRY_FORM_SLICE/dropEnquiryApi", async (payload, { rejectWithValue }) => {
+
+  const response = await client.post(URL.DROP_ENQUIRY(), payload);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 export const getCustomerTypesApi = createAsyncThunk("ENQUIRY_FORM_SLICE/getCustomerTypesApi", async (universalId, { rejectWithValue }) => {
 
   const response = await client.get(URL.GET_CUSTOMER_TYPES());
@@ -62,6 +72,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     openAccordian: 0,
     showDatepicker: false,
     customer_types_data: [],
+    enquiry_drop_response_status: "",
     //personal Intro
     gender_types_data: [],
     relation_types_data: [],
@@ -331,6 +342,9 @@ const enquiryDetailsOverViewSlice = createSlice({
           break;
         case "R_TRANSMISSION_TYPE":
           state.r_transmission_type = value;
+          break;
+        case "R_INSURENCE_TYPE":
+          state.r_insurence_type = value;
           break;
         case "DROP_REASON":
           state.drop_reason = value;
@@ -631,7 +645,7 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.r_expected_price = text;
           break;
         case "R_INSURENCE_CMPNY_NAME":
-          state.r_expected_price = text;
+          state.r_insurence_company_name = text;
           break;
         case "R_HYPOTHICATION_CHECKED":
           state.r_hypothication_checked = !state.r_hypothication_checked;
@@ -772,7 +786,7 @@ const enquiryDetailsOverViewSlice = createSlice({
         state.bank_or_finance_name = dataObj.financeCompany ? dataObj.financeCompany : "";
         state.rate_of_interest = dataObj.rateOfInterest ? dataObj.rateOfInterest : "";
         state.loan_of_tenure = dataObj.expectedTenureYears ? dataObj.expectedTenureYears : "";
-        state.emi = dataObj.emi ? dataObj.emi : "";
+        state.emi = dataObj.emi ? dataObj.emi.toString() : "";
         state.approx_annual_income = dataObj.annualIncome ? dataObj.annualIncome : "";
         state.location = dataObj.location ? dataObj.location : "";
         state.leashing_name = dataObj.financeCompany ? dataObj.financeCompany : "";
@@ -785,6 +799,8 @@ const enquiryDetailsOverViewSlice = createSlice({
         state.c_looking_for_any_other_brand_checked = dataObj.lookingForAnyOtherBrand ? dataObj.lookingForAnyOtherBrand : false;
         state.c_make = dataObj.brand ? dataObj.brand : "";
         state.c_model = dataObj.model ? dataObj.model : "";
+        state.c_make_other_name = dataObj.otherMake ? dataObj.otherMake : "";
+        state.c_model_other_name = dataObj.otherModel ? dataObj.otherModel : "";
         state.c_variant = dataObj.variant ? dataObj.variant : "";
         state.c_color = dataObj.color ? dataObj.color : "";
         state.c_fuel_type = dataObj.fuel ? dataObj.fuel : "";
@@ -864,6 +880,18 @@ const enquiryDetailsOverViewSlice = createSlice({
     })
     builder.addCase(getEnquiryDetailsApi.rejected, (state, action) => {
       console.log("F getEnquiryDetailsApi: ", JSON.stringify(action.payload));
+    })
+    builder.addCase(updateEnquiryDetailsApi.fulfilled, (state, action) => {
+      console.log("S updateEnquiryDetailsApi: ", JSON.stringify(action.payload));
+    })
+    builder.addCase(updateEnquiryDetailsApi.rejected, (state, action) => {
+      console.log(" updateEnquiryDetailsApi: ", JSON.stringify(action.payload));
+    })
+    builder.addCase(dropEnquiryApi.fulfilled, (state, action) => {
+      console.log("S dropEnquiryApi: ", JSON.stringify(action.payload));
+      if (action.payload.status === "SUCCESS") {
+        state.enquiry_drop_response_status = "success";
+      }
     })
     builder.addCase(getCustomerTypesApi.fulfilled, (state, action) => {
       console.log("S getCustomerTypesApi: ", JSON.stringify(action.payload));

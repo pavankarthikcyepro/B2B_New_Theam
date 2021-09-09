@@ -501,6 +501,29 @@ export const Finance_Types = [
   },
 ];
 
+export const Insurence_Types = [
+  {
+    id: "1",
+    name: "Comprehensive",
+  },
+  {
+    id: "2",
+    name: "Nil dip",
+  },
+  {
+    id: "3",
+    name: "Nil dip + Consumable",
+  },
+  {
+    id: "4",
+    name: "Nil dip + Consumable + Engine Protector",
+  },
+  {
+    id: "5",
+    name: "Third Party",
+  },
+]
+
 export const Enquiry_Drop_Reasons = [
   {
     id: "1",
