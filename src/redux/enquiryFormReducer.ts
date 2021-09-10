@@ -37,28 +37,6 @@ export const dropEnquiryApi = createAsyncThunk("ENQUIRY_FORM_SLICE/dropEnquiryAp
   return json;
 })
 
-export const uploadDocumentApi = createAsyncThunk("ENQUIRY_FORM_SLICE/uploadDocumentApi", async (payload, { rejectWithValue }) => {
-
-  const formData = payload["formData"];
-
-  await fetch(URL.UPLOAD_DOCUMENT(), {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'multipart/form-data',
-      'auth-token': ""
-    },
-    body: formData
-  })
-    .then((response) => response.json())
-    .then((response) => {
-      console.log('response', response);
-      return response;
-    })
-    .catch((error) => {
-      return rejectWithValue(error)
-    });
-})
-
 export const getCustomerTypesApi = createAsyncThunk("ENQUIRY_FORM_SLICE/getCustomerTypesApi", async (universalId, { rejectWithValue }) => {
 
   const response = await client.get(URL.GET_CUSTOMER_TYPES());
@@ -230,9 +208,14 @@ const enquiryDetailsOverViewSlice = createSlice({
     drop_remarks: "",
     // data variables
     enquiry_details_response: null,
+    update_enquiry_details_response: null,
     customer_types_response: null
   },
   reducers: {
+    clearState: (state, action) => {
+      state.enquiry_details_response = null;
+      state.update_enquiry_details_response = null;
+    },
     setEditable: (state, action) => {
       console.log("pressed");
       state.enableEdit = !state.enableEdit;
@@ -920,21 +903,19 @@ const enquiryDetailsOverViewSlice = createSlice({
     })
     builder.addCase(updateEnquiryDetailsApi.fulfilled, (state, action) => {
       console.log("S updateEnquiryDetailsApi: ", JSON.stringify(action.payload));
+      if (action.payload.success == true) {
+        state.update_enquiry_details_response = "success";
+      }
     })
     builder.addCase(updateEnquiryDetailsApi.rejected, (state, action) => {
-      console.log(" updateEnquiryDetailsApi: ", JSON.stringify(action.payload));
+      console.log("F updateEnquiryDetailsApi: ", JSON.stringify(action.payload));
+      state.update_enquiry_details_response = "failed";
     })
     builder.addCase(dropEnquiryApi.fulfilled, (state, action) => {
       console.log("S dropEnquiryApi: ", JSON.stringify(action.payload));
       if (action.payload.status === "SUCCESS") {
         state.enquiry_drop_response_status = "success";
       }
-    })
-    builder.addCase(uploadDocumentApi.fulfilled, (state, action) => {
-      console.log("S uploadDocumentApi: ", JSON.stringify(action.payload));
-    })
-    builder.addCase(uploadDocumentApi.rejected, (state, action) => {
-      console.log("F uploadDocumentApi: ", JSON.stringify(action.payload));
     })
     builder.addCase(getCustomerTypesApi.fulfilled, (state, action) => {
       console.log("S getCustomerTypesApi: ", JSON.stringify(action.payload));
@@ -965,6 +946,7 @@ const enquiryDetailsOverViewSlice = createSlice({
 });
 
 export const {
+  clearState,
   setDatePicker,
   setEditable,
   setPersonalIntro,

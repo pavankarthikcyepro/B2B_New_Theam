@@ -29,6 +29,7 @@ import {
   DatePickerComponent,
 } from "../../../components";
 import {
+  clearState,
   setEditable,
   setDatePicker,
   setPersonalIntro,
@@ -91,6 +92,7 @@ import { showToast, showToastRedAlert, showToastSucess } from "../../../utils/to
 import * as AsyncStore from "../../../asyncStore";
 import { convertDateStringToMilliseconds } from "../../../utils/helperFunctions";
 import URL from "../../../networking/endpoints";
+import { getEnquiryList } from "../../../redux/enquiryReducer";
 
 const theme = {
   ...DefaultTheme,
@@ -125,6 +127,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [isDropSelected, setIsDropSelected] = useState(false);
   const [userData, setUserData] = useState({ branchId: "", orgId: "", employeeId: "", employeeName: "" })
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
+  const [typeOfActionDispatched, setTypeOfActionDispatched] = useState("");
 
   useEffect(() => {
     getAsyncstoreData();
@@ -261,6 +264,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         "dmsLeadDto": dmsLeadDto
       }
     }
+    setTypeOfActionDispatched("UPDATE_ENQUIRY");
     dispatch(updateEnquiryDetailsApi(formData));
   }
 
@@ -465,73 +469,85 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
     let dmsAttachments = [...prevDmsAttachments];
     if (dmsAttachments.length > 0) {
-
-      dmsAttachments.forEach((item, index) => {
-
-        const dataObj = { ...item };
-        const photo = uploadedImagesDataObj[dataObj.documentType];
-
-        dataObj.branchId = userData.branchId;
-        dataObj.ownerName = userData.employeeName;
-        dataObj.orgId = userData.orgId;
-        dataObj.documentPath = photo.documentPath;
-        dataObj.keyName = photo.keyName;
-        dataObj.fileName = photo.fileName;
-        dataObj.createdBy = new Date().getTime();
-        dataObj.id = `${index}`;
-        dataObj.modifiedBy = userData.employeeName;
-        dataObj.ownerId = userData.employeeId;
-        switch (dataObj.documentType) {
-          case "pan":
-            dataObj.documentNumber = selector.pan_number;
-            break;
-          case "aadhar":
-            dataObj.documentNumber = selector.adhaar_number;
-            break;
-        }
-        dmsAttachments[index] = dataObj;
+      dmsAttachments.forEach((obj, index) => {
+        const item = uploadedImagesDataObj[dataObj.documentType];
+        const object = formatAttachment({ ...obj }, item, index, obj.documentType);
+        dmsAttachments[index] = object;
       })
-
     } else {
       Object.keys(uploadedImagesDataObj).forEach((key, index) => {
-        const item = uploadedImagesDataObj[property];
-        let object = {};
-        object.branchId = userData.branchId;
-        object.ownerName = userData.employeeName;
-        object.orgId = userData.orgId;
-        object.documentType = item.documentType;
-        object.documentPath = item.documentPath;
-        object.keyName = item.keyName;
-        object.fileName = item.fileName;
-        object.createdBy = new Date().getTime();
-        object.id = `${index}`;
-        object.modifiedBy = userData.employeeName;
-        object.ownerId = userData.employeeId;
-        switch (item.documentType) {
-          case "pan":
-            pan.documentNumber = selector.pan_number;
-            break;
-          case "aadhar":
-            pan.documentNumber = selector.adhaar_number;
-            break;
-        }
+        const item = uploadedImagesDataObj[key];
+        const object = formatAttachment({}, item, index, item.documentType);
         dmsAttachments.push(object);
       })
     }
     return dmsAttachments;
   }
 
+  const formatAttachment = (data, photoObj, index, typeOfDocument) => {
+    let object = { ...data };
+    object.branchId = userData.branchId;
+    object.ownerName = userData.employeeName;
+    object.orgId = userData.orgId;
+    object.documentType = photoObj.documentType;
+    object.documentPath = photoObj.documentPath;
+    object.keyName = photoObj.keyName;
+    object.fileName = photoObj.fileName;
+    object.createdBy = new Date().getTime();
+    object.id = `${index}`;
+    object.modifiedBy = userData.employeeName;
+    object.ownerId = userData.employeeId;
+    switch (typeOfDocument) {
+      case "pan":
+        object.documentNumber = selector.pan_number;
+        break;
+      case "aadhar":
+        object.documentNumber = selector.adhaar_number;
+        break;
+      case "REGDOC":
+        object.documentNumber = selector.r_reg_no;
+        break;
+    }
+    return object
+  }
+
   const proceedToPreBookingClicked = () => {
 
   }
 
+  useEffect(() => {
+    if (selector.update_enquiry_details_response === "success") {
+      if (typeOfActionDispatched === "DROP_ENQUIRY") {
+        showToastSucess("Successfully Enquiry Dropped");
+        getEnquiryListFromServer();
+      } else if (typeOfActionDispatched === "UPDATE_ENQUIRY") {
+        showToastSucess("Successfully Enquiry Updated");
+      }
+      dispatch(clearState());
+      navigation.goBack();
+    }
+  }, [selector.update_enquiry_details_response]);
+
+  const getEnquiryListFromServer = () => {
+    if (userData.employeeId) {
+      let endUrl = "?limit=10&offset=" + "0" + "&status=ENQUIRY&empId=" + userData.employeeId;
+      dispatch(getEnquiryList(endUrl));
+    }
+  }
+
   const proceedToCancelEnquiry = () => {
 
-    let leadId = "";
-    if (selector.enquiry_details_response) {
-      leadId = selector.enquiry_details_response.dmsLeadDto.id;
+    if (!selector.enquiry_details_response) {
+      return
     }
 
+    let enquiryDetailsObj = { ...selector.enquiry_details_response };
+    let dmsLeadDto = { ...enquiryDetailsObj.dmsLeadDto };
+    dmsLeadDto.leadStatus = "ENQUIRYCOMPLETED";
+    dmsLeadDto.leadStage = "DROPPED";
+    enquiryDetailsObj.dmsLeadDto = dmsLeadDto;
+
+    let leadId = selector.enquiry_details_response.dmsLeadDto.id;
     if (!leadId) {
       showToast("lead id not found")
       return
@@ -555,7 +571,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         "status": "ENQUIRY"
       }
     }
+    setTypeOfActionDispatched("DROP_ENQUIRY");
     dispatch(dropEnquiryApi(payload));
+    dispatch(updateEnquiryDetailsApi(enquiryDetailsObj));
   }
 
   const showDropDownModelMethod = (key, headerText) => {
@@ -761,6 +779,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       case "UPLOAD_ADHAR":
         formData.append("documentType", "aadhar");
         break;
+      case "UPLOAD_REG_DOC":
+        formData.append("documentType", "REGDOC");
+        break;
+      case "UPLOAD_INSURENCE":
+        formData.append("documentType", "insurance");
+        break;
       default:
         formData.append("documentType", "default");
         break;
@@ -775,7 +799,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     })
       .then((response) => response.json())
       .then((response) => {
-        console.log('response', response);
+        //console.log('response', response);
         if (response) {
           const dataObj = { ...uploadedImagesDataObj };
           dataObj[response.documentType] = response;
@@ -786,8 +810,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         showToastRedAlert(error.message ? error.message : "Something went wrong");
         console.error('error', error);
       });
-
-    // dispatch(uploadDocumentApi(formData));
   }
 
   const DisplaySelectedImage = ({ fileName }) => {
@@ -2076,9 +2098,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <View style={styles.select_image_bck_vw}>
                     <ImageSelectItem
                       name={"Upload Reg Doc"}
-                      onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
+                      onPress={() => dispatch(setImagePicker("UPLOAD_REG_DOC"))}
                     />
                   </View>
+                  {uploadedImagesDataObj.REGDOC ? <DisplaySelectedImage fileName={uploadedImagesDataObj.REGDOC.fileName} /> : null}
                   <DropDownSelectionItem
                     label={"Make"}
                     value={selector.r_make}
@@ -2318,13 +2341,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     </View>
                   )}
                   {selector.r_insurence_document_checked && (
-                    <View style={styles.select_image_bck_vw}>
-                      <ImageSelectItem
-                        name={"Upload Insurence"}
-                        onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
-                      />
+                    <View>
+                      <View style={styles.select_image_bck_vw}>
+                        <ImageSelectItem
+                          name={"Upload Insurence"}
+                          onPress={() => dispatch(setImagePicker("UPLOAD_INSURENCE"))}
+                        />
+                      </View>
+                      {uploadedImagesDataObj.insurance ? <DisplaySelectedImage fileName={uploadedImagesDataObj.insurance.fileName} /> : null}
                     </View>
                   )}
+
                   {!selector.r_insurence_checked && (
                     <View>
                       <DateSelectItem
