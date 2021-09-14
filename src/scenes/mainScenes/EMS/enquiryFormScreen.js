@@ -90,7 +90,7 @@ import {
 } from "../../../jsonData/enquiryFormScreenJsonData";
 import { showToast, showToastRedAlert, showToastSucess } from "../../../utils/toast";
 import * as AsyncStore from "../../../asyncStore";
-import { convertDateStringToMilliseconds } from "../../../utils/helperFunctions";
+import { convertDateStringToMilliseconds, convertDateStringToMillisecondsUsingMoment } from "../../../utils/helperFunctions";
 import URL from "../../../networking/endpoints";
 import { getEnquiryList } from "../../../redux/enquiryReducer";
 
@@ -264,14 +264,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         "dmsLeadDto": dmsLeadDto
       }
     }
-    setTypeOfActionDispatched("UPDATE_ENQUIRY");
-    dispatch(updateEnquiryDetailsApi(formData));
+    // setTypeOfActionDispatched("UPDATE_ENQUIRY");
+    // dispatch(updateEnquiryDetailsApi(formData));
   }
 
   const mapContactOrAccountDto = (prevData) => {
 
     let dataObj = { ...prevData };
-    dataObj.dateOfBirth = selector.dateOfBirth;
+    dataObj.dateOfBirth = convertDateStringToMillisecondsUsingMoment(selector.dateOfBirth);
     dataObj.email = selector.email;
     dataObj.firstName = selector.firstName;
     dataObj.lastName = selector.lastName;
@@ -286,7 +286,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.occupation = selector.occupation;
     dataObj.designation = selector.designation;
     dataObj.customerType = selector.customer_type;
-    dataObj.anniversaryDate = selector.anniversaryDate;
+    dataObj.anniversaryDate = convertDateStringToMillisecondsUsingMoment(selector.anniversaryDate);
     dataObj.annualRevenue = selector.approx_annual_income;
     dataObj.company = selector.company_name;
     dataObj.companyName = selector.company_name;
@@ -305,9 +305,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.enquirySegment = selector.enquiry_segment;
     dataObj.enquirySource = selector.source_of_enquiry;
     dataObj.subSource = selector.sub_source_of_enquiry;
-    dataObj.dmsExpectedDeliveryDate = convertDateStringToMilliseconds(selector.expected_delivery_date);
+    dataObj.dmsExpectedDeliveryDate = convertDateStringToMillisecondsUsingMoment(selector.expected_delivery_date);
     dataObj.model = selector.model;
-    // dataObj.leadStatus = 'ENQUIRYCOMPLETED';
+    dataObj.leadStatus = 'ENQUIRYCOMPLETED';
     dataObj.dmsAddresses = mapDMSAddress(dataObj.dmsAddresses);
     dataObj.dmsLeadProducts = mapLeadProducts(dataObj.dmsLeadProducts);
     dataObj.dmsfinancedetails = mapDmsFinanceDetails(dataObj.dmsfinancedetails);
@@ -421,48 +421,56 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const mapExchangeDetails = (prevDmsExchagedetails) => {
     let dmsExchagedetails = [...prevDmsExchagedetails];
     if (dmsExchagedetails.length > 0) {
-      const dataObj = { ...dmsExchagedetails[0] };
-      if (selector.buyer_type === "Additional Buyer") {
-        dataObj.buyerType = selector.buyer_type;
-        dataObj.brand = selector.a_make;
-        dataObj.model = selector.a_model;
-        dataObj.varient = selector.a_varient;
-        dataObj.color = selector.a_color;
-        dataObj.regNo = selector.a_reg_no;
-      }
-      else if (selector.buyer_type === "Replacement Buyer") {
-
-        dataObj.buyerType = selector.buyer_type;
-        dataObj.regNo = selector.r_reg_no;
-        dataObj.brand = selector.r_make;
-        dataObj.model = selector.r_model;
-        dataObj.varient = selector.r_varient;
-        dataObj.color = selector.r_color;
-        dataObj.fuelType = selector.r_fuel_type;
-        dataObj.transmission = selector.r_transmission_type;
-        // Pending
-        dataObj.yearofManufacture = selector.r_mfg_year;
-        dataObj.kiloMeters = selector.r_kms_driven_or_odometer_reading;
-        dataObj.expectedPrice = selector.r_expected_price ? Number(selector.r_expected_price) : null;
-        dataObj.hypothicationRequirement = selector.r_hypothication_checked;
-        dataObj.hypothication = selector.r_hypothication_name;
-        dataObj.hypothicationBranch = selector.r_hypothication_branch;
-        // Pending
-        dataObj.registrationDate = selector.r_registration_date;
-        dataObj.registrationValidityDate = selector.r_registration_validity_date;
-        dataObj.insuranceAvailable = `${selector.r_insurence_checked}`;
-        dataObj.insuranceDocumentAvailable = selector.r_insurence_document_checked;
-        dataObj.insuranceCompanyName = selector.r_insurence_company_name;
-        // Pending
-        dataObj.insuranceExpiryDate = selector.r_insurence_expiry_date;
-        dataObj.insuranceType = selector.r_insurence_type;
-        // Pending
-        dataObj.insuranceFromDate = selector.r_insurence_from_date;
-        dataObj.insuranceToDate = selector.r_insurence_to_date;
-      }
+      const dataObj = formatExchangeDetails(dmsExchagedetails[0]);
+      dmsExchagedetails[0] = dataObj;
+    } else {
+      const dataObj = formatExchangeDetails({});
       dmsExchagedetails[0] = dataObj;
     }
     return dmsExchagedetails;
+  }
+
+  const formatExchangeDetails = (prevData) => {
+    const dataObj = { ...prevData };
+    if (selector.buyer_type === "Additional Buyer") {
+      dataObj.buyerType = selector.buyer_type;
+      dataObj.brand = selector.a_make;
+      dataObj.model = selector.a_model;
+      dataObj.varient = selector.a_varient;
+      dataObj.color = selector.a_color;
+      dataObj.regNo = selector.a_reg_no;
+    }
+    else if (selector.buyer_type === "Replacement Buyer") {
+
+      dataObj.buyerType = selector.buyer_type;
+      dataObj.regNo = selector.r_reg_no;
+      dataObj.brand = selector.r_make;
+      dataObj.model = selector.r_model;
+      dataObj.varient = selector.r_varient;
+      dataObj.color = selector.r_color;
+      dataObj.fuelType = selector.r_fuel_type;
+      dataObj.transmission = selector.r_transmission_type;
+      // Pending
+      dataObj.yearofManufacture = convertDateStringToMillisecondsUsingMoment(selector.r_mfg_year);
+      dataObj.kiloMeters = selector.r_kms_driven_or_odometer_reading;
+      dataObj.expectedPrice = selector.r_expected_price ? Number(selector.r_expected_price) : null;
+      dataObj.hypothicationRequirement = selector.r_hypothication_checked;
+      dataObj.hypothication = selector.r_hypothication_name;
+      dataObj.hypothicationBranch = selector.r_hypothication_branch;
+      // Pending
+      dataObj.registrationDate = convertDateStringToMillisecondsUsingMoment(selector.r_registration_date);
+      dataObj.registrationValidityDate = convertDateStringToMillisecondsUsingMoment(selector.r_registration_validity_date);
+      dataObj.insuranceAvailable = `${selector.r_insurence_checked}`;
+      dataObj.insuranceDocumentAvailable = selector.r_insurence_document_checked;
+      dataObj.insuranceCompanyName = selector.r_insurence_company_name;
+      // Pending
+      dataObj.insuranceExpiryDate = convertDateStringToMillisecondsUsingMoment(selector.r_insurence_expiry_date);
+      dataObj.insuranceType = selector.r_insurence_type;
+      // Pending
+      dataObj.insuranceFromDate = convertDateStringToMillisecondsUsingMoment(selector.r_insurence_from_date);
+      dataObj.insuranceToDate = convertDateStringToMillisecondsUsingMoment(selector.r_insurence_to_date);
+    }
+    return dataObj;
   }
 
   const mapDmsAttachments = (prevDmsAttachments) => {

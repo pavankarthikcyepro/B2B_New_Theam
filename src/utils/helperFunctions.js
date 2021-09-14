@@ -52,3 +52,9 @@ export const convertDateStringToMilliseconds = (dateString) => {
     const milliseconds = Date.parse(dateString);
     return milliseconds;
 }
+
+export const convertDateStringToMillisecondsUsingMoment = (date, format = "DD/MM/YYYY") => {
+    if (!date) return "";
+    const result = moment(date, format).valueOf()
+    return result;
+}
