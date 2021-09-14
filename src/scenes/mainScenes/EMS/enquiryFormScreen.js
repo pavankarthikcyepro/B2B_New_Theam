@@ -1536,14 +1536,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       label={"Bank/Finance Name"}
                       keyboardType={"default"}
                       value={selector.bank_or_finance_name}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setFinancialDetails({
-                            key: "BANK_R_FINANCE_NAME",
-                            text: text,
-                          })
-                        )
-                      }
+                      onChangeText={(text) => dispatch(setFinancialDetails({ key: "BANK_R_FINANCE_NAME", text: text }))}
                     />
                     <Text style={GlobalStyle.underline}></Text>
 
@@ -1552,11 +1545,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       label={"Location"}
                       keyboardType={"default"}
                       value={selector.location}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setFinancialDetails({ key: "LOCATION", text: text })
-                        )
-                      }
+                      onChangeText={(text) => dispatch(setFinancialDetails({ key: "LOCATION", text: text }))}
                     />
                     <Text style={GlobalStyle.underline}></Text>
                   </View>

@@ -84,7 +84,7 @@ const PreBookingScreen = ({ navigation }) => {
                                     subName={item.enquirySource}
                                     date={item.createdDate}
                                     modelName={item.model}
-                                    onPress={() => navigation.navigate(AppNavigator.PreBookingStackIdentifiers.preBookingForm)}
+                                    onPress={() => navigation.navigate(AppNavigator.PreBookingStackIdentifiers.preBookingForm, { universalId: item.universalId })}
                                     onCallPress={() => callNumber(item.phone)}
                                 />
                             );

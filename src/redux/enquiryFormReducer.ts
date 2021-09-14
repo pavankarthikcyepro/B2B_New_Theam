@@ -937,7 +937,8 @@ const enquiryDetailsOverViewSlice = createSlice({
         const obj = {
           "personal": personalTypes,
           "commercial": commercialTypes,
-          "company": companyTypes
+          "company": companyTypes,
+          "handicapped": companyTypes
         }
         state.customer_types_response = obj;
       }

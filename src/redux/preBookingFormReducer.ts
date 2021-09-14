@@ -1,26 +1,16 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { client } from "../networking/client";
+import URL from "../networking/endpoints";
+
 import {
   Form_Types,
   Insurance_Types,
   Warranty_Types,
-  Payment_At_Types,
-  Booking_Payment_Types,
 } from "../jsonData/prebookingFormScreenJsonData";
 import {
   Salutation_Types,
   Enquiry_Segment_Data,
-  Customer_Type_Data,
-  Gender_Types,
-  Marital_Status_Types,
-  Model_Types,
-  Variant_Types,
-  Color_Types,
-  Fuel_Types,
-  Transmission_Types,
-  Finance_Types,
-  Finance_Category_Types,
-  Bank_Financer_Types,
-  Approx_Auual_Income_Types,
+  Gender_Data_Obj,
 } from "../jsonData/enquiryFormScreenJsonData";
 
 const dropDownData = [
@@ -42,6 +32,26 @@ const dropDownData = [
   },
 ];
 
+export const getPrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getPrebookingDetailsApi", async (universalId, { rejectWithValue }) => {
+
+  const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getCustomerTypesApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getCustomerTypesApi", async (universalId, { rejectWithValue }) => {
+
+  const response = await client.get(URL.GET_CUSTOMER_TYPES());
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 interface CustomerDetailModel {
   key: string;
   text: string;
@@ -50,6 +60,7 @@ interface CustomerDetailModel {
 interface DropDownModelNew {
   key: string;
   value: string;
+  id?: string;
 }
 
 interface DropDownModel {
@@ -66,6 +77,8 @@ const prebookingFormSlice = createSlice({
     showDatepicker: false,
     showDropDownpicker: false,
     dropDownData: dropDownData,
+    pre_booking_details_response: null,
+    customer_types_response: null,
 
     dropDownTitle: "",
     dropDownKeyId: "",
@@ -75,28 +88,13 @@ const prebookingFormSlice = createSlice({
 
     //Customer Details
     salutation_types_data: Salutation_Types,
-    gender_types_data: Gender_Types,
+    gender_types_data: [],
     form_types_data: Form_Types,
     enquiry_segment_types_data: Enquiry_Segment_Data,
-    customer_types_data: Customer_Type_Data,
-    marital_status_types_data: Marital_Status_Types,
-    //Model Selection
-    transmission_types_data: Transmission_Types,
-    fuel_types_data: Fuel_Types,
-    color_types_data: Color_Types,
-    varient_types_data: Variant_Types,
-    model_types_data: Model_Types,
+    customer_types_data: [],
     //Price Confirmation
     warranty_types_data: Warranty_Types,
     insurance_types_data: Insurance_Types,
-    // Booking Payment Mode
-    payment_at_types_data: Payment_At_Types,
-    booking_payment_types_data: Booking_Payment_Types,
-    //Finance Details
-    finance_types_data: Finance_Types,
-    approx_annual_income_types_data: Approx_Auual_Income_Types,
-    bank_financer_types_data: Bank_Financer_Types,
-    finance_category_types_data: Finance_Category_Types,
     // Customer Details
     first_name: "",
     last_name: "",
@@ -188,15 +186,21 @@ const prebookingFormSlice = createSlice({
   },
   reducers: {
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
-      const { key, value } = action.payload;
+      const { key, value, id } = action.payload;
       switch (key) {
         case "SALUTATION":
+          if (state.salutation !== value) {
+            state.gender = "";
+            state.gender_types_data = Gender_Data_Obj[value.toLowerCase()];
+          }
           state.salutation = value;
           break;
         case "ENQUIRY_SEGMENT":
           state.enquiry_segment = value;
-          state.customer_types_data = Customer_Type_Data;
-          state.customer_type = null;
+          state.customer_type = "";
+          if (state.customer_types_response) {
+            state.customer_types_data = state.customer_types_response[value.toLowerCase()];
+          }
           break;
         case "CUSTOMER_TYPE":
           state.customer_type = value;
@@ -208,19 +212,22 @@ const prebookingFormSlice = createSlice({
           state.marital_status = value;
           break;
         case "MODEL":
+          if (state.model !== value) {
+            state.varient = "";
+            state.color = "";
+            state.fuel_type = "";
+            state.transmission_type = "";
+          }
           state.model = value;
           break;
         case "VARIENT":
+          if (state.varient !== value) {
+            state.color = "";
+          }
           state.varient = value;
           break;
         case "COLOR":
           state.color = value;
-          break;
-        case "FUEL_TYPE":
-          state.fuel_type = value;
-          break;
-        case "TRANSMISSION_TYPE":
-          state.transmission_type = value;
           break;
         case "RETAIL_FINANCE":
           state.retail_finance = value;
@@ -230,9 +237,6 @@ const prebookingFormSlice = createSlice({
           break;
         case "BANK_FINANCE":
           state.bank_or_finance = value;
-          break;
-        case "LOAN_OF_TENURE":
-          state.loan_of_tenure = value;
           break;
         case "APPROX_ANNUAL_INCOME":
           state.approx_annual_income = value;
@@ -388,6 +392,9 @@ const prebookingFormSlice = createSlice({
         case "RATE_OF_INTEREST":
           state.rate_of_interest = text;
           break;
+        case "LOAN_OF_TENURE":
+          state.loan_of_tenure = text;
+          break;
         case "EMI":
           state.emi = text;
           break;
@@ -496,7 +503,7 @@ const prebookingFormSlice = createSlice({
       const { key, text } = action.payload;
       switch (key) {
         case "OCCASION":
-          state.down_payment = text;
+          state.occasion = text;
           break;
         case "DELIVERY_LOCATON":
           state.delivery_location = text;
@@ -517,7 +524,48 @@ const prebookingFormSlice = createSlice({
           break;
       }
     },
+    updateFuelAndTransmissionType: (state, action) => {
+      state.fuel_type = action.payload.fuelType;
+      state.transmission_type = action.payload.transmissionType;
+    }
   },
+  extraReducers: (builder) => {
+    builder.addCase(getPrebookingDetailsApi.fulfilled, (state, action) => {
+      console.log("S getPrebookingDetailsApi: ", JSON.stringify(action.payload));
+      if (action.payload.dmsEntity) {
+        state.pre_booking_details_response = action.payload.dmsEntity;
+      }
+    })
+    builder.addCase(getPrebookingDetailsApi.rejected, (state, action) => {
+      console.log("F getPrebookingDetailsApi: ", JSON.stringify(action.payload));
+    })
+    builder.addCase(getCustomerTypesApi.fulfilled, (state, action) => {
+      console.log("S getCustomerTypesApi: ", JSON.stringify(action.payload));
+      if (action.payload) {
+        const customerTypes = action.payload;
+        let personalTypes = [];
+        let commercialTypes = [];
+        let companyTypes = [];
+        customerTypes.forEach(customer => {
+          const obj = { id: customer.id, name: customer.customerType }
+          if (customer.customerType === "Fleet") {
+            commercialTypes.push(obj);
+          } else if (customer.customerType === "Institution") {
+            companyTypes.push(obj);
+          } else {
+            personalTypes.push(obj);
+          }
+        });
+        const obj = {
+          "personal": personalTypes,
+          "commercial": commercialTypes,
+          "company": companyTypes,
+          "handicapped": companyTypes
+        }
+        state.customer_types_response = obj;
+      }
+    })
+  }
 });
 
 const dateSelected = (isoDate) => {
@@ -544,5 +592,6 @@ export const {
   setDropDownData,
   setDocumentUploadDetails,
   setImagePicker,
+  updateFuelAndTransmissionType
 } = prebookingFormSlice.actions;
 export default prebookingFormSlice.reducer;

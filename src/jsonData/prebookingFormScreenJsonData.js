@@ -1,12 +1,12 @@
 //Document Upload
 export const Form_Types = [
   {
-    value: "Pan",
-    label: "PAN ",
+    id: "Pan",
+    name: "PAN ",
   },
   {
-    value: "Form60",
-    label: "Form60",
+    id: "Form60",
+    name: "Form60",
   },
 ];
 //Price Confirmation
@@ -58,33 +58,33 @@ export const Warranty_Types = [
 // Booking Payment Mode
 export const Payment_At_Types = [
   {
-    value: "Dealer Place",
-    label: "Dealer Place",
+    id: "1",
+    name: "Dealer Place",
   },
   {
-    value: "Customer Place",
-    label: "Customer Place",
+    id: "2",
+    name: "Customer Place",
   },
 ];
 export const Booking_Payment_Types = [
   {
-    value: "Cash",
-    label: "Cash",
+    id: "1",
+    name: "Cash",
   },
   {
-    value: "UPI",
-    label: "UPI",
+    id: "2",
+    name: "UPI",
   },
   {
-    value: "Internet Banking",
-    label: "Internet Banking",
+    id: "3",
+    name: "Internet Banking",
   },
   {
-    value: "Cheque",
-    label: "Cheque",
+    id: "4",
+    name: "Cheque",
   },
   {
-    value: "DD",
-    label: "DD",
+    id: "5",
+    name: "DD",
   },
 ];

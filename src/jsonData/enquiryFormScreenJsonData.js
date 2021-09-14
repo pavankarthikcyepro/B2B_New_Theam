@@ -11,6 +11,10 @@ export const Enquiry_Segment_Data = [
     id: "3",
     name: "Company",
   },
+  {
+    id: "4",
+    name: "Handicapped",
+  },
 ];
 
 export const Gender_Data_Obj = {
@@ -89,12 +93,12 @@ export const Relation_Data_Obj = {
 
 export const Marital_Status_Types = [
   {
-    value: "single",
-    label: "Single",
+    id: "1",
+    name: "Single",
   },
   {
-    value: "married",
-    label: "Married",
+    id: "2",
+    name: "Married",
   },
 ];
 
