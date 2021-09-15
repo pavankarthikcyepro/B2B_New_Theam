@@ -59,8 +59,8 @@ const URL = {
     GET_CUSTOMER_TYPES: () => sales_url + "/master-data/customertype",
     DROP_ENQUIRY: () => sales_url + "/lead-drop",
     UPLOAD_DOCUMENT: () => sales_url + "/documents",
-    GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS: (vehicleId, varientId) => {
-        return vehicleInfoService_url + `/api/vehicle_on_road_prices/${vehicleId}/${varientId}`;
+    GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS: (varientId, vehicleId) => {
+        return vehicleInfoService_url + `/api/vehicle_on_road_prices/${varientId}/${vehicleId}`;
     }
 }
 

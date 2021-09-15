@@ -36,7 +36,10 @@ import {
   updateDmsContactOrAccountDtoData,
   updateDmsLeadDtoData,
   updateDmsAddressData,
-  updateModelSelectionData
+  updateModelSelectionData,
+  updateFinancialData,
+  updateBookingPaymentData,
+  getOnRoadPriceAndInsurenceDetailsApi
 } from "../../../redux/preBookingFormReducer";
 import {
   RadioTextItem,
@@ -104,13 +107,30 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [carModelsData, setCarModelsData] = useState([]);
   const [selectedCarVarientsData, setSelectedCarVarientsData] = useState({ varientList: [], varientListForDropDown: [] });
   const [carColorsData, setCarColorsData] = useState([]);
+  const [selectedModelId, setSelectedModelId] = useState(0);
+  const [selectedVarientId, setSelectedVarientId] = useState(0);
+  const [insurenceVarientTypes, setInsurenceVarientTypes] = useState([]);
+  const [insurenceAddOnTypes, setInsurenceAddOnTypes] = useState([]);
+  const [warrentyTypes, setWarrentyTypes] = useState([]);
+  const [insurenceCost, setInsurenceCost] = useState(0);
+  const [priceInfomationData, setPriceInformationData] = useState({
+    ex_showroom_price: 0,
+    ex_showroom_price_csd: 0,
+    registration_charges: 0,
+    handling_charges: 0,
+    tcs_percentage: 0,
+    tcs_amount: 0,
+    essential_kit: 0,
+    fast_tag: 0,
+    vehicle_road_tax: 0,
+  })
 
   useEffect(() => {
     setComponentAppear(true);
     getAsyncstoreData();
     dispatch(getCustomerTypesApi());
-    getPreBookingDetailsFromServer();
     setCarModelsDataFromBase();
+    getPreBookingDetailsFromServer();
   }, []);
 
   const getAsyncstoreData = async () => {
@@ -157,10 +177,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       dispatch(updateDmsAddressData(dmsLeadDto.dmsAddresses));
       // Updaet Model Selection
       dispatch(updateModelSelectionData(dmsLeadDto.dmsLeadProducts));
-      // // Update Finance Details
-      // dispatch(updateFinancialData(dmsLeadDto.dmsfinancedetails));
-      // // Update Customer Need Analysys
-      // dispatch(updateCustomerNeedAnalysisData(dmsLeadDto.dmsLeadScoreCards));
+      // Update Finance Details
+      dispatch(updateFinancialData(dmsLeadDto.dmsfinancedetails));
+      // // Update Booking Payment Data
+      dispatch(updateBookingPaymentData(dmsLeadDto.dmsBooking));
       // // Update Additional ore Replacement Buyer Data
       // dispatch(updateAdditionalOrReplacementBuyerData(dmsLeadDto.dmsExchagedetails));
       // // Update Attachment details
@@ -174,6 +194,68 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       updateVariantModelsData(selector.model, true, selector.varient);
     }
   }, [selector.model_drop_down_data_update_statu]);
+
+  useEffect(() => {
+    if (selector.vehicle_on_road_price_insurence_details_response) {
+
+      const varientTypes = selector.vehicle_on_road_price_insurence_details_response.insurance_vareint_mapping || [];
+      if (varientTypes.length > 0) {
+        let newFormatVarientTypes = [];
+        varientTypes.forEach((item) => {
+          newFormatVarientTypes.push({
+            ...item,
+            name: item.policy_name
+          })
+          if (selector.insurance_type === item.policy_name) {
+            setInsurenceCost(item.cost);
+          }
+        })
+        setInsurenceVarientTypes([...newFormatVarientTypes]);
+      }
+
+      const allWarrentyTypes = selector.vehicle_on_road_price_insurence_details_response.extended_waranty || [];
+      if (allWarrentyTypes.length > 0) {
+        for (const object of allWarrentyTypes) {
+          if (object.varient_id === selectedVarientId) {
+            const matchedWarrentyTypes = object.warranty || [];
+            if (matchedWarrentyTypes.length > 0) {
+              let newFormatWarrentyTypes = [];
+              matchedWarrentyTypes.forEach((item) => {
+                if (Number(item.cost) !== 0) {
+                  newFormatWarrentyTypes.push({
+                    ...item,
+                    name: item.document_name
+                  })
+                }
+              })
+              setWarrentyTypes([...newFormatWarrentyTypes]);
+            }
+            break;
+          }
+        }
+      }
+
+      const allInsuranceAddOnTypes = selector.vehicle_on_road_price_insurence_details_response.insuranceAddOn || [];
+      if (allInsuranceAddOnTypes.length > 0) {
+        for (const object of allInsuranceAddOnTypes) {
+          if (object.varient_id === selectedVarientId) {
+            const matchedInsurenceAddOnTypes = object.add_on_price || [];
+            let newFormatAddOnTypes = [];
+            matchedInsurenceAddOnTypes.forEach((item) => {
+              newFormatAddOnTypes.push({
+                ...item,
+                name: item.document_name
+              })
+            })
+            setInsurenceAddOnTypes([...newFormatAddOnTypes]);
+            break;
+          }
+        }
+      }
+
+      setPriceInformationData({ ...selector.vehicle_on_road_price_insurence_details_response });
+    }
+  }, [selector.vehicle_on_road_price_insurence_details_response])
 
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
@@ -228,11 +310,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setDataForDropDown([...Booking_Payment_Types]);
         break;
       case "INSURANCE_TYPE":
-        setDataForDropDown([]);
+        setDataForDropDown([...insurenceVarientTypes]);
         break;
       case "WARRANTY":
-        setDataForDropDown([]);
+        setDataForDropDown([...warrentyTypes]);
         break;
+      case "INSURENCE_ADD_ONS":
+        setDataForDropDown([...insurenceAddOnTypes]);
     }
     setDropDownKey(key);
     setDropDownTitle(headerText);
@@ -251,6 +335,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     if (carModelObj !== undefined) {
       let newArray = [];
       let mArray = carModelObj.varients;
+      setSelectedModelId(carModelObj.vehicleId);
       if (mArray.length) {
         mArray.forEach(item => {
           newArray.push({
@@ -260,13 +345,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         })
         setSelectedCarVarientsData({ varientList: [...mArray], varientListForDropDown: [...newArray] });
         if (fromInitialize) {
-          updateColorsDataForSelectedVarient(selectedVarientName, [...mArray])
+          updateColorsDataForSelectedVarient(selectedVarientName, [...mArray], carModelObj.vehicleId)
         }
       }
     }
   }
 
-  const updateColorsDataForSelectedVarient = (selectedVarientName, varientList) => {
+  const updateColorsDataForSelectedVarient = (selectedVarientName, varientList, modelId) => {
 
     if (!selectedVarientName || selectedVarientName.length === 0) { return }
 
@@ -278,6 +363,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     if (carModelObj !== undefined) {
       let newArray = [];
       let mArray = carModelObj.vehicleImages;
+      const varientId = carModelObj.id;
+      setSelectedVarientId(varientId)
       if (mArray.length) {
         mArray.map(item => {
           newArray.push({
@@ -290,6 +377,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           transmissionType: carModelObj.transmission_type
         }
         dispatch(updateFuelAndTransmissionType(obj));
+        dispatch(getOnRoadPriceAndInsurenceDetailsApi({ vehicleId: modelId, varientId: varientId }))
         setCarColorsData([...newArray]);
       }
     }
@@ -332,7 +420,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             updateVariantModelsData(item.name, false);
           }
           else if (dropDownKey === "VARIENT") {
-            updateColorsDataForSelectedVarient(item.name, selectedCarVarientsData.varientList);
+            updateColorsDataForSelectedVarient(item.name, selectedCarVarientsData.varientList, selectedModelId);
           }
           else if (dropDownKey === "C_MAKE" || dropDownKey === "R_MAKE" || dropDownKey === "A_MAKE") {
             // updateModelTypesForCustomerNeedAnalysis(item.name, dropDownKey);
@@ -1030,7 +1118,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     openAccordian === "6" ? Colors.RED : Colors.WHITE,
                 }}
               >
-                <TextAndAmountComp title={"Ex-Showroom Price:"} amount={"0.00"} />
+                <TextAndAmountComp title={"Ex-Showroom Price:"} amount={priceInfomationData.ex_showroom_price} />
                 <View style={styles.radioGroupBcVw}>
                   <Checkbox.Android
                     style={{ margin: 0, padding: 0 }}
@@ -1057,7 +1145,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 <TextAndAmountComp
                   title={"Registration Charges:"}
-                  amount={"0.00"}
+                  amount={priceInfomationData.registration_charges}
                 />
                 <Text style={GlobalStyle.underline}></Text>
 
@@ -1069,11 +1157,19 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       onPress={() => showDropDownModelMethod("INSURANCE_TYPE", "Insurance Type")}
                     />
                   </View>
-                  <Text style={styles.shadowText}>{rupeeSymbol + " 0.00"}</Text>
+                  <Text style={styles.shadowText}>{rupeeSymbol + " " + insurenceCost}</Text>
                 </View>
 
-                <TextAndAmountComp title={"Add-on Insurance:"} amount={"0.00"} />
-                <Text style={GlobalStyle.underline}></Text>
+                <View style={styles.symbolview}>
+                  <View style={{ width: "70%" }}>
+                    <DropDownSelectionItem
+                      label={"Add-on Insurance"}
+                      value={selector.add_on_insurance}
+                      onPress={() => showDropDownModelMethod("INSURENCE_ADD_ONS", "Add-on Insurance")}
+                    />
+                  </View>
+                  <Text style={styles.shadowText}>{rupeeSymbol + " " + "0.00"}</Text>
+                </View>
 
                 <View style={styles.symbolview}>
                   <View style={{ width: "70%" }}>
@@ -1087,10 +1183,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 </View>
                 <Text style={GlobalStyle.underline}></Text>
 
-                <TextAndAmountComp title={"Handling Charges:"} amount={"0.00"} />
+                <TextAndAmountComp title={"Handling Charges:"} amount={priceInfomationData.handling_charges} />
                 <Text style={GlobalStyle.underline}></Text>
 
-                <TextAndAmountComp title={"Essential Kit:"} amount={"0.00"} />
+                <TextAndAmountComp title={"Essential Kit:"} amount={priceInfomationData.essential_kit} />
                 <Text style={GlobalStyle.underline}></Text>
 
                 <TextAndAmountComp
@@ -1102,7 +1198,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 <TextAndAmountComp title={"Paid Accessories:"} amount={"0.00"} />
                 <Text style={GlobalStyle.underline}></Text>
 
-                <TextAndAmountComp title={"Fast Tag:"} amount={"0.00"} />
+                <TextAndAmountComp title={"Fast Tag:"} amount={priceInfomationData.fast_tag} />
                 <Text style={GlobalStyle.underline}></Text>
 
                 <TextAndAmountComp

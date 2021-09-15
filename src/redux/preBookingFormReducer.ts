@@ -41,9 +41,9 @@ export const getPrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/
   return json;
 })
 
-export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getOnRoadPriceAndInsurenceDetailsApi", async (universalId, { rejectWithValue }) => {
+export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getOnRoadPriceAndInsurenceDetailsApi", async (payload, { rejectWithValue }) => {
 
-  const response = await client.get(URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(universalId));
+  const response = await client.get(URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(payload["varientId"], payload["vehicleId"]));
   const json = await response.json()
   if (!response.ok) {
     return rejectWithValue(json);
@@ -88,6 +88,7 @@ const prebookingFormSlice = createSlice({
     dropDownData: dropDownData,
     pre_booking_details_response: null,
     customer_types_response: null,
+    vehicle_on_road_price_insurence_details_response: null,
 
     dropDownTitle: "",
     dropDownKeyId: "",
@@ -266,6 +267,9 @@ const prebookingFormSlice = createSlice({
           break;
         case "WARRANTY":
           state.warranty = value;
+          break;
+        case "INSURENCE_ADD_ONS":
+          state.add_on_insurance = value;
           break;
       }
     },
@@ -562,6 +566,14 @@ const prebookingFormSlice = createSlice({
         state.customer_types_data = state.customer_types_response[state.enquiry_segment.toLowerCase()];
       }
       state.marital_status = dmsLeadDto.maritalStatus ? dmsLeadDto.maritalStatus : "";
+
+      // Commitment
+      state.occasion = dmsLeadDto.occasion ? dmsLeadDto.occasion : "";
+      const customerPreferredDate = dmsLeadDto.commitmentDeliveryPreferredDate ? dmsLeadDto.commitmentDeliveryPreferredDate : "";
+      state.customer_preferred_date = convertTimeStampToDateString(customerPreferredDate, "DD/MM/YYYY");
+      const tentativeDeliveryDate = dmsLeadDto.commitmentDeliveryTentativeDate ? dmsLeadDto.commitmentDeliveryTentativeDate : ""
+      state.tentative_delivery_date = convertTimeStampToDateString(tentativeDeliveryDate, "DD/MM/YYYY");
+      state.delivery_location = dmsLeadDto.deliveryOccasion ? dmsLeadDto.deliveryOccasion : "";
     },
     updateDmsAddressData: (state, action) => {
 
@@ -620,6 +632,33 @@ const prebookingFormSlice = createSlice({
         state.model_drop_down_data_update_statu = "update";
       }
     },
+    updateFinancialData: (state, action) => {
+      const dmsfinancedetails = action.payload;
+      if (dmsfinancedetails.length > 0) {
+        const dataObj = dmsfinancedetails[0];
+        state.retail_finance = dataObj.financeType ? dataObj.financeType : "";
+        state.finance_category = dataObj.financeCategory ? dataObj.financeCategory : "";
+        state.down_payment = dataObj.downPayment ? dataObj.downPayment.toString() : "";
+        state.loan_amount = dataObj.loanAmount ? dataObj.loanAmount.toString() : "";
+        state.bank_or_finance = dataObj.financeCompany ? dataObj.financeCompany : "";
+        state.bank_or_finance_name = dataObj.financeCompany ? dataObj.financeCompany : "";
+        state.rate_of_interest = dataObj.rateOfInterest ? dataObj.rateOfInterest : "";
+        state.loan_of_tenure = dataObj.expectedTenureYears ? dataObj.expectedTenureYears : "";
+        state.emi = dataObj.emi ? dataObj.emi.toString() : "";
+        state.approx_annual_income = dataObj.annualIncome ? dataObj.annualIncome : "";
+        state.location = dataObj.location ? dataObj.location : "";
+        state.leashing_name = dataObj.financeCompany ? dataObj.financeCompany : "";
+      }
+    },
+    updateBookingPaymentData: (state, action) => {
+      const dmsBooking = action.payload;
+      if (dmsBooking) {
+        const dataObj = dmsBooking;
+        state.booking_amount = dataObj.bookingAmount ? dataObj.bookingAmount.toString() : "";
+        state.payment_at = dataObj.paymentAt ? dataObj.paymentAt : "";
+        state.booking_payment_mode = dataObj.modeOfPayment ? dataObj.modeOfPayment : "";
+      }
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(getPrebookingDetailsApi.fulfilled, (state, action) => {
@@ -633,6 +672,9 @@ const prebookingFormSlice = createSlice({
     })
     builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.fulfilled, (state, action) => {
       console.log("S getOnRoadPriceAndInsurenceDetailsApi: ", JSON.stringify(action.payload));
+      if (action.payload) {
+        state.vehicle_on_road_price_insurence_details_response = action.payload;
+      }
     })
     builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.rejected, (state, action) => {
       console.log("F getOnRoadPriceAndInsurenceDetailsApi: ", JSON.stringify(action.payload));
@@ -694,6 +736,8 @@ export const {
   updateDmsContactOrAccountDtoData,
   updateDmsLeadDtoData,
   updateDmsAddressData,
-  updateModelSelectionData
+  updateModelSelectionData,
+  updateFinancialData,
+  updateBookingPaymentData
 } = prebookingFormSlice.actions;
 export default prebookingFormSlice.reducer;
