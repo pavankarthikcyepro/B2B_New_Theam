@@ -32,7 +32,11 @@ import {
   setImagePicker,
   getPrebookingDetailsApi,
   getCustomerTypesApi,
-  updateFuelAndTransmissionType
+  updateFuelAndTransmissionType,
+  updateDmsContactOrAccountDtoData,
+  updateDmsLeadDtoData,
+  updateDmsAddressData,
+  updateModelSelectionData
 } from "../../../redux/preBookingFormReducer";
 import {
   RadioTextItem,
@@ -68,16 +72,7 @@ const TextAndAmountComp = ({
   amoutStyle = {},
 }) => {
   return (
-    <View
-      style={{
-        flexDirection: "row",
-        justifyContent: "space-between",
-        paddingHorizontal: 12,
-        minHeight: 40,
-        paddingVertical: 5,
-        alignItems: "center",
-      }}
-    >
+    <View style={styles.textAndAmountView} >
       <Text
         style={[
           { fontSize: 14, fontWeight: "400", maxWidth: "70%" },
@@ -155,13 +150,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       const dmsLeadDto = selector.pre_booking_details_response.dmsLeadDto;
 
       // Update dmsContactOrAccountDto
-      // dispatch(updateDmsContactOrAccountDtoData(dmsContactOrAccountDto));
+      dispatch(updateDmsContactOrAccountDtoData(dmsContactOrAccountDto));
       // Update updateDmsLeadDtoData
-      // dispatch(updateDmsLeadDtoData(dmsLeadDto));
+      dispatch(updateDmsLeadDtoData(dmsLeadDto));
       // Update Addresses
-      // dispatch(updateDmsAddressData(dmsLeadDto.dmsAddresses));
-      // // Updaet Model Selection
-      // dispatch(updateModelSelectionData(dmsLeadDto.dmsLeadProducts));
+      dispatch(updateDmsAddressData(dmsLeadDto.dmsAddresses));
+      // Updaet Model Selection
+      dispatch(updateModelSelectionData(dmsLeadDto.dmsLeadProducts));
       // // Update Finance Details
       // dispatch(updateFinancialData(dmsLeadDto.dmsfinancedetails));
       // // Update Customer Need Analysys
@@ -173,6 +168,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       // dispatch(updateDmsAttachmentDetails(dmsLeadDto.dmsAttachments));
     }
   }, [selector.pre_booking_details_response])
+
+  useEffect(() => {
+    if (selector.model_drop_down_data_update_statu === "update") {
+      updateVariantModelsData(selector.model, true, selector.varient);
+    }
+  }, [selector.model_drop_down_data_update_statu]);
 
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
@@ -225,6 +226,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         break;
       case "BOOKING_PAYMENT_MODE":
         setDataForDropDown([...Booking_Payment_Types]);
+        break;
+      case "INSURANCE_TYPE":
+        setDataForDropDown([]);
+        break;
+      case "WARRANTY":
+        setDataForDropDown([]);
         break;
     }
     setDropDownKey(key);
@@ -1056,23 +1063,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 <View style={styles.symbolview}>
                   <View style={{ width: "70%" }}>
-                    <View style={styles.drop_down_view_style}>
-                      <Dropdown
-                        label="Insurance Type"
-                        data={selector.insurance_types_data}
-                        required={true}
-                        floating={true}
-                        value={selector.insurance_type}
-                        onChange={(value) =>
-                          dispatch(
-                            setDropDownData({
-                              key: "INSURANCE_TYPE",
-                              value: value,
-                            })
-                          )
-                        }
-                      />
-                    </View>
+                    <DropDownSelectionItem
+                      label={"Insurance Type"}
+                      value={selector.insurance_type}
+                      onPress={() => showDropDownModelMethod("INSURANCE_TYPE", "Insurance Type")}
+                    />
                   </View>
                   <Text style={styles.shadowText}>{rupeeSymbol + " 0.00"}</Text>
                 </View>
@@ -1082,23 +1077,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 <View style={styles.symbolview}>
                   <View style={{ width: "70%" }}>
-                    <View style={styles.drop_down_view_style}>
-                      <Dropdown
-                        label="Warranty"
-                        data={selector.warranty_types_data}
-                        required={true}
-                        floating={true}
-                        value={selector.warranty}
-                        onChange={(value) =>
-                          dispatch(
-                            setDropDownData({
-                              key: "WARRANTY",
-                              value: value,
-                            })
-                          )
-                        }
-                      />
-                    </View>
+                    <DropDownSelectionItem
+                      label={"Warranty"}
+                      value={selector.warranty}
+                      onPress={() => showDropDownModelMethod("WARRANTY", "Warranty")}
+                    />
                   </View>
                   <Text style={styles.shadowText}>{"\u20B9"} 0.00</Text>
                 </View>
@@ -1478,4 +1461,13 @@ const styles = StyleSheet.create({
     paddingLeft: 12,
     backgroundColor: Colors.WHITE,
   },
+  textAndAmountView: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 12,
+    minHeight: 40,
+    paddingVertical: 5,
+    alignItems: "center",
+    backgroundColor: Colors.WHITE
+  }
 });

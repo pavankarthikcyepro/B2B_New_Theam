@@ -4,14 +4,13 @@ import URL from "../networking/endpoints";
 
 import {
   Form_Types,
-  Insurance_Types,
-  Warranty_Types,
 } from "../jsonData/prebookingFormScreenJsonData";
 import {
   Salutation_Types,
   Enquiry_Segment_Data,
   Gender_Data_Obj,
 } from "../jsonData/enquiryFormScreenJsonData";
+import { convertTimeStampToDateString } from "../utils/helperFunctions";
 
 const dropDownData = [
   {
@@ -35,6 +34,16 @@ const dropDownData = [
 export const getPrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getPrebookingDetailsApi", async (universalId, { rejectWithValue }) => {
 
   const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getOnRoadPriceAndInsurenceDetailsApi", async (universalId, { rejectWithValue }) => {
+
+  const response = await client.get(URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(universalId));
   const json = await response.json()
   if (!response.ok) {
     return rejectWithValue(json);
@@ -92,9 +101,6 @@ const prebookingFormSlice = createSlice({
     form_types_data: Form_Types,
     enquiry_segment_types_data: Enquiry_Segment_Data,
     customer_types_data: [],
-    //Price Confirmation
-    warranty_types_data: Warranty_Types,
-    insurance_types_data: Insurance_Types,
     // Customer Details
     first_name: "",
     last_name: "",
@@ -132,6 +138,8 @@ const prebookingFormSlice = createSlice({
     color: "",
     fuel_type: "",
     transmission_type: "",
+    lead_product_id: "",
+    model_drop_down_data_update_statu: null,
     // financial details
     retail_finance: "",
     finance_category: "",
@@ -527,7 +535,91 @@ const prebookingFormSlice = createSlice({
     updateFuelAndTransmissionType: (state, action) => {
       state.fuel_type = action.payload.fuelType;
       state.transmission_type = action.payload.transmissionType;
-    }
+    },
+    updateDmsContactOrAccountDtoData: (state, action) => {
+
+      // dmsContactOrAccountDto
+      const dms_C_Or_A_Dto = action.payload;
+      state.salutation = dms_C_Or_A_Dto.salutation ? dms_C_Or_A_Dto.salutation : "";
+      if (state.salutation) {
+        state.gender_types_data = Gender_Data_Obj[state.salutation.toLowerCase()];
+      }
+      state.first_name = dms_C_Or_A_Dto.firstName ? dms_C_Or_A_Dto.firstName : "";
+      state.last_name = dms_C_Or_A_Dto.lastName ? dms_C_Or_A_Dto.lastName : "";
+      state.mobile = dms_C_Or_A_Dto.phone ? dms_C_Or_A_Dto.phone : "";
+      state.email = dms_C_Or_A_Dto.email ? dms_C_Or_A_Dto.email : "";
+      const dateOfBirth = dms_C_Or_A_Dto.dateOfBirth ? dms_C_Or_A_Dto.dateOfBirth : "";
+      state.date_of_birth = convertTimeStampToDateString(dateOfBirth, "DD/MM/YYYY");
+      state.gender = dms_C_Or_A_Dto.gender ? dms_C_Or_A_Dto.gender : "";
+      state.age = dms_C_Or_A_Dto.age ? dms_C_Or_A_Dto.age.toString() : "0";
+      state.customer_type = dms_C_Or_A_Dto.customerType ? dms_C_Or_A_Dto.customerType : "";
+    },
+    updateDmsLeadDtoData: (state, action) => {
+
+      const dmsLeadDto = action.payload;
+      state.enquiry_segment = dmsLeadDto.enquirySegment ? dmsLeadDto.enquirySegment : "";
+      if (state.customer_types_response && state.enquiry_segment) {
+        state.customer_types_data = state.customer_types_response[state.enquiry_segment.toLowerCase()];
+      }
+      state.marital_status = dmsLeadDto.maritalStatus ? dmsLeadDto.maritalStatus : "";
+    },
+    updateDmsAddressData: (state, action) => {
+
+      const dmsAddresses = action.payload;
+      if (dmsAddresses.length == 2) {
+        dmsAddresses.forEach((address) => {
+          if (address.addressType === 'Communication') {
+
+            state.pincode = address.pincode ? address.pincode : "";
+            state.house_number = address.houseNo ? address.houseNo : "";
+            state.street_name = address.street ? address.street : "";
+            state.village = address.village ? address.village : "";
+            state.city = address.city ? address.city : "";
+            state.district = address.district ? address.district : "";
+            state.state = address.state ? address.state : "";
+
+            let urbanOrRural = 0;
+            if (address.urban) {
+              urbanOrRural = 1;
+            } else if (address.rural) {
+              urbanOrRural = 2;
+            }
+            state.urban_or_rural = urbanOrRural;
+
+          } else if (address.addressType === 'Permanent') {
+
+            state.p_pincode = address.pincode ? address.pincode : "";
+            state.p_houseNum = address.houseNo ? address.houseNo : "";
+            state.p_streetName = address.street ? address.street : "";
+            state.p_village = address.village ? address.village : "";
+            state.p_city = address.city ? address.city : "";
+            state.p_district = address.district ? address.district : "";
+            state.p_state = address.state ? address.state : "";
+            let urbanOrRural = 0;
+            if (address.urban) {
+              urbanOrRural = 1;
+            } else if (address.rural) {
+              urbanOrRural = 2;
+            }
+            state.p_urban_or_rural = urbanOrRural;
+          }
+        });
+      }
+    },
+    updateModelSelectionData: (state, action) => {
+
+      const dmsLeadProducts = action.payload;
+      if (dmsLeadProducts.length > 0) {
+        const dataObj = dmsLeadProducts[0];
+        state.lead_product_id = dataObj.id ? dataObj.id : "";
+        state.model = dataObj.model ? dataObj.model : "";
+        state.varient = dataObj.variant ? dataObj.variant : "";
+        state.color = dataObj.color ? dataObj.color : "";
+        state.fuel_type = dataObj.fuel ? dataObj.fuel : "";
+        state.transmission_type = dataObj.transimmisionType ? dataObj.transimmisionType : "";
+        state.model_drop_down_data_update_statu = "update";
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getPrebookingDetailsApi.fulfilled, (state, action) => {
@@ -538,6 +630,12 @@ const prebookingFormSlice = createSlice({
     })
     builder.addCase(getPrebookingDetailsApi.rejected, (state, action) => {
       console.log("F getPrebookingDetailsApi: ", JSON.stringify(action.payload));
+    })
+    builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.fulfilled, (state, action) => {
+      console.log("S getOnRoadPriceAndInsurenceDetailsApi: ", JSON.stringify(action.payload));
+    })
+    builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.rejected, (state, action) => {
+      console.log("F getOnRoadPriceAndInsurenceDetailsApi: ", JSON.stringify(action.payload));
     })
     builder.addCase(getCustomerTypesApi.fulfilled, (state, action) => {
       console.log("S getCustomerTypesApi: ", JSON.stringify(action.payload));
@@ -592,6 +690,10 @@ export const {
   setDropDownData,
   setDocumentUploadDetails,
   setImagePicker,
-  updateFuelAndTransmissionType
+  updateFuelAndTransmissionType,
+  updateDmsContactOrAccountDtoData,
+  updateDmsLeadDtoData,
+  updateDmsAddressData,
+  updateModelSelectionData
 } = prebookingFormSlice.actions;
 export default prebookingFormSlice.reducer;
