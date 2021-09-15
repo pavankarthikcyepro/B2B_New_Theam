@@ -61,6 +61,9 @@ const URL = {
     UPLOAD_DOCUMENT: () => sales_url + "/documents",
     GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS: (varientId, vehicleId) => {
         return vehicleInfoService_url + `/api/vehicle_on_road_prices/${varientId}/${vehicleId}`;
+    },
+    GET_PAID_ACCESSORIES_LIST: (orgId) => {
+        return inventory_url + `/inventory/accessories/${orgId}?pageNo=0&pageSize=1000`
     }
 }
 

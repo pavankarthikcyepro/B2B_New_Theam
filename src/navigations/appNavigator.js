@@ -34,6 +34,7 @@ import PreBookingFollowUpScreen from "../scenes/mainScenes/MyTasks/preBookingFol
 import TestDriveScreen from "../scenes/mainScenes/MyTasks/testDriveScreen";
 import EnquiryFollowUpScreen from "../scenes/mainScenes/MyTasks/enquiryFollowUpScreen";
 import TestEnquiryFormScreen from "../scenes/mainScenes/EMS/testEnquiryFormScreen";
+import PaidAccessoriesScreen from "../scenes/mainScenes/EMS/paidAccessoriesScreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -103,7 +104,8 @@ export const EmsStackIdentifiers = {
   addPreEnq: "ADD_PRE_ENQUIRY",
   confirmedPreEnq: "CONFIRMED_PRE_ENQUIRY",
   detailsOverview: "DETAILS_OVERVIEW",
-  preBookingForm: "PRE_BOOKING_FORM"
+  preBookingForm: "PRE_BOOKING_FORM",
+  paidAccessories: "PAID_ACCESSORIES"
 };
 
 export const PreBookingStackIdentifiers = {
@@ -207,6 +209,11 @@ const EmsStackNavigator = ({ navigation }) => {
         name={EmsStackIdentifiers.preBookingForm}
         component={PreBookingFormScreen}
         options={{ title: "Pre-Booking Form" }}
+      />
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.paidAccessories}
+        component={PaidAccessoriesScreen}
+        options={{ title: "Paid Accessories" }}
       />
     </EmsStack.Navigator>
   );

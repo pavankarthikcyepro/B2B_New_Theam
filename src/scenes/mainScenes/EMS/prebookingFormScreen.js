@@ -8,7 +8,8 @@ import {
   ScrollView,
   Keyboard,
   ActivityIndicator,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  Pressable
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { useDispatch, useSelector } from "react-redux";
@@ -39,7 +40,8 @@ import {
   updateModelSelectionData,
   updateFinancialData,
   updateBookingPaymentData,
-  getOnRoadPriceAndInsurenceDetailsApi
+  getOnRoadPriceAndInsurenceDetailsApi,
+  getPaidAccessoriesListApi
 } from "../../../redux/preBookingFormReducer";
 import {
   RadioTextItem,
@@ -65,6 +67,7 @@ import {
   Payment_At_Types,
   Booking_Payment_Types
 } from "../../../jsonData/prebookingFormScreenJsonData";
+import { AppNavigator } from "../../../navigations";
 
 const rupeeSymbol = "\u20B9";
 
@@ -100,6 +103,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [componentAppear, setComponentAppear] = useState(false);
   const [userData, setUserData] = useState({ branchId: "", orgId: "", employeeId: "", employeeName: "" })
   const [showDropDownModel, setShowDropDownModel] = useState(false);
+  const [showMultipleDropDownData, setShowMultipleDropDownData] = useState(false);
   const [dataForDropDown, setDataForDropDown] = useState([]);
   const [dropDownKey, setDropDownKey] = useState("");
   const [dropDownTitle, setDropDownTitle] = useState("Select Data");
@@ -112,7 +116,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [insurenceVarientTypes, setInsurenceVarientTypes] = useState([]);
   const [insurenceAddOnTypes, setInsurenceAddOnTypes] = useState([]);
   const [warrentyTypes, setWarrentyTypes] = useState([]);
-  const [insurenceCost, setInsurenceCost] = useState(0);
+  const [selectedInsurencePrice, setSelectedInsurencePrice] = useState(0);
+  const [selectedAddOnsPrice, setSelectedAddOnsPrice] = useState(0);
+  const [selectedWarrentyPrice, setSelectedWarrentyPrice] = useState(0);
+  const [totalOnRoadPrice, setTotalOnRoadPrice] = useState(0);
   const [priceInfomationData, setPriceInformationData] = useState({
     ex_showroom_price: 0,
     ex_showroom_price_csd: 0,
@@ -138,6 +145,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       setUserData({ branchId: jsonObj.branchId, orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName })
+      dispatch(getPaidAccessoriesListApi(jsonObj.orgId));
     }
   }
 
@@ -207,7 +215,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             name: item.policy_name
           })
           if (selector.insurance_type === item.policy_name) {
-            setInsurenceCost(item.cost);
+            setSelectedInsurencePrice(item.cost);
           }
         })
         setInsurenceVarientTypes([...newFormatVarientTypes]);
@@ -244,6 +252,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             matchedInsurenceAddOnTypes.forEach((item) => {
               newFormatAddOnTypes.push({
                 ...item,
+                selected: false,
                 name: item.document_name
               })
             })
@@ -254,10 +263,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       }
 
       setPriceInformationData({ ...selector.vehicle_on_road_price_insurence_details_response });
+      calculateOnRoadPrice();
     }
   }, [selector.vehicle_on_road_price_insurence_details_response])
 
   const showDropDownModelMethod = (key, headerText) => {
+
     Keyboard.dismiss();
 
     switch (key) {
@@ -317,6 +328,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         break;
       case "INSURENCE_ADD_ONS":
         setDataForDropDown([...insurenceAddOnTypes]);
+        setShowMultipleDropDownData(true);
+        break;
     }
     setDropDownKey(key);
     setDropDownTitle(headerText);
@@ -383,6 +396,21 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
   }
 
+  const calculateOnRoadPrice = () => {
+
+    let totalPrice = 0;
+    totalPrice += priceInfomationData.ex_showroom_price;
+    totalPrice += priceInfomationData.registration_charges;
+    totalPrice += priceInfomationData.handling_charges;
+    totalPrice += priceInfomationData.essential_kit;
+    totalPrice += priceInfomationData.tcs_amount;
+
+    totalPrice += selectedInsurencePrice;
+    totalPrice += selectedAddOnsPrice;
+    totalPrice += selectedWarrentyPrice;
+    setTotalOnRoadPrice(totalPrice);
+  }
+
   const updateAccordian = (selectedIndex) => {
     if (selectedIndex != openAccordian) {
       setOpenAccordian(selectedIndex);
@@ -414,18 +442,39 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         visible={showDropDownModel}
         headerTitle={dropDownTitle}
         data={dataForDropDown}
+        multiple={showMultipleDropDownData}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
+          setShowDropDownModel(false);
+          setShowMultipleDropDownData(false);
           if (dropDownKey === "MODEL") {
             updateVariantModelsData(item.name, false);
           }
           else if (dropDownKey === "VARIENT") {
             updateColorsDataForSelectedVarient(item.name, selectedCarVarientsData.varientList, selectedModelId);
           }
-          else if (dropDownKey === "C_MAKE" || dropDownKey === "R_MAKE" || dropDownKey === "A_MAKE") {
-            // updateModelTypesForCustomerNeedAnalysis(item.name, dropDownKey);
+          else if (dropDownKey === "INSURANCE_TYPE") {
+            setSelectedInsurencePrice(item.cost);
+            calculateOnRoadPrice();
           }
-          setShowDropDownModel(false);
+          else if (dropDownKey === "WARRANTY") {
+            setSelectedWarrentyPrice(Number(item.cost));
+            calculateOnRoadPrice();
+          }
+          else if (dropDownKey === "INSURENCE_ADD_ONS") {
+            let totalCost = 0;
+            let names = "";
+            if (item.length > 0) {
+              item.forEach((obj, index) => {
+                totalCost += Number(obj.cost);
+                names += obj.name + ((index + 1) < item.length ? ", " : "");
+              })
+            }
+            setSelectedAddOnsPrice(totalCost);
+            dispatch(setDropDownData({ key: dropDownKey, value: names, id: "" }));
+            calculateOnRoadPrice();
+            return
+          }
           dispatch(setDropDownData({ key: dropDownKey, value: item.name, id: item.id }));
         }}
       />
@@ -1157,7 +1206,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       onPress={() => showDropDownModelMethod("INSURANCE_TYPE", "Insurance Type")}
                     />
                   </View>
-                  <Text style={styles.shadowText}>{rupeeSymbol + " " + insurenceCost}</Text>
+                  <Text style={styles.shadowText}>{rupeeSymbol + " " + selectedInsurencePrice}</Text>
                 </View>
 
                 <View style={styles.symbolview}>
@@ -1168,7 +1217,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       onPress={() => showDropDownModelMethod("INSURENCE_ADD_ONS", "Add-on Insurance")}
                     />
                   </View>
-                  <Text style={styles.shadowText}>{rupeeSymbol + " " + "0.00"}</Text>
+                  <Text style={styles.shadowText}>{rupeeSymbol + " " + selectedAddOnsPrice}</Text>
                 </View>
 
                 <View style={styles.symbolview}>
@@ -1179,7 +1228,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       onPress={() => showDropDownModelMethod("WARRANTY", "Warranty")}
                     />
                   </View>
-                  <Text style={styles.shadowText}>{"\u20B9"} 0.00</Text>
+                  <Text style={styles.shadowText}>{rupeeSymbol + " " + selectedWarrentyPrice}</Text>
                 </View>
                 <Text style={GlobalStyle.underline}></Text>
 
@@ -1195,7 +1244,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 />
                 <Text style={GlobalStyle.underline}></Text>
 
-                <TextAndAmountComp title={"Paid Accessories:"} amount={"0.00"} />
+                <Pressable onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.paidAccessories, { accessorylist: selector.paid_accessories_list })}>
+                  <TextAndAmountComp title={"Paid Accessories:"} amount={"0.00"} />
+                </Pressable>
                 <Text style={GlobalStyle.underline}></Text>
 
                 <TextAndAmountComp title={"Fast Tag:"} amount={priceInfomationData.fast_tag} />
@@ -1203,7 +1254,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 <TextAndAmountComp
                   title={"On Road Price:"}
-                  amount={"0.00"}
+                  amount={totalOnRoadPrice}
                   titleStyle={{ fontSize: 18, fontWeight: "800" }}
                   amoutStyle={{ fontSize: 18, fontWeight: "800" }}
                 />

@@ -51,6 +51,17 @@ export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk("PREBOONING
   return json;
 })
 
+export const getPaidAccessoriesListApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getPaidAccessoriesListApi", async (orgId, { rejectWithValue }) => {
+
+  const customConfig = { orgId: orgId };
+  const response = await client.get(URL.GET_PAID_ACCESSORIES_LIST(orgId), customConfig);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 export const getCustomerTypesApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getCustomerTypesApi", async (universalId, { rejectWithValue }) => {
 
   const response = await client.get(URL.GET_CUSTOMER_TYPES());
@@ -89,6 +100,7 @@ const prebookingFormSlice = createSlice({
     pre_booking_details_response: null,
     customer_types_response: null,
     vehicle_on_road_price_insurence_details_response: null,
+    paid_accessories_list: [],
 
     dropDownTitle: "",
     dropDownKeyId: "",
@@ -678,6 +690,12 @@ const prebookingFormSlice = createSlice({
     })
     builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.rejected, (state, action) => {
       console.log("F getOnRoadPriceAndInsurenceDetailsApi: ", JSON.stringify(action.payload));
+    })
+    builder.addCase(getPaidAccessoriesListApi.fulfilled, (state, action) => {
+      console.log("S getPaidAccessoriesListApi: ", JSON.stringify(action.payload));
+      if (action.payload.accessorylist) {
+        state.paid_accessories_list = action.payload.accessorylist;
+      }
     })
     builder.addCase(getCustomerTypesApi.fulfilled, (state, action) => {
       console.log("S getCustomerTypesApi: ", JSON.stringify(action.payload));

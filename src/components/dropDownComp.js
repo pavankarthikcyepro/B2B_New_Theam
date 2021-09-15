@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, SafeAreaView, View, Text, StyleSheet, FlatList, Pressable, Dimensions, Platform } from 'react-native';
 import { Colors } from '../styles';
 import { List, Divider, Button, IconButton } from 'react-native-paper';
@@ -32,7 +32,11 @@ const multipleTestData = [
 
 const DropDownComponant = ({ visible = false, multiple = false, headerTitle = "Select Data", data = [], selectedItems, keyId = "", onRequestClose }) => {
 
-    const [multipleData, setMultipleData] = useState(multipleTestData);
+    const [multipleData, setMultipleData] = useState([]);
+
+    useEffect(() => {
+        setMultipleData([...data])
+    }, [data])
 
     const itemSelected = (index) => {
         let updatedMultipleData = [...multipleData];

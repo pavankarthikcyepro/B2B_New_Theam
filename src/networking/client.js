@@ -1,6 +1,6 @@
 import * as AsyncStore from '../asyncStore';
 
-export const client = async (authToken, url, methodType, body) => {
+export const client = async (authToken, url, methodType, body, customConfig) => {
 
     const headers = {
         'Accept': "application/json",
@@ -15,6 +15,7 @@ export const client = async (authToken, url, methodType, body) => {
         method: methodType,
         headers: {
             ...headers,
+            ...customConfig
         },
     }
 
@@ -36,17 +37,17 @@ export const client = async (authToken, url, methodType, body) => {
 
 client.get = async function (endpoint, customConfig = {}) {
     let token = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
-    return client(token, endpoint, "GET")
+    return client(token, endpoint, "GET", null, customConfig)
 }
 
 client.post = async function (endpoint, body, customConfig = {}) {
     let token = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
-    return client(token, endpoint, "POST", body)
+    return client(token, endpoint, "POST", body, customConfig)
 }
 
 client.put = async function (endpoint, body, customConfig = {}) {
     let token = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
-    return client(token, endpoint, "PUT", body)
+    return client(token, endpoint, "PUT", body, customConfig)
 }
 
 export const parseAPIResponse = response => {
