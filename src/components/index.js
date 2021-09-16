@@ -9,7 +9,7 @@ import { SortAndFilterComp } from "./sortAndFilterComp";
 import LoaderComponent from "./loaderComp";
 import { ImagePickerComponent } from "./imagePickerComp";
 import { SelectEmployeeComponant } from "./selectEmployeeComp";
-
+import { SelectOtherVehicleComponant } from "./selectOtherVehicleComp";
 
 export {
     ButtonComp,
@@ -21,5 +21,6 @@ export {
     SortAndFilterComp,
     LoaderComponent,
     ImagePickerComponent,
-    SelectEmployeeComponant
+    SelectEmployeeComponant,
+    SelectOtherVehicleComponant
 };

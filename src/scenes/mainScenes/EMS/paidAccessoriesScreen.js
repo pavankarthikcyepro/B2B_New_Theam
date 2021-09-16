@@ -38,7 +38,7 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
                 totalPrice += item.cost;
             }
         })
-        console.log("totalPrice: ", totalPrice)
+        route.params.callback(totalPrice);
         navigation.goBack();
     }
 
@@ -74,6 +74,10 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
                             )
                         }}
                     />
+                    <View style={styles.bottomTextVw}>
+                        <Text style={[styles.text3, { fontWeight: '600' }]}>{"Note: "}</Text>
+                        <Text style={styles.text3}>{"All Prices are inclusive of all Taxes"}</Text>
+                    </View>
                     <View style={styles.actionBtnView}>
                         <Button
                             mode="contained"
@@ -125,5 +129,16 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '400',
         marginBottom: 5
+    },
+    bottomTextVw: {
+        paddingTop: 10,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        paddingBottom: 5
+    },
+    text3: {
+        fontSize: 12,
+        fontWeight: '400',
+        color: Colors.RED
     }
 })

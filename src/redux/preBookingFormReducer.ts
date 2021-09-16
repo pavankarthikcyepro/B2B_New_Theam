@@ -152,7 +152,7 @@ const prebookingFormSlice = createSlice({
     fuel_type: "",
     transmission_type: "",
     lead_product_id: "",
-    model_drop_down_data_update_statu: null,
+    model_drop_down_data_update_status: null,
     // financial details
     retail_finance: "",
     finance_category: "",
@@ -177,7 +177,9 @@ const prebookingFormSlice = createSlice({
     delivery_location: "",
     //Price Conformation
     showroom_price: "",
-    vechicle_registration: true,
+    vechicle_registration: false,
+    vehicle_type: "",
+    registration_number: "",
     life_tax: "",
     registration_charges: "",
     insurance_type: "",
@@ -188,7 +190,6 @@ const prebookingFormSlice = createSlice({
     tcs: "",
     paid_accessories: "",
     fast_tag: "",
-    on_road_price: "",
     //offerprice
     consumer_offer: "",
     exchange_offer: "",
@@ -198,12 +199,14 @@ const prebookingFormSlice = createSlice({
     for_accessories: "",
     additional_offer_1: "",
     additional_offer_2: "",
-    after_discount: "",
     // Documents Upload
     form_or_pan: "",
     customer_type_category: "",
     adhaar_number: "",
     relationship_proof: "",
+    // Booking Drop
+    drop_reason: "",
+    drop_remarks: ""
   },
   reducers: {
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
@@ -282,6 +285,12 @@ const prebookingFormSlice = createSlice({
           break;
         case "INSURENCE_ADD_ONS":
           state.add_on_insurance = value;
+          break;
+        case "VEHICLE_TYPE":
+          state.vehicle_type = value;
+          break;
+        case "DROP_REASON":
+          state.drop_reason = value;
           break;
       }
     },
@@ -469,8 +478,8 @@ const prebookingFormSlice = createSlice({
         case "FAST_TAG":
           state.fast_tag = text;
           break;
-        case "ON_PRICE_ROAD":
-          state.on_road_price = text;
+        case "REGISTRATION_NUMBER":
+          state.registration_number = text;
           break;
       }
     },
@@ -503,9 +512,6 @@ const prebookingFormSlice = createSlice({
           break;
         case "ADDITIONAL_OFFER_2":
           state.additional_offer_2 = text;
-          break;
-        case "AFTER_DISCOUNT":
-          state.after_discount = text;
           break;
       }
     },
@@ -545,6 +551,14 @@ const prebookingFormSlice = createSlice({
           break;
         case "RELATIONSHIP_PROOF":
           state.relationship_proof = text;
+          break;
+      }
+    },
+    setBookingDropDetails: (state, action) => {
+      const { key, text } = action.payload;
+      switch (key) {
+        case "DROP_REMARKS":
+          state.drop_remarks = text;
           break;
       }
     },
@@ -641,7 +655,7 @@ const prebookingFormSlice = createSlice({
         state.color = dataObj.color ? dataObj.color : "";
         state.fuel_type = dataObj.fuel ? dataObj.fuel : "";
         state.transmission_type = dataObj.transimmisionType ? dataObj.transimmisionType : "";
-        state.model_drop_down_data_update_statu = "update";
+        state.model_drop_down_data_update_status = "update";
       }
     },
     updateFinancialData: (state, action) => {
@@ -749,6 +763,7 @@ export const {
   setOfferPriceDetails,
   setDropDownData,
   setDocumentUploadDetails,
+  setBookingDropDetails,
   setImagePicker,
   updateFuelAndTransmissionType,
   updateDmsContactOrAccountDtoData,

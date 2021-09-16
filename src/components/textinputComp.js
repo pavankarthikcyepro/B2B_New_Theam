@@ -4,7 +4,7 @@ import { TextInput, HelperText } from 'react-native-paper';
 import { Colors } from '../styles';
 import PropTypes from 'prop-types';
 
-const TextinputComp = ({ value, mode = 'flat', label, disabled, placeholder, error, errorMsg = "", multiline, numberOfLines, editable, keyboardType = 'default', isSecure = false, showRightIcon = false, maxLength = null, rightIconObj = {}, onChangeText, onRightIconPressed, style = {}, onPressIn }) => {
+const TextinputComp = ({ value, mode = 'flat', label, disabled, placeholder, error, errorMsg = "", multiline, numberOfLines, editable, keyboardType = 'default', isSecure = false, showRightIcon = false, maxLength = null, rightIconObj = {}, onChangeText, onRightIconPressed, style = {}, onPressIn, showLeftAffixText = false, leftAffixText = "" }) => {
 
     let rightIconComp = null;
     if (showRightIcon) {
@@ -13,6 +13,10 @@ const TextinputComp = ({ value, mode = 'flat', label, disabled, placeholder, err
         } else {
             rightIconComp = <TextInput.Icon name="eye-off-outline" color={Colors.GRAY} onPress={onRightIconPressed} />
         }
+    }
+    let leftText = null;
+    if (showLeftAffixText) {
+        leftText = <TextInput.Affix text={leftAffixText + " "} />
     }
 
     return (
@@ -36,6 +40,7 @@ const TextinputComp = ({ value, mode = 'flat', label, disabled, placeholder, err
                 editable={editable}
                 onChangeText={onChangeText}
                 secureTextEntry={isSecure}
+                left={leftText}
                 right={rightIconComp}
                 spellCheck={false}
                 theme={{ colors: { primary: Colors.GRAY, underlineColor: 'transparent' } }}

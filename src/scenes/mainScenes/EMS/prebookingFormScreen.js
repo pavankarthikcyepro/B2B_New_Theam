@@ -30,6 +30,7 @@ import {
   setOfferPriceDetails,
   setDropDownData,
   setDocumentUploadDetails,
+  setBookingDropDetails,
   setImagePicker,
   getPrebookingDetailsApi,
   getCustomerTypesApi,
@@ -50,9 +51,8 @@ import {
   DateSelectItem,
   DropDownSelectionItem
 } from "../../../pureComponents";
-import { ImagePickerComponent } from "../../../components";
-import { Checkbox, List } from "react-native-paper";
-import { Dropdown } from "sharingan-rn-modal-dropdown";
+import { ImagePickerComponent, SelectOtherVehicleComponant } from "../../../components";
+import { Checkbox, List, Button } from "react-native-paper";
 import * as AsyncStore from "../../../asyncStore";
 import {
   Salutation_Types,
@@ -65,7 +65,9 @@ import {
 } from "../../../jsonData/enquiryFormScreenJsonData";
 import {
   Payment_At_Types,
-  Booking_Payment_Types
+  Booking_Payment_Types,
+  Vehicle_Types,
+  Drop_reasons
 } from "../../../jsonData/prebookingFormScreenJsonData";
 import { AppNavigator } from "../../../navigations";
 
@@ -81,7 +83,7 @@ const TextAndAmountComp = ({
     <View style={styles.textAndAmountView} >
       <Text
         style={[
-          { fontSize: 14, fontWeight: "400", maxWidth: "70%" },
+          { fontSize: 14, fontWeight: "400", maxWidth: "70%", color: Colors.GRAY },
           titleStyle,
         ]}
       >
@@ -119,7 +121,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [selectedInsurencePrice, setSelectedInsurencePrice] = useState(0);
   const [selectedAddOnsPrice, setSelectedAddOnsPrice] = useState(0);
   const [selectedWarrentyPrice, setSelectedWarrentyPrice] = useState(0);
+  const [selectedPaidAccessoriesPrice, setSelectedPaidAccessoriesPrice] = useState(0);
   const [totalOnRoadPrice, setTotalOnRoadPrice] = useState(0);
+  const [totalOnRoadPriceAfterDiscount, setTotalOnRoadPriceAfterDiscount] = useState(0);
   const [priceInfomationData, setPriceInformationData] = useState({
     ex_showroom_price: 0,
     ex_showroom_price_csd: 0,
@@ -131,6 +135,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     fast_tag: 0,
     vehicle_road_tax: 0,
   })
+  const [isDropSelected, setIsDropSelected] = useState(false);
+
 
   useEffect(() => {
     setComponentAppear(true);
@@ -139,6 +145,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     setCarModelsDataFromBase();
     getPreBookingDetailsFromServer();
   }, []);
+
+  useEffect(() => {
+    calculateOnRoadPrice();
+  }, [priceInfomationData, selectedInsurencePrice, selectedAddOnsPrice, selectedWarrentyPrice, selectedPaidAccessoriesPrice, selector.vechicle_registration])
+
+  useEffect(() => {
+    calculateOnRoadPriceAfterDiscount();
+  }, [selector.consumer_offer, selector.exchange_offer, selector.corporate_offer, selector.promotional_offer, selector.cash_discount, selector.for_accessories, selector.additional_offer_1, selector.additional_offer_2]);
 
   const getAsyncstoreData = async () => {
     const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -198,10 +212,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   }, [selector.pre_booking_details_response])
 
   useEffect(() => {
-    if (selector.model_drop_down_data_update_statu === "update") {
+    if (selector.model_drop_down_data_update_status === "update") {
       updateVariantModelsData(selector.model, true, selector.varient);
     }
-  }, [selector.model_drop_down_data_update_statu]);
+  }, [selector.model_drop_down_data_update_status]);
 
   useEffect(() => {
     if (selector.vehicle_on_road_price_insurence_details_response) {
@@ -263,7 +277,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       }
 
       setPriceInformationData({ ...selector.vehicle_on_road_price_insurence_details_response });
-      calculateOnRoadPrice();
     }
   }, [selector.vehicle_on_road_price_insurence_details_response])
 
@@ -329,6 +342,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       case "INSURENCE_ADD_ONS":
         setDataForDropDown([...insurenceAddOnTypes]);
         setShowMultipleDropDownData(true);
+        break;
+      case "VEHICLE_TYPE":
+        setDataForDropDown([...Vehicle_Types]);
+        break;
+      case "DROP_REASON":
+        setDataForDropDown([...Drop_reasons]);
         break;
     }
     setDropDownKey(key);
@@ -400,15 +419,57 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     let totalPrice = 0;
     totalPrice += priceInfomationData.ex_showroom_price;
+    totalPrice += getLifeTax();
     totalPrice += priceInfomationData.registration_charges;
-    totalPrice += priceInfomationData.handling_charges;
-    totalPrice += priceInfomationData.essential_kit;
-    totalPrice += priceInfomationData.tcs_amount;
-
     totalPrice += selectedInsurencePrice;
     totalPrice += selectedAddOnsPrice;
     totalPrice += selectedWarrentyPrice;
+    totalPrice += priceInfomationData.handling_charges;
+    totalPrice += priceInfomationData.essential_kit;
+    totalPrice += getTcsAmount();
+    totalPrice += selectedPaidAccessoriesPrice;
+    totalPrice += priceInfomationData.fast_tag;
     setTotalOnRoadPrice(totalPrice);
+    setTotalOnRoadPriceAfterDiscount(totalPrice);
+  }
+
+  const calculateOnRoadPriceAfterDiscount = () => {
+
+    let totalPrice = totalOnRoadPrice;
+    totalPrice -= Number(selector.consumer_offer);
+    totalPrice -= Number(selector.exchange_offer);
+    totalPrice -= Number(selector.corporate_offer);
+    totalPrice -= Number(selector.promotional_offer);
+    totalPrice -= Number(selector.cash_discount);
+    totalPrice -= Number(selector.for_accessories);
+    totalPrice -= Number(selector.additional_offer_1);
+    totalPrice -= Number(selector.additional_offer_2);
+    setTotalOnRoadPriceAfterDiscount(totalPrice);
+  }
+
+  const updatePaidAccessroies = (totalPrice) => {
+    setSelectedPaidAccessoriesPrice(totalPrice);
+  }
+
+  const getLifeTax = () => {
+    switch (selector.enquiry_segment) {
+      case 'Handicapped':
+        return selector.vechicle_registration === true ? 1000 : 500;
+      case 'Personal':
+        return selector.vechicle_registration === true ? priceInfomationData.ex_showroom_price * 0.14 : priceInfomationData.ex_showroom_price * 0.12;
+      default:
+        return priceInfomationData.ex_showroom_price * 0.14;
+    }
+  }
+
+  const getTcsAmount = () => {
+    let amount = 0;
+    if (priceInfomationData.ex_showroom_price > 1000000) {
+      amount = priceInfomationData.ex_showroom_price * (priceInfomationData.tcs_percentage / 100);
+    } else {
+      amount = priceInfomationData.tcs_amount;
+    }
+    return amount
   }
 
   const updateAccordian = (selectedIndex) => {
@@ -455,11 +516,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           }
           else if (dropDownKey === "INSURANCE_TYPE") {
             setSelectedInsurencePrice(item.cost);
-            calculateOnRoadPrice();
           }
           else if (dropDownKey === "WARRANTY") {
             setSelectedWarrentyPrice(Number(item.cost));
-            calculateOnRoadPrice();
           }
           else if (dropDownKey === "INSURENCE_ADD_ONS") {
             let totalCost = 0;
@@ -472,7 +531,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             }
             setSelectedAddOnsPrice(totalCost);
             dispatch(setDropDownData({ key: dropDownKey, value: names, id: "" }));
-            calculateOnRoadPrice();
             return
           }
           dispatch(setDropDownData({ key: dropDownKey, value: item.name, id: item.id }));
@@ -1157,17 +1215,22 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               <List.Accordion
                 id={"6"}
                 title={"Price Confirmation"}
+                description={rupeeSymbol + " " + totalOnRoadPrice.toFixed(2)}
                 titleStyle={{
                   color: openAccordian === "6" ? Colors.WHITE : Colors.BLACK,
                   fontSize: 16,
                   fontWeight: "600",
+                }}
+                descriptionStyle={{
+                  color: openAccordian === "6" ? Colors.WHITE : Colors.RED,
+                  paddingTop: 5, fontSize: 16, fontWeight: "600"
                 }}
                 style={{
                   backgroundColor:
                     openAccordian === "6" ? Colors.RED : Colors.WHITE,
                 }}
               >
-                <TextAndAmountComp title={"Ex-Showroom Price:"} amount={priceInfomationData.ex_showroom_price} />
+                <TextAndAmountComp title={"Ex-Showroom Price:"} amount={priceInfomationData.ex_showroom_price.toFixed(2)} />
                 <View style={styles.radioGroupBcVw}>
                   <Checkbox.Android
                     style={{ margin: 0, padding: 0 }}
@@ -1176,25 +1239,45 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     status={
                       selector.vechicle_registration ? "checked" : "unchecked"
                     }
-                    onPress={() =>
+                    onPress={() => {
                       dispatch(
                         setPriceConformationDetails({
                           key: "VECHILE_REGISTRATION",
                           text: "",
                         })
                       )
-                    }
+                    }}
                   />
                   <Text style={styles.checkboxAddText}>
                     {"Any Other Vehicle Registration on Your Name"}
                   </Text>
                 </View>
-                <TextAndAmountComp title={"Life Tax:"} amount={"0.00"} />
+
+                {selector.vechicle_registration ? <View>
+                  <DropDownSelectionItem
+                    label={"Vehicle Type"}
+                    value={selector.vehicle_type}
+                    onPress={() => showDropDownModelMethod("VEHICLE_TYPE", "Vehicle Type")}
+                  />
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.registration_number}
+                    label={"Reg. No"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setPriceConformationDetails({ key: "REGISTRATION_NUMBER", text: text })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                </View> : null}
+
+                <TextAndAmountComp title={"Life Tax:"} amount={getLifeTax().toFixed(2)} />
                 <Text style={GlobalStyle.underline}></Text>
 
                 <TextAndAmountComp
                   title={"Registration Charges:"}
-                  amount={priceInfomationData.registration_charges}
+                  amount={priceInfomationData.registration_charges.toFixed(2)}
                 />
                 <Text style={GlobalStyle.underline}></Text>
 
@@ -1206,7 +1289,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       onPress={() => showDropDownModelMethod("INSURANCE_TYPE", "Insurance Type")}
                     />
                   </View>
-                  <Text style={styles.shadowText}>{rupeeSymbol + " " + selectedInsurencePrice}</Text>
+                  <Text style={styles.shadowText}>{rupeeSymbol + " " + selectedInsurencePrice.toFixed(2)}</Text>
                 </View>
 
                 <View style={styles.symbolview}>
@@ -1217,7 +1300,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       onPress={() => showDropDownModelMethod("INSURENCE_ADD_ONS", "Add-on Insurance")}
                     />
                   </View>
-                  <Text style={styles.shadowText}>{rupeeSymbol + " " + selectedAddOnsPrice}</Text>
+                  <Text style={styles.shadowText}>{rupeeSymbol + " " + selectedAddOnsPrice.toFixed(2)}</Text>
                 </View>
 
                 <View style={styles.symbolview}>
@@ -1228,33 +1311,33 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       onPress={() => showDropDownModelMethod("WARRANTY", "Warranty")}
                     />
                   </View>
-                  <Text style={styles.shadowText}>{rupeeSymbol + " " + selectedWarrentyPrice}</Text>
+                  <Text style={styles.shadowText}>{rupeeSymbol + " " + selectedWarrentyPrice.toFixed(2)}</Text>
                 </View>
                 <Text style={GlobalStyle.underline}></Text>
 
-                <TextAndAmountComp title={"Handling Charges:"} amount={priceInfomationData.handling_charges} />
+                <TextAndAmountComp title={"Handling Charges:"} amount={priceInfomationData.handling_charges.toFixed(2)} />
                 <Text style={GlobalStyle.underline}></Text>
 
-                <TextAndAmountComp title={"Essential Kit:"} amount={priceInfomationData.essential_kit} />
+                <TextAndAmountComp title={"Essential Kit:"} amount={priceInfomationData.essential_kit.toFixed(2)} />
                 <Text style={GlobalStyle.underline}></Text>
 
                 <TextAndAmountComp
                   title={"TCS(>10Lakhs -> %):"}
-                  amount={"0.00"}
+                  amount={getTcsAmount().toFixed(2)}
                 />
                 <Text style={GlobalStyle.underline}></Text>
 
-                <Pressable onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.paidAccessories, { accessorylist: selector.paid_accessories_list })}>
-                  <TextAndAmountComp title={"Paid Accessories:"} amount={"0.00"} />
+                <Pressable onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.paidAccessories, { accessorylist: selector.paid_accessories_list, callback: updatePaidAccessroies })}>
+                  <TextAndAmountComp title={"Paid Accessories:"} amount={selectedPaidAccessoriesPrice.toFixed(2)} />
                 </Pressable>
                 <Text style={GlobalStyle.underline}></Text>
 
-                <TextAndAmountComp title={"Fast Tag:"} amount={priceInfomationData.fast_tag} />
+                <TextAndAmountComp title={"Fast Tag:"} amount={priceInfomationData.fast_tag.toFixed(2)} />
                 <Text style={GlobalStyle.underline}></Text>
 
                 <TextAndAmountComp
                   title={"On Road Price:"}
-                  amount={totalOnRoadPrice}
+                  amount={totalOnRoadPrice.toFixed(2)}
                   titleStyle={{ fontSize: 18, fontWeight: "800" }}
                   amoutStyle={{ fontSize: 18, fontWeight: "800" }}
                 />
@@ -1266,10 +1349,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               <List.Accordion
                 id={"7"}
                 title={"Offer Price"}
+                description={rupeeSymbol + " " + totalOnRoadPriceAfterDiscount.toFixed(2)}
                 titleStyle={{
                   color: openAccordian === "7" ? Colors.WHITE : Colors.BLACK,
                   fontSize: 16,
                   fontWeight: "600",
+                }}
+                descriptionStyle={{
+                  color: openAccordian === "7" ? Colors.WHITE : Colors.RED,
+                  paddingTop: 5, fontSize: 16, fontWeight: "600"
                 }}
                 style={{
                   backgroundColor:
@@ -1277,9 +1365,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 }}
               >
                 <TextinputComp
-                  style={{ height: 65, width: "100%" }}
+                  style={styles.offerPriceTextInput}
                   label={"Consumer Offer:"}
                   value={selector.consumer_offer}
+                  showLeftAffixText={true}
+                  leftAffixText={rupeeSymbol}
                   onChangeText={(text) =>
                     dispatch(
                       setOfferPriceDetails({
@@ -1291,9 +1381,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 />
                 <Text style={GlobalStyle.underline}></Text>
                 <TextinputComp
-                  style={{ height: 65, width: "100%" }}
+                  style={styles.offerPriceTextInput}
                   label={"Exchange Offer:"}
                   value={selector.exchange_offer}
+                  showLeftAffixText={true}
+                  leftAffixText={rupeeSymbol}
                   onChangeText={(text) =>
                     dispatch(
                       setOfferPriceDetails({
@@ -1305,9 +1397,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 />
                 <Text style={GlobalStyle.underline}></Text>
                 <TextinputComp
-                  style={{ height: 65, width: "100%" }}
+                  style={styles.offerPriceTextInput}
                   label={"Coporate Offer:"}
                   value={selector.corporate_offer}
+                  showLeftAffixText={true}
+                  leftAffixText={rupeeSymbol}
                   onChangeText={(text) =>
                     dispatch(
                       setOfferPriceDetails({
@@ -1319,9 +1413,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 />
                 <Text style={GlobalStyle.underline}></Text>
                 <TextinputComp
-                  style={{ height: 65, width: "100%" }}
+                  style={styles.offerPriceTextInput}
                   label={"Promotional Offer:"}
                   value={selector.promotional_offer}
+                  showLeftAffixText={true}
+                  leftAffixText={rupeeSymbol}
                   onChangeText={(text) =>
                     dispatch(
                       setOfferPriceDetails({
@@ -1333,9 +1429,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 />
                 <Text style={GlobalStyle.underline}></Text>
                 <TextinputComp
-                  style={{ height: 65, width: "100%" }}
+                  style={styles.offerPriceTextInput}
                   label={"Cash Discount:"}
                   value={selector.cash_discount}
+                  showLeftAffixText={true}
+                  leftAffixText={rupeeSymbol}
                   onChangeText={(text) =>
                     dispatch(
                       setOfferPriceDetails({
@@ -1347,9 +1445,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 />
                 <Text style={GlobalStyle.underline}></Text>
                 <TextinputComp
-                  style={{ height: 65, width: "100%" }}
+                  style={styles.offerPriceTextInput}
                   label={"Foc Accessories:"}
                   value={selector.for_accessories}
+                  showLeftAffixText={true}
+                  leftAffixText={rupeeSymbol}
                   onChangeText={(text) =>
                     dispatch(
                       setOfferPriceDetails({
@@ -1361,9 +1461,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 />
                 <Text style={GlobalStyle.underline}></Text>
                 <TextinputComp
-                  style={{ height: 65, width: "100%" }}
+                  style={styles.offerPriceTextInput}
                   label={"Additional Offer 1:"}
                   value={selector.additional_offer_1}
+                  showLeftAffixText={true}
+                  leftAffixText={rupeeSymbol}
                   onChangeText={(text) =>
                     dispatch(
                       setOfferPriceDetails({
@@ -1375,9 +1477,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 />
                 <Text style={GlobalStyle.underline}></Text>
                 <TextinputComp
-                  style={{ height: 65, width: "100%" }}
+                  style={styles.offerPriceTextInput}
                   label={"Additional Offer 2:"}
                   value={selector.additional_offer_2}
+                  showLeftAffixText={true}
+                  leftAffixText={rupeeSymbol}
                   onChangeText={(text) =>
                     dispatch(
                       setOfferPriceDetails({
@@ -1391,7 +1495,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 <TextAndAmountComp
                   title={"On Road Price After Discount:"}
-                  amount={"0.00"}
+                  amount={totalOnRoadPriceAfterDiscount.toFixed(2)}
                   titleStyle={{ fontSize: 18, fontWeight: "800" }}
                   amoutStyle={{ fontSize: 18, fontWeight: "800" }}
                 />
@@ -1498,7 +1602,74 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
               </List.Accordion>
               <View style={styles.space}></View>
+              {isDropSelected ? (<View style={styles.space}></View>) : null}
+              {isDropSelected ? (
+                <List.Accordion
+                  id={"10"}
+                  title={"PreBooking Drop Section"}
+                  titleStyle={{
+                    color: openAccordian === "10" ? Colors.WHITE : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={{
+                    backgroundColor:
+                      openAccordian === "10" ? Colors.RED : Colors.WHITE,
+                  }}
+                >
+                  <DropDownSelectionItem
+                    label={"Drop Reason"}
+                    value={selector.drop_reason}
+                    onPress={() => showDropDownModelMethod("DROP_REASON", "Drop Reason")}
+                  />
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.drop_remarks}
+                    label={"Remarks"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setBookingDropDetails({
+                          key: "DROP_REMARKS",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                </List.Accordion>
+              ) : null}
             </List.AccordionGroup>
+            {!isDropSelected && (
+              <View style={styles.actionBtnView}>
+                <Button
+                  mode="contained"
+                  style={{ width: 120 }}
+                  color={Colors.BLACK}
+                  labelStyle={{ textTransform: "none" }}
+                  onPress={() => setIsDropSelected(true)}
+                >
+                  Drop
+                </Button>
+                <Button
+                  mode="contained"
+                  color={Colors.RED}
+                  labelStyle={{ textTransform: "none" }}
+                  onPress={() => { }}
+                >
+                  SUBMIT
+                </Button>
+              </View>
+            )}
+            {isDropSelected && (<View style={styles.prebookingBtnView}>
+              <Button
+                mode="contained"
+                color={Colors.RED}
+                labelStyle={{ textTransform: "none" }}
+                onPress={() => { }}
+              >
+                Proceed To Cancellation
+              </Button>
+            </View>)}
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -1616,5 +1787,22 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     alignItems: "center",
     backgroundColor: Colors.WHITE
-  }
+  },
+  offerPriceTextInput: {
+    height: 55,
+    width: "100%"
+  },
+  actionBtnView: {
+    paddingTop: 20,
+    paddingBottom: 10,
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+  },
+  prebookingBtnView: {
+    marginTop: 20,
+    flexDirection: "row",
+    justifyContent: 'center',
+    alignItems: "center",
+  },
 });
