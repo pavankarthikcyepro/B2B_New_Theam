@@ -545,6 +545,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const proceedToCancelEnquiry = () => {
 
+    if (selector.drop_remarks.length === 0 || selector.drop_reason.length === 0) {
+      showToastRedAlert("Please enter details for drop")
+      return
+    }
+
     if (!selector.enquiry_details_response) {
       return
     }

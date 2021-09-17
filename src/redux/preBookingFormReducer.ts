@@ -11,6 +11,7 @@ import {
   Gender_Data_Obj,
 } from "../jsonData/enquiryFormScreenJsonData";
 import { convertTimeStampToDateString } from "../utils/helperFunctions";
+import { showToastRedAlert } from "../utils/toast";
 
 const dropDownData = [
   {
@@ -41,6 +42,16 @@ export const getPrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/
   return json;
 })
 
+export const updatePrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/updatePrebookingDetailsApi", async (payload, { rejectWithValue }) => {
+
+  const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getOnRoadPriceAndInsurenceDetailsApi", async (payload, { rejectWithValue }) => {
 
   const response = await client.get(URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(payload["varientId"], payload["vehicleId"]));
@@ -62,9 +73,39 @@ export const getPaidAccessoriesListApi = createAsyncThunk("PREBOONING_FORMS_SLIC
   return json;
 })
 
+export const dropPreBooingApi = createAsyncThunk("PREBOONING_FORMS_SLICE/dropPreBooingApi", async (payload, { rejectWithValue }) => {
+
+  const response = await client.post(URL.DROP_ENQUIRY(), payload);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const sendOnRoadPriceDetails = createAsyncThunk("PREBOONING_FORMS_SLICE/sendOnRoadPriceDetails", async (payload, { rejectWithValue }) => {
+
+  const response = await client.post(URL.SEND_ON_ROAD_PRICE_DETAILS(), payload);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 export const getCustomerTypesApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getCustomerTypesApi", async (universalId, { rejectWithValue }) => {
 
   const response = await client.get(URL.GET_CUSTOMER_TYPES());
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getOnRoadPriceDtoListApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getOnRoadPriceDtoListApi", async (leadId, { rejectWithValue }) => {
+
+  const response = await client.get(URL.GET_ON_ROAD_PRICE_DTO_LIST(leadId));
   const json = await response.json()
   if (!response.ok) {
     return rejectWithValue(json);
@@ -101,6 +142,9 @@ const prebookingFormSlice = createSlice({
     customer_types_response: null,
     vehicle_on_road_price_insurence_details_response: null,
     paid_accessories_list: [],
+    pre_booking_drop_response_status: null,
+    update_pre_booking_details_response: "",
+    on_road_price_dto_list_response: [],
 
     dropDownTitle: "",
     dropDownKeyId: "",
@@ -176,20 +220,12 @@ const prebookingFormSlice = createSlice({
     tentative_delivery_date: "",
     delivery_location: "",
     //Price Conformation
-    showroom_price: "",
     vechicle_registration: false,
     vehicle_type: "",
     registration_number: "",
-    life_tax: "",
-    registration_charges: "",
     insurance_type: "",
     add_on_insurance: "",
     warranty: "",
-    handling_charges: "",
-    essential_kit: "",
-    tcs: "",
-    paid_accessories: "",
-    fast_tag: "",
     //offerprice
     consumer_offer: "",
     exchange_offer: "",
@@ -209,6 +245,14 @@ const prebookingFormSlice = createSlice({
     drop_remarks: ""
   },
   reducers: {
+    clearState: (state, action) => {
+      state.pre_booking_details_response = null;
+      state.customer_types_response = null;
+      state.vehicle_on_road_price_insurence_details_response = null;
+      state.pre_booking_drop_response_status = null;
+      state.update_pre_booking_details_response = null;
+      state.on_road_price_dto_list_response = [];
+    },
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
       const { key, value, id } = action.payload;
       switch (key) {
@@ -448,35 +492,8 @@ const prebookingFormSlice = createSlice({
     ) => {
       const { key, text } = action.payload;
       switch (key) {
-        case "SHOWROOM_PRICE":
-          state.showroom_price = text;
-          break;
         case "VECHILE_REGISTRATION":
           state.vechicle_registration = !state.vechicle_registration;
-          break;
-        case "LIFE_TAX":
-          state.life_tax = text;
-          break;
-        case "RESGISTRATION_CHARGES":
-          state.registration_charges = text;
-          break;
-        case "ADD_ON_INSURANCE":
-          state.add_on_insurance = text;
-          break;
-        case "HANDLING_CHARGES":
-          state.handling_charges = text;
-          break;
-        case "ESSENTIAL_KIT":
-          state.essential_kit = text;
-          break;
-        case "TCS":
-          state.tcs = text;
-          break;
-        case "PAID_ACCSSORIES":
-          state.paid_accessories = text;
-          break;
-        case "FAST_TAG":
-          state.fast_tag = text;
           break;
         case "REGISTRATION_NUMBER":
           state.registration_number = text;
@@ -599,7 +616,6 @@ const prebookingFormSlice = createSlice({
       state.customer_preferred_date = convertTimeStampToDateString(customerPreferredDate, "DD/MM/YYYY");
       const tentativeDeliveryDate = dmsLeadDto.commitmentDeliveryTentativeDate ? dmsLeadDto.commitmentDeliveryTentativeDate : ""
       state.tentative_delivery_date = convertTimeStampToDateString(tentativeDeliveryDate, "DD/MM/YYYY");
-      state.delivery_location = dmsLeadDto.deliveryOccasion ? dmsLeadDto.deliveryOccasion : "";
     },
     updateDmsAddressData: (state, action) => {
 
@@ -683,32 +699,92 @@ const prebookingFormSlice = createSlice({
         state.booking_amount = dataObj.bookingAmount ? dataObj.bookingAmount.toString() : "";
         state.payment_at = dataObj.paymentAt ? dataObj.paymentAt : "";
         state.booking_payment_mode = dataObj.modeOfPayment ? dataObj.modeOfPayment : "";
+        state.delivery_location = dataObj.deliveryLocation ? dataObj.deliveryLocation : "";
+
       }
     }
   },
   extraReducers: (builder) => {
     builder.addCase(getPrebookingDetailsApi.fulfilled, (state, action) => {
-      console.log("S getPrebookingDetailsApi: ", JSON.stringify(action.payload));
+      //console.log("S getPrebookingDetailsApi: ", JSON.stringify(action.payload));
       if (action.payload.dmsEntity) {
         state.pre_booking_details_response = action.payload.dmsEntity;
       }
     })
     builder.addCase(getPrebookingDetailsApi.rejected, (state, action) => {
-      console.log("F getPrebookingDetailsApi: ", JSON.stringify(action.payload));
+      //console.log("F getPrebookingDetailsApi: ", JSON.stringify(action.payload));
+    })
+    builder.addCase(updatePrebookingDetailsApi.fulfilled, (state, action) => {
+      //console.log("S updatePrebookingDetailsApi: ", JSON.stringify(action.payload));
+      if (action.payload.success == true) {
+        state.update_pre_booking_details_response = "success";
+      }
+    })
+    builder.addCase(updatePrebookingDetailsApi.rejected, (state, action) => {
+      //console.log("F updatePrebookingDetailsApi: ", JSON.stringify(action.payload));
+      state.update_pre_booking_details_response = "failed";
     })
     builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.fulfilled, (state, action) => {
-      console.log("S getOnRoadPriceAndInsurenceDetailsApi: ", JSON.stringify(action.payload));
+      //console.log("S getOnRoadPriceAndInsurenceDetailsApi: ", JSON.stringify(action.payload));
       if (action.payload) {
         state.vehicle_on_road_price_insurence_details_response = action.payload;
       }
     })
     builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.rejected, (state, action) => {
-      console.log("F getOnRoadPriceAndInsurenceDetailsApi: ", JSON.stringify(action.payload));
+      //console.log("F getOnRoadPriceAndInsurenceDetailsApi: ", JSON.stringify(action.payload));
     })
+
     builder.addCase(getPaidAccessoriesListApi.fulfilled, (state, action) => {
-      console.log("S getPaidAccessoriesListApi: ", JSON.stringify(action.payload));
+      //console.log("S getPaidAccessoriesListApi: ", JSON.stringify(action.payload));
       if (action.payload.accessorylist) {
         state.paid_accessories_list = action.payload.accessorylist;
+      }
+    })
+    builder.addCase(dropPreBooingApi.fulfilled, (state, action) => {
+      //console.log("S dropPreBooingApi: ", JSON.stringify(action.payload));
+      if (action.payload.status === "SUCCESS") {
+        state.pre_booking_drop_response_status = "success";
+      }
+    })
+    builder.addCase(sendOnRoadPriceDetails.fulfilled, (state, action) => {
+
+      if (action.payload.success === false) {
+        showToastRedAlert(action.payload.errorMessage || "Something went wrong");
+        return;
+      }
+    })
+    builder.addCase(sendOnRoadPriceDetails.rejected, (state, action) => {
+      //console.log("F getOnRoadPriceAndInsurenceDetailsApi: ", JSON.stringify(action.payload));
+      showToastRedAlert("Something went wrong");
+    })
+    builder.addCase(getOnRoadPriceDtoListApi.fulfilled, (state, action) => {
+      console.log("S getOnRoadPriceDtoListApi: ", JSON.stringify(action.payload));
+      if (action.payload.dmsEntity) {
+        const dmsOnRoadPriceDtoList = action.payload.dmsEntity.dmsOnRoadPriceDtoList;
+        state.on_road_price_dto_list_response = dmsOnRoadPriceDtoList;
+        if (dmsOnRoadPriceDtoList.length > 0) {
+          const dataObj = dmsOnRoadPriceDtoList[0];
+
+          state.insurance_type = dataObj.insuranceType ? dataObj.insuranceType : "";
+          state.warranty = dataObj.warrantyName ? dataObj.warrantyName : "";
+
+          if (dataObj.insuranceAddonData && dataObj.insuranceAddonData.length > 0) {
+            let addOnNames = "";
+            dataObj.insuranceAddonData.forEach((element, index) => {
+              addOnNames += element.insuranceAddonName + ((index + 1) < dataObj.length ? ", " : "");
+            });
+            state.add_on_insurance + addOnNames;
+          }
+
+          state.consumer_offer = dataObj.specialScheme ? dataObj.specialScheme.toString() : "";
+          state.exchange_offer = dataObj.exchangeOffers ? dataObj.exchangeOffers.toString() : "";
+          state.corporate_offer = dataObj.corporateOffer ? dataObj.corporateOffer.toString() : "";
+          state.promotional_offer = dataObj.promotionalOffers ? dataObj.promotionalOffers.toString() : "";
+          state.cash_discount = dataObj.cashDiscount ? dataObj.cashDiscount.toString() : "";
+          state.for_accessories = dataObj.focAccessories ? dataObj.focAccessories.toString() : "";
+          state.additional_offer_1 = dataObj.additionalOffer1 ? dataObj.additionalOffer1.toString() : "";
+          state.additional_offer_2 = dataObj.additionalOffer2 ? dataObj.additionalOffer2.toString() : "";
+        }
       }
     })
     builder.addCase(getCustomerTypesApi.fulfilled, (state, action) => {
@@ -752,6 +828,7 @@ const dateSelected = (isoDate) => {
 };
 
 export const {
+  clearState,
   setDatePicker,
   updateSelectedDate,
   setCustomerDetails,

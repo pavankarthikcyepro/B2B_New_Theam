@@ -64,6 +64,13 @@ const URL = {
     },
     GET_PAID_ACCESSORIES_LIST: (orgId) => {
         return inventory_url + `/inventory/accessories/${orgId}?pageNo=0&pageSize=1000`
+    },
+    GET_ON_ROAD_PRICE_DTO_LIST: (leadId) => {
+        return sales_url + `/on-road-price/lead/${leadId}`
+    },
+    SEND_ON_ROAD_PRICE_DETAILS: () => sales_url + "/on-road-price",
+    GET_ALL_OFFERS: (varientId, vehicleId) => {
+        return ops_url + "/api/allofferdetail" + `?varientId=${varientId}&vehicleId=${vehicleId}`
     }
 }
 

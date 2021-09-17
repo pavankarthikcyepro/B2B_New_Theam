@@ -19,6 +19,7 @@ import {
   DatePickerComponent,
 } from "../../../components";
 import {
+  clearState,
   setDatePicker,
   setCustomerDetails,
   updateSelectedDate,
@@ -42,7 +43,10 @@ import {
   updateFinancialData,
   updateBookingPaymentData,
   getOnRoadPriceAndInsurenceDetailsApi,
-  getPaidAccessoriesListApi
+  getPaidAccessoriesListApi,
+  dropPreBooingApi,
+  updatePrebookingDetailsApi,
+  getOnRoadPriceDtoListApi
 } from "../../../redux/preBookingFormReducer";
 import {
   RadioTextItem,
@@ -70,6 +74,8 @@ import {
   Drop_reasons
 } from "../../../jsonData/prebookingFormScreenJsonData";
 import { AppNavigator } from "../../../navigations";
+import { getPreBookingData } from "../../../redux/preBookingReducer";
+import { showToastRedAlert } from "../../../utils/toast";
 
 const rupeeSymbol = "\u20B9";
 
@@ -136,6 +142,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     vehicle_road_tax: 0,
   })
   const [isDropSelected, setIsDropSelected] = useState(false);
+  const [typeOfActionDispatched, setTypeOfActionDispatched] = useState("");
+  const [selectedPaidAccessories, setSelectedPaidAccessories] = useState([]);
 
 
   useEffect(() => {
@@ -190,6 +198,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         dmsContactOrAccountDto = selector.pre_booking_details_response.dmsContactDto;
       }
       const dmsLeadDto = selector.pre_booking_details_response.dmsLeadDto;
+      if (dmsLeadDto) {
+        dispatch(getOnRoadPriceDtoListApi(dmsLeadDto.id))
+      }
 
       // Update dmsContactOrAccountDto
       dispatch(updateDmsContactOrAccountDtoData(dmsContactOrAccountDto));
@@ -203,8 +214,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       dispatch(updateFinancialData(dmsLeadDto.dmsfinancedetails));
       // // Update Booking Payment Data
       dispatch(updateBookingPaymentData(dmsLeadDto.dmsBooking));
-      // // Update Additional ore Replacement Buyer Data
-      // dispatch(updateAdditionalOrReplacementBuyerData(dmsLeadDto.dmsExchagedetails));
       // // Update Attachment details
       // saveAttachmentDetailsInLocalObject(dmsLeadDto.dmsAttachments);
       // dispatch(updateDmsAttachmentDetails(dmsLeadDto.dmsAttachments));
@@ -216,6 +225,41 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       updateVariantModelsData(selector.model, true, selector.varient);
     }
   }, [selector.model_drop_down_data_update_status]);
+
+  useEffect(() => {
+    if (selector.update_pre_booking_details_response === "success") {
+      if (typeOfActionDispatched === "DROP_ENQUIRY") {
+        showToastSucess("Successfully Pre-Booking Dropped");
+        getPreBookingListFromServer();
+      } else if (typeOfActionDispatched === "UPDATE_ENQUIRY") {
+        showToastSucess("Successfully Pre-Booking Updated");
+      }
+      dispatch(clearState());
+      navigation.goBack();
+    }
+  }, [selector.update_pre_booking_details_response]);
+
+  const getPreBookingListFromServer = async () => {
+    if (userData.employeeId) {
+      let endUrl = "?limit=10&offset=" + "0" + "&status=PREBOOKING&empId=" + empId;
+      dispatch(getPreBookingData(endUrl));
+    }
+  }
+
+  useEffect(() => {
+    if (selector.on_road_price_dto_list_response.length > 0) {
+      const dmsOnRoadPriceDtoObj = selector.on_road_price_dto_list_response[0];
+      // setSelectedInsurencePrice(dmsOnRoadPriceDtoObj.)
+      setSelectedWarrentyPrice(dmsOnRoadPriceDtoObj.warrantyAmount);
+      if (dmsOnRoadPriceDtoObj.insuranceAddonData && dmsOnRoadPriceDtoObj.insuranceAddonData.length > 0) {
+        let addOnPrice = 0;
+        dmsOnRoadPriceDtoObj.insuranceAddonData.forEach((element, index) => {
+          addOnPrice += element.insuranceAmount;
+        });
+        setSelectedAddOnsPrice(addOnPrice);
+      }
+    }
+  }, [selector.on_road_price_dto_list_response])
 
   useEffect(() => {
     if (selector.vehicle_on_road_price_insurence_details_response) {
@@ -447,6 +491,239 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     setTotalOnRoadPriceAfterDiscount(totalPrice);
   }
 
+  const submitClicked = () => {
+
+    if (!selector.pre_booking_details_response) {
+      return
+    }
+
+    let dmsContactOrAccountDto = {};
+    let dmsLeadDto = {};
+    let formData;
+
+    const dmsEntity = selector.pre_booking_details_response;
+    if (dmsEntity.hasOwnProperty('dmsContactDto'))
+      dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsContactDto);
+    else if (dmsEntity.hasOwnProperty('dmsAccountDto'))
+      dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsAccountDto);
+
+    if (dmsEntity.hasOwnProperty('dmsLeadDto'))
+      dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
+
+    if (selector.pre_booking_details_response.hasOwnProperty('dmsContactDto')) {
+      formData = {
+        "dmsContactDto": dmsContactOrAccountDto,
+        "dmsLeadDto": dmsLeadDto
+      }
+    } else {
+      formData = {
+        "dmsAccountDto": dmsContactOrAccountDto,
+        "dmsLeadDto": dmsLeadDto
+      }
+    }
+
+
+  }
+
+  const mapContactOrAccountDto = (prevData) => {
+
+    let dataObj = { ...prevData };
+    dataObj.salutation = selector.salutaion;
+    dataObj.firstName = selector.firstName;
+    dataObj.lastName = selector.lastName;
+    dataObj.phone = selector.mobile;
+    dataObj.email = selector.email;
+    dataObj.gender = selector.gender;
+    dataObj.dateOfBirth = convertDateStringToMillisecondsUsingMoment(selector.dateOfBirth);
+    dataObj.age = selector.age;
+    dataObj.customerType = selector.customer_type;
+    return dataObj;
+  }
+
+  const mapLeadDto = (prevData) => {
+
+    let dataObj = { ...prevData };
+    dataObj.enquirySegment = selector.enquiry_segment;
+    dataObj.maritalStatus = selector.marital_status;
+    dataObj.occasion = selector.occasion;
+    dataObj.commitmentDeliveryPreferredDate = convertDateStringToMillisecondsUsingMoment(selector.customer_preferred_date);
+    dataObj.commitmentDeliveryTentativeDate = convertDateStringToMillisecondsUsingMoment(selector.tentative_delivery_date);
+
+    dataObj.leadStatus = 'SENTFORAPPROVAL';
+    dataObj.leadStage = "PREBOOKING";
+    dataObj.dmsAddresses = mapDMSAddress(dataObj.dmsAddresses);
+    dataObj.dmsLeadProducts = mapLeadProducts(dataObj.dmsLeadProducts);
+    dataObj.dmsfinancedetails = mapDmsFinanceDetails(dataObj.dmsfinancedetails);
+    dataObj.dmsBooking = mapDmsBookingDetails(dataObj.dmsBooking, dataObj.id);
+    dataObj.dmsAttachments = mapDmsAttachments(dataObj.dmsAttachments);
+    return dataObj;
+  }
+
+  const mapDMSAddress = (prevDmsAddresses) => {
+
+    let dmsAddresses = [...prevDmsAddresses];
+    if (dmsAddresses.length == 2) {
+      dmsAddresses.forEach((address, index) => {
+        let dataObj = { ...address };
+        if (address.addressType === 'Communication') {
+
+          dataObj.pincode = selector.pincode;
+          dataObj.houseNo = selector.house_number;
+          dataObj.street = selector.street_name;
+          dataObj.village = selector.village;
+          dataObj.city = selector.city;
+          dataObj.district = selector.district;
+          dataObj.state = selector.state;
+          dataObj.urban = selector.urban_or_rural === 1 ? true : false;
+          dataObj.rural = selector.urban_or_rural === 2 ? true : false;
+
+        } else if (address.addressType === 'Permanent') {
+
+          dataObj.pincode = selector.p_pincode;
+          dataObj.houseNo = selector.p_houseNum;
+          dataObj.street = selector.p_streetName;
+          dataObj.village = selector.p_village;
+          dataObj.city = selector.p_city;
+          dataObj.district = selector.p_district;
+          dataObj.state = selector.p_state;
+          dataObj.urban = selector.p_urban_or_rural === 1 ? true : false;
+          dataObj.rural = selector.p_urban_or_rural === 2 ? true : false;
+        }
+        dmsAddresses[index] = dataObj;
+      });
+    }
+    return dmsAddresses;
+  }
+
+  const mapLeadProducts = (prevDmsLeadProducts) => {
+
+    let dmsLeadProducts = [...prevDmsLeadProducts];
+    if (dmsLeadProducts.length > 0) {
+      const dataObj = { ...dmsLeadProducts[0] };
+      dataObj.model = selector.model;
+      dataObj.variant = selector.varient;
+      dataObj.color = selector.color;
+      dataObj.fuel = selector.fuel_type;
+      dataObj.transimmisionType = selector.transmission_type;
+      dmsLeadProducts[0] = dataObj;
+    }
+    return dmsLeadProducts;
+  }
+
+  const mapDmsFinanceDetails = (prevDmsFinancedetails) => {
+
+    let dmsfinancedetails = [...prevDmsFinancedetails];
+    if (dmsfinancedetails.length > 0) {
+      const dataObj = { ...dmsfinancedetails[0] };
+      dataObj.financeType = selector.retail_finance;
+      dataObj.financeCategory = selector.finance_category;
+      dataObj.downPayment = selector.down_payment;
+      dataObj.loanAmount = selector.loan_amount ? Number(selector.loan_amount) : null;
+      dataObj.rateOfInterest = selector.rate_of_interest;
+      dataObj.expectedTenureYears = selector.loan_of_tenure;
+      dataObj.emi = selector.emi;
+      dataObj.annualIncome = selector.approx_annual_income;
+      dataObj.location = selector.location;
+      if (selector.retail_finance === "In House") {
+        dataObj.financeCompany = selector.bank_or_finance;
+      } else if (selector.retail_finance === "Out House") {
+        dataObj.financeCompany = selector.bank_or_finance_name;
+      } else if (selector.retail_finance === "Leashing") {
+        dataObj.financeCompany = selector.leashing_name;
+      }
+      dmsfinancedetails[0] = dataObj;
+    }
+    return dmsfinancedetails;
+  }
+
+  const mapDmsBookingDetails = (preDmsBooking, leadId) => {
+    let dmsBooking = { ...preDmsBooking };
+    dmsBooking.id = dmsBooking.id ? dmsBooking.id : 0;
+    dmsBooking.leadId = leadId;
+    dmsBooking.bookingAmount = Number(selector.booking_amount)
+    dmsBooking.paymentAt = selector.payment_at;
+    dmsBooking.modeOfPayment = selector.booking_payment_mode;
+    dmsBooking.deliveryLocation = selector.delivery_location;
+    return dmsBooking;
+  }
+
+  const mapOnRoadPriceTable = () => {
+
+    let postOnRoadPriceTable = {};
+    postOnRoadPriceTable.additionalOffer1 = selector.additional_offer_1;
+    postOnRoadPriceTable.additionalOffer2 = selector.additional_offer_2;
+    postOnRoadPriceTable.cashDiscount = selector.cash_discount;
+    postOnRoadPriceTable.corporateCheck = "";
+    postOnRoadPriceTable.corporateName = "";
+    postOnRoadPriceTable.corporateOffer = selector.corporate_offer;
+    postOnRoadPriceTable.essentialKit = priceInfomationData.essential_kit;
+    postOnRoadPriceTable.exShowroomPrice = priceInfomationData.ex_showroom_price;
+    postOnRoadPriceTable.offerData = [];
+    postOnRoadPriceTable.focAccessories = this.PreBookingForm.controls.focAccessories.value;
+    postOnRoadPriceTable.handlingCharges = priceInfomationData.handling_charges;
+    postOnRoadPriceTable.id = postOnRoadPriceTable.id ? postOnRoadPriceTable.id : 0;
+    postOnRoadPriceTable.insuranceAddonData = selectedPaidAccessories;
+    postOnRoadPriceTable.insuranceAmount = selectedInsurencePrice;
+    postOnRoadPriceTable.insuranceType = selector.insurance_type;
+    postOnRoadPriceTable.lead_id = selector.pre_booking_details_response.dmsLeadDto.id;
+    postOnRoadPriceTable.lifeTax = getLifeTax();
+    postOnRoadPriceTable.onRoadPrice = totalOnRoadPrice;
+    postOnRoadPriceTable.finalPrice = totalOnRoadPriceAfterDiscount;
+    postOnRoadPriceTable.promotionalOffers = selector.promotional_offer;
+    postOnRoadPriceTable.registrationCharges = priceInfomationData.registration_charges;
+    postOnRoadPriceTable.specialScheme = selector.consumer_offer;
+    postOnRoadPriceTable.exchangeOffers = selector.exchange_offer;
+    postOnRoadPriceTable.tcs = getTcsAmount();
+    postOnRoadPriceTable.warrantyAmount = selectedWarrentyPrice;
+    postOnRoadPriceTable.warrantyName = selector.warranty;
+    return postOnRoadPriceTable;
+  }
+
+  const proceedToCancelPreBooking = () => {
+
+    if (selector.drop_remarks.length === 0 || selector.drop_reason.length === 0) {
+      showToastRedAlert("Please enter details for drop")
+      return
+    }
+
+    if (!selector.pre_booking_details_response) {
+      return
+    }
+
+    let enquiryDetailsObj = { ...selector.pre_booking_details_response };
+    let dmsLeadDto = { ...enquiryDetailsObj.dmsLeadDto };
+    dmsLeadDto.leadStage = "DROPPED";
+    enquiryDetailsObj.dmsLeadDto = dmsLeadDto;
+
+    let leadId = selector.pre_booking_details_response.dmsLeadDto.id;
+    if (!leadId) {
+      showToast("lead id not found")
+      return
+    }
+
+    const payload = {
+      "dmsLeadDropInfo": {
+        "additionalRemarks": selector.drop_remarks,
+        "branchId": userData.branchId,
+        "brandName": "",
+        "dealerName": "",
+        "leadId": leadId,
+        "crmUniversalId": universalId,
+        "lostReason": selector.drop_reason,
+        "organizationId": userData.orgId,
+        "otherReason": "",
+        "droppedBy": userData.employeeId,
+        "location": "",
+        "model": "",
+        "stage": "PREBOOKING",
+        "status": "PREBOOKING"
+      }
+    }
+    setTypeOfActionDispatched("DROP_ENQUIRY");
+    dispatch(dropPreBooingApi(payload));
+    dispatch(updatePrebookingDetailsApi(enquiryDetailsObj));
+  }
+
   const updatePaidAccessroies = (totalPrice) => {
     setSelectedPaidAccessoriesPrice(totalPrice);
   }
@@ -523,13 +800,16 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           else if (dropDownKey === "INSURENCE_ADD_ONS") {
             let totalCost = 0;
             let names = "";
+            let paidAccessories = [];
             if (item.length > 0) {
               item.forEach((obj, index) => {
                 totalCost += Number(obj.cost);
                 names += obj.name + ((index + 1) < item.length ? ", " : "");
+                paidAccessories.push({ insuranceAmount: obj.cost, insuranceAddonName: obj.name })
               })
             }
             setSelectedAddOnsPrice(totalCost);
+            setSelectedPaidAccessories([...paidAccessories]);
             dispatch(setDropDownData({ key: dropDownKey, value: names, id: "" }));
             return
           }
@@ -1654,7 +1934,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   mode="contained"
                   color={Colors.RED}
                   labelStyle={{ textTransform: "none" }}
-                  onPress={() => { }}
+                  onPress={submitClicked}
                 >
                   SUBMIT
                 </Button>
@@ -1665,7 +1945,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 mode="contained"
                 color={Colors.RED}
                 labelStyle={{ textTransform: "none" }}
-                onPress={() => { }}
+                onPress={proceedToCancelPreBooking}
               >
                 Proceed To Cancellation
               </Button>
