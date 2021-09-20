@@ -145,6 +145,7 @@ const prebookingFormSlice = createSlice({
     pre_booking_drop_response_status: null,
     update_pre_booking_details_response: "",
     on_road_price_dto_list_response: [],
+    send_onRoad_price_details_response: null,
 
     dropDownTitle: "",
     dropDownKeyId: "",
@@ -252,6 +253,7 @@ const prebookingFormSlice = createSlice({
       state.pre_booking_drop_response_status = null;
       state.update_pre_booking_details_response = null;
       state.on_road_price_dto_list_response = [];
+      state.send_onRoad_price_details_response = null;
     },
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
       const { key, value, id } = action.payload;
@@ -609,6 +611,8 @@ const prebookingFormSlice = createSlice({
         state.customer_types_data = state.customer_types_response[state.enquiry_segment.toLowerCase()];
       }
       state.marital_status = dmsLeadDto.maritalStatus ? dmsLeadDto.maritalStatus : "";
+      state.vehicle_type = dmsLeadDto.otherVehicleRcNo ? dmsLeadDto.otherVehicleRcNo : "";
+      state.registration_number = dmsLeadDto.otherVehicleType ? dmsLeadDto.otherVehicleType : "";
 
       // Commitment
       state.occasion = dmsLeadDto.occasion ? dmsLeadDto.occasion : "";
@@ -700,7 +704,7 @@ const prebookingFormSlice = createSlice({
         state.payment_at = dataObj.paymentAt ? dataObj.paymentAt : "";
         state.booking_payment_mode = dataObj.modeOfPayment ? dataObj.modeOfPayment : "";
         state.delivery_location = dataObj.deliveryLocation ? dataObj.deliveryLocation : "";
-
+        state.vechicle_registration = dataObj.otherVehicle ? dataObj.otherVehicle : false;
       }
     }
   },
@@ -715,13 +719,13 @@ const prebookingFormSlice = createSlice({
       //console.log("F getPrebookingDetailsApi: ", JSON.stringify(action.payload));
     })
     builder.addCase(updatePrebookingDetailsApi.fulfilled, (state, action) => {
-      //console.log("S updatePrebookingDetailsApi: ", JSON.stringify(action.payload));
+      console.log("S updatePrebookingDetailsApi: ", JSON.stringify(action.payload));
       if (action.payload.success == true) {
         state.update_pre_booking_details_response = "success";
       }
     })
     builder.addCase(updatePrebookingDetailsApi.rejected, (state, action) => {
-      //console.log("F updatePrebookingDetailsApi: ", JSON.stringify(action.payload));
+      console.log("F updatePrebookingDetailsApi: ", JSON.stringify(action.payload));
       state.update_pre_booking_details_response = "failed";
     })
     builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.fulfilled, (state, action) => {
@@ -747,10 +751,12 @@ const prebookingFormSlice = createSlice({
       }
     })
     builder.addCase(sendOnRoadPriceDetails.fulfilled, (state, action) => {
-
+      console.log("S sendOnRoadPriceDetails: ", JSON.stringify(action.payload));
       if (action.payload.success === false) {
         showToastRedAlert(action.payload.errorMessage || "Something went wrong");
         return;
+      } else if (action.payload.success === true) {
+        state.send_onRoad_price_details_response = action.payload.dmsEntity.dmsOnRoadPriceDto;
       }
     })
     builder.addCase(sendOnRoadPriceDetails.rejected, (state, action) => {

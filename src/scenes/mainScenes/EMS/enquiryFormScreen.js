@@ -478,7 +478,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     let dmsAttachments = [...prevDmsAttachments];
     if (dmsAttachments.length > 0) {
       dmsAttachments.forEach((obj, index) => {
-        const item = uploadedImagesDataObj[dataObj.documentType];
+        const item = uploadedImagesDataObj[obj.documentType];
         const object = formatAttachment({ ...obj }, item, index, obj.documentType);
         dmsAttachments[index] = object;
       })

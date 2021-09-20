@@ -32,14 +32,18 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
     }
 
     const addSelected = () => {
-        let totalPrice = 0;
-        tableData.forEach((item) => {
+        let itemSelected = false;
+        for (const item of tableData) {
             if (item.selected) {
-                totalPrice += item.cost;
+                itemSelected = true
+                break;
             }
-        })
-        route.params.callback(totalPrice);
-        navigation.goBack();
+        }
+
+        if (itemSelected) {
+            route.params.callback(tableData);
+            navigation.goBack();
+        }
     }
 
     return (
