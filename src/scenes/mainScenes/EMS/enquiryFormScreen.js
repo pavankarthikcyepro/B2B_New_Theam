@@ -58,7 +58,8 @@ import {
   dropEnquiryApi,
   updateEnquiryDetailsApi,
   uploadDocumentApi,
-  updateDmsAttachmentDetails
+  updateDmsAttachmentDetails,
+  getPendingTasksApi
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
@@ -519,8 +520,35 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     return object
   }
 
+  useEffect(() => {
+    if (selector.get_pending_tasks_response_status === "success") {
+      let pendingTaskNames = [];
+      selector.get_pending_tasks_response_list.forEach((element) => {
+        if (element.taskName === "Test Drive" && (element.taskStatus === "" || element.taskStatus === "ASSIGNED")) {
+          pendingTaskNames.push("Test Drive : Pending");
+        }
+        if (element.taskName === "Home Visit" && (element.taskStatus === "" || element.taskStatus === "ASSIGNED")) {
+          pendingTaskNames.push("Home Visit : Pending");
+        }
+        if (element.taskName === "Evaluation" && (element.taskStatus === "" || element.taskStatus === "ASSIGNED") && selector.enquiry_details_response.dmsLeadDto.buyerType === "Replacement Buyer") {
+          pendingTaskNames.push("Evaluation : Pending");
+        }
+        if (element.universalId === universalId && element.taskName === "Proceed to Pre Booking" && element.assignee.empId === userData.employeeId) {
+          this.lead360Service.selectedTaskObj = element;
+          // this.router.navigate(['/lead360']);
+          this.popCheck = true;
+          return;
+        }
+      })
+    }
+  }, [selector.get_pending_tasks_response_status])
+
   const proceedToPreBookingClicked = () => {
 
+    if (universalId) {
+      const endUrl = universalId + '?' + 'stage=Enquiry';
+      dispatch(getPendingTasksApi(endUrl));
+    }
   }
 
   useEffect(() => {

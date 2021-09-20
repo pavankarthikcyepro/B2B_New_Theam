@@ -47,6 +47,17 @@ export const getCustomerTypesApi = createAsyncThunk("ENQUIRY_FORM_SLICE/getCusto
   return json;
 })
 
+export const getPendingTasksApi = createAsyncThunk("ENQUIRY_FORM_SLICE/getPendingTasksApi", async (endUrl, { rejectWithValue }) => {
+
+  const url = URL.TASKS_PRE_ENQUIRY() + endUrl;
+  const response = await client.get(url);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 interface PersonalIntroModel {
   key: string;
   text: string;
@@ -73,6 +84,9 @@ const enquiryDetailsOverViewSlice = createSlice({
     showDatepicker: false,
     customer_types_data: [],
     enquiry_drop_response_status: "",
+    get_pending_tasks_response_status: "",
+    get_pending_tasks_response_list: [],
+
     //personal Intro
     gender_types_data: [],
     relation_types_data: [],
@@ -916,6 +930,17 @@ const enquiryDetailsOverViewSlice = createSlice({
       if (action.payload.status === "SUCCESS") {
         state.enquiry_drop_response_status = "success";
       }
+    })
+    builder.addCase(getPendingTasksApi.fulfilled, (state, action) => {
+      console.log("S getPendingTasksApi: ", JSON.stringify(action.payload));
+      if (action.payload.success === true) {
+        state.get_pending_tasks_response_status = "success";
+        state.get_pending_tasks_response_list = action.payload.dmsEntity;
+      }
+    })
+    builder.addCase(getPendingTasksApi.rejected, (state, action) => {
+      console.log("F getPendingTasksApi: ", JSON.stringify(action.payload));
+      state.get_pending_tasks_response_status = "failed";
     })
     builder.addCase(getCustomerTypesApi.fulfilled, (state, action) => {
       console.log("S getCustomerTypesApi: ", JSON.stringify(action.payload));
