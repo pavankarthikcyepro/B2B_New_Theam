@@ -35,6 +35,7 @@ import TestDriveScreen from "../scenes/mainScenes/MyTasks/testDriveScreen";
 import EnquiryFollowUpScreen from "../scenes/mainScenes/MyTasks/enquiryFollowUpScreen";
 import TestEnquiryFormScreen from "../scenes/mainScenes/EMS/testEnquiryFormScreen";
 import PaidAccessoriesScreen from "../scenes/mainScenes/EMS/paidAccessoriesScreen";
+import ProceedToPreBookingScreen from "../scenes/mainScenes/MyTasks/proceedToPreBookingScreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -105,7 +106,8 @@ export const EmsStackIdentifiers = {
   confirmedPreEnq: "CONFIRMED_PRE_ENQUIRY",
   detailsOverview: "DETAILS_OVERVIEW",
   preBookingForm: "PRE_BOOKING_FORM",
-  paidAccessories: "PAID_ACCESSORIES"
+  paidAccessories: "PAID_ACCESSORIES",
+  proceedToPreBooking: "PROCEED_TO_PRE_BOOKING"
 };
 
 export const PreBookingStackIdentifiers = {
@@ -119,6 +121,7 @@ export const MyTasksStackIdentifiers = {
   preBookingFollowUp: "PREBOOKING_FOLLOWUP",
   testDrive: "TEST_DRIVE",
   enquiryFollowUp: "ENQUIRY_FOLLOW_UP",
+  proceedToPreBooking: "PROCEED_TO_PRE_BOOKING"
 };
 
 const HomeStack = createStackNavigator();
@@ -215,6 +218,11 @@ const EmsStackNavigator = ({ navigation }) => {
         component={PaidAccessoriesScreen}
         options={{ title: "Paid Accessories" }}
       />
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.proceedToPreBooking}
+        component={ProceedToPreBookingScreen}
+        options={{ title: "Proceed To PreBooking" }}
+      />
     </EmsStack.Navigator>
   );
 };
@@ -274,6 +282,12 @@ const MyTaskStackNavigator = ({ navigation }) => {
         name={MyTasksStackIdentifiers.enquiryFollowUp}
         component={EnquiryFollowUpScreen}
         options={{ title: "Enquiry Follow Up" }}
+      />
+
+      <MyTaskStack.Screen
+        name={MyTasksStackIdentifiers.proceedToPreBooking}
+        component={ProceedToPreBookingScreen}
+        options={{ title: "Proceed To PreBooking" }}
       />
     </MyTaskStack.Navigator>
   );

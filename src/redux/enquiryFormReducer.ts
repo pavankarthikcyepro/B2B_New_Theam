@@ -229,6 +229,8 @@ const enquiryDetailsOverViewSlice = createSlice({
     clearState: (state, action) => {
       state.enquiry_details_response = null;
       state.update_enquiry_details_response = null;
+      state.get_pending_tasks_response_status = "";
+      state.get_pending_tasks_response_list = [];
     },
     setEditable: (state, action) => {
       console.log("pressed");
@@ -907,43 +909,43 @@ const enquiryDetailsOverViewSlice = createSlice({
 
     })
     builder.addCase(getEnquiryDetailsApi.fulfilled, (state, action) => {
-      console.log("S getEnquiryDetailsApi: ", JSON.stringify(action.payload));
+      //console.log("S getEnquiryDetailsApi: ", JSON.stringify(action.payload));
       if (action.payload.dmsEntity) {
         state.enquiry_details_response = action.payload.dmsEntity;
       }
     })
     builder.addCase(getEnquiryDetailsApi.rejected, (state, action) => {
-      console.log("F getEnquiryDetailsApi: ", JSON.stringify(action.payload));
+      //console.log("F getEnquiryDetailsApi: ", JSON.stringify(action.payload));
     })
     builder.addCase(updateEnquiryDetailsApi.fulfilled, (state, action) => {
-      console.log("S updateEnquiryDetailsApi: ", JSON.stringify(action.payload));
+      //console.log("S updateEnquiryDetailsApi: ", JSON.stringify(action.payload));
       if (action.payload.success == true) {
         state.update_enquiry_details_response = "success";
       }
     })
     builder.addCase(updateEnquiryDetailsApi.rejected, (state, action) => {
-      console.log("F updateEnquiryDetailsApi: ", JSON.stringify(action.payload));
+      //console.log("F updateEnquiryDetailsApi: ", JSON.stringify(action.payload));
       state.update_enquiry_details_response = "failed";
     })
     builder.addCase(dropEnquiryApi.fulfilled, (state, action) => {
-      console.log("S dropEnquiryApi: ", JSON.stringify(action.payload));
+      //console.log("S dropEnquiryApi: ", JSON.stringify(action.payload));
       if (action.payload.status === "SUCCESS") {
         state.enquiry_drop_response_status = "success";
       }
     })
     builder.addCase(getPendingTasksApi.fulfilled, (state, action) => {
-      console.log("S getPendingTasksApi: ", JSON.stringify(action.payload));
+      //console.log("S getPendingTasksApi: ", JSON.stringify(action.payload));
       if (action.payload.success === true) {
         state.get_pending_tasks_response_status = "success";
-        state.get_pending_tasks_response_list = action.payload.dmsEntity;
+        state.get_pending_tasks_response_list = action.payload.dmsEntity.tasks;
       }
     })
     builder.addCase(getPendingTasksApi.rejected, (state, action) => {
-      console.log("F getPendingTasksApi: ", JSON.stringify(action.payload));
+      //console.log("F getPendingTasksApi: ", JSON.stringify(action.payload));
       state.get_pending_tasks_response_status = "failed";
     })
     builder.addCase(getCustomerTypesApi.fulfilled, (state, action) => {
-      console.log("S getCustomerTypesApi: ", JSON.stringify(action.payload));
+      //console.log("S getCustomerTypesApi: ", JSON.stringify(action.payload));
       if (action.payload) {
         const customerTypes = action.payload;
         let personalTypes = [];

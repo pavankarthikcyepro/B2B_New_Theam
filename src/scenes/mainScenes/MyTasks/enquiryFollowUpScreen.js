@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import {
   SafeAreaView,
   View,
@@ -12,62 +12,144 @@ import { Colors, GlobalStyle } from "../../../styles";
 import { TextinputComp } from "../../../components";
 import { Button } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
-
 import { DropDownSelectionItem } from "../../../pureComponents/dropDownSelectionItem";
 import { DropDownComponant, DatePickerComponent } from "../../../components";
 import {
   setDatePicker,
   setEnquiryFollowUpDetails,
   updateSelectedDate,
-  setDropDownData,
+  getTaskDetailsApi,
+  updateTaskApi
 } from "../../../redux/enquiryFollowUpReducer";
-
 import { DateSelectItem } from "../../../pureComponents";
-import { Dropdown } from "sharingan-rn-modal-dropdown";
 
 const ScreenWidth = Dimensions.get("window").width;
 
-const data = [
-  {
-    value: "1",
-    label: "Tiger Nixon",
-    employee_salary: "320800",
-    employee_age: "61",
-  },
-  {
-    value: "2",
-    label: "Garrett Winters",
-    employee_salary: "170750",
-    employee_age: "63",
-  },
-  {
-    value: "3",
-    label: "Ashton Cox",
-    employee_salary: "86000",
-    employee_age: "66",
-  },
-];
-const EnquiryFollowUpScreen = ({ navigation }) => {
+const EnquiryFollowUpScreen = ({ route, navigation }) => {
+
+  const { taskId, identifier } = route.params;
   const selector = useSelector((state) => state.enquiryFollowUpReducer);
+  const { vehicle_modal_list } = useSelector(state => state.homeReducer);
   const dispatch = useDispatch();
+  const [showDropDownModel, setShowDropDownModel] = useState(false);
+  const [dropDownTitle, setDropDownTitle] = useState("");
+  const [dataForDropDown, setDataForDropDown] = useState([]);
+  const [dropDownKey, setDropDownKey] = useState("");
+  const [showDatePickerModel, setShowDatePickerModel] = useState(false);
+  const [carModelsData, setCarModelsData] = useState([]);
+  const [modelVarientsData, setModelVarientsData] = useState([]);
+
+  useLayoutEffect(() => {
+
+    let title = "Enquiry Follow Up"
+    if (identifier === "PRE_ENQUIRY_FOLLOW_UP") {
+      title = "Pre Enquiry Follow Up"
+    }
+
+    navigation.setOptions({
+      title: title
+    })
+  }, [navigation])
+
+  useEffect(() => {
+
+    setCarModelsDataFromBase();
+    dispatch(getTaskDetailsApi(taskId));
+  }, [])
+
+  const setCarModelsDataFromBase = () => {
+    let modalList = [];
+    if (vehicle_modal_list.length > 0) {
+      vehicle_modal_list.forEach(item => {
+        modalList.push({ id: item.vehicleId, name: item.model })
+      });
+    }
+    setCarModelsData([...modalList]);
+  }
+
+  const updateModelVarientsData = (selectedModelName) => {
+
+    if (!selectedModelName || selectedModelName.length === 0) { return }
+
+    let arrTemp = vehicle_modal_list.filter(function (obj) {
+      return obj.model === selectedModelName;
+    });
+
+    let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
+    if (carModelObj !== undefined) {
+      let newArray = [];
+      let mArray = carModelObj.varients;
+      if (mArray.length) {
+        mArray.forEach(item => {
+          newArray.push({
+            id: item.id,
+            name: item.name
+          })
+        })
+        setModelVarientsData([...newArray])
+      }
+    }
+  }
+
+  const updateTask = () => {
+
+    if (selector.task_details_response?.taskId !== taskId) {
+      return
+    }
+
+    const newTaskObj = { ...selector.task_details_response };
+    newTaskObj.reason = selector.reason;
+    newTaskObj.customerRemarks = selector.customer_remarks;
+    newTaskObj.employeeRemarks = selector.employee_remarks;
+    dispatch(updateTaskApi(newTaskObj));
+  }
+
+  const setDropDownDataForModel = (key, title) => {
+
+    switch (key) {
+      case "MODEL":
+        setDataForDropDown([...carModelsData])
+        break;
+      case "VARIENT":
+        setDataForDropDown([...modelVarientsData])
+        break;
+    }
+    setShowDropDownModel(true);
+    setDropDownTitle(title);
+    setDropDownKey(key);
+  }
 
   return (
     <SafeAreaView style={[styles.container]}>
-      {selector.showDatepicker && (
-        <DatePickerComponent
-          visible={selector.showDatepicker}
-          mode={"time"}
-          value={new Date(Date.now())}
-          onChange={(event, selectedDate) => {
-            console.log("date: ", selectedDate);
-            if (Platform.OS === "android") {
-              //setDatePickerVisible(false);
-            }
-            dispatch(updateSelectedDate({ key: "", text: selectedDate }));
-          }}
-          onRequestClose={() => dispatch(setDatePicker())}
-        />
-      )}
+
+      <DropDownComponant
+        visible={showDropDownModel}
+        headerTitle={dropDownTitle}
+        data={dataForDropDown}
+        onRequestClose={() => setShowDropDownModel(false)}
+        selectedItems={(item) => {
+
+          if (dropDownKey === "MODEL") {
+            updateModelVarientsData(item.name);
+          }
+          dispatch(setEnquiryFollowUpDetails({ key: dropDownKey, text: item.name }));
+          setShowDropDownModel(false);
+        }}
+      />
+
+      <DatePickerComponent
+        visible={selector.showDatepicker}
+        mode={"time"}
+        value={new Date(Date.now())}
+        onChange={(event, selectedDate) => {
+          console.log("date: ", selectedDate);
+          if (Platform.OS === "android") {
+            //setDatePickerVisible(false);
+          }
+          dispatch(updateSelectedDate({ key: "", text: selectedDate }));
+        }}
+        onRequestClose={() => dispatch(setDatePicker())}
+      />
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -84,70 +166,45 @@ const EnquiryFollowUpScreen = ({ navigation }) => {
           style={{ flex: 1 }}
         >
           <View style={[GlobalStyle.shadow]}>
-            <View style={styles.drop_down_view_style}>
-              <Dropdown
-                label="Model"
-                data={selector.dropDownData}
-                required={true}
-                floating={true}
-                color={Colors.RED}
-                value={selector.model}
-                onChange={(value) =>
-                  dispatch(setDropDownData({ key: "MODEL", value: value }))
-                }
-              />
-            </View>
-            <View style={styles.drop_down_view_style}>
-              <Dropdown
-                label="Varient"
-                data={selector.dropDownData}
-                required={true}
-                floating={true}
-                value={selector.Varient}
-                onChange={(value) =>
-                  dispatch(setDropDownData({ key: "VARIENT", value: value }))
-                }
-              />
-            </View>
+
+            <DropDownSelectionItem
+              label={"Model"}
+              value={selector.model}
+              onPress={() => setDropDownDataForModel("MODEL", "Select Model")}
+            />
+
+            <DropDownSelectionItem
+              label={"Varient"}
+              value={selector.varient}
+              onPress={() => setDropDownDataForModel("VARIENT", "Select Varient")}
+            />
 
             <TextinputComp
               style={styles.textInputStyle}
               label={"Reason"}
-              keyboardType={"default"}
               value={selector.reason}
               onChangeText={(text) => {
-                dispatch(
-                  setEnquiryFollowUpDetails({ key: "REASON", text: text })
-                );
+                dispatch(setEnquiryFollowUpDetails({ key: "REASON", text: text }));
               }}
             />
             <Text style={GlobalStyle.underline}></Text>
+
             <TextinputComp
               style={styles.textInputStyle}
               label={"Customer Remarks"}
-              keyboardType={"default"}
               value={selector.customer_remarks}
               onChangeText={(text) =>
-                dispatch(
-                  setEnquiryFollowUpDetails({
-                    key: "CUSTOMER_REMARKS",
-                    text: text,
-                  })
-                )
+                dispatch(setEnquiryFollowUpDetails({ key: "CUSTOMER_REMARKS", text: text }))
               }
             />
             <Text style={GlobalStyle.underline}></Text>
+
             <TextinputComp
               style={styles.textInputStyle}
-              label={"Employee Remarks*"}
-              keyboardType={"default"}
+              label={"Employee Remarks"}
               value={selector.employee_remarks}
               onChangeText={(text) =>
-                dispatch(
-                  setEnquiryFollowUpDetails({
-                    key: "EMPLOYEE_REMARKS",
-                    text: text,
-                  })
+                dispatch(setEnquiryFollowUpDetails({ key: "EMPLOYEE_REMARKS", text: text })
                 )
               }
             />
@@ -165,13 +222,15 @@ const EnquiryFollowUpScreen = ({ navigation }) => {
             />
             <Text style={GlobalStyle.underline}></Text>
           </View>
+
           <View style={styles.view1}>
             <Button
               style={{ width: 120 }}
               mode="contained"
               color={Colors.RED}
+              disabled={selector.is_loading_for_task_update}
               labelStyle={{ textTransform: "none" }}
-              onPress={() => console.log("Pressed")}
+              onPress={updateTask}
             >
               Update
             </Button>
@@ -185,6 +244,7 @@ const EnquiryFollowUpScreen = ({ navigation }) => {
               Close
             </Button>
           </View>
+
           <View style={styles.view1}>
             <Button
               style={{ width: 120 }}

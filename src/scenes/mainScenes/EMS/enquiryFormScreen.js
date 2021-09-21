@@ -9,6 +9,7 @@ import {
   Keyboard,
   ActivityIndicator,
   KeyboardAvoidingView,
+  Alert
 } from "react-native";
 import { DefaultTheme, Checkbox, IconButton, List, Button } from "react-native-paper";
 import { Colors, GlobalStyle } from "../../../styles";
@@ -131,6 +132,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [typeOfActionDispatched, setTypeOfActionDispatched] = useState("");
 
   useEffect(() => {
+    dispatch(clearState());
     getAsyncstoreData();
     setComponentAppear(true);
     getEnquiryDetailsFromServer();
@@ -520,28 +522,73 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     return object
   }
 
+  const showPendingTaskAlert = (data = []) => {
+
+    if (data.length > 0) {
+      let taskNames = "";
+      let enableProceedToPrebooking = false;
+      data.forEach((item) => {
+        if (item === "Proceed to Pre Booking") {
+          enableProceedToPrebooking = true;
+        } else {
+          taskNames += item
+        }
+      })
+
+      if (enableProceedToPrebooking) {
+        Alert.alert(
+          "Below tasks are pending, do you want to continue to proceed to pre-booking",
+          taskNames,
+          [
+            {
+              text: "Cancel",
+              onPress: () => console.log("Cancel Pressed"),
+              style: "cancel"
+            },
+            {
+              text: "Proceed",
+              onPress: () => {
+
+              }
+            }
+          ]
+        )
+      } else {
+        Alert.alert(
+          "Below tasks are pending...",
+          taskNames,
+          [
+            {
+              text: "Ok",
+              onPress: () => console.log("Cancel Pressed"),
+              style: "cancel"
+            },
+          ]
+        )
+      }
+    }
+  }
+
   useEffect(() => {
-    if (selector.get_pending_tasks_response_status === "success") {
+    if (selector.get_pending_tasks_response_status === "success" && selector.get_pending_tasks_response_list.length > 0) {
       let pendingTaskNames = [];
       selector.get_pending_tasks_response_list.forEach((element) => {
         if (element.taskName === "Test Drive" && (element.taskStatus === "" || element.taskStatus === "ASSIGNED")) {
-          pendingTaskNames.push("Test Drive : Pending");
+          pendingTaskNames.push("Test Drive : Pending \n");
         }
         if (element.taskName === "Home Visit" && (element.taskStatus === "" || element.taskStatus === "ASSIGNED")) {
-          pendingTaskNames.push("Home Visit : Pending");
+          pendingTaskNames.push("Home Visit : Pending \n");
         }
         if (element.taskName === "Evaluation" && (element.taskStatus === "" || element.taskStatus === "ASSIGNED") && selector.enquiry_details_response.dmsLeadDto.buyerType === "Replacement Buyer") {
-          pendingTaskNames.push("Evaluation : Pending");
+          pendingTaskNames.push("Evaluation : Pending \n");
         }
-        if (element.universalId === universalId && element.taskName === "Proceed to Pre Booking" && element.assignee.empId === userData.employeeId) {
-          this.lead360Service.selectedTaskObj = element;
-          // this.router.navigate(['/lead360']);
-          this.popCheck = true;
-          return;
+        if (element.taskName === "Proceed to Pre Booking" && element.assignee.empId === userData.employeeId && element.universalId === universalId) {
+          pendingTaskNames.push("Proceed to Pre Booking");
         }
       })
+      showPendingTaskAlert(pendingTaskNames);
     }
-  }, [selector.get_pending_tasks_response_status])
+  }, [selector.get_pending_tasks_response_status, selector.get_pending_tasks_response_list])
 
   const proceedToPreBookingClicked = () => {
 

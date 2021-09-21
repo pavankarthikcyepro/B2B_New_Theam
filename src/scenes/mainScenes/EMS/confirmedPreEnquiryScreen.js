@@ -252,14 +252,14 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                                 >
                                     Create Enuqiry
                                 </Button>
-                                <Button
+                                {/* <Button
                                     mode="contained"
                                     color={Colors.BLACK}
                                     labelStyle={{ textTransform: 'none', color: Colors.WHITE }}
                                     onPress={noThanksClicked}
                                 >
                                     No Thanks
-                                </Button>
+                                </Button> */}
                             </View>
                         </View>
 

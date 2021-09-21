@@ -39,6 +39,11 @@ export const callNumber = phone => {
         .catch(err => console.log(err));
 }
 
+export const convertToTime = (isoDate) => {
+    const date = moment(isoDate).format("h:mm a");
+    return date;
+}
+
 export const convertTimeStampToDateString = (timeStamp, format) => {
     if (!timeStamp || timeStamp.length === 0) return "";
     format = format ? format : "DD/MM/YYYY h:mm a";

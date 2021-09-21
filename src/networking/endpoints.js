@@ -71,6 +71,9 @@ const URL = {
     SEND_ON_ROAD_PRICE_DETAILS: () => sales_url + "/on-road-price",
     GET_ALL_OFFERS: (varientId, vehicleId) => {
         return ops_url + "/api/allofferdetail" + `?varientId=${varientId}&vehicleId=${vehicleId}`
+    },
+    GET_TASK_DETAILS: (taskId) => {
+        return sales_url + `/workflow/task/${taskId}`;
     }
 }
 

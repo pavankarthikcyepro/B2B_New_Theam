@@ -20,6 +20,15 @@ import { EmptyListView } from "../../../pureComponents";
 
 const screenWidth = Dimensions.get("window").width;
 
+const mytasksIdentifires = {
+  testdrive: "TEST_DRIVE",
+  proceedtobooking: "PROCEED_TO_BOOKING",
+  prebookingfollowup: "PRE_BOOKING_FOLLOW_UP",
+  homevisit: "HOME_VISIT",
+  enquiryfollowup: "ENQUIRY_FOLLOW_UP",
+  preenquiryfollowup: "PRE_ENQUIRY_FOLLOW_UP"
+}
+
 const MyTasksScreen = ({ navigation }) => {
   const selector = useSelector((state) => state.mytaskReducer);
   const dispatch = useDispatch();
@@ -45,32 +54,32 @@ const MyTasksScreen = ({ navigation }) => {
     }
   }
 
-  const itemClicked = (taskName) => {
+  const itemClicked = (taskName, taskId) => {
     const trimName = taskName.toLowerCase().trim();
     const finalTaskName = trimName.replace(/ /g, "");
+    let navigationId = ""
     switch (finalTaskName) {
       case "testdrive":
-        navigation.navigate(AppNavigator.MyTasksStackIdentifiers.testDrive);
+        navigationId = AppNavigator.MyTasksStackIdentifiers.testDrive;
         break;
       case "proceedtobooking":
-        navigation.navigate(
-          AppNavigator.MyTasksStackIdentifiers.preBookingFollowUp
-        );
+        navigationId = AppNavigator.MyTasksStackIdentifiers.proceedToPreBooking;
         break;
       case "prebookingfollowup":
-        navigation.navigate(
-          AppNavigator.MyTasksStackIdentifiers.preBookingFollowUp
-        );
+        navigationId = AppNavigator.MyTasksStackIdentifiers.preBookingFollowUp;
         break;
       case "homevisit":
-        navigation.navigate(AppNavigator.MyTasksStackIdentifiers.homeVisit);
+        navigationId = AppNavigator.MyTasksStackIdentifiers.homeVisit;
         break;
       case "enquiryfollowup":
-        navigation.navigate(
-          AppNavigator.MyTasksStackIdentifiers.enquiryFollowUp
-        );
+        navigationId = AppNavigator.MyTasksStackIdentifiers.enquiryFollowUp;
+        break;
+      case "preenquiryfollowup":
+        navigationId = AppNavigator.MyTasksStackIdentifiers.enquiryFollowUp;
         break;
     }
+    if (!navigationId) { return }
+    navigation.navigate(navigationId, { identifier: mytasksIdentifires[finalTaskName], taskId });
   };
 
   const renderFooter = () => {
@@ -114,7 +123,7 @@ const MyTasksScreen = ({ navigation }) => {
             return (
               <View style={{ flex: 1, width: "100%" }}>
                 <View style={[styles.listBgVw]}>
-                  <Pressable onPress={() => itemClicked(item.taskName)}>
+                  <Pressable onPress={() => itemClicked(item.taskName, item.taskId)}>
                     <MyTaskItem
                       taskName={item.taskName}
                       dmsLead={item.leadDto.firstName + " " + item.leadDto.lastName}

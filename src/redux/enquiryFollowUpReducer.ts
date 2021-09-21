@@ -1,54 +1,46 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import moment from 'moment';
-
-const dropDownData = [
-  {
-    value: "1",
-    label: "Tiger Nixon",
-  },
-  {
-    value: "2",
-    label: "Garrett Winters",
-  },
-  {
-    value: "3",
-    label: "Jhon Wick 1",
-  },
-  {
-    value: "4",
-    label: "Jhon Wick 2",
-  },
-];
+import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { convertToTime } from "../utils/helperFunctions";
+import URL from "../networking/endpoints";
+import { client } from "../networking/client";
 
 interface EnquiryFollowUpTextModel {
   key: string;
   text: string;
 }
-interface DropDownModelNew {
-  key: string;
 
-  value: string;
-}
-
-interface PersonalIntroModel {
-  key: string;
-  text: string;
-}
 interface CustomerDetailModel {
   key: string;
   text: string;
 }
+
+export const getTaskDetailsApi = createAsyncThunk("ENQUIRY_FOLLOW_UP_SLICE/getTaskDetailsApi", async (taskId, { rejectWithValue }) => {
+
+  const response = await client.get(URL.GET_TASK_DETAILS(taskId));
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const updateTaskApi = createAsyncThunk("ENQUIRY_FOLLOW_UP_SLICE/updateTaskApi", async (body, { rejectWithValue }) => {
+  const response = await client.put(URL.ASSIGN_TASK(), body)
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 const slice = createSlice({
   name: "ENQUIRY_FOLLOW_UP_SLICE",
   initialState: {
     showDatepicker: false,
-    showDropDownpicker: false,
-    dropDownData: dropDownData,
-    dropDownTitle: "",
-    dropDownKeyId: "",
     datePickerKeyId: "",
     showImagePicker: false,
     imagePickerKeyId: "",
+    task_details_response: null,
+    is_loading_for_task_update: false,
     //*enquiry follow up *//
     reason: "",
     customer_remarks: "",
@@ -71,16 +63,14 @@ const slice = createSlice({
         case "EMPLOYEE_REMARKS":
           state.employee_remarks = text;
           break;
-      }
-    },
-    setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
-      const { key, value } = action.payload;
-      switch (key) {
         case "MODEL":
-          state.model = value;
+          if (state.model !== text) {
+            state.varient = "";
+          }
+          state.model = text;
           break;
         case "VARIENT":
-          state.varient = value;
+          state.varient = text;
           break;
       }
     },
@@ -102,17 +92,38 @@ const slice = createSlice({
       state.showDatepicker = !state.showDatepicker;
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(getTaskDetailsApi.fulfilled, (state, action) => {
+      if (action.payload.success === true && action.payload.dmsEntity) {
+        const taskObj = action.payload.dmsEntity.task;
+        state.reason = taskObj.reason ? taskObj.reason : "";
+        state.customer_remarks = taskObj.customerRemarks ? taskObj.customerRemarks : "";
+        state.employee_remarks = taskObj.employeeRemarks ? taskObj.employeeRemarks : "";
+        state.task_details_response = action.payload.dmsEntity.task;
+      } else {
+        state.task_details_response = null;
+      }
+    })
+    builder.addCase(getTaskDetailsApi.rejected, (state, action) => {
+      state.task_details_response = null;
+    })
+    builder.addCase(updateTaskApi.pending, (state, action) => {
+      state.is_loading_for_task_update = true;
+    })
+    builder.addCase(updateTaskApi.fulfilled, (state, action) => {
+      console.log("S updateTaskApi", JSON.stringify(action.payload))
+      state.is_loading_for_task_update = false;
+    })
+    builder.addCase(updateTaskApi.rejected, (state, action) => {
+      console.log("F updateTaskApi", JSON.stringify(action.payload))
+      state.is_loading_for_task_update = false;
+    })
+  }
 });
-
-const convertToTime = (isoDate) => {
-  const date = moment(isoDate).format("h:mm a");
-  return date;
-}
 
 export const {
   setEnquiryFollowUpDetails,
   setDatePicker,
-  setDropDownData,
   updateSelectedDate,
 } = slice.actions;
 export default slice.reducer;
