@@ -74,7 +74,9 @@ const URL = {
     },
     GET_TASK_DETAILS: (taskId) => {
         return sales_url + `/workflow/task/${taskId}`;
-    }
+    },
+    GET_TEST_DRIVE_DSE_LIST: () => roleManagement_url + "/user/role/name/Testdrive_DSE",
+    GET_DRIVERS_LIST: () => roleManagement_url + "/user/role/name/Driver"
 }
 
 export default URL;

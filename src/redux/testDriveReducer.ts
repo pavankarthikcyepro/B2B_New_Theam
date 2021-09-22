@@ -1,24 +1,7 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import moment from 'moment';
+import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { client } from "../networking/client";
+import URL from "../networking/endpoints";
 
-const dropDownData = [
-  {
-    value: "1",
-    label: "Tiger Nixon",
-  },
-  {
-    value: "2",
-    label: "Garrett Winters",
-  },
-  {
-    value: "3",
-    label: "Jhon Wick 1",
-  },
-  {
-    value: "4",
-    label: "Jhon Wick 2",
-  },
-];
 
 interface CustomerDetailModel {
   key: string;
@@ -35,16 +18,33 @@ interface DatePickerModel {
   mode: string;
 }
 
+export const getTestDriveDseEmployeeListApi = createAsyncThunk("TEST_DRIVE_SLICE/getTestDriveDseEmployeeListApi", async (payload, { rejectWithValue }) => {
+
+  const response = await client.get(URL.GET_TEST_DRIVE_DSE_LIST());
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getDriversListApi = createAsyncThunk("TEST_DRIVE_SLICE/getDriversListApi", async (payload, { rejectWithValue }) => {
+
+  const response = await client.get(URL.GET_DRIVERS_LIST());
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 const testDriveSlice = createSlice({
   name: "TEST_DRIVE_SLICE",
   initialState: {
     status: "",
     isLoading: false,
-    showDatepicker: false,
-    date_picker_mode: "date",
-    drop_down_data: dropDownData,
-    datePickerKeyId: "",
-    showImagePicker: false,
+    employees_list: [],
+    drivers_list: [],
     // Customer Details
     name: "",
     mobile: "",
@@ -54,6 +54,7 @@ const testDriveSlice = createSlice({
     fuel_type: "",
     transmission_type: "",
     address_type_is_showroom: "",
+    customer_address: "",
     customer_having_driving_licence: "",
     customer_preferred_date: "",
     selected_dse_employee: "",
@@ -67,16 +68,15 @@ const testDriveSlice = createSlice({
       const { key, value } = action.payload;
       switch (key) {
         case "MODEL":
+          if (state.model != value) {
+            state.varient = "";
+            state.fuel_type = "";
+            state.transmission_type = "";
+          }
           state.model = value;
           break;
         case "VARIENT":
           state.varient = value;
-          break;
-        case "FUEL_TYPE":
-          state.fuel_type = value;
-          break;
-        case "TRANSMISSION_TYPE":
-          state.transmission_type = value;
           break;
         case "LIST_OF_DSE_EMPLOYEES":
           state.selected_dse_employee = value;
@@ -86,38 +86,23 @@ const testDriveSlice = createSlice({
           break;
       }
     },
-    setDatePicker: (state, action: PayloadAction<DatePickerModel>) => {
-      const { key, mode } = action.payload;
-      state.datePickerKeyId = key;
-      state.date_picker_mode = mode;
-      state.showDatepicker = !state.showDatepicker;
-    },
     updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
-      let selectedDate = "";
-      if (state.date_picker_mode === "date") {
-        selectedDate = convertToDate(text);
-      } else {
-        selectedDate = convertToTime(text);
-      }
-      switch (state.datePickerKeyId) {
+      console.log(text);
+      switch (key) {
         case "PREFERRED_DATE":
-          state.customer_preferred_date = selectedDate;
+          state.customer_preferred_date = text;
           break;
         case "CUSTOMER_PREFERRED_TIME":
-          state.customer_preferred_time = selectedDate;
+          state.customer_preferred_time = text;
           break;
         case "ACTUAL_START_TIME":
-          state.actual_start_time = selectedDate;
+          state.actual_start_time = text;
           break;
         case "ACTUAL_END_TIME":
-          state.actual_end_time = selectedDate;
-          break;
-        case "NONE":
-          console.log('NONE')
+          state.actual_end_time = text;
           break;
       }
-      state.showDatepicker = !state.showDatepicker;
     },
     setTestDriveDetails: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
@@ -131,6 +116,9 @@ const testDriveSlice = createSlice({
         case "EMAIL":
           state.email = text;
           break;
+        case "CUSTOMER_ADDRESS":
+          state.customer_address = text;
+          break;
         case "CHOOSE_ADDRESS":
           state.address_type_is_showroom = text;
           break;
@@ -139,25 +127,39 @@ const testDriveSlice = createSlice({
           break;
       }
     },
+    updateFuelAndTransmissionType: (state, action) => {
+      state.fuel_type = action.payload.fuelType;
+      state.transmission_type = action.payload.transmissionType;
+    }
   },
+  extraReducers: (builder) => {
+    builder.addCase(getTestDriveDseEmployeeListApi.fulfilled, (state, action) => {
+      //console.log("S getTestDriveDseEmployeeListApi: ", JSON.stringify(action.payload));
+      if (action.payload.dmsEntity) {
+        state.employees_list = action.payload.dmsEntity.employees;
+      }
+    })
+    builder.addCase(getDriversListApi.fulfilled, (state, action) => {
+      console.log("S getDriversListApi: ", JSON.stringify(action.payload));
+      if (action.payload.dmsEntity) {
+        const driversList = action.payload.dmsEntity.employees;
+        let newFormatDriversList = [];
+        driversList.forEach((item) => {
+          newFormatDriversList.push({
+            id: item.empId,
+            name: item.empName
+          })
+        })
+        state.drivers_list = newFormatDriversList;
+      }
+    })
+  }
 });
 
-
-
-const convertToTime = (isoDate) => {
-  const date = moment(isoDate).format("h:mm a");
-  return date;
-}
-
-const convertToDate = (isoDate) => {
-  const date = moment(isoDate).format("DD/MM/YYYY");
-  return date;
-}
-
 export const {
-  setDatePicker,
   updateSelectedDate,
   setTestDriveDetails,
   setDropDownData,
+  updateFuelAndTransmissionType
 } = testDriveSlice.actions;
 export default testDriveSlice.reducer;

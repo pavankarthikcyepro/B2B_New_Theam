@@ -16,10 +16,10 @@ import enquiryReducer from "./enquiryReducer";
 import preBookingFormReducer from "./preBookingFormReducer";
 import preBookingReducer from "./preBookingReducer";
 import homeVisitReducer from "./homeVisitReducer";
-import preBookingFollowUpReducer from "./preBookingFollowUpReducer";
 import testDriveReducer from "./testDriveReducer";
 import enquiryFollowUpReducer from "./enquiryFollowUpReducer";
 import confirmedPreEnquiryReducer from "./confirmedPreEnquiryReducer";
+import proceedToPreBookingReducer from "./proceedToPreBookingReducer";
 
 const reducer = combineReducers({
   routeReducer,
@@ -37,10 +37,10 @@ const reducer = combineReducers({
   preBookingFormReducer,
   preBookingReducer,
   homeVisitReducer,
-  preBookingFollowUpReducer,
   testDriveReducer,
   enquiryFollowUpReducer,
-  confirmedPreEnquiryReducer
+  confirmedPreEnquiryReducer,
+  proceedToPreBookingReducer
 });
 
 const store = configureStore({

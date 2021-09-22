@@ -230,13 +230,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
   };
 
-  useEffect(() => {
-    if (selector.enquiry_drop_response_status === "success") {
-      showToastSucess("Sucessfully Enquiry Dropped.")
-      navigation.goBack();
-    }
-  }, [selector.enquiry_drop_response_status]);
-
   const submitClicked = () => {
 
     if (!selector.enquiry_details_response) {
@@ -267,8 +260,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         "dmsLeadDto": dmsLeadDto
       }
     }
-    // setTypeOfActionDispatched("UPDATE_ENQUIRY");
-    // dispatch(updateEnquiryDetailsApi(formData));
+    setTypeOfActionDispatched("UPDATE_ENQUIRY");
+    dispatch(updateEnquiryDetailsApi(formData));
   }
 
   const mapContactOrAccountDto = (prevData) => {
@@ -597,6 +590,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dispatch(getPendingTasksApi(endUrl));
     }
   }
+
+  // useEffect(() => {
+  //   if (selector.enquiry_drop_response_status === "success") {
+  //     showToastSucess("Sucessfully Enquiry Dropped.")
+  //     navigation.goBack();
+  //   }
+  // }, [selector.enquiry_drop_response_status]);
 
   useEffect(() => {
     if (selector.update_enquiry_details_response === "success") {

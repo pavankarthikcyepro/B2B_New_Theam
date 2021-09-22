@@ -6,6 +6,8 @@ import {
   Text,
   ScrollView,
   KeyboardAvoidingView,
+  Keyboard,
+  Platform
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,49 +16,192 @@ import {
   DropDownComponant,
   DatePickerComponent,
 } from "../../../components";
+import { DropDownSelectionItem } from "../../../pureComponents";
 import {
-  setDatePicker,
   setTestDriveDetails,
   updateSelectedDropDownData,
   updateSelectedDate,
   setDropDownData,
+  updateFuelAndTransmissionType,
+  getTestDriveDseEmployeeListApi,
+  getDriversListApi
 } from "../../../redux/testDriveReducer";
 import { DateSelectItem, RadioTextItem } from "../../../pureComponents";
 import { Dropdown } from "sharingan-rn-modal-dropdown";
 import { RadioButton } from "react-native-paper";
 import { Button } from "react-native-paper";
+import * as AsyncStore from "../../../asyncStore";
+import { convertToDate, convertToTime } from "../../../utils/helperFunctions";
 
 const TestDriveScreen = ({ navigation }) => {
+
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.testDriveReducer);
-  const [checked, setChecked] = React.useState("first");
+  const { vehicle_modal_list } = useSelector(state => state.homeReducer);
+  const [showDropDownModel, setShowDropDownModel] = useState(false);
+  const [dataForDropDown, setDataForDropDown] = useState([]);
+  const [dropDownKey, setDropDownKey] = useState("");
+  const [dropDownTitle, setDropDownTitle] = useState("Select Data");
+  const [userData, setUserData] = useState({ branchId: "", orgId: "", employeeId: "", employeeName: "" })
+  const [carModelsData, setCarModelsData] = useState([]);
+  const [selectedCarVarientsData, setSelectedCarVarientsData] = useState({ varientList: [], varientListForDropDown: [] });
+  const [showDatePickerModel, setShowDatePickerModel] = useState(false);
+  const [datePickerKey, setDatePickerKey] = useState("");
+  const [datePickerMode, setDatePickerMode] = useState("date");
+  const [driversList, setDrivesList] = useState([]);
+
+  useEffect(() => {
+    getAsyncstoreData();
+    dispatch(getTestDriveDseEmployeeListApi());
+    dispatch(getDriversListApi());
+    setCarModelsDataFromBase();
+  }, []);
+
+  const getAsyncstoreData = async () => {
+    const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      setUserData({ branchId: jsonObj.branchId, orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName })
+    }
+  }
+
+  const setCarModelsDataFromBase = () => {
+    let modalList = [];
+    if (vehicle_modal_list.length > 0) {
+      vehicle_modal_list.forEach(item => {
+        modalList.push({ id: item.vehicleId, name: item.model })
+      });
+    }
+    setCarModelsData([...modalList]);
+  }
+
+  const updateVariantModelsData = (selectedModelName) => {
+
+    if (!selectedModelName || selectedModelName.length === 0) { return }
+
+    let arrTemp = vehicle_modal_list.filter(function (obj) {
+      return obj.model === selectedModelName;
+    });
+
+    let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
+    if (carModelObj !== undefined) {
+      let newArray = [];
+      let mArray = carModelObj.varients;
+      if (mArray.length) {
+        mArray.forEach(item => {
+          newArray.push({
+            id: item.id,
+            name: item.name
+          })
+        })
+        setSelectedCarVarientsData({ varientList: [...mArray], varientListForDropDown: [...newArray] });
+      }
+    }
+  }
+
+  const updateColorsDataForSelectedVarient = (selectedVarientName, varientList) => {
+
+    if (!selectedVarientName || selectedVarientName.length === 0) { return }
+
+    let arrTemp = varientList.filter(function (obj) {
+      return obj.name === selectedVarientName;
+    });
+
+    let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
+    if (carModelObj !== undefined) {
+      let newArray = [];
+      let mArray = carModelObj.vehicleImages;
+      if (mArray.length) {
+        mArray.map(item => {
+          newArray.push({
+            id: item.id,
+            name: item.color
+          })
+        })
+        const obj = {
+          fuelType: carModelObj.fuelType,
+          transmissionType: carModelObj.transmission_type
+        }
+        dispatch(updateFuelAndTransmissionType(obj));
+      }
+    }
+  }
+
+  const showDropDownModelMethod = (key, headerText) => {
+    Keyboard.dismiss();
+
+    switch (key) {
+      case "MODEL":
+        setDataForDropDown([...carModelsData]);
+        break;
+      case "VARIENT":
+        setDataForDropDown([...selectedCarVarientsData.varientListForDropDown]);
+        break;
+      case "LIST_OF_DRIVERS":
+        setDataForDropDown([...selector.drivers_list]);
+        break;
+    }
+    setDropDownKey(key);
+    setDropDownTitle(headerText);
+    setShowDropDownModel(true);
+  }
+
+  const showDatePickerModelMethod = (key, mode) => {
+    Keyboard.dismiss();
+    setDatePickerMode(mode)
+    setDatePickerKey(key);
+    setShowDatePickerModel(true);
+  }
+
 
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
-      {selector.showDatepicker && (
-        <DatePickerComponent
-          visible={selector.showDatepicker}
-          mode={selector.date_picker_mode}
-          value={new Date(Date.now())}
-          onChange={(event, selectedDate) => {
-            console.log("date: ", selectedDate);
-            if (Platform.OS === "android") {
-              if (!selectedDate) {
-                dispatch(
-                  updateSelectedDate({ key: "NONE", text: selectedDate })
-                );
-              } else {
-                dispatch(updateSelectedDate({ key: "", text: selectedDate }));
-              }
-            } else {
-              dispatch(updateSelectedDate({ key: "", text: selectedDate }));
-            }
-          }}
-          onRequestClose={() =>
-            dispatch(updateSelectedDate({ key: "NONE", text: "" }))
+
+      <DropDownComponant
+        visible={showDropDownModel}
+        headerTitle={dropDownTitle}
+        data={dataForDropDown}
+        onRequestClose={() => setShowDropDownModel(false)}
+        selectedItems={(item) => {
+          if (dropDownKey === "MODEL") {
+            updateVariantModelsData(item.name);
           }
-        />
-      )}
+          else if (dropDownKey === "VARIENT") {
+            updateColorsDataForSelectedVarient(item.name, selectedCarVarientsData.varientList);
+          }
+          setShowDropDownModel(false);
+          dispatch(setDropDownData({ key: dropDownKey, value: item.name, id: item.id }));
+        }}
+      />
+
+      <DatePickerComponent
+        visible={showDatePickerModel}
+        mode={datePickerMode}
+        value={new Date(Date.now())}
+        onChange={(event, selectedDate) => {
+          console.log("date: ", selectedDate);
+
+          let formatDate = "";
+          if (selectedDate) {
+            if (datePickerMode === "date") {
+              formatDate = convertToDate(selectedDate);
+            } else {
+              formatDate = convertToTime(selectedDate);
+            }
+          }
+
+          if (Platform.OS === "android") {
+            if (selectedDate) {
+              dispatch(updateSelectedDate({ key: datePickerKey, text: formatDate }));
+            }
+            setShowDatePickerModel(false)
+          } else {
+            dispatch(updateSelectedDate({ key: datePickerKey, text: formatDate }));
+            setShowDatePickerModel(false)
+          }
+        }}
+        onRequestClose={() => setShowDatePickerModel(false)}
+      />
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -84,19 +229,8 @@ const TestDriveScreen = ({ navigation }) => {
             >
               <TextinputComp
                 style={{ height: 65, width: "100%" }}
-                value={selector.mobile}
-                label={"Mobile Number"}
-                keyboardType={"phone-pad"}
-                onChangeText={(text) =>
-                  dispatch(setTestDriveDetails({ key: "MOBILE", text: text }))
-                }
-              />
-              <Text style={GlobalStyle.underline}></Text>
-              <TextinputComp
-                style={{ height: 65, width: "100%" }}
                 value={selector.name}
                 label={"Name"}
-                keyboardType={"default"}
                 onChangeText={(text) =>
                   dispatch(setTestDriveDetails({ key: "NAME", text: text }))
                 }
@@ -112,90 +246,80 @@ const TestDriveScreen = ({ navigation }) => {
                 }
               />
               <Text style={GlobalStyle.underline}></Text>
-              <Dropdown
-                label="Model"
-                data={selector.drop_down_data}
-                floating={true}
+              <TextinputComp
+                style={{ height: 65, width: "100%" }}
+                value={selector.mobile}
+                label={"Mobile Number"}
+                maxLength={10}
+                keyboardType={"phone-pad"}
+                onChangeText={(text) =>
+                  dispatch(setTestDriveDetails({ key: "MOBILE", text: text }))
+                }
+              />
+              <Text style={GlobalStyle.underline}></Text>
+
+              <DropDownSelectionItem
+                label={"Model"}
                 value={selector.model}
-                onChange={(value) =>
-                  dispatch(setDropDownData({ key: "MODEL", value: value }))
-                }
+                onPress={() => showDropDownModelMethod("MODEL", "Model")}
               />
-              <Dropdown
-                label="Fuel Type"
-                data={selector.drop_down_data}
-                floating={true}
-                value={selector.fuel_type}
-                onChange={(value) =>
-                  dispatch(setDropDownData({ key: "FUEL_TYPE", value: value }))
-                }
-              />
-              <Dropdown
-                label="Transmission Type"
-                data={selector.drop_down_data}
-                floating={true}
-                value={selector.transmission_type}
-                onChange={(value) =>
-                  dispatch(
-                    setDropDownData({ key: "TRANSMISSION_TYPE", value: value })
-                  )
-                }
-              />
-              <Dropdown
-                label="Varient"
-                data={selector.drop_down_data}
-                floating={true}
+
+              <DropDownSelectionItem
+                label={"Varient"}
                 value={selector.varient}
-                onChange={(value) =>
-                  dispatch(setDropDownData({ key: "VARIENT", value: value }))
-                }
+                onPress={() => showDropDownModelMethod("VARIENT", "Varient")}
               />
-              <Text style={{ padding: 10, justifyContent: "center" }}>
-                {"Choose address:"}
-              </Text>
-              <View
-                style={{
-                  flexDirection: "row",
-                  paddingLeft: 12,
-                  paddingBottom: 5,
-                }}
-              >
+
+              <TextinputComp
+                style={{ height: 65, width: "100%" }}
+                label={"Fuel Type"}
+                value={selector.fuel_type}
+                editable={false}
+              />
+              <Text style={GlobalStyle.underline}></Text>
+
+              <TextinputComp
+                style={{ height: 65, width: "100%" }}
+                label={"Transmission Type"}
+                value={selector.transmission_type}
+                editable={false}
+              />
+              <Text style={GlobalStyle.underline}></Text>
+
+              <Text style={styles.chooseAddressTextStyle}>{"Choose address:"}</Text>
+              <View style={styles.view2}>
                 <RadioTextItem
                   label={"Showroom address"}
                   value={"Showroom address"}
-                  status={
-                    selector.address_type_is_showroom === "true" ? true : false
-                  }
-                  onPress={() =>
-                    dispatch(
-                      setTestDriveDetails({
-                        key: "CHOOSE_ADDRESS",
-                        text: "true",
-                      })
-                    )
-                  }
+                  status={selector.address_type_is_showroom === "true" ? true : false}
+                  onPress={() => dispatch(setTestDriveDetails({ key: "CHOOSE_ADDRESS", text: "true" }))}
                 />
                 <RadioTextItem
                   label={"Customer address"}
                   value={"Customer address"}
-                  status={
-                    selector.address_type_is_showroom === "false" ? true : false
-                  }
-                  onPress={() =>
-                    dispatch(
-                      setTestDriveDetails({
-                        key: "CHOOSE_ADDRESS",
-                        text: "false",
-                      })
-                    )
-                  }
+                  status={selector.address_type_is_showroom === "false" ? true : false}
+                  onPress={() => dispatch(setTestDriveDetails({ key: "CHOOSE_ADDRESS", text: "false" }))}
                 />
               </View>
-
               <Text style={GlobalStyle.underline}></Text>
-              <Text style={{ padding: 10 }}>
-                {"Do Customer have Driving License?"}
-              </Text>
+
+              {selector.address_type_is_showroom === "false" && (
+                <View >
+                  <TextinputComp
+                    style={{ height: 65, maxHeight: 100, width: "100%" }}
+                    value={selector.customer_address}
+                    label={"Customer Address"}
+                    multiline={true}
+                    numberOfLines={4}
+                    onChangeText={(text) =>
+                      dispatch(setTestDriveDetails({ key: "CUSTOMER_ADDRESS", text: text }))
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                </View>
+              )}
+
+              <Text style={{ padding: 10 }}>{"Do Customer have Driving License?"}</Text>
               <View
                 style={{
                   flexDirection: "row",
@@ -223,85 +347,40 @@ const TestDriveScreen = ({ navigation }) => {
                 <RadioTextItem
                   label={"No"}
                   value={"No"}
-                  status={
-                    selector.customer_having_driving_licence === "false"
-                      ? true
-                      : false
-                  }
-                  onPress={() =>
-                    dispatch(
-                      setTestDriveDetails({
-                        key: "CUSTOMER_HAVING_DRIVING_LICENCE",
-                        text: "false",
-                      })
-                    )
-                  }
+                  status={selector.customer_having_driving_licence === "false" ? true : false}
+                  onPress={() => dispatch(setTestDriveDetails({ key: "CUSTOMER_HAVING_DRIVING_LICENCE", text: "false", }))}
                 />
               </View>
               <Text style={GlobalStyle.underline}></Text>
               <DateSelectItem
                 label={"Customer Preffered Date"}
                 value={selector.customer_preferred_date}
-                onPress={() =>
-                  dispatch(
-                    setDatePicker({ key: "PREFERRED_DATE", mode: "date" })
-                  )
-                }
+                onPress={() => showDatePickerModelMethod("PREFERRED_DATE", "date")}
               />
-              <Dropdown
-                label="List of DSE employees:"
-                data={selector.drop_down_data}
-                floating={true}
-                value={selector.selected_dse_employee}
-                onChange={(value) =>
-                  dispatch(
-                    setDropDownData({
-                      key: "LIST_OF_DSE_EMPLOYEES",
-                      value: value,
-                    })
-                  )
-                }
+              <DropDownSelectionItem
+                label={"List of Employees"}
+                value={userData.employeeName}
+                disabled={true}
               />
-              <Dropdown
-                label="List of Drivers:"
-                data={selector.drop_down_data}
-                floating={true}
+              <DropDownSelectionItem
+                label={"List of Drivers"}
                 value={selector.selected_driver}
-                onChange={(value) =>
-                  dispatch(
-                    setDropDownData({ key: "LIST_OF_DRIVERS", value: value })
-                  )
-                }
+                onPress={() => showDropDownModelMethod("LIST_OF_DRIVERS", "List of Drivers")}
               />
               <DateSelectItem
                 label={"Customer Preffered Time (24 hours Format)"}
                 value={selector.customer_preferred_time}
-                onPress={() =>
-                  dispatch(
-                    setDatePicker({
-                      key: "CUSTOMER_PREFERRED_TIME",
-                      mode: "time",
-                    })
-                  )
-                }
+                onPress={() => showDatePickerModelMethod("CUSTOMER_PREFERRED_TIME", "time")}
               />
               <DateSelectItem
                 label={"Actual start Time (24 hours Format)"}
                 value={selector.actual_start_time}
-                onPress={() =>
-                  dispatch(
-                    setDatePicker({ key: "ACTUAL_START_TIME", mode: "time" })
-                  )
-                }
+                onPress={() => showDatePickerModelMethod("ACTUAL_START_TIME", "time")}
               />
               <DateSelectItem
                 label={"Actual End Time (24 hours Format)"}
                 value={selector.actual_end_time}
-                onPress={() =>
-                  dispatch(
-                    setDatePicker({ key: "ACTUAL_END_TIME", mode: "time" })
-                  )
-                }
+                onPress={() => showDatePickerModelMethod("ACTUAL_END_TIME", "time")}
               />
               <View style={styles.space}></View>
               <Text style={{ padding: 10 }}>{"Allotment ID"}</Text>
@@ -377,4 +456,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     alignItems: "center",
   },
+  chooseAddressTextStyle: {
+    padding: 10,
+    justifyContent: "center",
+    color: Colors.GRAY
+  },
+  view2: {
+    flexDirection: "row",
+    paddingLeft: 12,
+    paddingBottom: 5,
+  }
 });

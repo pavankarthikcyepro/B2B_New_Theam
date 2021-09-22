@@ -26,7 +26,8 @@ const mytasksIdentifires = {
   prebookingfollowup: "PRE_BOOKING_FOLLOW_UP",
   homevisit: "HOME_VISIT",
   enquiryfollowup: "ENQUIRY_FOLLOW_UP",
-  preenquiryfollowup: "PRE_ENQUIRY_FOLLOW_UP"
+  preenquiryfollowup: "PRE_ENQUIRY_FOLLOW_UP",
+  createenquiry: "CREATE_ENQUIRY"
 }
 
 const MyTasksScreen = ({ navigation }) => {
@@ -54,7 +55,7 @@ const MyTasksScreen = ({ navigation }) => {
     }
   }
 
-  const itemClicked = (taskName, taskId) => {
+  const itemClicked = (taskName, taskId, universalId, taskStatus) => {
     const trimName = taskName.toLowerCase().trim();
     const finalTaskName = trimName.replace(/ /g, "");
     let navigationId = ""
@@ -65,9 +66,6 @@ const MyTasksScreen = ({ navigation }) => {
       case "proceedtobooking":
         navigationId = AppNavigator.MyTasksStackIdentifiers.proceedToPreBooking;
         break;
-      case "prebookingfollowup":
-        navigationId = AppNavigator.MyTasksStackIdentifiers.preBookingFollowUp;
-        break;
       case "homevisit":
         navigationId = AppNavigator.MyTasksStackIdentifiers.homeVisit;
         break;
@@ -77,9 +75,15 @@ const MyTasksScreen = ({ navigation }) => {
       case "preenquiryfollowup":
         navigationId = AppNavigator.MyTasksStackIdentifiers.enquiryFollowUp;
         break;
+      case "prebookingfollowup":
+        navigationId = AppNavigator.MyTasksStackIdentifiers.enquiryFollowUp;
+        break;
+      case "createenquiry":
+        navigationId = AppNavigator.MyTasksStackIdentifiers.createEnquiry;
+        break;
     }
     if (!navigationId) { return }
-    navigation.navigate(navigationId, { identifier: mytasksIdentifires[finalTaskName], taskId });
+    navigation.navigate(navigationId, { identifier: mytasksIdentifires[finalTaskName], taskId, universalId, taskStatus });
   };
 
   const renderFooter = () => {
@@ -123,7 +127,7 @@ const MyTasksScreen = ({ navigation }) => {
             return (
               <View style={{ flex: 1, width: "100%" }}>
                 <View style={[styles.listBgVw]}>
-                  <Pressable onPress={() => itemClicked(item.taskName, item.taskId)}>
+                  <Pressable onPress={() => itemClicked(item.taskName, item.taskId, item.universalId, item.taskStatus)}>
                     <MyTaskItem
                       taskName={item.taskName}
                       dmsLead={item.leadDto.firstName + " " + item.leadDto.lastName}

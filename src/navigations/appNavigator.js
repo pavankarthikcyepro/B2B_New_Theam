@@ -30,12 +30,12 @@ import EnquiryFormScreen from "../scenes/mainScenes/EMS/enquiryFormScreen";
 import PreBookingFormScreen from "../scenes/mainScenes/EMS/prebookingFormScreen";
 import PreBookingScreen from "../scenes/mainScenes/EMS/prebookingScreen";
 import HomeVisitScreen from "../scenes/mainScenes/MyTasks/homeVisitScreen";
-import PreBookingFollowUpScreen from "../scenes/mainScenes/MyTasks/preBookingFollowUpScreen";
 import TestDriveScreen from "../scenes/mainScenes/MyTasks/testDriveScreen";
 import EnquiryFollowUpScreen from "../scenes/mainScenes/MyTasks/enquiryFollowUpScreen";
 import TestEnquiryFormScreen from "../scenes/mainScenes/EMS/testEnquiryFormScreen";
 import PaidAccessoriesScreen from "../scenes/mainScenes/EMS/paidAccessoriesScreen";
 import ProceedToPreBookingScreen from "../scenes/mainScenes/MyTasks/proceedToPreBookingScreen";
+import CreateEnquiryScreen from "../scenes/mainScenes/MyTasks/createEnquiryScreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -121,7 +121,8 @@ export const MyTasksStackIdentifiers = {
   preBookingFollowUp: "PREBOOKING_FOLLOWUP",
   testDrive: "TEST_DRIVE",
   enquiryFollowUp: "ENQUIRY_FOLLOW_UP",
-  proceedToPreBooking: "PROCEED_TO_PRE_BOOKING"
+  proceedToPreBooking: "PROCEED_TO_PRE_BOOKING",
+  createEnquiry: "CREATE_ENQUIRY",
 };
 
 const HomeStack = createStackNavigator();
@@ -266,11 +267,6 @@ const MyTaskStackNavigator = ({ navigation }) => {
         component={HomeVisitScreen}
         options={{ title: "Home Visit" }}
       />
-      <MyTaskStack.Screen
-        name={MyTasksStackIdentifiers.preBookingFollowUp}
-        component={PreBookingFollowUpScreen}
-        options={{ title: "Prekbooking Followup" }}
-      />
 
       <MyTaskStack.Screen
         name={MyTasksStackIdentifiers.testDrive}
@@ -288,6 +284,12 @@ const MyTaskStackNavigator = ({ navigation }) => {
         name={MyTasksStackIdentifiers.proceedToPreBooking}
         component={ProceedToPreBookingScreen}
         options={{ title: "Proceed To PreBooking" }}
+      />
+
+      <MyTaskStack.Screen
+        name={MyTasksStackIdentifiers.createEnquiry}
+        component={CreateEnquiryScreen}
+        options={{ title: "Create Enquiry" }}
       />
     </MyTaskStack.Navigator>
   );

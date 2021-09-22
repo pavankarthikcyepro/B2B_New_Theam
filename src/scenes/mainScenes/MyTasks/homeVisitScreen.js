@@ -28,9 +28,9 @@ const HomeVisitScreen = ({ route, navigation }) => {
   }, [])
 
   const getAsyncStorageData = async () => {
-    const empId = await AsyncStorage.getData(AsyncStorage.Keys.EMP_ID);
-    if (empId) {
-      setEmpId(empId);
+    const employeeId = await AsyncStorage.getData(AsyncStorage.Keys.EMP_ID);
+    if (employeeId) {
+      setEmpId(employeeId);
     }
   }
 

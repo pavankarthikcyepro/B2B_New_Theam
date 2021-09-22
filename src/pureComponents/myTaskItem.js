@@ -3,6 +3,21 @@ import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Colors } from '../styles'
 import { convertTimeStampToDateString } from "../utils/helperFunctions";
 
+const statusBgColors = {
+    CANCELLED: {
+        color: Colors.RED,
+        title: "Cancelled"
+    },
+    ASSIGNED: {
+        color: Colors.GREEN,
+        title: "Assigned"
+    },
+    SENT_FOR_APPROVAL: {
+        color: Colors.YELLOW,
+        title: "Sent For Approval"
+    }
+}
+
 const NameComp = ({ label, value, labelStyle = {}, valueStyle = {} }) => {
 
     return (
@@ -16,6 +31,8 @@ const NameComp = ({ label, value, labelStyle = {}, valueStyle = {} }) => {
 export const MyTaskItem = ({ taskName, status, created, dmsLead, phone }) => {
 
     const date = convertTimeStampToDateString(created);
+    const bgColor = statusBgColors[status].color || Colors.RED;
+    const statusName = statusBgColors[status].title || status;
 
     return (
 
@@ -28,7 +45,7 @@ export const MyTaskItem = ({ taskName, status, created, dmsLead, phone }) => {
                 <Text style={[styles.text1]}>{'Task Status'}</Text>
                 <View style={{ flexDirection: 'row' }}>
                     <Text style={[styles.text2]}>{":  "}</Text>
-                    <Text style={[styles.text2, styles.text3]}>{status}</Text>
+                    <Text style={[styles.text2, styles.text3, { backgroundColor: bgColor }]}>{statusName}</Text>
                 </View>
             </View>
         </View>

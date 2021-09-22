@@ -27,6 +27,8 @@ import { DateSelectItem } from "../../../pureComponents";
 import { convertDateStringToMillisecondsUsingMoment } from "../../../utils/helperFunctions";
 import moment from "moment";
 import { showToast, showToastRedAlert, showToastSucess } from "../../../utils/toast";
+import { getMyTasksList } from "../../../redux/mytaskReducer";
+import * as AsyncStorage from "../../../asyncStore";
 
 const ScreenWidth = Dimensions.get("window").width;
 
@@ -60,12 +62,18 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
   const [carModelsData, setCarModelsData] = useState([]);
   const [modelVarientsData, setModelVarientsData] = useState([]);
   const [actionType, setActionType] = useState("");
+  const [empId, setEmpId] = useState("");
 
   useLayoutEffect(() => {
 
     let title = "Enquiry Follow Up"
-    if (identifier === "PRE_ENQUIRY_FOLLOW_UP") {
-      title = "Pre Enquiry Follow Up"
+    switch (identifier) {
+      case "PRE_ENQUIRY_FOLLOW_UP":
+        title = "Pre Enquiry Follow Up";
+        break;
+      case "PRE_BOOKING_FOLLOW_UP":
+        title = "Pre Booking Follow Up";
+        break;
     }
 
     navigation.setOptions({
@@ -75,9 +83,17 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
 
   useEffect(() => {
 
+    getAsyncStorageData();
     setCarModelsDataFromBase();
     dispatch(getTaskDetailsApi(taskId));
   }, [])
+
+  const getAsyncStorageData = async () => {
+    const employeeId = await AsyncStorage.getData(AsyncStorage.Keys.EMP_ID);
+    if (employeeId) {
+      setEmpId(employeeId);
+    }
+  }
 
   const setCarModelsDataFromBase = () => {
     let modalList = [];
@@ -110,6 +126,13 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
         })
         setModelVarientsData([...newArray])
       }
+    }
+  }
+
+  const getMyTasksListFromServer = () => {
+    if (empId) {
+      const endUrl = `empId=${empId}&limit=10&offset=${0}`;
+      dispatch(getMyTasksList(endUrl));
     }
   }
 
@@ -258,17 +281,21 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
         >
           <View style={[GlobalStyle.shadow]}>
 
-            <DropDownSelectionItem
-              label={"Model"}
-              value={selector.model}
-              onPress={() => setDropDownDataForModel("MODEL", "Select Model")}
-            />
+            {(identifier === "ENQUIRY_FOLLOW_UP" || identifier === "PRE_ENQUIRY_FOLLOW_UP") && (
+              <View>
+                <DropDownSelectionItem
+                  label={"Model"}
+                  value={selector.model}
+                  onPress={() => setDropDownDataForModel("MODEL", "Select Model")}
+                />
 
-            <DropDownSelectionItem
-              label={"Varient"}
-              value={selector.varient}
-              onPress={() => setDropDownDataForModel("VARIENT", "Select Varient")}
-            />
+                <DropDownSelectionItem
+                  label={"Varient"}
+                  value={selector.varient}
+                  onPress={() => setDropDownDataForModel("VARIENT", "Select Varient")}
+                />
+              </View>
+            )}
 
             <TextinputComp
               style={styles.textInputStyle}

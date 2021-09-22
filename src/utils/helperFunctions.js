@@ -44,6 +44,11 @@ export const convertToTime = (isoDate) => {
     return date;
 }
 
+export const convertToDate = (isoDate) => {
+    const date = moment(isoDate).format("DD/MM/YYYY");
+    return date;
+}
+
 export const convertTimeStampToDateString = (timeStamp, format) => {
     if (!timeStamp || timeStamp.length === 0) return "";
     format = format ? format : "DD/MM/YYYY h:mm a";
