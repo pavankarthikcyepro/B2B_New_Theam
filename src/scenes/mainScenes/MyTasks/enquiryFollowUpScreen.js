@@ -7,6 +7,7 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   ScrollView,
+  Keyboard
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { TextinputComp } from "../../../components";
@@ -15,6 +16,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { DropDownSelectionItem } from "../../../pureComponents/dropDownSelectionItem";
 import { DropDownComponant, DatePickerComponent } from "../../../components";
 import {
+  clearState,
   setDatePicker,
   setEnquiryFollowUpDetails,
   updateSelectedDate,
@@ -22,8 +24,27 @@ import {
   updateTaskApi
 } from "../../../redux/enquiryFollowUpReducer";
 import { DateSelectItem } from "../../../pureComponents";
+import { convertDateStringToMillisecondsUsingMoment } from "../../../utils/helperFunctions";
+import moment from "moment";
+import { showToast, showToastRedAlert, showToastSucess } from "../../../utils/toast";
 
 const ScreenWidth = Dimensions.get("window").width;
+
+
+const LocalButtonComp = ({ title, onPress, disabled }) => {
+  return (
+    <Button
+      style={{ width: 120 }}
+      mode="contained"
+      color={Colors.RED}
+      disabled={disabled}
+      labelStyle={{ textTransform: "none" }}
+      onPress={onPress}
+    >
+      {title}
+    </Button>
+  )
+}
 
 const EnquiryFollowUpScreen = ({ route, navigation }) => {
 
@@ -38,6 +59,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
   const [showDatePickerModel, setShowDatePickerModel] = useState(false);
   const [carModelsData, setCarModelsData] = useState([]);
   const [modelVarientsData, setModelVarientsData] = useState([]);
+  const [actionType, setActionType] = useState("");
 
   useLayoutEffect(() => {
 
@@ -91,9 +113,58 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     }
   }
 
-  const updateTask = () => {
+  // Update, Close, Cancel, Reschedule Task Response handle
+  useEffect(() => {
+    if (selector.update_task_response_status === "success") {
+      switch (actionType) {
+        case "CLOSE":
+          showToastSucess("Successfully Task Closed");
+          getMyTasksListFromServer();
+          break;
+        case "RESCHEDULE":
+          showToastSucess("Successfully Task Rescheduled");
+          getMyTasksListFromServer();
+          break;
+        case "UPDATE":
+          showToastSucess("Successfully Task Updated");
+          break;
+        case "CANCEL":
+          showToastSucess("Successfully Task Cancelled");
+          getMyTasksListFromServer();
+          break;
+      }
+      navigation.popToTop();
+      dispatch(clearState());
+    } else if (selector.update_task_response_status === "failed") {
+      showToastRedAlert("something went wrong");
+    }
+  }, [selector.update_task_response_status])
 
+  const updateTask = () => {
+    changeTaskStatusBasedOnActionType("UPDATE");
+  }
+
+  const closeTask = () => {
+    changeTaskStatusBasedOnActionType("CLOSE");
+  }
+
+  const rescheduleTask = () => {
+    changeTaskStatusBasedOnActionType("RESCHEDULE");
+  }
+
+  const cancelTask = () => {
+    changeTaskStatusBasedOnActionType("CANCEL");
+  }
+
+  const changeTaskStatusBasedOnActionType = (type) => {
+
+    Keyboard.dismiss();
     if (selector.task_details_response?.taskId !== taskId) {
+      return
+    }
+
+    if (selector.reason.length === 0 || selector.customer_remarks.length === 0 || selector.employee_remarks === 0) {
+      showToast("Please enter required fields");
       return
     }
 
@@ -101,6 +172,26 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     newTaskObj.reason = selector.reason;
     newTaskObj.customerRemarks = selector.customer_remarks;
     newTaskObj.employeeRemarks = selector.employee_remarks;
+    newTaskObj.taskActualStartTime = convertDateStringToMillisecondsUsingMoment(selector.actual_start_time);
+    newTaskObj.taskActualEndTime = convertDateStringToMillisecondsUsingMoment(selector.actual_end_time);
+    switch (type) {
+      case "CLOSE":
+        newTaskObj.taskStatus = "CLOSED";
+        break;
+      case "CANCEL":
+        newTaskObj.taskStatus = "CANCELLED";
+        break;
+      case "RESCHEDULE":
+        var momentA = moment(selector.actual_start_time, "DD/MM/YYYY");
+        var momentB = moment(); // current date
+        if (momentA < momentB) {
+          showToast("Start date should not be less than current date")
+          return;
+        }
+        newTaskObj.taskStatus = "RESCHEDULED";
+        break;
+    }
+    setActionType(type);
     dispatch(updateTaskApi(newTaskObj));
   }
 
@@ -139,7 +230,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
 
       <DatePickerComponent
         visible={selector.showDatepicker}
-        mode={"time"}
+        mode={"date"}
         value={new Date(Date.now())}
         onChange={(event, selectedDate) => {
           console.log("date: ", selectedDate);
@@ -181,7 +272,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
 
             <TextinputComp
               style={styles.textInputStyle}
-              label={"Reason"}
+              label={"Reason*"}
               value={selector.reason}
               onChangeText={(text) => {
                 dispatch(setEnquiryFollowUpDetails({ key: "REASON", text: text }));
@@ -191,7 +282,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
 
             <TextinputComp
               style={styles.textInputStyle}
-              label={"Customer Remarks"}
+              label={"Customer Remarks*"}
               value={selector.customer_remarks}
               onChangeText={(text) =>
                 dispatch(setEnquiryFollowUpDetails({ key: "CUSTOMER_REMARKS", text: text }))
@@ -201,7 +292,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
 
             <TextinputComp
               style={styles.textInputStyle}
-              label={"Employee Remarks"}
+              label={"Employee Remarks*"}
               value={selector.employee_remarks}
               onChangeText={(text) =>
                 dispatch(setEnquiryFollowUpDetails({ key: "EMPLOYEE_REMARKS", text: text })
@@ -210,61 +301,52 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
             />
             <Text style={GlobalStyle.underline}></Text>
             <DateSelectItem
-              label={"Actual Start Time"}
+              label={"Actual Start Date"}
               value={selector.actual_start_time}
               onPress={() => dispatch(setDatePicker("ACTUAL_START_TIME"))}
             />
             <Text style={GlobalStyle.underline}></Text>
             <DateSelectItem
-              label={"Actual End Time"}
+              label={"Actual End Date"}
               value={selector.actual_end_time}
               onPress={() => dispatch(setDatePicker("ACTUAL_END_TIME"))}
             />
             <Text style={GlobalStyle.underline}></Text>
           </View>
 
-          <View style={styles.view1}>
-            <Button
-              style={{ width: 120 }}
-              mode="contained"
-              color={Colors.RED}
-              disabled={selector.is_loading_for_task_update}
-              labelStyle={{ textTransform: "none" }}
-              onPress={updateTask}
-            >
-              Update
-            </Button>
-            <Button
-              style={{ width: 120 }}
-              mode="contained"
-              color={Colors.RED}
-              labelStyle={{ textTransform: "none" }}
-              onPress={() => console.log("Pressed")}
-            >
-              Close
-            </Button>
-          </View>
+          {selector.task_status !== "CANCELLED" ? (
+            <View>
+              <View style={styles.view1}>
+                <LocalButtonComp
+                  title={"Update"}
+                  onPress={updateTask}
+                  disabled={selector.is_loading_for_task_update}
+                />
+                <LocalButtonComp
+                  title={"Close"}
+                  onPress={closeTask}
+                  disabled={selector.is_loading_for_task_update}
+                />
+              </View>
 
-          <View style={styles.view1}>
-            <Button
-              style={{ width: 120 }}
-              mode="contained"
-              color={Colors.RED}
-              labelStyle={{ textTransform: "none" }}
-              onPress={() => console.log("Pressed")}
-            >
-              Cancel
-            </Button>
-            <Button
-              style={{ width: 120 }}
-              mode="contained"
-              color={Colors.RED}
-              labelStyle={{ textTransform: "none" }}
-              onPress={() => console.log("Pressed")}
-            >
-              Reschedule
-            </Button>
-          </View>
+              <View style={styles.view1}>
+                <LocalButtonComp
+                  title={"Cancel"}
+                  onPress={cancelTask}
+                  disabled={selector.is_loading_for_task_update}
+                />
+                <LocalButtonComp
+                  title={"Reschedule"}
+                  onPress={rescheduleTask}
+                  disabled={selector.is_loading_for_task_update}
+                />
+              </View>
+            </View>
+          ) : (
+            <View style={styles.cancelledVw}>
+              <Text style={styles.cancelledText}>{"This task has been cancelled"}</Text>
+            </View>
+          )}
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -293,4 +375,15 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: Colors.WHITE,
   },
+  cancelledVw: {
+    height: 60,
+    width: "100%",
+    justifyContent: 'center',
+    alignItems: "center"
+  },
+  cancelledText: {
+    fontSize: 14,
+    fontWeight: '400',
+    color: Colors.RED
+  }
 });

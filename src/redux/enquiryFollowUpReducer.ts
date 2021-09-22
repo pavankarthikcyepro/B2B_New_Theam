@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
-import { convertToTime } from "../utils/helperFunctions";
+import { convertTimeStampToDateString, convertToTime } from "../utils/helperFunctions";
 import URL from "../networking/endpoints";
 import { client } from "../networking/client";
 
@@ -41,6 +41,8 @@ const slice = createSlice({
     imagePickerKeyId: "",
     task_details_response: null,
     is_loading_for_task_update: false,
+    update_task_response_status: null,
+    task_status: "",
     //*enquiry follow up *//
     reason: "",
     customer_remarks: "",
@@ -51,6 +53,12 @@ const slice = createSlice({
     actual_end_time: "",
   },
   reducers: {
+    clearState: (state, action) => {
+      state.task_details_response = null;
+      state.is_loading_for_task_update = false;
+      state.update_task_response_status = null;
+      state.task_status = "";
+    },
     setEnquiryFollowUpDetails: (state, action: PayloadAction<EnquiryFollowUpTextModel>) => {
       const { key, text } = action.payload;
       switch (key) {
@@ -80,7 +88,7 @@ const slice = createSlice({
     },
     updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
-      const selectedDate = convertToTime(text);
+      const selectedDate = convertTimeStampToDateString(text, "DD/MM/YYYY");
       switch (state.datePickerKeyId) {
         case "ACTUAL_START_TIME":
           state.actual_start_time = selectedDate;
@@ -99,6 +107,11 @@ const slice = createSlice({
         state.reason = taskObj.reason ? taskObj.reason : "";
         state.customer_remarks = taskObj.customerRemarks ? taskObj.customerRemarks : "";
         state.employee_remarks = taskObj.employeeRemarks ? taskObj.employeeRemarks : "";
+        const stratDate = taskObj.taskActualStartTime ? taskObj.taskActualStartTime : "";
+        state.actual_start_time = convertTimeStampToDateString(stratDate, "DD/MM/YYYY");
+        const endDate = taskObj.taskActualEndTime ? taskObj.taskActualEndTime : "";
+        state.actual_end_time = convertTimeStampToDateString(endDate, "DD/MM/YYYY");
+        state.task_status = taskObj.taskStatus;
         state.task_details_response = action.payload.dmsEntity.task;
       } else {
         state.task_details_response = null;
@@ -109,19 +122,23 @@ const slice = createSlice({
     })
     builder.addCase(updateTaskApi.pending, (state, action) => {
       state.is_loading_for_task_update = true;
+      state.update_task_response_status = null;
     })
     builder.addCase(updateTaskApi.fulfilled, (state, action) => {
       console.log("S updateTaskApi", JSON.stringify(action.payload))
       state.is_loading_for_task_update = false;
+      state.update_task_response_status = "success";
     })
     builder.addCase(updateTaskApi.rejected, (state, action) => {
       console.log("F updateTaskApi", JSON.stringify(action.payload))
       state.is_loading_for_task_update = false;
+      state.update_task_response_status = "failed";
     })
   }
 });
 
 export const {
+  clearState,
   setEnquiryFollowUpDetails,
   setDatePicker,
   updateSelectedDate,

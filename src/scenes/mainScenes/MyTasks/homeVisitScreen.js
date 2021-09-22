@@ -20,32 +20,30 @@ const HomeVisitScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeVisitReducer);
   const dispatch = useDispatch();
   const [actionType, setActionType] = useState("");
+  const [empId, setEmpId] = useState("");
 
   useEffect(() => {
-
+    getAsyncStorageData();
     dispatch(getTaskDetailsApi(taskId));
   }, [])
 
-  const getMyTasksListFromServer = async () => {
+  const getAsyncStorageData = async () => {
     const empId = await AsyncStorage.getData(AsyncStorage.Keys.EMP_ID);
+    if (empId) {
+      setEmpId(empId);
+    }
+  }
+
+  const getMyTasksListFromServer = () => {
     if (empId) {
       const endUrl = `empId=${empId}&limit=10&offset=${0}`;
       dispatch(getMyTasksList(endUrl));
     }
   }
 
-  // Update Task Response handle
+  // Update, Close Task Response handle
   useEffect(() => {
     if (selector.update_task_response_status === "success") {
-      showToastSucess("Successfully updated");
-      navigation.popToTop();
-      dispatch(clearState());
-    }
-  }, [selector.update_task_response_status])
-
-  // Close Task Response handle
-  useEffect(() => {
-    if (selector.update_response_status === "success") {
       if (actionType === "CLOSE_TASK") {
         showToastSucess("Successfully Task Closed");
         getMyTasksListFromServer();
@@ -55,7 +53,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
       navigation.popToTop();
       dispatch(clearState());
     }
-  }, [selector.update_response_status])
+  }, [selector.update_task_response_status])
 
   const updateTask = () => {
 
