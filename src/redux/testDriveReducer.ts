@@ -38,6 +38,16 @@ export const getDriversListApi = createAsyncThunk("TEST_DRIVE_SLICE/getDriversLi
   return json;
 })
 
+export const getTestDriveVehicleListApi = createAsyncThunk("TEST_DRIVE_SLICE/getTestDriveVehicleListApi", async (payload, { rejectWithValue }) => {
+
+  const response = await client.get(URL.GET_TEST_DRIVE_VEHICLES(payload["barnchId"], payload["orgId"]));
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 const testDriveSlice = createSlice({
   name: "TEST_DRIVE_SLICE",
   initialState: {
@@ -133,6 +143,9 @@ const testDriveSlice = createSlice({
     }
   },
   extraReducers: (builder) => {
+    builder.addCase(getTestDriveVehicleListApi.fulfilled, (state, action) => {
+      console.log("S getTestDriveVehicleListApi: ", JSON.stringify(action.payload));
+    })
     builder.addCase(getTestDriveDseEmployeeListApi.fulfilled, (state, action) => {
       //console.log("S getTestDriveDseEmployeeListApi: ", JSON.stringify(action.payload));
       if (action.payload.dmsEntity) {

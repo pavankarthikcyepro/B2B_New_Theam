@@ -30,6 +30,19 @@ const mytasksIdentifires = {
   createenquiry: "CREATE_ENQUIRY"
 }
 
+const taskNamesList = [
+  "Pre Enquiry Follow Up",
+  "Enquiry Follow Up",
+  "Test Drive",
+  "Test Drive Approval",
+  "Home Visit",
+  "Pre Booking Follow Up",
+  "Booking Follow Up - DSE",
+  "Proceed to Booking",
+  "Proceed to Pre Booking",
+  "Create Enquiry"
+]
+
 const MyTasksScreen = ({ navigation }) => {
   const selector = useSelector((state) => state.mytaskReducer);
   const dispatch = useDispatch();
@@ -63,8 +76,11 @@ const MyTasksScreen = ({ navigation }) => {
       case "testdrive":
         navigationId = AppNavigator.MyTasksStackIdentifiers.testDrive;
         break;
-      case "proceedtobooking":
+      case "proceedtoprebooking":
         navigationId = AppNavigator.MyTasksStackIdentifiers.proceedToPreBooking;
+        break;
+      case "proceedtobooking":
+        console.log("not implemented");
         break;
       case "homevisit":
         navigationId = AppNavigator.MyTasksStackIdentifiers.homeVisit;
@@ -98,7 +114,7 @@ const MyTasksScreen = ({ navigation }) => {
 
   if (selector.tableData.length === 0) {
     return (
-      <EmptyListView title={"No Data Found"} />
+      <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} />
     )
   }
 

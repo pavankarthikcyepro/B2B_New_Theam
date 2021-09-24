@@ -47,7 +47,7 @@ const PreBookingScreen = ({ navigation }) => {
 
     if (selector.pre_booking_list.length === 0) {
         return (
-            <EmptyListView title={"No Data Found"} />
+            <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} />
         )
     }
 

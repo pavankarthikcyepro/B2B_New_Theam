@@ -82,7 +82,7 @@ const PreEnquiryScreen = ({ navigation }) => {
                     </Pressable>
                 </View>
 
-                {selector.pre_enquiry_list.length === 0 ? <EmptyListView title={'No Data Found'} /> :
+                {selector.pre_enquiry_list.length === 0 ? <EmptyListView title={'No Data Found'} isLoading={selector.isLoading} /> :
                     <View style={[GlobalStyle.shadow, { backgroundColor: 'white', flex: 1, marginBottom: 10 }]}>
                         <FlatList
                             data={selector.pre_enquiry_list}

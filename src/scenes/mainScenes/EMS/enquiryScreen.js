@@ -57,7 +57,7 @@ const EnquiryScreen = ({ navigation }) => {
       </View> */}
       <View style={{ height: 10 }}></View>
 
-      {selector.enquiry_list.length === 0 ? <EmptyListView title={"No Data Found"} /> :
+      {selector.enquiry_list.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
         <View style={[GlobalStyle.shadow, { backgroundColor: 'white', flex: 1, marginBottom: 10 }]}>
           <FlatList
             data={selector.enquiry_list}

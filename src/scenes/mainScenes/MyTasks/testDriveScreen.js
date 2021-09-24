@@ -15,8 +15,8 @@ import {
   TextinputComp,
   DropDownComponant,
   DatePickerComponent,
+  ImagePickerComponent
 } from "../../../components";
-import { DropDownSelectionItem } from "../../../pureComponents";
 import {
   setTestDriveDetails,
   updateSelectedDropDownData,
@@ -24,17 +24,21 @@ import {
   setDropDownData,
   updateFuelAndTransmissionType,
   getTestDriveDseEmployeeListApi,
-  getDriversListApi
+  getDriversListApi,
+  getTestDriveVehicleListApi
 } from "../../../redux/testDriveReducer";
-import { DateSelectItem, RadioTextItem } from "../../../pureComponents";
+import { DateSelectItem, RadioTextItem, ImageSelectItem, DropDownSelectionItem } from "../../../pureComponents";
 import { Dropdown } from "sharingan-rn-modal-dropdown";
 import { RadioButton } from "react-native-paper";
 import { Button } from "react-native-paper";
 import * as AsyncStore from "../../../asyncStore";
 import { convertToDate, convertToTime } from "../../../utils/helperFunctions";
+import { showToastRedAlert } from "../../../utils/toast";
+import URL from "../../../networking/endpoints";
 
-const TestDriveScreen = ({ navigation }) => {
+const TestDriveScreen = ({ route, navigation }) => {
 
+  const { taskId, identifier, universalId } = route.params;
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.testDriveReducer);
   const { vehicle_modal_list } = useSelector(state => state.homeReducer);
@@ -48,11 +52,14 @@ const TestDriveScreen = ({ navigation }) => {
   const [showDatePickerModel, setShowDatePickerModel] = useState(false);
   const [datePickerKey, setDatePickerKey] = useState("");
   const [datePickerMode, setDatePickerMode] = useState("date");
-  const [driversList, setDrivesList] = useState([]);
+  const [showImagePicker, setShowImagePicker] = useState(false);
+  const [imagePickerKey, setImagePickerKey] = useState("");
+  const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
+
 
   useEffect(() => {
     getAsyncstoreData();
-    dispatch(getTestDriveDseEmployeeListApi());
+    //dispatch(getTestDriveDseEmployeeListApi());
     dispatch(getDriversListApi());
     setCarModelsDataFromBase();
   }, []);
@@ -62,6 +69,11 @@ const TestDriveScreen = ({ navigation }) => {
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       setUserData({ branchId: jsonObj.branchId, orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName })
+      const payload = {
+        barnchId: jsonObj.branchId,
+        orgId: jsonObj.orgId
+      }
+      dispatch(getTestDriveVehicleListApi(payload))
     }
   }
 
@@ -127,6 +139,47 @@ const TestDriveScreen = ({ navigation }) => {
     }
   }
 
+  const uploadSelectedImage = async (selectedPhoto, keyId) => {
+
+    const photoUri = selectedPhoto.uri;
+    if (!photoUri) {
+      return;
+    }
+
+    const formData = new FormData();
+    const fileType = photoUri.substring(photoUri.lastIndexOf(".") + 1);
+    const fileNameArry = photoUri.substring(photoUri.lastIndexOf('/') + 1).split('.');
+    const fileName = fileNameArry.length > 0 ? fileNameArry[0] : "None";
+    formData.append('file', {
+      name: `${fileName}-.${fileType}`,
+      type: `image/${fileType}`,
+      uri: Platform.OS === 'ios' ? photoUri.replace('file://', '') : photoUri
+    });
+    formData.append("universalId", universalId);
+    formData.append("documentType", "dl");
+
+    await fetch(URL.UPLOAD_DOCUMENT(), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      body: formData
+    })
+      .then((response) => response.json())
+      .then((response) => {
+        //console.log('response', response);
+        if (response) {
+          const dataObj = { ...uploadedImagesDataObj };
+          dataObj[response.documentType] = response;
+          setUploadedImagesDataObj({ ...dataObj });
+        }
+      })
+      .catch((error) => {
+        showToastRedAlert(error.message ? error.message : "Something went wrong");
+        console.error('error', error);
+      });
+  }
+
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
 
@@ -153,9 +206,33 @@ const TestDriveScreen = ({ navigation }) => {
     setShowDatePickerModel(true);
   }
 
+  const showImagePickerMethod = (key) => {
+    Keyboard.dismiss();
+    setImagePickerKey(key);
+    setShowImagePicker(true);
+  }
+
+  const DisplaySelectedImage = ({ fileName }) => {
+    return (
+      <View style={styles.selectedImageBckVw}>
+        <Text style={styles.selectedImageTextStyle}>{fileName}</Text>
+      </View>
+    )
+  }
 
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
+
+      <ImagePickerComponent
+        visible={showImagePicker}
+        keyId={imagePickerKey}
+        selectedImage={(data, keyId) => {
+          console.log("imageObj: ", data, keyId);
+          uploadSelectedImage(data, keyId);
+          setShowImagePicker(false)
+        }}
+        onDismiss={() => setShowImagePicker(false)}
+      />
 
       <DropDownComponant
         visible={showDropDownModel}
@@ -351,7 +428,18 @@ const TestDriveScreen = ({ navigation }) => {
                   onPress={() => dispatch(setTestDriveDetails({ key: "CUSTOMER_HAVING_DRIVING_LICENCE", text: "false", }))}
                 />
               </View>
+              {selector.customer_having_driving_licence === "true" && (
+                <View style={styles.select_image_bck_vw}>
+                  <ImageSelectItem
+                    name={"Upload Driving License"}
+                    onPress={() => showImagePickerMethod("DRIVING_LICENSE")}
+                  />
+                </View>
+              )}
+              {uploadedImagesDataObj.dl ? <DisplaySelectedImage fileName={uploadedImagesDataObj.dl.fileName} /> : null}
+
               <Text style={GlobalStyle.underline}></Text>
+
               <DateSelectItem
                 label={"Customer Preffered Date"}
                 value={selector.customer_preferred_date}
@@ -368,7 +456,7 @@ const TestDriveScreen = ({ navigation }) => {
                 onPress={() => showDropDownModelMethod("LIST_OF_DRIVERS", "List of Drivers")}
               />
               <DateSelectItem
-                label={"Customer Preffered Time (24 hours Format)"}
+                label={"Customer Preffered Time"}
                 value={selector.customer_preferred_time}
                 onPress={() => showDatePickerModelMethod("CUSTOMER_PREFERRED_TIME", "time")}
               />
@@ -465,5 +553,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingLeft: 12,
     paddingBottom: 5,
+  },
+  select_image_bck_vw: {
+    minHeight: 50,
+    paddingLeft: 12,
+    backgroundColor: Colors.WHITE,
+  },
+  selectedImageBckVw: {
+    paddingLeft: 12,
+    paddingRight: 15,
+    paddingBottom: 5,
+    backgroundColor: Colors.WHITE
+  },
+  selectedImageTextStyle: {
+    fontSize: 12,
+    fontWeight: '400',
+    color: Colors.DARK_GRAY
   }
 });

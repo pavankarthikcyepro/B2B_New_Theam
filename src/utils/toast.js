@@ -1,7 +1,7 @@
 
 import Snackbar from 'react-native-snackbar';
 import Toast from 'react-native-simple-toast';
-import { Platform, Linking } from 'react-native';
+import { Platform, Linking, Alert } from 'react-native';
 import { Colors } from '../styles';
 
 export const showToast = (title) => {
@@ -46,4 +46,18 @@ export const showToastRedAlert = (title) => {
     } else {
         Toast.show(title, 3000);
     }
+}
+
+export const showAlertMessage = (title = "", message = "") => {
+    Alert.alert(
+        title,
+        message,
+        [
+            {
+                text: "Ok",
+                onPress: () => console.log("ok Pressed"),
+                style: "cancel"
+            },
+        ]
+    )
 }

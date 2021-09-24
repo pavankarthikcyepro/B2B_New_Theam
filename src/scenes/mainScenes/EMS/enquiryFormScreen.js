@@ -90,11 +90,12 @@ import {
   Enquiry_Drop_Reasons,
   Insurence_Types
 } from "../../../jsonData/enquiryFormScreenJsonData";
-import { showToast, showToastRedAlert, showToastSucess } from "../../../utils/toast";
+import { showAlertMessage, showToast, showToastRedAlert, showToastSucess } from "../../../utils/toast";
 import * as AsyncStore from "../../../asyncStore";
 import { convertDateStringToMilliseconds, convertDateStringToMillisecondsUsingMoment } from "../../../utils/helperFunctions";
 import URL from "../../../networking/endpoints";
 import { getEnquiryList } from "../../../redux/enquiryReducer";
+import { AppNavigator } from "../../../navigations";
 
 const theme = {
   ...DefaultTheme,
@@ -515,7 +516,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     return object
   }
 
-  const showPendingTaskAlert = (data = []) => {
+  const showPendingTaskAlert = (data = [], probookingTaskObj) => {
 
     if (data.length > 0) {
       let taskNames = "";
@@ -529,8 +530,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       })
 
       if (enableProceedToPrebooking) {
+
+        const dataObj = probookingTaskObj;
+        const taskId = dataObj.taskId;
+        const universalId = dataObj.universalId;
+        const taskStatus = dataObj.taskStatus;
+
         Alert.alert(
-          "Below tasks are pending, do you want to continue to proceed to pre-booking",
+          "Below tasks are pending, do you want to continue to proceed pre-booking",
           taskNames,
           [
             {
@@ -541,23 +548,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             {
               text: "Proceed",
               onPress: () => {
-
+                navigation.navigate(AppNavigator.EmsStackIdentifiers.proceedToPreBooking, { identifier: "PROCEED_TO_BOOKING", taskId, universalId, taskStatus })
               }
             }
           ]
         )
       } else {
-        Alert.alert(
-          "Below tasks are pending...",
-          taskNames,
-          [
-            {
-              text: "Ok",
-              onPress: () => console.log("Cancel Pressed"),
-              style: "cancel"
-            },
-          ]
-        )
+        showAlertMessage("Below tasks are pending...", taskNames);
       }
     }
   }
@@ -565,6 +562,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   useEffect(() => {
     if (selector.get_pending_tasks_response_status === "success" && selector.get_pending_tasks_response_list.length > 0) {
       let pendingTaskNames = [];
+      let proBookingTaskObj = {};
       selector.get_pending_tasks_response_list.forEach((element) => {
         if (element.taskName === "Test Drive" && (element.taskStatus === "" || element.taskStatus === "ASSIGNED")) {
           pendingTaskNames.push("Test Drive : Pending \n");
@@ -577,9 +575,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         }
         if (element.taskName === "Proceed to Pre Booking" && element.assignee.empId === userData.employeeId && element.universalId === universalId) {
           pendingTaskNames.push("Proceed to Pre Booking");
+          proBookingTaskObj = element;
         }
       })
-      showPendingTaskAlert(pendingTaskNames);
+      showPendingTaskAlert(pendingTaskNames, proBookingTaskObj);
     }
   }, [selector.get_pending_tasks_response_status, selector.get_pending_tasks_response_list])
 

@@ -80,6 +80,7 @@ const SideMenuScreen = ({ navigation }) => {
 
     AsyncStore.storeData(AsyncStore.Keys.USER_NAME, "");
     AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, "");
+    AsyncStore.storeData(AsyncStore.Keys.LOGIN_EMPLOYEE, "");
     navigation.closeDrawer()
     //realm.close();
     signOut();
