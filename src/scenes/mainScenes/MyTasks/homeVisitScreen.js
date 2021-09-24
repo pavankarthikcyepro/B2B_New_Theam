@@ -12,7 +12,7 @@ import {
 } from "../../../redux/homeVisitReducer";
 import { showToastSucess } from "../../../utils/toast";
 import * as AsyncStorage from "../../../asyncStore";
-import { getMyTasksList } from "../../../redux/mytaskReducer";
+import { getCurrentTasksListApi, getPendingTasksListApi } from "../../../redux/mytaskReducer";
 
 const HomeVisitScreen = ({ route, navigation }) => {
 
@@ -36,8 +36,9 @@ const HomeVisitScreen = ({ route, navigation }) => {
 
   const getMyTasksListFromServer = () => {
     if (empId) {
-      const endUrl = `empId=${empId}&limit=10&offset=${0}`;
-      dispatch(getMyTasksList(endUrl));
+      const endUrl = `empid=${empId}&limit=10&offset=${0}`;
+      dispatch(getCurrentTasksListApi(endUrl));
+      dispatch(getPendingTasksListApi(endUrl));
     }
   }
 

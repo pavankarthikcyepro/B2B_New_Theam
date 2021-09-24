@@ -79,7 +79,13 @@ const URL = {
     GET_DRIVERS_LIST: () => roleManagement_url + "/user/role/name/Driver",
     GET_TEST_DRIVE_VEHICLES: (branchId, orgId) => {
         return inventory_url + `/demoVehicle/vehicles?branchId=${branchId}&orgId=${orgId}&type=TESTDRIVE`
-    }
+    },
+    GET_CURRENT_TASK_LIST: () => {
+        return sales_url + `/task-history/current-day-task?`;
+    },
+    GET_FEATURE_PENDING_TASK_LIST: (empId, offset) => {
+        return sales_url + `/task-history/future-or-past-tasks?`;
+    },
 }
 
 export default URL;

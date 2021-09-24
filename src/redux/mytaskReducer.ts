@@ -3,9 +3,21 @@ import { client } from '../networking/client';
 import URL from "../networking/endpoints";
 
 
-export const getMyTasksList = createAsyncThunk("MY_TASKS/getMyTasksList", async (endUrl, { rejectWithValue }) => {
+export const getCurrentTasksListApi = createAsyncThunk("MY_TASKS/getCurrentTasksListApi", async (endUrl, { rejectWithValue }) => {
 
-  const url = URL.MY_TASKS() + endUrl;
+  const url = URL.GET_CURRENT_TASK_LIST() + endUrl;
+  const response = await client.get(url);
+  const json = await response.json()
+  console.log(json)
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getPendingTasksListApi = createAsyncThunk("MY_TASKS/getPendingTasksListApi", async (endUrl, { rejectWithValue }) => {
+
+  const url = URL.GET_FEATURE_PENDING_TASK_LIST() + endUrl;
   const response = await client.get(url);
   const json = await response.json()
   if (!response.ok) {
@@ -14,9 +26,20 @@ export const getMyTasksList = createAsyncThunk("MY_TASKS/getMyTasksList", async 
   return json;
 })
 
-export const getMoreMyTasksList = createAsyncThunk("MY_TASKS/getMoreMyTasksList", async (endUrl, { rejectWithValue }) => {
+export const getMoreCurrentTasksListApi = createAsyncThunk("MY_TASKS/getMoreCurrentTasksListApi", async (endUrl, { rejectWithValue }) => {
 
-  const url = URL.MY_TASKS() + endUrl;
+  const url = URL.GET_CURRENT_TASK_LIST() + endUrl;
+  const response = await client.get(url);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getMorePendingTasksListApi = createAsyncThunk("MY_TASKS/getMorePendingTasksListApi", async (endUrl, { rejectWithValue }) => {
+
+  const url = URL.GET_FEATURE_PENDING_TASK_LIST() + endUrl;
   const response = await client.get(url);
   const json = await response.json()
   if (!response.ok) {
@@ -28,49 +51,82 @@ export const getMoreMyTasksList = createAsyncThunk("MY_TASKS/getMoreMyTasksList"
 export const mytaskSlice = createSlice({
   name: "MY_TASKS",
   initialState: {
-    tableData: [],
-    pageNumber: 0,
-    totalPages: 1,
-    isLoading: false,
-    isLoadingExtraData: false,
-    status: ""
+    // Current Tasks
+    currentTableData: [],
+    currentPageNumber: 0,
+    currnetTotalPages: 1,
+    isLoadingForCurrentTask: false,
+    isLoadingExtraDataForCurrentTask: false,
+    // Pending Tasks
+    pendingTableData: [],
+    pendingPageNumber: 0,
+    pendingTotalPages: 1,
+    isLoadingForPendingTask: false,
+    isLoadingExtraDataForPendingTask: false,
   },
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(getMyTasksList.pending, (state) => {
-      state.isLoading = true;
+    // Get Current Task List
+    builder.addCase(getCurrentTasksListApi.pending, (state) => {
+      state.isLoadingForCurrentTask = true;
     })
-    builder.addCase(getMyTasksList.fulfilled, (state, action) => {
-      //console.log("payload: ", action.payload);
+    builder.addCase(getCurrentTasksListApi.fulfilled, (state, action) => {
       const dmsEntityObj = action.payload?.dmsEntity;
       if (dmsEntityObj) {
-        state.totalPages = dmsEntityObj.myTasks.totalPages;
-        state.pageNumber = dmsEntityObj.myTasks.pageable.pageNumber;
-        state.tableData = dmsEntityObj.myTasks.content;
+        state.currnetTotalPages = dmsEntityObj.myTasks.totalPages;
+        state.currentPageNumber = dmsEntityObj.myTasks.pageable.pageNumber;
+        state.currentTableData = dmsEntityObj.myTasks.content;
       }
-      state.isLoading = false;
-      state.status = "success";
+      state.isLoadingForCurrentTask = false;
     })
-    builder.addCase(getMyTasksList.rejected, (state, action) => {
-      state.isLoading = false;
-      state.status = "failed";
+    builder.addCase(getCurrentTasksListApi.rejected, (state, action) => {
+      state.isLoadingForCurrentTask = false;
     })
-    builder.addCase(getMoreMyTasksList.pending, (state) => {
-      state.isLoadingExtraData = true;
+    // Get More Current Task List
+    builder.addCase(getMoreCurrentTasksListApi.pending, (state) => {
+      state.isLoadingExtraDataForCurrentTask = true;
     })
-    builder.addCase(getMoreMyTasksList.fulfilled, (state, action) => {
-      //console.log("payload: ", action.payload);
+    builder.addCase(getMoreCurrentTasksListApi.fulfilled, (state, action) => {
       const dmsEntityObj = action.payload?.dmsEntity;
       if (dmsEntityObj) {
-        state.pageNumber = dmsEntityObj.myTasks.pageable.pageNumber;
-        state.tableData = [...state.tableData, ...dmsEntityObj.myTasks.content];
+        state.currentPageNumber = dmsEntityObj.myTasks.pageable.pageNumber;
+        state.currentTableData = [...state.currentTableData, ...dmsEntityObj.myTasks.content];
       }
-      state.isLoadingExtraData = false;
-      state.status = "success";
+      state.isLoadingExtraDataForCurrentTask = false;
     })
-    builder.addCase(getMoreMyTasksList.rejected, (state, action) => {
-      state.isLoadingExtraData = false;
-      state.status = "failed";
+    builder.addCase(getMoreCurrentTasksListApi.rejected, (state, action) => {
+      state.isLoadingExtraDataForCurrentTask = false;
+    })
+    // Get Pending Task List
+    builder.addCase(getPendingTasksListApi.pending, (state) => {
+      state.isLoadingForPendingTask = true;
+    })
+    builder.addCase(getPendingTasksListApi.fulfilled, (state, action) => {
+      const dmsEntityObj = action.payload?.dmsEntity;
+      if (dmsEntityObj) {
+        state.pendingTotalPages = dmsEntityObj.myTasks.totalPages;
+        state.pendingPageNumber = dmsEntityObj.myTasks.pageable.pageNumber;
+        state.pendingTableData = dmsEntityObj.myTasks.content;
+      }
+      state.isLoadingForPendingTask = false;
+    })
+    builder.addCase(getPendingTasksListApi.rejected, (state, action) => {
+      state.isLoadingForPendingTask = false;
+    })
+    // Get More Pending Task List
+    builder.addCase(getMorePendingTasksListApi.pending, (state) => {
+      state.isLoadingExtraDataForPendingTask = true;
+    })
+    builder.addCase(getMorePendingTasksListApi.fulfilled, (state, action) => {
+      const dmsEntityObj = action.payload?.dmsEntity;
+      if (dmsEntityObj) {
+        state.pendingPageNumber = dmsEntityObj.myTasks.pageable.pageNumber;
+        state.pendingTableData = [...state.pendingTableData, ...dmsEntityObj.myTasks.content];
+      }
+      state.isLoadingExtraDataForPendingTask = false;
+    })
+    builder.addCase(getMorePendingTasksListApi.rejected, (state, action) => {
+      state.isLoadingExtraDataForPendingTask = false;
     })
   }
 });

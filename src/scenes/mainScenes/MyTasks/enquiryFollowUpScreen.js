@@ -27,7 +27,7 @@ import { DateSelectItem } from "../../../pureComponents";
 import { convertDateStringToMillisecondsUsingMoment } from "../../../utils/helperFunctions";
 import moment from "moment";
 import { showToast, showToastRedAlert, showToastSucess } from "../../../utils/toast";
-import { getMyTasksList } from "../../../redux/mytaskReducer";
+import { getCurrentTasksListApi, getPendingTasksListApi } from "../../../redux/mytaskReducer";
 import * as AsyncStorage from "../../../asyncStore";
 
 const ScreenWidth = Dimensions.get("window").width;
@@ -131,8 +131,9 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
 
   const getMyTasksListFromServer = () => {
     if (empId) {
-      const endUrl = `empId=${empId}&limit=10&offset=${0}`;
-      dispatch(getMyTasksList(endUrl));
+      const endUrl = `empid=${empId}&limit=10&offset=${0}`;
+      dispatch(getCurrentTasksListApi(endUrl));
+      dispatch(getPendingTasksListApi(endUrl));
     }
   }
 

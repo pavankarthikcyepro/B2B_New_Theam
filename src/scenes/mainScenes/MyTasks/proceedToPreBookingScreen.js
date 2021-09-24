@@ -14,7 +14,7 @@ import {
     dropPreBooingApi
 } from "../../../redux/proceedToPreBookingReducer";
 import { showToast, showToastSucess } from "../../../utils/toast";
-import { getMyTasksList } from "../../../redux/mytaskReducer";
+import { getCurrentTasksListApi, getPendingTasksListApi } from "../../../redux/mytaskReducer";
 
 const dropReasonsData = [
     { "id": 1, "name": "Looking For More Discount" },
@@ -73,8 +73,9 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
 
     const getMyTasksListFromServer = () => {
         if (userData.employeeId) {
-            const endUrl = `empId=${userData.employeeId}&limit=10&offset=${0}`;
-            dispatch(getMyTasksList(endUrl));
+            const endUrl = `empid=${userData.employeeId}&limit=10&offset=${0}`;
+            dispatch(getCurrentTasksListApi(endUrl));
+            dispatch(getPendingTasksListApi(endUrl));
         }
     }
 
