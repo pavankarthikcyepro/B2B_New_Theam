@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
         paddingLeft: 12,
         fontSize: 16,
         fontWeight: '400',
-        color: Colors.GRAY
+        color: Colors.GRAY,
+        maxWidth: "85%"
     },
 })

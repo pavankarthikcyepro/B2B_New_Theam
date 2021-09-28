@@ -9,6 +9,7 @@ interface CustomerDetailModel {
 }
 
 interface DropDownModelNew {
+  id: any;
   key: string;
   value: string;
 }
@@ -55,6 +56,8 @@ const testDriveSlice = createSlice({
     isLoading: false,
     employees_list: [],
     drivers_list: [],
+    test_drive_vehicle_list: [],
+    test_drive_vehicle_list_for_drop_down: [],
     // Customer Details
     name: "",
     mobile: "",
@@ -63,26 +66,24 @@ const testDriveSlice = createSlice({
     varient: "",
     fuel_type: "",
     transmission_type: "",
-    address_type_is_showroom: "",
+    selected_vehicle_id: "",
+    address_type_is_showroom: "true",
     customer_address: "",
-    customer_having_driving_licence: "",
+    customer_having_driving_licence: "false",
     customer_preferred_date: "",
     selected_dse_employee: "",
+    selected_dse_id: "",
     selected_driver: "",
+    selected_driver_id: "",
     customer_preferred_time: "",
     actual_start_time: "",
     actual_end_time: ""
   },
   reducers: {
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
-      const { key, value } = action.payload;
+      const { key, value, id } = action.payload;
       switch (key) {
         case "MODEL":
-          if (state.model != value) {
-            state.varient = "";
-            state.fuel_type = "";
-            state.transmission_type = "";
-          }
           state.model = value;
           break;
         case "VARIENT":
@@ -93,6 +94,7 @@ const testDriveSlice = createSlice({
           break;
         case "LIST_OF_DRIVERS":
           state.selected_driver = value;
+          state.selected_driver_id = id;
           break;
       }
     },
@@ -137,14 +139,52 @@ const testDriveSlice = createSlice({
           break;
       }
     },
-    updateFuelAndTransmissionType: (state, action) => {
-      state.fuel_type = action.payload.fuelType;
-      state.transmission_type = action.payload.transmissionType;
+    updateSelectedTestDriveVehicle: (state, action) => {
+
+      const vehicleInfo = action.payload;
+      console.log(vehicleInfo);
+      state.varient = vehicleInfo.varient;
+      state.fuel_type = vehicleInfo.fuelType;
+      state.transmission_type = vehicleInfo.transmissionType;
+      state.selected_vehicle_id = vehicleInfo.id;
+    },
+    updateBasicDetails: (state, action) => {
+      const taskData = action.payload;
+      if (taskData) {
+        const leadDtoObj = taskData.leadDto;
+        state.name = leadDtoObj.firstName + " " + leadDtoObj.lastName;
+        state.email = leadDtoObj.email || "";
+        state.mobile = leadDtoObj.phone || "";
+        state.selected_dse_employee = taskData.assignee.empName;
+        state.selected_dse_id = taskData.assignee.empId;
+      }
     }
   },
   extraReducers: (builder) => {
     builder.addCase(getTestDriveVehicleListApi.fulfilled, (state, action) => {
-      console.log("S getTestDriveVehicleListApi: ", JSON.stringify(action.payload));
+      // console.log("S getTestDriveVehicleListApi: ", JSON.stringify(action.payload));
+      if (action.payload.status === "SUCCESS" && action.payload.vehicles) {
+        const vehicles = action.payload.vehicles;
+        state.test_drive_vehicle_list = vehicles;
+
+        // For dropdown
+        let new_vehicles = [];
+        vehicles.forEach(element => {
+          const vehicleInfo = element.vehicleInfo;
+          new_vehicles.push({
+            id: element.id,
+            name: vehicleInfo.model,
+            varient: vehicleInfo.varientName,
+            fuelType: vehicleInfo.fuelType,
+            transmissionType: vehicleInfo.transmission_type
+          })
+        });
+        state.test_drive_vehicle_list_for_drop_down = new_vehicles;
+      }
+    })
+    builder.addCase(getTestDriveVehicleListApi.rejected, (state, action) => {
+      state.test_drive_vehicle_list = [];
+      state.test_drive_vehicle_list_for_drop_down = [];
     })
     builder.addCase(getTestDriveDseEmployeeListApi.fulfilled, (state, action) => {
       //console.log("S getTestDriveDseEmployeeListApi: ", JSON.stringify(action.payload));
@@ -173,6 +213,7 @@ export const {
   updateSelectedDate,
   setTestDriveDetails,
   setDropDownData,
-  updateFuelAndTransmissionType
+  updateBasicDetails,
+  updateSelectedTestDriveVehicle
 } = testDriveSlice.actions;
 export default testDriveSlice.reducer;
