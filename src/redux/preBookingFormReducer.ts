@@ -2,9 +2,7 @@ import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { client } from "../networking/client";
 import URL from "../networking/endpoints";
 
-import {
-  Form_Types,
-} from "../jsonData/prebookingFormScreenJsonData";
+import { Form_Types } from "../jsonData/prebookingFormScreenJsonData";
 import {
   Salutation_Types,
   Enquiry_Segment_Data,
@@ -32,86 +30,113 @@ const dropDownData = [
   },
 ];
 
-export const getPrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getPrebookingDetailsApi", async (universalId, { rejectWithValue }) => {
-
-  const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const getPrebookingDetailsApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getPrebookingDetailsApi",
+  async (universalId, { rejectWithValue }) => {
+    const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
-export const updatePrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/updatePrebookingDetailsApi", async (payload, { rejectWithValue }) => {
-
-  const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const updatePrebookingDetailsApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/updatePrebookingDetailsApi",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
-export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getOnRoadPriceAndInsurenceDetailsApi", async (payload, { rejectWithValue }) => {
-
-  const response = await client.get(URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(payload["varientId"], payload["vehicleId"]));
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getOnRoadPriceAndInsurenceDetailsApi",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.get(
+      URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(
+        payload["varientId"],
+        payload["vehicleId"]
+      )
+    );
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
-export const getPaidAccessoriesListApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getPaidAccessoriesListApi", async (orgId, { rejectWithValue }) => {
-
-  const customConfig = { orgId: orgId };
-  const response = await client.get(URL.GET_PAID_ACCESSORIES_LIST(orgId), customConfig);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const getPaidAccessoriesListApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getPaidAccessoriesListApi",
+  async (orgId, { rejectWithValue }) => {
+    const customConfig = { orgId: orgId };
+    const response = await client.get(
+      URL.GET_PAID_ACCESSORIES_LIST(orgId),
+      customConfig
+    );
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
-export const dropPreBooingApi = createAsyncThunk("PREBOONING_FORMS_SLICE/dropPreBooingApi", async (payload, { rejectWithValue }) => {
-
-  const response = await client.post(URL.DROP_ENQUIRY(), payload);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const dropPreBooingApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/dropPreBooingApi",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.DROP_ENQUIRY(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
-export const sendOnRoadPriceDetails = createAsyncThunk("PREBOONING_FORMS_SLICE/sendOnRoadPriceDetails", async (payload, { rejectWithValue }) => {
-
-  const response = await client.post(URL.SEND_ON_ROAD_PRICE_DETAILS(), payload);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const sendOnRoadPriceDetails = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/sendOnRoadPriceDetails",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(
+      URL.SEND_ON_ROAD_PRICE_DETAILS(),
+      payload
+    );
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
-export const getCustomerTypesApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getCustomerTypesApi", async (universalId, { rejectWithValue }) => {
-
-  const response = await client.get(URL.GET_CUSTOMER_TYPES());
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const getCustomerTypesApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getCustomerTypesApi",
+  async (universalId, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_CUSTOMER_TYPES());
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
-export const getOnRoadPriceDtoListApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getOnRoadPriceDtoListApi", async (leadId, { rejectWithValue }) => {
-
-  const response = await client.get(URL.GET_ON_ROAD_PRICE_DTO_LIST(leadId));
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const getOnRoadPriceDtoListApi = createAsyncThunk(
+  "PREBOONING_FORMS_SLICE/getOnRoadPriceDtoListApi",
+  async (leadId, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_ON_ROAD_PRICE_DTO_LIST(leadId));
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
 interface CustomerDetailModel {
   key: string;
@@ -243,7 +268,7 @@ const prebookingFormSlice = createSlice({
     relationship_proof: "",
     // Booking Drop
     drop_reason: "",
-    drop_remarks: ""
+    drop_remarks: "",
   },
   reducers: {
     clearState: (state, action) => {
@@ -269,7 +294,8 @@ const prebookingFormSlice = createSlice({
           state.enquiry_segment = value;
           state.customer_type = "";
           if (state.customer_types_response) {
-            state.customer_types_data = state.customer_types_response[value.toLowerCase()];
+            state.customer_types_data =
+              state.customer_types_response[value.toLowerCase()];
           }
           break;
         case "CUSTOMER_TYPE":
@@ -586,48 +612,75 @@ const prebookingFormSlice = createSlice({
       state.transmission_type = action.payload.transmissionType;
     },
     updateDmsContactOrAccountDtoData: (state, action) => {
-
       // dmsContactOrAccountDto
       const dms_C_Or_A_Dto = action.payload;
-      state.salutation = dms_C_Or_A_Dto.salutation ? dms_C_Or_A_Dto.salutation : "";
+      state.salutation = dms_C_Or_A_Dto.salutation
+        ? dms_C_Or_A_Dto.salutation
+        : "";
       if (state.salutation) {
-        state.gender_types_data = Gender_Data_Obj[state.salutation.toLowerCase()];
+        state.gender_types_data =
+          Gender_Data_Obj[state.salutation.toLowerCase()];
       }
-      state.first_name = dms_C_Or_A_Dto.firstName ? dms_C_Or_A_Dto.firstName : "";
+      state.first_name = dms_C_Or_A_Dto.firstName
+        ? dms_C_Or_A_Dto.firstName
+        : "";
       state.last_name = dms_C_Or_A_Dto.lastName ? dms_C_Or_A_Dto.lastName : "";
       state.mobile = dms_C_Or_A_Dto.phone ? dms_C_Or_A_Dto.phone : "";
       state.email = dms_C_Or_A_Dto.email ? dms_C_Or_A_Dto.email : "";
-      const dateOfBirth = dms_C_Or_A_Dto.dateOfBirth ? dms_C_Or_A_Dto.dateOfBirth : "";
-      state.date_of_birth = convertTimeStampToDateString(dateOfBirth, "DD/MM/YYYY");
+      const dateOfBirth = dms_C_Or_A_Dto.dateOfBirth
+        ? dms_C_Or_A_Dto.dateOfBirth
+        : "";
+      state.date_of_birth = convertTimeStampToDateString(
+        dateOfBirth,
+        "DD/MM/YYYY"
+      );
       state.gender = dms_C_Or_A_Dto.gender ? dms_C_Or_A_Dto.gender : "";
       state.age = dms_C_Or_A_Dto.age ? dms_C_Or_A_Dto.age.toString() : "0";
-      state.customer_type = dms_C_Or_A_Dto.customerType ? dms_C_Or_A_Dto.customerType : "";
+      state.customer_type = dms_C_Or_A_Dto.customerType
+        ? dms_C_Or_A_Dto.customerType
+        : "";
     },
     updateDmsLeadDtoData: (state, action) => {
-
       const dmsLeadDto = action.payload;
-      state.enquiry_segment = dmsLeadDto.enquirySegment ? dmsLeadDto.enquirySegment : "";
+      state.enquiry_segment = dmsLeadDto.enquirySegment
+        ? dmsLeadDto.enquirySegment
+        : "";
       if (state.customer_types_response && state.enquiry_segment) {
-        state.customer_types_data = state.customer_types_response[state.enquiry_segment.toLowerCase()];
+        state.customer_types_data =
+          state.customer_types_response[state.enquiry_segment.toLowerCase()];
       }
-      state.marital_status = dmsLeadDto.maritalStatus ? dmsLeadDto.maritalStatus : "";
-      state.vehicle_type = dmsLeadDto.otherVehicleRcNo ? dmsLeadDto.otherVehicleRcNo : "";
-      state.registration_number = dmsLeadDto.otherVehicleType ? dmsLeadDto.otherVehicleType : "";
+      state.marital_status = dmsLeadDto.maritalStatus
+        ? dmsLeadDto.maritalStatus
+        : "";
+      state.vehicle_type = dmsLeadDto.otherVehicleRcNo
+        ? dmsLeadDto.otherVehicleRcNo
+        : "";
+      state.registration_number = dmsLeadDto.otherVehicleType
+        ? dmsLeadDto.otherVehicleType
+        : "";
 
       // Commitment
       state.occasion = dmsLeadDto.occasion ? dmsLeadDto.occasion : "";
-      const customerPreferredDate = dmsLeadDto.commitmentDeliveryPreferredDate ? dmsLeadDto.commitmentDeliveryPreferredDate : "";
-      state.customer_preferred_date = convertTimeStampToDateString(customerPreferredDate, "DD/MM/YYYY");
-      const tentativeDeliveryDate = dmsLeadDto.commitmentDeliveryTentativeDate ? dmsLeadDto.commitmentDeliveryTentativeDate : ""
-      state.tentative_delivery_date = convertTimeStampToDateString(tentativeDeliveryDate, "DD/MM/YYYY");
+      const customerPreferredDate = dmsLeadDto.commitmentDeliveryPreferredDate
+        ? dmsLeadDto.commitmentDeliveryPreferredDate
+        : "";
+      state.customer_preferred_date = convertTimeStampToDateString(
+        customerPreferredDate,
+        "DD/MM/YYYY"
+      );
+      const tentativeDeliveryDate = dmsLeadDto.commitmentDeliveryTentativeDate
+        ? dmsLeadDto.commitmentDeliveryTentativeDate
+        : "";
+      state.tentative_delivery_date = convertTimeStampToDateString(
+        tentativeDeliveryDate,
+        "DD/MM/YYYY"
+      );
     },
     updateDmsAddressData: (state, action) => {
-
       const dmsAddresses = action.payload;
       if (dmsAddresses.length == 2) {
         dmsAddresses.forEach((address) => {
-          if (address.addressType === 'Communication') {
-
+          if (address.addressType === "Communication") {
             state.pincode = address.pincode ? address.pincode : "";
             state.house_number = address.houseNo ? address.houseNo : "";
             state.street_name = address.street ? address.street : "";
@@ -643,9 +696,7 @@ const prebookingFormSlice = createSlice({
               urbanOrRural = 2;
             }
             state.urban_or_rural = urbanOrRural;
-
-          } else if (address.addressType === 'Permanent') {
-
+          } else if (address.addressType === "Permanent") {
             state.p_pincode = address.pincode ? address.pincode : "";
             state.p_houseNum = address.houseNo ? address.houseNo : "";
             state.p_streetName = address.street ? address.street : "";
@@ -665,7 +716,6 @@ const prebookingFormSlice = createSlice({
       }
     },
     updateModelSelectionData: (state, action) => {
-
       const dmsLeadProducts = action.payload;
       if (dmsLeadProducts.length > 0) {
         const dataObj = dmsLeadProducts[0];
@@ -674,7 +724,9 @@ const prebookingFormSlice = createSlice({
         state.varient = dataObj.variant ? dataObj.variant : "";
         state.color = dataObj.color ? dataObj.color : "";
         state.fuel_type = dataObj.fuel ? dataObj.fuel : "";
-        state.transmission_type = dataObj.transimmisionType ? dataObj.transimmisionType : "";
+        state.transmission_type = dataObj.transimmisionType
+          ? dataObj.transimmisionType
+          : "";
         state.model_drop_down_data_update_status = "update";
       }
     },
@@ -683,30 +735,56 @@ const prebookingFormSlice = createSlice({
       if (dmsfinancedetails.length > 0) {
         const dataObj = dmsfinancedetails[0];
         state.retail_finance = dataObj.financeType ? dataObj.financeType : "";
-        state.finance_category = dataObj.financeCategory ? dataObj.financeCategory : "";
-        state.down_payment = dataObj.downPayment ? dataObj.downPayment.toString() : "";
-        state.loan_amount = dataObj.loanAmount ? dataObj.loanAmount.toString() : "";
-        state.bank_or_finance = dataObj.financeCompany ? dataObj.financeCompany : "";
-        state.bank_or_finance_name = dataObj.financeCompany ? dataObj.financeCompany : "";
-        state.rate_of_interest = dataObj.rateOfInterest ? dataObj.rateOfInterest : "";
-        state.loan_of_tenure = dataObj.expectedTenureYears ? dataObj.expectedTenureYears : "";
+        state.finance_category = dataObj.financeCategory
+          ? dataObj.financeCategory
+          : "";
+        state.down_payment = dataObj.downPayment
+          ? dataObj.downPayment.toString()
+          : "";
+        state.loan_amount = dataObj.loanAmount
+          ? dataObj.loanAmount.toString()
+          : "";
+        state.bank_or_finance = dataObj.financeCompany
+          ? dataObj.financeCompany
+          : "";
+        state.bank_or_finance_name = dataObj.financeCompany
+          ? dataObj.financeCompany
+          : "";
+        state.rate_of_interest = dataObj.rateOfInterest
+          ? dataObj.rateOfInterest
+          : "";
+        state.loan_of_tenure = dataObj.expectedTenureYears
+          ? dataObj.expectedTenureYears
+          : "";
         state.emi = dataObj.emi ? dataObj.emi.toString() : "";
-        state.approx_annual_income = dataObj.annualIncome ? dataObj.annualIncome : "";
+        state.approx_annual_income = dataObj.annualIncome
+          ? dataObj.annualIncome
+          : "";
         state.location = dataObj.location ? dataObj.location : "";
-        state.leashing_name = dataObj.financeCompany ? dataObj.financeCompany : "";
+        state.leashing_name = dataObj.financeCompany
+          ? dataObj.financeCompany
+          : "";
       }
     },
     updateBookingPaymentData: (state, action) => {
       const dmsBooking = action.payload;
       if (dmsBooking) {
         const dataObj = dmsBooking;
-        state.booking_amount = dataObj.bookingAmount ? dataObj.bookingAmount.toString() : "";
+        state.booking_amount = dataObj.bookingAmount
+          ? dataObj.bookingAmount.toString()
+          : "";
         state.payment_at = dataObj.paymentAt ? dataObj.paymentAt : "";
-        state.booking_payment_mode = dataObj.modeOfPayment ? dataObj.modeOfPayment : "";
-        state.delivery_location = dataObj.deliveryLocation ? dataObj.deliveryLocation : "";
-        state.vechicle_registration = dataObj.otherVehicle ? dataObj.otherVehicle : false;
+        state.booking_payment_mode = dataObj.modeOfPayment
+          ? dataObj.modeOfPayment
+          : "";
+        state.delivery_location = dataObj.deliveryLocation
+          ? dataObj.deliveryLocation
+          : "";
+        state.vechicle_registration = dataObj.otherVehicle
+          ? dataObj.otherVehicle
+          : false;
       }
-    }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getPrebookingDetailsApi.fulfilled, (state, action) => {
@@ -714,85 +792,128 @@ const prebookingFormSlice = createSlice({
       if (action.payload.dmsEntity) {
         state.pre_booking_details_response = action.payload.dmsEntity;
       }
-    })
+    });
     builder.addCase(getPrebookingDetailsApi.rejected, (state, action) => {
       //console.log("F getPrebookingDetailsApi: ", JSON.stringify(action.payload));
-    })
+    });
     builder.addCase(updatePrebookingDetailsApi.fulfilled, (state, action) => {
-      console.log("S updatePrebookingDetailsApi: ", JSON.stringify(action.payload));
+      console.log(
+        "S updatePrebookingDetailsApi: ",
+        JSON.stringify(action.payload)
+      );
       if (action.payload.success == true) {
         state.update_pre_booking_details_response = "success";
       }
-    })
+    });
     builder.addCase(updatePrebookingDetailsApi.rejected, (state, action) => {
-      console.log("F updatePrebookingDetailsApi: ", JSON.stringify(action.payload));
+      console.log(
+        "F updatePrebookingDetailsApi: ",
+        JSON.stringify(action.payload)
+      );
       state.update_pre_booking_details_response = "failed";
-    })
-    builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.fulfilled, (state, action) => {
-      //console.log("S getOnRoadPriceAndInsurenceDetailsApi: ", JSON.stringify(action.payload));
-      if (action.payload) {
-        state.vehicle_on_road_price_insurence_details_response = action.payload;
+    });
+    builder.addCase(
+      getOnRoadPriceAndInsurenceDetailsApi.fulfilled,
+      (state, action) => {
+        //console.log("S getOnRoadPriceAndInsurenceDetailsApi: ", JSON.stringify(action.payload));
+        if (action.payload) {
+          state.vehicle_on_road_price_insurence_details_response =
+            action.payload;
+        }
       }
-    })
-    builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.rejected, (state, action) => {
-      //console.log("F getOnRoadPriceAndInsurenceDetailsApi: ", JSON.stringify(action.payload));
-    })
+    );
+    builder.addCase(
+      getOnRoadPriceAndInsurenceDetailsApi.rejected,
+      (state, action) => {
+        //console.log("F getOnRoadPriceAndInsurenceDetailsApi: ", JSON.stringify(action.payload));
+      }
+    );
 
     builder.addCase(getPaidAccessoriesListApi.fulfilled, (state, action) => {
       //console.log("S getPaidAccessoriesListApi: ", JSON.stringify(action.payload));
       if (action.payload.accessorylist) {
         state.paid_accessories_list = action.payload.accessorylist;
       }
-    })
+    });
     builder.addCase(dropPreBooingApi.fulfilled, (state, action) => {
       //console.log("S dropPreBooingApi: ", JSON.stringify(action.payload));
       if (action.payload.status === "SUCCESS") {
         state.pre_booking_drop_response_status = "success";
       }
-    })
+    });
     builder.addCase(sendOnRoadPriceDetails.fulfilled, (state, action) => {
       console.log("S sendOnRoadPriceDetails: ", JSON.stringify(action.payload));
       if (action.payload.success === false) {
-        showToastRedAlert(action.payload.errorMessage || "Something went wrong");
+        showToastRedAlert(
+          action.payload.errorMessage || "Something went wrong"
+        );
         return;
       } else if (action.payload.success === true) {
-        state.send_onRoad_price_details_response = action.payload.dmsEntity.dmsOnRoadPriceDto;
+        state.send_onRoad_price_details_response =
+          action.payload.dmsEntity.dmsOnRoadPriceDto;
       }
-    })
+    });
     builder.addCase(sendOnRoadPriceDetails.rejected, (state, action) => {
       //console.log("F getOnRoadPriceAndInsurenceDetailsApi: ", JSON.stringify(action.payload));
       showToastRedAlert("Something went wrong");
-    })
+    });
     builder.addCase(getOnRoadPriceDtoListApi.fulfilled, (state, action) => {
-      console.log("S getOnRoadPriceDtoListApi: ", JSON.stringify(action.payload));
+      console.log(
+        "S getOnRoadPriceDtoListApi: ",
+        JSON.stringify(action.payload)
+      );
       if (action.payload.dmsEntity) {
-        const dmsOnRoadPriceDtoList = action.payload.dmsEntity.dmsOnRoadPriceDtoList;
+        const dmsOnRoadPriceDtoList =
+          action.payload.dmsEntity.dmsOnRoadPriceDtoList;
         state.on_road_price_dto_list_response = dmsOnRoadPriceDtoList;
         if (dmsOnRoadPriceDtoList.length > 0) {
           const dataObj = dmsOnRoadPriceDtoList[0];
 
-          state.insurance_type = dataObj.insuranceType ? dataObj.insuranceType : "";
+          state.insurance_type = dataObj.insuranceType
+            ? dataObj.insuranceType
+            : "";
           state.warranty = dataObj.warrantyName ? dataObj.warrantyName : "";
 
-          if (dataObj.insuranceAddonData && dataObj.insuranceAddonData.length > 0) {
+          if (
+            dataObj.insuranceAddonData &&
+            dataObj.insuranceAddonData.length > 0
+          ) {
             let addOnNames = "";
             dataObj.insuranceAddonData.forEach((element, index) => {
-              addOnNames += element.insuranceAddonName + ((index + 1) < dataObj.length ? ", " : "");
+              addOnNames +=
+                element.insuranceAddonName +
+                (index + 1 < dataObj.length ? ", " : "");
             });
             state.add_on_insurance + addOnNames;
           }
 
-          state.consumer_offer = dataObj.specialScheme ? dataObj.specialScheme.toString() : "";
-          state.exchange_offer = dataObj.exchangeOffers ? dataObj.exchangeOffers.toString() : "";
-          state.corporate_offer = dataObj.corporateOffer ? dataObj.corporateOffer.toString() : "";
-          state.promotional_offer = dataObj.promotionalOffers ? dataObj.promotionalOffers.toString() : "";
-          state.cash_discount = dataObj.cashDiscount ? dataObj.cashDiscount.toString() : "";
-          state.for_accessories = dataObj.focAccessories ? dataObj.focAccessories.toString() : "";
-          state.additional_offer_1 = dataObj.additionalOffer1 ? dataObj.additionalOffer1.toString() : "";
-          state.additional_offer_2 = dataObj.additionalOffer2 ? dataObj.additionalOffer2.toString() : "";
+          state.consumer_offer = dataObj.specialScheme
+            ? dataObj.specialScheme.toString()
+            : "";
+          state.exchange_offer = dataObj.exchangeOffers
+            ? dataObj.exchangeOffers.toString()
+            : "";
+          state.corporate_offer = dataObj.corporateOffer
+            ? dataObj.corporateOffer.toString()
+            : "";
+          state.promotional_offer = dataObj.promotionalOffers
+            ? dataObj.promotionalOffers.toString()
+            : "";
+          state.cash_discount = dataObj.cashDiscount
+            ? dataObj.cashDiscount.toString()
+            : "";
+          state.for_accessories = dataObj.focAccessories
+            ? dataObj.focAccessories.toString()
+            : "";
+          state.additional_offer_1 = dataObj.additionalOffer1
+            ? dataObj.additionalOffer1.toString()
+            : "";
+          state.additional_offer_2 = dataObj.additionalOffer2
+            ? dataObj.additionalOffer2.toString()
+            : "";
         }
       }
-    })
+    });
     builder.addCase(getCustomerTypesApi.fulfilled, (state, action) => {
       console.log("S getCustomerTypesApi: ", JSON.stringify(action.payload));
       if (action.payload) {
@@ -800,8 +921,8 @@ const prebookingFormSlice = createSlice({
         let personalTypes = [];
         let commercialTypes = [];
         let companyTypes = [];
-        customerTypes.forEach(customer => {
-          const obj = { id: customer.id, name: customer.customerType }
+        customerTypes.forEach((customer) => {
+          const obj = { id: customer.id, name: customer.customerType };
           if (customer.customerType === "Fleet") {
             commercialTypes.push(obj);
           } else if (customer.customerType === "Institution") {
@@ -811,15 +932,15 @@ const prebookingFormSlice = createSlice({
           }
         });
         const obj = {
-          "personal": personalTypes,
-          "commercial": commercialTypes,
-          "company": companyTypes,
-          "handicapped": companyTypes
-        }
+          personal: personalTypes,
+          commercial: commercialTypes,
+          company: companyTypes,
+          handicapped: companyTypes,
+        };
         state.customer_types_response = obj;
       }
-    })
-  }
+    });
+  },
 });
 
 const dateSelected = (isoDate) => {
@@ -854,6 +975,6 @@ export const {
   updateDmsAddressData,
   updateModelSelectionData,
   updateFinancialData,
-  updateBookingPaymentData
+  updateBookingPaymentData,
 } = prebookingFormSlice.actions;
 export default prebookingFormSlice.reducer;

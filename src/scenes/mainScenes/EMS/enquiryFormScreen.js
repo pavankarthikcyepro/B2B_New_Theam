@@ -9,9 +9,15 @@ import {
   Keyboard,
   ActivityIndicator,
   KeyboardAvoidingView,
-  Alert
+  Alert,
 } from "react-native";
-import { DefaultTheme, Checkbox, IconButton, List, Button } from "react-native-paper";
+import {
+  DefaultTheme,
+  Checkbox,
+  IconButton,
+  List,
+  Button,
+} from "react-native-paper";
 import { Colors, GlobalStyle } from "../../../styles";
 import VectorImage from "react-native-vector-image";
 import {
@@ -60,7 +66,7 @@ import {
   updateEnquiryDetailsApi,
   uploadDocumentApi,
   updateDmsAttachmentDetails,
-  getPendingTasksApi
+  getPendingTasksApi,
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
@@ -88,11 +94,19 @@ import {
   Transmission_Types,
   Fuel_Types,
   Enquiry_Drop_Reasons,
-  Insurence_Types
+  Insurence_Types,
 } from "../../../jsonData/enquiryFormScreenJsonData";
-import { showAlertMessage, showToast, showToastRedAlert, showToastSucess } from "../../../utils/toast";
+import {
+  showAlertMessage,
+  showToast,
+  showToastRedAlert,
+  showToastSucess,
+} from "../../../utils/toast";
 import * as AsyncStore from "../../../asyncStore";
-import { convertDateStringToMilliseconds, convertDateStringToMillisecondsUsingMoment } from "../../../utils/helperFunctions";
+import {
+  convertDateStringToMilliseconds,
+  convertDateStringToMillisecondsUsingMoment,
+} from "../../../utils/helperFunctions";
 import URL from "../../../networking/endpoints";
 import { getEnquiryList } from "../../../redux/enquiryReducer";
 import { AppNavigator } from "../../../navigations";
@@ -109,10 +123,9 @@ const theme = {
 };
 
 const DetailsOverviewScreen = ({ route, navigation }) => {
-
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.enquiryFormReducer);
-  const { vehicle_modal_list } = useSelector(state => state.homeReducer);
+  const { vehicle_modal_list } = useSelector((state) => state.homeReducer);
   const [openAccordian, setOpenAccordian] = useState("0");
   const [componentAppear, setComponentAppear] = useState(false);
   const { universalId } = route.params;
@@ -121,14 +134,22 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [dropDownKey, setDropDownKey] = useState("");
   const [dropDownTitle, setDropDownTitle] = useState("Select Data");
   const [carModelsData, setCarModelsData] = useState([]);
-  const [selectedCarVarientsData, setSelectedCarVarientsData] = useState({ varientList: [], varientListForDropDown: [] });
+  const [selectedCarVarientsData, setSelectedCarVarientsData] = useState({
+    varientList: [],
+    varientListForDropDown: [],
+  });
   const [carColorsData, setCarColorsData] = useState([]);
   const [c_model_types, set_c_model_types] = useState([]);
   const [r_model_types, set_r_model_types] = useState([]);
   const [a_model_types, set_a_model_types] = useState([]);
   const [showPreBookingBtn, setShowPreBookingBtn] = useState(false);
   const [isDropSelected, setIsDropSelected] = useState(false);
-  const [userData, setUserData] = useState({ branchId: "", orgId: "", employeeId: "", employeeName: "" })
+  const [userData, setUserData] = useState({
+    branchId: "",
+    orgId: "",
+    employeeId: "",
+    employeeName: "",
+  });
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
   const [typeOfActionDispatched, setTypeOfActionDispatched] = useState("");
 
@@ -142,32 +163,41 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   }, []);
 
   const getAsyncstoreData = async () => {
-    const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    const employeeData = await AsyncStore.getData(
+      AsyncStore.Keys.LOGIN_EMPLOYEE
+    );
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
-      setUserData({ branchId: jsonObj.branchId, orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName })
+      setUserData({
+        branchId: jsonObj.branchId,
+        orgId: jsonObj.orgId,
+        employeeId: jsonObj.empId,
+        employeeName: jsonObj.empName,
+      });
     }
-  }
+  };
 
   const setCarModelsDataFromBase = () => {
     let modalList = [];
     if (vehicle_modal_list.length > 0) {
-      vehicle_modal_list.forEach(item => {
-        modalList.push({ id: item.vehicleId, name: item.model })
+      vehicle_modal_list.forEach((item) => {
+        modalList.push({ id: item.vehicleId, name: item.model });
       });
     }
     setCarModelsData([...modalList]);
-  }
+  };
 
   useEffect(() => {
     if (selector.enquiry_details_response) {
-
       let dmsContactOrAccountDto;
       if (selector.enquiry_details_response.hasOwnProperty("dmsAccountDto")) {
-        dmsContactOrAccountDto = selector.enquiry_details_response.dmsAccountDto;
-      }
-      else if (selector.enquiry_details_response.hasOwnProperty("dmsContactDto")) {
-        dmsContactOrAccountDto = selector.enquiry_details_response.dmsContactDto;
+        dmsContactOrAccountDto =
+          selector.enquiry_details_response.dmsAccountDto;
+      } else if (
+        selector.enquiry_details_response.hasOwnProperty("dmsContactDto")
+      ) {
+        dmsContactOrAccountDto =
+          selector.enquiry_details_response.dmsContactDto;
       }
       const dmsLeadDto = selector.enquiry_details_response.dmsLeadDto;
       if (dmsLeadDto.leadStatus === "ENQUIRYCOMPLETED") {
@@ -187,12 +217,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       // Update Customer Need Analysys
       dispatch(updateCustomerNeedAnalysisData(dmsLeadDto.dmsLeadScoreCards));
       // Update Additional ore Replacement Buyer Data
-      dispatch(updateAdditionalOrReplacementBuyerData(dmsLeadDto.dmsExchagedetails));
+      dispatch(
+        updateAdditionalOrReplacementBuyerData(dmsLeadDto.dmsExchagedetails)
+      );
       // Update Attachment details
       saveAttachmentDetailsInLocalObject(dmsLeadDto.dmsAttachments);
       dispatch(updateDmsAttachmentDetails(dmsLeadDto.dmsAttachments));
     }
-  }, [selector.enquiry_details_response])
+  }, [selector.enquiry_details_response]);
 
   const saveAttachmentDetailsInLocalObject = (dmsAttachments) => {
     if (dmsAttachments.length > 0) {
@@ -202,13 +234,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           documentPath: item.documentPath,
           documentType: item.documentType,
           fileName: item.fileName,
-          keyName: item.keyName
-        }
+          keyName: item.keyName,
+        };
         dataObj[item.documentType] = obj;
-      })
-      setUploadedImagesDataObj({ ...dataObj })
+      });
+      setUploadedImagesDataObj({ ...dataObj });
     }
-  }
+  };
 
   useEffect(() => {
     if (selector.model_drop_down_data_update_statu === "update") {
@@ -220,7 +252,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (universalId) {
       dispatch(getEnquiryDetailsApi(universalId));
     }
-  }
+  };
 
   const updateAccordian = (selectedIndex) => {
     Keyboard.dismiss();
@@ -232,9 +264,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   const submitClicked = () => {
-
     if (!selector.enquiry_details_response) {
-      return
+      return;
     }
 
     let dmsContactOrAccountDto = {};
@@ -242,33 +273,34 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     let formData;
 
     const dmsEntity = selector.enquiry_details_response;
-    if (dmsEntity.hasOwnProperty('dmsContactDto'))
+    if (dmsEntity.hasOwnProperty("dmsContactDto"))
       dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsContactDto);
-    else if (dmsEntity.hasOwnProperty('dmsAccountDto'))
+    else if (dmsEntity.hasOwnProperty("dmsAccountDto"))
       dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsAccountDto);
 
-    if (dmsEntity.hasOwnProperty('dmsLeadDto'))
+    if (dmsEntity.hasOwnProperty("dmsLeadDto"))
       dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
 
-    if (selector.enquiry_details_response.hasOwnProperty('dmsContactDto')) {
+    if (selector.enquiry_details_response.hasOwnProperty("dmsContactDto")) {
       formData = {
-        "dmsContactDto": dmsContactOrAccountDto,
-        "dmsLeadDto": dmsLeadDto
-      }
+        dmsContactDto: dmsContactOrAccountDto,
+        dmsLeadDto: dmsLeadDto,
+      };
     } else {
       formData = {
-        "dmsAccountDto": dmsContactOrAccountDto,
-        "dmsLeadDto": dmsLeadDto
-      }
+        dmsAccountDto: dmsContactOrAccountDto,
+        dmsLeadDto: dmsLeadDto,
+      };
     }
     setTypeOfActionDispatched("UPDATE_ENQUIRY");
     dispatch(updateEnquiryDetailsApi(formData));
-  }
+  };
 
   const mapContactOrAccountDto = (prevData) => {
-
     let dataObj = { ...prevData };
-    dataObj.dateOfBirth = convertDateStringToMillisecondsUsingMoment(selector.dateOfBirth);
+    dataObj.dateOfBirth = convertDateStringToMillisecondsUsingMoment(
+      selector.dateOfBirth
+    );
     dataObj.email = selector.email;
     dataObj.firstName = selector.firstName;
     dataObj.lastName = selector.lastName;
@@ -283,7 +315,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.occupation = selector.occupation;
     dataObj.designation = selector.designation;
     dataObj.customerType = selector.customer_type;
-    dataObj.anniversaryDate = convertDateStringToMillisecondsUsingMoment(selector.anniversaryDate);
+    dataObj.anniversaryDate = convertDateStringToMillisecondsUsingMoment(
+      selector.anniversaryDate
+    );
     dataObj.annualRevenue = selector.approx_annual_income;
     dataObj.company = selector.company_name;
     dataObj.companyName = selector.company_name;
@@ -292,19 +326,22 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.primeExpectationFromCar = selector.prime_expectation_from_car;
     dataObj.whoDrives = selector.who_drives;
     return dataObj;
-  }
+  };
 
   const mapLeadDto = (prevData) => {
-
     let dataObj = { ...prevData };
     dataObj.buyerType = selector.buyer_type;
     dataObj.enquiryCategory = selector.enquiry_category;
     dataObj.enquirySegment = selector.enquiry_segment;
     dataObj.enquirySource = selector.source_of_enquiry;
     dataObj.subSource = selector.sub_source_of_enquiry;
-    dataObj.dmsExpectedDeliveryDate = convertDateStringToMillisecondsUsingMoment(selector.expected_delivery_date);
+    dataObj.dmsExpectedDeliveryDate =
+      convertDateStringToMillisecondsUsingMoment(
+        selector.expected_delivery_date
+      );
+
     dataObj.model = selector.model;
-    dataObj.leadStatus = 'ENQUIRYCOMPLETED';
+    dataObj.leadStatus = "ENQUIRYCOMPLETED";
     dataObj.dmsAddresses = mapDMSAddress(dataObj.dmsAddresses);
     dataObj.dmsLeadProducts = mapLeadProducts(dataObj.dmsLeadProducts);
     dataObj.dmsfinancedetails = mapDmsFinanceDetails(dataObj.dmsfinancedetails);
@@ -312,16 +349,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.dmsExchagedetails = mapExchangeDetails(dataObj.dmsExchagedetails);
     dataObj.dmsAttachments = mapDmsAttachments(dataObj.dmsAttachments);
     return dataObj;
-  }
+  };
 
   const mapDMSAddress = (prevDmsAddresses) => {
-
     let dmsAddresses = [...prevDmsAddresses];
     if (dmsAddresses.length == 2) {
       dmsAddresses.forEach((address, index) => {
         let dataObj = { ...address };
-        if (address.addressType === 'Communication') {
-
+        if (address.addressType === "Communication") {
           dataObj.pincode = selector.pincode;
           dataObj.houseNo = selector.houseNum;
           dataObj.street = selector.streetName;
@@ -331,9 +366,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           dataObj.state = selector.state;
           dataObj.urban = selector.urban_or_rural === 1 ? true : false;
           dataObj.rural = selector.urban_or_rural === 2 ? true : false;
-
-        } else if (address.addressType === 'Permanent') {
-
+        } else if (address.addressType === "Permanent") {
           dataObj.pincode = selector.p_pincode;
           dataObj.houseNo = selector.p_houseNum;
           dataObj.street = selector.p_streetName;
@@ -348,10 +381,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       });
     }
     return dmsAddresses;
-  }
+  };
 
   const mapLeadProducts = (prevDmsLeadProducts) => {
-
     let dmsLeadProducts = [...prevDmsLeadProducts];
     if (dmsLeadProducts.length > 0) {
       const dataObj = { ...dmsLeadProducts[0] };
@@ -364,17 +396,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dmsLeadProducts[0] = dataObj;
     }
     return dmsLeadProducts;
-  }
+  };
 
   const mapDmsFinanceDetails = (prevDmsFinancedetails) => {
-
     let dmsfinancedetails = [...prevDmsFinancedetails];
     if (dmsfinancedetails.length > 0) {
       const dataObj = { ...dmsfinancedetails[0] };
       dataObj.financeType = selector.retail_finance;
       dataObj.financeCategory = selector.finance_category;
       dataObj.downPayment = selector.down_payment;
-      dataObj.loanAmount = selector.loan_amount ? Number(selector.loan_amount) : null;
+      dataObj.loanAmount = selector.loan_amount
+        ? Number(selector.loan_amount)
+        : null;
       dataObj.rateOfInterest = selector.rate_of_interest;
       dataObj.expectedTenureYears = selector.loan_of_tenure;
       dataObj.emi = selector.emi;
@@ -390,13 +423,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dmsfinancedetails[0] = dataObj;
     }
     return dmsfinancedetails;
-  }
+  };
 
   const mapDmsLeadScoreCards = (prevDmsLeadScoreCards) => {
     let dmsLeadScoreCards = [...prevDmsLeadScoreCards];
     if (dmsLeadScoreCards.length > 0) {
       const dataObj = { ...dmsLeadScoreCards[0] };
-      dataObj.lookingForAnyOtherBrand = selector.c_looking_for_any_other_brand_checked;
+      dataObj.lookingForAnyOtherBrand =
+        selector.c_looking_for_any_other_brand_checked;
       dataObj.brand = selector.c_make;
       dataObj.model = selector.c_model;
       dataObj.otherMake = selector.c_make_other_name;
@@ -413,7 +447,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dmsLeadScoreCards[0] = dataObj;
     }
     return dmsLeadScoreCards;
-  }
+  };
 
   const mapExchangeDetails = (prevDmsExchagedetails) => {
     let dmsExchagedetails = [...prevDmsExchagedetails];
@@ -425,7 +459,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dmsExchagedetails[0] = dataObj;
     }
     return dmsExchagedetails;
-  }
+  };
 
   const formatExchangeDetails = (prevData) => {
     const dataObj = { ...prevData };
@@ -436,9 +470,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dataObj.varient = selector.a_varient;
       dataObj.color = selector.a_color;
       dataObj.regNo = selector.a_reg_no;
-    }
-    else if (selector.buyer_type === "Replacement Buyer") {
-
+    } else if (selector.buyer_type === "Replacement Buyer") {
       dataObj.buyerType = selector.buyer_type;
       dataObj.regNo = selector.r_reg_no;
       dataObj.brand = selector.r_make;
@@ -448,46 +480,66 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dataObj.fuelType = selector.r_fuel_type;
       dataObj.transmission = selector.r_transmission_type;
       // Pending
-      dataObj.yearofManufacture = convertDateStringToMillisecondsUsingMoment(selector.r_mfg_year);
+      dataObj.yearofManufacture = convertDateStringToMillisecondsUsingMoment(
+        selector.r_mfg_year
+      );
       dataObj.kiloMeters = selector.r_kms_driven_or_odometer_reading;
-      dataObj.expectedPrice = selector.r_expected_price ? Number(selector.r_expected_price) : null;
+      dataObj.expectedPrice = selector.r_expected_price
+        ? Number(selector.r_expected_price)
+        : null;
       dataObj.hypothicationRequirement = selector.r_hypothication_checked;
       dataObj.hypothication = selector.r_hypothication_name;
       dataObj.hypothicationBranch = selector.r_hypothication_branch;
       // Pending
-      dataObj.registrationDate = convertDateStringToMillisecondsUsingMoment(selector.r_registration_date);
-      dataObj.registrationValidityDate = convertDateStringToMillisecondsUsingMoment(selector.r_registration_validity_date);
+      dataObj.registrationDate = convertDateStringToMillisecondsUsingMoment(
+        selector.r_registration_date
+      );
+      dataObj.registrationValidityDate =
+        convertDateStringToMillisecondsUsingMoment(
+          selector.r_registration_validity_date
+        );
       dataObj.insuranceAvailable = `${selector.r_insurence_checked}`;
-      dataObj.insuranceDocumentAvailable = selector.r_insurence_document_checked;
+      dataObj.insuranceDocumentAvailable =
+        selector.r_insurence_document_checked;
       dataObj.insuranceCompanyName = selector.r_insurence_company_name;
       // Pending
-      dataObj.insuranceExpiryDate = convertDateStringToMillisecondsUsingMoment(selector.r_insurence_expiry_date);
+      dataObj.insuranceExpiryDate = convertDateStringToMillisecondsUsingMoment(
+        selector.r_insurence_expiry_date
+      );
       dataObj.insuranceType = selector.r_insurence_type;
       // Pending
-      dataObj.insuranceFromDate = convertDateStringToMillisecondsUsingMoment(selector.r_insurence_from_date);
-      dataObj.insuranceToDate = convertDateStringToMillisecondsUsingMoment(selector.r_insurence_to_date);
+      dataObj.insuranceFromDate = convertDateStringToMillisecondsUsingMoment(
+        selector.r_insurence_from_date
+      );
+      dataObj.insuranceToDate = convertDateStringToMillisecondsUsingMoment(
+        selector.r_insurence_to_date
+      );
     }
     return dataObj;
-  }
+  };
 
   const mapDmsAttachments = (prevDmsAttachments) => {
-
     let dmsAttachments = [...prevDmsAttachments];
     if (dmsAttachments.length > 0) {
       dmsAttachments.forEach((obj, index) => {
         const item = uploadedImagesDataObj[obj.documentType];
-        const object = formatAttachment({ ...obj }, item, index, obj.documentType);
+        const object = formatAttachment(
+          { ...obj },
+          item,
+          index,
+          obj.documentType
+        );
         dmsAttachments[index] = object;
-      })
+      });
     } else {
       Object.keys(uploadedImagesDataObj).forEach((key, index) => {
         const item = uploadedImagesDataObj[key];
         const object = formatAttachment({}, item, index, item.documentType);
         dmsAttachments.push(object);
-      })
+      });
     }
     return dmsAttachments;
-  }
+  };
 
   const formatAttachment = (data, photoObj, index, typeOfDocument) => {
     let object = { ...data };
@@ -513,11 +565,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         object.documentNumber = selector.r_reg_no;
         break;
     }
-    return object
-  }
+    return object;
+  };
 
   const showPendingTaskAlert = (data = [], probookingTaskObj) => {
-
     if (data.length > 0) {
       let taskNames = "";
       let enableProceedToPrebooking = false;
@@ -525,12 +576,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         if (item === "Proceed to Pre Booking") {
           enableProceedToPrebooking = true;
         } else {
-          taskNames += item
+          taskNames += item;
         }
-      })
+      });
 
       if (enableProceedToPrebooking) {
-
         const dataObj = probookingTaskObj;
         const taskId = dataObj.taskId;
         const universalId = dataObj.universalId;
@@ -543,52 +593,80 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             {
               text: "Cancel",
               onPress: () => console.log("Cancel Pressed"),
-              style: "cancel"
+              style: "cancel",
             },
             {
               text: "Proceed",
               onPress: () => {
-                navigation.navigate(AppNavigator.EmsStackIdentifiers.proceedToPreBooking, { identifier: "PROCEED_TO_BOOKING", taskId, universalId, taskStatus })
-              }
-            }
+                navigation.navigate(
+                  AppNavigator.EmsStackIdentifiers.proceedToPreBooking,
+                  {
+                    identifier: "PROCEED_TO_BOOKING",
+                    taskId,
+                    universalId,
+                    taskStatus,
+                  }
+                );
+              },
+            },
           ]
-        )
+        );
       } else {
         showAlertMessage("Below tasks are pending...", taskNames);
       }
     }
-  }
+  };
 
   useEffect(() => {
-    if (selector.get_pending_tasks_response_status === "success" && selector.get_pending_tasks_response_list.length > 0) {
+    if (
+      selector.get_pending_tasks_response_status === "success" &&
+      selector.get_pending_tasks_response_list.length > 0
+    ) {
       let pendingTaskNames = [];
       let proBookingTaskObj = {};
       selector.get_pending_tasks_response_list.forEach((element) => {
-        if (element.taskName === "Test Drive" && (element.taskStatus === "" || element.taskStatus === "ASSIGNED")) {
+        if (
+          element.taskName === "Test Drive" &&
+          (element.taskStatus === "" || element.taskStatus === "ASSIGNED")
+        ) {
           pendingTaskNames.push("Test Drive : Pending \n");
         }
-        if (element.taskName === "Home Visit" && (element.taskStatus === "" || element.taskStatus === "ASSIGNED")) {
+        if (
+          element.taskName === "Home Visit" &&
+          (element.taskStatus === "" || element.taskStatus === "ASSIGNED")
+        ) {
           pendingTaskNames.push("Home Visit : Pending \n");
         }
-        if (element.taskName === "Evaluation" && (element.taskStatus === "" || element.taskStatus === "ASSIGNED") && selector.enquiry_details_response.dmsLeadDto.buyerType === "Replacement Buyer") {
+        if (
+          element.taskName === "Evaluation" &&
+          (element.taskStatus === "" || element.taskStatus === "ASSIGNED") &&
+          selector.enquiry_details_response.dmsLeadDto.buyerType ===
+            "Replacement Buyer"
+        ) {
           pendingTaskNames.push("Evaluation : Pending \n");
         }
-        if (element.taskName === "Proceed to Pre Booking" && element.assignee.empId === userData.employeeId && element.universalId === universalId) {
+        if (
+          element.taskName === "Proceed to Pre Booking" &&
+          element.assignee.empId === userData.employeeId &&
+          element.universalId === universalId
+        ) {
           pendingTaskNames.push("Proceed to Pre Booking");
           proBookingTaskObj = element;
         }
-      })
+      });
       showPendingTaskAlert(pendingTaskNames, proBookingTaskObj);
     }
-  }, [selector.get_pending_tasks_response_status, selector.get_pending_tasks_response_list])
+  }, [
+    selector.get_pending_tasks_response_status,
+    selector.get_pending_tasks_response_list,
+  ]);
 
   const proceedToPreBookingClicked = () => {
-
     if (universalId) {
-      const endUrl = universalId + '?' + 'stage=Enquiry';
+      const endUrl = universalId + "?" + "stage=Enquiry";
       dispatch(getPendingTasksApi(endUrl));
     }
-  }
+  };
 
   // useEffect(() => {
   //   if (selector.enquiry_drop_response_status === "success") {
@@ -612,20 +690,26 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const getEnquiryListFromServer = () => {
     if (userData.employeeId) {
-      let endUrl = "?limit=10&offset=" + "0" + "&status=ENQUIRY&empId=" + userData.employeeId;
+      let endUrl =
+        "?limit=10&offset=" +
+        "0" +
+        "&status=ENQUIRY&empId=" +
+        userData.employeeId;
       dispatch(getEnquiryList(endUrl));
     }
-  }
+  };
 
   const proceedToCancelEnquiry = () => {
-
-    if (selector.drop_remarks.length === 0 || selector.drop_reason.length === 0) {
-      showToastRedAlert("Please enter details for drop")
-      return
+    if (
+      selector.drop_remarks.length === 0 ||
+      selector.drop_reason.length === 0
+    ) {
+      showToastRedAlert("Please enter details for drop");
+      return;
     }
 
     if (!selector.enquiry_details_response) {
-      return
+      return;
     }
 
     let enquiryDetailsObj = { ...selector.enquiry_details_response };
@@ -636,32 +720,32 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
     let leadId = selector.enquiry_details_response.dmsLeadDto.id;
     if (!leadId) {
-      showToast("lead id not found")
-      return
+      showToast("lead id not found");
+      return;
     }
 
     const payload = {
-      "dmsLeadDropInfo": {
-        "additionalRemarks": selector.drop_remarks,
-        "branchId": userData.branchId,
-        "brandName": "",
-        "dealerName": "",
-        "leadId": leadId,
-        "crmUniversalId": universalId,
-        "lostReason": selector.drop_reason,
-        "organizationId": userData.orgId,
-        "otherReason": "",
-        "droppedBy": userData.employeeId,
-        "location": "",
-        "model": "",
-        "stage": "ENQUIRY",
-        "status": "ENQUIRY"
-      }
-    }
+      dmsLeadDropInfo: {
+        additionalRemarks: selector.drop_remarks,
+        branchId: userData.branchId,
+        brandName: "",
+        dealerName: "",
+        leadId: leadId,
+        crmUniversalId: universalId,
+        lostReason: selector.drop_reason,
+        organizationId: userData.orgId,
+        otherReason: "",
+        droppedBy: userData.employeeId,
+        location: "",
+        model: "",
+        stage: "ENQUIRY",
+        status: "ENQUIRY",
+      },
+    };
     setTypeOfActionDispatched("DROP_ENQUIRY");
     dispatch(dropEnquiryApi(payload));
     dispatch(updateEnquiryDetailsApi(enquiryDetailsObj));
-  }
+  };
 
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
@@ -764,11 +848,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     setDropDownKey(key);
     setDropDownTitle(headerText);
     setShowDropDownModel(true);
-  }
+  };
 
-  const updateVariantModelsData = (selectedModelName, fromInitialize, selectedVarientName) => {
-
-    if (!selectedModelName || selectedModelName.length === 0) { return }
+  const updateVariantModelsData = (
+    selectedModelName,
+    fromInitialize,
+    selectedVarientName
+  ) => {
+    if (!selectedModelName || selectedModelName.length === 0) {
+      return;
+    }
 
     let arrTemp = vehicle_modal_list.filter(function (obj) {
       return obj.model === selectedModelName;
@@ -779,23 +868,30 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       let newArray = [];
       let mArray = carModelObj.varients;
       if (mArray.length) {
-        mArray.forEach(item => {
+        mArray.forEach((item) => {
           newArray.push({
             id: item.id,
-            name: item.name
-          })
-        })
-        setSelectedCarVarientsData({ varientList: [...mArray], varientListForDropDown: [...newArray] });
+            name: item.name,
+          });
+        });
+        setSelectedCarVarientsData({
+          varientList: [...mArray],
+          varientListForDropDown: [...newArray],
+        });
         if (fromInitialize) {
-          updateColorsDataForSelectedVarient(selectedVarientName, [...mArray])
+          updateColorsDataForSelectedVarient(selectedVarientName, [...mArray]);
         }
       }
     }
-  }
+  };
 
-  const updateColorsDataForSelectedVarient = (selectedVarientName, varientList) => {
-
-    if (!selectedVarientName || selectedVarientName.length === 0) { return }
+  const updateColorsDataForSelectedVarient = (
+    selectedVarientName,
+    varientList
+  ) => {
+    if (!selectedVarientName || selectedVarientName.length === 0) {
+      return;
+    }
 
     let arrTemp = varientList.filter(function (obj) {
       return obj.name === selectedVarientName;
@@ -806,31 +902,30 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       let newArray = [];
       let mArray = carModelObj.vehicleImages;
       if (mArray.length) {
-        mArray.map(item => {
+        mArray.map((item) => {
           newArray.push({
             id: item.id,
-            name: item.color
-          })
-        })
+            name: item.color,
+          });
+        });
         const obj = {
           fuelType: carModelObj.fuelType,
-          transmissionType: carModelObj.transmission_type
-        }
+          transmissionType: carModelObj.transmission_type,
+        };
         dispatch(updateFuelAndTransmissionType(obj));
         setCarColorsData([...newArray]);
       }
     }
-  }
+  };
 
   updateModelTypesForCustomerNeedAnalysis = (brandName, dropDownKey) => {
-
     let modelsData = [];
     All_Car_Brands.forEach((item) => {
       if (item.name === brandName) {
-        modelsData = item.models
+        modelsData = item.models;
       }
-    })
-    console.log("modelsData: ", modelsData)
+    });
+    console.log("modelsData: ", modelsData);
     switch (dropDownKey) {
       case "C_MAKE":
         return set_c_model_types([...modelsData]);
@@ -839,10 +934,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       case "A_MAKE":
         return set_a_model_types([...modelsData]);
     }
-  }
+  };
 
   const uploadSelectedImage = async (selectedPhoto, keyId) => {
-
     const photoUri = selectedPhoto.uri;
     if (!photoUri) {
       return;
@@ -850,12 +944,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
     const formData = new FormData();
     const fileType = photoUri.substring(photoUri.lastIndexOf(".") + 1);
-    const fileNameArry = photoUri.substring(photoUri.lastIndexOf('/') + 1).split('.');
+    const fileNameArry = photoUri
+      .substring(photoUri.lastIndexOf("/") + 1)
+      .split(".");
     const fileName = fileNameArry.length > 0 ? fileNameArry[0] : "None";
-    formData.append('file', {
+    formData.append("file", {
       name: `${fileName}-.${fileType}`,
       type: `image/${fileType}`,
-      uri: Platform.OS === 'ios' ? photoUri.replace('file://', '') : photoUri
+      uri: Platform.OS === "ios" ? photoUri.replace("file://", "") : photoUri,
     });
     formData.append("universalId", universalId);
 
@@ -878,11 +974,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
 
     await fetch(URL.UPLOAD_DOCUMENT(), {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
-      body: formData
+      body: formData,
     })
       .then((response) => response.json())
       .then((response) => {
@@ -894,18 +990,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         }
       })
       .catch((error) => {
-        showToastRedAlert(error.message ? error.message : "Something went wrong");
-        console.error('error', error);
+        showToastRedAlert(
+          error.message ? error.message : "Something went wrong"
+        );
+        console.error("error", error);
       });
-  }
+  };
 
   const DisplaySelectedImage = ({ fileName }) => {
     return (
       <View style={styles.selectedImageBckVw}>
         <Text style={styles.selectedImageTextStyle}>{fileName}</Text>
       </View>
-    )
-  }
+    );
+  };
 
   if (!componentAppear) {
     return (
@@ -935,15 +1033,22 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         selectedItems={(item) => {
           if (dropDownKey === "MODEL") {
             updateVariantModelsData(item.name, false);
-          }
-          else if (dropDownKey === "VARIENT") {
-            updateColorsDataForSelectedVarient(item.name, selectedCarVarientsData.varientList);
-          }
-          else if (dropDownKey === "C_MAKE" || dropDownKey === "R_MAKE" || dropDownKey === "A_MAKE") {
+          } else if (dropDownKey === "VARIENT") {
+            updateColorsDataForSelectedVarient(
+              item.name,
+              selectedCarVarientsData.varientList
+            );
+          } else if (
+            dropDownKey === "C_MAKE" ||
+            dropDownKey === "R_MAKE" ||
+            dropDownKey === "A_MAKE"
+          ) {
             updateModelTypesForCustomerNeedAnalysis(item.name, dropDownKey);
           }
           setShowDropDownModel(false);
-          dispatch(setDropDownData({ key: dropDownKey, value: item.name, id: item.id }));
+          dispatch(
+            setDropDownData({ key: dropDownKey, value: item.name, id: item.id })
+          );
         }}
       />
 
@@ -956,7 +1061,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             console.log("date: ", selectedDate);
             if (Platform.OS === "android") {
               if (!selectedDate) {
-                dispatch(updateSelectedDate({ key: "NONE", text: selectedDate }));
+                dispatch(
+                  updateSelectedDate({ key: "NONE", text: selectedDate })
+                );
               } else {
                 dispatch(updateSelectedDate({ key: "", text: selectedDate }));
               }
@@ -998,7 +1105,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           style={{ flex: 1 }}
         >
           <View style={styles.baseVw}>
-            <List.AccordionGroup expandedId={openAccordian} onAccordionPress={(expandedId) => updateAccordian(expandedId)}>
+            <List.AccordionGroup
+              expandedId={openAccordian}
+              onAccordionPress={(expandedId) => updateAccordian(expandedId)}
+            >
               {/* 1.Customer Profile */}
               <List.Accordion
                 id={"1"}
@@ -1041,21 +1151,31 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <DropDownSelectionItem
                   label={"Enquiry Segment*"}
                   value={selector.enquiry_segment}
-                  onPress={() => showDropDownModelMethod("ENQUIRY_SEGMENT", "Select Enquiry Segment")}
+                  onPress={() =>
+                    showDropDownModelMethod(
+                      "ENQUIRY_SEGMENT",
+                      "Select Enquiry Segment"
+                    )
+                  }
                 />
 
                 <DropDownSelectionItem
                   label={"Customer Type"}
                   value={selector.customer_type}
-                  onPress={() => showDropDownModelMethod("CUSTOMER_TYPE", "Select Customer Type")}
+                  onPress={() =>
+                    showDropDownModelMethod(
+                      "CUSTOMER_TYPE",
+                      "Select Customer Type"
+                    )
+                  }
                 />
 
                 {selector.customer_type.toLowerCase() === "fleet" ||
-                  selector.customer_type.toLowerCase() === "institution" ||
-                  selector.customer_type.toLowerCase() === "corporate" ||
-                  selector.customer_type.toLowerCase() === "government" ||
-                  selector.customer_type.toLowerCase() === "retired" ||
-                  selector.customer_type.toLowerCase() === "other" ? (
+                selector.customer_type.toLowerCase() === "institution" ||
+                selector.customer_type.toLowerCase() === "corporate" ||
+                selector.customer_type.toLowerCase() === "government" ||
+                selector.customer_type.toLowerCase() === "retired" ||
+                selector.customer_type.toLowerCase() === "other" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -1086,7 +1206,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <DropDownSelectionItem
                   label={"Sub Source Of Enquiry"}
                   value={selector.sub_source_of_enquiry}
-                  onPress={() => showDropDownModelMethod("SUB_SOURCE_OF_ENQUIRY", "Sub Source Of Enquiry")}
+                  onPress={() =>
+                    showDropDownModelMethod(
+                      "SUB_SOURCE_OF_ENQUIRY",
+                      "Sub Source Of Enquiry"
+                    )
+                  }
                 />
 
                 <DateSelectItem
@@ -1100,37 +1225,61 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <DropDownSelectionItem
                   label={"Enquiry Category"}
                   value={selector.enquiry_category}
-                  onPress={() => showDropDownModelMethod("ENQUIRY_CATEGORY", "Enquiry Category")}
+                  onPress={() =>
+                    showDropDownModelMethod(
+                      "ENQUIRY_CATEGORY",
+                      "Enquiry Category"
+                    )
+                  }
                 />
 
                 <DropDownSelectionItem
                   label={"Buyer Type"}
                   value={selector.buyer_type}
-                  onPress={() => showDropDownModelMethod("BUYER_TYPE", "Buyer Type")}
+                  onPress={() =>
+                    showDropDownModelMethod("BUYER_TYPE", "Buyer Type")
+                  }
                 />
 
                 <DropDownSelectionItem
                   label={"KMs Travelled in Month"}
                   value={selector.kms_travelled_month}
-                  onPress={() => showDropDownModelMethod("KMS_TRAVELLED", "KMs Travelled in Month")}
+                  onPress={() =>
+                    showDropDownModelMethod(
+                      "KMS_TRAVELLED",
+                      "KMs Travelled in Month"
+                    )
+                  }
                 />
 
                 <DropDownSelectionItem
                   label={"Who Drives"}
                   value={selector.who_drives}
-                  onPress={() => showDropDownModelMethod("WHO_DRIVES", "Who Drives")}
+                  onPress={() =>
+                    showDropDownModelMethod("WHO_DRIVES", "Who Drives")
+                  }
                 />
 
                 <DropDownSelectionItem
                   label={"How many members in your family?"}
                   value={selector.members}
-                  onPress={() => showDropDownModelMethod("MEMBERS", "How many members in your family?")}
+                  onPress={() =>
+                    showDropDownModelMethod(
+                      "MEMBERS",
+                      "How many members in your family?"
+                    )
+                  }
                 />
 
                 <DropDownSelectionItem
                   label={"What is prime expectation from the car?"}
                   value={selector.prime_expectation_from_car}
-                  onPress={() => showDropDownModelMethod("PRIME_EXPECTATION_CAR", "What is prime expectation from the car?")}
+                  onPress={() =>
+                    showDropDownModelMethod(
+                      "PRIME_EXPECTATION_CAR",
+                      "What is prime expectation from the car?"
+                    )
+                  }
                 />
               </List.Accordion>
               <View style={styles.space}></View>
@@ -1148,13 +1297,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     openAccordian === "2" ? Colors.RED : Colors.WHITE,
                 }}
               >
-
                 <DropDownSelectionItem
                   label={"Salutation*"}
                   value={selector.salutaion}
-                  onPress={() => showDropDownModelMethod("SALUTATION", "Select Salutation")}
+                  onPress={() =>
+                    showDropDownModelMethod("SALUTATION", "Select Salutation")
+                  }
                 />
-
                 {selector.enquiry_segment.toLowerCase() == "personal" ? (
                   <DropDownSelectionItem
                     label={"Gender"}
@@ -1162,7 +1311,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     onPress={() => showDropDownModelMethod("GENDER", "Gender")}
                   />
                 ) : null}
-
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.firstName}
@@ -1188,9 +1336,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <DropDownSelectionItem
                   label={"Relation"}
                   value={selector.relation}
-                  onPress={() => showDropDownModelMethod("RELATION", "Relation")}
+                  onPress={() =>
+                    showDropDownModelMethod("RELATION", "Relation")
+                  }
                 />
-
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.relationName}
@@ -1202,6 +1351,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     )
                   }
                 />
+                <Text style={GlobalStyle.underline}></Text>
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.mobile}
@@ -1236,16 +1386,27 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   }
                 />
                 <Text style={GlobalStyle.underline}></Text>
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.age}
+                  label={"Age"}
+                  keyboardType={"phone-pad"}
+                  maxLength={10}
+                  onChangeText={(text) =>
+                    dispatch(setPersonalIntro({ key: "AGE", text: text }))
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
                 {selector.enquiry_segment.toLowerCase() == "personal" ? (
                   <View>
                     <DateSelectItem
-                      label={"Date Of Birth"}
-                      value={selector.dateOfBirth}
+                      label={"Date of Birth"}
+                      value={selector.date_of_birth}
                       onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
                     />
                     <DateSelectItem
                       label={"Anniversary Date"}
-                      value={selector.anniversaryDate}
+                      value={selector.anniversary_date}
                       onPress={() =>
                         dispatch(setDatePicker("ANNIVERSARY_DATE"))
                       }
@@ -1555,19 +1716,25 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <DropDownSelectionItem
                   label={"Model"}
                   value={selector.model}
-                  onPress={() => showDropDownModelMethod("MODEL", "Select Model")}
+                  onPress={() =>
+                    showDropDownModelMethod("MODEL", "Select Model")
+                  }
                 />
 
                 <DropDownSelectionItem
                   label={"Varient"}
                   value={selector.varient}
-                  onPress={() => showDropDownModelMethod("VARIENT", "Select Varient")}
+                  onPress={() =>
+                    showDropDownModelMethod("VARIENT", "Select Varient")
+                  }
                 />
 
                 <DropDownSelectionItem
                   label={"Color"}
                   value={selector.color}
-                  onPress={() => showDropDownModelMethod("COLOR", "Select Color")}
+                  onPress={() =>
+                    showDropDownModelMethod("COLOR", "Select Color")
+                  }
                 />
 
                 <TextinputComp
@@ -1585,7 +1752,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   value={selector.transmission_type}
                 />
                 <Text style={GlobalStyle.underline}></Text>
-
               </List.Accordion>
               <View style={styles.space}></View>
               {/* // 5.Financial Details*/}
@@ -1605,7 +1771,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <DropDownSelectionItem
                   label={"Retail Finance"}
                   value={selector.retail_finance}
-                  onPress={() => showDropDownModelMethod("RETAIL_FINANCE", "Retail Finance")}
+                  onPress={() =>
+                    showDropDownModelMethod("RETAIL_FINANCE", "Retail Finance")
+                  }
                 />
 
                 {selector.retail_finance === "Out House" ? (
@@ -1615,7 +1783,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       label={"Bank/Finance Name"}
                       keyboardType={"default"}
                       value={selector.bank_or_finance_name}
-                      onChangeText={(text) => dispatch(setFinancialDetails({ key: "BANK_R_FINANCE_NAME", text: text }))}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setFinancialDetails({
+                            key: "BANK_R_FINANCE_NAME",
+                            text: text,
+                          })
+                        )
+                      }
                     />
                     <Text style={GlobalStyle.underline}></Text>
 
@@ -1624,7 +1799,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       label={"Location"}
                       keyboardType={"default"}
                       value={selector.location}
-                      onChangeText={(text) => dispatch(setFinancialDetails({ key: "LOCATION", text: text }))}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setFinancialDetails({ key: "LOCATION", text: text })
+                        )
+                      }
                     />
                     <Text style={GlobalStyle.underline}></Text>
                   </View>
@@ -1650,14 +1829,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   </View>
                 )}
 
-
-
                 {selector.retail_finance === "In House" && (
                   <DropDownSelectionItem
                     label={"Finance Category"}
                     value={selector.finance_category}
-                    onPress={() => showDropDownModelMethod("FINANCE_CATEGORY", "Finance Category")}
-                  />)}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "FINANCE_CATEGORY",
+                        "Finance Category"
+                      )
+                    }
+                  />
+                )}
 
                 {selector.retail_finance === "In House" && (
                   <View>
@@ -1681,48 +1864,48 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {(selector.retail_finance === "In House" ||
                   selector.retail_finance === "Out House") && (
-                    <View>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Loan Amount*"}
-                        keyboardType={"default"}
-                        value={selector.loan_amount}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setFinancialDetails({
-                              key: "LOAN_AMOUNT",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Rate of Interest*"}
-                        keyboardType={"default"}
-                        value={selector.rate_of_interest}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setFinancialDetails({
-                              key: "RATE_OF_INTEREST",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  )}
-
-
+                  <View>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Loan Amount*"}
+                      keyboardType={"default"}
+                      value={selector.loan_amount}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setFinancialDetails({
+                            key: "LOAN_AMOUNT",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Rate of Interest*"}
+                      keyboardType={"default"}
+                      value={selector.rate_of_interest}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setFinancialDetails({
+                            key: "RATE_OF_INTEREST",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                )}
 
                 {selector.retail_finance === "In House" && (
                   <View>
                     <DropDownSelectionItem
                       label={"Bank/Financer"}
                       value={selector.bank_or_finance}
-                      onPress={() => showDropDownModelMethod("BANK_FINANCE", "Bank/Financer")}
+                      onPress={() =>
+                        showDropDownModelMethod("BANK_FINANCE", "Bank/Financer")
+                      }
                     />
 
                     <TextinputComp
@@ -1757,7 +1940,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <DropDownSelectionItem
                       label={"Approx Annual Income"}
                       value={selector.approx_annual_income}
-                      onPress={() => showDropDownModelMethod("APPROX_ANNUAL_INCOME", "Approx Annual Income")}
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "APPROX_ANNUAL_INCOME",
+                          "Approx Annual Income"
+                        )
+                      }
                     />
                   </View>
                 )}
@@ -1793,7 +1981,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
                   />
                 </View>
-                {uploadedImagesDataObj.pan ? <DisplaySelectedImage fileName={uploadedImagesDataObj.pan.fileName} /> : null}
+                {uploadedImagesDataObj.pan ? (
+                  <DisplaySelectedImage
+                    fileName={uploadedImagesDataObj.pan.fileName}
+                  />
+                ) : null}
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.adhaar_number}
@@ -1810,7 +2002,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
                   />
                 </View>
-                {uploadedImagesDataObj.aadhar ? <DisplaySelectedImage fileName={uploadedImagesDataObj.aadhar.fileName} /> : null}
+                {uploadedImagesDataObj.aadhar ? (
+                  <DisplaySelectedImage
+                    fileName={uploadedImagesDataObj.aadhar.fileName}
+                  />
+                ) : null}
               </List.Accordion>
               <View style={styles.space}></View>
               {/* // 7.Customer Need Analysis */}
@@ -1854,45 +2050,51 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       value={selector.c_make}
                       onPress={() => showDropDownModelMethod("C_MAKE", "Make")}
                     />
-                    {selector.c_make === "Other" && (<View>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Make Other Name"}
-                        editable={true}
-                        value={selector.c_make_other_name}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setCustomerNeedAnalysis({
-                              key: "C_MAKE_OTHER_NAME",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>)}
+                    {selector.c_make === "Other" && (
+                      <View>
+                        <TextinputComp
+                          style={{ height: 65, width: "100%" }}
+                          label={"Make Other Name"}
+                          editable={true}
+                          value={selector.c_make_other_name}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setCustomerNeedAnalysis({
+                                key: "C_MAKE_OTHER_NAME",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
+                    )}
                     <DropDownSelectionItem
                       label={"Model"}
                       value={selector.c_model}
-                      onPress={() => showDropDownModelMethod("C_MODEL", "Model")}
+                      onPress={() =>
+                        showDropDownModelMethod("C_MODEL", "Model")
+                      }
                     />
-                    {selector.c_model === "Other" && (<View>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Model Other Name"}
-                        editable={true}
-                        value={selector.c_model_other_name}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setCustomerNeedAnalysis({
-                              key: "C_MODEL_OTHER_NAME",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>)}
+                    {selector.c_model === "Other" && (
+                      <View>
+                        <TextinputComp
+                          style={{ height: 65, width: "100%" }}
+                          label={"Model Other Name"}
+                          editable={true}
+                          value={selector.c_model_other_name}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setCustomerNeedAnalysis({
+                                key: "C_MODEL_OTHER_NAME",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
+                    )}
 
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
@@ -1929,12 +2131,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <DropDownSelectionItem
                       label={"Fuel Type"}
                       value={selector.c_fuel_type}
-                      onPress={() => showDropDownModelMethod("C_FUEL_TYPE", "Variant")}
+                      onPress={() =>
+                        showDropDownModelMethod("C_FUEL_TYPE", "Variant")
+                      }
                     />
                     <DropDownSelectionItem
                       label={"Transmission Type"}
                       value={selector.c_transmission_type}
-                      onPress={() => showDropDownModelMethod("C_TRANSMISSION_TYPE", "Color")}
+                      onPress={() =>
+                        showDropDownModelMethod("C_TRANSMISSION_TYPE", "Color")
+                      }
                     />
 
                     <TextinputComp
@@ -2032,7 +2238,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
               </List.Accordion>
               {selector.buyer_type == "Additional Buyer" ||
-                selector.buyer_type == "Replacement Buyer" ? (
+              selector.buyer_type == "Replacement Buyer" ? (
                 <View style={styles.space}></View>
               ) : null}
               {/* // 8.Additional Buyer */}
@@ -2055,45 +2261,49 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     value={selector.a_make}
                     onPress={() => showDropDownModelMethod("A_MAKE", "Make")}
                   />
-                  {selector.a_make === "Other" && (<View>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Make Other Name"}
-                      editable={true}
-                      value={selector.a_make_other_name}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setAdditionalBuyerDetails({
-                            key: "A_MAKE_OTHER_NAME",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>)}
+                  {selector.a_make === "Other" && (
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Make Other Name"}
+                        editable={true}
+                        value={selector.a_make_other_name}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setAdditionalBuyerDetails({
+                              key: "A_MAKE_OTHER_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
                   <DropDownSelectionItem
                     label={"Model"}
                     value={selector.a_model}
                     onPress={() => showDropDownModelMethod("A_MODEL", "Model")}
                   />
-                  {selector.a_model === "Other" && (<View>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Model Other Name"}
-                      editable={true}
-                      value={selector.a_model_other_name}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setAdditionalBuyerDetails({
-                            key: "A_MODEL_OTHER_NAME",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>)}
+                  {selector.a_model === "Other" && (
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Model Other Name"}
+                        editable={true}
+                        value={selector.a_model_other_name}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setAdditionalBuyerDetails({
+                              key: "A_MODEL_OTHER_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
 
                   <TextinputComp
                     style={styles.textInputStyle}
@@ -2177,51 +2387,59 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       onPress={() => dispatch(setImagePicker("UPLOAD_REG_DOC"))}
                     />
                   </View>
-                  {uploadedImagesDataObj.REGDOC ? <DisplaySelectedImage fileName={uploadedImagesDataObj.REGDOC.fileName} /> : null}
+                  {uploadedImagesDataObj.REGDOC ? (
+                    <DisplaySelectedImage
+                      fileName={uploadedImagesDataObj.REGDOC.fileName}
+                    />
+                  ) : null}
                   <DropDownSelectionItem
                     label={"Make"}
                     value={selector.r_make}
                     onPress={() => showDropDownModelMethod("R_MAKE", "Make")}
                   />
-                  {selector.r_make === "Other" && (<View>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Make Other Name"}
-                      editable={true}
-                      value={selector.r_make_other_name}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setReplacementBuyerDetails({
-                            key: "R_MAKE_OTHER_NAME",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>)}
+                  {selector.r_make === "Other" && (
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Make Other Name"}
+                        editable={true}
+                        value={selector.r_make_other_name}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setReplacementBuyerDetails({
+                              key: "R_MAKE_OTHER_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
                   <DropDownSelectionItem
                     label={"Model"}
                     value={selector.r_model}
                     onPress={() => showDropDownModelMethod("R_MODEL", "Model")}
                   />
-                  {selector.r_model === "Other" && (<View>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Model Other Name"}
-                      editable={true}
-                      value={selector.r_model_other_name}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setReplacementBuyerDetails({
-                            key: "R_MODEL_OTHER_NAME",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>)}
+                  {selector.r_model === "Other" && (
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Model Other Name"}
+                        editable={true}
+                        value={selector.r_model_other_name}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setReplacementBuyerDetails({
+                              key: "R_MODEL_OTHER_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
 
                   <TextinputComp
                     style={{ height: 65, width: "100%" }}
@@ -2258,12 +2476,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <DropDownSelectionItem
                     label={"Fuel Type"}
                     value={selector.r_fuel_type}
-                    onPress={() => showDropDownModelMethod("R_FUEL_TYPE", "Fuel Type")}
+                    onPress={() =>
+                      showDropDownModelMethod("R_FUEL_TYPE", "Fuel Type")
+                    }
                   />
                   <DropDownSelectionItem
                     label={"Transmission Type"}
                     value={selector.r_transmission_type}
-                    onPress={() => showDropDownModelMethod("R_TRANSMISSION_TYPE", "Transmission Type")}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "R_TRANSMISSION_TYPE",
+                        "Transmission Type"
+                      )
+                    }
                   />
 
                   <DateSelectItem
@@ -2421,10 +2646,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       <View style={styles.select_image_bck_vw}>
                         <ImageSelectItem
                           name={"Upload Insurence"}
-                          onPress={() => dispatch(setImagePicker("UPLOAD_INSURENCE"))}
+                          onPress={() =>
+                            dispatch(setImagePicker("UPLOAD_INSURENCE"))
+                          }
                         />
                       </View>
-                      {uploadedImagesDataObj.insurance ? <DisplaySelectedImage fileName={uploadedImagesDataObj.insurance.fileName} /> : null}
+                      {uploadedImagesDataObj.insurance ? (
+                        <DisplaySelectedImage
+                          fileName={uploadedImagesDataObj.insurance.fileName}
+                        />
+                      ) : null}
                     </View>
                   )}
 
@@ -2447,7 +2678,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         <DropDownSelectionItem
                           label={"Insurence Type"}
                           value={selector.r_insurence_type}
-                          onPress={() => showDropDownModelMethod("R_INSURENCE_TYPE", "Fuel Type")}
+                          onPress={() =>
+                            showDropDownModelMethod(
+                              "R_INSURENCE_TYPE",
+                              "Fuel Type"
+                            )
+                          }
                         />
                         <DateSelectItem
                           label={"Insurence From Date"}
@@ -2488,7 +2724,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 </List.Accordion>
               ) : null}
 
-              {isDropSelected ? (<View style={styles.space}></View>) : null}
+              {isDropSelected ? <View style={styles.space}></View> : null}
               {isDropSelected ? (
                 <List.Accordion
                   id={"9"}
@@ -2506,7 +2742,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <DropDownSelectionItem
                     label={"Drop Reason"}
                     value={selector.drop_reason}
-                    onPress={() => showDropDownModelMethod("DROP_REASON", "Drop Reason")}
+                    onPress={() =>
+                      showDropDownModelMethod("DROP_REASON", "Drop Reason")
+                    }
                   />
                   <TextinputComp
                     style={styles.textInputStyle}
@@ -2548,26 +2786,30 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               </Button>
             </View>
           )}
-          {showPreBookingBtn && !isDropSelected && (<View style={styles.prebookingBtnView}>
-            <Button
-              mode="contained"
-              color={Colors.BLACK}
-              labelStyle={{ textTransform: "none" }}
-              onPress={proceedToPreBookingClicked}
-            >
-              Proceed To PreBooking
-            </Button>
-          </View>)}
-          {isDropSelected && (<View style={styles.prebookingBtnView}>
-            <Button
-              mode="contained"
-              color={Colors.RED}
-              labelStyle={{ textTransform: "none" }}
-              onPress={proceedToCancelEnquiry}
-            >
-              Proceed To Cancellation
-            </Button>
-          </View>)}
+          {showPreBookingBtn && !isDropSelected && (
+            <View style={styles.prebookingBtnView}>
+              <Button
+                mode="contained"
+                color={Colors.BLACK}
+                labelStyle={{ textTransform: "none" }}
+                onPress={proceedToPreBookingClicked}
+              >
+                Proceed To PreBooking
+              </Button>
+            </View>
+          )}
+          {isDropSelected && (
+            <View style={styles.prebookingBtnView}>
+              <Button
+                mode="contained"
+                color={Colors.RED}
+                labelStyle={{ textTransform: "none" }}
+                onPress={proceedToCancelEnquiry}
+              >
+                Proceed To Cancellation
+              </Button>
+            </View>
+          )}
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -2663,20 +2905,20 @@ const styles = StyleSheet.create({
   prebookingBtnView: {
     marginTop: 20,
     flexDirection: "row",
-    justifyContent: 'center',
+    justifyContent: "center",
     alignItems: "center",
   },
   selectedImageBckVw: {
     paddingLeft: 12,
     paddingRight: 15,
     paddingBottom: 5,
-    backgroundColor: Colors.WHITE
+    backgroundColor: Colors.WHITE,
   },
   selectedImageTextStyle: {
     fontSize: 12,
-    fontWeight: '400',
-    color: Colors.DARK_GRAY
-  }
+    fontWeight: "400",
+    color: Colors.DARK_GRAY,
+  },
 });
 
 // left={(props) => (
