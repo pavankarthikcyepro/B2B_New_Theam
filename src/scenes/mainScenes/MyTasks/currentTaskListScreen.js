@@ -22,6 +22,7 @@ const screenWidth = Dimensions.get("window").width;
 
 const mytasksIdentifires = {
     testdrive: "TEST_DRIVE",
+    testdriveapproval: "TEST_DRIVE_APPROVAL",
     proceedtobooking: "PROCEED_TO_BOOKING",
     prebookingfollowup: "PRE_BOOKING_FOLLOW_UP",
     homevisit: "HOME_VISIT",
@@ -80,6 +81,9 @@ const CurrentTaskListScreen = ({ navigation }) => {
         let navigationId = ""
         switch (finalTaskName) {
             case "testdrive":
+                navigationId = AppNavigator.MyTasksStackIdentifiers.testDrive;
+                break;
+            case "testdriveapproval":
                 navigationId = AppNavigator.MyTasksStackIdentifiers.testDrive;
                 break;
             case "proceedtoprebooking":

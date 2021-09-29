@@ -7,7 +7,8 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Keyboard,
-  Platform
+  Platform,
+  Alert
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,6 +19,7 @@ import {
   ImagePickerComponent
 } from "../../../components";
 import {
+  clearState,
   setTestDriveDetails,
   updateSelectedDropDownData,
   updateSelectedDate,
@@ -26,7 +28,11 @@ import {
   getTestDriveDseEmployeeListApi,
   getDriversListApi,
   getTestDriveVehicleListApi,
-  updateBasicDetails
+  updateBasicDetails,
+  bookTestDriveAppointmentApi,
+  updateTestDriveTaskApi,
+  getTaskDetailsApi,
+  getTestDriveAppointmentDetailsApi
 } from "../../../redux/testDriveReducer";
 import { DateSelectItem, RadioTextItem, ImageSelectItem, DropDownSelectionItem } from "../../../pureComponents";
 import { Dropdown } from "sharingan-rn-modal-dropdown";
@@ -38,6 +44,20 @@ import { showToast, showToastRedAlert } from "../../../utils/toast";
 import URL from "../../../networking/endpoints";
 import moment from 'moment';
 
+const LocalButtonComp = ({ title, onPress, disabled, bgColor = Colors.RED }) => {
+  return (
+    <Button
+      style={{ width: 120 }}
+      mode="contained"
+      color={bgColor}
+      disabled={disabled}
+      labelStyle={{ textTransform: "none" }}
+      onPress={onPress}
+    >
+      {title}
+    </Button>
+  )
+}
 
 const TestDriveScreen = ({ route, navigation }) => {
 
@@ -56,6 +76,10 @@ const TestDriveScreen = ({ route, navigation }) => {
   const [imagePickerKey, setImagePickerKey] = useState("");
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
   const [isRecordEditable, setIsRecordEditable] = useState(true);
+  const [expectedStartTime, setExpectedStartTime] = useState("");
+  const [expectedEndTime, setExpectedEndTime] = useState("");
+  const [taskStatusAndName, setTaskStatusAndName] = useState({ status: "", name: "" });
+  const [handleActionButtons, setHandleActionButtons] = useState(0) // 0 : nothing, 1: submit, 2: cancel
 
   useEffect(() => {
 
@@ -75,7 +99,71 @@ const TestDriveScreen = ({ route, navigation }) => {
         orgId: jsonObj.orgId
       }
       dispatch(getTestDriveVehicleListApi(payload))
+      dispatch(getTaskDetailsApi(taskId));
     }
+  }
+
+  // Handle Task Details Response
+  useEffect(() => {
+    if (selector.task_details_response) {
+      if (selector.task_details_response.entityModuleId) {
+        getTestDriveAppointmentDetailsFromServer();
+      }
+      else if (selector.task_details_response.taskStatus === "ASSIGNED" && selector.task_details_response.taskName === "Test Drive") {
+        setHandleActionButtons(1);
+      }
+    }
+  }, [selector.task_details_response])
+
+  getTestDriveAppointmentDetailsFromServer = () => {
+
+    if (selector.task_details_response.entityModuleId) {
+      const payload = {
+        barnchId: userData.branchId,
+        orgId: userData.orgId,
+        entityModuleId: selector.task_details_response.entityModuleId
+      }
+      dispatch(getTestDriveAppointmentDetailsApi(payload));
+    }
+  }
+
+  useEffect(() => {
+    if (selector.test_drive_appointment_details_response) {
+
+      const taskStatus = selector.test_drive_appointment_details_response.status;
+      const taskName = selector.task_details_response.taskName;
+
+      if ((taskStatus === "SENT_FOR_APPROVAL" || taskStatus === "APPROVED") && taskName === "Test Drive") {
+        setHandleActionButtons(1);
+      }
+      else if (taskStatus === "SENT_FOR_APPROVAL" && taskName === "Test Drive") {
+        setHandleActionButtons(2);
+      }
+      else if (taskStatus === "SENT_FOR_APPROVAL" && taskName === "Test Drive Approval") {
+        setHandleActionButtons(3);
+      }
+      else if (taskStatus === "APPROVED" && taskName === "Test Drive") {
+        setHandleActionButtons(4);
+      }
+      else if (taskStatus === "CANCELLED") {
+        setHandleActionButtons(5);
+      }
+      updateTaskDetails(selector.test_drive_appointment_details_response);
+    }
+  }, [selector.test_drive_appointment_details_response])
+
+  const updateTaskDetails = (taskDetailsObj) => {
+
+    const vehicleInfo = taskDetailsObj.vehicleInfo;
+
+    const obj = {
+      id: vehicleInfo.vehicleId,
+      model: vehicleInfo.model,
+      varient: vehicleInfo.varientName,
+      fuelType: vehicleInfo.fuelType,
+      transmissionType: vehicleInfo.transmission_type
+    }
+    dispatch(updateSelectedTestDriveVehicle(obj));
   }
 
   const uploadSelectedImage = async (selectedPhoto, keyId) => {
@@ -95,7 +183,12 @@ const TestDriveScreen = ({ route, navigation }) => {
       uri: Platform.OS === 'ios' ? photoUri.replace('file://', '') : photoUri
     });
     formData.append("universalId", universalId);
-    formData.append("documentType", "dl");
+    if (keyId === "DRIVING_LICENSE_FRONT") {
+      formData.append("documentType", "dlFrontUrl");
+    }
+    else if (keyId === "DRIVING_LICENSE_BACK") {
+      formData.append("documentType", "dlBackUrl");
+    }
 
     await fetch(URL.UPLOAD_DOCUMENT(), {
       method: 'POST',
@@ -148,7 +241,7 @@ const TestDriveScreen = ({ route, navigation }) => {
     setShowImagePicker(true);
   }
 
-  const submitClicked = () => {
+  const submitClicked = (status, taskName) => {
 
     if (selector.model.length === 0) {
       showToast("Please select model");
@@ -173,7 +266,7 @@ const TestDriveScreen = ({ route, navigation }) => {
     let varientId = "";
     let vehicleId = ""
     selector.test_drive_vehicle_list.forEach(element => {
-      if (element.id == selector.selected_vehicle_id) {
+      if (element.vehicleInfo.vehicleId == selector.selected_vehicle_id) {
         varientId = element.vehicleInfo.varientId;
         vehicleId = element.vehicleInfo.vehicleId;
       }
@@ -183,8 +276,8 @@ const TestDriveScreen = ({ route, navigation }) => {
     const location = selector.address_type_is_showroom === "true" ? "showroom" : "customer";
 
     if (selector.customer_having_driving_licence === "true") {
-      if (!uploadedImagesDataObj.dl) {
-        showToast("Please upload driving license");
+      if (!uploadedImagesDataObj.dlFrontUrl || !uploadedImagesDataObj.dlBackUrl) {
+        showToast("Please upload driving license front & back");
         return;
       }
     }
@@ -206,6 +299,9 @@ const TestDriveScreen = ({ route, navigation }) => {
       actualStartTime = date + " " + selector.actual_start_time;
       actualEndTime = date + " " + selector.actual_end_time;
     }
+    setExpectedStartTime(actualStartTime);
+    setExpectedEndTime(actualEndTime);
+    setTaskStatusAndName({ status: status, name: taskName });
 
     const payload = {
       "appointment": {
@@ -213,7 +309,8 @@ const TestDriveScreen = ({ route, navigation }) => {
         "branchId": userData.branchId,
         "customerHaveingDl": selector.customer_having_driving_licence === "true" ? true : false,
         "customerId": universalId,
-        "dlBackUrl": uploadedImagesDataObj.dl.documentPath,
+        "dlBackUrl": uploadedImagesDataObj.dlBackUrl.documentPath,
+        "dlFrontUrl": uploadedImagesDataObj.dlFrontUrl.documentPath,
         "dseId": selector.selected_dse_id,
         "location": location,
         "orgId": userData.orgId,
@@ -222,14 +319,59 @@ const TestDriveScreen = ({ route, navigation }) => {
         "endTime": actualEndTime,
         "testDriveDatetime": prefferedTime,
         "testdriveId": 0,
-        "status": "SENT_FOR_APPROVAL",
+        "status": status,
         "varientId": varientId,
         "vehicleId": vehicleId,
         "driverId": selector.selected_driver_id
       }
     }
+    dispatch(bookTestDriveAppointmentApi(payload));
   }
 
+  // Handle Book Test drive appointment response
+  useEffect(() => {
+    if (selector.book_test_drive_appointment_response) {
+
+      const payload = {
+        "universalId": universalId,
+        "taskId": null,
+        "remarks": "Success",
+        "universalModuleId": selector.book_test_drive_appointment_response.confirmationId,
+        "status": taskStatusAndName.status,
+        "taskName": taskStatusAndName.name,
+        "expectedStarttime": expectedStartTime,
+        "expectedEndTime": expectedEndTime
+      }
+      dispatch(updateTestDriveTaskApi(payload));
+    }
+  }, [selector.book_test_drive_appointment_response])
+
+  // Handle Update Test Drive Task response
+  useEffect(() => {
+    if (selector.test_drive_update_task_response === "success") {
+      showAlertMessage(true);
+    } else if (selector.test_drive_update_task_response === "failed") {
+      showAlertMessage(false);
+    }
+  }, [selector.test_drive_update_task_response])
+
+  showAlertMessage = (isSucess) => {
+    let message = isSucess ? "TestDrive Appointment has succeeded" : "TestDrive Appointment has failed"
+    Alert.alert(
+      "",
+      message,
+      [
+        {
+          text: "OK",
+          onPress: () => {
+            dispatch(clearState());
+            navigation.popToTop();
+          }
+        }
+      ],
+      { cancelable: false }
+    );
+  }
 
   const DisplaySelectedImage = ({ fileName }) => {
     return (
@@ -459,11 +601,18 @@ const TestDriveScreen = ({ route, navigation }) => {
                 <View>
                   <View style={styles.select_image_bck_vw}>
                     <ImageSelectItem
-                      name={"Upload Driving License"}
-                      onPress={() => showImagePickerMethod("DRIVING_LICENSE")}
+                      name={"Upload Driving License (Front)"}
+                      onPress={() => showImagePickerMethod("DRIVING_LICENSE_FRONT")}
                     />
                   </View>
-                  {uploadedImagesDataObj.dl ? <DisplaySelectedImage fileName={uploadedImagesDataObj.dl.fileName} /> : null}
+                  {uploadedImagesDataObj.dlFrontUrl ? <DisplaySelectedImage fileName={uploadedImagesDataObj.dlFrontUrl.fileName} /> : null}
+                  <View style={styles.select_image_bck_vw}>
+                    <ImageSelectItem
+                      name={"Upload Driving License (Back)"}
+                      onPress={() => showImagePickerMethod("DRIVING_LICENSE_BACK")}
+                    />
+                  </View>
+                  {uploadedImagesDataObj.dlBackUrl ? <DisplaySelectedImage fileName={uploadedImagesDataObj.dlBackUrl.fileName} /> : null}
                 </View>
               )}
 
@@ -518,26 +667,60 @@ const TestDriveScreen = ({ route, navigation }) => {
               <Text style={GlobalStyle.underline}></Text> */}
             </View>
           </View>
-          <View style={styles.view1}>
-            <Button
-              mode="contained"
-              style={{ width: 120 }}
-              color={Colors.RED}
-              labelStyle={{ textTransform: "none" }}
-              onPress={submitClicked}
-            >
-              Submit
-            </Button>
-            <Button
-              mode="contained"
-              style={{ width: 120 }}
-              color={Colors.RED}
-              labelStyle={{ textTransform: "none" }}
-              onPress={() => console.log("Pressed")}
-            >
-              Close
-            </Button>
-          </View>
+
+          {handleActionButtons === 1 && (
+            <View style={styles.view1}>
+              <LocalButtonComp
+                title={"Submit"}
+                disabled={false}
+                onPress={() => submitClicked('SENT_FOR_APPROVAL', 'Test Drive')}
+              />
+            </View>
+          )}
+          {handleActionButtons === 2 && (
+            <View style={styles.view1}>
+              <LocalButtonComp
+                title={"Cancel"}
+                disabled={false}
+                onPress={() => submitClicked('CANCELLED', 'Test Drive')}
+              />
+            </View>
+          )}
+          {handleActionButtons === 3 && (
+            <View style={styles.view1}>
+              <LocalButtonComp
+                title={"Reject"}
+                disabled={false}
+                onPress={() => submitClicked('CANCELLED', 'Test Drive Approval')}
+              />
+              <LocalButtonComp
+                title={"Approve"}
+                disabled={false}
+                bgColor={Colors.GREEN}
+                onPress={() => submitClicked('APPROVED', 'Test Drive Approval')}
+              />
+            </View>
+          )}
+          {handleActionButtons === 4 && (
+            <View style={styles.view1}>
+              <LocalButtonComp
+                title={"Reject"}
+                disabled={false}
+                onPress={() => submitClicked('CLOSED', 'Test Drive')}
+              />
+              <LocalButtonComp
+                title={"Approve"}
+                disabled={false}
+                bgColor={Colors.GREEN}
+                onPress={() => submitClicked('RESCHEDULED', 'Test Drive')}
+              />
+            </View>
+          )}
+          {handleActionButtons === 5 && (
+            <View style={styles.view1}>
+              <Text style={styles.cancelText}>{"This task has cancelled"}</Text>
+            </View>
+          )}
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -606,5 +789,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '400',
     color: Colors.DARK_GRAY
+  },
+  cancelText: {
+    fontSize: 14,
+    fontWeight: '400',
+    color: Colors.RED
   }
 });

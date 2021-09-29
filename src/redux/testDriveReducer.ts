@@ -19,6 +19,16 @@ interface DatePickerModel {
   mode: string;
 }
 
+export const getTaskDetailsApi = createAsyncThunk("TEST_DRIVE_SLICE/getTaskDetailsApi", async (taskId, { rejectWithValue }) => {
+
+  const response = await client.get(URL.GET_TASK_DETAILS(taskId));
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 export const getTestDriveDseEmployeeListApi = createAsyncThunk("TEST_DRIVE_SLICE/getTestDriveDseEmployeeListApi", async (payload, { rejectWithValue }) => {
 
   const response = await client.get(URL.GET_TEST_DRIVE_DSE_LIST());
@@ -49,6 +59,36 @@ export const getTestDriveVehicleListApi = createAsyncThunk("TEST_DRIVE_SLICE/get
   return json;
 })
 
+export const bookTestDriveAppointmentApi = createAsyncThunk("TEST_DRIVE_SLICE/bookTestDriveAppointmentApi", async (payload, { rejectWithValue }) => {
+
+  const response = await client.post(URL.BOOK_TEST_DRIVE_APPOINTMENT(), payload);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const updateTestDriveTaskApi = createAsyncThunk("TEST_DRIVE_SLICE/updateTestDriveTaskApi", async (payload, { rejectWithValue }) => {
+
+  const response = await client.post(URL.UPDATE_TEST_DRIVE_TASK(), payload);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getTestDriveAppointmentDetailsApi = createAsyncThunk("TEST_DRIVE_SLICE/getAppointmentDetailsApi", async (payload, { rejectWithValue }) => {
+
+  const response = await client.get(URL.GET_TEST_DRIVE_APPOINTMENT_DETAILS(payload["entityModuleId"], payload["barnchId"], payload["orgId"]));
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 const testDriveSlice = createSlice({
   name: "TEST_DRIVE_SLICE",
   initialState: {
@@ -58,6 +98,10 @@ const testDriveSlice = createSlice({
     drivers_list: [],
     test_drive_vehicle_list: [],
     test_drive_vehicle_list_for_drop_down: [],
+    task_details_response: null,
+    book_test_drive_appointment_response: null,
+    test_drive_update_task_response: null,
+    test_drive_appointment_details_response: null,
     // Customer Details
     name: "",
     mobile: "",
@@ -80,6 +124,12 @@ const testDriveSlice = createSlice({
     actual_end_time: ""
   },
   reducers: {
+    clearState: (state, action) => {
+      state.book_test_drive_appointment_response = null;
+      state.test_drive_update_task_response = null;
+      state.task_details_response = null;
+      state.test_drive_appointment_details_response = null;
+    },
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
       const { key, value, id } = action.payload;
       switch (key) {
@@ -143,6 +193,7 @@ const testDriveSlice = createSlice({
 
       const vehicleInfo = action.payload;
       console.log(vehicleInfo);
+      state.model = vehicleInfo.model;
       state.varient = vehicleInfo.varient;
       state.fuel_type = vehicleInfo.fuelType;
       state.transmission_type = vehicleInfo.transmissionType;
@@ -161,6 +212,30 @@ const testDriveSlice = createSlice({
     }
   },
   extraReducers: (builder) => {
+    // Get Task Details Api
+    builder.addCase(getTaskDetailsApi.fulfilled, (state, action) => {
+      if (action.payload.success === true && action.payload.dmsEntity) {
+        state.task_details_response = action.payload.dmsEntity.task;
+      } else {
+        state.task_details_response = null;
+      }
+    })
+    builder.addCase(getTaskDetailsApi.rejected, (state, action) => {
+      state.task_details_response = null;
+    })
+    // Get Test Drive Appointment Details
+    builder.addCase(getTestDriveAppointmentDetailsApi.fulfilled, (state, action) => {
+      if (action.payload != null && action.payload.statusCode === "200") {
+        if (action.payload.testDrives && action.payload.testDrives.length > 0) {
+          state.test_drive_appointment_details_response = action.payload.testDrives[0];
+        }
+      }
+    })
+    builder.addCase(getTestDriveAppointmentDetailsApi.rejected, (state, action) => {
+      console.log("F getTestDriveAppointmentDetailsApi: ", JSON.stringify(action.payload));
+      state.test_drive_appointment_details_response = null;
+    })
+    // Get Test Drive Vehicle list
     builder.addCase(getTestDriveVehicleListApi.fulfilled, (state, action) => {
       // console.log("S getTestDriveVehicleListApi: ", JSON.stringify(action.payload));
       if (action.payload.status === "SUCCESS" && action.payload.vehicles) {
@@ -172,8 +247,9 @@ const testDriveSlice = createSlice({
         vehicles.forEach(element => {
           const vehicleInfo = element.vehicleInfo;
           new_vehicles.push({
-            id: element.id,
+            id: vehicleInfo.vehicleId,
             name: vehicleInfo.model,
+            model: vehicleInfo.model,
             varient: vehicleInfo.varientName,
             fuelType: vehicleInfo.fuelType,
             transmissionType: vehicleInfo.transmission_type
@@ -193,7 +269,7 @@ const testDriveSlice = createSlice({
       }
     })
     builder.addCase(getDriversListApi.fulfilled, (state, action) => {
-      console.log("S getDriversListApi: ", JSON.stringify(action.payload));
+      //console.log("S getDriversListApi: ", JSON.stringify(action.payload));
       if (action.payload.dmsEntity) {
         const driversList = action.payload.dmsEntity.employees;
         let newFormatDriversList = [];
@@ -206,10 +282,39 @@ const testDriveSlice = createSlice({
         state.drivers_list = newFormatDriversList;
       }
     })
+    // Book Test Drive Appointment
+    builder.addCase(bookTestDriveAppointmentApi.pending, (state, action) => {
+      state.isLoading = true;
+    })
+    builder.addCase(bookTestDriveAppointmentApi.fulfilled, (state, action) => {
+      if (action.payload.statusCode == "200") {
+        state.book_test_drive_appointment_response = action.payload;
+      }
+      state.isLoading = false;
+    })
+    builder.addCase(bookTestDriveAppointmentApi.rejected, (state, action) => {
+      state.book_test_drive_appointment_response = null;
+      state.isLoading = false;
+    })
+    // Update Test Drive Task
+    builder.addCase(updateTestDriveTaskApi.pending, (state, action) => {
+      state.isLoading = true;
+    })
+    builder.addCase(updateTestDriveTaskApi.fulfilled, (state, action) => {
+      if (action.payload.success === true) {
+        state.test_drive_update_task_response = "success";
+      }
+      state.isLoading = false;
+    })
+    builder.addCase(updateTestDriveTaskApi.rejected, (state, action) => {
+      state.test_drive_update_task_response = "failed";
+      state.isLoading = false;
+    })
   }
 });
 
 export const {
+  clearState,
   updateSelectedDate,
   setTestDriveDetails,
   setDropDownData,

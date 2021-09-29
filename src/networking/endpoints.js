@@ -86,6 +86,11 @@ const URL = {
     GET_FEATURE_PENDING_TASK_LIST: (empId, offset) => {
         return sales_url + `/task-history/future-or-past-tasks?`;
     },
+    BOOK_TEST_DRIVE_APPOINTMENT: () => ops_url + "/testdrive/appointment",
+    UPDATE_TEST_DRIVE_TASK: () => sales_url + "/dms/updateTestDriveTask",
+    GET_TEST_DRIVE_APPOINTMENT_DETAILS: (entityModuleId, branchId, orgId) => {
+        return ops_url + `/testdrive/history?branchId=${branchId}&filterType=TESTDRIVE&filterVal=${entityModuleId}&orgId=${orgId}`
+    }
 }
 
 export default URL;
