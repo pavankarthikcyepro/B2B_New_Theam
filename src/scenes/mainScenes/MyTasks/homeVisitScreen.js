@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView, View, Text, StyleSheet, Keyboard } from "react-native";
+import {
+  SafeAreaView,
+  View,
+  Text,
+  StyleSheet,
+  Keyboard,
+  ToastAndroid,
+} from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { TextinputComp } from "../../../components";
 import { Button } from "react-native-paper";
@@ -8,14 +15,16 @@ import {
   clearState,
   setHomeVisitDetails,
   getTaskDetailsApi,
-  updateTaskApi
+  updateTaskApi,
 } from "../../../redux/homeVisitReducer";
-import { showToastSucess } from "../../../utils/toast";
+import { showToastSucess, showToast } from "../../../utils/toast";
 import * as AsyncStorage from "../../../asyncStore";
-import { getCurrentTasksListApi, getPendingTasksListApi } from "../../../redux/mytaskReducer";
+import {
+  getCurrentTasksListApi,
+  getPendingTasksListApi,
+} from "../../../redux/mytaskReducer";
 
 const HomeVisitScreen = ({ route, navigation }) => {
-
   const { taskId, identifier } = route.params;
   const selector = useSelector((state) => state.homeVisitReducer);
   const dispatch = useDispatch();
@@ -25,14 +34,14 @@ const HomeVisitScreen = ({ route, navigation }) => {
   useEffect(() => {
     getAsyncStorageData();
     dispatch(getTaskDetailsApi(taskId));
-  }, [])
+  }, []);
 
   const getAsyncStorageData = async () => {
     const employeeId = await AsyncStorage.getData(AsyncStorage.Keys.EMP_ID);
     if (employeeId) {
       setEmpId(employeeId);
     }
-  }
+  };
 
   const getMyTasksListFromServer = () => {
     if (empId) {
@@ -40,7 +49,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
       dispatch(getCurrentTasksListApi(endUrl));
       dispatch(getPendingTasksListApi(endUrl));
     }
-  }
+  };
 
   // Update, Close Task Response handle
   useEffect(() => {
@@ -54,13 +63,25 @@ const HomeVisitScreen = ({ route, navigation }) => {
       navigation.popToTop();
       dispatch(clearState());
     }
-  }, [selector.update_task_response_status])
+  }, [selector.update_task_response_status]);
 
   const updateTask = () => {
-
     Keyboard.dismiss();
+
+    if (selector.reason.length === 0) {
+      showToast("Please Enter Reason");
+      return;
+    }
+    if (selector.customer_remarks.length === 0) {
+      showToast("Please enter customer remarks");
+      return;
+    }
+    if (selector.employee_remarks.length === 0) {
+      showToast("Please Enter employee remarks");
+      return;
+    }
     if (selector.task_details_response?.taskId !== taskId) {
-      return
+      return;
     }
 
     const newTaskObj = { ...selector.task_details_response };
@@ -69,13 +90,12 @@ const HomeVisitScreen = ({ route, navigation }) => {
     newTaskObj.employeeRemarks = selector.employee_remarks;
     dispatch(updateTaskApi(newTaskObj));
     setActionType("UPDATE_TASK");
-  }
+  };
 
   const closeTask = () => {
-
     Keyboard.dismiss();
     if (selector.task_details_response?.taskId !== taskId) {
-      return
+      return;
     }
 
     const newTaskObj = { ...selector.task_details_response };
@@ -85,7 +105,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
     newTaskObj.taskStatus = "CLOSED";
     dispatch(updateTaskApi(newTaskObj));
     setActionType("CLOSE_TASK");
-  }
+  };
 
   return (
     <SafeAreaView style={[styles.container]}>
