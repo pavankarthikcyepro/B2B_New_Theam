@@ -9,7 +9,7 @@ export const DropDownSelectionItem = ({ label, value, onPress, disabled = false 
             <View style={styles.container}>
                 <Text style={styles.label}>{value ? label : ""}</Text>
                 <View style={[styles.view3, { paddingBottom: value ? 0 : 20 }]}>
-                    <Text style={[styles.text3, { color: value ? (disabled ? Colors.GRAY : Colors.BLACK) : Colors.GRAY }]}>{value ? value : label}</Text>
+                    <Text style={[styles.text3, { color: value ? (disabled ? Colors.GRAY : Colors.BLACK) : Colors.GRAY }]} numberOfLines={1}>{value ? value : label}</Text>
                     <IconButton
                         icon="menu-down"
                         color={disabled ? Colors.GRAY : Colors.BLACK}
@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
         paddingLeft: 12,
         fontSize: 16,
         fontWeight: '400',
-        color: Colors.GRAY
+        color: Colors.GRAY,
+        maxWidth: "85%"
     },
 })

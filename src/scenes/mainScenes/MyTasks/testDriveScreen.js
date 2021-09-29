@@ -22,10 +22,11 @@ import {
   updateSelectedDropDownData,
   updateSelectedDate,
   setDropDownData,
-  updateFuelAndTransmissionType,
+  updateSelectedTestDriveVehicle,
   getTestDriveDseEmployeeListApi,
   getDriversListApi,
-  getTestDriveVehicleListApi
+  getTestDriveVehicleListApi,
+  updateBasicDetails
 } from "../../../redux/testDriveReducer";
 import { DateSelectItem, RadioTextItem, ImageSelectItem, DropDownSelectionItem } from "../../../pureComponents";
 import { Dropdown } from "sharingan-rn-modal-dropdown";
@@ -33,35 +34,35 @@ import { RadioButton } from "react-native-paper";
 import { Button } from "react-native-paper";
 import * as AsyncStore from "../../../asyncStore";
 import { convertToDate, convertToTime } from "../../../utils/helperFunctions";
-import { showToastRedAlert } from "../../../utils/toast";
+import { showToast, showToastRedAlert } from "../../../utils/toast";
 import URL from "../../../networking/endpoints";
+import moment from 'moment';
+
 
 const TestDriveScreen = ({ route, navigation }) => {
 
-  const { taskId, identifier, universalId } = route.params;
+  const { taskId, identifier, universalId, taskData } = route.params;
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.testDriveReducer);
-  const { vehicle_modal_list } = useSelector(state => state.homeReducer);
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [dataForDropDown, setDataForDropDown] = useState([]);
   const [dropDownKey, setDropDownKey] = useState("");
   const [dropDownTitle, setDropDownTitle] = useState("Select Data");
   const [userData, setUserData] = useState({ branchId: "", orgId: "", employeeId: "", employeeName: "" })
-  const [carModelsData, setCarModelsData] = useState([]);
-  const [selectedCarVarientsData, setSelectedCarVarientsData] = useState({ varientList: [], varientListForDropDown: [] });
   const [showDatePickerModel, setShowDatePickerModel] = useState(false);
   const [datePickerKey, setDatePickerKey] = useState("");
   const [datePickerMode, setDatePickerMode] = useState("date");
   const [showImagePicker, setShowImagePicker] = useState(false);
   const [imagePickerKey, setImagePickerKey] = useState("");
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
-
+  const [isRecordEditable, setIsRecordEditable] = useState(true);
 
   useEffect(() => {
+
+    dispatch(updateBasicDetails(taskData))
     getAsyncstoreData();
-    //dispatch(getTestDriveDseEmployeeListApi());
+    dispatch(getTestDriveDseEmployeeListApi());
     dispatch(getDriversListApi());
-    setCarModelsDataFromBase();
   }, []);
 
   const getAsyncstoreData = async () => {
@@ -74,68 +75,6 @@ const TestDriveScreen = ({ route, navigation }) => {
         orgId: jsonObj.orgId
       }
       dispatch(getTestDriveVehicleListApi(payload))
-    }
-  }
-
-  const setCarModelsDataFromBase = () => {
-    let modalList = [];
-    if (vehicle_modal_list.length > 0) {
-      vehicle_modal_list.forEach(item => {
-        modalList.push({ id: item.vehicleId, name: item.model })
-      });
-    }
-    setCarModelsData([...modalList]);
-  }
-
-  const updateVariantModelsData = (selectedModelName) => {
-
-    if (!selectedModelName || selectedModelName.length === 0) { return }
-
-    let arrTemp = vehicle_modal_list.filter(function (obj) {
-      return obj.model === selectedModelName;
-    });
-
-    let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
-    if (carModelObj !== undefined) {
-      let newArray = [];
-      let mArray = carModelObj.varients;
-      if (mArray.length) {
-        mArray.forEach(item => {
-          newArray.push({
-            id: item.id,
-            name: item.name
-          })
-        })
-        setSelectedCarVarientsData({ varientList: [...mArray], varientListForDropDown: [...newArray] });
-      }
-    }
-  }
-
-  const updateColorsDataForSelectedVarient = (selectedVarientName, varientList) => {
-
-    if (!selectedVarientName || selectedVarientName.length === 0) { return }
-
-    let arrTemp = varientList.filter(function (obj) {
-      return obj.name === selectedVarientName;
-    });
-
-    let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
-    if (carModelObj !== undefined) {
-      let newArray = [];
-      let mArray = carModelObj.vehicleImages;
-      if (mArray.length) {
-        mArray.map(item => {
-          newArray.push({
-            id: item.id,
-            name: item.color
-          })
-        })
-        const obj = {
-          fuelType: carModelObj.fuelType,
-          transmissionType: carModelObj.transmission_type
-        }
-        dispatch(updateFuelAndTransmissionType(obj));
-      }
     }
   }
 
@@ -167,7 +106,7 @@ const TestDriveScreen = ({ route, navigation }) => {
     })
       .then((response) => response.json())
       .then((response) => {
-        //console.log('response', response);
+        console.log('response', response);
         if (response) {
           const dataObj = { ...uploadedImagesDataObj };
           dataObj[response.documentType] = response;
@@ -185,10 +124,7 @@ const TestDriveScreen = ({ route, navigation }) => {
 
     switch (key) {
       case "MODEL":
-        setDataForDropDown([...carModelsData]);
-        break;
-      case "VARIENT":
-        setDataForDropDown([...selectedCarVarientsData.varientListForDropDown]);
+        setDataForDropDown([...selector.test_drive_vehicle_list_for_drop_down]);
         break;
       case "LIST_OF_DRIVERS":
         setDataForDropDown([...selector.drivers_list]);
@@ -211,6 +147,89 @@ const TestDriveScreen = ({ route, navigation }) => {
     setImagePickerKey(key);
     setShowImagePicker(true);
   }
+
+  const submitClicked = () => {
+
+    if (selector.model.length === 0) {
+      showToast("Please select model");
+      return;
+    }
+
+    if (selector.selected_driver.length === 0) {
+      showToast("Please select driver");
+      return;
+    }
+
+    if (selector.customer_preferred_date.length === 0) {
+      showToast("Please select customer preffered date");
+      return;
+    }
+
+    if (selector.customer_preferred_time.length === 0 || selector.actual_start_time.length === 0 || selector.actual_end_time.length === 0) {
+      showToast("Please select time");
+      return;
+    }
+
+    let varientId = "";
+    let vehicleId = ""
+    selector.test_drive_vehicle_list.forEach(element => {
+      if (element.id == selector.selected_vehicle_id) {
+        varientId = element.vehicleInfo.varientId;
+        vehicleId = element.vehicleInfo.vehicleId;
+      }
+    });
+    if (!varientId || !vehicleId) return;
+
+    const location = selector.address_type_is_showroom === "true" ? "showroom" : "customer";
+
+    if (selector.customer_having_driving_licence === "true") {
+      if (!uploadedImagesDataObj.dl) {
+        showToast("Please upload driving license");
+        return;
+      }
+    }
+    const date = moment(selector.customer_preferred_date, "DD/MM/YYYY").format("DD-MM-YYYY");
+    let prefferedTime = "";
+    let actualStartTime = "";
+    let actualEndTime = "";
+
+    if (Platform.OS === "ios") {
+      const preffTime = moment(selector.customer_preferred_time, 'hh:mm a').format('HH:mm:ss');
+      const startTime = moment(selector.actual_start_time, 'hh:mm a').format('HH:mm:ss');
+      const endTime = moment(selector.actual_end_time, 'hh:mm a').format('HH:mm:ss');
+      prefferedTime = date + " " + preffTime;
+      actualStartTime = date + " " + startTime;
+      actualEndTime = date + " " + endTime;
+    }
+    else {
+      prefferedTime = date + " " + selector.customer_preferred_time;
+      actualStartTime = date + " " + selector.actual_start_time;
+      actualEndTime = date + " " + selector.actual_end_time;
+    }
+
+    const payload = {
+      "appointment": {
+        "address": selector.customer_address,
+        "branchId": userData.branchId,
+        "customerHaveingDl": selector.customer_having_driving_licence === "true" ? true : false,
+        "customerId": universalId,
+        "dlBackUrl": uploadedImagesDataObj.dl.documentPath,
+        "dseId": selector.selected_dse_id,
+        "location": location,
+        "orgId": userData.orgId,
+        "source": "ShowroomWalkin",
+        "startTime": actualStartTime,
+        "endTime": actualEndTime,
+        "testDriveDatetime": prefferedTime,
+        "testdriveId": 0,
+        "status": "SENT_FOR_APPROVAL",
+        "varientId": varientId,
+        "vehicleId": vehicleId,
+        "driverId": selector.selected_driver_id
+      }
+    }
+  }
+
 
   const DisplaySelectedImage = ({ fileName }) => {
     return (
@@ -241,10 +260,7 @@ const TestDriveScreen = ({ route, navigation }) => {
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
           if (dropDownKey === "MODEL") {
-            updateVariantModelsData(item.name);
-          }
-          else if (dropDownKey === "VARIENT") {
-            updateColorsDataForSelectedVarient(item.name, selectedCarVarientsData.varientList);
+            dispatch(updateSelectedTestDriveVehicle(item));
           }
           setShowDropDownModel(false);
           dispatch(setDropDownData({ key: dropDownKey, value: item.name, id: item.id }));
@@ -307,7 +323,9 @@ const TestDriveScreen = ({ route, navigation }) => {
               <TextinputComp
                 style={{ height: 65, width: "100%" }}
                 value={selector.name}
-                label={"Name"}
+                label={"Name*"}
+                editable={false}
+                disabled={true}
                 onChangeText={(text) =>
                   dispatch(setTestDriveDetails({ key: "NAME", text: text }))
                 }
@@ -316,8 +334,10 @@ const TestDriveScreen = ({ route, navigation }) => {
               <TextinputComp
                 style={{ height: 65, width: "100%" }}
                 value={selector.email}
-                label={"Email ID"}
+                label={"Email ID*"}
                 keyboardType={"email-address"}
+                editable={false}
+                disabled={true}
                 onChangeText={(text) =>
                   dispatch(setTestDriveDetails({ key: "EMAIL", text: text }))
                 }
@@ -326,9 +346,11 @@ const TestDriveScreen = ({ route, navigation }) => {
               <TextinputComp
                 style={{ height: 65, width: "100%" }}
                 value={selector.mobile}
-                label={"Mobile Number"}
+                label={"Mobile Number*"}
                 maxLength={10}
                 keyboardType={"phone-pad"}
+                editable={false}
+                disabled={true}
                 onChangeText={(text) =>
                   dispatch(setTestDriveDetails({ key: "MOBILE", text: text }))
                 }
@@ -338,13 +360,14 @@ const TestDriveScreen = ({ route, navigation }) => {
               <DropDownSelectionItem
                 label={"Model"}
                 value={selector.model}
+                disabled={!isRecordEditable}
                 onPress={() => showDropDownModelMethod("MODEL", "Model")}
               />
 
               <DropDownSelectionItem
                 label={"Varient"}
                 value={selector.varient}
-                onPress={() => showDropDownModelMethod("VARIENT", "Varient")}
+                disabled={true}
               />
 
               <TextinputComp
@@ -352,6 +375,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 label={"Fuel Type"}
                 value={selector.fuel_type}
                 editable={false}
+                disabled={true}
               />
               <Text style={GlobalStyle.underline}></Text>
 
@@ -360,6 +384,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 label={"Transmission Type"}
                 value={selector.transmission_type}
                 editable={false}
+                disabled={true}
               />
               <Text style={GlobalStyle.underline}></Text>
 
@@ -388,6 +413,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                     label={"Customer Address"}
                     multiline={true}
                     numberOfLines={4}
+                    editable={isRecordEditable}
+                    disabled={!isRecordEditable}
                     onChangeText={(text) =>
                       dispatch(setTestDriveDetails({ key: "CUSTOMER_ADDRESS", text: text }))
                     }
@@ -429,14 +456,16 @@ const TestDriveScreen = ({ route, navigation }) => {
                 />
               </View>
               {selector.customer_having_driving_licence === "true" && (
-                <View style={styles.select_image_bck_vw}>
-                  <ImageSelectItem
-                    name={"Upload Driving License"}
-                    onPress={() => showImagePickerMethod("DRIVING_LICENSE")}
-                  />
+                <View>
+                  <View style={styles.select_image_bck_vw}>
+                    <ImageSelectItem
+                      name={"Upload Driving License"}
+                      onPress={() => showImagePickerMethod("DRIVING_LICENSE")}
+                    />
+                  </View>
+                  {uploadedImagesDataObj.dl ? <DisplaySelectedImage fileName={uploadedImagesDataObj.dl.fileName} /> : null}
                 </View>
               )}
-              {uploadedImagesDataObj.dl ? <DisplaySelectedImage fileName={uploadedImagesDataObj.dl.fileName} /> : null}
 
               <Text style={GlobalStyle.underline}></Text>
 
@@ -447,7 +476,7 @@ const TestDriveScreen = ({ route, navigation }) => {
               />
               <DropDownSelectionItem
                 label={"List of Employees"}
-                value={userData.employeeName}
+                value={selector.selected_dse_employee}
                 disabled={true}
               />
               <DropDownSelectionItem
@@ -460,25 +489,33 @@ const TestDriveScreen = ({ route, navigation }) => {
                 value={selector.customer_preferred_time}
                 onPress={() => showDatePickerModelMethod("CUSTOMER_PREFERRED_TIME", "time")}
               />
-              <DateSelectItem
-                label={"Actual start Time (24 hours Format)"}
-                value={selector.actual_start_time}
-                onPress={() => showDatePickerModelMethod("ACTUAL_START_TIME", "time")}
-              />
-              <DateSelectItem
-                label={"Actual End Time (24 hours Format)"}
-                value={selector.actual_end_time}
-                onPress={() => showDatePickerModelMethod("ACTUAL_END_TIME", "time")}
-              />
-              <View style={styles.space}></View>
-              <Text style={{ padding: 10 }}>{"Allotment ID"}</Text>
+              <View style={{ flexDirection: 'row' }}>
+                <View style={{ width: '50%' }}>
+                  <DateSelectItem
+                    label={"Actual start Time"}
+                    value={selector.actual_start_time}
+                    onPress={() => showDatePickerModelMethod("ACTUAL_START_TIME", "time")}
+                  />
+                </View>
+                <View style={{ width: '50%' }}>
+                  <DateSelectItem
+                    label={"Actual End Time"}
+                    value={selector.actual_end_time}
+                    onPress={() => showDatePickerModelMethod("ACTUAL_END_TIME", "time")}
+                  />
+                </View>
+              </View>
+
+
+              {/* <View style={styles.space}></View> */}
+              {/* <Text style={{ padding: 10 }}>{"Allotment ID"}</Text>
               <Text style={GlobalStyle.underline}></Text>
               <View style={styles.space}></View>
               <Text style={{ padding: 10 }}>{"Planned Start Date Time"} </Text>
               <Text style={GlobalStyle.underline}></Text>
               <View style={styles.space}></View>
               <Text style={{ padding: 10 }}>{"Planned End Date Time"}</Text>
-              <Text style={GlobalStyle.underline}></Text>
+              <Text style={GlobalStyle.underline}></Text> */}
             </View>
           </View>
           <View style={styles.view1}>
@@ -487,7 +524,7 @@ const TestDriveScreen = ({ route, navigation }) => {
               style={{ width: 120 }}
               color={Colors.RED}
               labelStyle={{ textTransform: "none" }}
-              onPress={() => console.log("Pressed")}
+              onPress={submitClicked}
             >
               Submit
             </Button>

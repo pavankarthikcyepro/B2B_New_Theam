@@ -67,7 +67,13 @@ const PendingTaskListScreen = ({ navigation }) => {
         }
     }
 
-    const itemClicked = (taskName, taskId, universalId, taskStatus) => {
+    const itemClicked = (item) => {
+
+        const taskName = item.taskName;
+        const taskId = item.taskId;
+        const universalId = item.universalId;
+        const taskStatus = item.taskStatus;
+
         const trimName = taskName.toLowerCase().trim();
         const finalTaskName = trimName.replace(/ /g, "");
         let navigationId = ""
@@ -98,7 +104,7 @@ const PendingTaskListScreen = ({ navigation }) => {
                 break;
         }
         if (!navigationId) { return }
-        navigation.navigate(navigationId, { identifier: mytasksIdentifires[finalTaskName], taskId, universalId, taskStatus });
+        navigation.navigate(navigationId, { identifier: mytasksIdentifires[finalTaskName], taskId, universalId, taskStatus, taskData: item });
     };
 
     const renderFooter = () => {
@@ -142,7 +148,7 @@ const PendingTaskListScreen = ({ navigation }) => {
                         return (
                             <View style={{ flex: 1, width: "100%" }}>
                                 <View style={[styles.listBgVw]}>
-                                    <Pressable onPress={() => itemClicked(item.taskName, item.taskId, item.universalId, item.taskStatus)}>
+                                    <Pressable onPress={() => itemClicked(item)}>
                                         <MyTaskItem
                                             taskName={item.taskName}
                                             dmsLead={item.leadDto.firstName + " " + item.leadDto.lastName}
