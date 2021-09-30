@@ -301,12 +301,14 @@ const testDriveSlice = createSlice({
       state.isLoading = true;
     })
     builder.addCase(updateTestDriveTaskApi.fulfilled, (state, action) => {
+      console.log("S updateTestDriveTaskApi: ", JSON.stringify(action.payload));
       if (action.payload.success === true) {
         state.test_drive_update_task_response = "success";
       }
       state.isLoading = false;
     })
     builder.addCase(updateTestDriveTaskApi.rejected, (state, action) => {
+      console.log("F updateTestDriveTaskApi: ", JSON.stringify(action.payload));
       state.test_drive_update_task_response = "failed";
       state.isLoading = false;
     })

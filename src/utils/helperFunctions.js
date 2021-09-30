@@ -40,7 +40,7 @@ export const callNumber = phone => {
 }
 
 export const convertToTime = (isoDate) => {
-    const date = moment(isoDate).format("h:mm a");
+    const date = moment(isoDate).format("HH:mm");
     return date;
 }
 

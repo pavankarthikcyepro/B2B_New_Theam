@@ -99,6 +99,20 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
             return
         }
 
+        if (dropReason === "Lost To Co-Dealer") {
+            if (dealerName.length === 0 || location.length === 0 || model.length === 0) {
+                showToast("please enter details");
+                return;
+            }
+        }
+
+        if (dropReason === "Lost To Competition" || dropReason === "Lost To Used Car") {
+            if (brandName.length === 0 || dealerName.length === 0 || location.length === 0 || model.length === 0) {
+                showToast("please enter details");
+                return;
+            }
+        }
+
         if (!selector.pre_booking_details_response) {
             return
         }

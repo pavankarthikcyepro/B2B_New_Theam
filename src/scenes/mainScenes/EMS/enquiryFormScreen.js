@@ -1236,6 +1236,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   }
                 />
                 <Text style={GlobalStyle.underline}></Text>
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.age}
+                  label={"Age"}
+                  keyboardType={"phone-pad"}
+                  maxLength={10}
+                  onChangeText={(text) =>
+                    dispatch(setPersonalIntro({ key: "AGE", text: text }))
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
                 {selector.enquiry_segment.toLowerCase() == "personal" ? (
                   <View>
                     <DateSelectItem

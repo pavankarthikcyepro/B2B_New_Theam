@@ -187,7 +187,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       return
     }
 
-    if (selector.reason.length === 0 || selector.customer_remarks.length === 0 || selector.employee_remarks === 0) {
+    if (selector.employee_remarks.length === 0) {
       showToast("Please enter required fields");
       return
     }

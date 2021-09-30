@@ -57,34 +57,44 @@ const HomeVisitScreen = ({ route, navigation }) => {
   }, [selector.update_task_response_status])
 
   const updateTask = () => {
-
-    Keyboard.dismiss();
-    if (selector.task_details_response?.taskId !== taskId) {
-      return
-    }
-
-    const newTaskObj = { ...selector.task_details_response };
-    newTaskObj.reason = selector.reason;
-    newTaskObj.customerRemarks = selector.customer_remarks;
-    newTaskObj.employeeRemarks = selector.employee_remarks;
-    dispatch(updateTaskApi(newTaskObj));
-    setActionType("UPDATE_TASK");
+    changeStatusForTask("UPDATE_TASK");
   }
 
   const closeTask = () => {
+    changeStatusForTask("CLOSE_TASK")
+  }
+
+  const changeStatusForTask = (actionType) => {
 
     Keyboard.dismiss();
     if (selector.task_details_response?.taskId !== taskId) {
       return
     }
 
+    if (selector.reason.length === 0) {
+      showToast("Please Enter Reason");
+      return;
+    }
+
+    if (selector.customer_remarks.length === 0) {
+      showToast("Please enter customer remarks");
+      return;
+    }
+
+    if (selector.employee_remarks.length === 0) {
+      showToast("Please Enter employee remarks");
+      return;
+    }
+
     const newTaskObj = { ...selector.task_details_response };
     newTaskObj.reason = selector.reason;
     newTaskObj.customerRemarks = selector.customer_remarks;
     newTaskObj.employeeRemarks = selector.employee_remarks;
-    newTaskObj.taskStatus = "CLOSED";
+    if (actionType === "CLOSE_TASK") {
+      newTaskObj.taskStatus = "CLOSED";
+    }
     dispatch(updateTaskApi(newTaskObj));
-    setActionType("CLOSE_TASK");
+    setActionType(actionType);
   }
 
   return (

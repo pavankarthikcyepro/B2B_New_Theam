@@ -441,6 +441,9 @@ const enquiryDetailsOverViewSlice = createSlice({
         case "ANNIVE_DATE":
           state.anniversaryDate = text;
           break;
+        case "AGE":
+          state.age = text;
+          break;
       }
     },
     setCommunicationAddress: (

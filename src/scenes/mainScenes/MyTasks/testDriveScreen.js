@@ -287,9 +287,9 @@ const TestDriveScreen = ({ route, navigation }) => {
     let actualEndTime = "";
 
     if (Platform.OS === "ios") {
-      const preffTime = moment(selector.customer_preferred_time, 'hh:mm a').format('HH:mm:ss');
-      const startTime = moment(selector.actual_start_time, 'hh:mm a').format('HH:mm:ss');
-      const endTime = moment(selector.actual_end_time, 'hh:mm a').format('HH:mm:ss');
+      const preffTime = moment(selector.customer_preferred_time, 'HH:mm').format('HH:mm:ss');
+      const startTime = moment(selector.actual_start_time, 'HH:mm').format('HH:mm:ss');
+      const endTime = moment(selector.actual_end_time, 'HH:mm').format('HH:mm:ss');
       prefferedTime = date + " " + preffTime;
       actualStartTime = date + " " + startTime;
       actualEndTime = date + " " + endTime;
@@ -421,7 +421,11 @@ const TestDriveScreen = ({ route, navigation }) => {
             if (datePickerMode === "date") {
               formatDate = convertToDate(selectedDate);
             } else {
-              formatDate = convertToTime(selectedDate);
+              if (Platform.OS === "ios") {
+                formatDate = convertToTime(selectedDate);
+              } else {
+                formatDate = convertToTime(selectedDate);
+              }
             }
           }
 
