@@ -21,6 +21,7 @@ import enquiryFollowUpReducer from "./enquiryFollowUpReducer";
 import confirmedPreEnquiryReducer from "./confirmedPreEnquiryReducer";
 import proceedToPreBookingReducer from "./proceedToPreBookingReducer";
 import createEnquiryReducer from "./createEnquiryReducer";
+import upcomingDeliveriesReducer from "./upcomingDeliveriesReducer";
 
 const reducer = combineReducers({
   routeReducer,
@@ -42,7 +43,8 @@ const reducer = combineReducers({
   enquiryFollowUpReducer,
   confirmedPreEnquiryReducer,
   proceedToPreBookingReducer,
-  createEnquiryReducer
+  createEnquiryReducer,
+  upcomingDeliveriesReducer
 });
 
 const store = configureStore({

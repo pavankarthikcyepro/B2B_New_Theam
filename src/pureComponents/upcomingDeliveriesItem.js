@@ -3,6 +3,16 @@ import { View, StyleSheet, Text, Pressable } from "react-native";
 import { Button, IconButton } from "react-native-paper";
 import { Colors } from "../styles";
 
+const NameComp = ({ label, value, labelStyle = {}, valueStyle = {} }) => {
+
+  return (
+    <View style={styles.bckVw}>
+      <Text style={[styles.text3, labelStyle]}>{label}</Text>
+      <Text style={[styles.text4, valueStyle]}>{":  " + value}</Text>
+    </View>
+  )
+}
+
 export const UpcomingDeliveriesItem = ({
   name,
   planning,
@@ -18,18 +28,21 @@ export const UpcomingDeliveriesItem = ({
       <View style={[styles.container, { backgroundColor: bgColor }]}>
         <View style={styles.leftView}>
           <Text style={styles.text1}>{name}</Text>
-          <Text style={[styles.text2, { marginTop: 5 }]}>
-            {"Delivery Planning: " + planning}
+          {/* <Text style={[styles.text2, { marginTop: 5 }]}>
+            {"D Planning: " + planning}
           </Text>
           <Text style={[styles.text2, { marginTop: 5 }]}>
-            {"Delivery Location: " + location}
+            {"D Location: " + location}
           </Text>
-          <Text style={styles.text2}>{"DSE Name: " + dseName}</Text>
+          <Text style={styles.text2}>{"DSE Name: " + dseName}</Text> */}
+          <NameComp label={'D Planning'} value={planning} />
+          <NameComp label={'D Location'} value={location} />
+          <NameComp label={'DSE Name'} value={dseName} />
         </View>
         <View style={styles.rightView}>
           <Button
             mode="contained"
-            contentStyle={{ height: 40, backgroundColor: Colors.RED }}
+            contentStyle={{ height: modelName ? 30 : 0, backgroundColor: Colors.RED }}
             labelStyle={{ fontSize: 12, fontWeight: "600" }}
             onPress={() => console.log("Pressed")}
           >
@@ -71,4 +84,19 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     color: Colors.GRAY,
   },
+  text3: {
+    color: Colors.GRAY,
+    fontSize: 12,
+    fontWeight: '400',
+    width: 65
+  },
+  text4: {
+    fontSize: 14,
+    fontWeight: '400'
+  },
+  bckVw: {
+    flexDirection: "row",
+    alignItems: 'center',
+    height: 25
+  }
 });
