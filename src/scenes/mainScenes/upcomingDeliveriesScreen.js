@@ -37,7 +37,7 @@ const UpcomingDeliveriesScreen = () => {
   const getUpcomingDelivieriesListFromServer = async () => {
     let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
     if (empId) {
-      let endUrl = "?limit=10&offset=" + "0" + "&status=DELIVERY&empId=" + "162";
+      let endUrl = "?limit=10&offset=" + "0" + "&status=DELIVERY&empId=" + empId;
       dispatch(getUpcmoingDeliveriesListApi(endUrl));
       setEmployeeId(empId);
     }
@@ -45,7 +45,7 @@ const UpcomingDeliveriesScreen = () => {
 
   const getMorePreEnquiryListFromServer = async () => {
     if (employeeId && ((selector.pageNumber + 1) < selector.totalPages)) {
-      let endUrl = "?limit=10&offset=" + (selector.pageNumber + 1) + "&status=DELIVERY&empId=" + "162";
+      let endUrl = "?limit=10&offset=" + (selector.pageNumber + 1) + "&status=DELIVERY&empId=" + empId;
       dispatch(getMoreUpcmoingDeliveriesListApi(endUrl))
     }
   }

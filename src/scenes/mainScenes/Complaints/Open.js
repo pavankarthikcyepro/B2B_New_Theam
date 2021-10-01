@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   View,
@@ -10,17 +10,57 @@ import {
 import { Colors, GlobalStyle } from "../../../styles";
 import { ComplaintsItem } from "../../../pureComponents/complaintsItem";
 import { useDispatch, useSelector } from "react-redux";
+import URL from "../../../networking/endpoints";
 
 const screenWidth = Dimensions.get("window").width;
 
 const OpenScreen = ({ navigation }) => {
+
   const selector = useSelector((state) => state.complaintsReducer);
+  const [complaintsList, setComplaintsList] = useState([]);
+
+  useEffect(() => {
+
+    getComplaintsListFromServer();
+  }, [])
+
+  const getComplaintsListFromServer = async () => {
+
+    const payload = {
+      "groupBy": [],
+      "orderBy": [],
+      "pageNo": 0,
+      "size": 5,
+      "orderByType": "asc",
+      "reportIdentifier": 1215,
+      "paginationRequired": true,
+      "empId": 1
+    }
+    const url = URL.GET_COMPLAINTS();
+
+    await fetch(url, {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+        'auth-token': ""
+      },
+      body: JSON.stringify(payload)
+    })
+      .then((res) => res.json())
+      .then((jsonRes) => {
+        console.log("jsonRes: ", jsonRes);
+        setComplaintsList(jsonRes.data);
+
+      })
+      .catch((err) => console.error(err))
+  }
+
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.view1}>
         <FlatList
-          data={selector.tableAry}
+          data={complaintsList}
           keyExtractor={(item, index) => index.toString()}
           showsVerticalScrollIndicator={false}
           ItemSeparatorComponent={() => {
@@ -32,13 +72,11 @@ const OpenScreen = ({ navigation }) => {
                 <ComplaintsItem
                   complaintFactor={item.complaintFactor}
                   name={item.name}
-                  place={item.place}
-                  enquiryID={item.enquiryID}
-                  enquiryDate={item.enquiryDate}
-                  source={item.source}
-                  dse={item.dse}
-                  car={item.car}
-                  text={item.text}
+                  mobile={item.name}
+                  email={item.name}
+                  model={item.name}
+                  name={item.name}
+                  source={item.name}
                 />
               </View>
             );

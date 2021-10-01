@@ -26,6 +26,7 @@ export const vehicleServices_url = "http://ec2-3-7-117-218.ap-south-1.compute.am
 export const admin_url = "http://ec2-3-7-117-218.ap-south-1.compute.amazonaws.com:8082/admin";
 export const notificationServices_url = "http://ec2-3-108-253-173.ap-south-1.compute.amazonaws.com:8083/notification-service";
 export const customerService_url = "http://ec2-3-108-253-173.ap-south-1.compute.amazonaws.com:8084/customer-service";
+export const dynamicReports_url = "http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/dynamic-reports";
 
 const URL = {
     LOGIN: () => hrms_url + "/emplogin",
@@ -94,6 +95,8 @@ const URL = {
     VALIDATE_TEST_DRIVE_DATE: (date, vehicleId) => {
         return inventory_url + `/allotment/vehicle/allotments?allotmentDate=${date}&id=${vehicleId}`
     },
+    CUSTOMER_LEAD_REFERENCE: () => sales_url + "/lead-customer-reference",
+    GET_COMPLAINTS: () => dynamicReports_url + "/v2-generate-query"
 }
 
 export default URL;

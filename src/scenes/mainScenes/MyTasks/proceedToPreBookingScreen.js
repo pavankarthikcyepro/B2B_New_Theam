@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { SafeAreaView, View, Text, StyleSheet, Keyboard, KeyboardAvoidingView, Platform } from "react-native";
+import { SafeAreaView, View, Text, StyleSheet, Keyboard, KeyboardAvoidingView, Platform, Alert } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { TextinputComp, DropDownComponant } from "../../../components";
 import { DropDownSelectionItem } from "../../../pureComponents";
@@ -9,12 +9,16 @@ import * as AsyncStore from "../../../asyncStore";
 import { useDispatch, useSelector } from "react-redux";
 import {
     clearState,
-    getPrebookingDetailsApi,
-    updatePrebookingDetailsApi,
-    dropPreBooingApi
+    getEnquiryDetailsApi,
+    updateEnquiryDetailsApi,
+    dropEnquiryApi,
+    getTaskDetailsApi,
+    updateTaskApi,
+    changeEnquiryStatusApi
 } from "../../../redux/proceedToPreBookingReducer";
 import { showToast, showToastSucess } from "../../../utils/toast";
 import { getCurrentTasksListApi, getPendingTasksListApi } from "../../../redux/mytaskReducer";
+import URL from "../../../networking/endpoints";
 
 const dropReasonsData = [
     { "id": 1, "name": "Looking For More Discount" },
@@ -51,9 +55,13 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
     const [isDropSelected, setIsDropSelected] = useState(false);
     const [userData, setUserData] = useState({ branchId: "", orgId: "", employeeId: "", employeeName: "" });
     const [typeOfActionDispatched, setTypeOfActionDispatched] = useState("");
+    const [authToken, setAuthToken] = useState("");
+    const [referenceNumber, setReferenceNumber] = useState("");
 
     useEffect(() => {
+        getAuthToken();
         getAsyncstoreData();
+        dispatch(getTaskDetailsApi(taskId));
         getPreBookingDetailsFromServer();
     }, []);
 
@@ -65,9 +73,16 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
         }
     }
 
+    const getAuthToken = async () => {
+        const token = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
+        if (token) {
+            setAuthToken(token)
+        }
+    }
+
     const getPreBookingDetailsFromServer = () => {
         if (universalId) {
-            dispatch(getPrebookingDetailsApi(universalId));
+            dispatch(getEnquiryDetailsApi(universalId));
         }
     }
 
@@ -79,20 +94,9 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
         }
     }
 
-    useEffect(() => {
-        if (selector.update_pre_booking_details_response === "success") {
-            if (typeOfActionDispatched === "DROP_ENQUIRY") {
-                showToastSucess("Successfully Enquiry Dropped");
-                getMyTasksListFromServer();
-            } else if (typeOfActionDispatched === "UPDATE_ENQUIRY") {
-                showToastSucess("Successfully Enquiry Updated");
-            }
-            dispatch(clearState());
-            navigation.goBack();
-        }
-    }, [selector.update_pre_booking_details_response]);
-
     const proceedToCancellation = () => {
+
+        setTypeOfActionDispatched("DROP_ENQUIRY");
 
         if (dropReason.length === 0 || dropRemarks.length === 0) {
             showToastRedAlert("Please enter details for drop")
@@ -113,19 +117,14 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
             }
         }
 
-        if (!selector.pre_booking_details_response) {
-            return
+        if (!selector.enquiry_details_response) {
+            return;
         }
 
-        let prebookingDetailsObj = { ...selector.pre_booking_details_response };
-        let dmsLeadDto = { ...prebookingDetailsObj.dmsLeadDto };
-        dmsLeadDto.leadStage = "DROPPED";
-        prebookingDetailsObj.dmsLeadDto = dmsLeadDto;
-
-        let leadId = selector.pre_booking_details_response.dmsLeadDto.id;
+        let leadId = selector.enquiry_details_response.dmsLeadDto.id;
         if (!leadId) {
-            showToast("lead id not found")
-            return
+            showToast("lead id not found");
+            return;
         }
 
         const payload = {
@@ -147,9 +146,120 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
             }
         }
 
-        setTypeOfActionDispatched("DROP_ENQUIRY");
-        dispatch(dropPreBooingApi(payload));
-        dispatch(updatePrebookingDetailsApi(prebookingDetailsObj));
+        dispatch(dropEnquiryApi(payload));
+    }
+
+    // Handle Drop Enquiry
+    useEffect(() => {
+        if (selector.enquiry_drop_response_status === "success") {
+            updateEnuiquiryDetails();
+        }
+    }, [selector.enquiry_drop_response_status])
+
+    const proceedToPreBookingClicked = () => {
+
+        setTypeOfActionDispatched("PROCEED_TO_PREBOOKING");
+        if (selector.task_details_response?.taskId !== taskId) {
+            return
+        }
+
+        const newTaskObj = { ...selector.task_details_response };
+        newTaskObj.taskStatus = "CLOSED";
+        dispatch(updateTaskApi(newTaskObj));
+    }
+
+    // Handle Update Current Task Response
+    useEffect(() => {
+        if (selector.update_task_response_status === "success") {
+            const endUrl = `${universalId}` + '?' + 'stage=PREBOOKING';
+            dispatch(changeEnquiryStatusApi(endUrl));
+        }
+    }, [selector.update_task_response_status])
+
+    // Handle Change Enquiry Status response
+    useEffect(() => {
+        if (selector.change_enquiry_status === "success") {
+            callCustomerLeadReferenceApi();
+        }
+    }, [selector.change_enquiry_status])
+
+    const callCustomerLeadReferenceApi = async () => {
+
+        const payload = { "branchid": userData.branchId, "leadstage": "PREBOOKING", "orgid": userData.orgId }
+        const url = URL.CUSTOMER_LEAD_REFERENCE();
+
+        await fetch(url, {
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': authToken
+            },
+            method: "POST",
+            body: JSON.stringify(payload)
+        })
+            .then(res => res.json())
+            .then(jsonRes => {
+                if (jsonRes.success === true) {
+                    if (jsonRes.dmsEntity?.leadCustomerReference) {
+                        const refNumber = jsonRes.dmsEntity?.leadCustomerReference.referencenumber;
+                        setReferenceNumber(refNumber)
+                        updateEnuiquiryDetails(refNumber);
+                    }
+                }
+            })
+            .catch((err) => console.error(err));
+    }
+
+    const updateEnuiquiryDetails = (refNumber) => {
+
+        if (!selector.enquiry_details_response) {
+            return
+        }
+
+        let enquiryDetailsObj = { ...selector.enquiry_details_response };
+        let dmsLeadDto = { ...enquiryDetailsObj.dmsLeadDto };
+        if (typeOfActionDispatched === "DROP_ENQUIRY") {
+            dmsLeadDto.leadStage = "DROPPED";
+        }
+        else if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING") {
+            dmsLeadDto.leadStage = "PREBOOKING";
+            dmsLeadDto.referencenumber = refNumber;
+        }
+        enquiryDetailsObj.dmsLeadDto = dmsLeadDto;
+        dispatch(updateEnquiryDetailsApi(enquiryDetailsObj));
+    }
+
+    // Handle Enquiry Update response
+    useEffect(() => {
+        if (selector.update_enquiry_details_response === "success") {
+            if (typeOfActionDispatched === "DROP_ENQUIRY") {
+                showToastSucess("Successfully Enquiry Dropped");
+                goToParentScreen();
+            }
+            else if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING") {
+                displayCreateEnquiryAlert();
+            }
+        }
+    }, [selector.update_enquiry_details_response]);
+
+    displayCreateEnquiryAlert = () => {
+        Alert.alert(
+            'Pre Booking Created Successfully',
+            "Pre Booking Number: " + referenceNumber
+            [
+            {
+                text: 'OK', onPress: () => {
+                    goToParentScreen();
+                }
+            }
+            ],
+            { cancelable: false }
+        );
+    }
+
+    const goToParentScreen = () => {
+        getMyTasksListFromServer();
+        navigation.goBack();
+        dispatch(clearState());
     }
 
     if (taskStatus === "CANCELLED") {
@@ -249,6 +359,7 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
                             mode="contained"
                             color={Colors.RED}
                             labelStyle={{ textTransform: "none" }}
+                            disabled={selector.isLoading}
                             onPress={() => setIsDropSelected(true)}
                         >
                             Drop
@@ -257,7 +368,8 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
                             mode="contained"
                             color={Colors.RED}
                             labelStyle={{ textTransform: "none" }}
-                            onPress={() => console.log("Pressed")}
+                            disabled={selector.isLoading}
+                            onPress={proceedToPreBookingClicked}
                         >
                             Proceed To PreBooking
                         </Button>
@@ -269,6 +381,7 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
                             mode="contained"
                             color={Colors.RED}
                             labelStyle={{ textTransform: "none" }}
+                            disabled={selector.isLoading}
                             onPress={proceedToCancellation}
                         >
                             Proceed To Cancellation
