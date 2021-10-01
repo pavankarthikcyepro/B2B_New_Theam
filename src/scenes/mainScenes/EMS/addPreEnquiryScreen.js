@@ -475,7 +475,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         >
           <Text style={styles.text1}>{"Create New Pre-Enquiry"}</Text>
           <View style={styles.view1}>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
+            {/* <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Checkbox.Android
                 status={
                   selector.create_enquiry_checked ? "checked" : "unchecked"
@@ -485,7 +485,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                 onPress={() => dispatch(setCreateEnquiryCheckbox())}
               />
               <Text style={styles.text2}>{"Create enquiry"}</Text>
-            </View>
+            </View> */}
             <Button
               labelStyle={{
                 fontSize: 12,
@@ -640,7 +640,7 @@ const styles = StyleSheet.create({
   view1: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
     height: 60,
   },
   view2: {

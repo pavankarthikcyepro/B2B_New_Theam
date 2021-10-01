@@ -90,7 +90,10 @@ const URL = {
     UPDATE_TEST_DRIVE_TASK: () => sales_url + "/dms/updateTestDriveTask",
     GET_TEST_DRIVE_APPOINTMENT_DETAILS: (entityModuleId, branchId, orgId) => {
         return ops_url + `/testdrive/history?branchId=${branchId}&filterType=TESTDRIVE&filterVal=${entityModuleId}&orgId=${orgId}`
-    }
+    },
+    VALIDATE_TEST_DRIVE_DATE: (date, vehicleId) => {
+        return inventory_url + `/allotment/vehicle/allotments?allotmentDate=${date}&id=${vehicleId}`
+    },
 }
 
 export default URL;

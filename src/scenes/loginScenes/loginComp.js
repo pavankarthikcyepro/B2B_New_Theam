@@ -147,11 +147,14 @@ const LoginScreen = ({ navigation }) => {
       />
 
       <View style={{ flex: 1 }}>
-        <Image
-          style={{ width: "100%", height: 400 }}
-          resizeMode={"center"}
-          source={require("../../assets/images/welcome.png")}
-        />
+
+        <View style={{ alignItems: "center" }}>
+          <Image
+            style={{ width: ScreenWidth - 60, height: ScreenHeight * 0.3 }}
+            // resizeMode={"cover"}
+            source={require("../../assets/images/welcome.png")}
+          />
+        </View>
 
         <View
           style={{

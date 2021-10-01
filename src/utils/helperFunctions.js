@@ -44,8 +44,8 @@ export const convertToTime = (isoDate) => {
     return date;
 }
 
-export const convertToDate = (isoDate) => {
-    const date = moment(isoDate).format("DD/MM/YYYY");
+export const convertToDate = (isoDate, format = "DD/MM/YYYY") => {
+    const date = moment(isoDate).format(format);
     return date;
 }
 

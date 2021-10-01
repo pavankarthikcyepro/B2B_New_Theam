@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import moment from "moment";
 import { client } from "../networking/client";
 import URL from "../networking/endpoints";
 
@@ -12,11 +13,6 @@ interface DropDownModelNew {
   id: any;
   key: string;
   value: string;
-}
-
-interface DatePickerModel {
-  key: string;
-  mode: string;
 }
 
 export const getTaskDetailsApi = createAsyncThunk("TEST_DRIVE_SLICE/getTaskDetailsApi", async (taskId, { rejectWithValue }) => {
@@ -89,6 +85,16 @@ export const getTestDriveAppointmentDetailsApi = createAsyncThunk("TEST_DRIVE_SL
   return json;
 })
 
+export const validateTestDriveApi = createAsyncThunk("TEST_DRIVE_SLICE/validateTestDriveApi", async (payload, { rejectWithValue }) => {
+
+  const response = await client.get(URL.VALIDATE_TEST_DRIVE_DATE(payload["date"], payload["vehicleId"]));
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 const testDriveSlice = createSlice({
   name: "TEST_DRIVE_SLICE",
   initialState: {
@@ -102,51 +108,24 @@ const testDriveSlice = createSlice({
     book_test_drive_appointment_response: null,
     test_drive_update_task_response: null,
     test_drive_appointment_details_response: null,
+    test_drive_date_validate_response: null,
     // Customer Details
-    name: "",
-    mobile: "",
-    email: "",
-    model: "",
-    varient: "",
-    fuel_type: "",
-    transmission_type: "",
-    selected_vehicle_id: "",
-    address_type_is_showroom: "true",
-    customer_address: "",
-    customer_having_driving_licence: "false",
     customer_preferred_date: "",
-    selected_dse_employee: "",
-    selected_dse_id: "",
-    selected_driver: "",
-    selected_driver_id: "",
     customer_preferred_time: "",
     actual_start_time: "",
     actual_end_time: ""
   },
   reducers: {
     clearState: (state, action) => {
+      state.customer_preferred_date = "";
+      state.customer_preferred_time = "";
+      state.actual_start_time = "";
+      state.actual_end_time = "";
       state.book_test_drive_appointment_response = null;
       state.test_drive_update_task_response = null;
       state.task_details_response = null;
       state.test_drive_appointment_details_response = null;
-    },
-    setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
-      const { key, value, id } = action.payload;
-      switch (key) {
-        case "MODEL":
-          state.model = value;
-          break;
-        case "VARIENT":
-          state.varient = value;
-          break;
-        case "LIST_OF_DSE_EMPLOYEES":
-          state.selected_dse_employee = value;
-          break;
-        case "LIST_OF_DRIVERS":
-          state.selected_driver = value;
-          state.selected_driver_id = id;
-          break;
-      }
+      state.test_drive_date_validate_response = null;
     },
     updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
@@ -166,53 +145,12 @@ const testDriveSlice = createSlice({
           break;
       }
     },
-    setTestDriveDetails: (state, action: PayloadAction<CustomerDetailModel>) => {
-      const { key, text } = action.payload;
-      switch (key) {
-        case "MOBILE":
-          state.mobile = text;
-          break;
-        case "NAME":
-          state.name = text;
-          break;
-        case "EMAIL":
-          state.email = text;
-          break;
-        case "CUSTOMER_ADDRESS":
-          state.customer_address = text;
-          break;
-        case "CHOOSE_ADDRESS":
-          state.address_type_is_showroom = text;
-          break;
-        case "CUSTOMER_HAVING_DRIVING_LICENCE":
-          state.customer_having_driving_licence = text;
-          break;
-      }
-    },
-    updateSelectedTestDriveVehicle: (state, action) => {
-
-      const vehicleInfo = action.payload;
-      console.log(vehicleInfo);
-      state.model = vehicleInfo.model;
-      state.varient = vehicleInfo.varient;
-      state.fuel_type = vehicleInfo.fuelType;
-      state.transmission_type = vehicleInfo.transmissionType;
-      state.selected_vehicle_id = vehicleInfo.id;
-    },
-    updateBasicDetails: (state, action) => {
-      const taskData = action.payload;
-      if (taskData) {
-        const leadDtoObj = taskData.leadDto;
-        state.name = leadDtoObj.firstName + " " + leadDtoObj.lastName;
-        state.email = leadDtoObj.email || "";
-        state.mobile = leadDtoObj.phone || "";
-        state.selected_dse_employee = taskData.assignee.empName;
-        state.selected_dse_id = taskData.assignee.empId;
-      }
-    }
   },
   extraReducers: (builder) => {
     // Get Task Details Api
+    builder.addCase(getTaskDetailsApi.pending, (state, action) => {
+      state.task_details_response = null;
+    })
     builder.addCase(getTaskDetailsApi.fulfilled, (state, action) => {
       if (action.payload.success === true && action.payload.dmsEntity) {
         state.task_details_response = action.payload.dmsEntity.task;
@@ -225,9 +163,33 @@ const testDriveSlice = createSlice({
     })
     // Get Test Drive Appointment Details
     builder.addCase(getTestDriveAppointmentDetailsApi.fulfilled, (state, action) => {
+      console.log("S getTestDriveAppointmentDetailsApi: ", JSON.stringify(action.payload));
       if (action.payload != null && action.payload.statusCode === "200") {
         if (action.payload.testDrives && action.payload.testDrives.length > 0) {
-          state.test_drive_appointment_details_response = action.payload.testDrives[0];
+
+          const testDrivesInfo = action.payload.testDrives[0];
+
+          const testDriveDatetime = testDrivesInfo.testDriveDatetime ? testDrivesInfo.testDriveDatetime : "";
+          const testDriveDatetimeAry = testDriveDatetime.split(" ");
+          if (testDriveDatetimeAry.length > 0) {
+            state.customer_preferred_date = moment(testDriveDatetimeAry[0], "DD-MM-YYYY").format("DD/MM/YYYY")
+          }
+          if (testDriveDatetimeAry.length > 1) {
+            state.customer_preferred_time = testDriveDatetimeAry[1];
+          }
+
+          const startTime = testDrivesInfo.startTime ? testDrivesInfo.startTime : "";
+          const startTimeAry = startTime.split(" ");
+          if (startTimeAry.length > 1) {
+            state.actual_start_time = startTimeAry[1];
+          }
+
+          const endTime = testDrivesInfo.endTime ? testDrivesInfo.endTime : "";
+          const endTimeAry = endTime.split(" ");
+          if (endTimeAry.length > 1) {
+            state.actual_end_time = endTimeAry[1];
+          }
+          state.test_drive_appointment_details_response = testDrivesInfo;
         }
       }
     })
@@ -263,13 +225,12 @@ const testDriveSlice = createSlice({
       state.test_drive_vehicle_list_for_drop_down = [];
     })
     builder.addCase(getTestDriveDseEmployeeListApi.fulfilled, (state, action) => {
-      //console.log("S getTestDriveDseEmployeeListApi: ", JSON.stringify(action.payload));
       if (action.payload.dmsEntity) {
         state.employees_list = action.payload.dmsEntity.employees;
       }
     })
+    // Get Driviers List
     builder.addCase(getDriversListApi.fulfilled, (state, action) => {
-      //console.log("S getDriversListApi: ", JSON.stringify(action.payload));
       if (action.payload.dmsEntity) {
         const driversList = action.payload.dmsEntity.employees;
         let newFormatDriversList = [];
@@ -301,16 +262,21 @@ const testDriveSlice = createSlice({
       state.isLoading = true;
     })
     builder.addCase(updateTestDriveTaskApi.fulfilled, (state, action) => {
-      console.log("S updateTestDriveTaskApi: ", JSON.stringify(action.payload));
       if (action.payload.success === true) {
         state.test_drive_update_task_response = "success";
       }
       state.isLoading = false;
     })
     builder.addCase(updateTestDriveTaskApi.rejected, (state, action) => {
-      console.log("F updateTestDriveTaskApi: ", JSON.stringify(action.payload));
       state.test_drive_update_task_response = "failed";
       state.isLoading = false;
+    })
+    // Validate Test Drive Api
+    builder.addCase(validateTestDriveApi.fulfilled, (state, action) => {
+      state.test_drive_date_validate_response = action.payload;
+    })
+    builder.addCase(validateTestDriveApi.rejected, (state, action) => {
+      state.test_drive_date_validate_response = null;
     })
   }
 });
@@ -318,9 +284,5 @@ const testDriveSlice = createSlice({
 export const {
   clearState,
   updateSelectedDate,
-  setTestDriveDetails,
-  setDropDownData,
-  updateBasicDetails,
-  updateSelectedTestDriveVehicle
 } = testDriveSlice.actions;
 export default testDriveSlice.reducer;
