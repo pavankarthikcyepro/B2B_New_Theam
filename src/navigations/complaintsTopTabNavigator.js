@@ -1,16 +1,13 @@
 import React from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 
-import OpenScreen from "../scenes/mainScenes/Complaints/Open";
-import ClosedScreen from "../scenes/mainScenes/Complaints/Closed";
-import InprogressScreen from "../scenes/mainScenes/Complaints/Inprogress";
-import { DateRangeComp } from "../components/dateRangeComp";
+import ActiveComplaintsScreen from "../scenes/mainScenes/Complaints/ActiveComplaintsScreen";
+import InActiveComplaintsScreen from "../scenes/mainScenes/Complaints/InActiveComplaintsScreen";
 import { Colors } from "../styles";
 
 const ComplaintsTopTabNavigatorIdentifiers = {
-  open: "OPEN",
-  inprogress: "INPROGRESS",
-  closed: "CLOSED",
+  active: "ACTIVE",
+  inActive: "CLOSED",
 };
 
 const ComplaintsTopTab = createMaterialTopTabNavigator();
@@ -18,7 +15,7 @@ const ComplaintsTopTab = createMaterialTopTabNavigator();
 const ComplaintsTopTabNavigator = () => {
   return (
     <ComplaintsTopTab.Navigator
-      initialRouteName={ComplaintsTopTabNavigatorIdentifiers.open}
+      initialRouteName={ComplaintsTopTabNavigatorIdentifiers.active}
       tabBarOptions={{
         activeTintColor: Colors.RED,
         inactiveTintColor: Colors.DARK_GRAY,
@@ -33,19 +30,14 @@ const ComplaintsTopTabNavigator = () => {
       }}
     >
       <ComplaintsTopTab.Screen
-        name={ComplaintsTopTabNavigatorIdentifiers.open}
-        component={OpenScreen}
-        options={{ title: "Open" }}
+        name={ComplaintsTopTabNavigatorIdentifiers.active}
+        component={ActiveComplaintsScreen}
+        options={{ title: "ACTIVE" }}
       />
       <ComplaintsTopTab.Screen
-        name={ComplaintsTopTabNavigatorIdentifiers.inprogress}
-        component={InprogressScreen}
-        options={{ title: "Inprogress" }}
-      />
-      <ComplaintsTopTab.Screen
-        name={ComplaintsTopTabNavigatorIdentifiers.closed}
-        component={ClosedScreen}
-        options={{ title: "Closed" }}
+        name={ComplaintsTopTabNavigatorIdentifiers.inActive}
+        component={InActiveComplaintsScreen}
+        options={{ title: "IN ACTIVE" }}
       />
     </ComplaintsTopTab.Navigator>
   );

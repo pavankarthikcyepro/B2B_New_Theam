@@ -54,7 +54,7 @@ export const updatePrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLI
 
 export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getOnRoadPriceAndInsurenceDetailsApi", async (payload, { rejectWithValue }) => {
 
-  const response = await client.get(URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(payload["varientId"], payload["vehicleId"]));
+  const response = await client.get(URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(payload["varientId"], payload["orgId"]));
   const json = await response.json()
   if (!response.ok) {
     return rejectWithValue(json);
@@ -794,7 +794,7 @@ const prebookingFormSlice = createSlice({
       }
     })
     builder.addCase(getCustomerTypesApi.fulfilled, (state, action) => {
-      console.log("S getCustomerTypesApi: ", JSON.stringify(action.payload));
+      //console.log("S getCustomerTypesApi: ", JSON.stringify(action.payload));
       if (action.payload) {
         const customerTypes = action.payload;
         let personalTypes = [];

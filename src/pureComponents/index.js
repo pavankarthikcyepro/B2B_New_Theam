@@ -7,6 +7,7 @@ import { EmptyListView } from "./emptyListView";
 import { PreEnquiryItem } from "./preEnquiryItem";
 import { PageControlItem } from "./pageControlItem";
 import { DropDownSelectionItem } from "./dropDownSelectionItem";
+import { ComplaintsItem } from "./complaintsItem";
 
 export {
     RadioTextItem,
@@ -16,5 +17,6 @@ export {
     EmptyListView,
     PreEnquiryItem,
     PageControlItem,
-    DropDownSelectionItem
+    DropDownSelectionItem,
+    ComplaintsItem
 };

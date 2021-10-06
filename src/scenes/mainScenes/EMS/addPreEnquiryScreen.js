@@ -605,6 +605,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               value={selector.pincode}
               label={"Pincode*"}
               keyboardType={"number-pad"}
+              maxLength={6}
               onChangeText={(text) => dispatch(setPreEnquiryDetails({ key: "PINCODE", text: text }))}
             />
             <Text style={styles.devider}></Text>

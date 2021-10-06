@@ -4,12 +4,13 @@ import { Colors } from "../../../styles";
 import { complaintsItem } from "../../../pureComponents/complaintsItem";
 import { ComplaintsTopTabNavigator } from "../../../navigations/complaintsTopTabNavigator";
 
-const InprogressScreen = ({ navigation }) => {
+const InActiveComplaintsScreen = ({ navigation }) => {
   return (
     <View>
-      <Text>InProgress</Text>
+      <Text>Closed</Text>
+      <Text>yamunacd</Text>
     </View>
   );
 };
 
-export default InprogressScreen;
+export default InActiveComplaintsScreen;

@@ -197,6 +197,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     setCarModelsData([...modalList]);
   }
 
+  // Handle Pre-Booking Details Response
   useEffect(() => {
     if (selector.pre_booking_details_response) {
 
@@ -472,7 +473,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           transmissionType: carModelObj.transmission_type
         }
         dispatch(updateFuelAndTransmissionType(obj));
-        dispatch(getOnRoadPriceAndInsurenceDetailsApi({ vehicleId: modelId, varientId: varientId }))
+        dispatch(getOnRoadPriceAndInsurenceDetailsApi({ orgId: userData.orgId, varientId: varientId }))
         setCarColorsData([...newArray]);
       }
     }
