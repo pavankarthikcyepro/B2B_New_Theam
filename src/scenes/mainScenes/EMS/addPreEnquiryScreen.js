@@ -20,14 +20,7 @@ import {
   clearState,
   setCreateEnquiryCheckbox,
   setPreEnquiryDetails,
-  setCarModel,
-  setEnquiryType,
-  setCustomerType,
-  setSourceOfEnquiry,
-  showModelSelect,
-  showCustomerTypeSelect,
-  showEnquirySegmentSelect,
-  showSourceOfEnquirySelect,
+  setDropDownData,
   createPreEnquiry,
   updatePreEnquiry,
   setCustomerTypeList,
@@ -58,6 +51,10 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   const [existingPreEnquiryDetails, setExistingPreEnquiryDetails] = useState({});
   const [fromEdit, setFromEdit] = useState(false);
   const [dataForCarModels, setDataForCarModels] = useState([]);
+  const [showDropDownModel, setShowDropDownModel] = useState(false);
+  const [dataForDropDown, setDataForDropDown] = useState([]);
+  const [dropDownKey, setDropDownKey] = useState("");
+  const [dropDownTitle, setDropDownTitle] = useState("Select Data");
 
   useEffect(() => {
     getAsyncstoreData();
@@ -107,15 +104,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     const data = realm.objects("CAR_MODAL_LIST_TABLE");
     dispatch(setCarModalList(JSON.stringify(data)));
   };
-
-  useEffect(() => {
-    if (selector.create_enquiry_response_obj.errorMessage === "") {
-      //navigation.goBack();
-      gotoConfirmPreEnquiryScreen(selector.create_enquiry_response_obj);
-    } else if (selector.errorMsg) {
-      showToast(selector.errorMsg);
-    }
-  }, [selector.status, selector.errorMsg, selector.create_enquiry_response_obj]);
 
   const gotoConfirmPreEnquiryScreen = (response) => {
 
@@ -357,6 +345,16 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     dispatch(createPreEnquiry(dataObj));
   };
 
+  // Handle Create Enquiry response
+  useEffect(() => {
+    if (selector.create_enquiry_response_obj.errorMessage === "") {
+      //navigation.goBack();
+      gotoConfirmPreEnquiryScreen(selector.create_enquiry_response_obj);
+    } else if (selector.errorMsg) {
+      showToast(selector.errorMsg);
+    }
+  }, [selector.status, selector.errorMsg, selector.create_enquiry_response_obj]);
+
   const updatePreEneuquiryDetails = () => {
 
     let url = sales_url;
@@ -414,49 +412,41 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     dispatch(updatePreEnquiry(dataObj));
   }
 
+  const showDropDownModelMethod = (key, headerText) => {
+
+    Keyboard.dismiss();
+
+    switch (key) {
+      case "CAR_MODEL":
+        setDataForDropDown([...dataForCarModels])
+        break;
+      case "ENQUIRY_SEGMENT":
+        setDataForDropDown([...selector.enquiry_type_list])
+        break;
+      case "CUSTOMER_TYPE":
+        setDataForDropDown([...selector.customer_type_list]);
+        break;
+      case "SOURCE_OF_ENQUIRY":
+        setDataForDropDown([...selector.source_of_enquiry_type_list]);
+        break;
+    }
+    setDropDownKey(key);
+    setDropDownTitle(headerText);
+    setShowDropDownModel(true);
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       {/* // select modal */}
       <DropDownComponant
-        visible={selector.show_model_drop_down}
-        headerTitle={"Select Model"}
-        data={dataForCarModels}
+        visible={showDropDownModel}
+        headerTitle={dropDownTitle}
+        data={dataForDropDown}
+        onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
           console.log("selected: ", item);
-          dispatch(setCarModel(item.name));
-        }}
-      />
-
-      {/* // select enquiry segment */}
-      <DropDownComponant
-        visible={selector.show_enquiry_segment_drop_down}
-        headerTitle={"Select Enquiry Segment"}
-        data={selector.enquiry_type_list}
-        selectedItems={(item) => {
-          console.log("selected: ", item);
-          dispatch(setEnquiryType(item));
-        }}
-      />
-
-      {/* // customer type */}
-      <DropDownComponant
-        visible={selector.show_customer_type_drop_down}
-        headerTitle={"Select Customer Type"}
-        data={selector.customer_type_list}
-        selectedItems={(item) => {
-          console.log("selected: ", item);
-          dispatch(setCustomerType(item.name));
-        }}
-      />
-
-      {/* // source of pre-enquiry */}
-      <DropDownComponant
-        visible={selector.show_source_type_drop_down}
-        headerTitle={"Select Source of Pre-Enquiry"}
-        data={selector.source_of_enquiry_type_list}
-        selectedItems={(item) => {
-          console.log("selected: ", item);
-          dispatch(setSourceOfEnquiry(item));
+          setShowDropDownModel(false);
+          dispatch(setDropDownData({ key: dropDownKey, value: item.name, id: item.id }));
         }}
       />
 
@@ -550,17 +540,17 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             <DropDownSelectionItem
               label={"Select Model*"}
               value={selector.carModel}
-              onPress={() => dispatch(showModelSelect())}
+              onPress={() => showDropDownModelMethod("CAR_MODEL", "Select Model")}
             />
             <DropDownSelectionItem
               label={"Select Enquiry Segment*"}
               value={selector.enquiryType}
-              onPress={() => dispatch(showEnquirySegmentSelect())}
+              onPress={() => showDropDownModelMethod("ENQUIRY_SEGMENT", "Select Enquiry Segment")}
             />
             <DropDownSelectionItem
               label={"Select Customer Type*"}
               value={selector.customerType}
-              onPress={() => dispatch(showCustomerTypeSelect())}
+              onPress={() => showDropDownModelMethod("CUSTOMER_TYPE", "Select Customer Type")}
             />
 
             {selector.customerType === "Corporate" ||
@@ -597,7 +587,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               label={"Select Source of Pre-Enquiry*"}
               value={selector.sourceOfEnquiry}
               disabled={fromEdit}
-              onPress={() => dispatch(showSourceOfEnquirySelect())}
+              onPress={() => showDropDownModelMethod("SOURCE_OF_ENQUIRY", "Select Source of Pre-Enquiry")}
             />
 
             <TextinputComp

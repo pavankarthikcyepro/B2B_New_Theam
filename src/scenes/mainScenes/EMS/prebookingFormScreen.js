@@ -78,6 +78,7 @@ import { AppNavigator } from "../../../navigations";
 import { getPreBookingData } from "../../../redux/preBookingReducer";
 import { showToast, showToastRedAlert } from "../../../utils/toast";
 import { convertDateStringToMillisecondsUsingMoment } from "../../../utils/helperFunctions";
+import { showToastSucess } from "../../../utils/toast";
 
 const rupeeSymbol = "\u20B9";
 
@@ -148,6 +149,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [selectedPaidAccessories, setSelectedPaidAccessories] = useState([]);
   const [selectedInsurenceAddons, setSelectedInsurenceAddons] = useState([]);
   const [showApproveRejectBtn, setShowApproveRejectBtn] = useState(false);
+  const [showSubmitDropBtn, setShowSubmitDropBtn] = useState(false);
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
 
 
@@ -210,6 +212,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       }
       const dmsLeadDto = selector.pre_booking_details_response.dmsLeadDto;
       dispatch(getOnRoadPriceDtoListApi(dmsLeadDto.id))
+      if (dmsLeadDto.leadStatus === 'ENQUIRYCOMPLETED') {
+        setShowSubmitDropBtn(true);
+      }
       if (dmsLeadDto.leadStatus === 'SENTFORAPPROVAL') {
         setShowApproveRejectBtn(true);
       }
@@ -245,19 +250,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       updateVariantModelsData(selector.model, true, selector.varient);
     }
   }, [selector.model_drop_down_data_update_status]);
-
-  useEffect(() => {
-    if (selector.update_pre_booking_details_response === "success") {
-      if (typeOfActionDispatched === "DROP_ENQUIRY") {
-        showToastSucess("Successfully Pre-Booking Dropped");
-        getPreBookingListFromServer();
-      } else if (typeOfActionDispatched === "UPDATE_PRE_BOOKING") {
-        showToastSucess("Successfully Pre-Booking Updated");
-      }
-      dispatch(clearState());
-      navigation.goBack();
-    }
-  }, [selector.update_pre_booking_details_response]);
 
   const getPreBookingListFromServer = async () => {
     if (userData.employeeId) {
@@ -511,6 +503,52 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     setTotalOnRoadPriceAfterDiscount(totalPrice);
   }
 
+  const submitClicked = () => {
+
+    Keyboard.dismiss();
+
+    if (selector.booking_amount.length === 0 || selector.payment_at.length === 0 || selector.booking_payment_mode.length === 0) {
+      showToast("Please enter booking details");
+      return
+    }
+
+    if (selector.customer_preferred_date.length === 0 || selector.tentative_delivery_date.length === 0) {
+      showToast("Please enter commitment details");
+      return
+    }
+
+    let postOnRoadPriceTable = {};
+    postOnRoadPriceTable.additionalOffer1 = selector.additional_offer_1;
+    postOnRoadPriceTable.additionalOffer2 = selector.additional_offer_2;
+    postOnRoadPriceTable.cashDiscount = selector.cash_discount;
+    postOnRoadPriceTable.corporateCheck = "";
+    postOnRoadPriceTable.corporateName = "";
+    postOnRoadPriceTable.corporateOffer = selector.corporate_offer;
+    postOnRoadPriceTable.essentialKit = priceInfomationData.essential_kit;
+    postOnRoadPriceTable.exShowroomPrice = priceInfomationData.ex_showroom_price;
+    postOnRoadPriceTable.offerData = [];
+    postOnRoadPriceTable.focAccessories = selector.for_accessories;
+    postOnRoadPriceTable.handlingCharges = priceInfomationData.handling_charges;
+    postOnRoadPriceTable.id = postOnRoadPriceTable.id ? postOnRoadPriceTable.id : 0;
+    postOnRoadPriceTable.insuranceAddonData = selectedInsurenceAddons;
+    postOnRoadPriceTable.insuranceAmount = selectedInsurencePrice;
+    postOnRoadPriceTable.insuranceType = selector.insurance_type;
+    postOnRoadPriceTable.lead_id = selector.pre_booking_details_response.dmsLeadDto.id;
+    postOnRoadPriceTable.lifeTax = getLifeTax();
+    postOnRoadPriceTable.onRoadPrice = totalOnRoadPrice;
+    postOnRoadPriceTable.finalPrice = totalOnRoadPriceAfterDiscount;
+    postOnRoadPriceTable.promotionalOffers = selector.promotional_offer;
+    postOnRoadPriceTable.registrationCharges = priceInfomationData.registration_charges;
+    postOnRoadPriceTable.specialScheme = selector.consumer_offer;
+    postOnRoadPriceTable.exchangeOffers = selector.exchange_offer;
+    postOnRoadPriceTable.tcs = getTcsAmount();
+    postOnRoadPriceTable.warrantyAmount = selectedWarrentyPrice;
+    postOnRoadPriceTable.warrantyName = selector.warranty;
+
+    dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable));
+  }
+
+  // Handle On Road Price Response
   useEffect(() => {
 
     if (selector.send_onRoad_price_details_response) {
@@ -549,55 +587,31 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
   }, [selector.send_onRoad_price_details_response])
 
-  const submitClicked = () => {
-
-    if (selector.booking_amount.length === 0 || selector.payment_at.length === 0 || selector.booking_payment_mode.length === 0) {
-      showToast("Please enter booking details");
-      return
+  // Handle Update Pre-Booking Details Response
+  useEffect(() => {
+    if (selector.update_pre_booking_details_response === "success") {
+      if (typeOfActionDispatched === "DROP_ENQUIRY") {
+        showToastSucess("Successfully Pre-Booking Dropped");
+        getPreBookingListFromServer();
+      } else if (typeOfActionDispatched === "UPDATE_PRE_BOOKING") {
+        showToastSucess("Successfully Pre-Booking Updated");
+      }
+      dispatch(clearState());
+      navigation.goBack();
     }
-
-    let postOnRoadPriceTable = {};
-    postOnRoadPriceTable.additionalOffer1 = selector.additional_offer_1;
-    postOnRoadPriceTable.additionalOffer2 = selector.additional_offer_2;
-    postOnRoadPriceTable.cashDiscount = selector.cash_discount;
-    postOnRoadPriceTable.corporateCheck = "";
-    postOnRoadPriceTable.corporateName = "";
-    postOnRoadPriceTable.corporateOffer = selector.corporate_offer;
-    postOnRoadPriceTable.essentialKit = priceInfomationData.essential_kit;
-    postOnRoadPriceTable.exShowroomPrice = priceInfomationData.ex_showroom_price;
-    postOnRoadPriceTable.offerData = [];
-    postOnRoadPriceTable.focAccessories = selector.for_accessories;
-    postOnRoadPriceTable.handlingCharges = priceInfomationData.handling_charges;
-    postOnRoadPriceTable.id = postOnRoadPriceTable.id ? postOnRoadPriceTable.id : 0;
-    postOnRoadPriceTable.insuranceAddonData = selectedInsurenceAddons;
-    postOnRoadPriceTable.insuranceAmount = selectedInsurencePrice;
-    postOnRoadPriceTable.insuranceType = selector.insurance_type;
-    postOnRoadPriceTable.lead_id = selector.pre_booking_details_response.dmsLeadDto.id;
-    postOnRoadPriceTable.lifeTax = getLifeTax();
-    postOnRoadPriceTable.onRoadPrice = totalOnRoadPrice;
-    postOnRoadPriceTable.finalPrice = totalOnRoadPriceAfterDiscount;
-    postOnRoadPriceTable.promotionalOffers = selector.promotional_offer;
-    postOnRoadPriceTable.registrationCharges = priceInfomationData.registration_charges;
-    postOnRoadPriceTable.specialScheme = selector.consumer_offer;
-    postOnRoadPriceTable.exchangeOffers = selector.exchange_offer;
-    postOnRoadPriceTable.tcs = getTcsAmount();
-    postOnRoadPriceTable.warrantyAmount = selectedWarrentyPrice;
-    postOnRoadPriceTable.warrantyName = selector.warranty;
-
-    dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable));
-  }
+  }, [selector.update_pre_booking_details_response]);
 
   const mapContactOrAccountDto = (prevData) => {
 
     let dataObj = { ...prevData };
-    dataObj.salutation = selector.salutaion;
-    dataObj.firstName = selector.firstName;
-    dataObj.lastName = selector.lastName;
+    dataObj.salutation = selector.salutation;
+    dataObj.firstName = selector.first_name;
+    dataObj.lastName = selector.last_name;
     dataObj.phone = selector.mobile;
     dataObj.email = selector.email;
     dataObj.gender = selector.gender;
-    dataObj.dateOfBirth = convertDateStringToMillisecondsUsingMoment(selector.dateOfBirth);
-    dataObj.age = selector.age;
+    dataObj.dateOfBirth = convertDateStringToMillisecondsUsingMoment(selector.date_of_birth);
+    dataObj.age = selector.age ? Number(selector.age) : 0;
     dataObj.customerType = selector.customer_type;
     return dataObj;
   }
@@ -613,8 +627,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     dataObj.otherVehicleRcNo = selector.vehicle_type;
     dataObj.otherVehicleType = selector.registration_number;
 
-    //dataObj.leadStatus = 'SENTFORAPPROVAL';
-    //dataObj.leadStage = "PREBOOKING";
+    dataObj.leadStatus = 'SENTFORAPPROVAL';
+    dataObj.leadStage = "PREBOOKING";
     dataObj.dmsAddresses = mapDMSAddress(dataObj.dmsAddresses);
     dataObj.dmsLeadProducts = mapLeadProducts(dataObj.dmsLeadProducts);
     dataObj.dmsfinancedetails = mapDmsFinanceDetails(dataObj.dmsfinancedetails);
@@ -706,7 +720,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     dmsBooking.id = dmsBooking.id ? dmsBooking.id : 0;
     dmsBooking.leadId = leadId;
     dmsBooking.bookingAmount = Number(selector.booking_amount)
-    dmsBooking.paymentAt = selector.payment_at;
+    let trimStr = selector.payment_at.replace(/\s+/g, '');
+    dmsBooking.paymentAt = trimStr;
     dmsBooking.modeOfPayment = selector.booking_payment_mode;
     dmsBooking.otherVehicle = selector.vechicle_registration;
     dmsBooking.deliveryLocation = selector.delivery_location;
@@ -2015,7 +2030,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 </List.Accordion>
               ) : null}
             </List.AccordionGroup>
-            {!isDropSelected && !userData.editEnable && (
+            {!isDropSelected && showSubmitDropBtn && (
               <View style={styles.actionBtnView}>
                 <Button
                   mode="contained"

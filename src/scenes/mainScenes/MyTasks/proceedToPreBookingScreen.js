@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import { SafeAreaView, View, Text, StyleSheet, Keyboard, KeyboardAvoidingView, Platform, Alert } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { TextinputComp, DropDownComponant } from "../../../components";
@@ -46,7 +46,11 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
     const selector = useSelector(state => state.proceedToPreBookingReducer);
     const dispatch = useDispatch();
     const [showDropDownModel, setShowDropDownModel] = useState(false);
+    const [dataForDropDown, setDataForDropDown] = useState([]);
+    const [dropDownKey, setDropDownKey] = useState("");
+    const [dropDownTitle, setDropDownTitle] = useState("Select Data");
     const [dropReason, setDropReason] = useState("");
+    const [dropSubReason, setDropSubReason] = useState("");
     const [dropRemarks, setDropRemarks] = useState("");
     const [brandName, setBrandName] = useState("");
     const [dealerName, setDealerName] = useState("");
@@ -57,6 +61,23 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
     const [typeOfActionDispatched, setTypeOfActionDispatched] = useState("");
     const [authToken, setAuthToken] = useState("");
     const [referenceNumber, setReferenceNumber] = useState("");
+
+    useLayoutEffect(() => {
+
+        let title = ""
+        switch (identifier) {
+            case "PROCEED_TO_PRE_BOOKING":
+                title = "Pre Booking Task";
+                break;
+            case "PROCEED_TO_BOOKING":
+                title = "Booking Task";
+                break;
+        }
+
+        navigation.setOptions({
+            title: title
+        })
+    }, [navigation])
 
     useEffect(() => {
         getAuthToken();
@@ -247,9 +268,7 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
             "Pre Booking Number: " + referenceNumber
             [
             {
-                text: 'OK', onPress: () => {
-                    goToParentScreen();
-                }
+                text: 'OK', onPress: goToParentScreen()
             }
             ],
             { cancelable: false }
@@ -260,6 +279,24 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
         getMyTasksListFromServer();
         navigation.goBack();
         dispatch(clearState());
+    }
+
+    const showDropDownMethod = (key, title) => {
+
+        switch (key) {
+            case "DROP_REASON":
+                setDataForDropDown([...dropReasonsData]);
+                break;
+            case "DROP_SUB_REASON":
+                setDataForDropDown([...dropReasonsData]);
+                break;
+            default:
+                break;
+        }
+
+        setDropDownKey(key);
+        setDropDownTitle(title);
+        setShowDropDownModel(true);
     }
 
     if (taskStatus === "CANCELLED") {
@@ -284,12 +321,17 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
 
                 <DropDownComponant
                     visible={showDropDownModel}
-                    headerTitle={"Drop Reason"}
-                    data={dropReasonsData}
+                    headerTitle={dropDownTitle}
+                    data={dataForDropDown}
                     onRequestClose={() => setShowDropDownModel(false)}
                     selectedItems={(item) => {
                         setShowDropDownModel(false);
-                        setDropReason(item.name)
+                        if (dropDownKey === "DROP_REASON") {
+                            setDropReason(item.name);
+                        }
+                        if (dropDownKey === "DROP_SUB_REASON") {
+                            setDropSubReason(item.name);
+                        }
                     }}
                 />
 
@@ -300,8 +342,14 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
                             <DropDownSelectionItem
                                 label={"Drop Reason"}
                                 value={dropReason}
-                                onPress={() => setShowDropDownModel(true)}
+                                onPress={() => showDropDownMethod("DROP_REASON", "Select Drop Reason")}
                             />
+
+                            {identifier === "PROCEED_TO_BOOKING" ? (<DropDownSelectionItem
+                                label={"Drop Sub Reason"}
+                                value={dropSubReason}
+                                onPress={() => showDropDownMethod("DROP_SUB_REASON", "Select Drop Sub Reason")}
+                            />) : null}
 
                             {FirstDependencyArray.includes(dropReason) && (
                                 <View>
@@ -371,7 +419,7 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
                             disabled={selector.isLoading}
                             onPress={proceedToPreBookingClicked}
                         >
-                            Proceed To PreBooking
+                            {identifier === "PROCEED_TO_BOOKING" ? "Proceed To Booking" : "Proceed To PreBooking"}
                         </Button>
                     </View>
                 )}

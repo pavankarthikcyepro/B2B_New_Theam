@@ -34,6 +34,7 @@ import { LoaderComponent } from '../../components';
 import * as AsyncStore from '../../asyncStore';
 
 const ScreenWidth = Dimensions.get("window").width;
+const ScreenHeight = Dimensions.get("window").height;
 
 const LoginScreen = ({ navigation }) => {
 

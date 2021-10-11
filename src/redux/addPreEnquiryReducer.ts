@@ -8,6 +8,12 @@ interface TextModel {
     text: string
 }
 
+interface DropDownModel {
+    key: string,
+    value: string,
+    id: string
+}
+
 interface Item {
     name: string,
     id: string
@@ -99,19 +105,25 @@ export const addPreEnquirySlice = createSlice({
         setCreateEnquiryCheckbox: (state, action) => {
             state.create_enquiry_checked = !state.create_enquiry_checked;
         },
-        showDropDown: (state, action) => {
-            switch (action.payload) {
+        setDropDownData: (state, action: PayloadAction<DropDownModel>) => {
+            const { key, value, id } = action.payload;
+            switch (key) {
                 case "ENQUIRY_SEGMENT":
+                    state.enquiryType = value;
+                    state.customer_type_list = CustomerTypesObj[value.toLowerCase()];
+                    state.customerType = "";
                     break;
                 case "CAR_MODEL":
+                    state.carModel = value;
                     break;
                 case "CUSTOMER_TYPE":
+                    state.customerType = value;
                     break;
                 case "SOURCE_OF_ENQUIRY":
+                    state.sourceOfEnquiry = value;
+                    state.sourceOfEnquiryId = id;
                     break;
             }
-            state.drop_down_key_id = action.payload;
-            state.show_drop_down = !state.show_drop_down;
         },
         setPreEnquiryDetails: (state, action: PayloadAction<TextModel>) => {
             const { key, text } = action.payload;
@@ -141,37 +153,6 @@ export const addPreEnquirySlice = createSlice({
                     state.pincode = text;
                     break;
             }
-        },
-        setCarModel: (state, action: PayloadAction<string>) => {
-            state.carModel = action.payload;
-            state.show_model_drop_down = !state.show_model_drop_down;
-        },
-        setEnquiryType: (state, action: PayloadAction<Item>) => {
-            state.enquiryType = action.payload.name;
-            state.customer_type_list = CustomerTypesObj[action.payload.name.toLowerCase()];
-            state.customerType = "";
-            state.show_enquiry_segment_drop_down = !state.show_enquiry_segment_drop_down;
-        },
-        setCustomerType: (state, action: PayloadAction<string>) => {
-            state.customerType = action.payload;
-            state.show_customer_type_drop_down = !state.show_customer_type_drop_down;
-        },
-        setSourceOfEnquiry: (state, action: PayloadAction<Item>) => {
-            state.sourceOfEnquiry = action.payload.name;
-            state.sourceOfEnquiryId = action.payload.id;
-            state.show_source_type_drop_down = !state.show_source_type_drop_down;
-        },
-        showModelSelect: (state, action) => {
-            state.show_model_drop_down = !state.show_model_drop_down;
-        },
-        showEnquirySegmentSelect: (state, action) => {
-            state.show_enquiry_segment_drop_down = !state.show_enquiry_segment_drop_down;
-        },
-        showCustomerTypeSelect: (state, action) => {
-            state.show_customer_type_drop_down = !state.show_customer_type_drop_down;
-        },
-        showSourceOfEnquirySelect: (state, action) => {
-            state.show_source_type_drop_down = !state.show_source_type_drop_down;
         },
         setCustomerTypeList: (state, action) => {
             state.customer_type_list = JSON.parse(action.payload);
@@ -256,14 +237,7 @@ export const {
     clearState,
     setCreateEnquiryCheckbox,
     setPreEnquiryDetails,
-    setCarModel,
-    setEnquiryType,
-    setCustomerType,
-    setSourceOfEnquiry,
-    showModelSelect,
-    showCustomerTypeSelect,
-    showEnquirySegmentSelect,
-    showSourceOfEnquirySelect,
+    setDropDownData,
     setCustomerTypeList,
     setCarModalList,
     setExistingDetails

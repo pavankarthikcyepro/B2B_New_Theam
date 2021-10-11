@@ -6,11 +6,12 @@ import { Colors, GlobalStyle } from '../../../styles';
 import { TextinputComp } from '../../../components/textinputComp';
 import { DropDownComponant } from '../../../components/dropDownComp';
 import { convertTimeStampToDateString } from '../../../utils/helperFunctions';
-import { getPreEnquiryDetails, noThanksApi, getaAllTasks, assignTaskApi, changeEnquiryStatusApi, getEmployeesListApi, updateEmployeeApi } from '../../../redux/confirmedPreEnquiryReducer';
+import { clearState, getPreEnquiryDetails, noThanksApi, getaAllTasks, assignTaskApi, changeEnquiryStatusApi, getEmployeesListApi, updateEmployeeApi } from '../../../redux/confirmedPreEnquiryReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppNavigator } from '../../../navigations';
 import * as AsyncStore from "../../../asyncStore";
 import { LoaderComponent, SelectEmployeeComponant } from '../../../components';
+import { getPreEnquiryData } from '../../../redux/preEnquiryReducer';
 
 
 const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
@@ -21,6 +22,35 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     const [employeeId, setEmployeeId] = useState("");
     const [showEmployeeSelectModel, setEmployeeSelectModel] = useState(false);
     const [employeesData, setEmployeesData] = useState([]);
+
+    React.useLayoutEffect(() => {
+        navigation.setOptions({
+            headerLeft: () => (
+                <IconButton
+                    icon="arrow-left"
+                    color={Colors.WHITE}
+                    size={30}
+                    onPress={goParentScreen}
+                />
+            ),
+        });
+    }, [navigation]);
+
+    const goParentScreen = () => {
+
+        if (fromCreatePreEnquiry) {
+            getPreEnquiryListFromServer();
+        }
+        navigation.popToTop();
+        dispatch(clearState());
+    }
+
+    const getPreEnquiryListFromServer = async () => {
+        if (employeeId) {
+            let endUrl = "?limit=10&offset=" + "0" + "&status=PREENQUIRY&empId=" + employeeId;
+            dispatch(getPreEnquiryData(endUrl));
+        }
+    }
 
     useEffect(() => {
 
@@ -110,7 +140,9 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
             [
                 {
                     text: 'OK', onPress: () => {
+                        getPreEnquiryListFromServer();
                         navigation.popToTop();
+                        dispatch(clearState());
                     }
                 }
             ],

@@ -81,7 +81,21 @@ export const slice = createSlice({
         create_enquiry_loading: false,
         status: ""
     },
-    reducers: {},
+    reducers: {
+        clearState: (state, action) => {
+            state.pre_enquiry_details = {};
+            state.all_pre_enquiry_tasks = [];
+            state.employees_list = [];
+            state.employees_list_status = "";
+            state.assign_task_status = "";
+            state.update_employee_status = "";
+            state.change_enquiry_response = null;
+            state.change_enquiry_status = "";
+            state.isLoading = false;
+            state.create_enquiry_loading = false;
+            state.status = "";
+        }
+    },
     extraReducers: (builder) => {
         builder.addCase(getPreEnquiryDetails.fulfilled, (state, action) => {
             // console.log("res: ", JSON.stringify(action.payload));
@@ -123,5 +137,5 @@ export const slice = createSlice({
     }
 });
 
-export const { } = slice.actions;
+export const { clearState } = slice.actions;
 export default slice.reducer;

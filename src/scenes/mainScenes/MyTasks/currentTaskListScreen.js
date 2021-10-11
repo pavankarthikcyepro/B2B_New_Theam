@@ -24,6 +24,7 @@ const mytasksIdentifires = {
     testdrive: "TEST_DRIVE",
     testdriveapproval: "TEST_DRIVE_APPROVAL",
     proceedtobooking: "PROCEED_TO_BOOKING",
+    proceedtoprebooking: "PROCEED_TO_PRE_BOOKING",
     prebookingfollowup: "PRE_BOOKING_FOLLOW_UP",
     homevisit: "HOME_VISIT",
     enquiryfollowup: "ENQUIRY_FOLLOW_UP",

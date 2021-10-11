@@ -23,6 +23,7 @@ const mytasksIdentifires = {
     testdrive: "TEST_DRIVE",
     testdriveapproval: "TEST_DRIVE_APPROVAL",
     proceedtobooking: "PROCEED_TO_BOOKING",
+    proceedtoprebooking: "PROCEED_TO_PRE_BOOKING",
     prebookingfollowup: "PRE_BOOKING_FOLLOW_UP",
     homevisit: "HOME_VISIT",
     enquiryfollowup: "ENQUIRY_FOLLOW_UP",
@@ -90,6 +91,7 @@ const PendingTaskListScreen = ({ navigation }) => {
                 break;
             case "proceedtobooking":
                 console.log("not implemented");
+                navigationId = AppNavigator.MyTasksStackIdentifiers.proceedToPreBooking;
                 break;
             case "homevisit":
                 navigationId = AppNavigator.MyTasksStackIdentifiers.homeVisit;
