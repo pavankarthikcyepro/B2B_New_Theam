@@ -2,7 +2,7 @@
 export const Form_Types = [
   {
     id: "Pan",
-    name: "PAN ",
+    name: "PAN",
   },
   {
     id: "Form60",
@@ -99,3 +99,9 @@ export const Drop_reasons = [{
 { "id": 31, "name": "Duplicate Enquiry" },
 { "id": 32, "name": "Family Decisions" },
 { "id": 33, "name": "Looking for More Discount" }]
+
+export const Customer_Category_Types = [
+  { "id": 1, "name": "B2B" },
+  { "id": 2, "name": "B2C" },
+  { "id": 3, "name": "NONE" },
+]

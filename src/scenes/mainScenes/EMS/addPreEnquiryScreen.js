@@ -224,17 +224,20 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     Keyboard.dismiss();
 
     if (
-      selector.firstName.length == 0 ||
-      selector.mobile.length == 0 ||
-      selector.enquiryType.length == 0 ||
-      selector.sourceOfEnquiry == 0
+      selector.firstName.length == 0 || selector.lastName.length == 0 || selector.mobile.length == 0 || selector.carModel.length == 0 || selector.enquiryType.length == 0 ||
+      selector.sourceOfEnquiry.length == 0 || selector.customerType.length == 0 || selector.pincode.length == 0
     ) {
       showToastRedAlert("Please fill required fields");
       return;
     }
 
-    if (!isMobileNumber(selector.mobile)) {
+    if (selector.mobile.length != 10) {
       showToast("Please enter valid mobile number");
+      return;
+    }
+
+    if (selector.alterMobile.length > 0 && selector.alterMobile.length != 10) {
+      showToast("Please enter valid alternate mobile number");
       return;
     }
 
@@ -538,17 +541,17 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             <Text style={styles.devider}></Text>
 
             <DropDownSelectionItem
-              label={"Select Model*"}
+              label={"Model*"}
               value={selector.carModel}
               onPress={() => showDropDownModelMethod("CAR_MODEL", "Select Model")}
             />
             <DropDownSelectionItem
-              label={"Select Enquiry Segment*"}
+              label={"Enquiry Segment*"}
               value={selector.enquiryType}
               onPress={() => showDropDownModelMethod("ENQUIRY_SEGMENT", "Select Enquiry Segment")}
             />
             <DropDownSelectionItem
-              label={"Select Customer Type*"}
+              label={"Customer Type*"}
               value={selector.customerType}
               onPress={() => showDropDownModelMethod("CUSTOMER_TYPE", "Select Customer Type")}
             />
@@ -584,7 +587,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             ) : null}
 
             <DropDownSelectionItem
-              label={"Select Source of Pre-Enquiry*"}
+              label={"Source of Create Lead*"}
               value={selector.sourceOfEnquiry}
               disabled={fromEdit}
               onPress={() => showDropDownModelMethod("SOURCE_OF_ENQUIRY", "Select Source of Pre-Enquiry")}

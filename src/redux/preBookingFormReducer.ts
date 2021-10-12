@@ -147,8 +147,6 @@ const prebookingFormSlice = createSlice({
     on_road_price_dto_list_response: [],
     send_onRoad_price_details_response: null,
 
-    dropDownTitle: "",
-    dropDownKeyId: "",
     datePickerKeyId: "",
     showImagePicker: false,
     imagePickerKeyId: "",
@@ -241,6 +239,7 @@ const prebookingFormSlice = createSlice({
     customer_type_category: "",
     adhaar_number: "",
     relationship_proof: "",
+    gstin_number: "",
     // Booking Drop
     drop_reason: "",
     drop_remarks: ""
@@ -254,6 +253,93 @@ const prebookingFormSlice = createSlice({
       state.update_pre_booking_details_response = null;
       state.on_road_price_dto_list_response = [];
       state.send_onRoad_price_details_response = null;
+
+      // Customer Details
+      state.first_name = "";
+      state.last_name = "";
+      state.age = "";
+      state.mobile = "";
+      state.email = "";
+      state.date_of_birth = "";
+      state.gender = "";
+      state.salutation = "";
+      state.enquiry_segment = "";
+      state.customer_type = "";
+      state.marital_status = "";
+      // Communication Address
+      state.pincode = "";
+      state.urban_or_rural = 0; // 1: urban, 2:
+      state.house_number = "";
+      state.street_name = "";
+      state.village = "";
+      state.city = "";
+      state.state = "";
+      state.district = "";
+
+      state.permanent_address = false;
+      state.p_pincode = "";
+      state.p_urban_or_rural = 0; // 1: urban, 2:
+      state.p_houseNum = "";
+      state.p_streetName = "";
+      state.p_village = "";
+      state.p_city = "";
+      state.p_state = "";
+      state.p_district = "";
+      // Model Selection
+      state.model = "";
+      state.varient = "";
+      state.color = "";
+      state.fuel_type = "";
+      state.transmission_type = "";
+      state.lead_product_id = "";
+      state.model_drop_down_data_update_status = null;
+      // financial details
+      state.retail_finance = "";
+      state.finance_category = "";
+      state.bank_or_finance_name = "";
+      state.location = "";
+      state.down_payment = "";
+      state.loan_amount = "";
+      state.bank_or_finance = "";
+      state.rate_of_interest = "";
+      state.loan_of_tenure = "";
+      state.emi = "";
+      state.approx_annual_income = "";
+      state.leashing_name = "";
+      // Booking payment mod
+      state.booking_amount = "";
+      state.payment_at = "";
+      state.booking_payment_mode = "";
+      // commitment
+      state.customer_preferred_date = "";
+      state.occasion = "";
+      state.tentative_delivery_date = "";
+      state.delivery_location = "";
+      //Price Conformation
+      state.vechicle_registration = false;
+      state.vehicle_type = "";
+      state.registration_number = "";
+      state.insurance_type = "";
+      state.add_on_insurance = "";
+      state.warranty = "";
+      //offerprice
+      state.consumer_offer = "";
+      state.exchange_offer = "";
+      state.corporate_offer = "";
+      state.promotional_offer = "";
+      state.cash_discount = "";
+      state.for_accessories = "";
+      state.additional_offer_1 = "";
+      state.additional_offer_2 = "";
+      // Documents Upload
+      state.form_or_pan = "";
+      state.customer_type_category = "";
+      state.adhaar_number = "";
+      state.relationship_proof = "";
+      state.gstin_number = "";
+      // Booking Drop
+      state.drop_reason = "";
+      state.drop_remarks = "";
     },
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
       const { key, value, id } = action.payload;
@@ -571,6 +657,9 @@ const prebookingFormSlice = createSlice({
         case "RELATIONSHIP_PROOF":
           state.relationship_proof = text;
           break;
+        case "GSTIN_NUMBER":
+          state.gstin_number = text;
+          break;
       }
     },
     setBookingDropDetails: (state, action) => {
@@ -613,6 +702,10 @@ const prebookingFormSlice = createSlice({
       state.marital_status = dmsLeadDto.maritalStatus ? dmsLeadDto.maritalStatus : "";
       state.vehicle_type = dmsLeadDto.otherVehicleRcNo ? dmsLeadDto.otherVehicleRcNo : "";
       state.registration_number = dmsLeadDto.otherVehicleType ? dmsLeadDto.otherVehicleType : "";
+
+      // Documents
+      state.gstin_number = dmsLeadDto.gstNumber ? dmsLeadDto.gstNumber : "";
+      state.customer_type_category = dmsLeadDto.customerCategoryType ? dmsLeadDto.customerCategoryType : "";
 
       // Commitment
       state.occasion = dmsLeadDto.occasion ? dmsLeadDto.occasion : "";
@@ -709,6 +802,10 @@ const prebookingFormSlice = createSlice({
     }
   },
   extraReducers: (builder) => {
+    // Get PreBooking Details
+    builder.addCase(getPrebookingDetailsApi.pending, (state, action) => {
+      state.pre_booking_details_response = null;
+    })
     builder.addCase(getPrebookingDetailsApi.fulfilled, (state, action) => {
       //console.log("S getPrebookingDetailsApi: ", JSON.stringify(action.payload));
       if (action.payload.dmsEntity) {
@@ -717,6 +814,11 @@ const prebookingFormSlice = createSlice({
     })
     builder.addCase(getPrebookingDetailsApi.rejected, (state, action) => {
       //console.log("F getPrebookingDetailsApi: ", JSON.stringify(action.payload));
+      state.pre_booking_details_response = null;
+    })
+    // Update PreBooking Details
+    builder.addCase(updatePrebookingDetailsApi.pending, (state, action) => {
+      state.update_pre_booking_details_response = "";
     })
     builder.addCase(updatePrebookingDetailsApi.fulfilled, (state, action) => {
       console.log("S updatePrebookingDetailsApi: ", JSON.stringify(action.payload));
@@ -728,6 +830,10 @@ const prebookingFormSlice = createSlice({
       console.log("F updatePrebookingDetailsApi: ", JSON.stringify(action.payload));
       state.update_pre_booking_details_response = "failed";
     })
+    // Get On Road Price & Insurence Details
+    builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.pending, (state, action) => {
+      state.vehicle_on_road_price_insurence_details_response = null;
+    })
     builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.fulfilled, (state, action) => {
       //console.log("S getOnRoadPriceAndInsurenceDetailsApi: ", JSON.stringify(action.payload));
       if (action.payload) {
@@ -736,6 +842,7 @@ const prebookingFormSlice = createSlice({
     })
     builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.rejected, (state, action) => {
       //console.log("F getOnRoadPriceAndInsurenceDetailsApi: ", JSON.stringify(action.payload));
+      state.vehicle_on_road_price_insurence_details_response = null;
     })
 
     builder.addCase(getPaidAccessoriesListApi.fulfilled, (state, action) => {

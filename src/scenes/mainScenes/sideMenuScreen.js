@@ -17,6 +17,8 @@ import { AppNavigator } from "../../navigations";
 import { AuthContext } from "../../utils/authContext";
 import realm from "../../database/realm";
 import * as AsyncStore from '../../asyncStore';
+// import { useNavigation } from '@react-navigation/native';
+import { useIsFocused } from "@react-navigation/native";
 
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 4;
@@ -26,6 +28,7 @@ const SideMenuScreen = ({ navigation }) => {
 
   const selector = useSelector((state) => state.sideMenuReducer);
   const homeSelector = useSelector((state) => state.homeReducer);
+  // const isFocused = useIsFocused();
 
   const { signOut } = React.useContext(AuthContext);
   const [empName, setEmpName] = useState("");
@@ -34,13 +37,29 @@ const SideMenuScreen = ({ navigation }) => {
   const [role, setRole] = useState("");
 
   useEffect(() => {
+
+    // const unsubscribe = navigation.addListener('focus', () => {
+    //   // The screen is focused
+    //   // Call any action
+    //   console.log("print 1")
+    //   getLoginEmployeeData();
+    // });
+
+    // Call only when screen open or when back on screen 
+    // if (isFocused) {
+    //   console.log("print 3")
+    // }
+    console.log("print 1")
     getLoginEmployeeData();
+
+    //return unsubscribe;
   }, [])
 
   const getLoginEmployeeData = async () => {
 
     const jsonString = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (jsonString) {
+      console.log("print 2")
       const jsonObj = JSON.parse(jsonString);
       setEmpName(jsonObj.empName);
       setEmail(jsonObj.email);

@@ -72,13 +72,14 @@ import {
   Payment_At_Types,
   Booking_Payment_Types,
   Vehicle_Types,
-  Drop_reasons
+  Drop_reasons,
+  Customer_Category_Types
 } from "../../../jsonData/prebookingFormScreenJsonData";
 import { AppNavigator } from "../../../navigations";
 import { getPreBookingData } from "../../../redux/preBookingReducer";
-import { showToast, showToastRedAlert } from "../../../utils/toast";
+import { showToast, showToastRedAlert, showToastSucess } from "../../../utils/toast";
 import { convertDateStringToMillisecondsUsingMoment } from "../../../utils/helperFunctions";
-import { showToastSucess } from "../../../utils/toast";
+import URL from "../../../networking/endpoints";
 
 const rupeeSymbol = "\u20B9";
 
@@ -152,14 +153,21 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [showSubmitDropBtn, setShowSubmitDropBtn] = useState(false);
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
 
-
   useEffect(() => {
+
+    const unsubscribe = navigation.addListener('focus', () => {
+      // The screen is focused
+      // Call any action
+      dispatch(clearState());
+    });
+
     setComponentAppear(true);
     getAsyncstoreData();
     dispatch(getCustomerTypesApi());
     setCarModelsDataFromBase();
     getPreBookingDetailsFromServer();
-  }, []);
+    return unsubscribe;
+  }, [navigation]);
 
   useEffect(() => {
     calculateOnRoadPrice();
@@ -231,9 +239,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       dispatch(updateFinancialData(dmsLeadDto.dmsfinancedetails));
       // // Update Booking Payment Data
       dispatch(updateBookingPaymentData(dmsLeadDto.dmsBooking));
-      // // Update Attachment details
-      // saveAttachmentDetailsInLocalObject(dmsLeadDto.dmsAttachments);
-      // dispatch(updateDmsAttachmentDetails(dmsLeadDto.dmsAttachments));
+      // Update Attachment details
+      saveAttachmentDetailsInLocalObject(dmsLeadDto.dmsAttachments);
 
       // Update Paid Accesories
       if (dmsLeadDto.dmsAccessories.length > 0) {
@@ -244,6 +251,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       setSelectedPaidAccessories([...dmsLeadDto.dmsAccessories])
     }
   }, [selector.pre_booking_details_response])
+
+  const saveAttachmentDetailsInLocalObject = (dmsAttachments) => {
+    const attachments = [...dmsAttachments];
+    if (attachments.length > 0) {
+      const dataObj = {};
+      attachments.forEach((item, index) => {
+        const obj = {
+          documentPath: item.documentPath,
+          documentType: item.documentType,
+          fileName: item.fileName,
+          keyName: item.keyName
+        }
+        dataObj[item.documentType] = obj;
+      })
+      setUploadedImagesDataObj({ ...dataObj })
+    }
+  }
 
   useEffect(() => {
     if (selector.model_drop_down_data_update_status === "update") {
@@ -404,6 +428,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         break;
       case "DROP_REASON":
         setDataForDropDown([...Drop_reasons]);
+        break;
+      case "CUSTOMER_TYPE_CATEGORY":
+        setDataForDropDown([...Customer_Category_Types]);
         break;
     }
     setDropDownKey(key);
@@ -587,6 +614,26 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
   }, [selector.send_onRoad_price_details_response])
 
+  const approveOrRejectMethod = (type) => {
+
+    if (!selector.pre_booking_details_response) {
+      return
+    }
+
+    const dmsEntity = { ...selector.pre_booking_details_response };
+    if (type === "APPROVE") {
+      dmsEntity.dmsLeadDto.leadStatus = 'PREBOOKINGCOMPLETED';
+    }
+    else if (type === "REJECT") {
+      // if (this.displayRemarks === true) {
+
+      dmsEntity.dmsLeadDto.leadStatus = 'REJECTED';
+      dmsEntity.dmsLeadDto.remarks = "";
+    }
+    setTypeOfActionDispatched("UPDATE_PRE_BOOKING")
+    dispatch(updatePrebookingDetailsApi(formData));
+  }
+
   // Handle Update Pre-Booking Details Response
   useEffect(() => {
     if (selector.update_pre_booking_details_response === "success") {
@@ -626,6 +673,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     dataObj.commitmentDeliveryTentativeDate = convertDateStringToMillisecondsUsingMoment(selector.tentative_delivery_date);
     dataObj.otherVehicleRcNo = selector.vehicle_type;
     dataObj.otherVehicleType = selector.registration_number;
+    dataObj.gstNumber = selector.gstin_number;
+    dataObj.customerCategoryType = selector.customer_type_category;
 
     dataObj.leadStatus = 'SENTFORAPPROVAL';
     dataObj.leadStage = "PREBOOKING";
@@ -735,10 +784,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     if (dmsAttachments.length > 0) {
       dmsAttachments.forEach((obj, index) => {
         const item = uploadedImagesDataObj[obj.documentType];
+        console.log("uploadedImagesDataObj2: ", uploadedImagesDataObj);
         const object = formatAttachment({ ...obj }, item, index, obj.documentType);
         dmsAttachments[index] = object;
       })
     } else {
+      console.log("uploadedImagesDataObj1: ", uploadedImagesDataObj);
       Object.keys(uploadedImagesDataObj).forEach((key, index) => {
         const item = uploadedImagesDataObj[key];
         const object = formatAttachment({}, item, index, item.documentType);
@@ -868,6 +919,72 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
   };
 
+  const uploadSelectedImage = async (selectedPhoto, keyId) => {
+
+    const photoUri = selectedPhoto.uri;
+    if (!photoUri) {
+      return;
+    }
+
+    const formData = new FormData();
+    const fileType = photoUri.substring(photoUri.lastIndexOf(".") + 1);
+    const fileNameArry = photoUri.substring(photoUri.lastIndexOf('/') + 1).split('.');
+    const fileName = fileNameArry.length > 0 ? fileNameArry[0] : "None";
+    formData.append('file', {
+      name: `${fileName}-.${fileType}`,
+      type: `image/${fileType}`,
+      uri: Platform.OS === 'ios' ? photoUri.replace('file://', '') : photoUri
+    });
+    formData.append("universalId", universalId);
+
+    switch (keyId) {
+      case "UPLOAD_PAN":
+        formData.append("documentType", "pan");
+        break;
+      case "UPLOAD_ADHAR":
+        formData.append("documentType", "aadhar");
+        break;
+      case "UPLOAD_FORM60":
+        formData.append("documentType", "form60");
+        break;
+      case "UPLOAD_RELATION_PROOF":
+        formData.append("documentType", "relationshipProof");
+        break;
+      default:
+        formData.append("documentType", "default");
+        break;
+    }
+
+    await fetch(URL.UPLOAD_DOCUMENT(), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      body: formData
+    })
+      .then((response) => response.json())
+      .then((response) => {
+        //console.log('response', response);
+        if (response) {
+          const dataObj = { ...uploadedImagesDataObj };
+          dataObj[response.documentType] = response;
+          setUploadedImagesDataObj({ ...dataObj });
+        }
+      })
+      .catch((error) => {
+        showToastRedAlert(error.message ? error.message : "Something went wrong");
+        console.error('error', error);
+      });
+  }
+
+  const DisplaySelectedImage = ({ fileName }) => {
+    return (
+      <View style={styles.selectedImageBckVw}>
+        <Text style={styles.selectedImageTextStyle}>{fileName}</Text>
+      </View>
+    )
+  }
+
   if (!componentAppear) {
     return (
       <View style={styles.initialContainer}>
@@ -881,8 +998,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       <ImagePickerComponent
         visible={selector.showImagePicker}
         keyId={selector.imagePickerKeyId}
+        onDismiss={() => dispatch(setImagePicker(""))}
         selectedImage={(data, keyId) => {
           console.log("imageObj: ", data, keyId);
+          uploadSelectedImage(data, keyId);
         }}
         onDismiss={() => dispatch(setImagePicker(""))}
       />
@@ -1557,6 +1676,32 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   onPress={() => showDropDownModelMethod("FORM_60_PAN", "Retail Finance")}
                 />
 
+                {selector.form_or_pan === "PAN" && (
+                  <View>
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"PAN"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.pan ? <DisplaySelectedImage fileName={uploadedImagesDataObj.pan.fileName} /> : null}
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                )}
+
+                {selector.form_or_pan === "Form60" && (
+                  <View>
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Form60"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_FORM60"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.form60 ? <DisplaySelectedImage fileName={uploadedImagesDataObj.form60.fileName} /> : null}
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                )}
+
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.adhaar_number}
@@ -1573,6 +1718,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     name={"Upload Adhar"}
                     onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
                   />
+                  {uploadedImagesDataObj.aadhar ? <DisplaySelectedImage fileName={uploadedImagesDataObj.aadhar.fileName} /> : null}
                 </View>
                 <TextinputComp
                   style={styles.textInputStyle}
@@ -1591,14 +1737,42 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 <View style={styles.select_image_bck_vw}>
                   <ImageSelectItem
                     name={"Relationship Proof"}
-                    onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
+                    onPress={() => dispatch(setImagePicker("UPLOAD_RELATION_PROOF"))}
                   />
                 </View>
-                {/* <DropDownSelectionItem
-                  label={"Customer Type Category"}
-                  value={selector.customer_type_category} // selector.dropDownData
-                  onPress={() => showDropDownModelMethod("CUSTOMER_TYPE_CATEGORY", "Retail Finance")}
-                /> */}
+                {uploadedImagesDataObj.relationshipProof ? <DisplaySelectedImage fileName={uploadedImagesDataObj.relationshipProof.fileName} /> : null}
+                <Text style={GlobalStyle.underline}></Text>
+
+                {selector.customer_type === "Individual" && (
+                  <View>
+                    <DropDownSelectionItem
+                      label={"Customer Type Category"}
+                      value={selector.customer_type_category}
+                      onPress={() => showDropDownModelMethod("CUSTOMER_TYPE_CATEGORY", "Customer Type Category")}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                )}
+
+                {(selector.enquiry_segment === "Company" && selector.customer_type === "Institution") || (selector.customer_type_category == "B2B" || selector.customer_type_category == "B2C") ? (
+                  <View>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.gstin_number}
+                      label={"GSTIN Number"}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setDocumentUploadDetails({
+                            key: "GSTIN_NUMBER",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                ) : null}
+
               </List.Accordion>
               <View style={styles.space}></View>
 
@@ -2051,6 +2225,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 </Button>
               </View>
             )}
+
             {showApproveRejectBtn && userData.managerEdit && (
               <View style={styles.actionBtnView}>
                 <Button
@@ -2058,7 +2233,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   style={{ width: 120 }}
                   color={Colors.GREEN}
                   labelStyle={{ textTransform: "none" }}
-                  onPress={() => { }}
+                  onPress={() => approveOrRejectMethod("APPROVE")}
                 >
                   Approve
                 </Button>
@@ -2066,7 +2241,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   mode="contained"
                   color={Colors.RED}
                   labelStyle={{ textTransform: "none" }}
-                  onPress={() => { }}
+                  onPress={() => approveOrRejectMethod("REJECT")}
                 >
                   Reject
                 </Button>
@@ -2217,4 +2392,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: "center",
   },
+  selectedImageBckVw: {
+    paddingLeft: 12,
+    paddingRight: 15,
+    paddingBottom: 5,
+    backgroundColor: Colors.WHITE
+  },
+  selectedImageTextStyle: {
+    fontSize: 12,
+    fontWeight: '400',
+    color: Colors.DARK_GRAY
+  }
 });

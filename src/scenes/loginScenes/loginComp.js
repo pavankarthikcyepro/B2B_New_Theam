@@ -149,7 +149,7 @@ const LoginScreen = ({ navigation }) => {
 
       <View style={{ flex: 1 }}>
 
-        <View style={{ alignItems: "center" }}>
+        <View style={{ alignItems: "center", justifyContent: 'center' }}>
           <Image
             style={{ width: ScreenWidth - 60, height: ScreenHeight * 0.3 }}
             // resizeMode={"cover"}
