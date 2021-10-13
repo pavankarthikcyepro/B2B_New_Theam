@@ -695,7 +695,6 @@ const enquiryDetailsOverViewSlice = createSlice({
 
       // dmsContactOrAccountDto
       const dms_C_Or_A_Dto = action.payload;
-      state.dateOfBirth = dms_C_Or_A_Dto.dateOfBirth ? dms_C_Or_A_Dto.dateOfBirth : "";
       state.email = dms_C_Or_A_Dto.email ? dms_C_Or_A_Dto.email : "";
       state.firstName = dms_C_Or_A_Dto.firstName ? dms_C_Or_A_Dto.firstName : "";
       state.lastName = dms_C_Or_A_Dto.lastName ? dms_C_Or_A_Dto.lastName : "";
@@ -712,7 +711,10 @@ const enquiryDetailsOverViewSlice = createSlice({
         state.relation_types_data = Relation_Data_Obj[state.salutaion.toLowerCase()];
       }
 
-      state.anniversaryDate = dms_C_Or_A_Dto.anniversaryDate ? dms_C_Or_A_Dto.anniversaryDate : "";
+      const dateOfBirth = dms_C_Or_A_Dto.dateOfBirth ? dms_C_Or_A_Dto.dateOfBirth : "";
+      state.dateOfBirth = convertTimeStampToDateString(dateOfBirth, "DD/MM/YYYY");
+      const anniversaryDate = dms_C_Or_A_Dto.anniversaryDate ? dms_C_Or_A_Dto.anniversaryDate : "";
+      state.anniversaryDate = convertTimeStampToDateString(anniversaryDate, "DD/MM/YYYY");
       state.approx_annual_income = dms_C_Or_A_Dto.annualRevenue ? dms_C_Or_A_Dto.annualRevenue : "";
       state.company_name = dms_C_Or_A_Dto.company ? dms_C_Or_A_Dto.company : "";
       state.customer_type = dms_C_Or_A_Dto.customerType ? dms_C_Or_A_Dto.customerType : "";
@@ -789,7 +791,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       const dmsLeadProducts = action.payload;
       if (dmsLeadProducts.length > 0) {
         const dataObj = dmsLeadProducts[0];
-        state.lead_product_id = dataObj.id ? dataObj.id : "";
+        state.lead_product_id = dataObj.id ? dataObj.id : 0;
         state.model = dataObj.model ? dataObj.model : "";
         state.varient = dataObj.variant ? dataObj.variant : "";
         state.color = dataObj.color ? dataObj.color : "";

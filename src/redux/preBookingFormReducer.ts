@@ -242,7 +242,8 @@ const prebookingFormSlice = createSlice({
     gstin_number: "",
     // Booking Drop
     drop_reason: "",
-    drop_remarks: ""
+    drop_remarks: "",
+    reject_remarks: ""
   },
   reducers: {
     clearState: (state, action) => {
@@ -340,6 +341,7 @@ const prebookingFormSlice = createSlice({
       // Booking Drop
       state.drop_reason = "";
       state.drop_remarks = "";
+      state.reject_remarks = "";
     },
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
       const { key, value, id } = action.payload;
@@ -668,6 +670,9 @@ const prebookingFormSlice = createSlice({
         case "DROP_REMARKS":
           state.drop_remarks = text;
           break;
+        case "REJECT_REMARKS":
+          state.reject_remarks = text;
+          break;
       }
     },
     updateFuelAndTransmissionType: (state, action) => {
@@ -700,10 +705,11 @@ const prebookingFormSlice = createSlice({
         state.customer_types_data = state.customer_types_response[state.enquiry_segment.toLowerCase()];
       }
       state.marital_status = dmsLeadDto.maritalStatus ? dmsLeadDto.maritalStatus : "";
-      state.vehicle_type = dmsLeadDto.otherVehicleRcNo ? dmsLeadDto.otherVehicleRcNo : "";
-      state.registration_number = dmsLeadDto.otherVehicleType ? dmsLeadDto.otherVehicleType : "";
+      state.vehicle_type = dmsLeadDto.otherVehicleType ? dmsLeadDto.otherVehicleType : "";
+      state.registration_number = dmsLeadDto.otherVehicleRcNo ? dmsLeadDto.otherVehicleRcNo : "";
 
       // Documents
+      state.form_or_pan = dmsLeadDto.documentType ? dmsLeadDto.documentType : "";
       state.gstin_number = dmsLeadDto.gstNumber ? dmsLeadDto.gstNumber : "";
       state.customer_type_category = dmsLeadDto.customerCategoryType ? dmsLeadDto.customerCategoryType : "";
 
@@ -713,6 +719,9 @@ const prebookingFormSlice = createSlice({
       state.customer_preferred_date = convertTimeStampToDateString(customerPreferredDate, "DD/MM/YYYY");
       const tentativeDeliveryDate = dmsLeadDto.commitmentDeliveryTentativeDate ? dmsLeadDto.commitmentDeliveryTentativeDate : ""
       state.tentative_delivery_date = convertTimeStampToDateString(tentativeDeliveryDate, "DD/MM/YYYY");
+
+      // Reject Remarks
+      state.reject_remarks = dmsLeadDto.remarks ? dmsLeadDto.remarks : "";
     },
     updateDmsAddressData: (state, action) => {
 

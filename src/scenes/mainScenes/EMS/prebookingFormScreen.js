@@ -152,6 +152,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [showApproveRejectBtn, setShowApproveRejectBtn] = useState(false);
   const [showSubmitDropBtn, setShowSubmitDropBtn] = useState(false);
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
+  const [isRejectSelected, setIsRejectSelected] = useState(false);
 
   useEffect(() => {
 
@@ -544,6 +545,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       return
     }
 
+    if (!selector.pre_booking_details_response.dmsLeadDto) {
+      return
+    }
+
     let postOnRoadPriceTable = {};
     postOnRoadPriceTable.additionalOffer1 = selector.additional_offer_1;
     postOnRoadPriceTable.additionalOffer2 = selector.additional_offer_2;
@@ -609,6 +614,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         }
       }
 
+      console.log("Data: ", JSON.stringify(formData));
+
       setTypeOfActionDispatched("UPDATE_PRE_BOOKING")
       dispatch(updatePrebookingDetailsApi(formData));
     }
@@ -625,10 +632,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       dmsEntity.dmsLeadDto.leadStatus = 'PREBOOKINGCOMPLETED';
     }
     else if (type === "REJECT") {
-      // if (this.displayRemarks === true) {
+
+      if (selector.reject_remarks.length == 0) {
+        showToast("Please enter reject remarks");
+        return;
+      }
 
       dmsEntity.dmsLeadDto.leadStatus = 'REJECTED';
-      dmsEntity.dmsLeadDto.remarks = "";
+      dmsEntity.dmsLeadDto.remarks = selector.reject_remarks;
     }
     setTypeOfActionDispatched("UPDATE_PRE_BOOKING")
     dispatch(updatePrebookingDetailsApi(formData));
@@ -669,12 +680,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     dataObj.enquirySegment = selector.enquiry_segment;
     dataObj.maritalStatus = selector.marital_status;
     dataObj.occasion = selector.occasion;
+
     dataObj.commitmentDeliveryPreferredDate = convertDateStringToMillisecondsUsingMoment(selector.customer_preferred_date);
     dataObj.commitmentDeliveryTentativeDate = convertDateStringToMillisecondsUsingMoment(selector.tentative_delivery_date);
     dataObj.otherVehicleRcNo = selector.vehicle_type;
     dataObj.otherVehicleType = selector.registration_number;
     dataObj.gstNumber = selector.gstin_number;
     dataObj.customerCategoryType = selector.customer_type_category;
+    dataObj.documentType = selector.form_or_pan;
 
     dataObj.leadStatus = 'SENTFORAPPROVAL';
     dataObj.leadStage = "PREBOOKING";
@@ -726,41 +739,43 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const mapLeadProducts = (prevDmsLeadProducts) => {
 
     let dmsLeadProducts = [...prevDmsLeadProducts];
+    let dataObj = {};
     if (dmsLeadProducts.length > 0) {
-      const dataObj = { ...dmsLeadProducts[0] };
-      dataObj.model = selector.model;
-      dataObj.variant = selector.varient;
-      dataObj.color = selector.color;
-      dataObj.fuel = selector.fuel_type;
-      dataObj.transimmisionType = selector.transmission_type;
-      dmsLeadProducts[0] = dataObj;
+      dataObj = { ...dmsLeadProducts[0] };
     }
+    dataObj.model = selector.model;
+    dataObj.variant = selector.varient;
+    dataObj.color = selector.color;
+    dataObj.fuel = selector.fuel_type;
+    dataObj.transimmisionType = selector.transmission_type;
+    dmsLeadProducts[0] = dataObj;
     return dmsLeadProducts;
   }
 
   const mapDmsFinanceDetails = (prevDmsFinancedetails) => {
 
     let dmsfinancedetails = [...prevDmsFinancedetails];
+    let dataObj = {};
     if (dmsfinancedetails.length > 0) {
-      const dataObj = { ...dmsfinancedetails[0] };
-      dataObj.financeType = selector.retail_finance;
-      dataObj.financeCategory = selector.finance_category;
-      dataObj.downPayment = selector.down_payment;
-      dataObj.loanAmount = selector.loan_amount ? Number(selector.loan_amount) : null;
-      dataObj.rateOfInterest = selector.rate_of_interest;
-      dataObj.expectedTenureYears = selector.loan_of_tenure;
-      dataObj.emi = selector.emi;
-      dataObj.annualIncome = selector.approx_annual_income;
-      dataObj.location = selector.location;
-      if (selector.retail_finance === "In House") {
-        dataObj.financeCompany = selector.bank_or_finance;
-      } else if (selector.retail_finance === "Out House") {
-        dataObj.financeCompany = selector.bank_or_finance_name;
-      } else if (selector.retail_finance === "Leashing") {
-        dataObj.financeCompany = selector.leashing_name;
-      }
-      dmsfinancedetails[0] = dataObj;
+      dataObj = { ...dmsfinancedetails[0] };
     }
+    dataObj.financeType = selector.retail_finance;
+    dataObj.financeCategory = selector.finance_category;
+    dataObj.downPayment = selector.down_payment;
+    dataObj.loanAmount = selector.loan_amount ? Number(selector.loan_amount) : null;
+    dataObj.rateOfInterest = selector.rate_of_interest;
+    dataObj.expectedTenureYears = selector.loan_of_tenure;
+    dataObj.emi = selector.emi;
+    dataObj.annualIncome = selector.approx_annual_income;
+    dataObj.location = selector.location;
+    if (selector.retail_finance === "In House") {
+      dataObj.financeCompany = selector.bank_or_finance;
+    } else if (selector.retail_finance === "Out House") {
+      dataObj.financeCompany = selector.bank_or_finance_name;
+    } else if (selector.retail_finance === "Leashing") {
+      dataObj.financeCompany = selector.leashing_name;
+    }
+    dmsfinancedetails[0] = dataObj;
     return dmsfinancedetails;
   }
 
@@ -2203,7 +2218,42 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <Text style={GlobalStyle.underline}></Text>
                 </List.Accordion>
               ) : null}
+
+              {isRejectSelected && (
+                <List.Accordion
+                  id={"11"}
+                  title={"Manager Reject Remarks"}
+                  titleStyle={{
+                    color: openAccordian === "11" ? Colors.WHITE : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={{
+                    backgroundColor:
+                      openAccordian === "11" ? Colors.RED : Colors.WHITE,
+                  }}
+                >
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.reject_remarks}
+                    label={"Remarks"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setBookingDropDetails({
+                          key: "REJECT_REMARKS",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                </List.Accordion>
+              )}
+
             </List.AccordionGroup>
+
+
+
             {!isDropSelected && showSubmitDropBtn && (
               <View style={styles.actionBtnView}>
                 <Button
@@ -2241,9 +2291,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   mode="contained"
                   color={Colors.RED}
                   labelStyle={{ textTransform: "none" }}
-                  onPress={() => approveOrRejectMethod("REJECT")}
+                  onPress={() => isRejectSelected ? approveOrRejectMethod("REJECT") : setIsRejectSelected(true)}
                 >
-                  Reject
+                  {isRejectSelected ? "Send" : "Reject"}
                 </Button>
               </View>
             )}

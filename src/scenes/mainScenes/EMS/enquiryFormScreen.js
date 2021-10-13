@@ -178,6 +178,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dispatch(updateDmsContactOrAccountDtoData(dmsContactOrAccountDto));
       // Update updateDmsLeadDtoData
       dispatch(updateDmsLeadDtoData(dmsLeadDto));
+      if (dmsLeadDto.model) {
+        updateVariantModelsData(dmsLeadDto.model, false);
+      }
       // Update Addresses
       dispatch(updateDmsAddressData(dmsLeadDto.dmsAddresses));
       // Updaet Model Selection
@@ -353,65 +356,68 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const mapLeadProducts = (prevDmsLeadProducts) => {
 
     let dmsLeadProducts = [...prevDmsLeadProducts];
+    const dataObj = {};
     if (dmsLeadProducts.length > 0) {
-      const dataObj = { ...dmsLeadProducts[0] };
-      dataObj.id = selector.lead_product_id;
-      dataObj.model = selector.model;
-      dataObj.variant = selector.varient;
-      dataObj.color = selector.color;
-      dataObj.fuel = selector.fuel_type;
-      dataObj.transimmisionType = selector.transmission_type;
-      dmsLeadProducts[0] = dataObj;
+      dataObj = { ...dmsLeadProducts[0] };
     }
+    dataObj.id = dataObj.id ? dataObj.id : 0;
+    dataObj.model = selector.model;
+    dataObj.variant = selector.varient;
+    dataObj.color = selector.color;
+    dataObj.fuel = selector.fuel_type;
+    dataObj.transimmisionType = selector.transmission_type;
+    dmsLeadProducts[0] = dataObj;
     return dmsLeadProducts;
   }
 
   const mapDmsFinanceDetails = (prevDmsFinancedetails) => {
 
     let dmsfinancedetails = [...prevDmsFinancedetails];
+    const dataObj = {};
     if (dmsfinancedetails.length > 0) {
-      const dataObj = { ...dmsfinancedetails[0] };
-      dataObj.financeType = selector.retail_finance;
-      dataObj.financeCategory = selector.finance_category;
-      dataObj.downPayment = selector.down_payment;
-      dataObj.loanAmount = selector.loan_amount ? Number(selector.loan_amount) : null;
-      dataObj.rateOfInterest = selector.rate_of_interest;
-      dataObj.expectedTenureYears = selector.loan_of_tenure;
-      dataObj.emi = selector.emi;
-      dataObj.annualIncome = selector.approx_annual_income;
-      dataObj.location = selector.location;
-      if (selector.retail_finance === "In House") {
-        dataObj.financeCompany = selector.bank_or_finance;
-      } else if (selector.retail_finance === "Out House") {
-        dataObj.financeCompany = selector.bank_or_finance_name;
-      } else if (selector.retail_finance === "Leashing") {
-        dataObj.financeCompany = selector.leashing_name;
-      }
-      dmsfinancedetails[0] = dataObj;
+      dataObj = { ...dmsfinancedetails[0] };
     }
+    dataObj.financeType = selector.retail_finance;
+    dataObj.financeCategory = selector.finance_category;
+    dataObj.downPayment = selector.down_payment;
+    dataObj.loanAmount = selector.loan_amount ? Number(selector.loan_amount) : null;
+    dataObj.rateOfInterest = selector.rate_of_interest;
+    dataObj.expectedTenureYears = selector.loan_of_tenure;
+    dataObj.emi = selector.emi;
+    dataObj.annualIncome = selector.approx_annual_income;
+    dataObj.location = selector.location;
+    if (selector.retail_finance === "In House") {
+      dataObj.financeCompany = selector.bank_or_finance;
+    } else if (selector.retail_finance === "Out House") {
+      dataObj.financeCompany = selector.bank_or_finance_name;
+    } else if (selector.retail_finance === "Leashing") {
+      dataObj.financeCompany = selector.leashing_name;
+    }
+    dmsfinancedetails[0] = dataObj;
     return dmsfinancedetails;
   }
 
   const mapDmsLeadScoreCards = (prevDmsLeadScoreCards) => {
     let dmsLeadScoreCards = [...prevDmsLeadScoreCards];
+    const dataObj = {}
     if (dmsLeadScoreCards.length > 0) {
-      const dataObj = { ...dmsLeadScoreCards[0] };
-      dataObj.lookingForAnyOtherBrand = selector.c_looking_for_any_other_brand_checked;
-      dataObj.brand = selector.c_make;
-      dataObj.model = selector.c_model;
-      dataObj.otherMake = selector.c_make_other_name;
-      dataObj.otherModel = selector.c_model_other_name;
-      dataObj.variant = selector.c_variant;
-      dataObj.color = selector.c_color;
-      dataObj.fuel = selector.c_fuel_type;
-      dataObj.priceRange = selector.c_price_range;
-      dataObj.onRoadPriceanyDifference = selector.c_on_road_price;
-      dataObj.dealershipName = selector.c_dealership_name;
-      dataObj.dealershipLocation = selector.c_dealership_location;
-      dataObj.decisionPendingReason = selector.c_dealership_pending_reason;
-      dataObj.voiceofCustomerRemarks = selector.c_voice_of_customer_remarks;
-      dmsLeadScoreCards[0] = dataObj;
+      dataObj = { ...dmsLeadScoreCards[0] };
     }
+    dataObj.lookingForAnyOtherBrand = selector.c_looking_for_any_other_brand_checked;
+    dataObj.brand = selector.c_make;
+    dataObj.model = selector.c_model;
+    dataObj.otherMake = selector.c_make_other_name;
+    dataObj.otherModel = selector.c_model_other_name;
+    dataObj.variant = selector.c_variant;
+    dataObj.color = selector.c_color;
+    dataObj.fuel = selector.c_fuel_type;
+    dataObj.priceRange = selector.c_price_range;
+    dataObj.onRoadPriceanyDifference = selector.c_on_road_price;
+    dataObj.dealershipName = selector.c_dealership_name;
+    dataObj.dealershipLocation = selector.c_dealership_location;
+    dataObj.decisionPendingReason = selector.c_dealership_pending_reason;
+    dataObj.voiceofCustomerRemarks = selector.c_voice_of_customer_remarks;
+    dmsLeadScoreCards[0] = dataObj;
     return dmsLeadScoreCards;
   }
 

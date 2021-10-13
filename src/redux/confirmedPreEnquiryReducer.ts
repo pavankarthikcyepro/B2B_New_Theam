@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import URL from "../networking/endpoints";
 import { client } from '../networking/client';
+import { showToastRedAlert } from "../utils/toast";
 
 export const getPreEnquiryDetails = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/getPreEnquiryDetails", async (universalId, { rejectWithValue }) => {
     const response = await client.get(URL.CONTACT_DETAILS(universalId))
@@ -108,10 +109,22 @@ export const slice = createSlice({
         builder.addCase(noThanksApi.fulfilled, (state, action) => {
             console.log("noThanksApi: ", JSON.stringify(action.payload));
         })
+        builder.addCase(getEmployeesListApi.pending, (state, action) => {
+            state.employees_list = [];
+            state.employees_list_status = "";
+        })
         builder.addCase(getEmployeesListApi.fulfilled, (state, action) => {
-            // console.log("getEmployeesListApi: ", JSON.stringify(action.payload));
+            console.log("S getEmployeesListApi: ", JSON.stringify(action.payload));
             state.employees_list = action.payload.dmsEntity.employeeDTOs || [];
             state.employees_list_status = "success";
+        })
+        builder.addCase(getEmployeesListApi.rejected, (state, action) => {
+            console.log("F getEmployeesListApi: ", JSON.stringify(action.payload));
+            state.employees_list = [];
+            state.employees_list_status = "failed";
+            if (action.payload["message"]) {
+                showToastRedAlert(action.payload["message"]);
+            }
         })
         builder.addCase(getaAllTasks.pending, (state, action) => {
             state.create_enquiry_loading = true;
