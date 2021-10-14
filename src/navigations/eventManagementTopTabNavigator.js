@@ -2,8 +2,8 @@ import React from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 
 import EventListScreen from "../scenes/mainScenes/EventManagement/eventlist";
-import PendingScreen from "../scenes/mainScenes/EventManagement/pending";
-import UpcomingScreen from "../scenes/mainScenes/EventManagement/upcoming";
+import PendingListScreen from "../scenes/mainScenes/EventManagement/pending";
+import UpcomingEventListScreen from "../scenes/mainScenes/EventManagement/upcoming";
 import { Colors } from "../styles";
 
 const EventManagementTopTabNavigatorIdentifiers = {
@@ -38,12 +38,12 @@ const EventManagementTopTabNavigator = () => {
       />
       <EventManagementTopTab.Screen
         name={EventManagementTopTabNavigatorIdentifiers.pending}
-        component={PendingScreen}
+        component={PendingListScreen}
         options={{ title: "Pending" }}
       />
       <EventManagementTopTab.Screen
         name={EventManagementTopTabNavigatorIdentifiers.upcoming}
-        component={UpcomingScreen}
+        component={UpcomingEventListScreen}
         options={{ title: "Upcoming" }}
       />
     </EventManagementTopTab.Navigator>

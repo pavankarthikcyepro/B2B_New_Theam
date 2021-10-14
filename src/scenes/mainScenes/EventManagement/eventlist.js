@@ -32,11 +32,11 @@ const EventListScreen = ({ navigation }) => {
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       setUserData({ branchId: jsonObj.branchId, orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName })
-      getEventListDataFromServer(jsonObj.empId, jsonObj.branchId, jsonObj.orgId);
+      // getListDataFromServer(jsonObj.empId, jsonObj.branchId, jsonObj.orgId);
     }
   }
 
-  const getEventListDataFromServer = (empId, branchId, orgId) => {
+  const getListDataFromServer = (empId, branchId, orgId) => {
     if (empId) {
       const payload = {
         startDate: "2021-09-01",
@@ -50,7 +50,7 @@ const EventListScreen = ({ navigation }) => {
     }
   }
 
-  const getMoreEventListDataFromServer = (empId, branchId, orgId) => {
+  const getMoreListDataFromServer = (empId, branchId, orgId) => {
 
     if (empId && ((selector.pageNumber + 1) < selector.totalPages)) {
       const payload = {
@@ -61,7 +61,7 @@ const EventListScreen = ({ navigation }) => {
         branchId: branchId,
         orgId: orgId
       }
-      dispatch(getEventsListApi(payload));
+      dispatch(getMoreEventsListApi(payload));
     }
   }
 
@@ -92,13 +92,13 @@ const EventListScreen = ({ navigation }) => {
           refreshControl={(
             <RefreshControl
               refreshing={selector.isLoading}
-              onRefresh={() => getEventListDataFromServer(userData.employeeId, userData.branchId, userData.orgId)}
+              onRefresh={() => getListDataFromServer(userData.employeeId, userData.branchId, userData.orgId)}
               progressViewOffset={200}
             />
           )}
           showsVerticalScrollIndicator={false}
           onEndReachedThreshold={0}
-          onEndReached={getMoreEventListDataFromServer(userData.employeeId, userData.branchId, userData.orgId)}
+          onEndReached={getMoreListDataFromServer(userData.employeeId, userData.branchId, userData.orgId)}
           ListFooterComponent={renderFooter}
           ItemSeparatorComponent={() => {
             return <View style={styles.separator}></View>;
@@ -109,11 +109,13 @@ const EventListScreen = ({ navigation }) => {
                 <EventManagementItem
                   eventid={item.id}
                   eventName={item.name}
+                  organizer={item.organiserName}
                   startDate={item.startdate}
                   endDate={item.enddate}
                   location={item.location}
                   eventType={item.eventType.name}
-                  participiants={""}
+                  status={item.status}
+                  eventEmpDetails={item.eventEmpDetails}
                 />
               </View>
             );

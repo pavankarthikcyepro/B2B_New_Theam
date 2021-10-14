@@ -34,7 +34,7 @@ const DateRangeComp = ({ fromDate, fromDateClicked, toDate, toDateClicked }) => 
         <Pressable onPress={fromDateClicked}>
           <DateComp
             label={"From Date"}
-            date={""}
+            date={fromDate}
           />
         </Pressable>
       </View>
@@ -43,7 +43,7 @@ const DateRangeComp = ({ fromDate, fromDateClicked, toDate, toDateClicked }) => 
         <Pressable onPress={toDateClicked}>
           <DateComp
             label={"To Date"}
-            date={""}
+            date={toDate}
           />
         </Pressable>
       </View>

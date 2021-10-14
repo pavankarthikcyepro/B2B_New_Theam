@@ -4,6 +4,7 @@ import { client } from '../networking/client';
 import URL from '../networking/endpoints';
 import * as AsyncStore from '../asyncStore';
 import realm from '../database/realm';
+import { showToastRedAlert } from "../utils/toast";
 
 interface LoginState {
     employeeId: string,
@@ -173,6 +174,9 @@ export const loginSlice = createSlice({
                 console.log('res3: ', action.payload);
                 state.status = 'failed';
                 state.isLoading = false;
+                if (action.payload["errorMessage"]) {
+                    showToastRedAlert(action.payload["errorMessage"]);
+                }
             })
             .addCase(getPreEnquiryData.pending, (state) => {
                 state.isLoading = true;

@@ -38,6 +38,7 @@ export const UpcomingDeliveriesItem = ({
           <NameComp label={'D Planning'} value={planning} />
           <NameComp label={'D Location'} value={location} />
           <NameComp label={'DSE Name'} value={dseName} />
+          <NameComp label={'Chassis No'} value={"--"} />
         </View>
         <View style={styles.rightView}>
           <Button
