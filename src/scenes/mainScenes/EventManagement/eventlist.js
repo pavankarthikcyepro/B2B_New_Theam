@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   View,
@@ -6,23 +6,100 @@ import {
   StyleSheet,
   FlatList,
   Dimensions,
+  ActivityIndicator,
+  RefreshControl
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
-import { EventManagementItem } from "../../../pureComponents/eventmanagementItem";
+import { EmptyListView, EventManagementItem } from "../../../pureComponents";
 import { useDispatch, useSelector } from "react-redux";
+import * as AsyncStore from "../../../asyncStore";
+import { getEventsListApi, getMoreEventsListApi } from "../../../redux/eventManagementReducer";
 
 const screenWidth = Dimensions.get("window").width;
 
 const EventListScreen = ({ navigation }) => {
+
   const selector = useSelector((state) => state.eventmanagementReducer);
+  const dispatch = useDispatch();
+  const [userData, setUserData] = useState({ branchId: "", orgId: "", employeeId: "", employeeName: "" })
+
+  useEffect(() => {
+    getAsyncstoreData()
+  }, []);
+
+  const getAsyncstoreData = async () => {
+    const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      setUserData({ branchId: jsonObj.branchId, orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName })
+      getEventListDataFromServer(jsonObj.empId, jsonObj.branchId, jsonObj.orgId);
+    }
+  }
+
+  const getEventListDataFromServer = (empId, branchId, orgId) => {
+    if (empId) {
+      const payload = {
+        startDate: "2021-09-01",
+        endDate: "2021-10-31",
+        managerId: empId,
+        pageNo: 0,
+        branchId: branchId,
+        orgId: orgId
+      }
+      dispatch(getEventsListApi(payload));
+    }
+  }
+
+  const getMoreEventListDataFromServer = (empId, branchId, orgId) => {
+
+    if (empId && ((selector.pageNumber + 1) < selector.totalPages)) {
+      const payload = {
+        startDate: "2021-10-01",
+        endDate: "2021-10-31",
+        managerId: empId,
+        pageNo: 0,
+        branchId: branchId,
+        orgId: orgId
+      }
+      dispatch(getEventsListApi(payload));
+    }
+  }
+
+  const renderFooter = () => {
+    if (!selector.isLoadingExtraData) { return null }
+    return (
+      <View style={styles.footer}>
+        <Text style={styles.btnText}>Loading More...</Text>
+        <ActivityIndicator color={Colors.GRAY} />
+      </View>
+    );
+  };
+
+  if (selector.eventList.length === 0) {
+    return (
+      <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} />
+    )
+  }
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.view1}>
+
         <FlatList
-          data={selector.tableAry}
+          data={selector.eventList}
+          extraData={selector.eventList}
           keyExtractor={(item, index) => index.toString()}
+          refreshControl={(
+            <RefreshControl
+              refreshing={selector.isLoading}
+              onRefresh={() => getEventListDataFromServer(userData.employeeId, userData.branchId, userData.orgId)}
+              progressViewOffset={200}
+            />
+          )}
           showsVerticalScrollIndicator={false}
+          onEndReachedThreshold={0}
+          onEndReached={getMoreEventListDataFromServer(userData.employeeId, userData.branchId, userData.orgId)}
+          ListFooterComponent={renderFooter}
           ItemSeparatorComponent={() => {
             return <View style={styles.separator}></View>;
           }}
@@ -30,13 +107,13 @@ const EventListScreen = ({ navigation }) => {
             return (
               <View style={[styles.listBgVw]}>
                 <EventManagementItem
-                  eventid={item.eventID}
-                  eventName={item.eventName}
-                  startDate={item.startDate}
-                  endDate={item.endDate}
+                  eventid={item.id}
+                  eventName={item.name}
+                  startDate={item.startdate}
+                  endDate={item.enddate}
                   location={item.location}
-                  eventType={item.eventType}
-                  participiants={item.participiants}
+                  eventType={item.eventType.name}
+                  participiants={""}
                 />
               </View>
             );
@@ -66,5 +143,16 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: 10,
+  },
+  footer: {
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  btnText: {
+    color: Colors.GRAY,
+    fontSize: 12,
+    textAlign: 'center',
+    marginBottom: 5
   },
 });

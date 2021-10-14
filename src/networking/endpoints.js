@@ -96,7 +96,10 @@ const URL = {
         return inventory_url + `/allotment/vehicle/allotments?allotmentDate=${date}&id=${vehicleId}`
     },
     CUSTOMER_LEAD_REFERENCE: () => sales_url + "/lead-customer-reference",
-    GET_COMPLAINTS: () => dynamicReports_url + "/v2-generate-query"
+    GET_COMPLAINTS: () => dynamicReports_url + "/v2-generate-query",
+    GET_EVENTS: () => {
+        return ops_url + `/dms/getAllServiceEventsByFilter`
+    }
 }
 
 export default URL;

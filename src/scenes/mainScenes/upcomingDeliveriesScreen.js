@@ -63,9 +63,14 @@ const UpcomingDeliveriesScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={{ flex: 1, paddingHorizontal: 10, paddingTop: 10 }}>
-        {/* <View style={styles.view0}>
-          <DateRangeComp fromDate={'09/23/2209'} toDate={'89/09/2021'} />
-        </View> */}
+        <View style={styles.view0}>
+          <DateRangeComp
+            fromDate={'09/23/2209'}
+            fromDateClicked={() => { console.log("from date") }}
+            toDate={'89/09/2021'}
+            toDateClicked={() => { console.log("to date") }}
+          />
+        </View>
         {selector.data_list.length === 0 ? <EmptyListView title={'No Data Found'} isLoading={selector.isLoading} /> :
           (<View style={[GlobalStyle.shadow, { backgroundColor: 'white', flex: 1, marginBottom: 10 }]}>
             <FlatList

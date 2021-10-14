@@ -8,6 +8,7 @@ import { PreEnquiryItem } from "./preEnquiryItem";
 import { PageControlItem } from "./pageControlItem";
 import { DropDownSelectionItem } from "./dropDownSelectionItem";
 import { ComplaintsItem } from "./complaintsItem";
+import { EventManagementItem } from "./eventmanagementItem";
 
 export {
     RadioTextItem,
@@ -18,5 +19,6 @@ export {
     PreEnquiryItem,
     PageControlItem,
     DropDownSelectionItem,
-    ComplaintsItem
+    ComplaintsItem,
+    EventManagementItem
 };
