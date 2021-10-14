@@ -236,6 +236,31 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const submitClicked = () => {
 
+    if (selector.designation.length == 0 || selector.buyer_type.length == 0) {
+      showToast("Please fill required fields in Customer Profile");
+      return;
+    }
+
+    if (selector.salutaion.length == 0 || selector.dateOfBirth.length == 0 || selector.anniversaryDate.length == 0) {
+      showToast("Please fill required fields in Personal Intro");
+      return;
+    }
+
+    if (selector.houseNum.length == 0 || selector.streetName.length == 0 || selector.village.length == 0 || selector.city.length == 0 || selector.state.length == 0 || selector.district.length == 0) {
+      showToast("Please fill required fields in Communication Address");
+      return;
+    }
+
+    if (selector.model.length == 0 || selector.varient.length == 0 || selector.color.length == 0) {
+      showToast("Please fill required fields in Model Selection");
+      return;
+    }
+
+    if (selector.retail_finance.length == 0) {
+      showToast("Please fill required fields in Financial Details");
+      return;
+    }
+
     if (!selector.enquiry_details_response) {
       return
     }
@@ -554,7 +579,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             {
               text: "Proceed",
               onPress: () => {
-                navigation.navigate(AppNavigator.EmsStackIdentifiers.proceedToPreBooking, { identifier: "PROCEED_TO_BOOKING", taskId, universalId, taskStatus })
+                navigation.navigate(AppNavigator.EmsStackIdentifiers.proceedToPreBooking, { identifier: "PROCEED_TO_PRE_BOOKING", taskId, universalId, taskStatus })
               }
             }
           ]
@@ -1356,7 +1381,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.village}
-                  label={"Village*"}
+                  label={"Village/Town*"}
                   keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
@@ -1502,7 +1527,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.p_village}
-                  label={"Village*"}
+                  label={"Village/Town*"}
                   keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
@@ -2306,7 +2331,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                   <View style={styles.view2}>
                     <Text style={styles.looking_any_text}>
-                      {"Hopothication"}
+                      {"Hypothication"}
                     </Text>
                     <Checkbox.Android
                       status={
@@ -2411,7 +2436,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <View>
                       <View style={styles.view2}>
                         <Text style={styles.looking_any_text}>
-                          {"Insurence Document"}
+                          {"Insurance Document"}
                         </Text>
                         <Checkbox.Android
                           status={
@@ -2448,7 +2473,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   {!selector.r_insurence_checked && (
                     <View>
                       <DateSelectItem
-                        label={"Insurence Policy Expiry Date"}
+                        label={"Insurance Policy Expiry Date"}
                         value={selector.r_insurence_expiry_date}
                         onPress={() =>
                           dispatch(
@@ -2462,19 +2487,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     !selector.r_insurence_document_checked && (
                       <View>
                         <DropDownSelectionItem
-                          label={"Insurence Type"}
+                          label={"Insurance Type"}
                           value={selector.r_insurence_type}
                           onPress={() => showDropDownModelMethod("R_INSURENCE_TYPE", "Fuel Type")}
                         />
                         <DateSelectItem
-                          label={"Insurence From Date"}
+                          label={"Insurance From Date"}
                           value={selector.r_insurence_from_date}
                           onPress={() =>
                             dispatch(setDatePicker("R_INSURENCE_FROM_DATE"))
                           }
                         />
                         <DateSelectItem
-                          label={"Insurence To Date"}
+                          label={"Insurance To Date"}
                           value={selector.r_insurence_to_date}
                           onPress={() =>
                             dispatch(setDatePicker("R_INSURENCE_TO_DATE"))
@@ -2488,7 +2513,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       <TextinputComp
                         style={styles.textInputStyle}
                         value={selector.r_insurence_company_name}
-                        label={"Insurence Company Name"}
+                        label={"Insurance Company Name"}
                         keyboardType={"default"}
                         onChangeText={(text) =>
                           dispatch(
@@ -2524,6 +2549,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     label={"Drop Reason"}
                     value={selector.drop_reason}
                     onPress={() => showDropDownModelMethod("DROP_REASON", "Drop Reason")}
+                  />
+                  <DropDownSelectionItem
+                    label={"Drop Sub Reason"}
+                    value={selector.drop_sub_reason}
+                    onPress={() => showDropDownModelMethod("DROP_SUB_REASON", "Drop Sub Reason")}
                   />
                   <TextinputComp
                     style={styles.textInputStyle}

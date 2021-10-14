@@ -64,7 +64,7 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
 
     useLayoutEffect(() => {
 
-        let title = ""
+        let title = "Pre Booking Task"
         switch (identifier) {
             case "PROCEED_TO_PRE_BOOKING":
                 title = "Pre Booking Task";
@@ -116,6 +116,10 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
     }
 
     const proceedToCancellation = () => {
+
+        if (identifier === "PROCEED_TO_BOOKING") {
+            return;
+        }
 
         setTypeOfActionDispatched("DROP_ENQUIRY");
 
@@ -178,6 +182,10 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
     }, [selector.enquiry_drop_response_status])
 
     const proceedToPreBookingClicked = () => {
+
+        if (identifier === "PROCEED_TO_BOOKING") {
+            return;
+        }
 
         setTypeOfActionDispatched("PROCEED_TO_PREBOOKING");
         if (selector.task_details_response?.taskId !== taskId) {
@@ -264,20 +272,19 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
 
     displayCreateEnquiryAlert = () => {
         Alert.alert(
-            'Pre Booking Created Successfully',
-            "Pre Booking Number: " + referenceNumber
-            [
-            {
-                text: 'OK', onPress: goToParentScreen()
-            }
-            ],
+            'Pre Booking Created Successfully', ""
+        [
+        {
+            text: 'OK', onPress: goToParentScreen()
+        }
+        ],
             { cancelable: false }
         );
     }
 
     const goToParentScreen = () => {
         getMyTasksListFromServer();
-        navigation.goBack();
+        navigation.popToTop();
         dispatch(clearState());
     }
 

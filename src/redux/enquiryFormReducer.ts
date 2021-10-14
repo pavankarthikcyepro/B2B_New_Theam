@@ -219,6 +219,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     r_insurence_document_checked: false,
     // DROP SECTION
     drop_reason: "",
+    drop_sub_reason: "",
     drop_remarks: "",
     // data variables
     enquiry_details_response: null,
@@ -369,6 +370,10 @@ const enquiryDetailsOverViewSlice = createSlice({
           break;
         case "DROP_REASON":
           state.drop_reason = value;
+          break;
+        case "DROP_SUB_REASON":
+          state.drop_sub_reason = value;
+          break;
       }
     },
     setDatePicker: (state, action) => {
@@ -789,104 +794,109 @@ const enquiryDetailsOverViewSlice = createSlice({
     updateModelSelectionData: (state, action) => {
 
       const dmsLeadProducts = action.payload;
+      let dataObj: any = {};
       if (dmsLeadProducts.length > 0) {
-        const dataObj = dmsLeadProducts[0];
-        state.lead_product_id = dataObj.id ? dataObj.id : 0;
-        state.model = dataObj.model ? dataObj.model : "";
-        state.varient = dataObj.variant ? dataObj.variant : "";
-        state.color = dataObj.color ? dataObj.color : "";
-        state.fuel_type = dataObj.fuel ? dataObj.fuel : "";
-        state.transmission_type = dataObj.transimmisionType ? dataObj.transimmisionType : "";
-        state.model_drop_down_data_update_statu = "update";
+        dataObj = { ...dmsLeadProducts[0] };
       }
+      state.lead_product_id = dataObj.id ? dataObj.id : 0;
+      //state.model = dataObj.model ? dataObj.model : "";
+      state.varient = dataObj.variant ? dataObj.variant : "";
+      state.color = dataObj.color ? dataObj.color : "";
+      state.fuel_type = dataObj.fuel ? dataObj.fuel : "";
+      state.transmission_type = dataObj.transimmisionType ? dataObj.transimmisionType : "";
+      state.model_drop_down_data_update_statu = "update";
     },
     updateFinancialData: (state, action) => {
       const dmsfinancedetails = action.payload;
+      let dataObj: any = {};
       if (dmsfinancedetails.length > 0) {
-        const dataObj = dmsfinancedetails[0];
-        state.retail_finance = dataObj.financeType ? dataObj.financeType : "";
-        state.finance_category = dataObj.financeCategory ? dataObj.financeCategory : "";
-        state.down_payment = dataObj.downPayment ? dataObj.downPayment.toString() : "";
-        state.loan_amount = dataObj.loanAmount ? dataObj.loanAmount.toString() : "";
-        state.bank_or_finance = dataObj.financeCompany ? dataObj.financeCompany : "";
-        state.bank_or_finance_name = dataObj.financeCompany ? dataObj.financeCompany : "";
-        state.rate_of_interest = dataObj.rateOfInterest ? dataObj.rateOfInterest : "";
-        state.loan_of_tenure = dataObj.expectedTenureYears ? dataObj.expectedTenureYears : "";
-        state.emi = dataObj.emi ? dataObj.emi.toString() : "";
-        state.approx_annual_income = dataObj.annualIncome ? dataObj.annualIncome : "";
-        state.location = dataObj.location ? dataObj.location : "";
-        state.leashing_name = dataObj.financeCompany ? dataObj.financeCompany : "";
+        dataObj = { ...dmsfinancedetails[0] };
       }
+      state.retail_finance = dataObj.financeType ? dataObj.financeType : "";
+      state.finance_category = dataObj.financeCategory ? dataObj.financeCategory : "";
+      state.down_payment = dataObj.downPayment ? dataObj.downPayment.toString() : "";
+      state.loan_amount = dataObj.loanAmount ? dataObj.loanAmount.toString() : "";
+      state.bank_or_finance = dataObj.financeCompany ? dataObj.financeCompany : "";
+      state.bank_or_finance_name = dataObj.financeCompany ? dataObj.financeCompany : "";
+      state.rate_of_interest = dataObj.rateOfInterest ? dataObj.rateOfInterest : "";
+      state.loan_of_tenure = dataObj.expectedTenureYears ? dataObj.expectedTenureYears : "";
+      state.emi = dataObj.emi ? dataObj.emi.toString() : "";
+      state.approx_annual_income = dataObj.annualIncome ? dataObj.annualIncome : "";
+      state.location = dataObj.location ? dataObj.location : "";
+      state.leashing_name = dataObj.financeCompany ? dataObj.financeCompany : "";
     },
     updateCustomerNeedAnalysisData: (state, action) => {
       const dmsLeadScoreCards = action.payload;
+      let dataObj: any = {};
       if (dmsLeadScoreCards.length > 0) {
-        const dataObj = dmsLeadScoreCards[0];
-        state.c_looking_for_any_other_brand_checked = dataObj.lookingForAnyOtherBrand ? dataObj.lookingForAnyOtherBrand : false;
-        state.c_make = dataObj.brand ? dataObj.brand : "";
-        state.c_model = dataObj.model ? dataObj.model : "";
-        state.c_make_other_name = dataObj.otherMake ? dataObj.otherMake : "";
-        state.c_model_other_name = dataObj.otherModel ? dataObj.otherModel : "";
-        state.c_variant = dataObj.variant ? dataObj.variant : "";
-        state.c_color = dataObj.color ? dataObj.color : "";
-        state.c_fuel_type = dataObj.fuel ? dataObj.fuel : "";
-        // TODO:- Need to check transmission type in response
-        state.c_transmission_type = "";
-        state.c_price_range = dataObj.priceRange ? dataObj.priceRange : "";
-        state.c_on_road_price = dataObj.onRoadPriceanyDifference ? dataObj.onRoadPriceanyDifference : "";
-        state.c_dealership_name = dataObj.dealershipName ? dataObj.dealershipName : "";
-        state.c_dealership_location = dataObj.dealershipLocation ? dataObj.dealershipLocation : "";
-        state.c_dealership_pending_reason = dataObj.decisionPendingReason ? dataObj.decisionPendingReason : "";
-        state.c_voice_of_customer_remarks = dataObj.voiceofCustomerRemarks ? dataObj.voiceofCustomerRemarks : "";
+        dataObj = { ...dmsLeadScoreCards[0] };
       }
+
+      state.c_looking_for_any_other_brand_checked = dataObj.lookingForAnyOtherBrand ? dataObj.lookingForAnyOtherBrand : false;
+      state.c_make = dataObj.brand ? dataObj.brand : "";
+      state.c_model = dataObj.model ? dataObj.model : "";
+      state.c_make_other_name = dataObj.otherMake ? dataObj.otherMake : "";
+      state.c_model_other_name = dataObj.otherModel ? dataObj.otherModel : "";
+      state.c_variant = dataObj.variant ? dataObj.variant : "";
+      state.c_color = dataObj.color ? dataObj.color : "";
+      state.c_fuel_type = dataObj.fuel ? dataObj.fuel : "";
+      // TODO:- Need to check transmission type in response
+      state.c_transmission_type = "";
+      state.c_price_range = dataObj.priceRange ? dataObj.priceRange : "";
+      state.c_on_road_price = dataObj.onRoadPriceanyDifference ? dataObj.onRoadPriceanyDifference : "";
+      state.c_dealership_name = dataObj.dealershipName ? dataObj.dealershipName : "";
+      state.c_dealership_location = dataObj.dealershipLocation ? dataObj.dealershipLocation : "";
+      state.c_dealership_pending_reason = dataObj.decisionPendingReason ? dataObj.decisionPendingReason : "";
+      state.c_voice_of_customer_remarks = dataObj.voiceofCustomerRemarks ? dataObj.voiceofCustomerRemarks : "";
     },
     updateAdditionalOrReplacementBuyerData: (state, action) => {
       const dmsExchagedetails = action.payload;
+      let dataObj: any = {};
       if (dmsExchagedetails.length > 0) {
-        const dataObj = dmsExchagedetails[0];
+        dataObj = dmsExchagedetails[0];
+      }
 
-        if (dataObj.buyerType === "Additional Buyer") {
-          state.a_make = dataObj.brand ? dataObj.brand : "";
-          state.a_model = dataObj.model ? dataObj.model : "";
-          state.a_varient = dataObj.varient ? dataObj.varient : "";
-          state.a_color = dataObj.color ? dataObj.color : "";
-          state.a_reg_no = dataObj.regNo ? dataObj.regNo : "";
-        }
-        else if (dataObj.buyerType === "Replacement Buyer") {
+      if (dataObj.buyerType === "Additional Buyer") {
+        state.a_make = dataObj.brand ? dataObj.brand : "";
+        state.a_model = dataObj.model ? dataObj.model : "";
+        state.a_varient = dataObj.varient ? dataObj.varient : "";
+        state.a_color = dataObj.color ? dataObj.color : "";
+        state.a_reg_no = dataObj.regNo ? dataObj.regNo : "";
+      }
+      else if (dataObj.buyerType === "Replacement Buyer") {
 
-          state.r_reg_no = dataObj.regNo ? dataObj.regNo : "";
-          state.r_make = dataObj.brand ? dataObj.brand : "";
-          state.r_model = dataObj.model ? dataObj.model : "";
-          state.r_varient = dataObj.varient ? dataObj.varient : "";
-          state.r_color = dataObj.color ? dataObj.color : "";
-          state.r_fuel_type = dataObj.fuelType ? dataObj.fuelType : "";
-          state.r_transmission_type = dataObj.transmission ? dataObj.transmission : "";
-          const yearOfManfac = dataObj.yearofManufacture ? dataObj.yearofManufacture : "";
-          state.r_mfg_year = convertTimeStampToDateString(yearOfManfac, "DD/MM/YYYY");
+        state.r_reg_no = dataObj.regNo ? dataObj.regNo : "";
+        state.r_make = dataObj.brand ? dataObj.brand : "";
+        state.r_model = dataObj.model ? dataObj.model : "";
+        state.r_varient = dataObj.varient ? dataObj.varient : "";
+        state.r_color = dataObj.color ? dataObj.color : "";
+        state.r_fuel_type = dataObj.fuelType ? dataObj.fuelType : "";
+        state.r_transmission_type = dataObj.transmission ? dataObj.transmission : "";
+        const yearOfManfac = dataObj.yearofManufacture ? dataObj.yearofManufacture : "";
+        state.r_mfg_year = convertTimeStampToDateString(yearOfManfac, "DD/MM/YYYY");
 
-          state.r_kms_driven_or_odometer_reading = dataObj.kiloMeters ? dataObj.kiloMeters : "";
-          state.r_expected_price = dataObj.expectedPrice ? dataObj.expectedPrice.toString() : "";
+        state.r_kms_driven_or_odometer_reading = dataObj.kiloMeters ? dataObj.kiloMeters : "";
+        state.r_expected_price = dataObj.expectedPrice ? dataObj.expectedPrice.toString() : "";
 
-          state.r_hypothication_checked = dataObj.hypothicationRequirement ? dataObj.hypothicationRequirement : false;
-          state.r_hypothication_name = dataObj.hypothication ? dataObj.hypothication : "";
-          state.r_hypothication_branch = dataObj.hypothicationBranch ? dataObj.hypothicationBranch : "";
+        state.r_hypothication_checked = dataObj.hypothicationRequirement ? dataObj.hypothicationRequirement : false;
+        state.r_hypothication_name = dataObj.hypothication ? dataObj.hypothication : "";
+        state.r_hypothication_branch = dataObj.hypothicationBranch ? dataObj.hypothicationBranch : "";
 
-          const registrationDate = dataObj.registrationDate ? dataObj.registrationDate : "";
-          state.r_registration_date = convertTimeStampToDateString(registrationDate, "DD/MM/YYYY");
+        const registrationDate = dataObj.registrationDate ? dataObj.registrationDate : "";
+        state.r_registration_date = convertTimeStampToDateString(registrationDate, "DD/MM/YYYY");
 
-          const registrationValidityDate = dataObj.registrationValidityDate ? dataObj.registrationValidityDate : "";
-          state.r_registration_validity_date = convertTimeStampToDateString(registrationValidityDate, "DD/MM/YYYY");
+        const registrationValidityDate = dataObj.registrationValidityDate ? dataObj.registrationValidityDate : "";
+        state.r_registration_validity_date = convertTimeStampToDateString(registrationValidityDate, "DD/MM/YYYY");
 
-          state.r_insurence_checked = dataObj.insuranceAvailable ? (dataObj.insuranceAvailable === "true" ? true : false) : false;
-          state.r_insurence_document_checked = dataObj.insuranceDocumentAvailable ? dataObj.insuranceDocumentAvailable : false;
-          state.r_insurence_company_name = dataObj.insuranceCompanyName ? dataObj.insuranceCompanyName : "";
-          state.r_insurence_expiry_date = dataObj.insuranceExpiryDate ? dataObj.insuranceExpiryDate : "";
-          state.r_insurence_type = dataObj.insuranceType ? dataObj.insuranceType : "";
-          const insurenceFromDate = dataObj.insuranceFromDate ? dataObj.insuranceFromDate : "";
-          state.r_insurence_from_date = convertTimeStampToDateString(insurenceFromDate, "DD/MM/YYYY");
-          const insurenceToDate = dataObj.insuranceToDate ? dataObj.insuranceToDate : "";
-          state.r_insurence_to_date = convertTimeStampToDateString(insurenceToDate, "DD/MM/YYYY");
-        }
+        state.r_insurence_checked = dataObj.insuranceAvailable ? (dataObj.insuranceAvailable === "true" ? true : false) : false;
+        state.r_insurence_document_checked = dataObj.insuranceDocumentAvailable ? dataObj.insuranceDocumentAvailable : false;
+        state.r_insurence_company_name = dataObj.insuranceCompanyName ? dataObj.insuranceCompanyName : "";
+        state.r_insurence_expiry_date = dataObj.insuranceExpiryDate ? dataObj.insuranceExpiryDate : "";
+        state.r_insurence_type = dataObj.insuranceType ? dataObj.insuranceType : "";
+        const insurenceFromDate = dataObj.insuranceFromDate ? dataObj.insuranceFromDate : "";
+        state.r_insurence_from_date = convertTimeStampToDateString(insurenceFromDate, "DD/MM/YYYY");
+        const insurenceToDate = dataObj.insuranceToDate ? dataObj.insuranceToDate : "";
+        state.r_insurence_to_date = convertTimeStampToDateString(insurenceToDate, "DD/MM/YYYY");
       }
     },
     updateDmsAttachmentDetails: (state, action) => {

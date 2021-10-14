@@ -769,45 +769,48 @@ const prebookingFormSlice = createSlice({
     updateModelSelectionData: (state, action) => {
 
       const dmsLeadProducts = action.payload;
+      let dataObj: any = {};
       if (dmsLeadProducts.length > 0) {
-        const dataObj = dmsLeadProducts[0];
-        state.lead_product_id = dataObj.id ? dataObj.id : "";
-        state.model = dataObj.model ? dataObj.model : "";
-        state.varient = dataObj.variant ? dataObj.variant : "";
-        state.color = dataObj.color ? dataObj.color : "";
-        state.fuel_type = dataObj.fuel ? dataObj.fuel : "";
-        state.transmission_type = dataObj.transimmisionType ? dataObj.transimmisionType : "";
-        state.model_drop_down_data_update_status = "update";
+        dataObj = { ...dmsLeadProducts[0] };
       }
+      state.lead_product_id = dataObj.id ? dataObj.id : "";
+      state.model = dataObj.model ? dataObj.model : "";
+      state.varient = dataObj.variant ? dataObj.variant : "";
+      state.color = dataObj.color ? dataObj.color : "";
+      state.fuel_type = dataObj.fuel ? dataObj.fuel : "";
+      state.transmission_type = dataObj.transimmisionType ? dataObj.transimmisionType : "";
+      state.model_drop_down_data_update_status = "update";
     },
     updateFinancialData: (state, action) => {
       const dmsfinancedetails = action.payload;
+      let dataObj: any = {};
       if (dmsfinancedetails.length > 0) {
-        const dataObj = dmsfinancedetails[0];
-        state.retail_finance = dataObj.financeType ? dataObj.financeType : "";
-        state.finance_category = dataObj.financeCategory ? dataObj.financeCategory : "";
-        state.down_payment = dataObj.downPayment ? dataObj.downPayment.toString() : "";
-        state.loan_amount = dataObj.loanAmount ? dataObj.loanAmount.toString() : "";
-        state.bank_or_finance = dataObj.financeCompany ? dataObj.financeCompany : "";
-        state.bank_or_finance_name = dataObj.financeCompany ? dataObj.financeCompany : "";
-        state.rate_of_interest = dataObj.rateOfInterest ? dataObj.rateOfInterest : "";
-        state.loan_of_tenure = dataObj.expectedTenureYears ? dataObj.expectedTenureYears : "";
-        state.emi = dataObj.emi ? dataObj.emi.toString() : "";
-        state.approx_annual_income = dataObj.annualIncome ? dataObj.annualIncome : "";
-        state.location = dataObj.location ? dataObj.location : "";
-        state.leashing_name = dataObj.financeCompany ? dataObj.financeCompany : "";
+        dataObj = { ...dmsfinancedetails[0] };
       }
+      state.retail_finance = dataObj.financeType ? dataObj.financeType : "";
+      state.finance_category = dataObj.financeCategory ? dataObj.financeCategory : "";
+      state.down_payment = dataObj.downPayment ? dataObj.downPayment.toString() : "";
+      state.loan_amount = dataObj.loanAmount ? dataObj.loanAmount.toString() : "";
+      state.bank_or_finance = dataObj.financeCompany ? dataObj.financeCompany : "";
+      state.bank_or_finance_name = dataObj.financeCompany ? dataObj.financeCompany : "";
+      state.rate_of_interest = dataObj.rateOfInterest ? dataObj.rateOfInterest : "";
+      state.loan_of_tenure = dataObj.expectedTenureYears ? dataObj.expectedTenureYears : "";
+      state.emi = dataObj.emi ? dataObj.emi.toString() : "";
+      state.approx_annual_income = dataObj.annualIncome ? dataObj.annualIncome : "";
+      state.location = dataObj.location ? dataObj.location : "";
+      state.leashing_name = dataObj.financeCompany ? dataObj.financeCompany : "";
     },
     updateBookingPaymentData: (state, action) => {
       const dmsBooking = action.payload;
+      let dataObj: any = {};
       if (dmsBooking) {
-        const dataObj = dmsBooking;
-        state.booking_amount = dataObj.bookingAmount ? dataObj.bookingAmount.toString() : "";
-        state.payment_at = dataObj.paymentAt ? dataObj.paymentAt : "";
-        state.booking_payment_mode = dataObj.modeOfPayment ? dataObj.modeOfPayment : "";
-        state.delivery_location = dataObj.deliveryLocation ? dataObj.deliveryLocation : "";
-        state.vechicle_registration = dataObj.otherVehicle ? dataObj.otherVehicle : false;
+        dataObj = { ...dmsBooking };
       }
+      state.booking_amount = dataObj.bookingAmount ? dataObj.bookingAmount.toString() : "";
+      state.payment_at = dataObj.paymentAt ? dataObj.paymentAt : "";
+      state.booking_payment_mode = dataObj.modeOfPayment ? dataObj.modeOfPayment : "";
+      state.delivery_location = dataObj.deliveryLocation ? dataObj.deliveryLocation : "";
+      state.vechicle_registration = dataObj.otherVehicle ? dataObj.otherVehicle : false;
     }
   },
   extraReducers: (builder) => {
