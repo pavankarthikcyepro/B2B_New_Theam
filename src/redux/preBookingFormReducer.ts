@@ -243,7 +243,18 @@ const prebookingFormSlice = createSlice({
     // Booking Drop
     drop_reason: "",
     drop_remarks: "",
-    reject_remarks: ""
+    reject_remarks: "",
+    // PreBooking Payment Details
+    type_of_upi: "",
+    transfer_from_mobile: "",
+    transfer_to_mobile: "",
+    utr_no: "",
+    transaction_date: "",
+    comapany_bank_name: "",
+    cheque_number: "",
+    cheque_date: "",
+    dd_number: "",
+    dd_date: ""
   },
   reducers: {
     clearState: (state, action) => {
@@ -342,6 +353,17 @@ const prebookingFormSlice = createSlice({
       state.drop_reason = "";
       state.drop_remarks = "";
       state.reject_remarks = "";
+      // PreBooking Payment Details
+      state.type_of_upi = "";
+      state.transfer_from_mobile = "";
+      state.transfer_to_mobile = "";
+      state.utr_no = "";
+      state.transaction_date = "";
+      state.comapany_bank_name = "";
+      state.cheque_number = "";
+      state.cheque_date = "";
+      state.dd_number = "";
+      state.dd_date = "";
     },
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
       const { key, value, id } = action.payload;
@@ -448,6 +470,15 @@ const prebookingFormSlice = createSlice({
           break;
         case "TENTATIVE_DELIVERY_DATE":
           state.tentative_delivery_date = selectedDate;
+          break;
+        case "TRANSACTION_DATE":
+          state.transaction_date = selectedDate;
+          break;
+        case "CHEQUE_DATE":
+          state.cheque_date = selectedDate;
+          break;
+        case "DD_DATE":
+          state.dd_date = selectedDate;
           break;
       }
       state.showDatepicker = !state.showDatepicker;
@@ -672,6 +703,32 @@ const prebookingFormSlice = createSlice({
           break;
         case "REJECT_REMARKS":
           state.reject_remarks = text;
+          break;
+      }
+    },
+    setPreBookingPaymentDetials: (state, action) => {
+      const { key, text } = action.payload;
+      switch (key) {
+        case "TYPE_OF_UPI":
+          state.type_of_upi = text;
+          break;
+        case "TRANSFER_FROM_MOBILE":
+          state.transfer_from_mobile = text;
+          break;
+        case "TRANSFER_TO_MOBILE":
+          state.transfer_to_mobile = text;
+          break;
+        case "UTR_NO":
+          state.utr_no = text;
+          break;
+        case "COMPANY_BANK_NAME":
+          state.comapany_bank_name = text;
+          break;
+        case "CHEQUE_NUMBER":
+          state.cheque_number = text;
+          break;
+        case "DD_NUMBER":
+          state.dd_number = text;
           break;
       }
     },
@@ -967,12 +1024,13 @@ export const {
   setDocumentUploadDetails,
   setBookingDropDetails,
   setImagePicker,
+  setPreBookingPaymentDetials,
   updateFuelAndTransmissionType,
   updateDmsContactOrAccountDtoData,
   updateDmsLeadDtoData,
   updateDmsAddressData,
   updateModelSelectionData,
   updateFinancialData,
-  updateBookingPaymentData
+  updateBookingPaymentData,
 } = prebookingFormSlice.actions;
 export default prebookingFormSlice.reducer;

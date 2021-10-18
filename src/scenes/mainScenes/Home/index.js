@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FILTER } from '../../../assets/svg';
 import { DateItem } from '../../../pureComponents/dateItem';
 import { AppNavigator } from '../../../navigations';
-import { dateSelected, showDateModal, getCarModalList, getCustomerTypeList } from '../../../redux/homeReducer';
+import { dateSelected, showDateModal, getCarModalList, getCustomerTypeList, getSourceOfEnquiryList } from '../../../redux/homeReducer';
 import { DateRangeComp, DatePickerComponent, SortAndFilterComp } from '../../../components';
 import { DateModalComp } from "../../../components/dateModalComp";
 import { getMenuList } from '../../../redux/homeReducer';
@@ -27,6 +27,7 @@ const HomeScreen = ({ navigation }) => {
     getMenuListFromServer();
     getCarModalListFromServer();
     dispatch(getCustomerTypeList());
+    dispatch(getSourceOfEnquiryList());
   }, [])
 
   const getMenuListFromServer = async () => {

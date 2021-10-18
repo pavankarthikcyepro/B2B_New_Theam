@@ -24,6 +24,9 @@ const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 4;
 const profileBgWidth = profileWidth + 5;
 
+const receptionMenu = ["Home", "Upcoming Deliveries", "Settings"];
+const teleCollerMenu = ["Home", "Settings"];
+
 const SideMenuScreen = ({ navigation }) => {
 
   const selector = useSelector((state) => state.sideMenuReducer);
@@ -35,37 +38,46 @@ const SideMenuScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [location, setLocation] = useState("");
   const [role, setRole] = useState("");
+  const [newTableData, setNewTableData] = useState([]);
+
+  useEffect(() => {
+    getLoginEmployeeData();
+  }, [])
 
   useEffect(() => {
 
-    // const unsubscribe = navigation.addListener('focus', () => {
-    //   // The screen is focused
-    //   // Call any action
-    //   console.log("print 1")
-    //   getLoginEmployeeData();
-    // });
-
-    // Call only when screen open or when back on screen 
-    // if (isFocused) {
-    //   console.log("print 3")
-    // }
-    console.log("print 1")
-    getLoginEmployeeData();
-
-    //return unsubscribe;
-  }, [])
+    if (homeSelector.login_employee_details) {
+      const jsonObj = homeSelector.login_employee_details;
+      updateUserData(jsonObj);
+    }
+  }, [homeSelector.login_employee_details])
 
   const getLoginEmployeeData = async () => {
 
     const jsonString = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (jsonString) {
-      console.log("print 2")
       const jsonObj = JSON.parse(jsonString);
-      setEmpName(jsonObj.empName);
-      setEmail(jsonObj.email);
-      setRole(jsonObj.hrmsRole);
-      setLocation(jsonObj.branchName);
+      updateUserData(jsonObj);
     }
+  }
+
+  updateUserData = (jsonObj) => {
+    setEmpName(jsonObj.empName);
+    setEmail(jsonObj.email);
+    setRole(jsonObj.hrmsRole);
+    setLocation(jsonObj.branchName);
+
+    let newFilterData = [];
+    if (jsonObj.hrmsRole === "Reception") {
+      newFilterData = selector.tableData.filter(item => receptionMenu.includes(item.title))
+    }
+    else if (jsonObj.hrmsRole === "Tele Caller") {
+      newFilterData = selector.tableData.filter(item => teleCollerMenu.includes(item.title))
+    }
+    else {
+      newFilterData = selector.tableData;
+    }
+    setNewTableData([...newFilterData])
   }
 
   const itemSelected = (item) => {
@@ -150,7 +162,7 @@ const SideMenuScreen = ({ navigation }) => {
       </View>
       <Divider />
       <FlatList
-        data={selector.tableData}
+        data={newTableData}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item, index }) => {
           return (

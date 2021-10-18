@@ -42,7 +42,7 @@ const ActiveComplaintsScreen = ({ navigation }) => {
       "pageNo": selector.page_number,
       "size": 5,
       "orderByType": "asc",
-      "reportIdentifier": 1215,
+      "reportIdentifier": "1215",
       "paginationRequired": true,
       "empId": empId
     }
@@ -51,17 +51,19 @@ const ActiveComplaintsScreen = ({ navigation }) => {
 
   const getMoreComplaintsListFromServer = (empId) => {
 
-    const payload = {
-      "groupBy": [],
-      "orderBy": [],
-      "pageNo": selector.page_number,
-      "size": 5,
-      "orderByType": "asc",
-      "reportIdentifier": 1215,
-      "paginationRequired": true,
-      "empId": empId
+    if (selector.total_objects_count < selector.complaints_list.length) {
+      const payload = {
+        "groupBy": [],
+        "orderBy": [],
+        "pageNo": selector.page_number + 1,
+        "size": 5,
+        "orderByType": "asc",
+        "reportIdentifier": "1215",
+        "paginationRequired": true,
+        "empId": empId
+      }
+      dispatch(getMoreComplaintsListApi(payload));
     }
-    dispatch(getMoreComplaintsListApi(payload));
   }
 
   const renderFooter = () => {
@@ -105,13 +107,12 @@ const ActiveComplaintsScreen = ({ navigation }) => {
             return (
               <View style={[styles.listBgVw]}>
                 <ComplaintsItem
-                  complaintFactor={item.complaintFactor}
-                  name={item.name}
-                  mobile={item.name}
-                  email={item.name}
-                  model={item.name}
-                  name={item.name}
-                  source={item.name}
+                  complaintFactor={item["Complaint Factor"]}
+                  name={item["Customer Name"]}
+                  mobile={item["Mobile No."]}
+                  email={item["E-Mail"]}
+                  model={item["Model"]}
+                  source={item["Closing Source"]}
                 />
               </View>
             );

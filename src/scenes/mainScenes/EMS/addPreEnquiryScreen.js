@@ -43,6 +43,7 @@ const screenWidth = Dimensions.get("window").width;
 const AddPreEnquiryScreen = ({ route, navigation }) => {
 
   const selector = useSelector((state) => state.addPreEnquiryReducer);
+  const homeSelector = useSelector((state) => state.homeReducer);
   const { vehicle_modal_list, customer_type_list } = useSelector(state => state.homeReducer);
   const dispatch = useDispatch();
   const [organizationId, setOrganizationId] = useState(0);
@@ -71,6 +72,20 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       setOrganizationId(jsonObj.orgId);
       setBranchId(jsonObj.branchId);
       setEmployeeName(jsonObj.empName);
+
+      if (jsonObj.hrmsRole === "Reception") {
+
+        const resultAry = homeSelector.source_of_enquiry_list.filter(item => item.name == "Showroom");
+        if (resultAry.length > 0) {
+          dispatch(setDropDownData({ key: "SOURCE_OF_ENQUIRY", value: resultAry[0].name, id: resultAry[0].id }));
+        }
+      } else if (jsonObj.hrmsRole === "Tele Caller") {
+
+        const resultAry = homeSelector.source_of_enquiry_list.filter(item => item.name == "Digital Marketing");
+        if (resultAry.length > 0) {
+          dispatch(setDropDownData({ key: "SOURCE_OF_ENQUIRY", value: resultAry[0].name, id: resultAry[0].id }));
+        }
+      }
     }
   }
 
@@ -430,7 +445,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         setDataForDropDown([...selector.customer_type_list]);
         break;
       case "SOURCE_OF_ENQUIRY":
-        setDataForDropDown([...selector.source_of_enquiry_type_list]);
+        setDataForDropDown([...homeSelector.source_of_enquiry_list]);
         break;
     }
     setDropDownKey(key);

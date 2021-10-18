@@ -47,7 +47,8 @@ import {
   dropPreBooingApi,
   updatePrebookingDetailsApi,
   getOnRoadPriceDtoListApi,
-  sendOnRoadPriceDetails
+  sendOnRoadPriceDetails,
+  setPreBookingPaymentDetials
 } from "../../../redux/preBookingFormReducer";
 import {
   RadioTextItem,
@@ -150,6 +151,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [selectedPaidAccessories, setSelectedPaidAccessories] = useState([]);
   const [selectedInsurenceAddons, setSelectedInsurenceAddons] = useState([]);
   const [showApproveRejectBtn, setShowApproveRejectBtn] = useState(false);
+  const [showPrebookingPaymentSection, setShowPrebookingPaymentSection] = useState(false);
   const [showSubmitDropBtn, setShowSubmitDropBtn] = useState(false);
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
   const [isRejectSelected, setIsRejectSelected] = useState(false);
@@ -226,6 +228,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       }
       if (dmsLeadDto.leadStatus === 'SENTFORAPPROVAL') {
         setShowApproveRejectBtn(true);
+      }
+      if (dmsLeadDto.leadStatus === 'PREBOOKINGCOMPLETED') {
+        setShowPrebookingPaymentSection(true);
       }
 
       // Update dmsContactOrAccountDto
@@ -964,6 +969,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         break;
       case "UPLOAD_RELATION_PROOF":
         formData.append("documentType", "relationshipProof");
+        break;
+      case "RECEIPT_DOC":
+        formData.append("documentType", "receipt");
         break;
       default:
         formData.append("documentType", "default");
@@ -2250,6 +2258,162 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 </List.Accordion>
               )}
 
+              {showPrebookingPaymentSection ? (
+                <List.Accordion
+                  id={"12"}
+                  title={"PreBooking Payment Details"}
+                  titleStyle={{
+                    color: openAccordian === "12" ? Colors.WHITE : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={{
+                    backgroundColor:
+                      openAccordian === "12" ? Colors.RED : Colors.WHITE,
+                  }}
+                >
+                  <View>
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Receipt Doc"}
+                        onPress={() => dispatch(setImagePicker("RECEIPT_DOC"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.receipt ? <DisplaySelectedImage fileName={uploadedImagesDataObj.receipt.fileName} /> : null}
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                  {selector.booking_payment_mode === "UPI" && (
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.type_of_upi}
+                        label={"Type of UPI"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setPreBookingPaymentDetials({
+                              key: "TYPE_OF_UPI",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.transfer_from_mobile}
+                        label={"Transfer From Mobile"}
+                        keyboardType={'number-pad'}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setPreBookingPaymentDetials({
+                              key: "TRANSFER_FROM_MOBILE",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.transfer_to_mobile}
+                        label={"Transfer To Mobile"}
+                        keyboardType={'number-pad'}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setPreBookingPaymentDetials({
+                              key: "TRANSFER_TO_MOBILE",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
+
+                  {(selector.booking_payment_mode === "InternetBanking" || selector.booking_payment_mode === "Internet Banking") && (
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.utr_no}
+                        label={"UTR No"}
+                        onChangeText={(text) =>
+                          dispatch(setPreBookingPaymentDetials({ key: "UTR_NO", text: text }))
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <DateSelectItem
+                        label={"Transaction Date"}
+                        value={selector.transaction_date}
+                        onPress={() => dispatch(setDatePicker("TRANSACTION_DATE"))}
+                      />
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.comapany_bank_name}
+                        label={"Company Bank Name"}
+                        onChangeText={(text) =>
+                          dispatch(setPreBookingPaymentDetials({ key: "COMPANY_BANK_NAME", text: text }))
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
+
+                  {selector.booking_payment_mode === "Cheque" && (
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.cheque_number}
+                        label={"Cheque Number"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setPreBookingPaymentDetials({
+                              key: "CHEQUE_NUMBER",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <DateSelectItem
+                        label={"Cheque Date"}
+                        value={selector.cheque_date}
+                        onPress={() =>
+                          dispatch(setDatePicker("CHEQUE_DATE"))
+                        }
+                      />
+                    </View>
+                  )}
+
+                  {selector.booking_payment_mode === "DD" && (
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.dd_number}
+                        label={"DD Number"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setPreBookingPaymentDetials({
+                              key: "DD_NUMBER",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <DateSelectItem
+                        label={"DD Date"}
+                        value={selector.dd_date}
+                        onPress={() =>
+                          dispatch(setDatePicker("DD_DATE"))
+                        }
+                      />
+                    </View>
+                  )}
+
+                </List.Accordion>
+              ) : null}
+
             </List.AccordionGroup>
 
 
@@ -2276,7 +2440,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               </View>
             )}
 
-            {showApproveRejectBtn && userData.managerEdit && (
+            {showApproveRejectBtn && (
               <View style={styles.actionBtnView}>
                 <Button
                   mode="contained"

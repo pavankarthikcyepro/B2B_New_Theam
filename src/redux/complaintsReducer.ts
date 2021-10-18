@@ -41,15 +41,17 @@ export const complaintsSlice = createSlice({
       state.isLoading = true;
     })
     builder.addCase(getComplaintsListApi.fulfilled, (state, action) => {
-      state.isLoading = false;
+      // console.log("S getComplaintsListApi: ", action.payload);
       if (action.payload) {
         const dataObj = action.payload;
         state.total_objects_count = dataObj.totalCnt ? dataObj.totalCnt : 0;
         state.page_number = dataObj.pageNo ? dataObj.pageNo : 0;
         state.complaints_list = dataObj.data ? dataObj.data : [];
       }
+      state.isLoading = false;
     })
     builder.addCase(getComplaintsListApi.rejected, (state, action) => {
+      // console.log("F getComplaintsListApi: ", action.payload);
       state.isLoading = false;
     })
     // Get More Complaints List

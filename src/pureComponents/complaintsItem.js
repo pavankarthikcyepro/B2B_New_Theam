@@ -19,16 +19,36 @@ export const ComplaintsItem = ({
   mobile,
   email,
   model,
-  source
+  source,
+  status,
+  onCallPress,
+  onEmailPress
 }) => {
+
+  let textColor = Colors.BLUE;
+  let statusText = ""
+  if (status === "Active") {
+    textColor = Colors.GREEN;
+    statusText = "Active";
+  }
+  else if (status === "InActive") {
+    textColor = Colors.YELLOW;
+    statusText = "In Active";
+  }
+
   return (
     <View>
-      <NameComp
-        label={"Complaint Factor: "}
-        labelStyle={{ color: Colors.RED }}
-        value={complaintFactor}
-        valueStyle={{ color: Colors.BLUE }}
-      />
+      <View style={styles.view1}>
+        <NameComp
+          label={"Complaint Factor: "}
+          labelStyle={{ color: Colors.RED }}
+          value={complaintFactor}
+          valueStyle={{ color: Colors.BLUE }}
+        />
+        <View style={{ backgroundColor: textColor, paddingHorizontal: 5, height: 20, justifyContent: 'center', alignItems: "center", borderRadius: 4 }}>
+          <Text style={[styles.statusTextStyle, { color: Colors.WHITE, }]}>{statusText}</Text>
+        </View>
+      </View>
 
       <View style={styles.view1}>
         <View>
@@ -40,56 +60,13 @@ export const ComplaintsItem = ({
         </View>
 
         <View style={{ flexDirection: "column" }}>
-          <IconButton icon="phone" color={Colors.GREEN} size={20} />
-          <IconButton icon="email" color={Colors.LIGHT_SKY_BLUE} size={20} />
+          <IconButton icon="phone" color={Colors.GREEN} size={20} onPress={onCallPress} />
+          <IconButton icon="email" color={Colors.LIGHT_SKY_BLUE} size={20} onPress={onEmailPress} />
         </View>
       </View>
     </View>
   );
 };
-
-// export const ComplaintsItem = ({
-//   complaintFactor,
-//   name,
-//   place,
-//   enquiryID,
-//   enquiryDate,
-//   source,
-//   dse,
-//   car,
-//   text,
-// }) => {
-//   return (
-//     <View>
-//       <NameComp
-//         label={"Complaint Factor: "}
-//         labelStyle={{ color: Colors.RED }}
-//         value={complaintFactor}
-//         valueStyle={{ color: Colors.BLUE }}
-//       />
-
-//       <View style={styles.view1}>
-//         <View>
-//           <NameComp value={name} />
-//           <NameComp value={place} />
-//           <NameComp label={"Enquiry ID    : "} value={enquiryID} />
-//           <NameComp label={"Enquiry DATE   : "} value={enquiryDate} />
-//           <NameComp label={"Source  : "} value={source} />
-//           <NameComp label={"DSE   : "} value={dse} />
-//           <NameComp />
-//         </View>
-
-//         <View style={{ flexDirection: "column" }}>
-//           <IconButton icon="phone" color={Colors.GREEN} size={20} />
-//           <IconButton icon="email" color={Colors.LIGHT_SKY_BLUE} size={20} />
-//         </View>
-//       </View>
-
-//       <NameComp value={car} />
-//       <NameComp value={text} valueStyle={{ color: Colors.GRAY }} />
-//     </View>
-//   );
-// };
 
 const styles = StyleSheet.create({
   view1: {
@@ -122,5 +99,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: 'center',
     height: 25
+  },
+  statusTextStyle: {
+    fontSize: 14,
+    fontWeight: "400"
   }
 });

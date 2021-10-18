@@ -14,7 +14,7 @@ import { Colors, GlobalStyle } from "../../styles";
 import { UpcomingDeliveriesItem } from "../../pureComponents/upcomingDeliveriesItem";
 import { EmptyListView } from "../../pureComponents";
 import { IconButton } from "react-native-paper";
-import { DateRangeComp } from "../../components/dateRangeComp";
+import { DateRangeComp, DatePickerComponent } from "../../components";
 import { callNumber } from "../../utils/helperFunctions";
 import { useDispatch, useSelector } from "react-redux";
 import * as AsyncStore from "../../asyncStore";
@@ -22,16 +22,27 @@ import {
   getUpcmoingDeliveriesListApi,
   getMoreUpcmoingDeliveriesListApi
 } from "../../redux/upcomingDeliveriesReducer";
+import moment from "moment";
 
 const UpcomingDeliveriesScreen = () => {
 
   const selector = useSelector(state => state.upcomingDeliveriesReducer);
   const dispatch = useDispatch();
   const [employeeId, setEmployeeId] = useState("");
+  const [userData, setUserData] = useState({ branchId: "", orgId: "", employeeId: "", employeeName: "" })
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [datePickerId, setDatePickerId] = useState("");
+  const [selectedFromDate, setSelectedFromDate] = useState("");
+  const [selectedToDate, setSelectedToDate] = useState("");
 
   useEffect(() => {
 
     getUpcomingDelivieriesListFromServer();
+
+    // Get Data From Server
+    const currentDate = moment().format("DD/MM/YYYY");
+    setSelectedFromDate(currentDate);
+    setSelectedToDate(currentDate);
   }, [])
 
   const getUpcomingDelivieriesListFromServer = async () => {
@@ -50,6 +61,28 @@ const UpcomingDeliveriesScreen = () => {
     }
   }
 
+  const showDatePickerMethod = (key) => {
+    setShowDatePicker(true);
+    setDatePickerId(key);
+  }
+
+  const updateSelectedDate = (date, key) => {
+
+    const formatDate = moment(date).format("DD/MM/YYYY");
+    const payloadDate = moment(date).format("YYYY-DD-MM");
+    switch (key) {
+      case "FROM_DATE":
+        setSelectedFromDate(formatDate);
+        const formatToDate = moment(selectedToDate, "DD/MM/YYYY").format("YYYY-MM-DD");
+        console.log("format formatToDate: ", formatToDate)
+        break;
+      case "TO_DATE":
+        setSelectedToDate(formatDate);
+        const formatFromDate = moment(selectedFromDate, "DD/MM/YYYY").format("YYYY-MM-DD");
+        break;
+    }
+  }
+
   const renderFooter = () => {
     if (!selector.isLoadingExtraData) { return null }
     return (
@@ -60,19 +93,45 @@ const UpcomingDeliveriesScreen = () => {
     );
   };
 
+  if (selector.data_list.length === 0) {
+    return (
+      <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} />
+    )
+  }
+
   return (
     <SafeAreaView style={styles.container}>
+
+      <DatePickerComponent
+        visible={showDatePicker}
+        mode={"date"}
+        value={new Date(Date.now())}
+        onChange={(event, selectedDate) => {
+          console.log("date: ", selectedDate);
+          if (Platform.OS === "android") {
+            if (selectedDate) {
+              updateSelectedDate(selectedDate, datePickerId);
+            }
+          } else {
+            updateSelectedDate(selectedDate, datePickerId);
+          }
+          setShowDatePicker(false)
+        }}
+        onRequestClose={() => setShowDatePicker(false)}
+      />
+
       <View style={{ flex: 1, paddingHorizontal: 10, paddingTop: 10 }}>
         <View style={styles.view0}>
           <DateRangeComp
-            fromDate={'09/23/2209'}
-            fromDateClicked={() => { console.log("from date") }}
-            toDate={'89/09/2021'}
-            toDateClicked={() => { console.log("to date") }}
+            fromDate={selectedFromDate}
+            toDate={selectedToDate}
+            fromDateClicked={() => showDatePickerMethod("FROM_DATE")}
+            toDateClicked={() => showDatePickerMethod("TO_DATE")}
           />
         </View>
-        {selector.data_list.length === 0 ? <EmptyListView title={'No Data Found'} isLoading={selector.isLoading} /> :
-          (<View style={[GlobalStyle.shadow, { backgroundColor: 'white', flex: 1, marginBottom: 10 }]}>
+        {/* // [GlobalStyle.shadow, { backgroundColor: 'white', flex: 1, marginBottom: 10 }] */}
+        {selector.data_list.length === 0 ? (<EmptyListView title={"No Data Found"} isLoading={selector.isLoading} />) : (
+          <View style={{}}>
             <FlatList
               data={selector.data_list}
               extraData={selector.data_list}
@@ -88,6 +147,9 @@ const UpcomingDeliveriesScreen = () => {
               onEndReachedThreshold={0}
               onEndReached={getMorePreEnquiryListFromServer}
               ListFooterComponent={renderFooter}
+              ItemSeparatorComponent={() => {
+                return <View style={styles.separator}></View>;
+              }}
               renderItem={({ item, index }) => {
 
                 let color = Colors.WHITE;
@@ -111,7 +173,8 @@ const UpcomingDeliveriesScreen = () => {
                 );
               }}
             />
-          </View>)}
+          </View>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -149,5 +212,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: 'center',
     marginBottom: 5
+  },
+  separator: {
+    height: 10,
   },
 });

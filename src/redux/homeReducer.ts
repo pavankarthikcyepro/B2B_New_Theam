@@ -72,6 +72,16 @@ export const getCustomerTypeList = createAsyncThunk("HOME/getCustomerTypeList", 
   return json;
 })
 
+export const getSourceOfEnquiryList = createAsyncThunk("HOME/getSourceOfEnquiryList", async (data, { rejectWithValue }) => {
+
+  const response = await client.get(URL.GET_SOURCE_OF_ENQUIRY())
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 const AVAILABLE_SCREENS = [
   {
     "menuId": 81,
@@ -93,7 +103,9 @@ export const homeSlice = createSlice({
     menuList: [],
     vehicle_modal_list: [],
     customer_type_list: [],
+    source_of_enquiry_list: [],
     dateSelectedIndex: 0,
+    login_employee_details: {},
     dateModalVisible: false,
   },
   reducers: {
@@ -124,6 +136,7 @@ export const homeSlice = createSlice({
 
         const empId = dmsEntityObj.loginEmployee.empId;
         AsyncStore.storeData(AsyncStore.Keys.EMP_ID, empId.toString());
+        state.login_employee_details = dmsEntityObj.loginEmployee;
         AsyncStore.storeData(AsyncStore.Keys.LOGIN_EMPLOYEE, JSON.stringify(dmsEntityObj.loginEmployee));
         state.employeeId = empId;
       })
@@ -144,6 +157,18 @@ export const homeSlice = createSlice({
           typeList.push({ id: item.id, name: item.customerType })
         });
         state.customer_type_list = typeList;
+      })
+      // Get Source of Enquiry List
+      .addCase(getSourceOfEnquiryList.pending, (state, action) => {
+        state.source_of_enquiry_list = [];
+      })
+      .addCase(getSourceOfEnquiryList.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.source_of_enquiry_list = action.payload;
+        }
+      })
+      .addCase(getSourceOfEnquiryList.rejected, (state, action) => {
+        state.source_of_enquiry_list = [];
       })
   }
 });
