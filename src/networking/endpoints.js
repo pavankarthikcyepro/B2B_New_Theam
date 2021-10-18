@@ -11,6 +11,7 @@
 // export const notificationServices_url = "http://ec2-3-108-253-173.ap-south-1.compute.amazonaws.com:8083/notification-service";
 // export const vehicleInfoService_url = "http://ec2-3-109-35-105.ap-south-1.compute.amazonaws.com:8082/vehicle-information-service";
 // export const customerService_url = "http://ec2-3-108-253-173.ap-south-1.compute.amazonaws.com:8084/customer-service";
+// export const dynamicForms = "http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/dynamic-forms"
 
 // Dev Urls:
 
@@ -27,6 +28,7 @@ export const admin_url = "http://ec2-3-7-117-218.ap-south-1.compute.amazonaws.co
 export const notificationServices_url = "http://ec2-3-108-253-173.ap-south-1.compute.amazonaws.com:8083/notification-service";
 export const customerService_url = "http://ec2-3-108-253-173.ap-south-1.compute.amazonaws.com:8084/customer-service";
 export const dynamicReports_url = "http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/dynamic-reports";
+export const dynamicForms = "http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/dynamic-forms"
 
 const URL = {
     LOGIN: () => hrms_url + "/emplogin",
@@ -102,8 +104,13 @@ const URL = {
     },
     GET_SOURCE_OF_ENQUIRY: () => {
         return sales_url + "/master-data/source-of-enquiry";
+    },
+    GET_DROP_DATA: () => {
+        return dynamicForms + "/dropdown";
+    },
+    PRE_BOOKING_PAYMENT: () => {
+        return sales_url + "/payment";
     }
 }
 
 export default URL;
-

@@ -14,60 +14,58 @@ const EmsTopTabNavigatorIdentifiers = {
 
 const EMSTopTab = createMaterialTopTabNavigator();
 
-const EMSTopTabNavigator = () => {
+const tabBarOptions = {
+  activeTintColor: Colors.RED,
+  inactiveTintColor: Colors.DARK_GRAY,
+  indicatorStyle: {
+    backgroundColor: Colors.RED,
+  },
+  labelStyle: {
+    fontSize: 14,
+    fontWeight: "600",
+  },
+}
 
-  const [handleTabDisplay, setHandleTabDisplay] = useState(0);
-
-  useEffect(async () => {
-
-    const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-    if (employeeData) {
-      const jsonObj = JSON.parse(employeeData);
-      if (jsonObj.hrmsRole === "Reception" || jsonObj.hrmsRole === "Tele Caller") {
-        setHandleTabDisplay(1)
-      } else {
-        setHandleTabDisplay(2)
-      }
-    }
-  }, [])
-
+const EMSTopTabNavigatorOne = () => {
 
   return (
     <EMSTopTab.Navigator
       initialRouteName={EmsTopTabNavigatorIdentifiers.preEnquiry}
-      tabBarOptions={{
-        activeTintColor: Colors.RED,
-        inactiveTintColor: Colors.DARK_GRAY,
-        indicatorStyle: {
-          backgroundColor: Colors.RED,
-        },
-        labelStyle: {
-          fontSize: 14,
-          fontWeight: "600",
-        },
-      }}
+      tabBarOptions={tabBarOptions}
     >
       <EMSTopTab.Screen
         name={EmsTopTabNavigatorIdentifiers.preEnquiry}
         component={PreEnquiryScreen}
         options={{ title: "Pre-Enquiry" }}
       />
-      {handleTabDisplay == 2 && (
-        <EMSTopTab.Screen
-          name={EmsTopTabNavigatorIdentifiers.enquiry}
-          component={EnquiryScreen}
-          options={{ title: "Enquiry" }}
-        />
-      )}
-      {handleTabDisplay == 2 && (
-        <EMSTopTab.Screen
-          name={EmsTopTabNavigatorIdentifiers.preBooking}
-          component={PreBookingScreen}
-          options={{ title: "Pre-Booking" }}
-        />
-      )}
     </EMSTopTab.Navigator>
   );
 };
 
-export { EMSTopTabNavigator };
+const EMSTopTabNavigatorTwo = () => {
+
+  return (
+    <EMSTopTab.Navigator
+      initialRouteName={EmsTopTabNavigatorIdentifiers.preEnquiry}
+      tabBarOptions={tabBarOptions}
+    >
+      <EMSTopTab.Screen
+        name={EmsTopTabNavigatorIdentifiers.preEnquiry}
+        component={PreEnquiryScreen}
+        options={{ title: "Pre-Enquiry" }}
+      />
+      <EMSTopTab.Screen
+        name={EmsTopTabNavigatorIdentifiers.enquiry}
+        component={EnquiryScreen}
+        options={{ title: "Enquiry" }}
+      />
+      <EMSTopTab.Screen
+        name={EmsTopTabNavigatorIdentifiers.preBooking}
+        component={PreBookingScreen}
+        options={{ title: "Pre-Booking" }}
+      />
+    </EMSTopTab.Navigator>
+  );
+};
+
+export { EMSTopTabNavigatorOne, EMSTopTabNavigatorTwo };

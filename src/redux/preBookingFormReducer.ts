@@ -103,9 +103,49 @@ export const getCustomerTypesApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getC
   return json;
 })
 
+export const getDropDataApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getDropDataApi", async (payload, { rejectWithValue }) => {
+
+  const response = await client.post(URL.GET_DROP_DATA(), payload);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getDropSubReasonDataApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getDropSubReasonDataApi", async (payload, { rejectWithValue }) => {
+
+  const response = await client.post(URL.GET_DROP_DATA(), payload);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 export const getOnRoadPriceDtoListApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getOnRoadPriceDtoListApi", async (leadId, { rejectWithValue }) => {
 
   const response = await client.get(URL.GET_ON_ROAD_PRICE_DTO_LIST(leadId));
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const preBookingPaymentApi = createAsyncThunk("PREBOONING_FORMS_SLICE/preBookingPaymentApi", async (payload, { rejectWithValue }) => {
+
+  const response = await client.post(URL.PRE_BOOKING_PAYMENT(), payload);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const postBookingAmountApi = createAsyncThunk("PREBOONING_FORMS_SLICE/postBookingAmountApi", async (payload, { rejectWithValue }) => {
+
+  const response = await client.post(URL.BOOKING_AMOUNT(), payload);
   const json = await response.json()
   if (!response.ok) {
     return rejectWithValue(json);
@@ -146,6 +186,12 @@ const prebookingFormSlice = createSlice({
     update_pre_booking_details_response: "",
     on_road_price_dto_list_response: [],
     send_onRoad_price_details_response: null,
+    drop_reasons_list: [],
+    drop_sub_reasons_list: [],
+    pre_booking_payment_response: null,
+    pre_booking_payment_response_status: "",
+    booking_amount_response: null,
+    booking_amount_response_status: "",
 
     datePickerKeyId: "",
     showImagePicker: false,
@@ -242,8 +288,13 @@ const prebookingFormSlice = createSlice({
     gstin_number: "",
     // Booking Drop
     drop_reason: "",
+    drop_sub_reason: "",
     drop_remarks: "",
     reject_remarks: "",
+    d_brand_name: "",
+    d_dealer_name: "",
+    d_location: "",
+    d_model: "",
     // PreBooking Payment Details
     type_of_upi: "",
     transfer_from_mobile: "",
@@ -265,6 +316,10 @@ const prebookingFormSlice = createSlice({
       state.update_pre_booking_details_response = null;
       state.on_road_price_dto_list_response = [];
       state.send_onRoad_price_details_response = null;
+      state.drop_reasons_list = [];
+      state.drop_sub_reasons_list = [];
+      state.pre_booking_payment_response = null;
+      state.pre_booking_payment_response_status = "";
 
       // Customer Details
       state.first_name = "";
@@ -351,8 +406,13 @@ const prebookingFormSlice = createSlice({
       state.gstin_number = "";
       // Booking Drop
       state.drop_reason = "";
+      state.drop_sub_reason = "";
       state.drop_remarks = "";
       state.reject_remarks = "";
+      state.d_brand_name = "";
+      state.d_dealer_name = "";
+      state.d_location = "";
+      state.d_model = "";
       // PreBooking Payment Details
       state.type_of_upi = "";
       state.transfer_from_mobile = "";
@@ -447,6 +507,9 @@ const prebookingFormSlice = createSlice({
           break;
         case "DROP_REASON":
           state.drop_reason = value;
+          break;
+        case "DROP_SUB_REASON":
+          state.drop_sub_reason = value;
           break;
       }
     },
@@ -700,6 +763,18 @@ const prebookingFormSlice = createSlice({
       switch (key) {
         case "DROP_REMARKS":
           state.drop_remarks = text;
+          break;
+        case "DROP_BRAND_NAME":
+          state.d_brand_name = text;
+          break;
+        case "DROP_DEALER_NAME":
+          state.d_dealer_name = text;
+          break;
+        case "DROP_LOCATION":
+          state.d_location = text;
+          break;
+        case "DROP_MODEL":
+          state.d_model = text;
           break;
         case "REJECT_REMARKS":
           state.reject_remarks = text;
@@ -994,6 +1069,77 @@ const prebookingFormSlice = createSlice({
         }
         state.customer_types_response = obj;
       }
+    })
+    builder.addCase(getDropDataApi.pending, (state, action) => {
+      state.drop_reasons_list = [];
+    })
+    builder.addCase(getDropDataApi.fulfilled, (state, action) => {
+      if (action.payload) {
+        const newTypeData = action.payload.map(element => {
+          return {
+            ...element,
+            name: element.value
+          }
+        });
+        state.drop_reasons_list = newTypeData;
+      }
+    })
+    builder.addCase(getDropDataApi.rejected, (state, action) => {
+      state.drop_reasons_list = [];
+    })
+    // Get drop sub reasons api
+    builder.addCase(getDropSubReasonDataApi.pending, (state, action) => {
+      state.drop_sub_reasons_list = [];
+    })
+    builder.addCase(getDropSubReasonDataApi.fulfilled, (state, action) => {
+      if (action.payload) {
+        const newTypeData = action.payload.map(element => {
+          return {
+            ...element,
+            name: element.value
+          }
+        });
+        state.drop_sub_reasons_list = newTypeData;
+      }
+    })
+    builder.addCase(getDropSubReasonDataApi.rejected, (state, action) => {
+      state.drop_sub_reasons_list = [];
+    })
+    // Pre Booking Payment Api
+    builder.addCase(preBookingPaymentApi.pending, (state, action) => {
+      state.pre_booking_payment_response = null;
+      state.pre_booking_payment_response_status = "pending";
+    })
+    builder.addCase(preBookingPaymentApi.fulfilled, (state, action) => {
+      if (action.payload.success == true) {
+        state.pre_booking_payment_response = action.payload.dmsEntity;
+      }
+      state.pre_booking_payment_response_status = "success";
+    })
+    builder.addCase(preBookingPaymentApi.rejected, (state, action) => {
+      if (action.payload["errorMessage"]) {
+        showToastRedAlert(action.payload["errorMessage"]);
+      }
+      state.pre_booking_payment_response = null;
+      state.pre_booking_payment_response_status = "failed";
+    })
+    // Booking Amount
+    builder.addCase(postBookingAmountApi.pending, (state, action) => {
+      state.booking_amount_response = null;
+      state.booking_amount_response_status = "pending";
+    })
+    builder.addCase(postBookingAmountApi.fulfilled, (state, action) => {
+      if (action.payload.success == true) {
+        state.booking_amount_response = action.payload.dmsEntity;
+      }
+      state.booking_amount_response_status = "success";
+    })
+    builder.addCase(postBookingAmountApi.rejected, (state, action) => {
+      if (action.payload["errorMessage"]) {
+        showToastRedAlert(action.payload["errorMessage"]);
+      }
+      state.booking_amount_response = null;
+      state.booking_amount_response_status = "failed";
     })
   }
 });

@@ -48,7 +48,11 @@ import {
   updatePrebookingDetailsApi,
   getOnRoadPriceDtoListApi,
   sendOnRoadPriceDetails,
-  setPreBookingPaymentDetials
+  setPreBookingPaymentDetials,
+  getDropDataApi,
+  getDropSubReasonDataApi,
+  preBookingPaymentApi,
+  postBookingAmountApi
 } from "../../../redux/preBookingFormReducer";
 import {
   RadioTextItem,
@@ -114,7 +118,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const { universalId } = route.params;
   const [openAccordian, setOpenAccordian] = useState(0);
   const [componentAppear, setComponentAppear] = useState(false);
-  const [userData, setUserData] = useState({ branchId: "", orgId: "", employeeId: "", employeeName: "", managerEdit: false, editEnable: false })
+  const [userData, setUserData] = useState({ branchId: "", orgId: "", employeeId: "", employeeName: "", isManager: false, editEnable: false, isPreBookingApprover: false })
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [showMultipleDropDownData, setShowMultipleDropDownData] = useState(false);
   const [dataForDropDown, setDataForDropDown] = useState([]);
@@ -184,13 +188,24 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
-      let managerEdit = false, editEnable = false;
-      if (jsonObj.roles.includes('PreBooking Approver')) {
-        managerEdit = true;
-        editEnable = true;
+      let isManager = false, editEnable = false;
+      let isPreBookingApprover = false;
+      if (jsonObj.hrmsRole === "MD" || jsonObj.hrmsRole === "General Manager" || jsonObj.hrmsRole === "Manager") {
+        isManager = true;
       }
-      setUserData({ branchId: jsonObj.branchId, orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName, managerEdit: managerEdit, editEnable: editEnable })
+      if (jsonObj.roles.includes('PreBooking Approver')) {
+        editEnable = true;
+        isPreBookingApprover = true;
+      }
+      setUserData({ branchId: jsonObj.branchId, orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName, isManager: isManager, editEnable: editEnable, isPreBookingApprover: isPreBookingApprover })
       dispatch(getPaidAccessoriesListApi(jsonObj.orgId));
+
+      const payload = {
+        "bu": jsonObj.orgId,
+        "dropdownType": "PreBookDropReas",
+        "parentId": 0
+      }
+      dispatch(getDropDataApi(payload));
     }
   }
 
@@ -433,7 +448,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setDataForDropDown([...Vehicle_Types]);
         break;
       case "DROP_REASON":
-        setDataForDropDown([...Drop_reasons]);
+        setDataForDropDown([...selector.drop_reasons_list]);
+        break;
+      case "DROP_SUB_REASON":
+        setDataForDropDown([...selector.drop_sub_reasons_list]);
         break;
       case "CUSTOMER_TYPE_CATEGORY":
         setDataForDropDown([...Customer_Category_Types]);
@@ -872,16 +890,17 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       "dmsLeadDropInfo": {
         "additionalRemarks": selector.drop_remarks,
         "branchId": userData.branchId,
-        "brandName": "",
-        "dealerName": "",
+        "brandName": selector.d_brand_name,
+        "dealerName": selector.d_dealer_name,
         "leadId": leadId,
         "crmUniversalId": universalId,
         "lostReason": selector.drop_reason,
+        "lostSubReason": selector.drop_sub_reason,
         "organizationId": userData.orgId,
         "otherReason": "",
         "droppedBy": userData.employeeId,
-        "location": "",
-        "model": "",
+        "location": selector.d_location,
+        "model": selector.d_model,
         "stage": "PREBOOKING",
         "status": "PREBOOKING"
       }
@@ -889,6 +908,74 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     setTypeOfActionDispatched("DROP_ENQUIRY");
     dispatch(dropPreBooingApi(payload));
     dispatch(updatePrebookingDetailsApi(enquiryDetailsObj));
+  }
+
+  const proceedToBookingClicked = () => {
+
+    let leadId = selector.pre_booking_details_response.dmsLeadDto.id;
+    if (!leadId) {
+      showToast("lead id not found")
+      return
+    }
+
+    let bookingId = selector.pre_booking_details_response.dmsLeadDto.dmsBooking.id;
+    if (!bookingId) {
+      showToast("lead id not found")
+      return
+    }
+
+    const paymentMode = selector.booking_payment_mode.replace(/\s/g, "");
+    let paymentDate = ""
+    if (paymentMode === "InternetBanking") {
+      paymentDate = convertDateStringToMillisecondsUsingMoment(selector.transaction_date);
+    }
+    else if (paymentMode === "Cheque") {
+      paymentDate = convertDateStringToMillisecondsUsingMoment(selector.cheque_date);
+    }
+    else if (paymentMode === "DD") {
+      paymentDate = convertDateStringToMillisecondsUsingMoment(selector.dd_date);
+    }
+
+    const payload = {
+      "bankName": selector.comapany_bank_name,
+      "bookingId": bookingId,
+      "chequeNo": selector.cheque_number,
+      "date": paymentDate,
+      "ddNo": selector.dd_number,
+      "id": 0,
+      "leadId": leadId,
+      "paymentMode": paymentMode,
+      "transferFromMobile": selector.transfer_from_mobile,
+      "transferToMobile": selector.transfer_to_mobile,
+      "typeUpi": selector.type_of_upi,
+      "utrNo": selector.utr_no
+    }
+    dispatch(preBookingPaymentApi(payload))
+  }
+
+  const sendBookingAmount = () => {
+
+    let leadId = selector.pre_booking_details_response.dmsLeadDto.id;
+    if (!leadId) {
+      showToast("lead id not found")
+      return
+    }
+
+    let bookingAmount = selector.pre_booking_details_response.dmsLeadDto.dmsBooking.bookingAmount;
+    if (!bookingAmount) {
+      showToast("lead id not found")
+      return
+    }
+
+    const payload = [
+      {
+        "id": 0,
+        "paymentName": "Booking Advance Amount",
+        "amount": bookingAmount,
+        "leadId": leadId
+      }
+    ]
+    dispatch(postBookingAmountApi(payload))
   }
 
   const updatePaidAccessroies = (tableData) => {
@@ -1049,6 +1136,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           }
           else if (dropDownKey === "WARRANTY") {
             setSelectedWarrentyPrice(Number(item.cost));
+          }
+          else if (dropDownKey === "DROP_REASON") {
+            const payload = {
+              "bu": userData.orgId,
+              "dropdownType": "PreBook_Lost_Com_Sub_Reas",
+              "parentId": item.id
+            }
+            dispatch(getDropSubReasonDataApi(payload))
           }
           else if (dropDownKey === "INSURENCE_ADD_ONS") {
             let totalCost = 0;
@@ -2190,6 +2285,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
               </List.Accordion>
               <View style={styles.space}></View>
+              {/* // 10.Drop */}
               {isDropSelected ? (<View style={styles.space}></View>) : null}
               {isDropSelected ? (
                 <List.Accordion
@@ -2210,6 +2306,75 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     value={selector.drop_reason}
                     onPress={() => showDropDownModelMethod("DROP_REASON", "Drop Reason")}
                   />
+                  <DropDownSelectionItem
+                    label={"Drop Sub Reason"}
+                    value={selector.drop_sub_reason}
+                    onPress={() => showDropDownModelMethod("DROP_SUB_REASON", "Drop Sub Reason")}
+                  />
+                  {(selector.drop_reason === "Lost to Competitor" || selector.drop_reason === "Lost to Used Cars from Co-Dealer") ? (
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.d_brand_name}
+                        label={"Brand Name"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setBookingDropDetails({
+                              key: "DROP_BRAND_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  ) : null}
+
+                  {(selector.drop_reason === "Lost to Competitor" || selector.drop_reason === "Lost to Used Cars from Co-Dealer" || selector.drop_reason === "Lost to Co-Dealer") ? (
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.d_dealer_name}
+                        label={"Dealer Name"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setBookingDropDetails({
+                              key: "DROP_DEALER_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.d_location}
+                        label={"Location"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setBookingDropDetails({
+                              key: "DROP_LOCATION",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  ) : null}
+
+                  {(selector.drop_reason === "Lost to Competitor" || selector.drop_reason === "Lost to Used Cars from Co-Dealer") ? (
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.d_model}
+                        label={"Model"}
+                        onChangeText={(text) => dispatch(setBookingDropDetails({ key: "DROP_MODEL", text: text }))}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  ) : null}
+
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.drop_remarks}
@@ -2226,7 +2391,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <Text style={GlobalStyle.underline}></Text>
                 </List.Accordion>
               ) : null}
-
+              {/* // 11.Reject */}
+              {isRejectSelected ? (<View style={styles.space}></View>) : null}
               {isRejectSelected && (
                 <List.Accordion
                   id={"11"}
@@ -2257,7 +2423,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <Text style={GlobalStyle.underline}></Text>
                 </List.Accordion>
               )}
-
+              {/* // 12.Payment Details */}
+              {showPrebookingPaymentSection ? (<View style={styles.space}></View>) : null}
               {showPrebookingPaymentSection ? (
                 <List.Accordion
                   id={"12"}
@@ -2268,8 +2435,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     fontWeight: "600",
                   }}
                   style={{
-                    backgroundColor:
-                      openAccordian === "12" ? Colors.RED : Colors.WHITE,
+                    backgroundColor: openAccordian === "12" ? Colors.RED : Colors.WHITE,
                   }}
                 >
                   <View>
@@ -2416,9 +2582,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
             </List.AccordionGroup>
 
-
-
-            {!isDropSelected && showSubmitDropBtn && (
+            {!isDropSelected && showSubmitDropBtn && !userData.isManager && (
               <View style={styles.actionBtnView}>
                 <Button
                   mode="contained"
@@ -2440,7 +2604,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               </View>
             )}
 
-            {showApproveRejectBtn && (
+            {showApproveRejectBtn && userData.isPreBookingApprover && !isDropSelected && (
               <View style={styles.actionBtnView}>
                 <Button
                   mode="contained"
@@ -2461,6 +2625,29 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 </Button>
               </View>
             )}
+
+            {showPrebookingPaymentSection && !userData.isManager && !isDropSelected && (
+              <View style={styles.actionBtnView}>
+                <Button
+                  mode="contained"
+                  style={{ width: 120 }}
+                  color={Colors.BLACK}
+                  labelStyle={{ textTransform: "none" }}
+                  onPress={() => setIsDropSelected(true)}
+                >
+                  Drop
+                </Button>
+                <Button
+                  mode="contained"
+                  color={Colors.RED}
+                  labelStyle={{ textTransform: "none" }}
+                  onPress={() => { }}
+                >
+                  Proceed To Booking
+                </Button>
+              </View>
+            )}
+
             {isDropSelected && (<View style={styles.prebookingBtnView}>
               <Button
                 mode="contained"
