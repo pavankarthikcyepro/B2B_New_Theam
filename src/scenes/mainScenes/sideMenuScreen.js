@@ -211,6 +211,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     height: 50,
     alignItems: "center",
+    overflow: 'hidden'
   },
   nameStyle: {
     fontSize: 18,

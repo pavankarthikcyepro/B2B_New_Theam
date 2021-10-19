@@ -4,7 +4,7 @@ import { SafeAreaView, View, Text, StyleSheet, Keyboard, KeyboardAvoidingView, P
 import { Colors, GlobalStyle } from "../../../styles";
 import { TextinputComp, DropDownComponant } from "../../../components";
 import { DropDownSelectionItem } from "../../../pureComponents";
-import { Button } from "react-native-paper";
+import { Button, IconButton } from "react-native-paper";
 import * as AsyncStore from "../../../asyncStore";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -14,31 +14,17 @@ import {
     dropEnquiryApi,
     getTaskDetailsApi,
     updateTaskApi,
-    changeEnquiryStatusApi
+    changeEnquiryStatusApi,
+    getDropDataApi,
+    getDropSubReasonDataApi
 } from "../../../redux/proceedToPreBookingReducer";
-import { showToast, showToastSucess } from "../../../utils/toast";
+import { showToast, showToastRedAlert, showToastSucess } from "../../../utils/toast";
 import { getCurrentTasksListApi, getPendingTasksListApi } from "../../../redux/mytaskReducer";
 import URL from "../../../networking/endpoints";
 
-const dropReasonsData = [
-    { "id": 1, "name": "Looking For More Discount" },
-    { "id": 2, "name": "Lost To Co-Dealer" },
-    { "id": 3, "name": "Lost To Competition" },
-    { "id": 4, "name": "Duplicate Enquiry" },
-    { "id": 5, "name": "Call Not Connected" },
-    { "id": 6, "name": "Casual Enquiry" },
-    { "id": 7, "name": "Lost To Used Car" },
-    { "id": 8, "name": "Out of Station" },
-    { "id": 9, "name": "Out of Stock" },
-    { "id": 10, "name": "Loan not Approved" },
-    { "id": 11, "name": "More Waiting Period" },
-    { "id": 12, "name": "Old Car Price not matched" },
-    { "id": 13, "name": "Poor response from Salesteam" },
-    { "id": 14, "name": "Other" }
-]
 
-const FirstDependencyArray = ["Lost To Competition", "Lost To Used Car"];
-const SecondDependencyArray = ["Lost To Co-Dealer", "Lost To Competition", "Lost To Used Car"];
+const FirstDependencyArray = ["Lost To Competition", "Lost To Used Car", "Lost to Used Cars from Co-Dealer"];
+const SecondDependencyArray = ["Lost to Competitor", "Lost To Co-Dealer", "Lost To Competition", "Lost To Used Car"];
 
 const ProceedToPreBookingScreen = ({ route, navigation }) => {
 
@@ -60,7 +46,6 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
     const [userData, setUserData] = useState({ branchId: "", orgId: "", employeeId: "", employeeName: "" });
     const [typeOfActionDispatched, setTypeOfActionDispatched] = useState("");
     const [authToken, setAuthToken] = useState("");
-    const [referenceNumber, setReferenceNumber] = useState("");
 
     useLayoutEffect(() => {
 
@@ -75,9 +60,22 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
         }
 
         navigation.setOptions({
-            title: title
-        })
+            title: title,
+            headerLeft: () => (
+                <IconButton
+                    icon="arrow-left"
+                    color={Colors.WHITE}
+                    size={30}
+                    onPress={goParentScreen}
+                />
+            ),
+        });
     }, [navigation])
+
+    const goParentScreen = () => {
+        navigation.popToTop();
+        dispatch(clearState());
+    }
 
     useEffect(() => {
         getAuthToken();
@@ -90,7 +88,14 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
         const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
-            setUserData({ branchId: jsonObj.branchId, orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName })
+            setUserData({ branchId: jsonObj.branchId, orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName });
+
+            const payload = {
+                "bu": jsonObj.orgId,
+                "dropdownType": identifier === "PROCEED_TO_BOOKING" ? "PreBookDropReas" : "PreEnqDropReas",
+                "parentId": 0
+            }
+            dispatch(getDropDataApi(payload));
         }
     }
 
@@ -159,7 +164,7 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
                 "brandName": brandName,
                 "dealerName": dealerName,
                 "leadId": leadId,
-                // "crmUniversalId": universalId,
+                "crmUniversalId": universalId,
                 "lostReason": dropReason,
                 "organizationId": userData.orgId,
                 "otherReason": "",
@@ -179,13 +184,12 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
         if (selector.enquiry_drop_response_status === "success") {
             updateEnuiquiryDetails();
         }
+        else if (selector.enquiry_drop_response_status === "failed") {
+            showToastRedAlert("something went wrong");
+        }
     }, [selector.enquiry_drop_response_status])
 
     const proceedToPreBookingClicked = () => {
-
-        if (identifier === "PROCEED_TO_BOOKING") {
-            return;
-        }
 
         setTypeOfActionDispatched("PROCEED_TO_PREBOOKING");
         if (selector.task_details_response?.taskId !== taskId) {
@@ -200,8 +204,17 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
     // Handle Update Current Task Response
     useEffect(() => {
         if (selector.update_task_response_status === "success") {
-            const endUrl = `${universalId}` + '?' + 'stage=PREBOOKING';
-            dispatch(changeEnquiryStatusApi(endUrl));
+
+            if (identifier === "PROCEED_TO_PRE_BOOKING") {
+                const endUrl = `${universalId}` + '?' + 'stage=PREBOOKING';
+                dispatch(changeEnquiryStatusApi(endUrl));
+            }
+            else if (identifier === "PROCEED_TO_BOOKING") {
+                const endUrl = `${universalId}` + '?' + 'stage=BOOKING';
+                dispatch(changeEnquiryStatusApi(endUrl));
+            }
+        } else if (selector.update_task_response_status === "failed") {
+            showToastRedAlert("something went wrong");
         }
     }, [selector.update_task_response_status])
 
@@ -209,12 +222,18 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
     useEffect(() => {
         if (selector.change_enquiry_status === "success") {
             callCustomerLeadReferenceApi();
+        } else if (selector.change_enquiry_status === "failed") {
+            showToastRedAlert("something went wrong");
         }
     }, [selector.change_enquiry_status])
 
     const callCustomerLeadReferenceApi = async () => {
 
-        const payload = { "branchid": userData.branchId, "leadstage": "PREBOOKING", "orgid": userData.orgId }
+        const payload = {
+            "branchid": userData.branchId,
+            "leadstage": identifier === "PROCEED_TO_PRE_BOOKING" ? "PREBOOKING" : "BOOKING",
+            "orgid": userData.orgId
+        }
         const url = URL.CUSTOMER_LEAD_REFERENCE();
 
         await fetch(url, {
@@ -230,7 +249,6 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
                 if (jsonRes.success === true) {
                     if (jsonRes.dmsEntity?.leadCustomerReference) {
                         const refNumber = jsonRes.dmsEntity?.leadCustomerReference.referencenumber;
-                        setReferenceNumber(refNumber)
                         updateEnuiquiryDetails(refNumber);
                     }
                 }
@@ -249,8 +267,12 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
         if (typeOfActionDispatched === "DROP_ENQUIRY") {
             dmsLeadDto.leadStage = "DROPPED";
         }
-        else if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING") {
+        else if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING" && identifier === "PROCEED_TO_PRE_BOOKING") {
             dmsLeadDto.leadStage = "PREBOOKING";
+            dmsLeadDto.referencenumber = refNumber;
+        }
+        else if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING" && identifier === "PROCEED_TO_BOOKING") {
+            dmsLeadDto.leadStage = "BOOKING";
             dmsLeadDto.referencenumber = refNumber;
         }
         enquiryDetailsObj.dmsLeadDto = dmsLeadDto;
@@ -259,31 +281,43 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
 
     // Handle Enquiry Update response
     useEffect(() => {
-        if (selector.update_enquiry_details_response === "success") {
+        if (selector.update_enquiry_details_response_status === "success") {
             if (typeOfActionDispatched === "DROP_ENQUIRY") {
                 showToastSucess("Successfully Enquiry Dropped");
                 goToParentScreen();
             }
-            else if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING") {
+            else if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING" && identifier === "PROCEED_TO_PRE_BOOKING") {
                 displayCreateEnquiryAlert();
             }
+            else if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING" && identifier === "PROCEED_TO_BOOKING") {
+                displayCreateEnquiryAlert();
+            }
+        } else if (selector.update_enquiry_details_response_status === "failed") {
+            showToastRedAlert("something went wrong")
         }
-    }, [selector.update_enquiry_details_response]);
+    }, [selector.update_enquiry_details_response_status, selector.update_enquiry_details_response]);
 
     displayCreateEnquiryAlert = () => {
-        Alert.alert(
-            'Pre Booking Created Successfully', ""
-        [
-        {
-            text: 'OK', onPress: goToParentScreen()
+
+        let refNumber = "";
+        if (selector.update_enquiry_details_response) {
+            refNumber = selector.update_enquiry_details_response.dmsLeadDto.referencenumber;
         }
+        let title = identifier === "PROCEED_TO_BOOKING" ? 'Booking Created Successfully' : 'Pre Booking Created Successfully'
+        Alert.alert(title, refNumber
+        [
+            {
+                text: 'OK', onPress: goToParentScreen()
+            }
         ],
             { cancelable: false }
         );
     }
 
     const goToParentScreen = () => {
-        getMyTasksListFromServer();
+        if (identifier === "PROCEED_TO_PRE_BOOKING") {
+            getMyTasksListFromServer();
+        }
         navigation.popToTop();
         dispatch(clearState());
     }
@@ -292,10 +326,10 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
 
         switch (key) {
             case "DROP_REASON":
-                setDataForDropDown([...dropReasonsData]);
+                setDataForDropDown([...selector.drop_reasons_list]);
                 break;
             case "DROP_SUB_REASON":
-                setDataForDropDown([...dropReasonsData]);
+                setDataForDropDown([...selector.drop_sub_reasons_list]);
                 break;
             default:
                 break;
@@ -334,6 +368,12 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
                     selectedItems={(item) => {
                         setShowDropDownModel(false);
                         if (dropDownKey === "DROP_REASON") {
+                            const payload = {
+                                "bu": userData.orgId,
+                                "dropdownType": identifier == "PROCEED_TO_BOOKING" ? "PreBook_Lost_Com_Sub_Reas" : "PreEnq_Lost_Com_Sub_Reas",
+                                "parentId": item.id
+                            }
+                            dispatch(getDropSubReasonDataApi(payload))
                             setDropReason(item.name);
                         }
                         if (dropDownKey === "DROP_SUB_REASON") {
@@ -352,11 +392,11 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
                                 onPress={() => showDropDownMethod("DROP_REASON", "Select Drop Reason")}
                             />
 
-                            {identifier === "PROCEED_TO_BOOKING" ? (<DropDownSelectionItem
+                            <DropDownSelectionItem
                                 label={"Drop Sub Reason"}
                                 value={dropSubReason}
                                 onPress={() => showDropDownMethod("DROP_SUB_REASON", "Select Drop Sub Reason")}
-                            />) : null}
+                            />
 
                             {FirstDependencyArray.includes(dropReason) && (
                                 <View>
@@ -386,6 +426,12 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
                                         onChangeText={(text) => setLocation(text)}
                                     />
                                     <Text style={GlobalStyle.underline}></Text>
+
+                                </View>
+                            )}
+
+                            {FirstDependencyArray.includes(dropReason) && (
+                                <View>
                                     <TextinputComp
                                         style={styles.textInputStyle}
                                         label={"Model"}

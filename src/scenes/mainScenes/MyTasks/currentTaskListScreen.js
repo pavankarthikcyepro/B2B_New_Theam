@@ -91,7 +91,7 @@ const CurrentTaskListScreen = ({ navigation }) => {
                 navigationId = AppNavigator.MyTasksStackIdentifiers.proceedToPreBooking;
                 break;
             case "proceedtobooking":
-                console.log("not implemented");
+                navigationId = AppNavigator.MyTasksStackIdentifiers.proceedToPreBooking;
                 break;
             case "homevisit":
                 navigationId = AppNavigator.MyTasksStackIdentifiers.homeVisit;

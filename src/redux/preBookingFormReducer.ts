@@ -153,6 +153,37 @@ export const postBookingAmountApi = createAsyncThunk("PREBOONING_FORMS_SLICE/pos
   return json;
 })
 
+export const getPaymentDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getPaymentDetailsApi", async (leadId, { rejectWithValue }) => {
+
+  const response = await client.get(URL.GET_PRE_BOOKING_PAYMENT_DETAILS(leadId));
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getBookingAmountDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getBookingAmountDetailsApi", async (leadId, { rejectWithValue }) => {
+
+  const response = await client.get(URL.GET_BOOKING_AMOUNT_DETAILS(leadId));
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getAssignedTasksApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getAssignedTasksApi", async (universalId, { rejectWithValue }) => {
+
+  const url = URL.TASKS_PRE_ENQUIRY() + universalId;
+  const response = await client.get(url);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 interface CustomerDetailModel {
   key: string;
   text: string;
@@ -192,6 +223,12 @@ const prebookingFormSlice = createSlice({
     pre_booking_payment_response_status: "",
     booking_amount_response: null,
     booking_amount_response_status: "",
+    existing_payment_details_response: null,
+    existing_payment_details_status: "",
+    existing_booking_amount_response: null,
+    existing_booking_amount_response_status: "",
+    assigned_tasks_list: [],
+    assigned_tasks_list_status: "",
 
     datePickerKeyId: "",
     showImagePicker: false,
@@ -309,6 +346,7 @@ const prebookingFormSlice = createSlice({
   },
   reducers: {
     clearState: (state, action) => {
+      state.isLoading = false;
       state.pre_booking_details_response = null;
       state.customer_types_response = null;
       state.vehicle_on_road_price_insurence_details_response = null;
@@ -320,6 +358,12 @@ const prebookingFormSlice = createSlice({
       state.drop_sub_reasons_list = [];
       state.pre_booking_payment_response = null;
       state.pre_booking_payment_response_status = "";
+      state.existing_payment_details_response = null;
+      state.existing_payment_details_status = "";
+      state.existing_booking_amount_response = null;
+      state.existing_booking_amount_response_status = "";
+      state.assigned_tasks_list = [];
+      state.assigned_tasks_list_status = "";
 
       // Customer Details
       state.first_name = "";
@@ -949,44 +993,53 @@ const prebookingFormSlice = createSlice({
     // Get PreBooking Details
     builder.addCase(getPrebookingDetailsApi.pending, (state, action) => {
       state.pre_booking_details_response = null;
+      state.isLoading = true;
     })
     builder.addCase(getPrebookingDetailsApi.fulfilled, (state, action) => {
       //console.log("S getPrebookingDetailsApi: ", JSON.stringify(action.payload));
       if (action.payload.dmsEntity) {
         state.pre_booking_details_response = action.payload.dmsEntity;
       }
+      state.isLoading = false;
     })
     builder.addCase(getPrebookingDetailsApi.rejected, (state, action) => {
       //console.log("F getPrebookingDetailsApi: ", JSON.stringify(action.payload));
       state.pre_booking_details_response = null;
+      state.isLoading = false;
     })
     // Update PreBooking Details
     builder.addCase(updatePrebookingDetailsApi.pending, (state, action) => {
       state.update_pre_booking_details_response = "";
+      state.isLoading = true;
     })
     builder.addCase(updatePrebookingDetailsApi.fulfilled, (state, action) => {
       console.log("S updatePrebookingDetailsApi: ", JSON.stringify(action.payload));
       if (action.payload.success == true) {
         state.update_pre_booking_details_response = "success";
       }
+      state.isLoading = false;
     })
     builder.addCase(updatePrebookingDetailsApi.rejected, (state, action) => {
       console.log("F updatePrebookingDetailsApi: ", JSON.stringify(action.payload));
       state.update_pre_booking_details_response = "failed";
+      state.isLoading = false;
     })
     // Get On Road Price & Insurence Details
     builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.pending, (state, action) => {
       state.vehicle_on_road_price_insurence_details_response = null;
+      state.isLoading = true;
     })
     builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.fulfilled, (state, action) => {
       //console.log("S getOnRoadPriceAndInsurenceDetailsApi: ", JSON.stringify(action.payload));
       if (action.payload) {
         state.vehicle_on_road_price_insurence_details_response = action.payload;
       }
+      state.isLoading = false;
     })
     builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.rejected, (state, action) => {
       //console.log("F getOnRoadPriceAndInsurenceDetailsApi: ", JSON.stringify(action.payload));
       state.vehicle_on_road_price_insurence_details_response = null;
+      state.isLoading = false;
     })
 
     builder.addCase(getPaidAccessoriesListApi.fulfilled, (state, action) => {
@@ -994,12 +1047,14 @@ const prebookingFormSlice = createSlice({
       if (action.payload.accessorylist) {
         state.paid_accessories_list = action.payload.accessorylist;
       }
+      state.isLoading = false;
     })
     builder.addCase(dropPreBooingApi.fulfilled, (state, action) => {
       //console.log("S dropPreBooingApi: ", JSON.stringify(action.payload));
       if (action.payload.status === "SUCCESS") {
         state.pre_booking_drop_response_status = "success";
       }
+      state.isLoading = false;
     })
     builder.addCase(sendOnRoadPriceDetails.fulfilled, (state, action) => {
       console.log("S sendOnRoadPriceDetails: ", JSON.stringify(action.payload));
@@ -1009,10 +1064,12 @@ const prebookingFormSlice = createSlice({
       } else if (action.payload.success === true) {
         state.send_onRoad_price_details_response = action.payload.dmsEntity.dmsOnRoadPriceDto;
       }
+      state.isLoading = false;
     })
     builder.addCase(sendOnRoadPriceDetails.rejected, (state, action) => {
       //console.log("F getOnRoadPriceAndInsurenceDetailsApi: ", JSON.stringify(action.payload));
       showToastRedAlert("Something went wrong");
+      state.isLoading = false;
     })
     builder.addCase(getOnRoadPriceDtoListApi.fulfilled, (state, action) => {
       console.log("S getOnRoadPriceDtoListApi: ", JSON.stringify(action.payload));
@@ -1043,6 +1100,7 @@ const prebookingFormSlice = createSlice({
           state.additional_offer_2 = dataObj.additionalOffer2 ? dataObj.additionalOffer2.toString() : "";
         }
       }
+      state.isLoading = false;
     })
     builder.addCase(getCustomerTypesApi.fulfilled, (state, action) => {
       //console.log("S getCustomerTypesApi: ", JSON.stringify(action.payload));
@@ -1069,9 +1127,11 @@ const prebookingFormSlice = createSlice({
         }
         state.customer_types_response = obj;
       }
+      state.isLoading = false;
     })
     builder.addCase(getDropDataApi.pending, (state, action) => {
       state.drop_reasons_list = [];
+      state.isLoading = true;
     })
     builder.addCase(getDropDataApi.fulfilled, (state, action) => {
       if (action.payload) {
@@ -1083,13 +1143,16 @@ const prebookingFormSlice = createSlice({
         });
         state.drop_reasons_list = newTypeData;
       }
+      state.isLoading = false;
     })
     builder.addCase(getDropDataApi.rejected, (state, action) => {
       state.drop_reasons_list = [];
+      state.isLoading = false;
     })
     // Get drop sub reasons api
     builder.addCase(getDropSubReasonDataApi.pending, (state, action) => {
       state.drop_sub_reasons_list = [];
+      state.isLoading = true;
     })
     builder.addCase(getDropSubReasonDataApi.fulfilled, (state, action) => {
       if (action.payload) {
@@ -1101,20 +1164,24 @@ const prebookingFormSlice = createSlice({
         });
         state.drop_sub_reasons_list = newTypeData;
       }
+      state.isLoading = false;
     })
     builder.addCase(getDropSubReasonDataApi.rejected, (state, action) => {
       state.drop_sub_reasons_list = [];
+      state.isLoading = false;
     })
     // Pre Booking Payment Api
     builder.addCase(preBookingPaymentApi.pending, (state, action) => {
       state.pre_booking_payment_response = null;
       state.pre_booking_payment_response_status = "pending";
+      state.isLoading = true;
     })
     builder.addCase(preBookingPaymentApi.fulfilled, (state, action) => {
       if (action.payload.success == true) {
         state.pre_booking_payment_response = action.payload.dmsEntity;
+        state.pre_booking_payment_response_status = "success";
       }
-      state.pre_booking_payment_response_status = "success";
+      state.isLoading = false;
     })
     builder.addCase(preBookingPaymentApi.rejected, (state, action) => {
       if (action.payload["errorMessage"]) {
@@ -1122,17 +1189,20 @@ const prebookingFormSlice = createSlice({
       }
       state.pre_booking_payment_response = null;
       state.pre_booking_payment_response_status = "failed";
+      state.isLoading = false;
     })
-    // Booking Amount
+    //Post Booking Amount
     builder.addCase(postBookingAmountApi.pending, (state, action) => {
       state.booking_amount_response = null;
       state.booking_amount_response_status = "pending";
+      state.isLoading = true;
     })
     builder.addCase(postBookingAmountApi.fulfilled, (state, action) => {
       if (action.payload.success == true) {
-        state.booking_amount_response = action.payload.dmsEntity;
+        state.booking_amount_response = action.payload.dmsEntity.dmsBookingAmountReceivedDtoList;
+        state.booking_amount_response_status = "success";
       }
-      state.booking_amount_response_status = "success";
+      state.isLoading = false;
     })
     builder.addCase(postBookingAmountApi.rejected, (state, action) => {
       if (action.payload["errorMessage"]) {
@@ -1140,6 +1210,82 @@ const prebookingFormSlice = createSlice({
       }
       state.booking_amount_response = null;
       state.booking_amount_response_status = "failed";
+      state.isLoading = false;
+    })
+    // Get Payment Details Api
+    builder.addCase(getPaymentDetailsApi.pending, (state, action) => {
+      state.existing_payment_details_response = null;
+      state.existing_payment_details_status = "pending";
+      state.isLoading = true;
+    })
+    builder.addCase(getPaymentDetailsApi.fulfilled, (state, action) => {
+      if (action.payload) {
+        state.existing_payment_details_response = action.payload;
+        state.type_of_upi = action.payload.typeUpi ? action.payload.typeUpi : "";
+        state.transfer_from_mobile = action.payload.transferFromMobile ? action.payload.transferFromMobile : "";
+        state.transfer_to_mobile = action.payload.transferToMobile ? action.payload.transferToMobile : "";
+        state.utr_no = action.payload.utrNo ? action.payload.utrNo : "";
+        state.comapany_bank_name = action.payload.bankName ? action.payload.bankName : "";
+        state.cheque_number = action.payload.chequeNo ? action.payload.chequeNo.toString() : "";
+        state.dd_number = action.payload.ddNo ? action.payload.ddNo : "";
+
+        const date = convertTimeStampToDateString(action.payload.date, "DD/MM/YYYY");
+        state.transaction_date = date;
+        state.cheque_date = date;
+        state.dd_date = date;
+      }
+      state.existing_payment_details_status = "success";
+      state.isLoading = false;
+    })
+    builder.addCase(getPaymentDetailsApi.rejected, (state, action) => {
+      if (action.payload["errorMessage"]) {
+        showToastRedAlert(action.payload["errorMessage"]);
+      }
+      state.existing_payment_details_response = null;
+      state.existing_payment_details_status = "failed";
+      state.isLoading = false;
+    })
+    //Get Booking Amount Details
+    builder.addCase(getBookingAmountDetailsApi.pending, (state, action) => {
+      state.existing_booking_amount_response = null;
+      state.existing_booking_amount_response_status = "pending";
+      state.isLoading = true;
+    })
+    builder.addCase(getBookingAmountDetailsApi.fulfilled, (state, action) => {
+      if (action.payload.success == true) {
+        state.existing_booking_amount_response = action.payload.dmsEntity.dmsBookingAmountReceivedDtoList;
+        state.existing_booking_amount_response_status = "success";
+      }
+      state.isLoading = false;
+    })
+    builder.addCase(getBookingAmountDetailsApi.rejected, (state, action) => {
+      if (action.payload["errorMessage"]) {
+        showToastRedAlert(action.payload["errorMessage"]);
+      }
+      state.existing_booking_amount_response = null;
+      state.existing_booking_amount_response_status = "failed";
+      state.isLoading = false;
+    })
+    //Get Assingned Tasks api
+    builder.addCase(getAssignedTasksApi.pending, (state, action) => {
+      state.assigned_tasks_list = [];
+      state.assigned_tasks_list_status = "pending";
+      state.isLoading = true;
+    })
+    builder.addCase(getAssignedTasksApi.fulfilled, (state, action) => {
+      if (action.payload.success == true && action.payload.dmsEntity) {
+        state.assigned_tasks_list = action.payload.dmsEntity.tasks || [];
+      }
+      state.isLoading = false;
+      state.assigned_tasks_list_status = "success";
+    })
+    builder.addCase(getAssignedTasksApi.rejected, (state, action) => {
+      if (action.payload["errorMessage"]) {
+        showToastRedAlert(action.payload["errorMessage"]);
+      }
+      state.assigned_tasks_list = null;
+      state.assigned_tasks_list_status = "failed";
+      state.isLoading = false;
     })
   }
 });

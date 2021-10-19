@@ -52,7 +52,10 @@ import {
   getDropDataApi,
   getDropSubReasonDataApi,
   preBookingPaymentApi,
-  postBookingAmountApi
+  postBookingAmountApi,
+  getPaymentDetailsApi,
+  getBookingAmountDetailsApi,
+  getAssignedTasksApi
 } from "../../../redux/preBookingFormReducer";
 import {
   RadioTextItem,
@@ -246,6 +249,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       }
       if (dmsLeadDto.leadStatus === 'PREBOOKINGCOMPLETED') {
         setShowPrebookingPaymentSection(true);
+        // Get Payment Details
+        dispatch(getPaymentDetailsApi(dmsLeadDto.id));
+        dispatch(getBookingAmountDetailsApi(dmsLeadDto.id));
       }
 
       // Update dmsContactOrAccountDto
@@ -650,9 +656,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       return
     }
 
-    const dmsEntity = { ...selector.pre_booking_details_response };
+    let dmsEntity = { ...selector.pre_booking_details_response };
+    let dmsLeadDto = { ...dmsEntity.dmsLeadDto };
     if (type === "APPROVE") {
-      dmsEntity.dmsLeadDto.leadStatus = 'PREBOOKINGCOMPLETED';
+      dmsLeadDto.leadStatus = 'PREBOOKINGCOMPLETED';
     }
     else if (type === "REJECT") {
 
@@ -661,11 +668,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         return;
       }
 
-      dmsEntity.dmsLeadDto.leadStatus = 'REJECTED';
-      dmsEntity.dmsLeadDto.remarks = selector.reject_remarks;
+      dmsLeadDto.leadStatus = 'REJECTED';
+      dmsLeadDto.remarks = selector.reject_remarks;
     }
+    dmsEntity.dmsLeadDto = dmsLeadDto;
     setTypeOfActionDispatched("UPDATE_PRE_BOOKING")
-    dispatch(updatePrebookingDetailsApi(formData));
+    dispatch(updatePrebookingDetailsApi(dmsEntity));
   }
 
   // Handle Update Pre-Booking Details Response
@@ -809,7 +817,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     dmsBooking.bookingAmount = Number(selector.booking_amount)
     let trimStr = selector.payment_at.replace(/\s+/g, '');
     dmsBooking.paymentAt = trimStr;
-    dmsBooking.modeOfPayment = selector.booking_payment_mode;
+    let trimStr2 = selector.booking_payment_mode.replace(/\s+/g, '');
+    dmsBooking.modeOfPayment = trimStr2;
     dmsBooking.otherVehicle = selector.vechicle_registration;
     dmsBooking.deliveryLocation = selector.delivery_location;
     console.log("dmsBooking: ", dmsBooking);
@@ -936,22 +945,36 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       paymentDate = convertDateStringToMillisecondsUsingMoment(selector.dd_date);
     }
 
-    const payload = {
-      "bankName": selector.comapany_bank_name,
-      "bookingId": bookingId,
-      "chequeNo": selector.cheque_number,
-      "date": paymentDate,
-      "ddNo": selector.dd_number,
-      "id": 0,
-      "leadId": leadId,
-      "paymentMode": paymentMode,
-      "transferFromMobile": selector.transfer_from_mobile,
-      "transferToMobile": selector.transfer_to_mobile,
-      "typeUpi": selector.type_of_upi,
-      "utrNo": selector.utr_no
+    let payload = {};
+    if (selector.existing_payment_details_response) {
+      payload = { ...selector.existing_payment_details_response };
     }
+
+    payload.bankName = selector.comapany_bank_name;
+    payload.bookingId = bookingId;
+    payload.chequeNo = selector.cheque_number;
+    payload.date = paymentDate;
+    payload.ddNo = selector.dd_number;
+    payload.id = payload.id ? payload.id : 0;
+    payload.leadId = leadId;
+    payload.paymentMode = paymentMode;
+    payload.transferFromMobile = selector.transfer_from_mobile;
+    payload.transferToMobile = selector.transfer_to_mobile;
+    payload.typeUpi = selector.type_of_upi;
+    payload.utrNo = selector.utr_no;
     dispatch(preBookingPaymentApi(payload))
   }
+
+  // 1. payment, lead, booking
+
+  // Handle Payment Response
+  useEffect(() => {
+    if (selector.pre_booking_payment_response_status === "success") {
+      sendBookingAmount();
+    } else if (selector.pre_booking_payment_response_status === "failed") {
+      showToastRedAlert("Something went wrong");
+    }
+  }, [selector.pre_booking_payment_response_status])
 
   const sendBookingAmount = () => {
 
@@ -967,16 +990,45 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       return
     }
 
-    const payload = [
-      {
-        "id": 0,
-        "paymentName": "Booking Advance Amount",
-        "amount": bookingAmount,
-        "leadId": leadId
-      }
-    ]
-    dispatch(postBookingAmountApi(payload))
+    let payload = {};
+    if (selector.existing_booking_amount_response && selector.existing_booking_amount_response.length > 0) {
+      payload = { ...selector.existing_booking_amount_response[0] };
+    }
+    payload.id = payload.id ? payload.id : 0
+    payload.paymentName = "Booking Advance Amount";
+    payload.amount = bookingAmount;
+    payload.leadId = leadId;
+
+    const finalPayload = [payload]
+    dispatch(postBookingAmountApi(finalPayload))
   }
+
+  // Handle Booking Amount Response
+  useEffect(() => {
+    if (selector.booking_amount_response_status === "success") {
+      // Get Assigned tasks
+      dispatch(getAssignedTasksApi(universalId));
+    } else if (selector.booking_amount_response_status === "failed") {
+      showToastRedAlert("Something went wrong");
+    }
+  }, [selector.booking_amount_response_status]);
+
+  // Handle Assigned Tasks Response
+  useEffect(() => {
+    if (selector.assigned_tasks_list_status === "success" && selector.assigned_tasks_list) {
+      if (selector.assigned_tasks_list.length > 0) {
+        const filteredAry = selector.assigned_tasks_list.filter(item => item.taskName === "Proceed to Booking");
+        if (filteredAry.length == 0) { return }
+        const taskData = filteredAry[0];
+        const taskId = taskData.taskId;
+        const taskStatus = taskData.taskStatus;
+        navigation.navigate(AppNavigator.MyTasksStackIdentifiers.proceedToPreBooking, { identifier: "PROCEED_TO_BOOKING", taskId, universalId, taskStatus, taskData: taskData });
+        dispatch(clearState());
+      }
+    } else if (selector.assigned_tasks_list_status === "failed") {
+      showToastRedAlert("Something went wrong");
+    }
+  }, [selector.assigned_tasks_list_status]);
 
   const updatePaidAccessroies = (tableData) => {
 
@@ -2588,6 +2640,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   mode="contained"
                   style={{ width: 120 }}
                   color={Colors.BLACK}
+                  disabled={selector.isLoading}
                   labelStyle={{ textTransform: "none" }}
                   onPress={() => setIsDropSelected(true)}
                 >
@@ -2596,6 +2649,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 <Button
                   mode="contained"
                   color={Colors.RED}
+                  disabled={selector.isLoading}
                   labelStyle={{ textTransform: "none" }}
                   onPress={submitClicked}
                 >
@@ -2610,6 +2664,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   mode="contained"
                   style={{ width: 120 }}
                   color={Colors.GREEN}
+                  disabled={selector.isLoading}
                   labelStyle={{ textTransform: "none" }}
                   onPress={() => approveOrRejectMethod("APPROVE")}
                 >
@@ -2618,6 +2673,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 <Button
                   mode="contained"
                   color={Colors.RED}
+                  disabled={selector.isLoading}
                   labelStyle={{ textTransform: "none" }}
                   onPress={() => isRejectSelected ? approveOrRejectMethod("REJECT") : setIsRejectSelected(true)}
                 >
@@ -2632,6 +2688,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   mode="contained"
                   style={{ width: 120 }}
                   color={Colors.BLACK}
+                  disabled={selector.isLoading}
                   labelStyle={{ textTransform: "none" }}
                   onPress={() => setIsDropSelected(true)}
                 >
@@ -2640,8 +2697,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 <Button
                   mode="contained"
                   color={Colors.RED}
+                  disabled={selector.isLoading}
                   labelStyle={{ textTransform: "none" }}
-                  onPress={() => { }}
+                  onPress={proceedToBookingClicked}
                 >
                   Proceed To Booking
                 </Button>
@@ -2652,6 +2710,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               <Button
                 mode="contained"
                 color={Colors.RED}
+                disabled={selector.isLoading}
                 labelStyle={{ textTransform: "none" }}
                 onPress={proceedToCancelPreBooking}
               >

@@ -107,7 +107,8 @@ export const EmsStackIdentifiers = {
   detailsOverview: "DETAILS_OVERVIEW",
   preBookingForm: "PRE_BOOKING_FORM",
   paidAccessories: "PAID_ACCESSORIES",
-  proceedToPreBooking: "PROCEED_TO_PRE_BOOKING"
+  proceedToPreBooking: "PROCEED_TO_PRE_BOOKING",
+  proceedToBooking: "PROCEED_TO_BOOKING",
 };
 
 export const PreBookingStackIdentifiers = {
@@ -122,6 +123,7 @@ export const MyTasksStackIdentifiers = {
   testDrive: "TEST_DRIVE",
   enquiryFollowUp: "ENQUIRY_FOLLOW_UP",
   proceedToPreBooking: "PROCEED_TO_PRE_BOOKING",
+  proceedToBooking: "PROCEED_TO_BOOKING",
   createEnquiry: "CREATE_ENQUIRY",
 };
 
