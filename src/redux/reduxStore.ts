@@ -44,7 +44,7 @@ const reducer = combineReducers({
   confirmedPreEnquiryReducer,
   proceedToPreBookingReducer,
   createEnquiryReducer,
-  upcomingDeliveriesReducer
+  upcomingDeliveriesReducer,
 });
 
 const store = configureStore({

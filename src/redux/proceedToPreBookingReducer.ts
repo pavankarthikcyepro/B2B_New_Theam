@@ -72,6 +72,26 @@ export const dropEnquiryApi = createAsyncThunk("PROCEED_TO_PRE_BOOKING_SLICE/dro
     return json;
 })
 
+export const getDropDataApi = createAsyncThunk("PROCEED_TO_PRE_BOOKING_SLICE/getDropDataApi", async (payload, { rejectWithValue }) => {
+
+    const response = await client.post(URL.GET_DROP_DATA(), payload);
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const getDropSubReasonDataApi = createAsyncThunk("PROCEED_TO_PRE_BOOKING_SLICE/getDropSubReasonDataApi", async (payload, { rejectWithValue }) => {
+
+    const response = await client.post(URL.GET_DROP_DATA(), payload);
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
 
 const slice = createSlice({
     name: "PROCEED_TO_PRE_BOOKING_SLICE",
@@ -80,9 +100,12 @@ const slice = createSlice({
         update_task_response_status: null,
         change_enquiry_status: null,
         enquiry_details_response: null,
-        update_enquiry_details_response: "",
+        update_enquiry_details_response: null,
+        update_enquiry_details_response_status: "",
         enquiry_drop_response_status: null,
         isLoading: false,
+        drop_reasons_list: [],
+        drop_sub_reasons_list: [],
     },
     reducers: {
         clearState: (state, action) => {
@@ -90,8 +113,11 @@ const slice = createSlice({
             state.update_task_response_status = null;
             state.change_enquiry_status = null;
             state.enquiry_details_response = null;
-            state.update_enquiry_details_response = "";
+            state.update_enquiry_details_response = null;
+            state.update_enquiry_details_response_status = "";
             state.enquiry_drop_response_status = null;
+            state.drop_reasons_list = [];
+            state.drop_sub_reasons_list = [];
         },
         setDataDetails: (state, action: PayloadAction<EnquiryFollowUpTextModel>) => {
             const { key, text } = action.payload;
@@ -146,17 +172,20 @@ const slice = createSlice({
         // Update Prebooking Details
         builder.addCase(updateEnquiryDetailsApi.pending, (state, action) => {
             state.isLoading = true;
-            state.update_enquiry_details_response = "";
+            state.update_enquiry_details_response = null;
+            state.update_enquiry_details_response_status = "pending";
         })
         builder.addCase(updateEnquiryDetailsApi.fulfilled, (state, action) => {
-            if (action.payload.success == true) {
-                state.update_enquiry_details_response = "success";
+            if (action.payload.dmsEntity) {
+                state.update_enquiry_details_response = action.payload.dmsEntity;
             }
             state.isLoading = false;
+            state.update_enquiry_details_response_status = "success";
         })
         builder.addCase(updateEnquiryDetailsApi.rejected, (state, action) => {
-            state.update_enquiry_details_response = "failed";
             state.isLoading = false;
+            state.update_enquiry_details_response_status = "failed";
+            state.update_enquiry_details_response = null;
         })
         // Change Enquiry Status
         builder.addCase(changeEnquiryStatusApi.pending, (state, action) => {
@@ -186,6 +215,48 @@ const slice = createSlice({
         })
         builder.addCase(dropEnquiryApi.rejected, (state, action) => {
             state.enquiry_drop_response_status = "failed";
+            state.isLoading = false;
+        })
+        // GET Drop Reasons Data
+        builder.addCase(getDropDataApi.pending, (state, action) => {
+            state.drop_reasons_list = [];
+            state.isLoading = true;
+        })
+        builder.addCase(getDropDataApi.fulfilled, (state, action) => {
+            if (action.payload) {
+                const newTypeData = action.payload.map(element => {
+                    return {
+                        ...element,
+                        name: element.value
+                    }
+                });
+                state.drop_reasons_list = newTypeData;
+            }
+            state.isLoading = false;
+        })
+        builder.addCase(getDropDataApi.rejected, (state, action) => {
+            state.drop_reasons_list = [];
+            state.isLoading = false;
+        })
+        // Get drop sub reasons api
+        builder.addCase(getDropSubReasonDataApi.pending, (state, action) => {
+            state.drop_sub_reasons_list = [];
+            state.isLoading = true;
+        })
+        builder.addCase(getDropSubReasonDataApi.fulfilled, (state, action) => {
+            if (action.payload) {
+                const newTypeData = action.payload.map(element => {
+                    return {
+                        ...element,
+                        name: element.value
+                    }
+                });
+                state.drop_sub_reasons_list = newTypeData;
+            }
+            state.isLoading = false;
+        })
+        builder.addCase(getDropSubReasonDataApi.rejected, (state, action) => {
+            state.drop_sub_reasons_list = [];
             state.isLoading = false;
         })
     }

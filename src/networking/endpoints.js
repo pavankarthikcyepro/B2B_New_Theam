@@ -110,6 +110,18 @@ const URL = {
     },
     PRE_BOOKING_PAYMENT: () => {
         return sales_url + "/payment";
+    },
+    BOOKING_AMOUNT: () => {
+        return sales_url + "/booking-amount";
+    },
+    GET_PRE_BOOKING_PAYMENT_DETAILS: (leadId) => {
+        return sales_url + `/payment?leadId=${leadId}`;
+    },
+    GET_BOOKING_AMOUNT_DETAILS: (leadId) => {
+        return sales_url + `/booking-amount/lead/${leadId}`;
+    },
+    GET_ASSIGNED_TASKS_AT_PRE_BOOKING: (universalId) => {
+        return sales_url + `/workflow/lead/stage/${universalId}`;
     }
 }
 
