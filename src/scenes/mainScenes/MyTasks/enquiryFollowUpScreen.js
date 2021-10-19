@@ -7,7 +7,7 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   ScrollView,
-  Keyboard
+  Keyboard,
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { TextinputComp } from "../../../components";
@@ -21,17 +21,24 @@ import {
   setEnquiryFollowUpDetails,
   updateSelectedDate,
   getTaskDetailsApi,
-  updateTaskApi
+  updateTaskApi,
 } from "../../../redux/enquiryFollowUpReducer";
 import { DateSelectItem } from "../../../pureComponents";
 import { convertDateStringToMillisecondsUsingMoment } from "../../../utils/helperFunctions";
 import moment from "moment";
-import { showToast, showToastRedAlert, showToastSucess } from "../../../utils/toast";
-import { getCurrentTasksListApi, getPendingTasksListApi } from "../../../redux/mytaskReducer";
+import {
+  showToast,
+  showToastRedAlert,
+  showToastSucess,
+} from "../../../utils/toast";
+import {
+  getCurrentTasksListApi,
+  getPendingTasksListApi,
+} from "../../../redux/mytaskReducer";
 import * as AsyncStorage from "../../../asyncStore";
+import { isValidateAlphabetics } from "../../../utils/helperFunctions";
 
 const ScreenWidth = Dimensions.get("window").width;
-
 
 const LocalButtonComp = ({ title, onPress, disabled }) => {
   return (
@@ -45,14 +52,13 @@ const LocalButtonComp = ({ title, onPress, disabled }) => {
     >
       {title}
     </Button>
-  )
-}
+  );
+};
 
 const EnquiryFollowUpScreen = ({ route, navigation }) => {
-
   const { taskId, identifier } = route.params;
   const selector = useSelector((state) => state.enquiryFollowUpReducer);
-  const { vehicle_modal_list } = useSelector(state => state.homeReducer);
+  const { vehicle_modal_list } = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [dropDownTitle, setDropDownTitle] = useState("");
@@ -65,8 +71,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
   const [empId, setEmpId] = useState("");
 
   useLayoutEffect(() => {
-
-    let title = "Enquiry Follow Up"
+    let title = "Enquiry Follow Up";
     switch (identifier) {
       case "PRE_ENQUIRY_FOLLOW_UP":
         title = "Pre Enquiry Follow Up";
@@ -77,37 +82,37 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     }
 
     navigation.setOptions({
-      title: title
-    })
-  }, [navigation])
+      title: title,
+    });
+  }, [navigation]);
 
   useEffect(() => {
-
     getAsyncStorageData();
     setCarModelsDataFromBase();
     dispatch(getTaskDetailsApi(taskId));
-  }, [])
+  }, []);
 
   const getAsyncStorageData = async () => {
     const employeeId = await AsyncStorage.getData(AsyncStorage.Keys.EMP_ID);
     if (employeeId) {
       setEmpId(employeeId);
     }
-  }
+  };
 
   const setCarModelsDataFromBase = () => {
     let modalList = [];
     if (vehicle_modal_list.length > 0) {
-      vehicle_modal_list.forEach(item => {
-        modalList.push({ id: item.vehicleId, name: item.model })
+      vehicle_modal_list.forEach((item) => {
+        modalList.push({ id: item.vehicleId, name: item.model });
       });
     }
     setCarModelsData([...modalList]);
-  }
+  };
 
   const updateModelVarientsData = (selectedModelName) => {
-
-    if (!selectedModelName || selectedModelName.length === 0) { return }
+    if (!selectedModelName || selectedModelName.length === 0) {
+      return;
+    }
 
     let arrTemp = vehicle_modal_list.filter(function (obj) {
       return obj.model === selectedModelName;
@@ -118,16 +123,16 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       let newArray = [];
       let mArray = carModelObj.varients;
       if (mArray.length) {
-        mArray.forEach(item => {
+        mArray.forEach((item) => {
           newArray.push({
             id: item.id,
-            name: item.name
-          })
-        })
-        setModelVarientsData([...newArray])
+            name: item.name,
+          });
+        });
+        setModelVarientsData([...newArray]);
       }
     }
-  }
+  };
 
   const getMyTasksListFromServer = () => {
     if (empId) {
@@ -135,7 +140,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       dispatch(getCurrentTasksListApi(endUrl));
       dispatch(getPendingTasksListApi(endUrl));
     }
-  }
+  };
 
   // Update, Close, Cancel, Reschedule Task Response handle
   useEffect(() => {
@@ -162,42 +167,59 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     } else if (selector.update_task_response_status === "failed") {
       showToastRedAlert("something went wrong");
     }
-  }, [selector.update_task_response_status])
+  }, [selector.update_task_response_status]);
 
   const updateTask = () => {
     changeTaskStatusBasedOnActionType("UPDATE");
-  }
+  };
 
   const closeTask = () => {
     changeTaskStatusBasedOnActionType("CLOSE");
-  }
+  };
 
   const rescheduleTask = () => {
     changeTaskStatusBasedOnActionType("RESCHEDULE");
-  }
+  };
 
   const cancelTask = () => {
     changeTaskStatusBasedOnActionType("CANCEL");
-  }
+  };
 
   const changeTaskStatusBasedOnActionType = (type) => {
-
     Keyboard.dismiss();
     if (selector.task_details_response?.taskId !== taskId) {
-      return
+      return;
     }
 
     if (selector.employee_remarks.length === 0) {
       showToast("Please enter required fields");
-      return
+      return;
+    }
+
+    if (!isValidateAlphabetics(selector.reason)) {
+      showToast("please enter alphabetics only in reason");
+      return;
+    }
+    if (!isValidateAlphabetics(selector.customer_remarks)) {
+      showToast("please enter alphabetics only in customer reason");
+      return;
+    }
+
+    if (!isValidateAlphabetics(selector.employee_remarks)) {
+      showToast("please enter alphabetics only in employee remarks");
+      return;
     }
 
     const newTaskObj = { ...selector.task_details_response };
     newTaskObj.reason = selector.reason;
     newTaskObj.customerRemarks = selector.customer_remarks;
     newTaskObj.employeeRemarks = selector.employee_remarks;
-    newTaskObj.taskActualStartTime = convertDateStringToMillisecondsUsingMoment(selector.actual_start_time);
-    newTaskObj.taskActualEndTime = convertDateStringToMillisecondsUsingMoment(selector.actual_end_time);
+    newTaskObj.taskActualStartTime = convertDateStringToMillisecondsUsingMoment(
+      selector.actual_start_time
+    );
+    newTaskObj.taskActualEndTime = convertDateStringToMillisecondsUsingMoment(
+      selector.actual_end_time
+    );
     switch (type) {
       case "CLOSE":
         newTaskObj.taskStatus = "CLOSED";
@@ -209,7 +231,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
         var momentA = moment(selector.actual_start_time, "DD/MM/YYYY");
         var momentB = moment(); // current date
         if (momentA < momentB) {
-          showToast("Start date should not be less than current date")
+          showToast("Start date should not be less than current date");
           return;
         }
         newTaskObj.taskStatus = "RESCHEDULED";
@@ -217,37 +239,36 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     }
     setActionType(type);
     dispatch(updateTaskApi(newTaskObj));
-  }
+  };
 
   const setDropDownDataForModel = (key, title) => {
-
     switch (key) {
       case "MODEL":
-        setDataForDropDown([...carModelsData])
+        setDataForDropDown([...carModelsData]);
         break;
       case "VARIENT":
-        setDataForDropDown([...modelVarientsData])
+        setDataForDropDown([...modelVarientsData]);
         break;
     }
     setShowDropDownModel(true);
     setDropDownTitle(title);
     setDropDownKey(key);
-  }
+  };
 
   return (
     <SafeAreaView style={[styles.container]}>
-
       <DropDownComponant
         visible={showDropDownModel}
         headerTitle={dropDownTitle}
         data={dataForDropDown}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
-
           if (dropDownKey === "MODEL") {
             updateModelVarientsData(item.name);
           }
-          dispatch(setEnquiryFollowUpDetails({ key: dropDownKey, text: item.name }));
+          dispatch(
+            setEnquiryFollowUpDetails({ key: dropDownKey, text: item.name })
+          );
           setShowDropDownModel(false);
         }}
       />
@@ -281,19 +302,23 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
           style={{ flex: 1 }}
         >
           <View style={[GlobalStyle.shadow]}>
-
-            {(identifier === "ENQUIRY_FOLLOW_UP" || identifier === "PRE_ENQUIRY_FOLLOW_UP") && (
+            {(identifier === "ENQUIRY_FOLLOW_UP" ||
+              identifier === "PRE_ENQUIRY_FOLLOW_UP") && (
               <View>
                 <DropDownSelectionItem
                   label={"Model"}
                   value={selector.model}
-                  onPress={() => setDropDownDataForModel("MODEL", "Select Model")}
+                  onPress={() =>
+                    setDropDownDataForModel("MODEL", "Select Model")
+                  }
                 />
 
                 <DropDownSelectionItem
                   label={"Varient"}
                   value={selector.varient}
-                  onPress={() => setDropDownDataForModel("VARIENT", "Select Varient")}
+                  onPress={() =>
+                    setDropDownDataForModel("VARIENT", "Select Varient")
+                  }
                 />
               </View>
             )}
@@ -303,7 +328,9 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
               label={"Reason*"}
               value={selector.reason}
               onChangeText={(text) => {
-                dispatch(setEnquiryFollowUpDetails({ key: "REASON", text: text }));
+                dispatch(
+                  setEnquiryFollowUpDetails({ key: "REASON", text: text })
+                );
               }}
             />
             <Text style={GlobalStyle.underline}></Text>
@@ -313,7 +340,12 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
               label={"Customer Remarks*"}
               value={selector.customer_remarks}
               onChangeText={(text) =>
-                dispatch(setEnquiryFollowUpDetails({ key: "CUSTOMER_REMARKS", text: text }))
+                dispatch(
+                  setEnquiryFollowUpDetails({
+                    key: "CUSTOMER_REMARKS",
+                    text: text,
+                  })
+                )
               }
             />
             <Text style={GlobalStyle.underline}></Text>
@@ -323,7 +355,11 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
               label={"Employee Remarks*"}
               value={selector.employee_remarks}
               onChangeText={(text) =>
-                dispatch(setEnquiryFollowUpDetails({ key: "EMPLOYEE_REMARKS", text: text })
+                dispatch(
+                  setEnquiryFollowUpDetails({
+                    key: "EMPLOYEE_REMARKS",
+                    text: text,
+                  })
                 )
               }
             />
@@ -372,7 +408,9 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
             </View>
           ) : (
             <View style={styles.cancelledVw}>
-              <Text style={styles.cancelledText}>{"This task has been cancelled"}</Text>
+              <Text style={styles.cancelledText}>
+                {"This task has been cancelled"}
+              </Text>
             </View>
           )}
         </ScrollView>
@@ -406,12 +444,12 @@ const styles = StyleSheet.create({
   cancelledVw: {
     height: 60,
     width: "100%",
-    justifyContent: 'center',
-    alignItems: "center"
+    justifyContent: "center",
+    alignItems: "center",
   },
   cancelledText: {
     fontSize: 14,
-    fontWeight: '400',
-    color: Colors.RED
-  }
+    fontWeight: "400",
+    color: Colors.RED,
+  },
 });

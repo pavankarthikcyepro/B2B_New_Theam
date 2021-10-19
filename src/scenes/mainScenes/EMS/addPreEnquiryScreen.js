@@ -8,7 +8,7 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Alert,
-  Keyboard
+  Keyboard,
 } from "react-native";
 import { ButtonComp } from "../../../components/buttonComp";
 import { Checkbox, Button, IconButton } from "react-native-paper";
@@ -26,7 +26,7 @@ import {
   setCustomerTypeList,
   setCarModalList,
   setExistingDetails,
-  continueToCreatePreEnquiry
+  continueToCreatePreEnquiry,
 } from "../../../redux/addPreEnquiryReducer";
 import { useDispatch, useSelector } from "react-redux";
 import { isMobileNumber, isEmail } from "../../../utils/helperFunctions";
@@ -37,19 +37,23 @@ import { DropDownSelectionItem } from "../../../pureComponents";
 import * as AsyncStore from "../../../asyncStore";
 import { showToast, showToastRedAlert } from "../../../utils/toast";
 import URL from "../../../networking/endpoints";
+import { isValidateAlphabetics } from "../../../utils/helperFunctions";
 
 const screenWidth = Dimensions.get("window").width;
 
 const AddPreEnquiryScreen = ({ route, navigation }) => {
-
   const selector = useSelector((state) => state.addPreEnquiryReducer);
   const homeSelector = useSelector((state) => state.homeReducer);
-  const { vehicle_modal_list, customer_type_list } = useSelector(state => state.homeReducer);
+  const { vehicle_modal_list, customer_type_list } = useSelector(
+    (state) => state.homeReducer
+  );
   const dispatch = useDispatch();
   const [organizationId, setOrganizationId] = useState(0);
   const [branchId, setBranchId] = useState(0);
   const [employeeName, setEmployeeName] = useState("");
-  const [existingPreEnquiryDetails, setExistingPreEnquiryDetails] = useState({});
+  const [existingPreEnquiryDetails, setExistingPreEnquiryDetails] = useState(
+    {}
+  );
   const [fromEdit, setFromEdit] = useState(false);
   const [dataForCarModels, setDataForCarModels] = useState([]);
   const [showDropDownModel, setShowDropDownModel] = useState(false);
@@ -66,7 +70,9 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   }, []);
 
   const getAsyncstoreData = async () => {
-    const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    const employeeData = await AsyncStore.getData(
+      AsyncStore.Keys.LOGIN_EMPLOYEE
+    );
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       setOrganizationId(jsonObj.orgId);
@@ -74,33 +80,46 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       setEmployeeName(jsonObj.empName);
 
       if (jsonObj.hrmsRole === "Reception") {
-
-        const resultAry = homeSelector.source_of_enquiry_list.filter(item => item.name == "Showroom");
+        const resultAry = homeSelector.source_of_enquiry_list.filter(
+          (item) => item.name == "Showroom"
+        );
         if (resultAry.length > 0) {
-          dispatch(setDropDownData({ key: "SOURCE_OF_ENQUIRY", value: resultAry[0].name, id: resultAry[0].id }));
+          dispatch(
+            setDropDownData({
+              key: "SOURCE_OF_ENQUIRY",
+              value: resultAry[0].name,
+              id: resultAry[0].id,
+            })
+          );
         }
       } else if (jsonObj.hrmsRole === "Tele Caller") {
-
-        const resultAry = homeSelector.source_of_enquiry_list.filter(item => item.name == "Digital Marketing");
+        const resultAry = homeSelector.source_of_enquiry_list.filter(
+          (item) => item.name == "Digital Marketing"
+        );
         if (resultAry.length > 0) {
-          dispatch(setDropDownData({ key: "SOURCE_OF_ENQUIRY", value: resultAry[0].name, id: resultAry[0].id }));
+          dispatch(
+            setDropDownData({
+              key: "SOURCE_OF_ENQUIRY",
+              value: resultAry[0].name,
+              id: resultAry[0].id,
+            })
+          );
         }
       }
     }
-  }
+  };
 
   const updateCarModelsData = () => {
     let modalList = [];
     if (vehicle_modal_list.length > 0) {
-      vehicle_modal_list.forEach(item => {
-        modalList.push({ id: item.vehicleId, name: item.model })
+      vehicle_modal_list.forEach((item) => {
+        modalList.push({ id: item.vehicleId, name: item.model });
       });
     }
     setDataForCarModels([...modalList]);
-  }
+  };
 
   const setExistingData = () => {
-
     if (route.params != null && route.params !== undefined) {
       const preEnquiryDetails = route.params.preEnquiryDetails;
       const fromEdit = route.params.fromEdit;
@@ -108,7 +127,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       setFromEdit(fromEdit);
       dispatch(setExistingDetails(preEnquiryDetails));
     }
-  }
+  };
 
   const getCustomerTypeListFromDB = () => {
     const data = realm.objects("CUSTOMER_TYPE_TABLE");
@@ -121,7 +140,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   };
 
   const gotoConfirmPreEnquiryScreen = (response) => {
-
     if (response.hasOwnProperty("dmsEntity")) {
       let dmsEn;
       if (response.dmsEntity.hasOwnProperty("dmsContactDto")) {
@@ -141,24 +159,26 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       itemData.enquirySegment = dms.enquirySegment;
       itemData.createdDate = dms.createddatetime;
       itemData.enquirySource = dms.enquirySource;
-      itemData.pincode = dms.dmsAddresses ? dms.dmsAddresses[0].pincode : '';
+      itemData.pincode = dms.dmsAddresses ? dms.dmsAddresses[0].pincode : "";
       itemData.leadStage = dms.leadStage;
       itemData.universalId = dms.crmUniversalId;
       if (!fromEdit) {
-        navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq, { itemData, fromCreatePreEnquiry: true })
+        navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq, {
+          itemData,
+          fromCreatePreEnquiry: true,
+        });
       } else {
         navigation.popToTop();
       }
       dispatch(clearState());
-    }
-    else {
+    } else {
       if (response.accountId != null && response.contactId != null) {
         confirmToCreateLeadAgain(response);
       } else {
         showToast(response.message);
       }
     }
-  }
+  };
 
   const confirmToCreateLeadAgain = (response) => {
     Alert.alert(
@@ -167,63 +187,62 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       [
         {
           text: "Cancel",
-          style: "cancel"
+          style: "cancel",
         },
-        { text: "Create Lead", onPress: () => proceedToCreateLead(response) }
+        { text: "Create Lead", onPress: () => proceedToCreateLead(response) },
       ],
       { cancelable: false }
     );
-  }
+  };
 
   proceedToCreateLead = (data) => {
-
     let formData = {
-      "branchId": branchId,
-      "createdBy": employeeName,
-      "dmsaccountid": data.accountId,
-      "dmscontactid": data.contactId,
-      "enquirySegment": selector.enquiryType,
-      "firstName": selector.firstName,
-      "lastName": selector.lastName,
-      "leadStage": "PREENQUIRY",
-      "model": selector.carModel,
-      "organizationId": organizationId,
-      "phone": selector.mobile,
-      "sourceOfEnquiry": selector.sourceOfEnquiryId,
-      "eventCode": "",
-      "email": selector.email,
-      "referencenumber": "",
-      "dmsAddresses": [
+      branchId: branchId,
+      createdBy: employeeName,
+      dmsaccountid: data.accountId,
+      dmscontactid: data.contactId,
+      enquirySegment: selector.enquiryType,
+      firstName: selector.firstName,
+      lastName: selector.lastName,
+      leadStage: "PREENQUIRY",
+      model: selector.carModel,
+      organizationId: organizationId,
+      phone: selector.mobile,
+      sourceOfEnquiry: selector.sourceOfEnquiryId,
+      eventCode: "",
+      email: selector.email,
+      referencenumber: "",
+      dmsAddresses: [
         {
-          "addressType": "Communication",
-          "houseNo": "",
-          "street": "",
-          "city": "",
-          "district": "",
-          "pincode": selector.pincode,
-          "state": "",
-          "village": "",
-          "county": "India",
-          "rural": false,
-          "urban": true,
-          "id": 0
+          addressType: "Communication",
+          houseNo: "",
+          street: "",
+          city: "",
+          district: "",
+          pincode: selector.pincode,
+          state: "",
+          village: "",
+          county: "India",
+          rural: false,
+          urban: true,
+          id: 0,
         },
         {
-          "addressType": "Permanent",
-          "houseNo": "",
-          "street": "",
-          "city": "",
-          "district": "",
-          "pincode": selector.pincode,
-          "state": "",
-          "village": "",
-          "county": "India",
-          "rural": false,
-          "urban": true,
-          "id": 0
-        }
-      ]
-    }
+          addressType: "Permanent",
+          houseNo: "",
+          street: "",
+          city: "",
+          district: "",
+          pincode: selector.pincode,
+          state: "",
+          village: "",
+          county: "India",
+          rural: false,
+          urban: true,
+          id: 0,
+        },
+      ],
+    };
 
     const url = URL.CREATE_CONTACT() + "/lead?allocateDse=false";
     let dataObj = {
@@ -231,18 +250,31 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       body: formData,
     };
     dispatch(createPreEnquiry(dataObj));
-  }
-
+  };
 
   const submitClicked = () => {
-
     Keyboard.dismiss();
 
     if (
-      selector.firstName.length == 0 || selector.lastName.length == 0 || selector.mobile.length == 0 || selector.carModel.length == 0 || selector.enquiryType.length == 0 ||
-      selector.sourceOfEnquiry.length == 0 || selector.customerType.length == 0 || selector.pincode.length == 0
+      selector.firstName.length == 0 ||
+      selector.lastName.length == 0 ||
+      selector.mobile.length == 0 ||
+      selector.carModel.length == 0 ||
+      selector.enquiryType.length == 0 ||
+      selector.sourceOfEnquiry.length == 0 ||
+      selector.customerType.length == 0 ||
+      selector.pincode.length == 0
     ) {
       showToastRedAlert("Please fill required fields");
+      return;
+    }
+
+    if (!isValidateAlphabetics(selector.firstName)) {
+      showToast("please enter alphabetics only in firstname ");
+      return;
+    }
+    if (!isValidateAlphabetics(selector.lastName)) {
+      showToast("please enter alphabetics only in lastname ");
       return;
     }
 
@@ -261,7 +293,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (selector.pincode.length === 0) {
+    if (selector.pincode.length != 6) {
       showToast("Please enter valid pincode");
       return;
     }
@@ -371,19 +403,21 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     } else if (selector.errorMsg) {
       showToast(selector.errorMsg);
     }
-  }, [selector.status, selector.errorMsg, selector.create_enquiry_response_obj]);
+  }, [
+    selector.status,
+    selector.errorMsg,
+    selector.create_enquiry_response_obj,
+  ]);
 
   const updatePreEneuquiryDetails = () => {
-
     let url = sales_url;
     let dmsAccountOrContactDto = {};
-    let dmsLeadDto = {}
+    let dmsLeadDto = {};
 
     if (existingPreEnquiryDetails.hasOwnProperty("dmsContactDto")) {
       url = url + "/contact?allocateDse=" + selector.create_enquiry_checked;
       dmsAccountOrContactDto = { ...existingPreEnquiryDetails.dmsContactDto };
-    }
-    else if (existingPreEnquiryDetails.hasOwnProperty("dmsAccountDto")) {
+    } else if (existingPreEnquiryDetails.hasOwnProperty("dmsAccountDto")) {
       url = url + "/account?allocateDse=" + selector.create_enquiry_checked;
       dmsAccountOrContactDto = { ...existingPreEnquiryDetails.dmsAccountDto };
     }
@@ -396,7 +430,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     dmsAccountOrContactDto.model = selector.carModel;
 
     if (existingPreEnquiryDetails.hasOwnProperty("dmsLeadDto")) {
-
       dmsLeadDto = { ...existingPreEnquiryDetails.dmsLeadDto };
       dmsLeadDto.firstName = selector.firstName;
       dmsLeadDto.lastName = selector.lastName;
@@ -409,16 +442,18 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     let formData = {};
     if (existingPreEnquiryDetails.hasOwnProperty("dmsContactDto")) {
       formData = {
-        "dmsContactDto": dmsAccountOrContactDto,
-        "dmsLeadDto": dmsLeadDto,
-        "dmsEmployeeAllocationDtos": existingPreEnquiryDetails.dmsEmployeeAllocationDtos
-      }
+        dmsContactDto: dmsAccountOrContactDto,
+        dmsLeadDto: dmsLeadDto,
+        dmsEmployeeAllocationDtos:
+          existingPreEnquiryDetails.dmsEmployeeAllocationDtos,
+      };
     } else {
       formData = {
-        "dmsAccountDto": dmsAccountOrContactDto,
-        "dmsLeadDto": dmsLeadDto,
-        "dmsEmployeeAllocationDtos": existingPreEnquiryDetails.dmsEmployeeAllocationDtos
-      }
+        dmsAccountDto: dmsAccountOrContactDto,
+        dmsLeadDto: dmsLeadDto,
+        dmsEmployeeAllocationDtos:
+          existingPreEnquiryDetails.dmsEmployeeAllocationDtos,
+      };
     }
 
     console.log("formData: ", formData);
@@ -428,18 +463,17 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       body: formData,
     };
     dispatch(updatePreEnquiry(dataObj));
-  }
+  };
 
   const showDropDownModelMethod = (key, headerText) => {
-
     Keyboard.dismiss();
 
     switch (key) {
       case "CAR_MODEL":
-        setDataForDropDown([...dataForCarModels])
+        setDataForDropDown([...dataForCarModels]);
         break;
       case "ENQUIRY_SEGMENT":
-        setDataForDropDown([...selector.enquiry_type_list])
+        setDataForDropDown([...selector.enquiry_type_list]);
         break;
       case "CUSTOMER_TYPE":
         setDataForDropDown([...selector.customer_type_list]);
@@ -451,7 +485,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     setDropDownKey(key);
     setDropDownTitle(headerText);
     setShowDropDownModel(true);
-  }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -464,7 +498,9 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         selectedItems={(item) => {
           console.log("selected: ", item);
           setShowDropDownModel(false);
-          dispatch(setDropDownData({ key: dropDownKey, value: item.name, id: item.id }));
+          dispatch(
+            setDropDownData({ key: dropDownKey, value: item.name, id: item.id })
+          );
         }}
       />
 
@@ -513,7 +549,11 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               value={selector.firstName}
               label={"First Name*"}
               keyboardType={"default"}
-              onChangeText={(text) => dispatch(setPreEnquiryDetails({ key: "FIRST_NAME", text: text }))}
+              onChangeText={(text) =>
+                dispatch(
+                  setPreEnquiryDetails({ key: "FIRST_NAME", text: text })
+                )
+              }
             />
             <Text style={styles.devider}></Text>
 
@@ -522,7 +562,9 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               value={selector.lastName}
               label={"Last Name*"}
               keyboardType={"default"}
-              onChangeText={(text) => dispatch(setPreEnquiryDetails({ key: "LAST_NAME", text: text }))}
+              onChangeText={(text) =>
+                dispatch(setPreEnquiryDetails({ key: "LAST_NAME", text: text }))
+              }
             />
             <Text style={styles.devider}></Text>
 
@@ -532,7 +574,9 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               label={"Mobile Number*"}
               keyboardType={"phone-pad"}
               maxLength={10}
-              onChangeText={(text) => dispatch(setPreEnquiryDetails({ key: "MOBILE", text: text }))}
+              onChangeText={(text) =>
+                dispatch(setPreEnquiryDetails({ key: "MOBILE", text: text }))
+              }
             />
             <Text style={styles.devider}></Text>
 
@@ -542,7 +586,11 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               label={"Alternate Mobile Number"}
               keyboardType={"phone-pad"}
               maxLength={10}
-              onChangeText={(text) => dispatch(setPreEnquiryDetails({ key: "ALTER_MOBILE", text: text }))}
+              onChangeText={(text) =>
+                dispatch(
+                  setPreEnquiryDetails({ key: "ALTER_MOBILE", text: text })
+                )
+              }
             />
             <Text style={styles.devider}></Text>
 
@@ -551,38 +599,53 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               value={selector.email}
               label={"Email-Id"}
               keyboardType={"email-address"}
-              onChangeText={(text) => dispatch(setPreEnquiryDetails({ key: "EMAIL", text: text }))}
+              onChangeText={(text) =>
+                dispatch(setPreEnquiryDetails({ key: "EMAIL", text: text }))
+              }
             />
             <Text style={styles.devider}></Text>
 
             <DropDownSelectionItem
               label={"Model*"}
               value={selector.carModel}
-              onPress={() => showDropDownModelMethod("CAR_MODEL", "Select Model")}
+              onPress={() =>
+                showDropDownModelMethod("CAR_MODEL", "Select Model")
+              }
             />
             <DropDownSelectionItem
               label={"Enquiry Segment*"}
               value={selector.enquiryType}
-              onPress={() => showDropDownModelMethod("ENQUIRY_SEGMENT", "Select Enquiry Segment")}
+              onPress={() =>
+                showDropDownModelMethod(
+                  "ENQUIRY_SEGMENT",
+                  "Select Enquiry Segment"
+                )
+              }
             />
             <DropDownSelectionItem
               label={"Customer Type*"}
               value={selector.customerType}
-              onPress={() => showDropDownModelMethod("CUSTOMER_TYPE", "Select Customer Type")}
+              onPress={() =>
+                showDropDownModelMethod("CUSTOMER_TYPE", "Select Customer Type")
+              }
             />
 
             {selector.customerType === "Corporate" ||
-              selector.customerType === "Government" ||
-              selector.customerType === "Retired" ||
-              selector.customerType === "Fleet" ||
-              selector.customerType === "Institution" ? (
+            selector.customerType === "Government" ||
+            selector.customerType === "Retired" ||
+            selector.customerType === "Fleet" ||
+            selector.customerType === "Institution" ? (
               <View>
                 <TextinputComp
                   style={styles.textInputComp}
                   value={selector.companyName}
                   label={"Company Name"}
                   keyboardType={"default"}
-                  onChangeText={(text) => dispatch(setPreEnquiryDetails({ key: "COMPANY_NAME", text: text }))}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setPreEnquiryDetails({ key: "COMPANY_NAME", text: text })
+                    )
+                  }
                 />
                 <Text style={styles.devider}></Text>
               </View>
@@ -595,7 +658,9 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                   value={selector.other}
                   label={"Other"}
                   keyboardType={"default"}
-                  onChangeText={(text) => dispatch(setPreEnquiryDetails({ key: "OTHER", text: text }))}
+                  onChangeText={(text) =>
+                    dispatch(setPreEnquiryDetails({ key: "OTHER", text: text }))
+                  }
                 />
                 <Text style={styles.devider}></Text>
               </View>
@@ -605,7 +670,12 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               label={"Source of Create Lead*"}
               value={selector.sourceOfEnquiry}
               disabled={fromEdit}
-              onPress={() => showDropDownModelMethod("SOURCE_OF_ENQUIRY", "Select Source of Pre-Enquiry")}
+              onPress={() =>
+                showDropDownModelMethod(
+                  "SOURCE_OF_ENQUIRY",
+                  "Select Source of Pre-Enquiry"
+                )
+              }
             />
 
             <TextinputComp
@@ -614,7 +684,9 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               label={"Pincode*"}
               keyboardType={"number-pad"}
               maxLength={6}
-              onChangeText={(text) => dispatch(setPreEnquiryDetails({ key: "PINCODE", text: text }))}
+              onChangeText={(text) =>
+                dispatch(setPreEnquiryDetails({ key: "PINCODE", text: text }))
+              }
             />
             <Text style={styles.devider}></Text>
           </View>

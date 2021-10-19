@@ -8,14 +8,21 @@ import {
   clearState,
   setHomeVisitDetails,
   getTaskDetailsApi,
-  updateTaskApi
+  updateTaskApi,
 } from "../../../redux/homeVisitReducer";
-import { showToastSucess } from "../../../utils/toast";
+import {
+  showToastSucess,
+  showToast,
+  showToastRedAlert,
+} from "../../../utils/toast";
 import * as AsyncStorage from "../../../asyncStore";
-import { getCurrentTasksListApi, getPendingTasksListApi } from "../../../redux/mytaskReducer";
+import {
+  getCurrentTasksListApi,
+  getPendingTasksListApi,
+} from "../../../redux/mytaskReducer";
+import { isValidateAlphabetics } from "../../../utils/helperFunctions";
 
 const HomeVisitScreen = ({ route, navigation }) => {
-
   const { taskId, identifier } = route.params;
   const selector = useSelector((state) => state.homeVisitReducer);
   const dispatch = useDispatch();
@@ -25,14 +32,14 @@ const HomeVisitScreen = ({ route, navigation }) => {
   useEffect(() => {
     getAsyncStorageData();
     dispatch(getTaskDetailsApi(taskId));
-  }, [])
+  }, []);
 
   const getAsyncStorageData = async () => {
     const employeeId = await AsyncStorage.getData(AsyncStorage.Keys.EMP_ID);
     if (employeeId) {
       setEmpId(employeeId);
     }
-  }
+  };
 
   const getMyTasksListFromServer = () => {
     if (empId) {
@@ -40,7 +47,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
       dispatch(getCurrentTasksListApi(endUrl));
       dispatch(getPendingTasksListApi(endUrl));
     }
-  }
+  };
 
   // Update, Close Task Response handle
   useEffect(() => {
@@ -54,21 +61,20 @@ const HomeVisitScreen = ({ route, navigation }) => {
       navigation.popToTop();
       dispatch(clearState());
     }
-  }, [selector.update_task_response_status])
+  }, [selector.update_task_response_status]);
 
   const updateTask = () => {
     changeStatusForTask("UPDATE_TASK");
-  }
+  };
 
   const closeTask = () => {
-    changeStatusForTask("CLOSE_TASK")
-  }
+    changeStatusForTask("CLOSE_TASK");
+  };
 
   const changeStatusForTask = (actionType) => {
-
     Keyboard.dismiss();
     if (selector.task_details_response?.taskId !== taskId) {
-      return
+      return;
     }
 
     if (selector.reason.length === 0) {
@@ -86,6 +92,20 @@ const HomeVisitScreen = ({ route, navigation }) => {
       return;
     }
 
+    if (!isValidateAlphabetics(selector.reason)) {
+      showToast("please enter alphabetics only in reason");
+      return;
+    }
+    if (!isValidateAlphabetics(selector.customer_remarks)) {
+      showToast("please enter alphabetics only in customer reason");
+      return;
+    }
+
+    if (!isValidateAlphabetics(selector.employee_remarks)) {
+      showToast("please enter alphabetics only in employee remarks");
+      return;
+    }
+
     const newTaskObj = { ...selector.task_details_response };
     newTaskObj.reason = selector.reason;
     newTaskObj.customerRemarks = selector.customer_remarks;
@@ -95,7 +115,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
     }
     dispatch(updateTaskApi(newTaskObj));
     setActionType(actionType);
-  }
+  };
 
   return (
     <SafeAreaView style={[styles.container]}>

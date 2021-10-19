@@ -4,7 +4,7 @@
 
     -> 1. npm install
     -> 2. cd ios/ pod install (if you are running in ios only otherwise skip this step)
-    -> 3. yarn react-native-vector-image generate
+    -> 3. git
     -> 4. npx react-native run-ios (or) npx react-native run-android
 
 # to display toast message:
