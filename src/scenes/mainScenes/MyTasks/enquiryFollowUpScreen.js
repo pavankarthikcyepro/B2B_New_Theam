@@ -187,6 +187,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
 
   const changeTaskStatusBasedOnActionType = (type) => {
     Keyboard.dismiss();
+
     if (selector.task_details_response?.taskId !== taskId) {
       return;
     }
@@ -197,16 +198,16 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     }
 
     if (!isValidateAlphabetics(selector.reason)) {
-      showToast("please enter alphabetics only in reason");
+      showToast("Please enter alphabetics only in reason");
       return;
     }
     if (!isValidateAlphabetics(selector.customer_remarks)) {
-      showToast("please enter alphabetics only in customer reason");
+      showToast("Please enter alphabetics only in customer reason");
       return;
     }
 
     if (!isValidateAlphabetics(selector.employee_remarks)) {
-      showToast("please enter alphabetics only in employee remarks");
+      showToast("Please enter alphabetics only in employee remarks");
       return;
     }
 
@@ -304,24 +305,24 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
           <View style={[GlobalStyle.shadow]}>
             {(identifier === "ENQUIRY_FOLLOW_UP" ||
               identifier === "PRE_ENQUIRY_FOLLOW_UP") && (
-              <View>
-                <DropDownSelectionItem
-                  label={"Model"}
-                  value={selector.model}
-                  onPress={() =>
-                    setDropDownDataForModel("MODEL", "Select Model")
-                  }
-                />
+                <View>
+                  <DropDownSelectionItem
+                    label={"Model"}
+                    value={selector.model}
+                    onPress={() =>
+                      setDropDownDataForModel("MODEL", "Select Model")
+                    }
+                  />
 
-                <DropDownSelectionItem
-                  label={"Varient"}
-                  value={selector.varient}
-                  onPress={() =>
-                    setDropDownDataForModel("VARIENT", "Select Varient")
-                  }
-                />
-              </View>
-            )}
+                  <DropDownSelectionItem
+                    label={"Varient"}
+                    value={selector.varient}
+                    onPress={() =>
+                      setDropDownDataForModel("VARIENT", "Select Varient")
+                    }
+                  />
+                </View>
+              )}
 
             <TextinputComp
               style={styles.textInputStyle}

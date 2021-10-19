@@ -14,7 +14,6 @@ export const DateSelectItem = ({ label, value, disabled = false, onPress }) => {
                         icon="calendar-range"
                         color={disabled ? Colors.GRAY : Colors.BLACK}
                         size={25}
-                        onPress={() => { }}
                     />
                 </View>
                 <Text style={GlobalStyle.underline}></Text>

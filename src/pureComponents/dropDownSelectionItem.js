@@ -14,7 +14,6 @@ export const DropDownSelectionItem = ({ label, value, onPress, disabled = false 
                         icon="menu-down"
                         color={disabled ? Colors.GRAY : Colors.BLACK}
                         size={25}
-                        onPress={() => { }}
                     />
                 </View>
                 <Text style={GlobalStyle.underline}></Text>

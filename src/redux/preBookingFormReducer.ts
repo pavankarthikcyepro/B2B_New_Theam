@@ -567,7 +567,7 @@ const prebookingFormSlice = createSlice({
     },
     updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
-      const selectedDate = dateSelected(text);
+      const selectedDate = convertTimeStampToDateString(text, "DD/MM/YYYY");
       switch (state.datePickerKeyId) {
         case "DATE_OF_BIRTH":
           state.date_of_birth = selectedDate;
@@ -996,14 +996,12 @@ const prebookingFormSlice = createSlice({
       state.isLoading = true;
     })
     builder.addCase(getPrebookingDetailsApi.fulfilled, (state, action) => {
-      //console.log("S getPrebookingDetailsApi: ", JSON.stringify(action.payload));
       if (action.payload.dmsEntity) {
         state.pre_booking_details_response = action.payload.dmsEntity;
       }
       state.isLoading = false;
     })
     builder.addCase(getPrebookingDetailsApi.rejected, (state, action) => {
-      //console.log("F getPrebookingDetailsApi: ", JSON.stringify(action.payload));
       state.pre_booking_details_response = null;
       state.isLoading = false;
     })
@@ -1013,14 +1011,12 @@ const prebookingFormSlice = createSlice({
       state.isLoading = true;
     })
     builder.addCase(updatePrebookingDetailsApi.fulfilled, (state, action) => {
-      console.log("S updatePrebookingDetailsApi: ", JSON.stringify(action.payload));
       if (action.payload.success == true) {
         state.update_pre_booking_details_response = "success";
       }
       state.isLoading = false;
     })
     builder.addCase(updatePrebookingDetailsApi.rejected, (state, action) => {
-      console.log("F updatePrebookingDetailsApi: ", JSON.stringify(action.payload));
       state.update_pre_booking_details_response = "failed";
       state.isLoading = false;
     })
@@ -1030,46 +1026,67 @@ const prebookingFormSlice = createSlice({
       state.isLoading = true;
     })
     builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.fulfilled, (state, action) => {
-      //console.log("S getOnRoadPriceAndInsurenceDetailsApi: ", JSON.stringify(action.payload));
       if (action.payload) {
         state.vehicle_on_road_price_insurence_details_response = action.payload;
       }
       state.isLoading = false;
     })
     builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.rejected, (state, action) => {
-      //console.log("F getOnRoadPriceAndInsurenceDetailsApi: ", JSON.stringify(action.payload));
       state.vehicle_on_road_price_insurence_details_response = null;
       state.isLoading = false;
     })
-
+    // Get Paid Asossaries List
+    builder.addCase(getPaidAccessoriesListApi.pending, (state, action) => {
+      state.paid_accessories_list = [];
+      state.isLoading = true;
+    })
     builder.addCase(getPaidAccessoriesListApi.fulfilled, (state, action) => {
-      //console.log("S getPaidAccessoriesListApi: ", JSON.stringify(action.payload));
       if (action.payload.accessorylist) {
         state.paid_accessories_list = action.payload.accessorylist;
       }
       state.isLoading = false;
     })
+    builder.addCase(getPaidAccessoriesListApi.rejected, (state, action) => {
+      state.paid_accessories_list = [];
+      state.isLoading = false;
+    })
+    // Drop Pre-Booking
+    builder.addCase(dropPreBooingApi.pending, (state, action) => {
+      state.pre_booking_drop_response_status = "pending"
+      state.isLoading = true;
+    })
     builder.addCase(dropPreBooingApi.fulfilled, (state, action) => {
-      //console.log("S dropPreBooingApi: ", JSON.stringify(action.payload));
       if (action.payload.status === "SUCCESS") {
         state.pre_booking_drop_response_status = "success";
       }
       state.isLoading = false;
     })
+    builder.addCase(dropPreBooingApi.rejected, (state, action) => {
+      state.pre_booking_drop_response_status = "failed"
+      state.isLoading = false;
+    })
+    // Send On Road Price Details
+    builder.addCase(sendOnRoadPriceDetails.pending, (state, action) => {
+      state.send_onRoad_price_details_response = null
+      state.isLoading = true;
+    })
     builder.addCase(sendOnRoadPriceDetails.fulfilled, (state, action) => {
-      console.log("S sendOnRoadPriceDetails: ", JSON.stringify(action.payload));
-      if (action.payload.success === false) {
-        showToastRedAlert(action.payload.errorMessage || "Something went wrong");
-        return;
-      } else if (action.payload.success === true) {
+      if (action.payload.dmsEntity) {
         state.send_onRoad_price_details_response = action.payload.dmsEntity.dmsOnRoadPriceDto;
       }
       state.isLoading = false;
     })
     builder.addCase(sendOnRoadPriceDetails.rejected, (state, action) => {
-      //console.log("F getOnRoadPriceAndInsurenceDetailsApi: ", JSON.stringify(action.payload));
-      showToastRedAlert("Something went wrong");
+      state.send_onRoad_price_details_response = null
       state.isLoading = false;
+      if (action.payload["errorMessage"]) {
+        showToastRedAlert(action.payload["errorMessage"] || "Something went wrong");
+      }
+    })
+    // Get On Road Price Dto List
+    builder.addCase(getOnRoadPriceDtoListApi.pending, (state, action) => {
+      state.on_road_price_dto_list_response = [];
+      state.isLoading = true;
     })
     builder.addCase(getOnRoadPriceDtoListApi.fulfilled, (state, action) => {
       console.log("S getOnRoadPriceDtoListApi: ", JSON.stringify(action.payload));
@@ -1102,8 +1119,16 @@ const prebookingFormSlice = createSlice({
       }
       state.isLoading = false;
     })
+    builder.addCase(getOnRoadPriceDtoListApi.rejected, (state, action) => {
+      state.on_road_price_dto_list_response = [];
+      state.isLoading = false;
+    })
+    // Get Customer Types 
+    builder.addCase(getCustomerTypesApi.pending, (state, action) => {
+      state.customer_types_response = [];
+      state.isLoading = true;
+    })
     builder.addCase(getCustomerTypesApi.fulfilled, (state, action) => {
-      //console.log("S getCustomerTypesApi: ", JSON.stringify(action.payload));
       if (action.payload) {
         const customerTypes = action.payload;
         let personalTypes = [];
@@ -1129,6 +1154,11 @@ const prebookingFormSlice = createSlice({
       }
       state.isLoading = false;
     })
+    builder.addCase(getCustomerTypesApi.rejected, (state, action) => {
+      state.customer_types_response = [];
+      state.isLoading = false;
+    })
+    // Get Drop Down Data
     builder.addCase(getDropDataApi.pending, (state, action) => {
       state.drop_reasons_list = [];
       state.isLoading = true;
@@ -1283,23 +1313,12 @@ const prebookingFormSlice = createSlice({
       if (action.payload["errorMessage"]) {
         showToastRedAlert(action.payload["errorMessage"]);
       }
-      state.assigned_tasks_list = null;
+      state.assigned_tasks_list = [];
       state.assigned_tasks_list_status = "failed";
       state.isLoading = false;
     })
   }
 });
-
-const dateSelected = (isoDate) => {
-  if (!isoDate) {
-    return "";
-  }
-  const date = new Date(isoDate);
-  const finalDate =
-    date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
-  console.log("date: ", finalDate);
-  return finalDate;
-};
 
 export const {
   clearState,

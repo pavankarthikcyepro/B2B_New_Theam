@@ -2257,6 +2257,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   value={selector.booking_amount}
                   label={"Booking Amount*"}
                   keyboardType={"number-pad"}
+                  maxLength={9}
                   onChangeText={(text) =>
                     dispatch(
                       setBookingPaymentDetails({
@@ -2633,6 +2634,16 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               ) : null}
 
             </List.AccordionGroup>
+
+            <Button
+              mode="contained"
+              color={Colors.RED}
+              disabled={selector.isLoading}
+              labelStyle={{ textTransform: "none" }}
+              onPress={submitClicked}
+            >
+              SUBMIT
+            </Button>
 
             {!isDropSelected && showSubmitDropBtn && !userData.isManager && (
               <View style={styles.actionBtnView}>
