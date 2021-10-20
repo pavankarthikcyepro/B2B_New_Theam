@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Alert,
+  BackHandler
 } from "react-native";
 import {
   DefaultTheme,
@@ -154,19 +155,45 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
   const [typeOfActionDispatched, setTypeOfActionDispatched] = useState("");
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+
+    navigation.setOptions({
+      headerLeft: () => (
+        <IconButton
+          icon="arrow-left"
+          color={Colors.WHITE}
+          size={30}
+          onPress={goParentScreen}
+        />
+      ),
+    });
+  }, [navigation])
+
+  const goParentScreen = () => {
+    navigation.goBack();
     dispatch(clearState());
+  }
+
+  useEffect(() => {
     getAsyncstoreData();
     setComponentAppear(true);
     getEnquiryDetailsFromServer();
     dispatch(getCustomerTypesApi());
     setCarModelsDataFromBase();
+
+    BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
+    };
   }, []);
 
+  const handleBackButtonClick = () => {
+    goParentScreen();
+    return true;
+  }
+
   const getAsyncstoreData = async () => {
-    const employeeData = await AsyncStore.getData(
-      AsyncStore.Keys.LOGIN_EMPLOYEE
-    );
+    const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       setUserData({

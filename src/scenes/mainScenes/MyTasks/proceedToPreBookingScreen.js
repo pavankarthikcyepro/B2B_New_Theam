@@ -258,6 +258,7 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
 
     const updateEnuiquiryDetails = (refNumber) => {
 
+        console.log("test 5")
         if (!selector.enquiry_details_response) {
             return
         }
@@ -281,7 +282,8 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
 
     // Handle Enquiry Update response
     useEffect(() => {
-        if (selector.update_enquiry_details_response_status === "success") {
+        console.log("test 6")
+        if (selector.update_enquiry_details_response_status === "success" && selector.update_enquiry_details_response) {
             if (typeOfActionDispatched === "DROP_ENQUIRY") {
                 showToastSucess("Successfully Enquiry Dropped");
                 goToParentScreen();
@@ -298,20 +300,23 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
     }, [selector.update_enquiry_details_response_status, selector.update_enquiry_details_response]);
 
     displayCreateEnquiryAlert = () => {
-
+        console.log("test 7")
         let refNumber = "";
         if (selector.update_enquiry_details_response) {
             refNumber = selector.update_enquiry_details_response.dmsLeadDto.referencenumber;
         }
-        let title = identifier === "PROCEED_TO_BOOKING" ? 'Booking Created Successfully' : 'Pre Booking Created Successfully'
-        Alert.alert(title, refNumber
-        [
+        let title = identifier === "PROCEED_TO_BOOKING" ? 'Booking Created Successfully' : 'Pre Booking Created Successfully';
+
+        Alert.alert(title, refNumber,
+            [
+                {
+                    text: "OK",
+                    onPress: () => goToParentScreen()
+                }
+            ],
             {
-                text: 'OK', onPress: goToParentScreen()
-            }
-        ],
-            { cancelable: false }
-        );
+                cancelable: false
+            });
     }
 
     const goToParentScreen = () => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -9,7 +9,8 @@ import {
   Keyboard,
   ActivityIndicator,
   KeyboardAvoidingView,
-  Pressable
+  Pressable,
+  BackHandler
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { useDispatch, useSelector } from "react-redux";
@@ -65,7 +66,7 @@ import {
   DropDownSelectionItem
 } from "../../../pureComponents";
 import { ImagePickerComponent, SelectOtherVehicleComponant } from "../../../components";
-import { Checkbox, List, Button } from "react-native-paper";
+import { Checkbox, List, Button, IconButton } from "react-native-paper";
 import * as AsyncStore from "../../../asyncStore";
 import {
   Salutation_Types,
@@ -163,21 +164,43 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
   const [isRejectSelected, setIsRejectSelected] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
 
-    const unsubscribe = navigation.addListener('focus', () => {
-      // The screen is focused
-      // Call any action
-      dispatch(clearState());
+    navigation.setOptions({
+      headerLeft: () => (
+        <IconButton
+          icon="arrow-left"
+          color={Colors.WHITE}
+          size={30}
+          onPress={goParentScreen}
+        />
+      ),
     });
+  }, [navigation]);
+
+  const goParentScreen = () => {
+    navigation.goBack();
+    dispatch(clearState());
+  }
+
+  useEffect(() => {
 
     setComponentAppear(true);
     getAsyncstoreData();
     dispatch(getCustomerTypesApi());
     setCarModelsDataFromBase();
     getPreBookingDetailsFromServer();
-    return unsubscribe;
+
+    BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
+    };
   }, [navigation]);
+
+  const handleBackButtonClick = () => {
+    goParentScreen();
+    return true;
+  }
 
   useEffect(() => {
     calculateOnRoadPrice();
@@ -2634,16 +2657,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               ) : null}
 
             </List.AccordionGroup>
-
-            <Button
-              mode="contained"
-              color={Colors.RED}
-              disabled={selector.isLoading}
-              labelStyle={{ textTransform: "none" }}
-              onPress={submitClicked}
-            >
-              SUBMIT
-            </Button>
 
             {!isDropSelected && showSubmitDropBtn && !userData.isManager && (
               <View style={styles.actionBtnView}>

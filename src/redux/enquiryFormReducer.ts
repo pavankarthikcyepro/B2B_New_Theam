@@ -233,6 +233,14 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.update_enquiry_details_response = null;
       state.get_pending_tasks_response_status = "";
       state.get_pending_tasks_response_list = [];
+
+      state.customer_types_data = [];
+      state.enquiry_drop_response_status = "";
+      state.get_pending_tasks_response_status = "";
+      state.get_pending_tasks_response_list = [];
+      state.enquiry_details_response = null;
+      state.update_enquiry_details_response = null;
+      state.customer_types_response = null;
     },
     setEditable: (state, action) => {
       console.log("pressed");
@@ -941,43 +949,70 @@ const enquiryDetailsOverViewSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(getEnquiryDetailsApi.pending, (state) => {
-
+      state.isLoading = true;
+      state.enquiry_details_response = null;
     })
     builder.addCase(getEnquiryDetailsApi.fulfilled, (state, action) => {
-      //console.log("S getEnquiryDetailsApi: ", JSON.stringify(action.payload));
       if (action.payload.dmsEntity) {
         state.enquiry_details_response = action.payload.dmsEntity;
       }
+      state.isLoading = false;
     })
     builder.addCase(getEnquiryDetailsApi.rejected, (state, action) => {
-      //console.log("F getEnquiryDetailsApi: ", JSON.stringify(action.payload));
+      state.isLoading = false;
+    })
+    // Update Enquiry Details
+    builder.addCase(updateEnquiryDetailsApi.pending, (state, action) => {
+      state.update_enquiry_details_response = "pending";
+      state.isLoading = true;
     })
     builder.addCase(updateEnquiryDetailsApi.fulfilled, (state, action) => {
-      //console.log("S updateEnquiryDetailsApi: ", JSON.stringify(action.payload));
       if (action.payload.success == true) {
         state.update_enquiry_details_response = "success";
       }
+      state.isLoading = false;
     })
     builder.addCase(updateEnquiryDetailsApi.rejected, (state, action) => {
-      //console.log("F updateEnquiryDetailsApi: ", JSON.stringify(action.payload));
       state.update_enquiry_details_response = "failed";
+      state.isLoading = false;
+    })
+    // Drop Enquiry
+    builder.addCase(dropEnquiryApi.pending, (state, action) => {
+      state.enquiry_drop_response_status = "pending";
+      state.isLoading = true;
     })
     builder.addCase(dropEnquiryApi.fulfilled, (state, action) => {
-      //console.log("S dropEnquiryApi: ", JSON.stringify(action.payload));
       if (action.payload.status === "SUCCESS") {
         state.enquiry_drop_response_status = "success";
       }
+      state.isLoading = false;
+    })
+    builder.addCase(dropEnquiryApi.rejected, (state, action) => {
+      state.enquiry_drop_response_status = "failed";
+      state.isLoading = false;
+    })
+    // Get Pending Tasks
+    builder.addCase(getPendingTasksApi.pending, (state, action) => {
+      state.get_pending_tasks_response_status = "pending";
+      state.get_pending_tasks_response_list = [];
+      state.isLoading = true;
     })
     builder.addCase(getPendingTasksApi.fulfilled, (state, action) => {
-      //console.log("S getPendingTasksApi: ", JSON.stringify(action.payload));
       if (action.payload.success === true) {
         state.get_pending_tasks_response_status = "success";
         state.get_pending_tasks_response_list = action.payload.dmsEntity.tasks;
       }
+      state.isLoading = false;
     })
     builder.addCase(getPendingTasksApi.rejected, (state, action) => {
-      //console.log("F getPendingTasksApi: ", JSON.stringify(action.payload));
       state.get_pending_tasks_response_status = "failed";
+      state.get_pending_tasks_response_list = [];
+      state.isLoading = false;
+    })
+    // Get Customer Types
+    builder.addCase(getCustomerTypesApi.pending, (state, action) => {
+      state.customer_types_response = null;
+      state.isLoading = true;
     })
     builder.addCase(getCustomerTypesApi.fulfilled, (state, action) => {
       //console.log("S getCustomerTypesApi: ", JSON.stringify(action.payload));
@@ -1004,6 +1039,11 @@ const enquiryDetailsOverViewSlice = createSlice({
         }
         state.customer_types_response = obj;
       }
+      state.isLoading = false;
+    })
+    builder.addCase(getCustomerTypesApi.rejected, (state, action) => {
+      state.customer_types_response = null;
+      state.isLoading = false;
     })
   }
 });
