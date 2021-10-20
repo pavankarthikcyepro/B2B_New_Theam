@@ -21,7 +21,8 @@ export const isEmail = (email) => {
 };
 
 export const isValidateAlphabetics = (text) => {
-  const regex = /^[a-zA-Z]+$/;
+  // const regex = /^[a-zA-Z]+$/;
+  const regex = /^[a-zA-Z ]*$/
   if (regex.test(text)) {
     return true;
   }

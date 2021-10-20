@@ -6,6 +6,7 @@ import {
   Gender_Data_Obj,
 } from "../jsonData/enquiryFormScreenJsonData";
 import { convertTimeStampToDateString } from "../utils/helperFunctions";
+import moment from "moment";
 
 export const getEnquiryDetailsApi = createAsyncThunk("ENQUIRY_FORM_SLICE/getEnquiryDetailsApi", async (universalId, { rejectWithValue }) => {
 
@@ -393,6 +394,25 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.anniversaryDate = selectedDate;
           break;
         case "EXPECTED_DELIVERY_DATE":
+
+          let categoryType = "";
+          if (selectedDate) {
+            const currentDate = moment().format("DD/MM/YYYY");
+            const startDate = moment(currentDate, "DD/MM/YYYY")
+            var endDate = moment(selectedDate, "DD/MM/YYYY");
+            var daysCount = endDate.diff(startDate, 'days');
+            if (daysCount) {
+              if (daysCount <= 7) {
+                categoryType = "Hot";
+              } else if (daysCount >= 8 && daysCount <= 15) {
+                categoryType = "Warm";
+              } else if (daysCount > 15) {
+                categoryType = "Cold";
+              }
+            }
+          }
+
+          state.enquiry_category = categoryType;
           state.expected_delivery_date = selectedDate;
           break;
         case "R_MFG_YEAR":

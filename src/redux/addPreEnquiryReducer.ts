@@ -2,6 +2,9 @@ import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { client } from "../networking/client";
 import { EnquiryTypes, SourceOfEnquiryTypes, CustomerTypesObj } from "../jsonData/preEnquiryScreenJsonData";
 import { showToast } from "../utils/toast";
+import URL from "../networking/endpoints";
+import { convertToDate } from "../utils/helperFunctions";
+import moment from "moment";
 
 interface TextModel {
     key: string,
@@ -49,6 +52,20 @@ export const updatePreEnquiry = createAsyncThunk('ADD_PRE_ENQUIRY_SLICE/updatePr
     return json;
 })
 
+export const getEventListApi = createAsyncThunk('ADD_PRE_ENQUIRY_SLICE/getEventListApi', async (payload: any, { rejectWithValue }) => {
+
+    const customConfig = {
+        branchid: payload.branchId,
+        orgid: payload.orgId
+    }
+    const response = await client.get(URL.GET_EVENT_LIST(payload.startDate, payload.endDate, payload.empId), customConfig);
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
 export const addPreEnquirySlice = createSlice({
     name: "ADD_PRE_ENQUIRY_SLICE",
     initialState: {
@@ -64,6 +81,9 @@ export const addPreEnquirySlice = createSlice({
         customerType: "",
         sourceOfEnquiry: "",
         sourceOfEnquiryId: null,
+        eventName: "",
+        eventStartDate: "",
+        eventEndDate: "",
         companyName: "",
         other: "",
         drop_down_data: [],
@@ -81,6 +101,8 @@ export const addPreEnquirySlice = createSlice({
         vehicle_modal_list: [],
         customer_type_list: [],
         create_enquiry_response_obj: {},
+        event_list: [],
+        event_list_response_status: ""
     },
     reducers: {
         clearState: (state) => {
@@ -97,10 +119,15 @@ export const addPreEnquirySlice = createSlice({
             state.sourceOfEnquiry = "";
             state.sourceOfEnquiryId = null;
             state.companyName = "";
+            state.eventName = "";
+            state.eventStartDate = "";
+            state.eventEndDate = "";
             state.isLoading = false;
             state.status = "";
             state.errorMsg = "";
-            state.create_enquiry_response_obj = {}
+            state.create_enquiry_response_obj = {};
+            state.event_list = [];
+            state.event_list_response_status = "";
         },
         setCreateEnquiryCheckbox: (state, action) => {
             state.create_enquiry_checked = !state.create_enquiry_checked;
@@ -120,8 +147,31 @@ export const addPreEnquirySlice = createSlice({
                     state.customerType = value;
                     break;
                 case "SOURCE_OF_ENQUIRY":
+                    if (value === "Event") {
+                        const currentDate = moment().format("YYYY-MM-DD");
+                        state.eventStartDate = currentDate;
+                        state.eventEndDate = currentDate;
+                        state.eventName = "";
+                    }
                     state.sourceOfEnquiry = value;
                     state.sourceOfEnquiryId = id;
+                    break;
+                case "EVENT_NAME":
+                    state.eventName = value;
+                    break;
+            }
+        },
+        updateSelectedDate: (state, action: PayloadAction<TextModel>) => {
+            const { key, text } = action.payload;
+            const date = convertToDate(text, "YYYY-MM-DD");
+            switch (key) {
+                case "START_DATE":
+                    state.eventStartDate = date;
+                    state.eventName = "";
+                    break;
+                case "END_DATE":
+                    state.eventEndDate = date;
+                    state.eventName = "";
                     break;
             }
         },
@@ -227,8 +277,33 @@ export const addPreEnquirySlice = createSlice({
                 state.isLoading = false;
                 state.status = "failed";
             })
+            .addCase(continueToCreatePreEnquiry.pending, (state, action) => {
+                state.isLoading = true;
+            })
             .addCase(continueToCreatePreEnquiry.fulfilled, (state, action) => {
-                console.log('continueToCreatePreEnquiry: ', action.payload);
+                state.isLoading = false;
+            })
+            .addCase(continueToCreatePreEnquiry.rejected, (state, action) => {
+                state.isLoading = false;
+            })
+            // Get Event List
+            .addCase(getEventListApi.pending, (state, action) => {
+                state.event_list = [];
+                state.event_list_response_status = "pending";
+                state.isLoading = true;
+            })
+            .addCase(getEventListApi.fulfilled, (state, action) => {
+                console.log("S getEventListApi: ", JSON.stringify(action.payload));
+                if (action.payload) {
+                    state.event_list = action.payload;
+                }
+                state.event_list_response_status = "success";
+                state.isLoading = false;
+            })
+            .addCase(getEventListApi.rejected, (state, action) => {
+                console.log("F getEventListApi: ", JSON.stringify(action.payload));
+                state.event_list_response_status = "failed";
+                state.isLoading = false;
             })
     }
 });
@@ -240,6 +315,7 @@ export const {
     setDropDownData,
     setCustomerTypeList,
     setCarModalList,
-    setExistingDetails
+    setExistingDetails,
+    updateSelectedDate
 } = addPreEnquirySlice.actions;
 export default addPreEnquirySlice.reducer;

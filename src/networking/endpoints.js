@@ -28,7 +28,7 @@ export const admin_url = "http://ec2-3-7-117-218.ap-south-1.compute.amazonaws.co
 export const notificationServices_url = "http://ec2-3-108-253-173.ap-south-1.compute.amazonaws.com:8083/notification-service";
 export const customerService_url = "http://ec2-3-108-253-173.ap-south-1.compute.amazonaws.com:8084/customer-service";
 export const dynamicReports_url = "http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/dynamic-reports";
-export const dynamicForms = "http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/dynamic-forms"
+export const dynamicForms = "http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/dynamic-forms";
 
 const URL = {
     LOGIN: () => hrms_url + "/emplogin",
@@ -122,7 +122,12 @@ const URL = {
     },
     GET_ASSIGNED_TASKS_AT_PRE_BOOKING: (universalId) => {
         return sales_url + `/workflow/lead/stage/${universalId}`;
+    },
+    GET_EVENT_LIST: (startDate, endDate, empId) => {
+        return ops_url + `/dms/getAllServiceEventsByFilterWithoutPagination?startdate=${startDate}&enddate=${endDate}&organiserid=${empId}`;
     }
 }
 
 export default URL;
+
+// http://ec2-3-108-253-173.ap-south-1.compute.amazonaws.com:8085/ops

@@ -10,6 +10,7 @@ import LoaderComponent from "./loaderComp";
 import { ImagePickerComponent } from "./imagePickerComp";
 import { SelectEmployeeComponant } from "./selectEmployeeComp";
 import { SelectOtherVehicleComponant } from "./selectOtherVehicleComp";
+import { EventComp } from "./eventComp";
 
 export {
     ButtonComp,
@@ -22,5 +23,6 @@ export {
     LoaderComponent,
     ImagePickerComponent,
     SelectEmployeeComponant,
-    SelectOtherVehicleComponant
+    SelectOtherVehicleComponant,
+    EventComp
 };

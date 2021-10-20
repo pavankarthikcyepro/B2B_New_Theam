@@ -10,11 +10,10 @@ import {
   Alert,
   Keyboard,
 } from "react-native";
-import { ButtonComp } from "../../../components/buttonComp";
+import { ButtonComp } from "../../../components";
 import { Checkbox, Button, IconButton } from "react-native-paper";
 import { Colors, GlobalStyle } from "../../../styles";
-import { TextinputComp } from "../../../components/textinputComp";
-import { DropDownComponant } from "../../../components/dropDownComp";
+import { TextinputComp, DropDownComponant, DatePickerComponent } from "../../../components";
 import { EmsStackIdentifiers } from "../../../navigations/appNavigator";
 import {
   clearState,
@@ -27,15 +26,17 @@ import {
   setCarModalList,
   setExistingDetails,
   continueToCreatePreEnquiry,
+  getEventListApi,
+  updateSelectedDate
 } from "../../../redux/addPreEnquiryReducer";
 import { useDispatch, useSelector } from "react-redux";
-import { isMobileNumber, isEmail } from "../../../utils/helperFunctions";
+import { isMobileNumber, isEmail, convertToDate } from "../../../utils/helperFunctions";
 import { sales_url } from "../../../networking/endpoints";
 import realm from "../../../database/realm";
 import { AppNavigator } from "../../../navigations";
-import { DropDownSelectionItem } from "../../../pureComponents";
+import { DropDownSelectionItem, DateSelectItem } from "../../../pureComponents";
 import * as AsyncStore from "../../../asyncStore";
-import { showToast, showToastRedAlert } from "../../../utils/toast";
+import { showAlertMessage, showToast, showToastRedAlert } from "../../../utils/toast";
 import URL from "../../../networking/endpoints";
 import { isValidateAlphabetics } from "../../../utils/helperFunctions";
 
@@ -51,15 +52,17 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   const [organizationId, setOrganizationId] = useState(0);
   const [branchId, setBranchId] = useState(0);
   const [employeeName, setEmployeeName] = useState("");
-  const [existingPreEnquiryDetails, setExistingPreEnquiryDetails] = useState(
-    {}
-  );
+  const [userData, setUserData] = useState({ branchId: "", orgId: "", employeeId: "", employeeName: "" })
+  const [existingPreEnquiryDetails, setExistingPreEnquiryDetails] = useState({});
   const [fromEdit, setFromEdit] = useState(false);
   const [dataForCarModels, setDataForCarModels] = useState([]);
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [dataForDropDown, setDataForDropDown] = useState([]);
   const [dropDownKey, setDropDownKey] = useState("");
   const [dropDownTitle, setDropDownTitle] = useState("Select Data");
+  const [showEventModel, setShowEventModel] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [datePickerId, setDatePickerId] = useState("");
 
   useEffect(() => {
     getAsyncstoreData();
@@ -70,11 +73,11 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   }, []);
 
   const getAsyncstoreData = async () => {
-    const employeeData = await AsyncStore.getData(
-      AsyncStore.Keys.LOGIN_EMPLOYEE
-    );
+    const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
+      setUserData({ branchId: jsonObj.branchId, orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName })
       setOrganizationId(jsonObj.orgId);
       setBranchId(jsonObj.branchId);
       setEmployeeName(jsonObj.empName);
@@ -84,12 +87,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           (item) => item.name == "Showroom"
         );
         if (resultAry.length > 0) {
-          dispatch(
-            setDropDownData({
-              key: "SOURCE_OF_ENQUIRY",
-              value: resultAry[0].name,
-              id: resultAry[0].id,
-            })
+          dispatch(setDropDownData({ key: "SOURCE_OF_ENQUIRY", value: resultAry[0].name, id: resultAry[0].id, })
           );
         }
       } else if (jsonObj.hrmsRole === "Tele Caller") {
@@ -97,12 +95,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           (item) => item.name == "Digital Marketing"
         );
         if (resultAry.length > 0) {
-          dispatch(
-            setDropDownData({
-              key: "SOURCE_OF_ENQUIRY",
-              value: resultAry[0].name,
-              id: resultAry[0].id,
-            })
+          dispatch(setDropDownData({ key: "SOURCE_OF_ENQUIRY", value: resultAry[0].name, id: resultAry[0].id, })
           );
         }
       }
@@ -298,12 +291,17 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       return;
     }
 
+    if (selector.sourceOfEnquiry === "Event") {
+      if (selector.eventName.length === 0) {
+        showToast("Please select event details");
+        return;
+      }
+    }
+
     if (fromEdit) {
       updatePreEneuquiryDetails();
       return;
     }
-
-    const eventName = "";
 
     const dmsContactDtoObj = {
       branchId: branchId,
@@ -337,7 +335,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       phone: selector.mobile,
       model: selector.carModel,
       sourceOfEnquiry: selector.sourceOfEnquiryId,
-      eventCode: eventName,
+      eventCode: selector.eventName,
       dmsAddresses: [
         {
           addressType: "Communication",
@@ -481,14 +479,42 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       case "SOURCE_OF_ENQUIRY":
         setDataForDropDown([...homeSelector.source_of_enquiry_list]);
         break;
+      case "EVENT_NAME":
+        setDataForDropDown([...selector.event_list]);
+        break;
     }
     setDropDownKey(key);
     setDropDownTitle(headerText);
     setShowDropDownModel(true);
   };
 
+  const showDatePickerMethod = (key) => {
+    setShowDatePicker(true);
+    setDatePickerId(key)
+  }
+
+  const getEventListFromServer = (startDate, endDate) => {
+
+    const payload = {
+      startDate: startDate,
+      endDate: endDate,
+      empId: userData.employeeId,
+      branchId: userData.branchId,
+      orgId: userData.orgId
+    }
+    dispatch(getEventListApi(payload));
+  }
+
+  // Handle When Event dates selected
+  useEffect(() => {
+    if (selector.eventStartDate && selector.eventEndDate) {
+      getEventListFromServer(selector.eventStartDate, selector.eventEndDate);
+    }
+  }, [selector.eventStartDate, selector.eventEndDate]);
+
   return (
     <SafeAreaView style={styles.container}>
+
       {/* // select modal */}
       <DropDownComponant
         visible={showDropDownModel}
@@ -497,11 +523,31 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
           console.log("selected: ", item);
+
+          if (dropDownKey === "SOURCE_OF_ENQUIRY" && item.name === "Event") {
+            getEventListFromServer();
+          }
           setShowDropDownModel(false);
-          dispatch(
-            setDropDownData({ key: dropDownKey, value: item.name, id: item.id })
-          );
+          dispatch(setDropDownData({ key: dropDownKey, value: item.name, id: item.id }));
         }}
+      />
+
+      <DatePickerComponent
+        visible={showDatePicker}
+        mode={"date"}
+        value={new Date(Date.now())}
+        onChange={(event, selectedDate) => {
+          console.log("date: ", selectedDate);
+          if (Platform.OS === "android") {
+            if (selectedDate) {
+              dispatch(updateSelectedDate({ key: datePickerId, text: selectedDate }))
+            }
+          } else {
+            dispatch(updateSelectedDate({ key: datePickerId, text: selectedDate }))
+          }
+          setShowDatePicker(false)
+        }}
+        onRequestClose={() => setShowDatePicker(false)}
       />
 
       <KeyboardAvoidingView
@@ -641,11 +687,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                   value={selector.companyName}
                   label={"Company Name"}
                   keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setPreEnquiryDetails({ key: "COMPANY_NAME", text: text })
-                    )
-                  }
+                  onChangeText={(text) => dispatch(setPreEnquiryDetails({ key: "COMPANY_NAME", text: text }))}
                 />
                 <Text style={styles.devider}></Text>
               </View>
@@ -670,13 +712,34 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               label={"Source of Create Lead*"}
               value={selector.sourceOfEnquiry}
               disabled={fromEdit}
-              onPress={() =>
-                showDropDownModelMethod(
-                  "SOURCE_OF_ENQUIRY",
-                  "Select Source of Pre-Enquiry"
-                )
-              }
+              onPress={() => showDropDownModelMethod("SOURCE_OF_ENQUIRY", "Select Source of Pre-Enquiry")}
             />
+
+            {selector.sourceOfEnquiry === "Event" ? (
+              <View>
+                <DateSelectItem
+                  label={"Event Start Date"}
+                  value={selector.eventStartDate}
+                  onPress={() => showDatePickerMethod("START_DATE")}
+                />
+                <DateSelectItem
+                  label={"Event End Date"}
+                  value={selector.eventEndDate}
+                  onPress={() => showDatePickerMethod("END_DATE")}
+                />
+                <DropDownSelectionItem
+                  label={"Event Name"}
+                  value={selector.eventName}
+                  disabled={fromEdit}
+                  onPress={() => showDropDownModelMethod("EVENT_NAME", "Select Event Name")}
+                />
+                {selector.event_list.length === 0 ? (
+                  <View style={{ backgroundColor: Colors.WHITE, paddingLeft: 12 }}>
+                    <Text style={styles.noEventsText}>{"No Events Found"}</Text>
+                  </View>
+                ) : null}
+              </View>
+            ) : null}
 
             <TextinputComp
               style={styles.textInputComp}
@@ -741,6 +804,12 @@ const styles = StyleSheet.create({
   textInputComp: {
     height: 65,
   },
+  noEventsText: {
+    fontSize: 12,
+    fontWeight: "400",
+    color: Colors.RED,
+    paddingVertical: 5
+  }
 });
 
 {
