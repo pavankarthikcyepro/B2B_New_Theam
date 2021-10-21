@@ -1,30 +1,30 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { SETTINGS, SCHEDULE_FILL } from "../assets/svg";
+import { SETTINGS, SCHEDULE_FILL, EVENT_MANAGEMENT, CUSTOMER_RELATIONSHIP, DOCUMENT_WALLET, HOME_LINE, BOOKING_TRACKER } from "../assets/svg";
 
 const data = [
   {
     title: "Home",
-    icon: SCHEDULE_FILL,
+    icon: HOME_LINE,
     screen: 99,
   },
   {
     title: "Upcoming Deliveries",
-    icon: SETTINGS,
+    icon: BOOKING_TRACKER,
     screen: 100,
   },
   {
     title: "Complaints",
-    icon: SCHEDULE_FILL,
+    icon: DOCUMENT_WALLET,
     screen: 101,
   },
   {
     title: "Settings",
-    icon: SETTINGS,
+    icon: CUSTOMER_RELATIONSHIP,
     screen: 102,
   },
   {
     title: "Event Management",
-    icon: SCHEDULE_FILL,
+    icon: EVENT_MANAGEMENT,
     screen: 103,
   },
 ];

@@ -167,13 +167,16 @@ const SideMenuScreen = ({ navigation }) => {
         renderItem={({ item, index }) => {
           return (
             <Pressable onPress={() => itemSelected(item)}>
-              <View style={{ paddingLeft: 10 }}>
-                <List.Item
+              <View style={{ paddingLeft: 10, height: 55, justifyContent: "center", }}>
+                {/* <List.Item
                   title={item.title}
                   titleStyle={{ fontSize: 16, fontWeight: "600" }}
                   left={(props) => <List.Icon {...props} icon="folder" style={{ margin: 0 }} />}
-                />
-                {/* // <VectorImage source={item.icon} width={20} height={20} /> */}
+                /> */}
+                <View style={{ flexDirection: "row", height: 25, alignItems: "center", paddingLeft: 10, marginBottom: 10 }}>
+                  <VectorImage source={item.icon} width={20} height={20} />
+                  <Text style={{ fontSize: 16, fontWeight: "600", marginLeft: 15 }}>{item.title}</Text>
+                </View>
                 <Divider />
               </View>
             </Pressable>

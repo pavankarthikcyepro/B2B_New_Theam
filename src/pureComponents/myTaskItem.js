@@ -15,7 +15,11 @@ const statusBgColors = {
     SENT_FOR_APPROVAL: {
         color: Colors.YELLOW,
         title: "Sent For Approval"
-    }
+    },
+    RESCHEDULED: {
+        color: Colors.BLUE,
+        title: "Rescheduled"
+    },
 }
 
 const NameComp = ({ label, value, labelStyle = {}, valueStyle = {} }) => {
@@ -31,8 +35,12 @@ const NameComp = ({ label, value, labelStyle = {}, valueStyle = {} }) => {
 export const MyTaskItem = ({ taskName, status, created, dmsLead, phone }) => {
 
     const date = convertTimeStampToDateString(created);
-    const bgColor = statusBgColors[status].color || Colors.RED;
-    const statusName = statusBgColors[status].title || status;
+    let bgColor = Colors.BLUE;
+    let statusName = status;
+    if (status === "CANCELLED" || status === "ASSIGNED" || status === "SENT_FOR_APPROVAL" || status === "RESCHEDULED") {
+        bgColor = statusBgColors[status].color;
+        statusName = statusBgColors[status].title;
+    }
 
     return (
 

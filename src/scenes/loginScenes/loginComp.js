@@ -8,7 +8,8 @@ import {
   Pressable,
   Animated,
   Image,
-  Modal
+  Modal,
+  KeyboardAvoidingView
 } from "react-native";
 import { Colors } from "../../styles";
 import { TextinputComp } from "../../components/textinputComp";
@@ -147,25 +148,32 @@ const LoginScreen = ({ navigation }) => {
         onRequestClose={() => { }}
       />
 
-      <View style={{ flex: 1 }}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS == "ios" ? "padding" : "height"}
+        enabled
+        keyboardVerticalOffset={100}
+      >
 
-        <View style={{ alignItems: "center", justifyContent: 'center' }}>
-          <Image
-            style={{ width: ScreenWidth - 60, height: ScreenHeight * 0.3 }}
-            // resizeMode={"cover"}
-            source={require("../../assets/images/welcome.png")}
-          />
+        <View style={{ flexDirection: 'column', backgroundColor: Colors.LIGHT_GRAY }}>
+
+          <View style={{ width: "100%", height: ScreenHeight * 0.3, alignItems: "center", justifyContent: 'center', }}>
+            <Image
+              style={{ width: 300, height: ScreenHeight * 0.4 }}
+              resizeMode={"center"}
+              source={require("../../assets/images/welcome.png")}
+            />
+          </View>
         </View>
-
         <View
           style={{
-            height: "100%",
+            flex: 1,
             position: "absolute",
             paddingHorizontal: 20,
             paddingTop: 30,
-            marginTop: 150,
+            marginTop: ScreenHeight * 0.22,
             backgroundColor: Colors.WHITE,
-            borderRadius: 4,
+            borderTopEndRadius: 4,
           }}
         >
           <Text style={styles.welcomeStyle}>{"Welcome To Automate"}</Text>
@@ -186,6 +194,7 @@ const LoginScreen = ({ navigation }) => {
             mode={"outlined"}
             isSecure={selector.securePassword}
             showRightIcon={true}
+            rightIconObj={{ name: selector.securePassword ? "eye-off-outline" : "eye-outline", color: Colors.GRAY }}
             onChangeText={(text) => dispatch(updatePassword(text))}
             onRightIconPressed={() => dispatch(updateSecurePassword())}
           />
@@ -202,29 +211,30 @@ const LoginScreen = ({ navigation }) => {
             disabled={selector.isLoading ? true : false}
           />
           <View style={{ width: "100%", height: 50, justifyContent: "center", alignItems: 'center' }}>
-            <Text style={{ fontSize: 12, fontWeight: "400", color: Colors.GRAY }}>{"Version: 0.1"}</Text>
+            <Text style={{ fontSize: 12, fontWeight: "400", color: Colors.GRAY }}>{"Version: 0.2"}</Text>
           </View>
-        </View>
 
-        {/* Bottom Popup */}
-        <Animated.View style={[styles.bottomView, { opacity: fadeAnima }]}>
-          <View style={styles.bottomVwSubVw}>
-            <Text style={styles.text1}>{"User’s Profile"}</Text>
-            <Text style={styles.text2}>
-              {
-                "Thanks to user’s profile your vehicles, service books and massages will be stored safely in a cloud, so you do not have to worry about that anymore."
-              }
-            </Text>
-          </View>
-          <IconButton
-            style={styles.closeStyle}
-            icon="close"
-            color={Colors.DARK_GRAY}
-            size={20}
-            onPress={closeBottomView}
-          />
-        </Animated.View>
-      </View>
+          {/* Bottom Popup */}
+          <Animated.View style={[styles.bottomView, { opacity: fadeAnima }]}>
+            <View style={styles.bottomVwSubVw}>
+              <Text style={styles.text1}>{"User’s Profile"}</Text>
+              <Text style={styles.text2}>
+                {
+                  "Thanks to user’s profile your vehicles, service books and massages will be stored safely in a cloud, so you do not have to worry about that anymore."
+                }
+              </Text>
+            </View>
+            <IconButton
+              style={styles.closeStyle}
+              icon="close"
+              color={Colors.DARK_GRAY}
+              size={20}
+              onPress={closeBottomView}
+            />
+          </Animated.View>
+        </View>
+      </KeyboardAvoidingView>
+
     </SafeAreaView>
   );
 };
@@ -235,7 +245,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "column",
-    backgroundColor: Colors.LIGHT_GRAY,
+    backgroundColor: Colors.WHITE,
   },
   welcomeStyle: {
     fontSize: 20,
@@ -256,10 +266,10 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   bottomView: {
-    position: "absolute",
+    // position: "absolute",
     bottom: 0,
     backgroundColor: Colors.LIGHT_GRAY,
-    paddingVertical: 20,
+    // paddingVertical: 20,
   },
   bottomVwSubVw: {
     paddingHorizontal: 30,

@@ -45,9 +45,7 @@ const screenWidth = Dimensions.get("window").width;
 const AddPreEnquiryScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.addPreEnquiryReducer);
   const homeSelector = useSelector((state) => state.homeReducer);
-  const { vehicle_modal_list, customer_type_list } = useSelector(
-    (state) => state.homeReducer
-  );
+  const { vehicle_modal_list, customer_type_list } = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
   const [organizationId, setOrganizationId] = useState(0);
   const [branchId, setBranchId] = useState(0);

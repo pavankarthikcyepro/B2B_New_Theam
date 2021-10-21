@@ -157,7 +157,7 @@ const HomeStackNavigator = ({ navigation }) => {
       <HomeStack.Screen
         name={"NOTIF_1"}
         component={NotificationScreen}
-        options={{ title: "Notfications" }}
+        options={{ title: "Notifications" }}
       />
     </HomeStack.Navigator>
   );
@@ -180,7 +180,7 @@ const EmsStackNavigator = ({ navigation }) => {
           headerRight: () => {
             return (
               <View style={{ flexDirection: "row" }}>
-                <SearchIcon />
+                {/* <SearchIcon /> */}
                 <NotficationIcon
                   navigation={navigation}
                   identifier={"NOTIF_2"}
@@ -194,7 +194,7 @@ const EmsStackNavigator = ({ navigation }) => {
       <EmsStack.Screen
         name={"NOTIF_2"}
         component={NotificationScreen}
-        options={{ title: "Notfications" }}
+        options={{ title: "Notifications" }}
       />
       <EmsStack.Screen
         name={EmsStackIdentifiers.addPreEnq}
@@ -247,7 +247,7 @@ const MyTaskStackNavigator = ({ navigation }) => {
           headerRight: () => {
             return (
               <View style={{ flexDirection: "row" }}>
-                <SearchIcon />
+                {/* <SearchIcon /> */}
                 <NotficationIcon
                   navigation={navigation}
                   identifier={"NOTIF_3"}
@@ -261,7 +261,7 @@ const MyTaskStackNavigator = ({ navigation }) => {
       <MyTaskStack.Screen
         name={"NOTIF_3"}
         component={NotificationScreen}
-        options={{ title: "Notfications" }}
+        options={{ title: "Notifications" }}
       />
 
       <MyTaskStack.Screen
@@ -309,7 +309,7 @@ const TabNavigator = () => {
           if (route.name === TabStackIdentifiers.home) {
             iconName = focused ? HOME_FILL : HOME_LINE;
           } else if (route.name === TabStackIdentifiers.ems) {
-            iconName = focused ? HOME_FILL : EMS_LINE;
+            iconName = focused ? EMS_LINE : EMS_LINE;
           } else if (route.name === TabStackIdentifiers.myTask) {
             iconName = focused ? SCHEDULE_FILL : SCHEDULE_LINE;
           }

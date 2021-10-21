@@ -100,7 +100,7 @@ const URL = {
     CUSTOMER_LEAD_REFERENCE: () => sales_url + "/lead-customer-reference",
     GET_COMPLAINTS: () => dynamicReports_url + "/v2-generate-query",
     GET_EVENTS: () => {
-        return ops_url + `/dms/getAllServiceEventsByFilter`
+        return ops_url + `/dms/getAllServiceEventsByFilter`;
     },
     GET_SOURCE_OF_ENQUIRY: () => {
         return sales_url + "/master-data/source-of-enquiry";
@@ -129,5 +129,3 @@ const URL = {
 }
 
 export default URL;
-
-// http://ec2-3-108-253-173.ap-south-1.compute.amazonaws.com:8085/ops

@@ -7,7 +7,7 @@ const NameComp = ({ label, value, labelStyle = {}, valueStyle = {} }) => {
 
   return (
     <View style={styles.bckVw}>
-      <Text style={[styles.text3, labelStyle]}>{label}</Text>
+      <Text style={[styles.text3, labelStyle]} numberOfLines={1}>{label}</Text>
       <Text style={[styles.text4, valueStyle]}>{":  " + value}</Text>
     </View>
   )
@@ -40,8 +40,8 @@ export const ComplaintsItem = ({
     <View>
       <View style={styles.view1}>
         <NameComp
-          label={"Complaint Factor: "}
-          labelStyle={{ color: Colors.RED }}
+          label={"Complaint Factor"}
+          labelStyle={{ color: Colors.RED, width: 100 }}
           value={complaintFactor}
           valueStyle={{ color: Colors.BLUE }}
         />
