@@ -54,7 +54,27 @@ const ComplaintsScreen = ({ navigation }) => {
       "orderByType": "asc",
       "reportIdentifier": "1215",
       "paginationRequired": true,
-      "empId": empId
+      "empId": empId,
+      "where": [
+        {
+          "type": "date",
+          "key": "from_date.fromDATE(dl.createddatetime)",
+          "values": [
+            {
+              "value": "2021-05-06"
+            }
+          ]
+        },
+        {
+          "type": "date",
+          "key": "to_date.toDATE(dl.createddatetime)",
+          "values": [
+            {
+              "value": "2021-10-21"
+            }
+          ]
+        }
+      ]
     }
     dispatch(getComplaintsListApi(payload));
   }
@@ -70,7 +90,9 @@ const ComplaintsScreen = ({ navigation }) => {
         "orderByType": "asc",
         "reportIdentifier": "1215",
         "paginationRequired": true,
-        "empId": empId
+        "empId": empId,
+        "from_date": "2021-05-06",
+        "to_date": "2021-10-21"
       }
       dispatch(getMoreComplaintsListApi(payload));
     }

@@ -147,6 +147,9 @@ const slice = createSlice({
         })
         builder.addCase(validateOtpApi.fulfilled, (state, action) => {
             console.log("S validateOtpApi: ", JSON.stringify(action.payload));
+            if (action.payload.reason === "Success") {
+                state.validate_otp_response_status = "successs";
+            }
             state.isLoading = false;
             state.validate_otp_response_status = "successs";
         })

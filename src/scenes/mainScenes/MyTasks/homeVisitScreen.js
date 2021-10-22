@@ -108,9 +108,23 @@ const HomeVisitScreen = ({ route, navigation }) => {
 
   const closeTask = () => {
 
+    if (selector.reason.length === 0) {
+      showToast("Please Enter Reason");
+      return;
+    }
+
+    if (selector.customer_remarks.length === 0) {
+      showToast("Please enter customer remarks");
+      return;
+    }
+
+    if (selector.employee_remarks.length === 0) {
+      showToast("Please Enter employee remarks");
+      return;
+    }
+
     generateOtpToCloseTask();
     setIsCloseSelected(true)
-    // changeStatusForTask("CLOSE_TASK");
   };
 
   const changeStatusForTask = (actionType) => {
@@ -134,20 +148,6 @@ const HomeVisitScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (!isValidateAlphabetics(selector.reason)) {
-      showToast("please enter alphabetics only in reason");
-      return;
-    }
-    if (!isValidateAlphabetics(selector.customer_remarks)) {
-      showToast("please enter alphabetics only in customer reason");
-      return;
-    }
-
-    if (!isValidateAlphabetics(selector.employee_remarks)) {
-      showToast("please enter alphabetics only in employee remarks");
-      return;
-    }
-
     const newTaskObj = { ...selector.task_details_response };
     newTaskObj.reason = selector.reason;
     newTaskObj.customerRemarks = selector.customer_remarks;
@@ -167,7 +167,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
     }
 
     const payload = {
-      mobileNo: mobile,
+      mobileNo: "91" + mobile,
       message: null
     }
     dispatch(generateOtpApi(payload));
@@ -191,12 +191,18 @@ const HomeVisitScreen = ({ route, navigation }) => {
     }
 
     const payload = {
-      mobileNo: mobile,
+      mobileNo: "91" + mobile,
       sessionKey: selector.otp_session_key,
       otp: otpValue
     }
     dispatch(validateOtpApi(payload));
   }
+
+  useEffect(() => {
+    if (selector.validate_otp_response_status === "successs") {
+      changeStatusForTask("CLOSE_TASK");
+    }
+  }, [selector.validate_otp_response_status])
 
   return (
     <KeyboardAvoidingView
