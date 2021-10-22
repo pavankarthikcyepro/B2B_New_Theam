@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import URL from "../networking/endpoints";
 import { client } from "../networking/client";
-import { showToast } from "../utils/toast";
+import { showToast, showToastRedAlert, showToastSucess } from "../utils/toast";
 
 interface HomeVisitTextModel {
     key: string,
@@ -27,21 +27,49 @@ export const updateTaskApi = createAsyncThunk("HOME_VISIT_SLICE/updateTaskApi", 
     return json;
 })
 
+export const generateOtpApi = createAsyncThunk("HOME_VISIT_SLICE/generateOtpApi", async (payload, { rejectWithValue }) => {
+
+    const response = await client.post(URL.GENERATE_OTP(), payload);
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const validateOtpApi = createAsyncThunk("HOME_VISIT_SLICE/validateOtpApi", async (payload, { rejectWithValue }) => {
+
+    const response = await client.post(URL.VALIDATE_OTP(), payload);
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
 
 const slice = createSlice({
     name: "HOME_VISIT_SLICE",
     initialState: {
         task_details_response: null,
+        user_mobile_number: "",
         is_loading_for_task_update: false,
         update_task_response_status: null,
         reason: "",
         customer_remarks: "",
-        employee_remarks: ""
+        employee_remarks: "",
+        isLoading: false,
+        generate_otp_response_status: "",
+        otp_session_key: "",
+        validate_otp_response_status: "",
     },
     reducers: {
         clearState: (state, action) => {
             state.task_details_response = null;
+            state.user_mobile_number = "";
             state.update_task_response_status = null;
+            state.generate_otp_response_status = "";
+            state.otp_session_key = "";
+            state.validate_otp_response_status = "";
         },
         setHomeVisitDetails: (state, action: PayloadAction<HomeVisitTextModel>) => {
             const { key, text } = action.payload;
@@ -59,15 +87,23 @@ const slice = createSlice({
         }
     },
     extraReducers: (builder) => {
+        builder.addCase(getTaskDetailsApi.pending, (state, action) => {
+            state.task_details_response = null;
+            state.user_mobile_number = "";
+        })
         builder.addCase(getTaskDetailsApi.fulfilled, (state, action) => {
             if (action.payload.success === true && action.payload.dmsEntity) {
                 const taskObj = action.payload.dmsEntity.task;
                 state.reason = taskObj.reason ? taskObj.reason : "";
                 state.customer_remarks = taskObj.customerRemarks ? taskObj.customerRemarks : "";
                 state.employee_remarks = taskObj.employeeRemarks ? taskObj.employeeRemarks : "";
-                state.task_details_response = action.payload.dmsEntity.task;
+                state.task_details_response = taskObj;
+                if (taskObj.assignee && taskObj.assignee.mobile) {
+                    state.user_mobile_number = taskObj.assignee.mobile;
+                }
             } else {
                 state.task_details_response = null;
+                state.user_mobile_number = "";
             }
         })
         builder.addCase(getTaskDetailsApi.rejected, (state, action) => {
@@ -87,6 +123,49 @@ const slice = createSlice({
             state.is_loading_for_task_update = false;
             state.update_task_response_status = null;
             showToast("Something went wrong");
+        })
+        // Generate OTP
+        builder.addCase(generateOtpApi.pending, (state, action) => {
+            state.isLoading = true;
+            state.generate_otp_response_status = "";
+            state.otp_session_key = "";
+        })
+        builder.addCase(generateOtpApi.fulfilled, (state, action) => {
+            console.log("S generateOtpApi: ", JSON.stringify(action.payload));
+            const status = action.payload.reason ? action.payload.reason : "";
+            if (status === "Success") {
+                showToastSucess("Otp sent successfully");
+            }
+            state.isLoading = false;
+            state.generate_otp_response_status = "successs";
+            state.otp_session_key = action.payload.sessionKey ? action.payload.sessionKey : "";
+        })
+        builder.addCase(generateOtpApi.rejected, (state, action) => {
+            console.log("F generateOtpApi: ", JSON.stringify(action.payload));
+            if (action.payload["reason"]) {
+                showToastRedAlert(action.payload["reason"]);
+            }
+            state.isLoading = false;
+            state.generate_otp_response_status = "failed";
+            state.otp_session_key = "";
+        })
+        // Validate OTP
+        builder.addCase(validateOtpApi.pending, (state, action) => {
+            state.isLoading = true;
+            state.validate_otp_response_status = "";
+        })
+        builder.addCase(validateOtpApi.fulfilled, (state, action) => {
+            console.log("S validateOtpApi: ", JSON.stringify(action.payload));
+            state.isLoading = false;
+            state.validate_otp_response_status = "successs";
+        })
+        builder.addCase(validateOtpApi.rejected, (state, action) => {
+            console.log("F validateOtpApi: ", JSON.stringify(action.payload));
+            if (action.payload["reason"]) {
+                showToastRedAlert(action.payload["reason"]);
+            }
+            state.isLoading = false;
+            state.validate_otp_response_status = "failed";
         })
     }
 });

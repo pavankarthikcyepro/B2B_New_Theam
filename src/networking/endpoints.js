@@ -125,7 +125,13 @@ const URL = {
     },
     GET_EVENT_LIST: (startDate, endDate, empId) => {
         return ops_url + `/dms/getAllServiceEventsByFilterWithoutPagination?startdate=${startDate}&enddate=${endDate}&organiserid=${empId}`;
-    }
+    },
+    GENERATE_OTP: () => {
+        return notificationServices_url + "/generateOTP";
+    },
+    VALIDATE_OTP: () => {
+        return notificationServices_url + "/validateOTP";
+    },
 }
 
 export default URL;

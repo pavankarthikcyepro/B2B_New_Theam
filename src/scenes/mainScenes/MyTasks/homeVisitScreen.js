@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView, View, Text, StyleSheet, Keyboard } from "react-native";
+import { SafeAreaView, View, Text, StyleSheet, Keyboard, Dimensions, KeyboardAvoidingView } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { TextinputComp } from "../../../components";
 import { Button } from "react-native-paper";
@@ -9,6 +9,8 @@ import {
   setHomeVisitDetails,
   getTaskDetailsApi,
   updateTaskApi,
+  generateOtpApi,
+  validateOtpApi
 } from "../../../redux/homeVisitReducer";
 import {
   showToastSucess,
@@ -21,6 +23,35 @@ import {
   getPendingTasksListApi,
 } from "../../../redux/mytaskReducer";
 import { isValidateAlphabetics } from "../../../utils/helperFunctions";
+import {
+  CodeField,
+  Cursor,
+  useBlurOnFulfill,
+  useClearByFocusCell,
+} from 'react-native-confirmation-code-field';
+import URL from "../../../networking/endpoints";
+
+const otpStyles = StyleSheet.create({
+  root: { flex: 1, padding: 20 },
+  title: { textAlign: 'center', fontSize: 30, fontWeight: "400" },
+  codeFieldRoot: { marginTop: 20 },
+  cell: {
+    width: 40,
+    height: 40,
+    lineHeight: 38,
+    fontSize: 24,
+    borderWidth: 1,
+    borderColor: '#00000030',
+    textAlign: 'center',
+  },
+  focusCell: {
+    borderColor: '#000',
+  },
+});
+
+const CELL_COUNT = 4;
+const screenWidth = Dimensions.get("window").width;
+const otpViewHorizontalPadding = (screenWidth - (160 + 80)) / 2;
 
 const HomeVisitScreen = ({ route, navigation }) => {
   const { taskId, identifier } = route.params;
@@ -28,6 +59,14 @@ const HomeVisitScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const [actionType, setActionType] = useState("");
   const [empId, setEmpId] = useState("");
+  const [isCloseSelected, setIsCloseSelected] = useState(false);
+
+  const [otpValue, setOtpValue] = useState('');
+  const ref = useBlurOnFulfill({ otpValue, cellCount: CELL_COUNT });
+  const [props, getCellOnLayoutHandler] = useClearByFocusCell({
+    value: otpValue,
+    setValue: setOtpValue,
+  });
 
   useEffect(() => {
     getAsyncStorageData();
@@ -68,7 +107,10 @@ const HomeVisitScreen = ({ route, navigation }) => {
   };
 
   const closeTask = () => {
-    changeStatusForTask("CLOSE_TASK");
+
+    generateOtpToCloseTask();
+    setIsCloseSelected(true)
+    // changeStatusForTask("CLOSE_TASK");
   };
 
   const changeStatusForTask = (actionType) => {
@@ -117,67 +159,202 @@ const HomeVisitScreen = ({ route, navigation }) => {
     setActionType(actionType);
   };
 
-  return (
-    <SafeAreaView style={[styles.container]}>
-      <View style={{ padding: 15 }}>
-        <View style={[GlobalStyle.shadow, { backgroundColor: Colors.WHITE }]}>
-          <TextinputComp
-            style={styles.textInputStyle}
-            label={"Reason"}
-            value={selector.reason}
-            onChangeText={(text) => {
-              dispatch(setHomeVisitDetails({ key: "REASON", text: text }));
-            }}
-          />
-          <Text style={GlobalStyle.underline}></Text>
-          <TextinputComp
-            style={styles.textInputStyle}
-            label={"Customer Remarks"}
-            value={selector.customer_remarks}
-            onChangeText={(text) =>
-              dispatch(
-                setHomeVisitDetails({ key: "CUSTOMER_REMARKS", text: text })
-              )
-            }
-          />
-          <Text style={GlobalStyle.underline}></Text>
-          <TextinputComp
-            style={styles.textInputStyle}
-            label={"Employee Remarks"}
-            value={selector.employee_remarks}
-            onChangeText={(text) =>
-              dispatch(
-                setHomeVisitDetails({ key: "EMPLOYEE_REMARKS", text: text })
-              )
-            }
-          />
-          <Text style={GlobalStyle.underline}></Text>
-        </View>
-      </View>
+  const generateOtpToCloseTask = () => {
 
-      <View style={styles.view1}>
-        <Button
-          mode="contained"
-          style={{ width: 120 }}
-          color={Colors.RED}
-          disabled={selector.is_loading_for_task_update}
-          labelStyle={{ textTransform: "none" }}
-          onPress={updateTask}
-        >
-          Update
-        </Button>
-        <Button
-          mode="contained"
-          style={{ width: 120 }}
-          color={Colors.RED}
-          disabled={selector.is_loading_for_task_update}
-          labelStyle={{ textTransform: "none" }}
-          onPress={closeTask}
-        >
-          Close
-        </Button>
-      </View>
-    </SafeAreaView>
+    if (!selector.user_mobile_number) {
+      showToastRedAlert("No mobile found");
+      return
+    }
+
+    const payload = {
+      mobileNo: selector.user_mobile_number,
+      message: null
+    }
+    dispatch(generateOtpApi(payload));
+  }
+
+  const resendClicked = () => {
+
+    generateOtpToCloseTask();
+  }
+
+  const test = () => {
+
+
+    const categoryType = "warm";
+    const model = [
+      {
+        id: 15,
+        name: "Duster"
+      }, {
+        id: 16,
+        name: "Kiger"
+      }]
+
+    const source = [
+      {
+        id: 1,
+        name: "Event"
+      },
+      {
+        id: 2,
+        name: "Field"
+      }]
+    const payload = {
+      dateRange: {
+        startDate: "2021-10-22",
+        endDate: "2021-10-22",
+      },
+      categoryType: categoryType,
+      model: model,
+      sourceOfEnquiry: source
+    }
+  }
+
+  const verifyClicked = async () => {
+
+    if (otpValue.length != 4) {
+      showToastRedAlert("Please enter valid OTP")
+      return;
+    }
+
+    if (!selector.user_mobile_number) {
+      showToastRedAlert("No mobile found");
+      return
+    }
+
+    const payload = {
+      mobileNo: selector.user_mobile_number,
+      sessionKey: selector.otp_session_key,
+      otp: otpValue
+    }
+    dispatch(validateOtpApi(payload));
+  }
+
+  return (
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS == "ios" ? "padding" : "height"}
+      enabled
+      keyboardVerticalOffset={100}
+    >
+      <SafeAreaView style={[styles.container]}>
+
+        <View style={{ padding: 15 }}>
+          <View style={[GlobalStyle.shadow, { backgroundColor: Colors.WHITE }]}>
+            <TextinputComp
+              style={styles.textInputStyle}
+              label={"Reason"}
+              value={selector.reason}
+              onChangeText={(text) => {
+                dispatch(setHomeVisitDetails({ key: "REASON", text: text }));
+              }}
+            />
+            <Text style={GlobalStyle.underline}></Text>
+            <TextinputComp
+              style={styles.textInputStyle}
+              label={"Customer Remarks"}
+              value={selector.customer_remarks}
+              onChangeText={(text) =>
+                dispatch(
+                  setHomeVisitDetails({ key: "CUSTOMER_REMARKS", text: text })
+                )
+              }
+            />
+            <Text style={GlobalStyle.underline}></Text>
+            <TextinputComp
+              style={styles.textInputStyle}
+              label={"Employee Remarks"}
+              value={selector.employee_remarks}
+              onChangeText={(text) =>
+                dispatch(
+                  setHomeVisitDetails({ key: "EMPLOYEE_REMARKS", text: text })
+                )
+              }
+            />
+            <Text style={GlobalStyle.underline}></Text>
+          </View>
+
+          {isCloseSelected ? (
+            <View style={{ marginTop: 20, paddingHorizontal: otpViewHorizontalPadding }}>
+              <View style={{ height: 60, justifyContent: 'center', alignItems: "center" }}>
+                <Text style={{ textAlign: "center" }}>{"We have sent an OTP to mobile number, please verify"}</Text>
+              </View>
+              <CodeField
+                ref={ref}
+                {...props}
+                caretHidden={false} // when users can't paste a text value, because context menu doesn't appear
+                value={otpValue}
+                onChangeText={setOtpValue}
+                cellCount={CELL_COUNT}
+                rootStyle={otpStyles.codeFieldRoot}
+                keyboardType="number-pad"
+                textContentType="oneTimeCode"
+                renderCell={({ index, symbol, isFocused }) => (
+                  <Text
+                    key={index}
+                    style={[otpStyles.cell, isFocused && otpStyles.focusCell]}
+                    onLayout={getCellOnLayoutHandler(index)}>
+                    {symbol || (isFocused ? <Cursor /> : null)}
+                  </Text>
+                )}
+              />
+            </View>
+          ) : null}
+
+        </View>
+
+        {!isCloseSelected ? (
+          <View style={styles.view1}>
+            <Button
+              mode="contained"
+              style={{ width: 120 }}
+              color={Colors.RED}
+              disabled={selector.is_loading_for_task_update}
+              labelStyle={{ textTransform: "none" }}
+              onPress={updateTask}
+            >
+              Update
+            </Button>
+            <Button
+              mode="contained"
+              style={{ width: 120 }}
+              color={Colors.RED}
+              disabled={selector.is_loading_for_task_update}
+              labelStyle={{ textTransform: "none" }}
+              onPress={closeTask}
+            >
+              Close
+            </Button>
+          </View>
+        ) : null}
+
+        {isCloseSelected ? (
+          <View style={[styles.view1, { marginTop: 30 }]}>
+            <Button
+              mode="contained"
+              style={{ width: 120 }}
+              color={Colors.GREEN}
+              disabled={selector.is_loading_for_task_update}
+              labelStyle={{ textTransform: "none" }}
+              onPress={verifyClicked}
+            >
+              Verify
+            </Button>
+            <Button
+              mode="contained"
+              style={{ width: 120 }}
+              color={Colors.RED}
+              disabled={selector.is_loading_for_task_update}
+              labelStyle={{ textTransform: "none" }}
+              onPress={resendClicked}
+            >
+              Resend
+            </Button>
+          </View>
+        ) : null}
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 
