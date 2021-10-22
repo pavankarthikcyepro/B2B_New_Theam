@@ -54,7 +54,7 @@ const screenWidth = Dimensions.get("window").width;
 const otpViewHorizontalPadding = (screenWidth - (160 + 80)) / 2;
 
 const HomeVisitScreen = ({ route, navigation }) => {
-  const { taskId, identifier } = route.params;
+  const { taskId, identifier, mobile } = route.params;
   const selector = useSelector((state) => state.homeVisitReducer);
   const dispatch = useDispatch();
   const [actionType, setActionType] = useState("");
@@ -161,13 +161,13 @@ const HomeVisitScreen = ({ route, navigation }) => {
 
   const generateOtpToCloseTask = () => {
 
-    if (!selector.user_mobile_number) {
+    if (!mobile) {
       showToastRedAlert("No mobile found");
       return
     }
 
     const payload = {
-      mobileNo: selector.user_mobile_number,
+      mobileNo: mobile,
       message: null
     }
     dispatch(generateOtpApi(payload));
@@ -178,39 +178,6 @@ const HomeVisitScreen = ({ route, navigation }) => {
     generateOtpToCloseTask();
   }
 
-  const test = () => {
-
-
-    const categoryType = "warm";
-    const model = [
-      {
-        id: 15,
-        name: "Duster"
-      }, {
-        id: 16,
-        name: "Kiger"
-      }]
-
-    const source = [
-      {
-        id: 1,
-        name: "Event"
-      },
-      {
-        id: 2,
-        name: "Field"
-      }]
-    const payload = {
-      dateRange: {
-        startDate: "2021-10-22",
-        endDate: "2021-10-22",
-      },
-      categoryType: categoryType,
-      model: model,
-      sourceOfEnquiry: source
-    }
-  }
-
   const verifyClicked = async () => {
 
     if (otpValue.length != 4) {
@@ -218,13 +185,13 @@ const HomeVisitScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (!selector.user_mobile_number) {
+    if (!mobile) {
       showToastRedAlert("No mobile found");
       return
     }
 
     const payload = {
-      mobileNo: selector.user_mobile_number,
+      mobileNo: mobile,
       sessionKey: selector.otp_session_key,
       otp: otpValue
     }

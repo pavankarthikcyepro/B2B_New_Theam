@@ -6,10 +6,10 @@ import { IconButton } from "react-native-paper";
 
 const DateComp = ({ label, date }) => {
   return (
-    <View style={{ borderColor: Colors.GRAY, borderWidth: 1, borderRadius: 4, backgroundColor: Colors.WHITE, paddingHorizontal: 5, height: 50, justifyContent: 'center' }}>
+    <View style={{ borderColor: Colors.BORDER_COLOR, borderWidth: 1, borderRadius: 4, backgroundColor: Colors.WHITE, paddingHorizontal: 5, height: 50, justifyContent: 'center' }}>
       {date ? <Text style={{ fontSize: 12, fontWeight: '400', color: Colors.GRAY }}>{label}</Text> : null}
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Text style={{ fontSize: 14, fontWeight: '600', color: date ? Colors.BLACK : Colors.GRAY }}>{date ? date : label}</Text>
+        <Text style={{ fontSize: 14, fontWeight: '400', color: date ? Colors.BLACK : Colors.GRAY }}>{date ? date : label}</Text>
         <IconButton
           icon={"calendar-month"}
           size={20}

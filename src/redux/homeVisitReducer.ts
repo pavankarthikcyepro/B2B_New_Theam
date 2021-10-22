@@ -51,7 +51,6 @@ const slice = createSlice({
     name: "HOME_VISIT_SLICE",
     initialState: {
         task_details_response: null,
-        user_mobile_number: "",
         is_loading_for_task_update: false,
         update_task_response_status: null,
         reason: "",
@@ -65,7 +64,6 @@ const slice = createSlice({
     reducers: {
         clearState: (state, action) => {
             state.task_details_response = null;
-            state.user_mobile_number = "";
             state.update_task_response_status = null;
             state.generate_otp_response_status = "";
             state.otp_session_key = "";
@@ -89,7 +87,6 @@ const slice = createSlice({
     extraReducers: (builder) => {
         builder.addCase(getTaskDetailsApi.pending, (state, action) => {
             state.task_details_response = null;
-            state.user_mobile_number = "";
         })
         builder.addCase(getTaskDetailsApi.fulfilled, (state, action) => {
             if (action.payload.success === true && action.payload.dmsEntity) {
@@ -98,12 +95,6 @@ const slice = createSlice({
                 state.customer_remarks = taskObj.customerRemarks ? taskObj.customerRemarks : "";
                 state.employee_remarks = taskObj.employeeRemarks ? taskObj.employeeRemarks : "";
                 state.task_details_response = taskObj;
-                if (taskObj.assignee && taskObj.assignee.mobile) {
-                    state.user_mobile_number = taskObj.assignee.mobile;
-                }
-            } else {
-                state.task_details_response = null;
-                state.user_mobile_number = "";
             }
         })
         builder.addCase(getTaskDetailsApi.rejected, (state, action) => {

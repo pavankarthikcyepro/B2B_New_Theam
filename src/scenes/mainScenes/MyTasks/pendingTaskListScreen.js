@@ -75,6 +75,7 @@ const PendingTaskListScreen = ({ navigation }) => {
         const taskId = item.taskId;
         const universalId = item.universalId;
         const taskStatus = item.taskStatus;
+        const mobileNumber = item.leadDto.phone ? item.leadDto.phone : "";
 
         const trimName = taskName.toLowerCase().trim();
         const finalTaskName = trimName.replace(/ /g, "");
@@ -109,7 +110,7 @@ const PendingTaskListScreen = ({ navigation }) => {
                 break;
         }
         if (!navigationId) { return }
-        navigation.navigate(navigationId, { identifier: mytasksIdentifires[finalTaskName], taskId, universalId, taskStatus, taskData: item });
+        navigation.navigate(navigationId, { identifier: mytasksIdentifires[finalTaskName], taskId, universalId, taskStatus, taskData: item, mobile: mobileNumber });
     };
 
     const renderFooter = () => {

@@ -7,22 +7,32 @@ import { IconButton } from 'react-native-paper';
 import VectorImage from 'react-native-vector-image';
 import { CREATE_NEW } from '../../../assets/svg';
 import { AppNavigator } from '../../../navigations';
-import { CallUserComponent, SortAndFilterComp } from '../../../components';
+import { CallUserComponent, SortAndFilterComp, DateRangeComp, DatePickerComponent } from '../../../components';
 import { callPressed, sortAndFilterPressed, getPreEnquiryData, setPreEnquiryList, getMorePreEnquiryData } from '../../../redux/preEnquiryReducer';
 import * as AsyncStore from '../../../asyncStore';
 import realm from '../../../database/realm';
 import { callNumber } from '../../../utils/helperFunctions';
+import moment from "moment";
 
 const PreEnquiryScreen = ({ navigation }) => {
 
     const selector = useSelector(state => state.preEnquiryReducer);
     const dispatch = useDispatch();
     const [employeeId, setEmployeeId] = useState("");
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [datePickerId, setDatePickerId] = useState("");
+    const [selectedFromDate, setSelectedFromDate] = useState("");
+    const [selectedToDate, setSelectedToDate] = useState("");
 
     useEffect(() => {
 
         getPreEnquiryListFromServer();
         //getPreEnquiryListFromDB();
+
+        // Get Data From Server
+        const currentDate = moment().format("DD/MM/YYYY");
+        setSelectedFromDate(currentDate);
+        setSelectedToDate(currentDate);
     }, [])
 
     const getPreEnquiryListFromDB = () => {
@@ -46,6 +56,28 @@ const PreEnquiryScreen = ({ navigation }) => {
         }
     }
 
+    const showDatePickerMethod = (key) => {
+        setShowDatePicker(true);
+        setDatePickerId(key);
+    }
+
+    const updateSelectedDate = (date, key) => {
+
+        const formatDate = moment(date).format("DD/MM/YYYY");
+        const payloadDate = moment(date).format("YYYY-DD-MM");
+        switch (key) {
+            case "FROM_DATE":
+                setSelectedFromDate(formatDate);
+                const formatToDate = moment(selectedToDate, "DD/MM/YYYY").format("YYYY-MM-DD");
+                console.log("format formatToDate: ", formatToDate)
+                break;
+            case "TO_DATE":
+                setSelectedToDate(formatDate);
+                const formatFromDate = moment(selectedFromDate, "DD/MM/YYYY").format("YYYY-MM-DD");
+                break;
+        }
+    }
+
     const renderFooter = () => {
         if (!selector.isLoadingExtraData) { return null }
         return (
@@ -59,10 +91,28 @@ const PreEnquiryScreen = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.conatiner}>
 
-            <CallUserComponent
+            <DatePickerComponent
+                visible={showDatePicker}
+                mode={"date"}
+                value={new Date(Date.now())}
+                onChange={(event, selectedDate) => {
+                    console.log("date: ", selectedDate);
+                    if (Platform.OS === "android") {
+                        if (selectedDate) {
+                            updateSelectedDate(selectedDate, datePickerId);
+                        }
+                    } else {
+                        updateSelectedDate(selectedDate, datePickerId);
+                    }
+                    setShowDatePicker(false)
+                }}
+                onRequestClose={() => setShowDatePicker(false)}
+            />
+
+            {/* <CallUserComponent
                 visible={selector.modelVisible}
                 onRequestClose={() => dispatch(callPressed())}
-            />
+            /> */}
 
             <SortAndFilterComp
                 visible={selector.sortAndFilterVisible}
@@ -71,16 +121,25 @@ const PreEnquiryScreen = ({ navigation }) => {
                 }}
             />
 
-            <View style={{ flex: 1, paddingHorizontal: 10, paddingTop: 10 }}>
+            <View style={{ flex: 1, paddingHorizontal: 10, paddingTop: 5 }}>
 
                 <View style={styles.view1}>
+                    <View style={{ width: "80%" }}>
+                        <DateRangeComp
+                            fromDate={selectedFromDate}
+                            toDate={selectedToDate}
+                            fromDateClicked={() => showDatePickerMethod("FROM_DATE")}
+                            toDateClicked={() => showDatePickerMethod("TO_DATE")}
+                        />
+                    </View>
                     <Pressable onPress={() => dispatch(sortAndFilterPressed())}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Text style={styles.text1}>{'Sort & Filter'}</Text>
-                            <IconButton icon={'dots-vertical'} size={20} color={Colors.RED} style={{ margin: 0 }} />
+                            <Text style={styles.text1}>{'Filter'}</Text>
+                            <IconButton icon={'filter-outline'} size={20} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
                         </View>
                     </Pressable>
                 </View>
+                {/* // filter */}
 
                 {selector.pre_enquiry_list.length === 0 ? <EmptyListView title={'No Data Found'} isLoading={selector.isLoading} /> :
                     <View style={[GlobalStyle.shadow, { backgroundColor: 'white', flex: 1, marginBottom: 10 }]}>
@@ -143,12 +202,17 @@ const styles = StyleSheet.create({
     },
     view1: {
         flexDirection: 'row',
-        justifyContent: 'flex-end',
-        marginBottom: 5
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 5,
+        paddingHorizontal: 5,
+        borderWidth: 1,
+        borderColor: Colors.LIGHT_GRAY,
+        backgroundColor: Colors.WHITE
     },
     text1: {
-        fontSize: 14,
-        fontWeight: '600',
+        fontSize: 16,
+        fontWeight: '400',
         color: Colors.RED
     },
     addView: {

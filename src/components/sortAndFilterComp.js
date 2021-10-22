@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, SafeAreaView, StyleSheet, View, Dimensions, Text, TouchableOpacity, FlatList, Pressable, Platform } from 'react-native';
 import { Colors, GlobalStyle } from '../styles';
 import { IconButton, Checkbox, Button, RadioButton } from 'react-native-paper';
@@ -7,23 +7,15 @@ const screenWidth = Dimensions.get('window').width;
 
 const dummyData = [
     {
-        title: "Sort By",
-        subtitle: "Category, Hot"
+        title: "Category Type",
+        subtitle: ""
     },
     {
         title: "Model",
         subtitle: ""
     },
     {
-        title: "Source of enquiry",
-        subtitle: ""
-    },
-    {
-        title: "Due date",
-        subtitle: ""
-    },
-    {
-        title: "Status of enquiry",
+        title: "Source of Enquiry",
         subtitle: ""
     }
 ]
@@ -51,6 +43,10 @@ const SortAndFilterComp = ({ visible = false, onRequestClose }) => {
 
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [selectedRadioIndex, setSelectedRadioIndex] = useState("1");
+
+    useEffect(() => {
+        console.log("use effect called")
+    }, [])
 
     return (
         <Modal
