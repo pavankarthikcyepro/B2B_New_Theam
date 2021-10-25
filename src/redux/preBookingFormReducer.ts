@@ -1017,6 +1017,7 @@ const prebookingFormSlice = createSlice({
       state.isLoading = false;
     })
     builder.addCase(updatePrebookingDetailsApi.rejected, (state, action) => {
+      console.log("F updatePrebookingDetailsApi: ", JSON.stringify(action.payload));
       state.update_pre_booking_details_response = "failed";
       state.isLoading = false;
     })

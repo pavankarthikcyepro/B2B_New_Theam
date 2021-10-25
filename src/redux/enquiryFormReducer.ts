@@ -103,6 +103,12 @@ const enquiryDetailsOverViewSlice = createSlice({
     customer_type: "",
     company_name: "",
     source_of_enquiry: "",
+    event_code: "",
+    rf_by_first_name: "",
+    rf_by_last_name: "",
+    rf_by_mobile: "",
+    rf_by_source: "",
+    rf_by_source_location: "",
     sub_source_of_enquiry: "",
     expected_delivery_date: "",
     enquiry_category: "",
@@ -259,6 +265,9 @@ const enquiryDetailsOverViewSlice = createSlice({
           break;
         case "CUSTOMER_TYPE":
           state.customer_type = value;
+          break;
+        case "RF_SOURCE":
+          state.rf_by_source = value;
           break;
         case "SALUTATION":
           if (state.salutaion !== value) {
@@ -560,6 +569,18 @@ const enquiryDetailsOverViewSlice = createSlice({
         case "COMPANY_NAME":
           state.company_name = text;
           break;
+        case "RF_FIRST_NAME":
+          state.rf_by_first_name = text;
+          break;
+        case "RF_LAST_NAME":
+          state.rf_by_last_name = text;
+          break;
+        case "RF_MOBILE":
+          state.rf_by_mobile = text;
+          break;
+        case "RF_SOURCE_LOCATION":
+          state.rf_by_source_location = text;
+          break;
       }
     },
     setFinancialDetails: (state, action: PayloadAction<PersonalIntroModel>) => {
@@ -757,6 +778,12 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.occupation = dms_C_Or_A_Dto.occupation ? dms_C_Or_A_Dto.occupation : "";
       state.prime_expectation_from_car = dms_C_Or_A_Dto.primeExpectationFromCar ? dms_C_Or_A_Dto.primeExpectationFromCar : "";
       state.who_drives = dms_C_Or_A_Dto.whoDrives ? dms_C_Or_A_Dto.whoDrives : "";
+
+      state.rf_by_first_name = dms_C_Or_A_Dto.referedByFirstname ? dms_C_Or_A_Dto.referedByFirstname : "";
+      state.rf_by_last_name = dms_C_Or_A_Dto.referedByLastname ? dms_C_Or_A_Dto.referedByLastname : "";
+      state.rf_by_mobile = dms_C_Or_A_Dto.refferedMobileNo ? dms_C_Or_A_Dto.refferedMobileNo : "";
+      state.rf_by_source = dms_C_Or_A_Dto.refferedSource ? dms_C_Or_A_Dto.refferedSource : "";
+      state.rf_by_source_location = dms_C_Or_A_Dto.reffered_Sourcelocation ? dms_C_Or_A_Dto.reffered_Sourcelocation : "";
     },
     updateDmsLeadDtoData: (state, action) => {
 
@@ -769,6 +796,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       }
       state.source_of_enquiry = dmsLeadDto.enquirySource ? dmsLeadDto.enquirySource : "";
       state.sub_source_of_enquiry = dmsLeadDto.subSource ? dmsLeadDto.subSource : "";
+      state.event_code = dmsLeadDto.eventCode ? dmsLeadDto.eventCode : "";
       const deliveryDate = dmsLeadDto.dmsExpectedDeliveryDate ? dmsLeadDto.dmsExpectedDeliveryDate : "";
       state.expected_delivery_date = convertTimeStampToDateString(deliveryDate, "DD/MM/YYYY");
       state.model = dmsLeadDto.model ? dmsLeadDto.model : "";

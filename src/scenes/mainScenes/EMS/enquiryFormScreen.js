@@ -96,6 +96,7 @@ import {
   Fuel_Types,
   Enquiry_Drop_Reasons,
   Insurence_Types,
+  Referred_By_Source
 } from "../../../jsonData/enquiryFormScreenJsonData";
 import {
   showAlertMessage,
@@ -386,9 +387,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const mapContactOrAccountDto = (prevData) => {
     let dataObj = { ...prevData };
-    dataObj.dateOfBirth = convertDateStringToMillisecondsUsingMoment(
-      selector.dateOfBirth
-    );
+    dataObj.dateOfBirth = convertDateStringToMillisecondsUsingMoment(selector.dateOfBirth);
     dataObj.email = selector.email;
     dataObj.firstName = selector.firstName;
     dataObj.lastName = selector.lastName;
@@ -403,9 +402,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.occupation = selector.occupation;
     dataObj.designation = selector.designation;
     dataObj.customerType = selector.customer_type;
-    dataObj.anniversaryDate = convertDateStringToMillisecondsUsingMoment(
-      selector.anniversaryDate
-    );
+    dataObj.anniversaryDate = convertDateStringToMillisecondsUsingMoment(selector.anniversaryDate);
     dataObj.annualRevenue = selector.approx_annual_income;
     dataObj.company = selector.company_name;
     dataObj.companyName = selector.company_name;
@@ -413,6 +410,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.membersInFamily = selector.members;
     dataObj.primeExpectationFromCar = selector.prime_expectation_from_car;
     dataObj.whoDrives = selector.who_drives;
+
+    dataObj.referedByFirstname = selector.rf_by_first_name;
+    dataObj.referedByLastname = selector.rf_by_last_name;
+    dataObj.refferedMobileNo = selector.rf_by_mobile;
+    dataObj.refferedSource = selector.rf_by_source;
+    dataObj.reffered_Sourcelocation = selector.rf_by_source_location;
     return dataObj;
   };
 
@@ -422,11 +425,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.enquiryCategory = selector.enquiry_category;
     dataObj.enquirySegment = selector.enquiry_segment;
     dataObj.enquirySource = selector.source_of_enquiry;
+    dataObj.eventCode = selector.event_code;
     dataObj.subSource = selector.sub_source_of_enquiry;
-    dataObj.dmsExpectedDeliveryDate =
-      convertDateStringToMillisecondsUsingMoment(
-        selector.expected_delivery_date
-      );
+    dataObj.dmsExpectedDeliveryDate = convertDateStringToMillisecondsUsingMoment(selector.expected_delivery_date);
     dataObj.model = selector.model;
     dataObj.leadStatus = "ENQUIRYCOMPLETED";
     dataObj.dmsAddresses = mapDMSAddress(dataObj.dmsAddresses);
@@ -780,11 +781,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const getEnquiryListFromServer = () => {
     if (userData.employeeId) {
-      let endUrl =
-        "?limit=10&offset=" +
-        "0" +
-        "&status=ENQUIRY&empId=" +
-        userData.employeeId;
+      let endUrl = "?limit=10&offset=" + "0" + "&status=ENQUIRY&empId=" + userData.employeeId;
       dispatch(getEnquiryList(endUrl));
     }
   };
@@ -933,6 +930,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         break;
       case "DROP_REASON":
         setDataForDropDown([...Enquiry_Drop_Reasons]);
+        break;
+      case "RF_SOURCE":
+        setDataForDropDown([...Referred_By_Source]);
         break;
     }
     setDropDownKey(key);
@@ -1293,16 +1293,75 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
                 <Text style={GlobalStyle.underline}></Text>
 
-                <DropDownSelectionItem
-                  label={"Sub Source Of Enquiry"}
-                  value={selector.sub_source_of_enquiry}
-                  onPress={() =>
-                    showDropDownModelMethod(
-                      "SUB_SOURCE_OF_ENQUIRY",
-                      "Sub Source Of Enquiry"
-                    )
-                  }
-                />
+                {selector.source_of_enquiry.toLowerCase() === "event" && (
+                  <View>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.event_code}
+                      label={"Event Code"}
+                      editable={false}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                )}
+
+                {(selector.source_of_enquiry.toLowerCase().trim().replace(/ /g, "") === "digitalmarketing" || selector.source_of_enquiry.toLowerCase().trim().replace(/ /g, "") === "socialnetwork") && (
+                  <View>
+                    <DropDownSelectionItem
+                      label={"Sub Source Of Enquiry"}
+                      value={selector.sub_source_of_enquiry}
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "SUB_SOURCE_OF_ENQUIRY",
+                          "Sub Source Of Enquiry"
+                        )
+                      }
+                    />
+                  </View>
+                )}
+
+                {selector.source_of_enquiry.toLowerCase() === "reference" && (
+                  <View>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.rf_by_first_name}
+                      label={"Referred BY First Name"}
+                      keyboardType={"default"}
+                      onChangeText={(text) => dispatch(setCustomerProfile({ key: "RF_FIRST_NAME", text: text, }))}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.rf_by_last_name}
+                      label={"Referred BY Last Name"}
+                      keyboardType={"default"}
+                      onChangeText={(text) => dispatch(setCustomerProfile({ key: "RF_LAST_NAME", text: text, }))}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.rf_by_mobile}
+                      label={"Referred BY Mobile"}
+                      keyboardType={"number-pad"}
+                      maxLength={10}
+                      onChangeText={(text) => dispatch(setCustomerProfile({ key: "RF_MOBILE", text: text, }))}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <DropDownSelectionItem
+                      label={"Referred BY Source"}
+                      value={selector.rf_by_source}
+                      onPress={() => showDropDownModelMethod("RF_SOURCE", "Referred BY Source")}
+                    />
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.rf_by_source_location}
+                      label={"Referred BY Source Location"}
+                      keyboardType={"default"}
+                      onChangeText={(text) => dispatch(setCustomerProfile({ key: "RF_SOURCE_LOCATION", text: text, }))}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                )}
 
                 <DateSelectItem
                   label={"Expected Delivery Date"}

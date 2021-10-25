@@ -17,6 +17,49 @@ export const Enquiry_Segment_Data = [
   },
 ];
 
+export const Referred_By_Source = [
+  {
+    id: "1",
+    name: "Existing Customer",
+  },
+  {
+    id: "2",
+    name: "Service Center",
+  },
+  {
+    id: "3",
+    name: "Private Garage",
+  },
+  {
+    id: "4",
+    name: "RTA Agent",
+  },
+  {
+    id: "5",
+    name: "Banker",
+  },
+  {
+    id: "6",
+    name: "NBFC",
+  },
+  {
+    id: "7",
+    name: "DSA",
+  },
+  {
+    id: "8",
+    name: "Company Employee",
+  },
+  {
+    id: "9",
+    name: "Workshop",
+  },
+  {
+    id: "10",
+    name: "Other",
+  },
+]
+
 export const Gender_Data_Obj = {
   "mr": [
     {

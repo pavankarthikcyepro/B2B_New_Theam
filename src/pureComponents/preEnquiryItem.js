@@ -42,14 +42,9 @@ export const PreEnquiryItem = ({
           <Text style={styles.text2}>{myDate}</Text>
         </View>
         <View style={styles.rightView}>
-          <Button
-            mode="contained"
-            contentStyle={{ height: 30, backgroundColor: Colors.RED }}
-            labelStyle={{ fontSize: 12, fontWeight: "600" }}
-            onPress={() => console.log("Pressed")}
-          >
-            {modelName}
-          </Button>
+          <View style={styles.modelBckView}>
+            <Text style={styles.text4}>{modelName}</Text>
+          </View>
           <IconButton
             icon="phone"
             color={Colors.GREEN}
@@ -90,4 +85,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "400",
   },
+  modelBckView: {
+    paddingHorizontal: 5,
+    paddingVertical: 3,
+    backgroundColor: Colors.RED,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 4
+  },
+  text4: {
+    fontSize: 12,
+    fontWeight: "400",
+    color: Colors.WHITE
+  }
 });
