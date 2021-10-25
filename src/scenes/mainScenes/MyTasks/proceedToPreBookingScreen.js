@@ -258,7 +258,6 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
 
     const updateEnuiquiryDetails = (refNumber) => {
 
-        console.log("test 5")
         if (!selector.enquiry_details_response) {
             return
         }
@@ -269,6 +268,7 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
             dmsLeadDto.leadStage = "DROPPED";
         }
         else if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING" && identifier === "PROCEED_TO_PRE_BOOKING") {
+            dmsLeadDto.leadStatus = "ENQUIRYCOMPLETED";
             dmsLeadDto.leadStage = "PREBOOKING";
             dmsLeadDto.referencenumber = refNumber;
         }
@@ -282,7 +282,6 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
 
     // Handle Enquiry Update response
     useEffect(() => {
-        console.log("test 6")
         if (selector.update_enquiry_details_response_status === "success" && selector.update_enquiry_details_response) {
             if (typeOfActionDispatched === "DROP_ENQUIRY") {
                 showToastSucess("Successfully Enquiry Dropped");
@@ -300,7 +299,6 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
     }, [selector.update_enquiry_details_response_status, selector.update_enquiry_details_response]);
 
     displayCreateEnquiryAlert = () => {
-        console.log("test 7")
         let refNumber = "";
         if (selector.update_enquiry_details_response) {
             refNumber = selector.update_enquiry_details_response.dmsLeadDto.referencenumber;

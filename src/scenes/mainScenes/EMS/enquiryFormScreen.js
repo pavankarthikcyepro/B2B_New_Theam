@@ -310,14 +310,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (
-      selector.salutaion.length == 0 ||
-      selector.dateOfBirth.length == 0 ||
-      selector.anniversaryDate.length == 0
-    ) {
+    if (selector.salutaion.length == 0) {
       showToast("Please fill required fields in Personal Intro");
       return;
     }
+
+    if (selector.enquiry_segment.toLowerCase() == "personal") {
+      if (selector.dateOfBirth.length == 0 || selector.anniversaryDate.length == 0) {
+        showToast("Please fill required fields in Personal Intro");
+        return;
+      }
+    }
+
     if (!isValidateAlphabetics(selector.firstName)) {
       showToast("please enter alphabetics only in firstname");
       return;
@@ -342,59 +346,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("Please fill required fields in Communication Address");
       return;
     }
-    if (!isValidateAlphabetics(selector.streetName)) {
-      showToast("please enter alphabetics only in streetname");
-      return;
-    }
-    if (!isValidateAlphabetics(selector.village)) {
-      showToast("please enter alphabetics only in village/town");
-      return;
-    }
-    if (!isValidateAlphabetics(selector.city)) {
-      showToast("please enter alphabetics only in city");
-      return;
-    }
-    if (!isValidateAlphabetics(selector.state)) {
-      showToast("please enter alphabetics only in state");
-      return;
-    }
-    if (!isValidateAlphabetics(selector.district)) {
-      showToast("please enter alphabetics only in district");
-      return;
-    }
-
-    if (
-      selector.model.length == 0 ||
-      selector.varient.length == 0 ||
-      selector.color.length == 0
-    ) {
-      showToast("Please fill required fields in Model Selection");
-      return;
-    }
 
     if (selector.retail_finance.length == 0) {
       showToast("Please fill required fields in Financial Details");
-      return;
-    }
-
-    if (!isValidateAlphabetics(selector.c_color)) {
-      showToast("please enter alphabetics only in color");
-      return;
-    }
-    if (!isValidateAlphabetics(selector.c_dealership_name)) {
-      showToast("please enter alphabetics only in dealership name");
-      return;
-    }
-    if (!isValidateAlphabetics(selector.c_dealership_location)) {
-      showToast("please enter alphabetics only in location");
-      return;
-    }
-    if (!isValidateAlphabetics(selector.c_dealership_pending_reason)) {
-      showToast("please enter alphabetics only in pending reason");
-      return;
-    }
-    if (!isValidateAlphabetics(selector.c_voice_of_customer_remarks)) {
-      showToast("please enter alphabetics only in customer remarks");
       return;
     }
 
@@ -518,7 +472,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const mapLeadProducts = (prevDmsLeadProducts) => {
     let dmsLeadProducts = [...prevDmsLeadProducts];
-    const dataObj = {};
+    let dataObj = {};
     if (dmsLeadProducts.length > 0) {
       dataObj = { ...dmsLeadProducts[0] };
     }
@@ -534,7 +488,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const mapDmsFinanceDetails = (prevDmsFinancedetails) => {
     let dmsfinancedetails = [...prevDmsFinancedetails];
-    const dataObj = {};
+    let dataObj = {};
     if (dmsfinancedetails.length > 0) {
       dataObj = { ...dmsfinancedetails[0] };
     }
@@ -562,7 +516,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const mapDmsLeadScoreCards = (prevDmsLeadScoreCards) => {
     let dmsLeadScoreCards = [...prevDmsLeadScoreCards];
-    const dataObj = {};
+    let dataObj = {};
     if (dmsLeadScoreCards.length > 0) {
       dataObj = { ...dmsLeadScoreCards[0] };
     }
@@ -598,7 +552,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   const formatExchangeDetails = (prevData) => {
-    const dataObj = { ...prevData };
+    let dataObj = { ...prevData };
     if (selector.buyer_type === "Additional Buyer") {
       dataObj.buyerType = selector.buyer_type;
       dataObj.brand = selector.a_make;

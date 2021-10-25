@@ -967,12 +967,14 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.isLoading = true;
     })
     builder.addCase(updateEnquiryDetailsApi.fulfilled, (state, action) => {
+      console.log("S updateEnquiryDetailsApi: ", JSON.stringify(action.payload));
       if (action.payload.success == true) {
         state.update_enquiry_details_response = "success";
       }
       state.isLoading = false;
     })
     builder.addCase(updateEnquiryDetailsApi.rejected, (state, action) => {
+      console.log("F updateEnquiryDetailsApi: ", JSON.stringify(action.payload));
       state.update_enquiry_details_response = "failed";
       state.isLoading = false;
     })
