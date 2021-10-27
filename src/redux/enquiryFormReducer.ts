@@ -87,6 +87,8 @@ const enquiryDetailsOverViewSlice = createSlice({
     enquiry_drop_response_status: "",
     get_pending_tasks_response_status: "",
     get_pending_tasks_response_list: [],
+    minDate: null,
+    maxDate: null,
 
     //personal Intro
     gender_types_data: [],
@@ -396,6 +398,48 @@ const enquiryDetailsOverViewSlice = createSlice({
     },
     setDatePicker: (state, action) => {
       console.log("coming here");
+      switch (action.payload) {
+        case "EXPECTED_DELIVERY_DATE":
+          state.minDate = new Date();
+          state.maxDate = null;
+          break;
+        case "DATE_OF_BIRTH":
+          state.minDate = null;
+          state.maxDate = new Date();
+          break;
+        case "ANNIVERSARY_DATE":
+          state.minDate = null;
+          state.maxDate = new Date();
+          break;
+        case "R_MFG_YEAR":
+          state.minDate = null;
+          state.maxDate = new Date();
+          break;
+        case "R_REG_DATE":
+          state.minDate = null;
+          state.maxDate = new Date();
+          break;
+        case "R_REG_VALIDITY_DATE":
+          state.minDate = null;
+          state.maxDate = null;
+          break;
+        case "R_INSURENCE_POLICIY_EXPIRY_DATE":
+          state.minDate = null;
+          state.maxDate = null;
+          break;
+        case "R_INSURENCE_FROM_DATE":
+          state.minDate = null;
+          state.maxDate = null;
+          break;
+        case "R_INSURENCE_TO_DATE":
+          state.minDate = null;
+          state.maxDate = null;
+          break;
+        default:
+          state.minDate = null;
+          state.maxDate = null;
+          break;
+      }
       state.datePickerKeyId = action.payload;
       state.showDatepicker = !state.showDatepicker;
     },

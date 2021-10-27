@@ -229,6 +229,8 @@ const prebookingFormSlice = createSlice({
     existing_booking_amount_response_status: "",
     assigned_tasks_list: [],
     assigned_tasks_list_status: "",
+    minDate: null,
+    maxDate: null,
 
     datePickerKeyId: "",
     showImagePicker: false,
@@ -562,6 +564,24 @@ const prebookingFormSlice = createSlice({
       state.showImagePicker = !state.showImagePicker;
     },
     setDatePicker: (state, action) => {
+      switch (action.payload) {
+        case "DATE_OF_BIRTH":
+          state.minDate = null;
+          state.maxDate = new Date();
+          break;
+        case "CUSTOMER_PREFERRED_DATE":
+          state.minDate = new Date();
+          state.maxDate = null;
+          break;
+        case "TENTATIVE_DELIVERY_DATE":
+          state.minDate = new Date();
+          state.maxDate = null;
+          break;
+        default:
+          state.minDate = null;
+          state.maxDate = null;
+          break;
+      }
       state.datePickerKeyId = action.payload;
       state.showDatepicker = !state.showDatepicker;
     },
@@ -586,6 +606,9 @@ const prebookingFormSlice = createSlice({
           break;
         case "DD_DATE":
           state.dd_date = selectedDate;
+          break;
+        case "NONE":
+          console.log("NONE");
           break;
       }
       state.showDatepicker = !state.showDatepicker;
@@ -1042,12 +1065,14 @@ const prebookingFormSlice = createSlice({
       state.isLoading = true;
     })
     builder.addCase(getPaidAccessoriesListApi.fulfilled, (state, action) => {
-      if (action.payload.accessorylist) {
+      console.log("S getPaidAccessoriesListApi: ", JSON.stringify(action.payload));
+      if (action.payload.success == true) {
         state.paid_accessories_list = action.payload.accessorylist;
       }
       state.isLoading = false;
     })
     builder.addCase(getPaidAccessoriesListApi.rejected, (state, action) => {
+      console.log("F getPaidAccessoriesListApi: ", JSON.stringify(action.payload));
       state.paid_accessories_list = [];
       state.isLoading = false;
     })

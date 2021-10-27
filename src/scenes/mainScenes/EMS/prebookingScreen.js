@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { SafeAreaView, StyleSheet, View, FlatList, RefreshControl, Text, ActivityIndicator, Pressable } from "react-native";
 import { IconButton } from "react-native-paper";
 import { PreEnquiryItem, EmptyListView } from "../../../pureComponents";
-import { DateRangeComp, DatePickerComponent } from "../../../components";
+import { DateRangeComp, DatePickerComponent, SortAndFilterComp } from "../../../components";
 import { useDispatch, useSelector } from "react-redux";
 import { Colors, GlobalStyle } from "../../../styles";
 import { AppNavigator } from '../../../navigations';
@@ -14,12 +14,16 @@ import moment from "moment";
 const PreBookingScreen = ({ navigation }) => {
 
     const selector = useSelector((state) => state.preBookingReducer);
+    const { vehicle_model_list_for_filters, source_of_enquiry_list } = useSelector(state => state.homeReducer);
     const dispatch = useDispatch();
+    const [vehicleModelList, setVehicleModelList] = useState(vehicle_model_list_for_filters);
+    const [sourceList, setSourceList] = useState(source_of_enquiry_list);
     const [employeeId, setEmployeeId] = useState("");
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [datePickerId, setDatePickerId] = useState("");
     const [selectedFromDate, setSelectedFromDate] = useState("");
     const [selectedToDate, setSelectedToDate] = useState("");
+    const [sortAndFilterVisible, setSortAndFilterVisible] = useState(false);
 
     useEffect(() => {
         getPreBookingListFromServer();
@@ -99,6 +103,21 @@ const PreBookingScreen = ({ navigation }) => {
                 onRequestClose={() => setShowDatePicker(false)}
             />
 
+            <SortAndFilterComp
+                visible={sortAndFilterVisible}
+                modelList={vehicleModelList}
+                sourceList={sourceList}
+                submitCallback={(payload) => {
+                    // console.log("payload: ", payload);
+                    setVehicleModelList([...payload.model]);
+                    setSourceList([...payload.source]);
+                    setSortAndFilterVisible(false);
+                }}
+                onRequestClose={() => {
+                    setSortAndFilterVisible(false);
+                }}
+            />
+
             <View style={styles.view1}>
                 <View style={{ width: "80%" }}>
                     <DateRangeComp
@@ -108,7 +127,7 @@ const PreBookingScreen = ({ navigation }) => {
                         toDateClicked={() => showDatePickerMethod("TO_DATE")}
                     />
                 </View>
-                <Pressable onPress={() => { }}>
+                <Pressable onPress={() => setSortAndFilterVisible(true)}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Text style={styles.text1}>{'Filter'}</Text>
                         <IconButton icon={'filter-outline'} size={20} color={Colors.RED} style={{ margin: 0, padding: 0 }} />

@@ -32,34 +32,6 @@ const CreateEnquiryScreen = ({ route, navigation }) => {
         }
     }
 
-    // Handle Employee list 
-    useEffect(() => {
-
-        if (selector.employees_list.length === 0 && selector.employees_list_status === "success") {
-            updateTaskStatus();
-        }
-        else if (selector.employees_list.length > 0 && selector.employees_list_status === "success") {
-            let newData = [];
-            selector.employees_list.forEach(element => {
-                const obj = {
-                    id: element.empId,
-                    name: element.empName,
-                    selected: false,
-                }
-                newData.push(obj);
-            });
-            setEmployeesData([...newData]);
-            setEmployeeSelectModel(true);
-        }
-    }, [selector.employees_list, selector.employees_list_status])
-
-    // Handle When employee updated
-    useEffect(() => {
-        if (selector.update_employee_status === "success") {
-            updateTaskStatus();
-        }
-    }, [selector.update_employee_status])
-
     const updateTaskStatus = () => {
         if (!selector.task_details_response) {
             return;
@@ -119,6 +91,27 @@ const CreateEnquiryScreen = ({ route, navigation }) => {
         }
     }
 
+    // Handle Employee list 
+    useEffect(() => {
+
+        if (selector.employees_list.length === 0 && selector.employees_list_status === "success") {
+            updateTaskStatus();
+        }
+        else if (selector.employees_list.length > 0 && selector.employees_list_status === "success") {
+            let newData = [];
+            selector.employees_list.forEach(element => {
+                const obj = {
+                    id: element.empId,
+                    name: element.empName,
+                    selected: false,
+                }
+                newData.push(obj);
+            });
+            setEmployeesData([...newData]);
+            setEmployeeSelectModel(true);
+        }
+    }, [selector.employees_list, selector.employees_list_status])
+
     const updateEmployee = (employeeObj) => {
         if (!selector.enquiry_details_response) {
             return
@@ -128,6 +121,13 @@ const CreateEnquiryScreen = ({ route, navigation }) => {
         dispatch(updateEmployeeApi(dmsLeadDto));
         setEmployeeSelectModel(false);
     }
+
+    // Handle When employee updated
+    useEffect(() => {
+        if (selector.update_employee_status === "success") {
+            updateTaskStatus();
+        }
+    }, [selector.update_employee_status])
 
     return (
         <SafeAreaView style={[styles.container]}>

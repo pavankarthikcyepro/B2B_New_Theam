@@ -102,6 +102,7 @@ export const homeSlice = createSlice({
     datesData: dates,
     menuList: [],
     vehicle_modal_list: [],
+    vehicle_model_list_for_filters: [],
     customer_type_list: [],
     source_of_enquiry_list: [],
     dateSelectedIndex: 0,
@@ -143,11 +144,28 @@ export const homeSlice = createSlice({
       .addCase(getMenuList.rejected, (state, action) => {
 
       })
+      // Get Car modal list
+      .addCase(getCarModalList.pending, (state, action) => {
+        state.vehicle_modal_list = [];
+        state.vehicle_model_list_for_filters = [];
+      })
       .addCase(getCarModalList.fulfilled, (state, action) => {
-        // console.log('vehicle_modal_list: ', action.payload);
         if (action.payload) {
           state.vehicle_modal_list = action.payload;
+
+          // For pre-enquiry, enquiry & pre-booking filter's
+          let modalList = [];
+          if (state.vehicle_modal_list.length > 0) {
+            state.vehicle_modal_list.forEach((item) => {
+              modalList.push({ id: item.vehicleId, name: item.model, isChecked: false });
+            });
+          }
+          state.vehicle_model_list_for_filters = modalList;
         }
+      })
+      .addCase(getCarModalList.rejected, (state, action) => {
+        state.vehicle_modal_list = [];
+        state.vehicle_model_list_for_filters = [];
       })
       .addCase(getCustomerTypeList.fulfilled, (state, action) => {
         //console.log('customer_type_list: ', action.payload);
@@ -164,7 +182,14 @@ export const homeSlice = createSlice({
       })
       .addCase(getSourceOfEnquiryList.fulfilled, (state, action) => {
         if (action.payload) {
-          state.source_of_enquiry_list = action.payload;
+          const sourceList = action.payload;
+          let modalList = [];
+          if (sourceList.length > 0) {
+            sourceList.forEach((item) => {
+              modalList.push({ ...item, isChecked: false });
+            });
+          }
+          state.source_of_enquiry_list = modalList;
         }
       })
       .addCase(getSourceOfEnquiryList.rejected, (state, action) => {

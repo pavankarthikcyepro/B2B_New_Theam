@@ -29,7 +29,6 @@ export const preEnquirySlice = createSlice({
   initialState: {
     pre_enquiry_list: [],
     modelVisible: false,
-    sortAndFilterVisible: false,
     pageNumber: 0,
     totalPages: 1,
     isLoading: false,
@@ -39,9 +38,6 @@ export const preEnquirySlice = createSlice({
   reducers: {
     callPressed: (state, action) => {
       state.modelVisible = !state.modelVisible;
-    },
-    sortAndFilterPressed: (state, action) => {
-      state.sortAndFilterVisible = !state.sortAndFilterVisible;
     },
     setPreEnquiryList: (state, action) => {
       state.pre_enquiry_list = JSON.parse(action.payload);
@@ -83,5 +79,5 @@ export const preEnquirySlice = createSlice({
   }
 });
 
-export const { callPressed, sortAndFilterPressed, setPreEnquiryList } = preEnquirySlice.actions;
+export const { callPressed, setPreEnquiryList } = preEnquirySlice.actions;
 export default preEnquirySlice.reducer;

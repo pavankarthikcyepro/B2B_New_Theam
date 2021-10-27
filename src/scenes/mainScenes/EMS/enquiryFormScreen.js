@@ -155,6 +155,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   });
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
   const [typeOfActionDispatched, setTypeOfActionDispatched] = useState("");
+  const [minOrMaxDate, setMinOrMaxDate] = useState({ minDate: null, maxDate: null });
 
   useLayoutEffect(() => {
 
@@ -249,9 +250,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       // Update Customer Need Analysys
       dispatch(updateCustomerNeedAnalysisData(dmsLeadDto.dmsLeadScoreCards));
       // Update Additional ore Replacement Buyer Data
-      dispatch(
-        updateAdditionalOrReplacementBuyerData(dmsLeadDto.dmsExchagedetails)
-      );
+      dispatch(updateAdditionalOrReplacementBuyerData(dmsLeadDto.dmsExchagedetails));
       // Update Attachment details
       saveAttachmentDetailsInLocalObject(dmsLeadDto.dmsAttachments);
       dispatch(updateDmsAttachmentDetails(dmsLeadDto.dmsAttachments));
@@ -496,9 +495,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.financeType = selector.retail_finance;
     dataObj.financeCategory = selector.finance_category;
     dataObj.downPayment = selector.down_payment;
-    dataObj.loanAmount = selector.loan_amount
-      ? Number(selector.loan_amount)
-      : null;
+    dataObj.loanAmount = selector.loan_amount ? Number(selector.loan_amount) : null;
     dataObj.rateOfInterest = selector.rate_of_interest;
     dataObj.expectedTenureYears = selector.loan_of_tenure;
     dataObj.emi = selector.emi;
@@ -1147,13 +1144,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           visible={selector.showDatepicker}
           mode={"date"}
           value={new Date(Date.now())}
+          minimumDate={selector.minDate}
+          maximumDate={selector.maxDate}
           onChange={(event, selectedDate) => {
             console.log("date: ", selectedDate);
             if (Platform.OS === "android") {
               if (!selectedDate) {
-                dispatch(
-                  updateSelectedDate({ key: "NONE", text: selectedDate })
-                );
+                dispatch(updateSelectedDate({ key: "NONE", text: selectedDate }));
               } else {
                 dispatch(updateSelectedDate({ key: "", text: selectedDate }));
               }

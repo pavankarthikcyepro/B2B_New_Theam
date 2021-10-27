@@ -1245,10 +1245,16 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           visible={selector.showDatepicker}
           mode={"date"}
           value={new Date(Date.now())}
+          minimumDate={selector.minDate}
+          maximumDate={selector.maxDate}
           onChange={(event, selectedDate) => {
             console.log("date: ", selectedDate);
             if (Platform.OS === "android") {
-              // setDatePickerVisible(false)
+              if (!selectedDate) {
+                dispatch(updateSelectedDate({ key: "NONE", text: selectedDate }));
+              } else {
+                dispatch(updateSelectedDate({ key: "", text: selectedDate }));
+              }
             }
             dispatch(updateSelectedDate({ key: "", text: selectedDate }));
           }}

@@ -150,8 +150,11 @@ const slice = createSlice({
             if (action.payload.reason === "Success") {
                 state.validate_otp_response_status = "successs";
             }
+            if (action.payload["reason"]) {
+                showToastRedAlert(action.payload["reason"]);
+                state.validate_otp_response_status = "failed";
+            }
             state.isLoading = false;
-            state.validate_otp_response_status = "successs";
         })
         builder.addCase(validateOtpApi.rejected, (state, action) => {
             console.log("F validateOtpApi: ", JSON.stringify(action.payload));

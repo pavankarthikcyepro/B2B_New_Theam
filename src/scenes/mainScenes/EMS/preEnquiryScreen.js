@@ -8,7 +8,7 @@ import VectorImage from 'react-native-vector-image';
 import { CREATE_NEW } from '../../../assets/svg';
 import { AppNavigator } from '../../../navigations';
 import { CallUserComponent, SortAndFilterComp, DateRangeComp, DatePickerComponent } from '../../../components';
-import { callPressed, sortAndFilterPressed, getPreEnquiryData, setPreEnquiryList, getMorePreEnquiryData } from '../../../redux/preEnquiryReducer';
+import { callPressed, getPreEnquiryData, setPreEnquiryList, getMorePreEnquiryData } from '../../../redux/preEnquiryReducer';
 import * as AsyncStore from '../../../asyncStore';
 import realm from '../../../database/realm';
 import { callNumber } from '../../../utils/helperFunctions';
@@ -17,12 +17,16 @@ import moment from "moment";
 const PreEnquiryScreen = ({ navigation }) => {
 
     const selector = useSelector(state => state.preEnquiryReducer);
+    const { vehicle_model_list_for_filters, source_of_enquiry_list } = useSelector(state => state.homeReducer);
     const dispatch = useDispatch();
+    const [vehicleModelList, setVehicleModelList] = useState(vehicle_model_list_for_filters);
+    const [sourceList, setSourceList] = useState(source_of_enquiry_list);
     const [employeeId, setEmployeeId] = useState("");
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [datePickerId, setDatePickerId] = useState("");
     const [selectedFromDate, setSelectedFromDate] = useState("");
     const [selectedToDate, setSelectedToDate] = useState("");
+    const [sortAndFilterVisible, setSortAndFilterVisible] = useState(false);
 
     useEffect(() => {
 
@@ -115,9 +119,17 @@ const PreEnquiryScreen = ({ navigation }) => {
             /> */}
 
             <SortAndFilterComp
-                visible={selector.sortAndFilterVisible}
+                visible={sortAndFilterVisible}
+                modelList={vehicleModelList}
+                sourceList={sourceList}
+                submitCallback={(payload) => {
+                    // console.log("payload: ", payload);
+                    setVehicleModelList([...payload.model]);
+                    setSourceList([...payload.source]);
+                    setSortAndFilterVisible(false);
+                }}
                 onRequestClose={() => {
-                    dispatch(sortAndFilterPressed());
+                    setSortAndFilterVisible(false);
                 }}
             />
 
@@ -132,7 +144,7 @@ const PreEnquiryScreen = ({ navigation }) => {
                             toDateClicked={() => showDatePickerMethod("TO_DATE")}
                         />
                     </View>
-                    <Pressable onPress={() => dispatch(sortAndFilterPressed())}>
+                    <Pressable onPress={() => setSortAndFilterVisible(true)}>
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Text style={styles.text1}>{'Filter'}</Text>
                             <IconButton icon={'filter-outline'} size={20} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
