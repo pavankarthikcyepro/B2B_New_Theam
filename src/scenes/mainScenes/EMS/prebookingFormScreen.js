@@ -1240,27 +1240,27 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         }}
       />
 
-      {selector.showDatepicker && (
-        <DatePickerComponent
-          visible={selector.showDatepicker}
-          mode={"date"}
-          value={new Date(Date.now())}
-          minimumDate={selector.minDate}
-          maximumDate={selector.maxDate}
-          onChange={(event, selectedDate) => {
-            console.log("date: ", selectedDate);
-            if (Platform.OS === "android") {
-              if (!selectedDate) {
-                dispatch(updateSelectedDate({ key: "NONE", text: selectedDate }));
-              } else {
-                dispatch(updateSelectedDate({ key: "", text: selectedDate }));
-              }
+      <DatePickerComponent
+        visible={selector.showDatepicker}
+        mode={"date"}
+        value={new Date(Date.now())}
+        minimumDate={selector.minDate}
+        maximumDate={selector.maxDate}
+        onChange={(event, selectedDate) => {
+          console.log("date: ", selectedDate);
+          if (Platform.OS === "android") {
+            if (!selectedDate) {
+              dispatch(updateSelectedDate({ key: "NONE", text: selectedDate }));
+            } else {
+              dispatch(updateSelectedDate({ key: "", text: selectedDate }));
             }
+          }
+          else {
             dispatch(updateSelectedDate({ key: "", text: selectedDate }));
-          }}
-          onRequestClose={() => dispatch(setDatePicker())}
-        />
-      )}
+          }
+        }}
+        onRequestClose={() => dispatch(setDatePicker())}
+      />
 
       <KeyboardAvoidingView
         style={{
