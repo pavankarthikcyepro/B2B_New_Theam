@@ -7,18 +7,25 @@ import { convertTimeStampToDateString } from "../utils/helperFunctions";
 export const PreEnquiryItem = ({
   name,
   subName,
-  type = "COLD",
   date,
   modelName,
+  enquiryCategory,
   bgColor = Colors.WHITE,
   onPress,
-  onCallPress,
+  onCallPress
 }) => {
+
   let textColor = Colors.GREEN;
-  if (type === "HOT") {
-    textColor = Colors.RED;
-  } else if (type === "WARM") {
-    textColor = Colors.YELLOW;
+  let displayCategoryText = "";
+  if (enquiryCategory) {
+    displayCategoryText = enquiryCategory.toUpperCase();
+    if (type === "HOT") {
+      textColor = Colors.RED;
+    } else if (type === "WARM") {
+      textColor = Colors.YELLOW;
+    } else if (type === "COLD") {
+      textColor = Colors.GREEN;
+    }
   }
 
   const myDate = convertTimeStampToDateString(date);
@@ -35,7 +42,7 @@ export const PreEnquiryItem = ({
                 { color: textColor, marginLeft: 10, fontSize: 12 },
               ]}
             >
-              {type.toUpperCase()}
+              {displayCategoryText}
             </Text>
           </Text>
           <Text style={[styles.text3, { marginTop: 5 }]}>{subName}</Text>

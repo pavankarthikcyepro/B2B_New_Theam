@@ -24,6 +24,8 @@ import {
 } from "../../redux/upcomingDeliveriesReducer";
 import moment from "moment";
 
+const dateFormat = "YYYY-DD-MM";
+
 const UpcomingDeliveriesScreen = () => {
 
   const selector = useSelector(state => state.upcomingDeliveriesReducer);
@@ -37,27 +39,47 @@ const UpcomingDeliveriesScreen = () => {
 
   useEffect(() => {
 
-    getUpcomingDelivieriesListFromServer();
-
     // Get Data From Server
-    const currentDate = moment().format("DD/MM/YYYY");
-    setSelectedFromDate(currentDate);
+    const currentDate = moment().format(dateFormat)
+    const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(1, 'months').startOf('month').format(dateFormat);
+    setSelectedFromDate(lastMonthFirstDate);
     setSelectedToDate(currentDate);
+    getAsyncData(lastMonthFirstDate, currentDate);
   }, [])
 
-  const getUpcomingDelivieriesListFromServer = async () => {
+  const getAsyncData = async (startDate, endDate) => {
     let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
     if (empId) {
-      let endUrl = "?limit=10&offset=" + "0" + "&status=DELIVERY&empId=" + empId;
-      dispatch(getUpcmoingDeliveriesListApi(endUrl));
+      getUpcomingDelivieriesListFromServer(empId, startDate, endDate);
       setEmployeeId(empId);
     }
   }
 
+  const getUpcomingDelivieriesListFromServer = async (empId, startDate, endDate) => {
+    const payload = getPayloadData(empId, startDate, endDate, 0)
+    dispatch(getUpcmoingDeliveriesListApi(payload));
+  }
+
+  const getPayloadData = (empId, startDate, endDate, offSet, modelFilters = [], categoryFilters = [], sourceFilters = []) => {
+    const payload = {
+      "startdate": startDate,
+      "enddate": endDate,
+      "model": modelFilters,
+      "categoryType": categoryFilters,
+      "sourceOfEnquiry": sourceFilters,
+      "empId": empId,
+      "status": "DELIVERY",
+      "offset": offSet,
+      "limit": 10
+    }
+    return payload;
+  }
+
   const getMorePreEnquiryListFromServer = async () => {
+    if (selector.isLoadingExtraData) { return }
     if (employeeId && ((selector.pageNumber + 1) < selector.totalPages)) {
-      let endUrl = "?limit=10&offset=" + (selector.pageNumber + 1) + "&status=DELIVERY&empId=" + empId;
-      dispatch(getMoreUpcmoingDeliveriesListApi(endUrl))
+      const payload = getPayloadData(employeeId, selectedFromDate, selectedToDate, (selector.pageNumber + 1))
+      dispatch(getMoreUpcmoingDeliveriesListApi(payload))
     }
   }
 
@@ -68,17 +90,15 @@ const UpcomingDeliveriesScreen = () => {
 
   const updateSelectedDate = (date, key) => {
 
-    const formatDate = moment(date).format("DD/MM/YYYY");
-    const payloadDate = moment(date).format("YYYY-DD-MM");
+    const formatDate = moment(date).format(dateFormat);
     switch (key) {
       case "FROM_DATE":
         setSelectedFromDate(formatDate);
-        const formatToDate = moment(selectedToDate, "DD/MM/YYYY").format("YYYY-MM-DD");
-        console.log("format formatToDate: ", formatToDate)
+        getUpcomingDelivieriesListFromServer(employeeId, formatDate, selectedToDate);
         break;
       case "TO_DATE":
         setSelectedToDate(formatDate);
-        const formatFromDate = moment(selectedFromDate, "DD/MM/YYYY").format("YYYY-MM-DD");
+        getUpcomingDelivieriesListFromServer(employeeId, selectedFromDate, formatDate);
         break;
     }
   }
@@ -92,12 +112,6 @@ const UpcomingDeliveriesScreen = () => {
       </View>
     );
   };
-
-  if (selector.data_list.length === 0) {
-    return (
-      <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} />
-    )
-  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -139,7 +153,7 @@ const UpcomingDeliveriesScreen = () => {
               refreshControl={(
                 <RefreshControl
                   refreshing={selector.isLoading}
-                  onRefresh={getUpcomingDelivieriesListFromServer}
+                  onRefresh={() => getUpcomingDelivieriesListFromServer(employeeId, selectedFromDate, selectedToDate)}
                   progressViewOffset={200}
                 />
               )}

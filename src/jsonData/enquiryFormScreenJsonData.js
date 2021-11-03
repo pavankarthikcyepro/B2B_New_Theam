@@ -17,6 +17,24 @@ export const Enquiry_Segment_Data = [
   },
 ];
 
+export const Category_Type_List_For_Filter = [
+  {
+    id: '1',
+    name: 'Hot',
+    isChecked: false
+  },
+  {
+    id: '2',
+    name: 'Warm',
+    isChecked: false
+  },
+  {
+    id: '3',
+    name: 'Cold',
+    isChecked: false
+  }
+]
+
 export const Referred_By_Source = [
   {
     id: "1",

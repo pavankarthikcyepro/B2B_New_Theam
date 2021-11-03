@@ -4,7 +4,7 @@ import URL from "../networking/endpoints";
 
 export const getEventsListApi = createAsyncThunk('EVENT_MANAGEMENT/getEventsListApi', async (payload: any, { rejectWithValue }) => {
 
-  let endUrl = `?startdate=${payload.startDate}&enddate=${payload.endDate}&managerId=${payload.managerId}&pageNo=${payload.pageNo}&pageSize=10`;
+  let endUrl = `?status=All&startdate=${payload.startDate}&enddate=${payload.endDate}&managerId=${payload.managerId}&pageNo=${payload.pageNo}&pageSize=10`;
   let url = URL.GET_EVENTS() + endUrl;
   const customHeaders = {
     branchid: payload.branchId,
@@ -18,8 +18,9 @@ export const getEventsListApi = createAsyncThunk('EVENT_MANAGEMENT/getEventsList
   return json;
 })
 
-export const getMoreEventsListApi = createAsyncThunk('EVENT_MANAGEMENT/getMoreEventsListApi', async (endUrl, { rejectWithValue }) => {
+export const getMoreEventsListApi = createAsyncThunk('EVENT_MANAGEMENT/getMoreEventsListApi', async (payload: any, { rejectWithValue }) => {
 
+  let endUrl = `?status=All&startdate=${payload.startDate}&enddate=${payload.endDate}&managerId=${payload.managerId}&pageNo=${payload.pageNo}&pageSize=10`;
   let url = URL.GET_EVENTS() + endUrl;
   const response = await client.get(url);
   const json = await response.json()
@@ -31,7 +32,7 @@ export const getMoreEventsListApi = createAsyncThunk('EVENT_MANAGEMENT/getMoreEv
 
 export const getPendingEventListApi = createAsyncThunk('EVENT_MANAGEMENT/getPendingEventListApi', async (payload: any, { rejectWithValue }) => {
 
-  let endUrl = `?startdate=${payload.startDate}&enddate=${payload.endDate}&managerId=${payload.managerId}&pageNo=${payload.pageNo}&pageSize=10`;
+  let endUrl = `?status=Approval_Pending&startdate=${payload.startDate}&enddate=${payload.endDate}&managerId=${payload.managerId}&pageNo=${payload.pageNo}&pageSize=10`;
   let url = URL.GET_EVENTS() + endUrl;
   const customHeaders = {
     branchid: payload.branchId,
@@ -45,8 +46,9 @@ export const getPendingEventListApi = createAsyncThunk('EVENT_MANAGEMENT/getPend
   return json;
 })
 
-export const getMorePendingEventListApi = createAsyncThunk('EVENT_MANAGEMENT/getMorePendingEventListApi', async (endUrl, { rejectWithValue }) => {
+export const getMorePendingEventListApi = createAsyncThunk('EVENT_MANAGEMENT/getMorePendingEventListApi', async (payload: any, { rejectWithValue }) => {
 
+  let endUrl = `?status=Approval_Pending&startdate=${payload.startDate}&enddate=${payload.endDate}&managerId=${payload.managerId}&pageNo=${payload.pageNo}&pageSize=10`;
   let url = URL.GET_EVENTS() + endUrl;
   const response = await client.get(url);
   const json = await response.json()
@@ -58,7 +60,7 @@ export const getMorePendingEventListApi = createAsyncThunk('EVENT_MANAGEMENT/get
 
 export const getUpcomingEventListApi = createAsyncThunk('EVENT_MANAGEMENT/getUpcomingEventListApi', async (payload: any, { rejectWithValue }) => {
 
-  let endUrl = `?startdate=${payload.startDate}&enddate=${payload.endDate}&managerId=${payload.managerId}&pageNo=${payload.pageNo}&pageSize=10`;
+  let endUrl = `?status=Planning_Pending&startdate=${payload.startDate}&enddate=${payload.endDate}&managerId=${payload.managerId}&pageNo=${payload.pageNo}&pageSize=10`;
   let url = URL.GET_EVENTS() + endUrl;
   const customHeaders = {
     branchid: payload.branchId,
@@ -72,8 +74,9 @@ export const getUpcomingEventListApi = createAsyncThunk('EVENT_MANAGEMENT/getUpc
   return json;
 })
 
-export const getMoreUpcomingEventListApi = createAsyncThunk('EVENT_MANAGEMENT/getMoreUpcomingEventListApi', async (endUrl, { rejectWithValue }) => {
+export const getMoreUpcomingEventListApi = createAsyncThunk('EVENT_MANAGEMENT/getMoreUpcomingEventListApi', async (payload: any, { rejectWithValue }) => {
 
+  let endUrl = `?status=Planning_Pending&startdate=${payload.startDate}&enddate=${payload.endDate}&managerId=${payload.managerId}&pageNo=${payload.pageNo}&pageSize=10`;
   let url = URL.GET_EVENTS() + endUrl;
   const response = await client.get(url);
   const json = await response.json()

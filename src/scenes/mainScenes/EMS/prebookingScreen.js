@@ -10,6 +10,9 @@ import * as AsyncStore from "../../../asyncStore";
 import { getPreBookingData, getMorePreBookingData } from "../../../redux/preBookingReducer";
 import { callNumber } from "../../../utils/helperFunctions";
 import moment from "moment";
+import { Category_Type_List_For_Filter } from '../../../jsonData/enquiryFormScreenJsonData';
+
+const dateFormat = "YYYY-DD-MM";
 
 const PreBookingScreen = ({ navigation }) => {
 
@@ -18,6 +21,7 @@ const PreBookingScreen = ({ navigation }) => {
     const dispatch = useDispatch();
     const [vehicleModelList, setVehicleModelList] = useState(vehicle_model_list_for_filters);
     const [sourceList, setSourceList] = useState(source_of_enquiry_list);
+    const [categoryList, setCategoryList] = useState(Category_Type_List_For_Filter);
     const [employeeId, setEmployeeId] = useState("");
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [datePickerId, setDatePickerId] = useState("");
@@ -26,26 +30,48 @@ const PreBookingScreen = ({ navigation }) => {
     const [sortAndFilterVisible, setSortAndFilterVisible] = useState(false);
 
     useEffect(() => {
-        getPreBookingListFromServer();
-        // Get Current Date
-        const currentDate = moment().format("DD/MM/YYYY");
-        setSelectedFromDate(currentDate);
+
+        // Get Data From Server
+        const currentDate = moment().format(dateFormat)
+        const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(1, 'months').startOf('month').format(dateFormat);
+        setSelectedFromDate(lastMonthFirstDate);
         setSelectedToDate(currentDate);
+        getAsyncData(lastMonthFirstDate, currentDate);
     }, [])
 
-    const getPreBookingListFromServer = async () => {
+    const getAsyncData = async (startDate, endDate) => {
         let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
         if (empId) {
-            let endUrl = "?limit=10&offset=" + "0" + "&status=PREBOOKING&empId=" + empId;
-            dispatch(getPreBookingData(endUrl));
+            getPreBookingListFromServer(empId, startDate, endDate);
             setEmployeeId(empId);
         }
     }
 
+    const getPreBookingListFromServer = (empId, startDate, endDate) => {
+        const payload = getPayloadData(empId, startDate, endDate, 0)
+        dispatch(getPreBookingData(payload));
+    }
+
+    const getPayloadData = (empId, startDate, endDate, offSet, modelFilters = [], categoryFilters = [], sourceFilters = []) => {
+        const payload = {
+            "startdate": startDate,
+            "enddate": endDate,
+            "model": modelFilters,
+            "categoryType": categoryFilters,
+            "sourceOfEnquiry": sourceFilters,
+            "empId": empId,
+            "status": "PREBOOKING",
+            "offset": offSet,
+            "limit": 10
+        }
+        return payload;
+    }
+
     const getMorePreBookingListFromServer = async () => {
+        if (selector.isLoadingExtraData) { return }
         if (employeeId && ((selector.pageNumber + 1) < selector.totalPages)) {
-            let endUrl = "?limit=10&offset=" + (selector.pageNumber + 1) + "&status=PREBOOKING&empId=" + employeeId;
-            dispatch(getMorePreBookingData(endUrl));
+            const payload = getPayloadData(employeeId, selectedFromDate, selectedToDate, (selector.pageNumber + 1))
+            dispatch(getMorePreBookingData(payload));
         }
     }
 
@@ -56,19 +82,61 @@ const PreBookingScreen = ({ navigation }) => {
 
     const updateSelectedDate = (date, key) => {
 
-        const formatDate = moment(date).format("DD/MM/YYYY");
-        const payloadDate = moment(date).format("YYYY-DD-MM");
+        const formatDate = moment(date).format(dateFormat);
         switch (key) {
             case "FROM_DATE":
                 setSelectedFromDate(formatDate);
-                const formatToDate = moment(selectedToDate, "DD/MM/YYYY").format("YYYY-MM-DD");
-                console.log("format formatToDate: ", formatToDate)
+                getPreBookingListFromServer(employeeId, formatDate, selectedToDate);
                 break;
             case "TO_DATE":
                 setSelectedToDate(formatDate);
-                const formatFromDate = moment(selectedFromDate, "DD/MM/YYYY").format("YYYY-MM-DD");
+                getPreBookingListFromServer(employeeId, formatDate, selectedToDate);
                 break;
         }
+    }
+
+    const applySelectedFilters = (payload) => {
+
+        const modelData = payload.model;
+        const sourceData = payload.source;
+        const categoryData = payload.category;
+
+        const categoryFilters = [];
+        const modelFilters = [];
+        const sourceFilters = [];
+
+        categoryData.forEach(element => {
+            if (element.isChecked) {
+                categoryFilters.push({
+                    id: element.id,
+                    name: element.name
+                })
+            }
+        });
+        modelData.forEach(element => {
+            if (element.isChecked) {
+                modelFilters.push({
+                    id: element.id,
+                    name: element.name
+                })
+            }
+        });
+        sourceData.forEach(element => {
+            if (element.isChecked) {
+                sourceFilters.push({
+                    id: element.id,
+                    name: element.name
+                })
+            }
+        });
+
+        setCategoryList([...categoryFilters])
+        setVehicleModelList([...modelData]);
+        setSourceList([...sourceData]);
+
+        // Make Server call
+        const payload2 = getPayloadData(employeeId, selectedFromDate, selectedToDate, 0, modelFilters, categoryFilters, sourceFilters)
+        dispatch(getPreBookingData(payload2));
     }
 
     const renderFooter = () => {
@@ -105,12 +173,12 @@ const PreBookingScreen = ({ navigation }) => {
 
             <SortAndFilterComp
                 visible={sortAndFilterVisible}
+                categoryList={categoryList}
                 modelList={vehicleModelList}
                 sourceList={sourceList}
                 submitCallback={(payload) => {
                     // console.log("payload: ", payload);
-                    setVehicleModelList([...payload.model]);
-                    setSourceList([...payload.source]);
+                    applySelectedFilters(payload);
                     setSortAndFilterVisible(false);
                 }}
                 onRequestClose={() => {
@@ -144,7 +212,7 @@ const PreBookingScreen = ({ navigation }) => {
                         refreshControl={(
                             <RefreshControl
                                 refreshing={selector.isLoading}
-                                onRefresh={getPreBookingListFromServer}
+                                onRefresh={() => getPreBookingListFromServer(employeeId, selectedFromDate, selectedToDate)}
                                 progressViewOffset={200}
                             />
                         )}
@@ -165,6 +233,7 @@ const PreBookingScreen = ({ navigation }) => {
                                     name={item.firstName + " " + item.lastName}
                                     subName={item.enquirySource}
                                     date={item.createdDate}
+                                    enquiryCategory={item.enquiryCategory}
                                     modelName={item.model}
                                     onPress={() => navigation.navigate(AppNavigator.PreBookingStackIdentifiers.preBookingForm, { universalId: item.universalId })}
                                     onCallPress={() => callNumber(item.phone)}

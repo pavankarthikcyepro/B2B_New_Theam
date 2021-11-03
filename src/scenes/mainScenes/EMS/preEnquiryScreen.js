@@ -13,6 +13,9 @@ import * as AsyncStore from '../../../asyncStore';
 import realm from '../../../database/realm';
 import { callNumber } from '../../../utils/helperFunctions';
 import moment from "moment";
+import { Category_Type_List_For_Filter } from '../../../jsonData/enquiryFormScreenJsonData';
+
+const dateFormat = "YYYY-DD-MM";
 
 const PreEnquiryScreen = ({ navigation }) => {
 
@@ -21,6 +24,7 @@ const PreEnquiryScreen = ({ navigation }) => {
     const dispatch = useDispatch();
     const [vehicleModelList, setVehicleModelList] = useState(vehicle_model_list_for_filters);
     const [sourceList, setSourceList] = useState(source_of_enquiry_list);
+    const [categoryList, setCategoryList] = useState(Category_Type_List_For_Filter);
     const [employeeId, setEmployeeId] = useState("");
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [datePickerId, setDatePickerId] = useState("");
@@ -30,13 +34,13 @@ const PreEnquiryScreen = ({ navigation }) => {
 
     useEffect(() => {
 
-        getPreEnquiryListFromServer();
-        //getPreEnquiryListFromDB();
-
         // Get Data From Server
-        const currentDate = moment().format("DD/MM/YYYY");
-        setSelectedFromDate(currentDate);
+        const currentDate = moment().format(dateFormat)
+        const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(1, 'months').startOf('month').format(dateFormat);
+        setSelectedFromDate(lastMonthFirstDate);
         setSelectedToDate(currentDate);
+        getAsyncData(lastMonthFirstDate, currentDate);
+
     }, [])
 
     const getPreEnquiryListFromDB = () => {
@@ -44,19 +48,39 @@ const PreEnquiryScreen = ({ navigation }) => {
         dispatch(setPreEnquiryList(JSON.stringify(data)));
     }
 
-    const getPreEnquiryListFromServer = async () => {
+    const getAsyncData = async (startDate, endDate) => {
         let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
         if (empId) {
-            let endUrl = "?limit=10&offset=" + "0" + "&status=PREENQUIRY&empId=" + empId;
-            dispatch(getPreEnquiryData(endUrl));
+            getPreEnquiryListFromServer(empId, startDate, endDate);
             setEmployeeId(empId);
         }
     }
 
+    const getPreEnquiryListFromServer = (empId, startDate, endDate) => {
+        const payload = getPayloadData(empId, startDate, endDate, 0)
+        dispatch(getPreEnquiryData(payload));
+    }
+
+    const getPayloadData = (empId, startDate, endDate, offSet, modelFilters = [], categoryFilters = [], sourceFilters = []) => {
+        const payload = {
+            "startdate": startDate,
+            "enddate": endDate,
+            "model": modelFilters,
+            "categoryType": categoryFilters,
+            "sourceOfEnquiry": sourceFilters,
+            "empId": empId,
+            "status": "PREENQUIRY",
+            "offset": offSet,
+            "limit": 10
+        }
+        return payload;
+    }
+
     const getMorePreEnquiryListFromServer = async () => {
+        if (selector.isLoadingExtraData) { return }
         if (employeeId && ((selector.pageNumber + 1) < selector.totalPages)) {
-            let endUrl = "?limit=10&offset=" + (selector.pageNumber + 1) + "&status=PREENQUIRY&empId=" + employeeId;
-            dispatch(getMorePreEnquiryData(endUrl))
+            const payload = getPayloadData(employeeId, selectedFromDate, selectedToDate, (selector.pageNumber + 1))
+            dispatch(getMorePreEnquiryData(payload))
         }
     }
 
@@ -67,19 +91,61 @@ const PreEnquiryScreen = ({ navigation }) => {
 
     const updateSelectedDate = (date, key) => {
 
-        const formatDate = moment(date).format("DD/MM/YYYY");
-        const payloadDate = moment(date).format("YYYY-DD-MM");
+        const formatDate = moment(date).format(dateFormat);
         switch (key) {
             case "FROM_DATE":
                 setSelectedFromDate(formatDate);
-                const formatToDate = moment(selectedToDate, "DD/MM/YYYY").format("YYYY-MM-DD");
-                console.log("format formatToDate: ", formatToDate)
+                getPreEnquiryListFromServer(employeeId, formatDate, selectedToDate);
                 break;
             case "TO_DATE":
                 setSelectedToDate(formatDate);
-                const formatFromDate = moment(selectedFromDate, "DD/MM/YYYY").format("YYYY-MM-DD");
+                getPreEnquiryListFromServer(employeeId, selectedFromDate, formatDate);
                 break;
         }
+    }
+
+    const applySelectedFilters = (payload) => {
+
+        const modelData = payload.model;
+        const sourceData = payload.source;
+        const categoryData = payload.category;
+
+        const categoryFilters = [];
+        const modelFilters = [];
+        const sourceFilters = [];
+
+        categoryData.forEach(element => {
+            if (element.isChecked) {
+                categoryFilters.push({
+                    id: element.id,
+                    name: element.name
+                })
+            }
+        });
+        modelData.forEach(element => {
+            if (element.isChecked) {
+                modelFilters.push({
+                    id: element.id,
+                    name: element.name
+                })
+            }
+        });
+        sourceData.forEach(element => {
+            if (element.isChecked) {
+                sourceFilters.push({
+                    id: element.id,
+                    name: element.name
+                })
+            }
+        });
+
+        setCategoryList([...categoryFilters])
+        setVehicleModelList([...modelData]);
+        setSourceList([...sourceData]);
+
+        // Make Server call
+        const payload2 = getPayloadData(employeeId, selectedFromDate, selectedToDate, 0, modelFilters, categoryFilters, sourceFilters)
+        dispatch(getPreEnquiryData(payload2));
     }
 
     const renderFooter = () => {
@@ -120,12 +186,12 @@ const PreEnquiryScreen = ({ navigation }) => {
 
             <SortAndFilterComp
                 visible={sortAndFilterVisible}
+                categoryList={categoryList}
                 modelList={vehicleModelList}
                 sourceList={sourceList}
                 submitCallback={(payload) => {
                     // console.log("payload: ", payload);
-                    setVehicleModelList([...payload.model]);
-                    setSourceList([...payload.source]);
+                    applySelectedFilters(payload);
                     setSortAndFilterVisible(false);
                 }}
                 onRequestClose={() => {
@@ -162,7 +228,7 @@ const PreEnquiryScreen = ({ navigation }) => {
                             refreshControl={(
                                 <RefreshControl
                                     refreshing={selector.isLoading}
-                                    onRefresh={getPreEnquiryListFromServer}
+                                    onRefresh={() => getPreEnquiryListFromServer(employeeId, selectedFromDate, selectedToDate)}
                                     progressViewOffset={200}
                                 />
                             )}
@@ -183,7 +249,7 @@ const PreEnquiryScreen = ({ navigation }) => {
                                         name={item.firstName + " " + item.lastName}
                                         subName={item.enquirySource}
                                         date={item.createdDate}
-                                        // type={item.type}
+                                        enquiryCategory={item.enquiryCategory}
                                         modelName={item.model}
                                         onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq, { itemData: item, fromCreatePreEnquiry: false })}
                                         onCallPress={() => callNumber(item.phone)}

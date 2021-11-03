@@ -33,6 +33,7 @@ export const dynamicForms = "http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.
 const URL = {
     LOGIN: () => hrms_url + "/emplogin",
     LEADS_LIST_API: () => sales_url + "/lead/all",
+    LEADS_LIST_API_FILTER: () => sales_url + "/lead/allByDate",
     MENULIST_API: (userName) => {
         return roleManagement_url + "/user/" + userName;
     },
@@ -100,8 +101,8 @@ const URL = {
     CUSTOMER_LEAD_REFERENCE: () => sales_url + "/lead-customer-reference",
     GET_COMPLAINTS: () => dynamicReports_url + "/v2-generate-query",
     GET_EVENTS: () => {
-        return ops_url + `/dms/getAllServiceEventsByFilter`;
-    },
+        return ops_url + `/dms/getAllServiceEventsByFilterByStatus`;
+    }, // getAllServiceEventsByFilter replaced by getAllServiceEventsByFilterByStatus
     GET_SOURCE_OF_ENQUIRY: () => {
         return sales_url + "/master-data/source-of-enquiry";
     },

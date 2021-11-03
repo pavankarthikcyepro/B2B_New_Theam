@@ -28,24 +28,28 @@ const dummyData = [
 const radioDummyData = [
     {
         id: '1',
-        name: 'Hot'
+        name: 'Hot',
+        isChecked: false
     },
     {
         id: '2',
-        name: 'Warm'
+        name: 'Warm',
+        isChecked: false
     },
     {
         id: '3',
-        name: 'Cold'
+        name: 'Cold',
+        isChecked: false
     }
 ]
 
-const SortAndFilterComp = ({ visible = false, modelList = [], sourceList = [], onRequestClose, submitCallback }) => {
+const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [], sourceList = [], onRequestClose, submitCallback }) => {
 
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [selectedRadioIndex, setSelectedRadioIndex] = useState("0");
     const [localModelList, setLocalModelList] = useState(modelList);
     const [localSourceOfEnquiryList, setLocalSourceOfEnquiryList] = useState(sourceList);
+    const [localCategoryList, setLocalCategoryList] = useState(categoryList);
 
     useEffect(() => {
         console.log("use effect called: ", localModelList.length)
@@ -53,7 +57,14 @@ const SortAndFilterComp = ({ visible = false, modelList = [], sourceList = [], o
 
     itemSelected = (selectedItem, itemIndex) => {
 
-        if (selectedIndex === 1) {
+        if (selectedIndex === 0) {
+            let categoryList = [...localCategoryList];
+            let selectedObject = { ...categoryList[itemIndex] };
+            selectedObject.isChecked = !selectedObject.isChecked;
+            categoryList[itemIndex] = selectedObject;
+            setLocalCategoryList([...categoryList]);
+        }
+        else if (selectedIndex === 1) {
             let models = [...localModelList];
             let selectedObject = { ...models[itemIndex] };
             selectedObject.isChecked = !selectedObject.isChecked;
@@ -71,17 +82,23 @@ const SortAndFilterComp = ({ visible = false, modelList = [], sourceList = [], o
 
     clearAllClicked = () => {
 
-        setSelectedRadioIndex("0");
+        const updatedCategoryList = localCategoryList.map((item, index) => {
+            let newObj = { ...item };
+            newObj.isChecked = false;
+            return newObj;
+        })
+        setLocalCategoryList([...updatedCategoryList]);
+
         const updatedModelList = localModelList.map((item, index) => {
             let newObj = { ...item };
-            newObj.isChecked = false
+            newObj.isChecked = false;
             return newObj;
         })
         setLocalModelList([...updatedModelList]);
 
         const updatedSourceList = localModelList.map((item, index) => {
             let newObj = { ...item };
-            newObj.isChecked = false
+            newObj.isChecked = false;
             return newObj;
         })
         setLocalSourceOfEnquiryList([...updatedSourceList]);
@@ -89,21 +106,8 @@ const SortAndFilterComp = ({ visible = false, modelList = [], sourceList = [], o
 
     applyButtonClicked = () => {
 
-        let categoryType = ""
-        switch (selectedRadioIndex) {
-            case "1":
-                categoryType = "hot";
-                break;
-            case "2":
-                categoryType = "warm";
-                break;
-            case "3":
-                categoryType = "cold";
-                break;
-        }
-
         const payload = {
-            category: categoryType,
+            category: localCategoryList,
             source: localSourceOfEnquiryList,
             model: localModelList
         }
@@ -162,16 +166,36 @@ const SortAndFilterComp = ({ visible = false, modelList = [], sourceList = [], o
                                 {/* // Right Content */}
                                 <View style={{ width: '65%', paddingLeft: 10, backgroundColor: Colors.WHITE }}>
                                     {selectedIndex === 0 && (
-                                        <RadioButton.Group onValueChange={newValue => setSelectedRadioIndex(newValue)} value={selectedRadioIndex}>
-                                            {radioDummyData.map((radioItem, index) => {
-                                                return (
-                                                    <View key={index} style={styles.radiobuttonVw}>
-                                                        <RadioButton.Android value={radioItem.id} color={Colors.RED} uncheckedColor={Colors.GRAY} />
-                                                        <Text style={[styles.radioText, { color: Colors.BLACK }]}>{radioItem.name}</Text>
-                                                    </View>
-                                                )
-                                            })}
-                                        </RadioButton.Group>
+                                        // <RadioButton.Group onValueChange={newValue => setSelectedRadioIndex(newValue)} value={selectedRadioIndex}>
+                                        //     {radioDummyData.map((radioItem, index) => {
+                                        //         return (
+                                        //             <View key={index} style={styles.radiobuttonVw}>
+                                        //                 <RadioButton.Android value={radioItem.id} color={Colors.RED} uncheckedColor={Colors.GRAY} />
+                                        //                 <Text style={[styles.radioText, { color: Colors.BLACK }]}>{radioItem.name}</Text>
+                                        //             </View>
+                                        //         )
+                                        //     })}
+                                        // </RadioButton.Group>
+
+                                        <View>
+                                            <FlatList
+                                                key={"CATEGORY_LIST"}
+                                                data={localCategoryList}
+                                                keyExtractor={(item, index) => index.toString()}
+                                                renderItem={({ item, index }) => {
+                                                    return (
+                                                        <TouchableOpacity onPress={() => itemSelected(item, index)}>
+                                                            <View style={styles.radiobuttonVw}>
+                                                                <Checkbox.Android
+                                                                    status={item.isChecked ? 'checked' : 'unchecked'}
+                                                                />
+                                                                <Text style={[styles.radioText, { color: Colors.BLACK }]}>{item.name}</Text>
+                                                            </View>
+                                                        </TouchableOpacity>
+                                                    )
+                                                }}
+                                            />
+                                        </View>
                                     )}
                                     {selectedIndex === 1 && (
                                         <View>

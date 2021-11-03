@@ -8,6 +8,8 @@ import { useDispatch, useSelector } from "react-redux";
 import * as AsyncStore from "../../asyncStore";
 import moment from "moment";
 
+const dateFormat = "YYYY-MM-DD";
+
 const EventManagementScreen = ({ navigation }) => {
 
   const selector = useSelector((state) => state.eventmanagementReducer);
@@ -20,23 +22,20 @@ const EventManagementScreen = ({ navigation }) => {
 
   useEffect(() => {
 
-    getAsyncstoreData();
-
     // Get Data From Server
-    const currentDate = moment().format("DD/MM/YYYY");
-    setSelectedFromDate(currentDate);
+    const currentDate = moment().format(dateFormat)
+    const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(1, 'months').startOf('month').format(dateFormat);
+    setSelectedFromDate(lastMonthFirstDate);
     setSelectedToDate(currentDate);
+    getAsyncstoreData(lastMonthFirstDate, currentDate);
   }, []);
 
-  const getAsyncstoreData = async () => {
+  const getAsyncstoreData = async (startDate, endDate) => {
     const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       setUserData({ branchId: jsonObj.branchId, orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName });
-
-      const currentDate = moment().format("YYYY-MM-DD");
-      console.log("date: ", currentDate); // 2021-09-01
-      getEventListDataFromServer(jsonObj.empId, jsonObj.branchId, jsonObj.orgId, currentDate, currentDate)
+      getEventListDataFromServer(jsonObj.empId, jsonObj.branchId, jsonObj.orgId, startDate, endDate)
     }
   }
 
@@ -63,19 +62,15 @@ const EventManagementScreen = ({ navigation }) => {
 
   const updateSelectedDate = (date, key) => {
 
-    const formatDate = moment(date).format("DD/MM/YYYY");
-    const payloadDate = moment(date).format("YYYY-DD-MM");
+    const formatDate = moment(date).format(dateFormat);
     switch (key) {
       case "FROM_DATE":
         setSelectedFromDate(formatDate);
-        const formatToDate = moment(selectedToDate, "DD/MM/YYYY").format("YYYY-MM-DD");
-        console.log("format formatToDate: ", formatToDate)
-        getEventListDataFromServer(userData.employeeId, userData.branchId, userData.orgId, payloadDate, formatToDate);
+        getEventListDataFromServer(userData.employeeId, userData.branchId, userData.orgId, formatDate, formatToDate);
         break;
       case "TO_DATE":
         setSelectedToDate(formatDate);
-        const formatFromDate = moment(selectedFromDate, "DD/MM/YYYY").format("YYYY-MM-DD");
-        getEventListDataFromServer(userData.employeeId, userData.branchId, userData.orgId, formatFromDate, payloadDate)
+        getEventListDataFromServer(userData.employeeId, userData.branchId, userData.orgId, formatFromDate, formatDate)
         break;
     }
   }

@@ -11,6 +11,8 @@ import { Colors } from "../../styles";
 import { callNumber, sendEmail } from "../../utils/helperFunctions";
 import { showToastSucess } from "../../utils/toast";
 
+const dateFormat = "YYYY-MM-DD"
+
 const ComplaintsScreen = ({ navigation }) => {
 
   const selector = useSelector((state) => state.complaintsReducer);
@@ -23,36 +25,38 @@ const ComplaintsScreen = ({ navigation }) => {
 
   useEffect(() => {
 
-    getAsyncstoreData();
-
     // Get Data From Server
-    const currentDate = moment().format("DD/MM/YYYY");
-    setSelectedFromDate(currentDate);
+    const currentDate = moment().format(dateFormat)
+    const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(1, 'months').startOf('month').format(dateFormat);
+    setSelectedFromDate(lastMonthFirstDate);
     setSelectedToDate(currentDate);
+    getAsyncstoreData(lastMonthFirstDate, currentDate);
   }, []);
 
-  const getAsyncstoreData = async () => {
+  const getAsyncstoreData = async (startDate, endDate) => {
     const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       setUserData({ branchId: jsonObj.branchId, orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName });
-
-      const currentDate = moment().format("YYYY-MM-DD");
-      console.log("date: ", currentDate); // 2021-09-01
-      getComplaintsListFromServer(jsonObj.empId)
-
+      getComplaintsListFromServer(jsonObj.empId, startDate, endDate);
     }
   }
 
-  const getComplaintsListFromServer = async (empId) => {
+  const getComplaintsListFromServer = async (empId, startDate, endDate) => {
 
-    const payload = {
+    const payload = getPayloadData(empId, 0, startDate, endDate);
+    dispatch(getComplaintsListApi(payload));
+  }
+
+  const getPayloadData = (empId, pageNo, startDate, endDate) => {
+
+    return {
       "groupBy": [],
       "orderBy": [],
-      "pageNo": selector.page_number,
-      "size": 5,
-      "orderByType": "asc",
-      "reportIdentifier": "1215",
+      "pageNo": pageNo,
+      "size": 10,
+      "orderByType": "",
+      "reportIdentifier": 1215,
       "paginationRequired": true,
       "empId": empId,
       "where": [
@@ -61,7 +65,7 @@ const ComplaintsScreen = ({ navigation }) => {
           "key": "from_date.fromDATE(dl.createddatetime)",
           "values": [
             {
-              "value": "2021-05-06"
+              "value": startDate
             }
           ]
         },
@@ -70,30 +74,18 @@ const ComplaintsScreen = ({ navigation }) => {
           "key": "to_date.toDATE(dl.createddatetime)",
           "values": [
             {
-              "value": "2021-10-21"
+              "value": endDate
             }
           ]
         }
       ]
     }
-    dispatch(getComplaintsListApi(payload));
   }
 
   const getMoreComplaintsListFromServer = (empId) => {
-
+    if (selector.isExtraLoading) { return }
     if (selector.total_objects_count < selector.complaints_list.length) {
-      const payload = {
-        "groupBy": [],
-        "orderBy": [],
-        "pageNo": selector.page_number + 1,
-        "size": 5,
-        "orderByType": "asc",
-        "reportIdentifier": "1215",
-        "paginationRequired": true,
-        "empId": empId,
-        "from_date": "2021-05-06",
-        "to_date": "2021-10-21"
-      }
+      const payload = getPayloadData(empId, selector.page_number + 1, selectedFromDate, selectedToDate)
       dispatch(getMoreComplaintsListApi(payload));
     }
   }
@@ -105,17 +97,15 @@ const ComplaintsScreen = ({ navigation }) => {
 
   const updateSelectedDate = (date, key) => {
 
-    const formatDate = moment(date).format("DD/MM/YYYY");
-    const payloadDate = moment(date).format("YYYY-DD-MM");
+    const formatDate = moment(date).format(dateFormat);
     switch (key) {
       case "FROM_DATE":
         setSelectedFromDate(formatDate);
-        const formatToDate = moment(selectedToDate, "DD/MM/YYYY").format("YYYY-MM-DD");
-        console.log("format formatToDate: ", formatToDate)
+        getComplaintsListFromServer(userData.employeeId, formatDate, selectedToDate)
         break;
       case "TO_DATE":
         setSelectedToDate(formatDate);
-        const formatFromDate = moment(selectedFromDate, "DD/MM/YYYY").format("YYYY-MM-DD");
+        getComplaintsListFromServer(userData.employeeId, selectedFromDate, formatDate)
         break;
     }
   }
@@ -185,7 +175,7 @@ const ComplaintsScreen = ({ navigation }) => {
             refreshControl={(
               <RefreshControl
                 refreshing={selector.isLoading}
-                onRefresh={() => getComplaintsListFromServer(userData.employeeId)}
+                onRefresh={() => getComplaintsListFromServer(userData.employeeId, selectedFromDate, selectedToDate)}
                 progressViewOffset={200}
               />
             )}

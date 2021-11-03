@@ -2,10 +2,9 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { client } from '../networking/client';
 import URL from "../networking/endpoints";
 
-export const getPreEnquiryData = createAsyncThunk('PRE_ENQUIRY/getPreEnquiryData', async (endUrl, { rejectWithValue }) => {
+export const getPreEnquiryData = createAsyncThunk('PRE_ENQUIRY/getPreEnquiryData', async (payload, { rejectWithValue }) => {
 
-  let url = URL.LEADS_LIST_API() + endUrl;
-  const response = await client.get(url);
+  const response = await client.post(URL.LEADS_LIST_API_FILTER(), payload);
   const json = await response.json()
   if (!response.ok) {
     return rejectWithValue(json);
@@ -13,10 +12,9 @@ export const getPreEnquiryData = createAsyncThunk('PRE_ENQUIRY/getPreEnquiryData
   return json;
 })
 
-export const getMorePreEnquiryData = createAsyncThunk('PRE_ENQUIRY/getMorePreEnquiryData', async (endUrl, { rejectWithValue }) => {
+export const getMorePreEnquiryData = createAsyncThunk('PRE_ENQUIRY/getMorePreEnquiryData', async (payload, { rejectWithValue }) => {
 
-  let url = URL.LEADS_LIST_API() + endUrl;
-  const response = await client.get(url);
+  const response = await client.post(URL.LEADS_LIST_API_FILTER(), payload);
   const json = await response.json()
   if (!response.ok) {
     return rejectWithValue(json);
@@ -81,3 +79,31 @@ export const preEnquirySlice = createSlice({
 
 export const { callPressed, setPreEnquiryList } = preEnquirySlice.actions;
 export default preEnquirySlice.reducer;
+
+
+// {
+//   "startdate": "2021-09-09",
+//   "enddate": "2021-22-09",
+//   "model": [
+//     {
+//       "id": 1,
+//       "name": "kwid"
+//     }
+//   ],
+//   "categoryType": [
+//     {
+//       "id": 1,
+//       "name": "hot"
+//     }
+//   ],
+//   "sourceOfEnquiry": [
+//     {
+//       "id": 1,
+//       "name": "WebSite"
+//     }
+//   ],
+//   "empId": 1,
+//   "status": "PREENQUIRY",
+//   "offset": 0,
+//   "limit": 5
+// }

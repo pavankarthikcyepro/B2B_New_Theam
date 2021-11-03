@@ -2,10 +2,9 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import URL from "../networking/endpoints";
 import { client } from '../networking/client';
 
-export const getEnquiryList = createAsyncThunk("ENQUIRY/getEnquiryList", async (endUrl, { rejectWithValue }) => {
+export const getEnquiryList = createAsyncThunk("ENQUIRY/getEnquiryList", async (payload, { rejectWithValue }) => {
 
-  let url = URL.LEADS_LIST_API() + endUrl;
-  const response = await client.get(url);
+  const response = await client.post(URL.LEADS_LIST_API_FILTER(), payload);
   const json = await response.json()
   if (!response.ok) {
     return rejectWithValue(json);
@@ -13,10 +12,9 @@ export const getEnquiryList = createAsyncThunk("ENQUIRY/getEnquiryList", async (
   return json;
 })
 
-export const getMoreEnquiryList = createAsyncThunk("ENQUIRY/getMoreEnquiryList", async (endUrl, { rejectWithValue }) => {
+export const getMoreEnquiryList = createAsyncThunk("ENQUIRY/getMoreEnquiryList", async (payload, { rejectWithValue }) => {
 
-  let url = URL.LEADS_LIST_API() + endUrl;
-  const response = await client.get(url);
+  const response = await client.post(URL.LEADS_LIST_API_FILTER(), payload);
   const json = await response.json()
   if (!response.ok) {
     return rejectWithValue(json);
@@ -58,7 +56,7 @@ const enquirySlice = createSlice({
       state.isLoadingExtraData = true;
     })
     builder.addCase(getMoreEnquiryList.fulfilled, (state, action) => {
-      console.log('res: ', action.payload);
+      // console.log('res: ', action.payload);
       const dmsEntityObj = action.payload?.dmsEntity;
       if (dmsEntityObj) {
         state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;

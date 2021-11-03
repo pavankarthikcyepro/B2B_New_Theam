@@ -2,10 +2,9 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { client } from '../networking/client';
 import URL from "../networking/endpoints";
 
-export const getUpcmoingDeliveriesListApi = createAsyncThunk('UPCOMING_DELIVERIES_SLICE/getUpcmoingDeliveriesListApi', async (endUrl, { rejectWithValue }) => {
+export const getUpcmoingDeliveriesListApi = createAsyncThunk('UPCOMING_DELIVERIES_SLICE/getUpcmoingDeliveriesListApi', async (payload, { rejectWithValue }) => {
 
-    let url = URL.LEADS_LIST_API() + endUrl;
-    const response = await client.get(url);
+    const response = await client.post(URL.LEADS_LIST_API_FILTER(), payload);
     const json = await response.json()
     if (!response.ok) {
         return rejectWithValue(json);
@@ -13,10 +12,9 @@ export const getUpcmoingDeliveriesListApi = createAsyncThunk('UPCOMING_DELIVERIE
     return json;
 })
 
-export const getMoreUpcmoingDeliveriesListApi = createAsyncThunk('UPCOMING_DELIVERIES_SLICE/getMoreUpcmoingDeliveriesListApi', async (endUrl, { rejectWithValue }) => {
+export const getMoreUpcmoingDeliveriesListApi = createAsyncThunk('UPCOMING_DELIVERIES_SLICE/getMoreUpcmoingDeliveriesListApi', async (payload, { rejectWithValue }) => {
 
-    let url = URL.LEADS_LIST_API() + endUrl;
-    const response = await client.get(url);
+    const response = await client.post(URL.LEADS_LIST_API_FILTER(), payload);
     const json = await response.json()
     if (!response.ok) {
         return rejectWithValue(json);
