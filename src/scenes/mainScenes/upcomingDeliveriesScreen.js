@@ -24,7 +24,7 @@ import {
 } from "../../redux/upcomingDeliveriesReducer";
 import moment from "moment";
 
-const dateFormat = "YYYY-DD-MM";
+const dateFormat = "YYYY-MM-DD";
 
 const UpcomingDeliveriesScreen = () => {
 
@@ -174,10 +174,11 @@ const UpcomingDeliveriesScreen = () => {
                 return (
                   <UpcomingDeliveriesItem
                     name={item.firstName + " " + item.lastName}
-                    planning={""}
-                    location={""}
+                    planning={item.commitmentDeliveryPreferredDate}
+                    location={item.deliveryLocation}
                     dseName={item.createdBy}
                     modelName={item.model ? item.model : ""}
+                    chasissNo={item.chassisNo}
                     bgColor={color}
                     onPress={() => {
                       console.log("onpress");

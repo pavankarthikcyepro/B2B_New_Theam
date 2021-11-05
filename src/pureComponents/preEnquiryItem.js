@@ -19,11 +19,11 @@ export const PreEnquiryItem = ({
   let displayCategoryText = "";
   if (enquiryCategory) {
     displayCategoryText = enquiryCategory.toUpperCase();
-    if (type === "HOT") {
+    if (displayCategoryText === "HOT") {
       textColor = Colors.RED;
-    } else if (type === "WARM") {
+    } else if (displayCategoryText === "WARM") {
       textColor = Colors.YELLOW;
-    } else if (type === "COLD") {
+    } else if (displayCategoryText === "COLD") {
       textColor = Colors.GREEN;
     }
   }

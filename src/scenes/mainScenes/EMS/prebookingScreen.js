@@ -12,7 +12,7 @@ import { callNumber } from "../../../utils/helperFunctions";
 import moment from "moment";
 import { Category_Type_List_For_Filter } from '../../../jsonData/enquiryFormScreenJsonData';
 
-const dateFormat = "YYYY-DD-MM";
+const dateFormat = "YYYY-MM-DD";
 
 const PreBookingScreen = ({ navigation }) => {
 

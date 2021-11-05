@@ -2,6 +2,7 @@ import React from "react";
 import { View, StyleSheet, Text, Pressable } from "react-native";
 import { Button, IconButton } from "react-native-paper";
 import { Colors } from "../styles";
+import { convertTimeStampToDateString } from "../utils/helperFunctions";
 
 const NameComp = ({ label, value, labelStyle = {}, valueStyle = {} }) => {
 
@@ -19,10 +20,14 @@ export const UpcomingDeliveriesItem = ({
   location,
   dseName,
   modelName,
+  chasissNo,
   bgColor = Colors.WHITE,
   onPress,
   onCallPress,
 }) => {
+
+  const date = convertTimeStampToDateString(planning, "MMM DD, YYYY")
+
   return (
     <Pressable onPress={onPress}>
       <View style={[styles.container, { backgroundColor: bgColor }]}>
@@ -35,10 +40,10 @@ export const UpcomingDeliveriesItem = ({
             {"D Location: " + location}
           </Text>
           <Text style={styles.text2}>{"DSE Name: " + dseName}</Text> */}
-          <NameComp label={'D Planning'} value={planning} />
+          <NameComp label={'D Planning'} value={date} />
           <NameComp label={'D Location'} value={location} />
           <NameComp label={'DSE Name'} value={dseName} />
-          <NameComp label={'Chassis No'} value={"--"} />
+          <NameComp label={'Chassis No'} value={chasissNo} />
         </View>
         <View style={styles.rightView}>
           <Button
