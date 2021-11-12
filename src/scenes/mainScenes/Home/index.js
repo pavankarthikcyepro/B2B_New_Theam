@@ -13,6 +13,7 @@ import { dateSelected, showDateModal, getCarModalList, getCustomerTypeList, getS
 import { DateRangeComp, DatePickerComponent, SortAndFilterComp } from '../../../components';
 import { DateModalComp } from "../../../components/dateModalComp";
 import { getMenuList } from '../../../redux/homeReducer';
+import { DashboardTopTabNavigator } from '../../../navigations/dashboardTopTabNavigator';
 import * as AsyncStore from '../../../asyncStore';
 
 const screenWidth = Dimensions.get("window").width;
@@ -21,7 +22,6 @@ const itemWidth = (screenWidth - 30) / 2;
 const HomeScreen = ({ navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
-  const [datePickerVisible, setDatePickerVisible] = useState(false);
 
   useEffect(() => {
     getMenuListFromServer();
@@ -44,47 +44,8 @@ const HomeScreen = ({ navigation }) => {
     }
   }
 
-  const dateClicked = (index) => {
-
-    //setDatePickerVisible(true)
-    dispatch(showDateModal());
-  };
-
-  const cardClicked = (index) => {
-
-    if (index === 0) {
-      navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-    } else if (index === 1) {
-      navigation.navigate(AppNavigator.TabStackIdentifiers.myTask);
-    }
-  };
-
   return (
     <SafeAreaView style={styles.container}>
-
-      {
-        datePickerVisible && <DatePickerComponent
-          visible={datePickerVisible}
-          mode={'date'}
-          value={new Date(Date.now())}
-          onChange={(event, selectedDate) => {
-            console.log('date: ', selectedDate)
-            if (Platform.OS === "android") {
-              setDatePickerVisible(false)
-            }
-          }}
-          onRequestClose={() => {
-            console.log('closed');
-            setDatePickerVisible(false)
-          }}
-        />
-      }
-
-      <DateModalComp
-        visible={selector.dateModalVisible}
-        onRequestClose={() => dispatch(showDateModal())}
-        submitCallback={() => { }}
-      />
 
       <View style={{ flex: 1, paddingVertical: 10, paddingHorizontal: 15, }}>
         <View style={{ flexDirection: 'row', height: 60, alignItems: 'center', justifyContent: 'space-between' }}>
@@ -103,7 +64,7 @@ const HomeScreen = ({ navigation }) => {
           />
         </View>
 
-        <Pressable onPress={dateClicked}>
+        <Pressable onPress={() => { }}>
           <View style={styles.dateVw}>
             <Text style={styles.text3}>{"My Activities"}</Text>
             <IconButton
@@ -114,34 +75,75 @@ const HomeScreen = ({ navigation }) => {
             />
           </View>
         </Pressable>
+        <DashboardTopTabNavigator />
 
-        {/* <View style={{ maxHeight: 100, marginBottom: 15 }}>
-          <FlatList
-            data={selector.datesData}
-            style={{}}
-            keyExtractor={(item, index) => index.toString()}
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            renderItem={({ item, index }) => {
-              return (
-                <Pressable onPress={() => dispatch(dateSelected(index))}>
-                  <View style={{ paddingRight: 10 }}>
-                    <DateItem
-                      month={item.month}
-                      date={item.date}
-                      day={item.day}
-                      selected={
-                        selector.dateSelectedIndex === index ? true : false
-                      }
-                    />
-                  </View>
-                </Pressable>
-              );
-            }}
-          />
-        </View> */}
+      </View>
+    </SafeAreaView>
+  );
+};
 
-        <FlatList
+export default HomeScreen;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "center",
+    backgroundColor: Colors.LIGHT_GRAY,
+  },
+  shadow: {
+    //   overflow: 'hidden',
+    borderRadius: 4,
+    width: "100%",
+    height: 250,
+    shadowColor: Colors.DARK_GRAY,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowRadius: 2,
+    shadowOpacity: 0.5,
+    elevation: 3,
+    position: "relative",
+  },
+  text1: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: Colors.WHITE,
+  },
+  barVw: {
+    backgroundColor: Colors.WHITE,
+    width: 40,
+    height: "70%",
+    justifyContent: "center",
+  },
+  text2: {
+    fontSize: 20,
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  text3: {
+    fontSize: 18,
+    fontWeight: "800",
+  },
+  dateVw: {
+    flexDirection: "row",
+    alignItems: "center",
+    height: 60,
+  },
+});
+
+
+// const cardClicked = (index) => {
+
+//   if (index === 0) {
+//     navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
+//   } else if (index === 1) {
+//     navigation.navigate(AppNavigator.TabStackIdentifiers.myTask);
+//   }
+// };
+
+{/* <FlatList
           data={selector.tableData}
           numColumns={2}
           horizontal={false}
@@ -198,59 +200,30 @@ const HomeScreen = ({ navigation }) => {
               </Pressable>
             );
           }}
-        />
-      </View>
-    </SafeAreaView>
-  );
-};
+        /> */}
 
-export default HomeScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: "column",
-    justifyContent: "center",
-    backgroundColor: Colors.LIGHT_GRAY,
-  },
-  shadow: {
-    //   overflow: 'hidden',
-    borderRadius: 4,
-    width: "100%",
-    height: 250,
-    shadowColor: Colors.DARK_GRAY,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowRadius: 2,
-    shadowOpacity: 0.5,
-    elevation: 3,
-    position: "relative",
-  },
-  text1: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: Colors.WHITE,
-  },
-  barVw: {
-    backgroundColor: Colors.WHITE,
-    width: 40,
-    height: "70%",
-    justifyContent: "center",
-  },
-  text2: {
-    fontSize: 20,
-    fontWeight: "600",
-    textAlign: "center",
-  },
-  text3: {
-    fontSize: 18,
-    fontWeight: "800",
-  },
-  dateVw: {
-    flexDirection: "row",
-    alignItems: "center",
-    height: 60,
-  },
-});
+{/* <View style={{ maxHeight: 100, marginBottom: 15 }}>
+          <FlatList
+            data={selector.datesData}
+            style={{}}
+            keyExtractor={(item, index) => index.toString()}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            renderItem={({ item, index }) => {
+              return (
+                <Pressable onPress={() => dispatch(dateSelected(index))}>
+                  <View style={{ paddingRight: 10 }}>
+                    <DateItem
+                      month={item.month}
+                      date={item.date}
+                      day={item.day}
+                      selected={
+                        selector.dateSelectedIndex === index ? true : false
+                      }
+                    />
+                  </View>
+                </Pressable>
+              );
+            }}
+          />
+        </View> */}

@@ -107,14 +107,10 @@ export const homeSlice = createSlice({
     source_of_enquiry_list: [],
     dateSelectedIndex: 0,
     login_employee_details: {},
-    dateModalVisible: false,
   },
   reducers: {
     dateSelected: (state, action) => {
       state.dateSelectedIndex = action.payload;
-    },
-    showDateModal: (state, action) => {
-      state.dateModalVisible = !state.dateModalVisible;
     },
   },
   extraReducers: (builder) => {
@@ -198,7 +194,7 @@ export const homeSlice = createSlice({
   }
 });
 
-export const { dateSelected, showDateModal } = homeSlice.actions;
+export const { dateSelected } = homeSlice.actions;
 export default homeSlice.reducer;
 
 
