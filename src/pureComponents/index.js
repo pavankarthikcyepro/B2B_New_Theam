@@ -9,6 +9,7 @@ import { PageControlItem } from "./pageControlItem";
 import { DropDownSelectionItem } from "./dropDownSelectionItem";
 import { ComplaintsItem } from "./complaintsItem";
 import { EventManagementItem } from "./eventmanagementItem";
+import { ChartNameList } from "./chartNameList";
 
 export {
     RadioTextItem,
@@ -20,5 +21,6 @@ export {
     PageControlItem,
     DropDownSelectionItem,
     ComplaintsItem,
-    EventManagementItem
+    EventManagementItem,
+    ChartNameList
 };
