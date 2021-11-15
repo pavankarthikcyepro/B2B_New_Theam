@@ -12,26 +12,23 @@ const NameComp = ({ label, labelStyle = {}, showColon = false }) => {
     )
 }
 
-export const TasksListComp = ({ data }) => {
+export const TargetListComp = ({ data, titlesData }) => {
 
     return (
         <FlatList
             data={data}
-            keyExtractor={(item, index) => "Task" + index.toString()}
+            keyExtractor={(item, index) => "Target" + index.toString()}
             horizontal={true}
             renderItem={({ item, index }) => {
 
                 if (index === 0) {
                     return (
                         <View style={{}}>
-                            <NameComp label={"S.No."} labelStyle={styles.titleStyle} showColon={true} />
-                            <NameComp label={"Employee"} labelStyle={styles.titleStyle} showColon={true} />
-                            <NameComp label={"Call"} labelStyle={styles.titleStyle} showColon={true} />
-                            <NameComp label={"TD"} labelStyle={styles.titleStyle} showColon={true} />
-                            <NameComp label={"V"} labelStyle={styles.titleStyle} showColon={true} />
-                            <NameComp label={"PB"} labelStyle={styles.titleStyle} showColon={true} />
-                            <NameComp label={"D"} labelStyle={styles.titleStyle} showColon={true} />
-                            <NameComp label={"Pending"} labelStyle={styles.titleStyle} showColon={true} />
+                            {titlesData.map((item, index) => {
+                                return (
+                                    <NameComp key={index} label={item} labelStyle={styles.titleStyle} showColon={true} />
+                                )
+                            })}
                         </View>
                     )
                 }
@@ -45,7 +42,6 @@ export const TasksListComp = ({ data }) => {
                         <NameComp label={item.v} labelStyle={styles.dataTextStyle} />
                         <NameComp label={item.pb} labelStyle={styles.dataTextStyle} />
                         <NameComp label={item.d} labelStyle={styles.dataTextStyle} />
-                        <NameComp label={item.pending} labelStyle={styles.dataTextStyle} />
                     </View>
                 )
             }}

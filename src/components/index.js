@@ -12,6 +12,7 @@ import { SelectEmployeeComponant } from "./selectEmployeeComp";
 import { SelectOtherVehicleComponant } from "./selectOtherVehicleComp";
 import { DonutChartComp } from "./donutChartComp";
 import { TasksListComp } from "./tasksListComp";
+import { TargetListComp } from "./targetListComp";
 
 export {
     ButtonComp,
@@ -26,5 +27,6 @@ export {
     SelectEmployeeComponant,
     SelectOtherVehicleComponant,
     DonutChartComp,
-    TasksListComp
+    TasksListComp,
+    TargetListComp
 };
