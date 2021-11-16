@@ -13,6 +13,7 @@ import { SelectOtherVehicleComponant } from "./selectOtherVehicleComp";
 import { DonutChartComp } from "./donutChartComp";
 import { TasksListComp } from "./tasksListComp";
 import { TargetListComp } from "./targetListComp";
+import { DashboadFilterModalComp } from "./dashboardFilterModalComp";
 
 export {
     ButtonComp,
@@ -28,5 +29,6 @@ export {
     SelectOtherVehicleComponant,
     DonutChartComp,
     TasksListComp,
-    TargetListComp
+    TargetListComp,
+    DashboadFilterModalComp
 };

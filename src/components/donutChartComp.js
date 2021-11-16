@@ -13,7 +13,7 @@ export const DonutChartComp = ({ data, width, height, colorScale }) => {
             animate={{
                 duration: 2000
             }}
-            innerRadius={width * 0.2}
+            innerRadius={width * 0.25}
             colorScale={colorScale}
             style={{
                 labels: {

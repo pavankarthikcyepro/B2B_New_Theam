@@ -23,8 +23,17 @@ export const DropDownSelectionItem = ({ label, value, onPress, disabled = false 
 }
 
 const styles = StyleSheet.create({
-    container: { height: 65, backgroundColor: Colors.WHITE, justifyContent: 'flex-end' },
-    label: { fontSize: 12, marginLeft: 12, fontWeight: '400', color: Colors.GRAY },
+    container: {
+        height: 65,
+        backgroundColor: Colors.WHITE,
+        justifyContent: 'flex-end'
+    },
+    label: {
+        fontSize: 12,
+        marginLeft: 12,
+        fontWeight: '400',
+        color: Colors.GRAY
+    },
     view3: {
         width: '100%',
         height: 40,

@@ -40,8 +40,12 @@ const DropDownComponant = ({ visible = false, multiple = false, headerTitle = "S
 
     const itemSelected = (index) => {
         let updatedMultipleData = [...multipleData];
-        let obj = updatedMultipleData[index];
-        obj.selected = !obj.selected;
+        const obj = { ...updatedMultipleData[index] };
+        if (obj.selected != undefined) {
+            obj.selected = !obj.selected;
+        } else {
+            obj.selected = true;
+        }
         updatedMultipleData[index] = obj;
         setMultipleData(updatedMultipleData);
     }

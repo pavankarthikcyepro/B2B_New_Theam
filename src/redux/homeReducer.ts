@@ -52,6 +52,16 @@ export const getMenuList = createAsyncThunk("HOME/getMenuList", async (name, { r
   return json;
 })
 
+export const getOrganaizationHirarchyList = createAsyncThunk("HOME/getOrganaizationHirarchyList", async (payload: any, { rejectWithValue }) => {
+
+  const response = await client.get(URL.ORG_HIRARCHY(payload.orgId, payload.branchId))
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 export const getCarModalList = createAsyncThunk("HOME/getCarModalList", async (orgId, { rejectWithValue }) => {
 
   const response = await client.get(URL.VEHICLE_MODELS(orgId))
@@ -107,6 +117,7 @@ export const homeSlice = createSlice({
     source_of_enquiry_list: [],
     dateSelectedIndex: 0,
     login_employee_details: {},
+    filter_drop_down_data: []
   },
   reducers: {
     dateSelected: (state, action) => {
@@ -114,29 +125,28 @@ export const homeSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(getMenuList.fulfilled, (state, action) => {
-        //console.log('menu_list: ', action.payload);
-        const dmsEntityObj = action.payload.dmsEntity;
-        const menuList = dmsEntityObj.menuList;
+    builder.addCase(getMenuList.fulfilled, (state, action) => {
+      //console.log('menu_list: ', action.payload);
+      const dmsEntityObj = action.payload.dmsEntity;
+      const menuList = dmsEntityObj.menuList;
 
-        if (menuList.length > 0) {
-          let newMenuList = [];
-          menuList.forEach((item) => {
-            newMenuList.push({
-              screen: item.menuId,
-              title: item.displayName
-            })
-          });
-          state.menuList = newMenuList;
-        }
+      if (menuList.length > 0) {
+        let newMenuList = [];
+        menuList.forEach((item) => {
+          newMenuList.push({
+            screen: item.menuId,
+            title: item.displayName
+          })
+        });
+        state.menuList = newMenuList;
+      }
 
-        const empId = dmsEntityObj.loginEmployee.empId;
-        AsyncStore.storeData(AsyncStore.Keys.EMP_ID, empId.toString());
-        state.login_employee_details = dmsEntityObj.loginEmployee;
-        AsyncStore.storeData(AsyncStore.Keys.LOGIN_EMPLOYEE, JSON.stringify(dmsEntityObj.loginEmployee));
-        state.employeeId = empId;
-      })
+      const empId = dmsEntityObj.loginEmployee.empId;
+      AsyncStore.storeData(AsyncStore.Keys.EMP_ID, empId.toString());
+      state.login_employee_details = dmsEntityObj.loginEmployee;
+      AsyncStore.storeData(AsyncStore.Keys.LOGIN_EMPLOYEE, JSON.stringify(dmsEntityObj.loginEmployee));
+      state.employeeId = empId;
+    })
       .addCase(getMenuList.rejected, (state, action) => {
 
       })
@@ -190,6 +200,19 @@ export const homeSlice = createSlice({
       })
       .addCase(getSourceOfEnquiryList.rejected, (state, action) => {
         state.source_of_enquiry_list = [];
+      })
+      // Get Filter Dropdown list
+      .addCase(getOrganaizationHirarchyList.pending, (state, action) => {
+
+      })
+      .addCase(getOrganaizationHirarchyList.fulfilled, (state, action) => {
+        // console.log("S getOrganaizationHirarchyList: ", JSON.stringify(action.payload));
+        if (action.payload) {
+          state.filter_drop_down_data = action.payload;
+        }
+      })
+      .addCase(getOrganaizationHirarchyList.rejected, (state, action) => {
+        // console.log("F getOrganaizationHirarchyList: ", JSON.stringify(action.payload));
       })
   }
 });

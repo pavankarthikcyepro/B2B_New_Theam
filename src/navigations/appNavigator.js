@@ -36,6 +36,7 @@ import TestEnquiryFormScreen from "../scenes/mainScenes/EMS/testEnquiryFormScree
 import PaidAccessoriesScreen from "../scenes/mainScenes/EMS/paidAccessoriesScreen";
 import ProceedToPreBookingScreen from "../scenes/mainScenes/MyTasks/proceedToPreBookingScreen";
 import CreateEnquiryScreen from "../scenes/mainScenes/MyTasks/createEnquiryScreen";
+import FilterScreen from "../scenes/mainScenes/Home/filterScreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -101,6 +102,10 @@ export const TabStackIdentifiers = {
   myTask: "MY_TASK_TAB",
 };
 
+export const HomeStackIdentifiers = {
+  filter: "FILTER",
+};
+
 export const EmsStackIdentifiers = {
   addPreEnq: "ADD_PRE_ENQUIRY",
   confirmedPreEnq: "CONFIRMED_PRE_ENQUIRY",
@@ -158,6 +163,11 @@ const HomeStackNavigator = ({ navigation }) => {
         name={"NOTIF_1"}
         component={NotificationScreen}
         options={{ title: "Notifications" }}
+      />
+      <HomeStack.Screen
+        name={HomeStackIdentifiers.filter}
+        component={FilterScreen}
+        options={{ title: "Filters" }}
       />
     </HomeStack.Navigator>
   );

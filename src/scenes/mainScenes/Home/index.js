@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, View, Text, StyleSheet, FlatList, Dimensions, Image, Pressable, Alert } from 'react-native';
+import { SafeAreaView, View, Text, StyleSheet, FlatList, Dimensions, Image, Pressable, Alert, TouchableOpacity } from 'react-native';
 import { Colors } from '../../../styles';
 import { Searchbar } from 'react-native-paper';
 import { IconButton } from 'react-native-paper';
@@ -9,11 +9,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FILTER } from '../../../assets/svg';
 import { DateItem } from '../../../pureComponents/dateItem';
 import { AppNavigator } from '../../../navigations';
-import { dateSelected, showDateModal, getCarModalList, getCustomerTypeList, getSourceOfEnquiryList } from '../../../redux/homeReducer';
+import { dateSelected, showDateModal, getCarModalList, getCustomerTypeList, getSourceOfEnquiryList, getOrganaizationHirarchyList } from '../../../redux/homeReducer';
 import { DateRangeComp, DatePickerComponent, SortAndFilterComp } from '../../../components';
 import { DateModalComp } from "../../../components/dateModalComp";
 import { getMenuList } from '../../../redux/homeReducer';
 import { DashboardTopTabNavigator } from '../../../navigations/dashboardTopTabNavigator';
+import { HomeStackIdentifiers } from '../../../navigations/appNavigator';
 import * as AsyncStore from '../../../asyncStore';
 
 const screenWidth = Dimensions.get("window").width;
@@ -44,11 +45,22 @@ const HomeScreen = ({ navigation }) => {
     }
   }
 
+  useEffect(() => {
+    if (selector.login_employee_details) {
+      const dataObj = selector.login_employee_details;
+      const payload = {
+        orgId: dataObj.orgId,
+        branchId: dataObj.branchId
+      }
+      dispatch(getOrganaizationHirarchyList(payload));
+    }
+  }, [selector.login_employee_details])
+
   return (
     <SafeAreaView style={styles.container}>
 
       <View style={{ flex: 1, paddingVertical: 10, paddingHorizontal: 15, }}>
-        <View style={{ flexDirection: 'row', height: 60, alignItems: 'center', justifyContent: 'space-between' }}>
+        {/* <View style={{ flexDirection: 'row', height: 60, alignItems: 'center', justifyContent: 'space-between' }}>
 
           <Searchbar
             style={{ width: "90%" }}
@@ -62,19 +74,18 @@ const HomeScreen = ({ navigation }) => {
             source={FILTER}
             style={{ tintColor: Colors.DARK_GRAY }}
           />
+        </View> */}
+
+        <View style={styles.dateVw}>
+          <Text style={styles.text3}>{"My Dashboard"}</Text>
+          <TouchableOpacity onPress={() => navigation.navigate(HomeStackIdentifiers.filter)}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text style={[styles.text1, { color: Colors.RED }]}>{'Filters'}</Text>
+              <IconButton icon={'filter-outline'} size={20} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
+            </View>
+          </TouchableOpacity>
         </View>
 
-        <Pressable onPress={() => { }}>
-          <View style={styles.dateVw}>
-            <Text style={styles.text3}>{"My Activities"}</Text>
-            <IconButton
-              icon="calendar-month"
-              color={Colors.RED}
-              size={25}
-            // ondateSelected={() => dispatch(showDateModal())}
-            />
-          </View>
-        </Pressable>
         <DashboardTopTabNavigator />
 
       </View>
@@ -128,8 +139,14 @@ const styles = StyleSheet.create({
   },
   dateVw: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    height: 60,
+    borderWidth: 1,
+    borderColor: Colors.BORDER_COLOR,
+    backgroundColor: Colors.WHITE,
+    marginBottom: 5,
+    paddingLeft: 5,
+    height: 50,
   },
 });
 

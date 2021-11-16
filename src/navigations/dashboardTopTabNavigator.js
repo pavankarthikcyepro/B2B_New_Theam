@@ -169,7 +169,7 @@ const DashboardTopTabNavigator = () => {
             <DashboardTopTab.Screen
                 name={DashboardTopTabNavigatorIdentifiers.data}
                 component={DataTopTabNavigator}
-                options={{ title: "Data" }}
+                options={{ title: "Revenue" }}
             />
             <DashboardTopTab.Screen
                 name={DashboardTopTabNavigatorIdentifiers.tasks}

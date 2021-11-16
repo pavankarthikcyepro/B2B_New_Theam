@@ -29,6 +29,7 @@ export const notificationServices_url = "http://ec2-3-108-253-173.ap-south-1.com
 export const customerService_url = "http://ec2-3-108-253-173.ap-south-1.compute.amazonaws.com:8084/customer-service";
 export const dynamicReports_url = "http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/dynamic-reports";
 export const dynamicForms = "http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/dynamic-forms";
+export const orgnaizationHirarchy = "http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/oh";
 
 const URL = {
     LOGIN: () => hrms_url + "/emplogin",
@@ -133,6 +134,9 @@ const URL = {
     VALIDATE_OTP: () => {
         return notificationServices_url + "/validateOTP";
     },
+    ORG_HIRARCHY: (orgId, branchId) => {
+        return orgnaizationHirarchy + `/active-levels/${orgId}/${branchId}`;
+    }
 }
 
 export default URL;
