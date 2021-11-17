@@ -38,6 +38,7 @@ const FilterScreen = ({ navigation }) => {
                 names.push(key);
             }
             setNameKeyList(names);
+            setTableData(selector.filter_drop_down_data);
         }
 
         const currentDate = moment().format(dateFormat)

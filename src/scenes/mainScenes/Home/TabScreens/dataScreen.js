@@ -116,39 +116,6 @@ export const DropScreen = () => {
                 <Area theme={{ gradient: { from: { color: '#ffa502' }, to: { color: '#ffa502', opacity: 0.4 } } }} />
                 <Line theme={{ stroke: { color: '#ffa502', width: 5 }, scatter: { default: { width: 4, height: 4, rx: 2 } } }} />
             </Chart> */}
-
-            {/* <Chart
-                style={{ height: 200, width: '100%', marginTop: 40 }}
-                data={[
-                    { x: 5, y: 15 },
-                    { x: 6, y: 6 },
-                    { x: 7, y: 25 },
-                    { x: 8, y: 3 },
-                ]}
-                padding={{ left: 40, bottom: 20, right: 20, top: 20 }}
-                xDomain={{ min: 5, max: 8 }}
-            >
-                <VerticalAxis
-                    tickValues={[0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20]}
-                    theme={{
-                        axis: { stroke: { color: '#aaa', width: 2 } },
-                        ticks: { stroke: { color: '#aaa', width: 2 } },
-                        labels: { formatter: (v) => v.toFixed(2) },
-                    }}
-                />
-                <HorizontalAxis
-                    tickCount={9}
-                    theme={{
-                        axis: { stroke: { color: '#aaa', width: 2 } },
-                        ticks: { stroke: { color: '#aaa', width: 2 } },
-                        labels: { label: { rotation: 50 }, formatter: (v) => v.toFixed(1) },
-                    }}
-                />
-                <Line theme={{ stroke: { color: 'red', width: 2 } }} />
-                <Line smoothing="bezier" tension={0.15} theme={{ stroke: { color: 'blue', width: 2 } }} />
-                <Line smoothing="bezier" tension={0.3} theme={{ stroke: { color: 'green', width: 2 } }} />
-                <Line smoothing="cubic-spline" tension={0.3} theme={{ stroke: { color: 'orange', width: 2 } }} />
-            </Chart> */}
         </View >
     )
 }

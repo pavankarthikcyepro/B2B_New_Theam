@@ -5,9 +5,6 @@ import { TasksListComp } from "../../../../components";
 
 const todaysData = [
     {
-
-    },
-    {
         "empName": "Admin",
         "call": 0,
         "td": 0,
@@ -18,7 +15,7 @@ const todaysData = [
         "sno": 1
     },
     {
-        "empName": "Admin First",
+        "empName": " First",
         "call": 0,
         "td": 0,
         "v": 0,
@@ -28,7 +25,7 @@ const todaysData = [
         "sno": 1
     },
     {
-        "empName": "Admin Second",
+        "empName": " Second",
         "call": 0,
         "td": 0,
         "v": 0,
@@ -38,7 +35,7 @@ const todaysData = [
         "sno": 1
     },
     {
-        "empName": "Admin First",
+        "empName": " First",
         "call": 0,
         "td": 0,
         "v": 0,
