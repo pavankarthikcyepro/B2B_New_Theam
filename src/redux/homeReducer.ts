@@ -132,6 +132,16 @@ export const getTaskTableList = createAsyncThunk("HOME/getTaskTableList", async 
   return json;
 })
 
+export const getLostDropChartData = createAsyncThunk("HOME/getLostDropChartData", async (payload: any, { rejectWithValue }) => {
+
+  const response = await client.post(URL.GET_LOST_DROP_CHART_DATA(), payload)
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 const AVAILABLE_SCREENS = [
   {
     "menuId": 81,
@@ -162,11 +172,15 @@ export const homeSlice = createSlice({
     vehicle_model_table_data: [],
     events_table_data: [],
     task_table_data: {},
+    lost_drop_chart_data: {}
   },
   reducers: {
     dateSelected: (state, action) => {
       state.dateSelectedIndex = action.payload;
     },
+    updateFilterDropDownData: (state, action) => {
+      state.filter_drop_down_data = action.payload;
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(getMenuList.fulfilled, (state, action) => {
@@ -310,10 +324,23 @@ export const homeSlice = createSlice({
       .addCase(getTaskTableList.rejected, (state, action) => {
         state.task_table_data = {};
       })
+      // Get Lost Drop Chart Data
+      .addCase(getLostDropChartData.pending, (state, action) => {
+        state.lost_drop_chart_data = {};
+      })
+      .addCase(getLostDropChartData.fulfilled, (state, action) => {
+        console.log("S getLostDropChartData: ", JSON.stringify(action.payload));
+        if (action.payload) {
+          state.lost_drop_chart_data = action.payload;
+        }
+      })
+      .addCase(getLostDropChartData.rejected, (state, action) => {
+        state.lost_drop_chart_data = {};
+      })
   }
 });
 
-export const { dateSelected } = homeSlice.actions;
+export const { dateSelected, updateFilterDropDownData } = homeSlice.actions;
 export default homeSlice.reducer;
 
 

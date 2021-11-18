@@ -1,41 +1,23 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Dimensions, FlatList, Text } from "react-native";
 import { Colors } from "../../../../styles";
 import { DonutChartComp } from "../../../../components";
 import { ChartNameList } from "../../../../pureComponents";
-import { Chart, Line, Area, HorizontalAxis, VerticalAxis } from 'react-native-responsive-linechart'
+import { useDispatch, useSelector } from 'react-redux';
+import { random_color } from "../../../../utils/helperFunctions";
 
 const graphicData = [
     { y: 5, x: '5%' },
     { y: 20, x: '20%' },
-    { y: 50, x: '50%' },
-    { y: 30, x: '30%' },
-    { y: 70, x: '70%' },
 ]
-
 const graphicColor = ['red', 'blue', 'yellow', 'green', 'tomato']
 const tableData = [
     {
         name: "Duster",
         color: "red"
     },
-    {
-        name: "Kiger",
-        color: "blue"
-    },
-    {
-        name: "Kwid",
-        color: "yellow"
-    },
-    {
-        name: "Triber",
-        color: "green"
-    },
-    {
-        name: "Verna",
-        color: "tomato"
-    }
 ]
+
 const screenWidth = Dimensions.get("window").width;
 const chartWidth = (screenWidth / 2) + 100;
 
@@ -43,26 +25,56 @@ const itemWidth = (screenWidth - 100) / 4;
 
 export const LostScreen = () => {
 
-    React.useEffect(() => {
-        console.log("re: ", itemWidth);
-    })
+    const selector = useSelector((state) => state.homeReducer);
+    const dispatch = useDispatch();
+    const [chartData, setChartData] = useState([]);
+    const [chartColorData, setChartColorData] = useState([]);
+    const [namesData, setNamesData] = useState([]);
+
+    useEffect(() => {
+        if (selector.lost_drop_chart_data != undefined && selector.lost_drop_chart_data.lostData) {
+            const dataArray = selector.lost_drop_chart_data.lostData;
+            let chartDataLocal = [];
+            let chartColorLocal = [];
+            let namesDataLocal = [];
+            if (dataArray.length > 0) {
+                dataArray.forEach(element => {
+                    const randomColor = random_color("hexa");
+                    const percentage = Number(element.lostPercentage);
+                    if (percentage > 0) {
+                        chartDataLocal.push({
+                            x: percentage + "%",
+                            y: percentage
+                        })
+                    }
+                    chartColorLocal.push(randomColor);
+                    namesDataLocal.push({ name: element.modelName, color: randomColor })
+                });
+            }
+            setChartData(chartDataLocal);
+            setChartColorData(chartColorLocal);
+            setNamesData(namesDataLocal);
+        } else {
+            setChartData([]);
+        }
+    }, [selector.lost_drop_chart_data])
 
     return (
         <View style={styles.container2}>
 
             <View style={{ alignItems: "center", }}>
                 <ChartNameList
-                    data={tableData}
+                    data={namesData}
                     itemWidth={itemWidth}
                 />
             </View>
 
             <View style={{ width: "100%", alignItems: "center" }}>
                 <DonutChartComp
-                    data={graphicData}
+                    data={chartData}
                     width={chartWidth}
                     height={chartWidth}
-                    colorScale={graphicColor}
+                    colorScale={chartColorData}
                 />
             </View>
         </View>
@@ -71,51 +83,59 @@ export const LostScreen = () => {
 
 export const DropScreen = () => {
 
+    const selector = useSelector((state) => state.homeReducer);
+    const dispatch = useDispatch();
+    const [chartData, setChartData] = useState([]);
+    const [chartColorData, setChartColorData] = useState([]);
+    const [namesData, setNamesData] = useState([]);
+
+    useEffect(() => {
+        if (selector.lost_drop_chart_data != undefined && selector.lost_drop_chart_data.dropData) {
+            const dataArray = selector.lost_drop_chart_data.dropData;
+            let chartDataLocal = [];
+            let chartColorLocal = [];
+            let namesDataLocal = [];
+            if (dataArray.length > 0) {
+                dataArray.forEach(element => {
+                    const randomColor = random_color("hexa");
+                    const percentage = Number(element.dropPercentage);
+                    if (percentage > 0) {
+                        chartDataLocal.push({
+                            x: percentage + "%",
+                            y: percentage
+                        })
+                    }
+                    chartColorLocal.push(randomColor);
+                    namesDataLocal.push({ name: element.modelName, color: randomColor })
+                });
+            }
+            setChartData(chartDataLocal);
+            setChartColorData(chartColorLocal);
+            setNamesData(namesDataLocal);
+        } else {
+            setChartData([]);
+        }
+    }, [selector.lost_drop_chart_data])
+
+
     return (
         <View style={styles.container2}>
 
             <View style={{ alignItems: "center" }}>
                 <ChartNameList
-                    data={tableData}
+                    data={namesData}
                     itemWidth={itemWidth}
                 />
             </View>
 
             <View style={{ width: "100%", alignItems: "center" }}>
                 <DonutChartComp
-                    data={graphicData}
+                    data={chartData}
                     width={chartWidth}
                     height={chartWidth}
-                    colorScale={graphicColor}
+                    colorScale={chartColorData}
                 />
             </View>
-
-            {/* <Chart
-                style={{ height: 200, width: 400 }}
-                data={[
-                    { x: -2, y: 15 },
-                    { x: -1, y: 10 },
-                    { x: 0, y: 12 },
-                    { x: 1, y: 7 },
-                    { x: 2, y: 6 },
-                    { x: 3, y: 8 },
-                    { x: 4, y: 10 },
-                    { x: 5, y: 8 },
-                    { x: 6, y: 12 },
-                    { x: 7, y: 14 },
-                    { x: 8, y: 12 },
-                    { x: 9, y: 13.5 },
-                    { x: 10, y: 18 },
-                ]}
-                padding={{ left: 40, bottom: 20, right: 20, top: 20 }}
-                xDomain={{ min: -2, max: 10 }}
-                yDomain={{ min: 0, max: 20 }}
-            >
-                <VerticalAxis tickCount={11} theme={{ labels: { formatter: (v) => v.toFixed(2) } }} />
-                <HorizontalAxis tickCount={5} />
-                <Area theme={{ gradient: { from: { color: '#ffa502' }, to: { color: '#ffa502', opacity: 0.4 } } }} />
-                <Line theme={{ stroke: { color: '#ffa502', width: 5 }, scatter: { default: { width: 4, height: 4, rx: 2 } } }} />
-            </Chart> */}
         </View >
     )
 }

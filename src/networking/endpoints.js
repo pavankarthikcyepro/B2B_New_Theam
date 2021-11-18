@@ -144,6 +144,7 @@ const URL = {
     VEHICLE_MODEL_DATA: () => dashboard + "/v2/get_vehicle_model_data",
     EVENT_DATA: () => dashboard + "/v2/get_events_data",
     TASKS_DATA: () => dashboard + "/v2/get_todays_data",
+    GET_LOST_DROP_CHART_DATA: () => dashboard + "/v2/get_lostdrop_data",
 }
 
 export default URL;

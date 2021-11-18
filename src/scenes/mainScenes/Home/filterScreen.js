@@ -10,6 +10,14 @@ import { DatePickerComponent, DropDownComponant } from '../../../components';
 import { DateSelectItem, DropDownSelectionItem } from '../../../pureComponents';
 import moment from 'moment';
 import { Button } from "react-native-paper";
+import {
+    updateFilterDropDownData,
+    getLeadSourceTableList,
+    getVehicleModelTableList,
+    getEventTableList,
+    getTaskTableList,
+    getLostDropChartData
+} from '../../../redux/homeReducer';
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
@@ -152,21 +160,32 @@ const FilterScreen = ({ navigation }) => {
     const [showDropDownModel, setShowDropDownModel] = useState(false);
     const [dropDownData, setDropDownData] = useState([]);
     const [selectedItemIndex, setSelectedItemIndex] = useState([]);
-    const [value, setValue] = useState("");
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [datePickerId, setDatePickerId] = useState("");
     const [fromDate, setFromDate] = useState("");
     const [toDate, setToDate] = useState("");
     const [nameKeyList, setNameKeyList] = useState([]);
+    const [employeeId, setEmployeeId] = useState("");
 
     useEffect(() => {
-        if (tempData) {
+        getAsyncData();
+    }, [])
+
+    const getAsyncData = async (startDate, endDate) => {
+        let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
+        if (empId) {
+            setEmployeeId(empId);
+        }
+    }
+
+    useEffect(() => {
+        if (selector.filter_drop_down_data) {
             let names = [];
-            for (let key in tempData) {
+            for (let key in selector.filter_drop_down_data) {
                 names.push(key);
             }
             setNameKeyList(names);
-            setTotalDataObj(tempData);
+            setTotalDataObj(selector.filter_drop_down_data);
         }
 
         const currentDate = moment().format(dateFormat)
@@ -174,7 +193,7 @@ const FilterScreen = ({ navigation }) => {
         const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
         setFromDate(monthFirstDate);
         setToDate(monthLastDate);
-    }, [])
+    }, [selector.filter_drop_down_data])
 
     const dropDownItemClicked = (index) => {
 
@@ -264,15 +283,76 @@ const FilterScreen = ({ navigation }) => {
 
     const clearBtnClicked = () => {
 
+        const totalDataObjLocal = { ...totalDataObj };
+        let i = 0;
+        for (i; i < nameKeyList.length; i++) {
+
+            let key = nameKeyList[i];
+            const dataArray = totalDataObjLocal[key].sublevels;
+            if (dataArray.length > 0) {
+                const newDataArry = dataArray.map((subItem, index) => {
+                    const obj = { ...subItem };
+                    obj.selected = false;
+                    return obj;
+                })
+                const newOBJ = {
+                    "sublevels": newDataArry
+                }
+                totalDataObjLocal[key] = newOBJ;
+            }
+        }
+        setTotalDataObj({ ...totalDataObjLocal });
     }
 
     const submitBtnClicked = () => {
 
+        let i = 0;
+        const selectedIds = [];
+        for (i; i < nameKeyList.length; i++) {
+            let key = nameKeyList[i];
+            const dataArray = totalDataObj[key].sublevels;
+            if (dataArray.length > 0) {
+                dataArray.forEach((item, index) => {
+                    if (item.selected != undefined && item.selected == true) {
+                        selectedIds.push(item.id)
+                    }
+                })
+            }
+        }
+        // console.log("selectedIds: ", selectedIds);
+        getDashboadTableDataFromServer(selectedIds);
+    }
+
+    const getDashboadTableDataFromServer = (selectedIds) => {
+
+        const payload = {
+            "startDate": fromDate,
+            "endDate": toDate,
+            "loggedInEmpId": employeeId,
+            "levelSelected": selectedIds
+        }
+        dispatch(getLeadSourceTableList(payload));
+        dispatch(getVehicleModelTableList(payload));
+        dispatch(getEventTableList(payload));
+        dispatch(getLostDropChartData(payload));
+        getTaskTableDataFromServer(employeeId, payload);
+        dispatch(updateFilterDropDownData(totalDataObj))
+        navigation.goBack();
+    }
+
+    const getTaskTableDataFromServer = (oldPayload) => {
+
+        const payload = {
+            ...oldPayload,
+            "pageNo": 0,
+            "size": 10
+        }
+        dispatch(getTaskTableList(payload));
     }
 
     const updateSelectedDate = (date, key) => {
 
-        const formatDate = moment(date).format("MM-DD-YYYY");
+        const formatDate = moment(date).format(dateFormat);
         switch (key) {
             case "FROM_DATE":
                 setFromDate(formatDate);
@@ -369,7 +449,14 @@ const FilterScreen = ({ navigation }) => {
                     />
                 </View>
                 <View style={styles.submitBtnBckVw}>
-
+                    <Button
+                        labelStyle={{ color: Colors.RED, textTransform: "none" }}
+                        style={{ width: buttonWidth }}
+                        mode="outlined"
+                        onPress={clearBtnClicked}
+                    >
+                        Clear
+                    </Button>
                     <Button
                         labelStyle={{
                             color: Colors.WHITE,
@@ -430,7 +517,8 @@ const styles = StyleSheet.create({
     submitBtnBckVw: {
         width: "100%",
         height: 70,
-        justifyContent: "center",
-        alignItems: "center"
+        flexDirection: "row",
+        justifyContent: "space-evenly",
+        alignItems: "center",
     }
 });

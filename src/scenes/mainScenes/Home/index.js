@@ -19,7 +19,8 @@ import {
   getLeadSourceTableList,
   getVehicleModelTableList,
   getEventTableList,
-  getTaskTableList
+  getTaskTableList,
+  getLostDropChartData
 } from '../../../redux/homeReducer';
 import { DateRangeComp, DatePickerComponent, SortAndFilterComp } from '../../../components';
 import { DateModalComp } from "../../../components/dateModalComp";
@@ -83,6 +84,7 @@ const HomeScreen = ({ navigation }) => {
     dispatch(getLeadSourceTableList(payload));
     dispatch(getVehicleModelTableList(payload));
     dispatch(getEventTableList(payload));
+    dispatch(getLostDropChartData(payload));
     getTaskTableDataFromServer(empId, payload);
   }
 
