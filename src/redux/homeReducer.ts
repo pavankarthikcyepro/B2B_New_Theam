@@ -92,6 +92,46 @@ export const getSourceOfEnquiryList = createAsyncThunk("HOME/getSourceOfEnquiryL
   return json;
 })
 
+export const getLeadSourceTableList = createAsyncThunk("HOME/getLeadSourceTableList", async (payload: any, { rejectWithValue }) => {
+
+  const response = await client.post(URL.LEAD_SOURCE_DATA(), payload)
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getVehicleModelTableList = createAsyncThunk("HOME/getVehicleModelTableList", async (payload: any, { rejectWithValue }) => {
+
+  const response = await client.post(URL.VEHICLE_MODEL_DATA(), payload)
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getEventTableList = createAsyncThunk("HOME/getEventTableList", async (payload: any, { rejectWithValue }) => {
+
+  const response = await client.post(URL.EVENT_DATA(), payload)
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getTaskTableList = createAsyncThunk("HOME/getTaskTableList", async (payload: any, { rejectWithValue }) => {
+
+  const response = await client.post(URL.TASKS_DATA(), payload)
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 const AVAILABLE_SCREENS = [
   {
     "menuId": 81,
@@ -117,7 +157,11 @@ export const homeSlice = createSlice({
     source_of_enquiry_list: [],
     dateSelectedIndex: 0,
     login_employee_details: {},
-    filter_drop_down_data: []
+    filter_drop_down_data: [],
+    lead_source_table_data: [],
+    vehicle_model_table_data: [],
+    events_table_data: [],
+    task_table_data: {},
   },
   reducers: {
     dateSelected: (state, action) => {
@@ -213,6 +257,58 @@ export const homeSlice = createSlice({
       })
       .addCase(getOrganaizationHirarchyList.rejected, (state, action) => {
         // console.log("F getOrganaizationHirarchyList: ", JSON.stringify(action.payload));
+      })
+      // Get Lead Source Table List
+      .addCase(getLeadSourceTableList.pending, (state, action) => {
+        state.lead_source_table_data = [];
+      })
+      .addCase(getLeadSourceTableList.fulfilled, (state, action) => {
+        // console.log("S getLeadSourceTableList: ", JSON.stringify(action.payload));
+        if (action.payload) {
+          state.lead_source_table_data = action.payload;
+        }
+      })
+      .addCase(getLeadSourceTableList.rejected, (state, action) => {
+        state.lead_source_table_data = [];
+      })
+      // Get Vehicle Model Table List
+      .addCase(getVehicleModelTableList.pending, (state, action) => {
+        state.vehicle_model_table_data = [];
+      })
+      .addCase(getVehicleModelTableList.fulfilled, (state, action) => {
+        // console.log("S getVehicleModelTableList: ", JSON.stringify(action.payload));
+        if (action.payload) {
+          state.vehicle_model_table_data = action.payload;
+        }
+      })
+      .addCase(getVehicleModelTableList.rejected, (state, action) => {
+        state.vehicle_model_table_data = [];
+      })
+      // Get Event Table List
+      .addCase(getEventTableList.pending, (state, action) => {
+        state.events_table_data = [];
+      })
+      .addCase(getEventTableList.fulfilled, (state, action) => {
+        // console.log("S getEventTableList: ", JSON.stringify(action.payload));
+        if (action.payload) {
+          state.events_table_data = action.payload;
+        }
+      })
+      .addCase(getEventTableList.rejected, (state, action) => {
+        state.events_table_data = [];
+      })
+      // Get Event Table List
+      .addCase(getTaskTableList.pending, (state, action) => {
+        state.task_table_data = {};
+      })
+      .addCase(getTaskTableList.fulfilled, (state, action) => {
+        console.log("S getTaskTableList: ", JSON.stringify(action.payload));
+        if (action.payload) {
+          state.task_table_data = action.payload;
+        }
+      })
+      .addCase(getTaskTableList.rejected, (state, action) => {
+        state.task_table_data = {};
       })
   }
 });

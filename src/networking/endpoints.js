@@ -12,6 +12,8 @@
 // export const vehicleInfoService_url = "http://ec2-3-109-35-105.ap-south-1.compute.amazonaws.com:8082/vehicle-information-service";
 // export const customerService_url = "http://ec2-3-108-253-173.ap-south-1.compute.amazonaws.com:8084/customer-service";
 // export const dynamicForms = "http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/dynamic-forms"
+// export const orgnaizationHirarchy = "http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/oh";
+// export const dashboard = "http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/dashboard";
 
 // Dev Urls:
 
@@ -30,6 +32,7 @@ export const customerService_url = "http://ec2-3-108-253-173.ap-south-1.compute.
 export const dynamicReports_url = "http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/dynamic-reports";
 export const dynamicForms = "http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/dynamic-forms";
 export const orgnaizationHirarchy = "http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/oh";
+export const dashboard = "http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/dashboard";
 
 const URL = {
     LOGIN: () => hrms_url + "/emplogin",
@@ -136,7 +139,11 @@ const URL = {
     },
     ORG_HIRARCHY: (orgId, branchId) => {
         return orgnaizationHirarchy + `/active-levels/${orgId}/${branchId}`;
-    }
+    },
+    LEAD_SOURCE_DATA: () => dashboard + "/v2/get_leadsource_data",
+    VEHICLE_MODEL_DATA: () => dashboard + "/v2/get_vehicle_model_data",
+    EVENT_DATA: () => dashboard + "/v2/get_events_data",
+    TASKS_DATA: () => dashboard + "/v2/get_todays_data",
 }
 
 export default URL;

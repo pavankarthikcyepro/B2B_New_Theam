@@ -15,12 +15,140 @@ const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
 const dateFormat = "YYYY-MM-DD";
 
+const tempData = {
+    "Level1": {
+        "sublevels": [
+            {
+                "id": 261,
+                "cananicalName": "Asia",
+                "code": "Asia",
+                "name": "Asia",
+                "parentId": "0",
+                "type": "Level1",
+                "refParentId": "0",
+                "orgId": 1,
+                "active": "Y",
+                "locationNodeDefId": 169,
+                "childs": null,
+                "disabled": "Y",
+                "order": 1
+            }
+        ]
+    },
+    "Level2": {
+        "sublevels": [
+            {
+                "id": 262,
+                "cananicalName": "Asia/India",
+                "code": "India",
+                "name": "India",
+                "parentId": "261",
+                "type": "Level2",
+                "refParentId": "261",
+                "orgId": 1,
+                "active": "Y",
+                "locationNodeDefId": 170,
+                "childs": null,
+                "disabled": "Y",
+                "order": 2
+            },
+            {
+                "id": 266,
+                "cananicalName": "Asia/Japan",
+                "code": "Japan",
+                "name": "Japan",
+                "parentId": "261",
+                "type": "Level2",
+                "refParentId": "261",
+                "orgId": 1,
+                "active": "Y",
+                "locationNodeDefId": 170,
+                "childs": null,
+                "disabled": "Y",
+                "order": 2
+            }
+        ]
+    },
+    "Level3": {
+        "sublevels": [
+            {
+                "id": 263,
+                "cananicalName": "Asia/India/Telangana",
+                "code": "Telangana",
+                "name": "Telangana",
+                "parentId": "262",
+                "type": "Level3",
+                "refParentId": "262",
+                "orgId": 1,
+                "active": "Y",
+                "locationNodeDefId": 171,
+                "childs": null,
+                "disabled": "Y",
+                "order": 3
+            },
+            {
+                "id": 267,
+                "cananicalName": "Asia/Japan/Tokyo",
+                "code": "Tokyo",
+                "name": "Tokyo",
+                "parentId": "266",
+                "type": "Level3",
+                "refParentId": "266",
+                "orgId": 1,
+                "active": "Y",
+                "locationNodeDefId": 171,
+                "childs": null,
+                "disabled": "Y",
+                "order": 3
+            }
+        ]
+    },
+    "Level4": {
+        "sublevels": [
+            {
+                "id": 264,
+                "cananicalName": "Asia/India/Telangana/Hyderabad",
+                "code": "Hyderabad",
+                "name": "Hyderabad",
+                "parentId": "263",
+                "type": "Level4",
+                "refParentId": "263",
+                "orgId": 1,
+                "active": "Y",
+                "locationNodeDefId": 172,
+                "childs": null,
+                "disabled": "Y",
+                "order": 4
+            }
+        ]
+    },
+    "Level5": {
+        "sublevels": [
+            {
+                "id": 265,
+                "cananicalName": "Asia/India/Telangana/Hyderabad/500089",
+                "code": "500089",
+                "name": "Manikonda",
+                "parentId": "264",
+                "type": "Level5",
+                "refParentId": "264",
+                "orgId": 1,
+                "active": "Y",
+                "locationNodeDefId": 173,
+                "childs": null,
+                "disabled": "Y",
+                "order": 5
+            }
+        ]
+    }
+}
+
 const FilterScreen = ({ navigation }) => {
 
     const selector = useSelector((state) => state.homeReducer);
     const dispatch = useDispatch();
 
-    const [tableData, setTableData] = useState([]);
+    const [totalDataObj, setTotalDataObj] = useState([]);
     const [showDropDownModel, setShowDropDownModel] = useState(false);
     const [dropDownData, setDropDownData] = useState([]);
     const [selectedItemIndex, setSelectedItemIndex] = useState([]);
@@ -32,13 +160,13 @@ const FilterScreen = ({ navigation }) => {
     const [nameKeyList, setNameKeyList] = useState([]);
 
     useEffect(() => {
-        if (selector.filter_drop_down_data) {
+        if (tempData) {
             let names = [];
-            for (let key in selector.filter_drop_down_data) {
+            for (let key in tempData) {
                 names.push(key);
             }
             setNameKeyList(names);
-            setTableData(selector.filter_drop_down_data);
+            setTotalDataObj(tempData);
         }
 
         const currentDate = moment().format(dateFormat)
@@ -50,18 +178,88 @@ const FilterScreen = ({ navigation }) => {
 
     const dropDownItemClicked = (index) => {
 
-        const data = selector.filter_drop_down_data[nameKeyList[index]].sublevels;
+        const data = totalDataObj[nameKeyList[index]].sublevels;
         setDropDownData([...data])
         setSelectedItemIndex(index);
         setShowDropDownModel(true);
     }
 
-    const updateSelectedItems = (item, index) => {
+    const updateSelectedItems = (data, index) => {
 
-        if (item.length > 0) {
-            const data = selector.filter_drop_down_data[nameKeyList[index]].sublevels;
+        console.log("index: ", index)
 
+        const totalDataObjLocal = { ...totalDataObj };
+        if (index > 0) {
+            let selectedParendIds = [];
+            let unselectedParentIds = [];
+            data.forEach((item) => {
+                if (item.selected != undefined && item.selected == true) {
+                    selectedParendIds.push(Number(item.parentId));
+                } else {
+                    unselectedParentIds.push(Number(item.parentId));
+                }
+            })
+
+            let localIndex = index - 1;
+
+            for (localIndex; localIndex >= 0; localIndex--) {
+
+                let selectedNewParentIds = [];
+                let unselectedNewParentIds = [];
+
+                let key = nameKeyList[localIndex];
+                const dataArray = totalDataObjLocal[key].sublevels;
+
+                if (dataArray.length > 0) {
+                    const newDataArry = dataArray.map((subItem, index) => {
+                        const obj = { ...subItem };
+                        if (selectedParendIds.includes(Number(obj.id))) {
+                            obj.selected = true;
+                            selectedNewParentIds.push(Number(obj.parentId));
+                        }
+                        else if (unselectedParentIds.includes(Number(obj.id))) {
+                            if (obj.selected == undefined) {
+                                obj.selected = false;
+                            }
+                            unselectedNewParentIds.push(Number(obj.parentId));
+                        }
+                        return obj;
+                    })
+                    const newOBJ = {
+                        "sublevels": newDataArry
+                    }
+                    totalDataObjLocal[key] = newOBJ;
+                }
+                selectedParendIds = selectedNewParentIds;
+                unselectedParentIds = unselectedNewParentIds;
+            }
         }
+
+        let localIndex2 = index + 1;
+        for (localIndex2; localIndex2 < nameKeyList.length; localIndex2++) {
+
+            let key = nameKeyList[localIndex2];
+            const dataArray = totalDataObjLocal[key].sublevels;
+            if (dataArray.length > 0) {
+                const newDataArry = dataArray.map((subItem, index) => {
+                    const obj = { ...subItem };
+                    obj.selected = false;
+                    return obj;
+                })
+                const newOBJ = {
+                    "sublevels": newDataArry
+                }
+                totalDataObjLocal[key] = newOBJ;
+            }
+        }
+
+        let key = nameKeyList[index];
+        const newOBJ = {
+            "sublevels": data
+        }
+        totalDataObjLocal[key] = newOBJ;
+        // console.log("totalDataObjLocal: ", JSON.stringify(totalDataObjLocal));
+        setTotalDataObj({ ...totalDataObjLocal });
     }
 
     const clearBtnClicked = () => {
@@ -146,17 +344,44 @@ const FilterScreen = ({ navigation }) => {
                         keyExtractor={(item, index) => index.toString()}
                         renderItem={({ item, index }) => {
 
+                            const data = totalDataObj[item].sublevels;
+                            let selectedNames = "";
+                            data.forEach((obj, index) => {
+                                if (obj.selected != undefined && obj.selected == true) {
+                                    selectedNames += obj.name + ", "
+                                }
+                            })
+
+                            if (selectedNames.length > 0) {
+                                selectedNames = selectedNames.slice(0, selectedNames.length - 1);
+                            }
+
                             return (
                                 <View>
                                     <DropDownSelectionItem
                                         label={item}
-                                        value={""}
+                                        value={selectedNames}
                                         onPress={() => dropDownItemClicked(index)}
                                     />
                                 </View>
                             )
                         }}
                     />
+                </View>
+                <View style={styles.submitBtnBckVw}>
+
+                    <Button
+                        labelStyle={{
+                            color: Colors.WHITE,
+                            textTransform: "none",
+                        }}
+                        style={{ width: buttonWidth }}
+                        contentStyle={{ backgroundColor: Colors.BLACK }}
+                        mode="contained"
+                        onPress={submitBtnClicked}
+                    >
+                        Submit
+                    </Button>
                 </View>
 
             </View>
@@ -202,4 +427,10 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-evenly",
     },
+    submitBtnBckVw: {
+        width: "100%",
+        height: 70,
+        justifyContent: "center",
+        alignItems: "center"
+    }
 });

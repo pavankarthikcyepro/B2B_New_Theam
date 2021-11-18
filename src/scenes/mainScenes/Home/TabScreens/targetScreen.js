@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, FlatList } from "react-native";
 import { Colors } from "../../../../styles";
 import { TargetListComp } from "../../../../components";
 import { DropDownSelectionItem, DateSelectItem } from "../../../../pureComponents";
 import { NameComp, targetStyle } from "../../../../components/targetListComp";
 import { Chart, Line, Area, HorizontalAxis, VerticalAxis } from 'react-native-responsive-linechart'
+import { useDispatch, useSelector } from 'react-redux';
 
 const todaysData = [
     {
@@ -62,6 +63,7 @@ const todaysData = [
 const paramtersTitlesData = ["Parameter", "E", "TD", "HV", "VC", "B", "Ex", "R", "F", "I", "Ex-W", "Acc.", "Ev"]
 const eventTitlesData = ["Event Name", "E", "T", "V", "B", "R", "L"]
 const vehicleModelTitlesData = ["Model", "E", "T", "V", "B", "R", "L"]
+const leadSourceTitlesData = ["Lead", "E", "T", "V", "B", "R", "L"]
 
 export const ParameterScreen = () => {
 
@@ -143,27 +145,63 @@ export const ParameterScreen = () => {
 
 export const LeadSourceScreen = () => {
 
+    const selector = useSelector((state) => state.homeReducer);
+    const dispatch = useDispatch();
+    const [tableData, setTableData] = useState([])
+
+    useEffect(() => {
+        if (selector.lead_source_table_data) {
+            setTableData(selector.lead_source_table_data);
+        } else {
+            setTableData([]);
+        }
+    }, [selector.lead_source_table_data])
+
     return (
         <View style={styles.container}>
-            <TargetListComp data={todaysData} titlesData={vehicleModelTitlesData} />
+            <TargetListComp data={tableData} titlesData={leadSourceTitlesData} from={"LEAD_SOURCE"} />
         </View>
     )
 }
 
 export const VehicleModelScreen = () => {
 
+    const selector = useSelector((state) => state.homeReducer);
+    const dispatch = useDispatch();
+    const [tableData, setTableData] = useState([])
+
+    useEffect(() => {
+        if (selector.vehicle_model_table_data) {
+            setTableData(selector.vehicle_model_table_data);
+        } else {
+            setTableData([]);
+        }
+    }, [selector.vehicle_model_table_data])
+
     return (
         <View style={styles.container}>
-            <TargetListComp data={todaysData} titlesData={vehicleModelTitlesData} />
+            <TargetListComp data={tableData} titlesData={vehicleModelTitlesData} from={"VEHICLE_MODEL"} />
         </View>
     )
 }
 
 export const EventScreen = () => {
 
+    const selector = useSelector((state) => state.homeReducer);
+    const dispatch = useDispatch();
+    const [tableData, setTableData] = useState([])
+
+    useEffect(() => {
+        if (selector.events_table_data) {
+            setTableData(selector.events_table_data);
+        } else {
+            setTableData([]);
+        }
+    }, [selector.events_table_data])
+
     return (
         <View style={styles.container}>
-            <TargetListComp data={todaysData} titlesData={eventTitlesData} />
+            <TargetListComp data={tableData} titlesData={eventTitlesData} from={"EVENT"} />
         </View>
     )
 }

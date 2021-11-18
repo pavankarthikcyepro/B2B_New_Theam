@@ -53,13 +53,13 @@ const DropDownComponant = ({ visible = false, multiple = false, headerTitle = "S
     const closeModalWithSelectedItem = (item) => {
 
         if (multiple) {
-            let itemsSelected = [];
-            multipleData.forEach((value, index) => {
-                if (value.selected) {
-                    itemsSelected.push(value);
-                }
-            })
-            selectedItems(itemsSelected, keyId)
+            // let itemsSelected = [];
+            // multipleData.forEach((value, index) => {
+            //     if (value.selected) {
+            //         itemsSelected.push(value);
+            //     }
+            // })
+            selectedItems(multipleData, keyId)
         } else {
             selectedItems(item, keyId)
         }

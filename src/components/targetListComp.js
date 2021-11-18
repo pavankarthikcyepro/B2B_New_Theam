@@ -5,6 +5,7 @@ import { DropDownSelectionItem, DateSelectItem } from "../pureComponents";
 import { DatePickerComponent, DropDownComponant } from ".";
 import moment from "moment";
 import { IconButton } from "react-native-paper";
+import { useDispatch, useSelector } from 'react-redux';
 
 export const NameComp = ({ label, labelStyle = {}, showColon = false }) => {
 
@@ -47,18 +48,33 @@ const dummyData = [
     }
 ]
 
-export const TargetListComp = ({ data, titlesData }) => {
+export const TargetListComp = ({ data, titlesData, from }) => {
 
     const [showDropDownModel, setShowDropDownModel] = useState(false);
     const [value, setValue] = useState("");
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [selctedDate, setSelectedDate] = useState("");
+    const [tableData, setTableData] = useState([]);
+
+    const selector = useSelector((state) => state.homeReducer);
+    const dispatch = useDispatch();
 
     const updateSelectedDate = (date, key) => {
 
         const formatDate = moment(date).format("MM-DD-YYYY");
         setSelectedDate(formatDate);
     }
+
+    useEffect(() => {
+        switch (from) {
+            case "LEAD_SOURCE":
+                break;
+            case "VEHICLE_MODEL":
+                break;
+            case "EVENT":
+                break;
+        }
+    }, [selector.lead_source_table_data, selector.vehicle_model_table_data])
 
     return (
         <View>
@@ -129,17 +145,45 @@ export const TargetListComp = ({ data, titlesData }) => {
                         showsHorizontalScrollIndicator={false}
                         renderItem={({ item, index }) => {
 
-                            return (
-                                <View style={{ alignItems: "center", paddingHorizontal: 5 }}>
-                                    <NameComp label={item.sno} labelStyle={targetStyle.dataTextStyle} />
-                                    <NameComp label={item.empName} labelStyle={targetStyle.dataTextStyle} />
-                                    <NameComp label={item.call} labelStyle={targetStyle.dataTextStyle} />
-                                    <NameComp label={item.td} labelStyle={targetStyle.dataTextStyle} />
-                                    <NameComp label={item.v} labelStyle={targetStyle.dataTextStyle} />
-                                    <NameComp label={item.pb} labelStyle={targetStyle.dataTextStyle} />
-                                    <NameComp label={item.d} labelStyle={targetStyle.dataTextStyle} />
-                                </View>
-                            )
+                            if (from == "LEAD_SOURCE") {
+                                return (
+                                    <View style={{ alignItems: "center", paddingHorizontal: 5 }}>
+                                        <NameComp label={item.lead} labelStyle={targetStyle.dataTextStyle} />
+                                        <NameComp label={item.e} labelStyle={targetStyle.dataTextStyle} />
+                                        <NameComp label={item.t} labelStyle={targetStyle.dataTextStyle} />
+                                        <NameComp label={item.v} labelStyle={targetStyle.dataTextStyle} />
+                                        <NameComp label={item.b} labelStyle={targetStyle.dataTextStyle} />
+                                        <NameComp label={item.r} labelStyle={targetStyle.dataTextStyle} />
+                                        <NameComp label={item.l} labelStyle={targetStyle.dataTextStyle} />
+                                    </View>
+                                )
+                            }
+                            else if (from == "VEHICLE_MODEL") {
+                                return (
+                                    <View style={{ alignItems: "center", paddingHorizontal: 5 }}>
+                                        <NameComp label={item.model} labelStyle={targetStyle.dataTextStyle} />
+                                        <NameComp label={item.e} labelStyle={targetStyle.dataTextStyle} />
+                                        <NameComp label={item.t} labelStyle={targetStyle.dataTextStyle} />
+                                        <NameComp label={item.v} labelStyle={targetStyle.dataTextStyle} />
+                                        <NameComp label={item.b} labelStyle={targetStyle.dataTextStyle} />
+                                        <NameComp label={item.r} labelStyle={targetStyle.dataTextStyle} />
+                                        <NameComp label={item.l} labelStyle={targetStyle.dataTextStyle} />
+                                    </View>
+                                )
+                            }
+                            else if (from == "EVENT") {
+                                return (
+                                    <View style={{ alignItems: "center", paddingHorizontal: 5 }}>
+                                        <NameComp label={item.eventName} labelStyle={targetStyle.dataTextStyle} />
+                                        <NameComp label={item.e} labelStyle={targetStyle.dataTextStyle} />
+                                        <NameComp label={item.t} labelStyle={targetStyle.dataTextStyle} />
+                                        <NameComp label={item.v} labelStyle={targetStyle.dataTextStyle} />
+                                        <NameComp label={item.b} labelStyle={targetStyle.dataTextStyle} />
+                                        <NameComp label={item.r} labelStyle={targetStyle.dataTextStyle} />
+                                        <NameComp label={item.l} labelStyle={targetStyle.dataTextStyle} />
+                                    </View>
+                                )
+                            }
                         }}
                     />
                 </View>

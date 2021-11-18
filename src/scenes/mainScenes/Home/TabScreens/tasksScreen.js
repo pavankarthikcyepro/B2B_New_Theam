@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, FlatList, Text } from "react-native";
 import { Colors, GlobalStyle } from "../../../../styles";
 import { TasksListComp } from "../../../../components";
+import { useDispatch, useSelector } from 'react-redux';
 
 const todaysData = [
     {
@@ -58,27 +59,63 @@ const todaysData = [
 
 export const TodayScreen = () => {
 
+    const selector = useSelector((state) => state.homeReducer);
+    const dispatch = useDispatch();
+    const [tableData, setTableData] = useState([])
+
+    useEffect(() => {
+        if (selector.task_table_data != undefined && selector.task_table_data.todaysData) {
+            setTableData(selector.task_table_data.todaysData);
+        } else {
+            setTableData([]);
+        }
+    }, [selector.task_table_data])
+
     return (
         <View style={styles.container}>
-            <TasksListComp data={todaysData} />
+            <TasksListComp data={tableData} />
         </View>
     )
 }
 
 export const UpcomingScreen = () => {
 
+    const selector = useSelector((state) => state.homeReducer);
+    const dispatch = useDispatch();
+    const [tableData, setTableData] = useState([])
+
+    useEffect(() => {
+        if (selector.task_table_data != undefined && selector.task_table_data.upcomingData) {
+            setTableData(selector.task_table_data.upcomingData);
+        } else {
+            setTableData([]);
+        }
+    }, [selector.task_table_data])
+
     return (
         <View style={styles.container}>
-            <TasksListComp data={todaysData} />
+            <TasksListComp data={tableData} />
         </View>
     )
 }
 
 export const PendingScreen = () => {
 
+    const selector = useSelector((state) => state.homeReducer);
+    const dispatch = useDispatch();
+    const [tableData, setTableData] = useState([])
+
+    useEffect(() => {
+        if (selector.task_table_data != undefined && selector.task_table_data.pendingData) {
+            setTableData(selector.task_table_data.pendingData);
+        } else {
+            setTableData([]);
+        }
+    }, [selector.task_table_data])
+
     return (
         <View style={styles.container}>
-            <TasksListComp data={todaysData} />
+            <TasksListComp data={tableData} />
         </View>
     )
 }

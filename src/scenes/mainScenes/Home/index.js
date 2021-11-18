@@ -9,13 +9,25 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FILTER } from '../../../assets/svg';
 import { DateItem } from '../../../pureComponents/dateItem';
 import { AppNavigator } from '../../../navigations';
-import { dateSelected, showDateModal, getCarModalList, getCustomerTypeList, getSourceOfEnquiryList, getOrganaizationHirarchyList } from '../../../redux/homeReducer';
+import {
+  dateSelected,
+  showDateModal,
+  getCarModalList,
+  getCustomerTypeList,
+  getSourceOfEnquiryList,
+  getOrganaizationHirarchyList,
+  getLeadSourceTableList,
+  getVehicleModelTableList,
+  getEventTableList,
+  getTaskTableList
+} from '../../../redux/homeReducer';
 import { DateRangeComp, DatePickerComponent, SortAndFilterComp } from '../../../components';
 import { DateModalComp } from "../../../components/dateModalComp";
 import { getMenuList } from '../../../redux/homeReducer';
 import { DashboardTopTabNavigator } from '../../../navigations/dashboardTopTabNavigator';
 import { HomeStackIdentifiers } from '../../../navigations/appNavigator';
 import * as AsyncStore from '../../../asyncStore';
+import moment from 'moment';
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 30) / 2;
@@ -53,8 +65,36 @@ const HomeScreen = ({ navigation }) => {
         branchId: dataObj.branchId
       }
       dispatch(getOrganaizationHirarchyList(payload));
+      getDashboadTableDataFromServer(dataObj.empId);
     }
-  }, [selector.login_employee_details])
+  }, [selector.login_employee_details]);
+
+  const getDashboadTableDataFromServer = (empId) => {
+    const dateFormat = "YYYY-MM-DD";
+    const currentDate = moment().format(dateFormat)
+    const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+    const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+    const payload = {
+      "endDate": monthLastDate,
+      "loggedInEmpId": empId,
+      "startDate": monthFirstDate,
+      "levelSelected": null
+    }
+    dispatch(getLeadSourceTableList(payload));
+    dispatch(getVehicleModelTableList(payload));
+    dispatch(getEventTableList(payload));
+    getTaskTableDataFromServer(empId, payload);
+  }
+
+  const getTaskTableDataFromServer = (empId, oldPayload) => {
+
+    const payload = {
+      ...oldPayload,
+      "pageNo": 0,
+      "size": 10
+    }
+    dispatch(getTaskTableList(payload));
+  }
 
   return (
     <SafeAreaView style={styles.container}>
