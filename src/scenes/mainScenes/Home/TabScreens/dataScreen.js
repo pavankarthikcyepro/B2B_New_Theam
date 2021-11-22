@@ -48,7 +48,7 @@ export const LostScreen = () => {
                         })
                     }
                     chartColorLocal.push(randomColor);
-                    namesDataLocal.push({ name: element.modelName, color: randomColor })
+                    namesDataLocal.push({ name: percentage + "%" + " " + element.modelName, color: randomColor, value: percentage + "%" })
                 });
             }
             setChartData(chartDataLocal);
@@ -106,7 +106,7 @@ export const DropScreen = () => {
                         })
                     }
                     chartColorLocal.push(randomColor);
-                    namesDataLocal.push({ name: element.modelName, color: randomColor })
+                    namesDataLocal.push({ name: percentage + "%" + " " + element.modelName, color: randomColor })
                 });
             }
             setChartData(chartDataLocal);

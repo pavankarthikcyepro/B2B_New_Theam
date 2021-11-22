@@ -145,6 +145,12 @@ const URL = {
     EVENT_DATA: () => dashboard + "/v2/get_events_data",
     TASKS_DATA: () => dashboard + "/v2/get_todays_data",
     GET_LOST_DROP_CHART_DATA: () => dashboard + "/v2/get_lostdrop_data",
+    GET_EMPLOYEES_DROP_DOWN_DATA: (orgId, employeeId) => {
+        return orgnaizationHirarchy + `/active-dropdowns/${orgId}/${employeeId}`
+    },
+    GET_TARGET_PARAMS: () => dashboard + "/v2/get_target_params"
 }
+
+// http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/oh/active-dropdowns/13/412
 
 export default URL;

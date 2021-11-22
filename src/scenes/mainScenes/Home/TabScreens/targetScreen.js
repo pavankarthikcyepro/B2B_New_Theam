@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, FlatList } from "react-native";
+import { View, StyleSheet, FlatList, Dimensions } from "react-native";
 import { Colors } from "../../../../styles";
 import { TargetListComp } from "../../../../components";
-import { DropDownSelectionItem, DateSelectItem } from "../../../../pureComponents";
+import { DropDownSelectionItem, DateSelectItem, ChartNameList } from "../../../../pureComponents";
 import { NameComp, targetStyle } from "../../../../components/targetListComp";
-import { Chart, Line, Area, HorizontalAxis, VerticalAxis } from 'react-native-responsive-linechart'
 import { useDispatch, useSelector } from 'react-redux';
+import { LineChart } from "react-native-chart-kit";
+import { random_color } from "../../../../utils/helperFunctions";
 
 const todaysData = [
     {
@@ -60,26 +61,66 @@ const todaysData = [
     }
 ]
 
-const paramtersTitlesData = ["Parameter", "E", "TD", "HV", "VC", "B", "Ex", "R", "F", "I", "Ex-W", "Acc.", "Ev"]
+// const paramtersTitlesData = ["Parameter", "E", "TD", "HV", "VC", "B", "Ex", "R", "F", "I", "Ex-W", "Acc.", "Ev"]
+const paramtersTitlesData = ["Parameter", "Target", "Achivement", "Achivement %", "ShortFall", "ShortFall %"]
+const chartTitles = ["Target", "Achivement", "ShortFall"]
+
 const eventTitlesData = ["Event Name", "E", "T", "V", "B", "R", "L"]
 const vehicleModelTitlesData = ["Model", "E", "T", "V", "B", "R", "L"]
 const leadSourceTitlesData = ["Lead", "E", "T", "V", "B", "R", "L"]
 
+const screenWidth = Dimensions.get("window").width;
+const itemWidth = (screenWidth - 100) / 4;
+
 export const ParameterScreen = () => {
+
+    const selector = useSelector((state) => state.homeReducer);
+    const dispatch = useDispatch();
+    const [tableData, setTableData] = useState([]);
+    const [chartData, setChartData] = useState([]);
+    const [namesData, setNamesData] = useState([]);
+
+    useEffect(() => {
+        if (selector.target_parameters_data) {
+            const chartDataLocal = [];
+            const namesDataLocal = [];
+            if (selector.target_parameters_data.length > 0) {
+                selector.target_parameters_data.forEach((object) => {
+                    // const randomColor = random_color("rgba");
+                    var x = Math.floor(Math.random() * 256);
+                    var y = Math.floor(Math.random() * 256);
+                    var z = Math.floor(Math.random() * 256);
+                    const rgbValue = `rgba(${x}, ${y}, ${z}, 1)`;
+                    chartDataLocal.push({
+                        data: [Number(object.target), Number(object.achievment), Number(object.shortfall)],
+                        color: () => rgbValue, // optional
+                        strokeWidth: 2
+                    })
+                    namesDataLocal.push({ name: object.paramName, color: rgbValue })
+                })
+            }
+            setTableData(selector.target_parameters_data);
+            console.log("chartDataLocal: ", chartDataLocal)
+            setChartData(chartDataLocal);
+            setNamesData(namesDataLocal);
+        } else {
+            setTableData([]);
+        }
+    }, [selector.target_parameters_data])
 
     return (
         <View style={[styles.container, { paddingTop: 10 }]}>
             <View style={{ width: "100%", flexDirection: "row" }}>
-                <View style={{ width: "20%", paddingLeft: 5 }}>
+                <View style={{ width: "23%", paddingLeft: 5 }}>
                     {paramtersTitlesData.map((item, index) => {
                         return (
                             <NameComp key={index} label={item} labelStyle={targetStyle.titleStyle} showColon={true} />
                         )
                     })}
                 </View>
-                <View style={{ width: "80%" }}>
+                <View style={{ width: "78%" }}>
                     <FlatList
-                        data={todaysData}
+                        data={tableData}
                         keyExtractor={(item, index) => "Target" + index.toString()}
                         horizontal={true}
                         showsHorizontalScrollIndicator={false}
@@ -87,19 +128,12 @@ export const ParameterScreen = () => {
 
                             return (
                                 <View style={{ alignItems: "center", paddingHorizontal: 5 }}>
-                                    <NameComp label={item.sno} labelStyle={targetStyle.dataTextStyle} />
-                                    <NameComp label={item.empName} labelStyle={targetStyle.dataTextStyle} />
-                                    <NameComp label={item.call} labelStyle={targetStyle.dataTextStyle} />
-                                    <NameComp label={item.td} labelStyle={targetStyle.dataTextStyle} />
-                                    <NameComp label={item.v} labelStyle={targetStyle.dataTextStyle} />
-                                    <NameComp label={item.pb} labelStyle={targetStyle.dataTextStyle} />
-                                    <NameComp label={item.d} labelStyle={targetStyle.dataTextStyle} />
-                                    <NameComp label={item.call} labelStyle={targetStyle.dataTextStyle} />
-                                    <NameComp label={item.td} labelStyle={targetStyle.dataTextStyle} />
-                                    <NameComp label={item.v} labelStyle={targetStyle.dataTextStyle} />
-                                    <NameComp label={item.pb} labelStyle={targetStyle.dataTextStyle} />
-                                    <NameComp label={item.d} labelStyle={targetStyle.dataTextStyle} />
-                                    <NameComp label={item.d} labelStyle={targetStyle.dataTextStyle} />
+                                    <NameComp label={item.paramShortName} labelStyle={targetStyle.dataTextStyle} />
+                                    <NameComp label={item.target} labelStyle={targetStyle.dataTextStyle} />
+                                    <NameComp label={item.achievment} labelStyle={targetStyle.dataTextStyle} />
+                                    <NameComp label={item.achivementPerc} labelStyle={targetStyle.dataTextStyle} />
+                                    <NameComp label={item.shortfall} labelStyle={targetStyle.dataTextStyle} />
+                                    <NameComp label={item.shortFallPerc} labelStyle={targetStyle.dataTextStyle} />
                                 </View>
                             )
                         }}
@@ -107,37 +141,45 @@ export const ParameterScreen = () => {
                 </View>
             </View>
             <View style={{ backgroundColor: Colors.WHITE, }}>
-                <Chart
-                    style={{ height: 200, width: '100%', }}
-                    data={[
-                        { x: 8, y: 15 },
-                        { x: 6, y: 12 },
-                    ]}
-                    padding={{ left: 40, bottom: 20, right: 20, top: 20 }}
-                    xDomain={{ min: 5, max: 8 }}
-                >
-                    <VerticalAxis
-                        tickValues={[0, 2, 4, 6, 8, 10, 12, 14, 16, 18]}
-                        theme={{
-                            axis: { stroke: { color: '#0b03fc', width: 10 } },
-                            ticks: { stroke: { color: '#fcba03', width: 10 } },
-                            labels: { formatter: (v) => v.toFixed(2) },
+                <View style={{ paddingLeft: 5, paddingTop: 20, paddingBottom: 10 }}>
+                    <ChartNameList
+                        data={namesData}
+                        itemWidth={itemWidth}
+                    />
+                </View>
+                {chartData.length > 0 && (
+                    <LineChart
+                        data={{
+                            labels: chartTitles,
+                            datasets: chartData,
+                            legend: [] // optional
+                        }}
+                        width={Dimensions.get("window").width - 30} // from react-native
+                        height={200}
+                        yAxisInterval={1} // optional, defaults to 1
+                        chartConfig={{
+                            backgroundColor: "#e8e7e6",
+                            backgroundGradientFrom: "#dcdedc",
+                            backgroundGradientTo: "#e1e6e1",
+                            decimalPlaces: 2, // optional, defaults to 2dp
+                            color: (opacity = 1) => "#040504",
+                            labelColor: (opacity = 1) => "#040504",
+                            style: {
+                                borderRadius: 16
+                            },
+                            propsForDots: {
+                                r: "6",
+                                strokeWidth: "2",
+                                stroke: "#ffa726"
+                            }
+                        }}
+                        bezier
+                        style={{
+                            marginVertical: 4,
+                            borderRadius: 8,
                         }}
                     />
-                    <HorizontalAxis
-                        // tickValues={[50]}
-                        tickCount={10}
-                        theme={{
-                            axis: { stroke: { color: '#aaa', width: 2 } },
-                            ticks: { stroke: { color: '#aaa', width: 2 } },
-                            labels: { label: { rotation: 0 }, formatter: (v) => v.toFixed(1) },
-                        }}
-                    />
-                    <Line theme={{ stroke: { color: 'red', width: 2 } }} />
-                    <Line smoothing="bezier" tension={0.15} theme={{ stroke: { color: 'blue', width: 2 } }} />
-                    <Line smoothing="bezier" tension={0.3} theme={{ stroke: { color: 'green', width: 2 } }} />
-                    <Line smoothing="cubic-spline" tension={0.3} theme={{ stroke: { color: 'orange', width: 2 } }} />
-                </Chart>
+                )}
             </View>
         </View>
     )

@@ -34,7 +34,7 @@ const initialState: LoginState = {
     // employeeId: "ksudhakar",
     // password: "Bharat@123",
     employeeId: "",
-    password: "",
+    password: "Master@123",
     securePassword: true,
     showLoginErr: false,
     showPasswordErr: false,

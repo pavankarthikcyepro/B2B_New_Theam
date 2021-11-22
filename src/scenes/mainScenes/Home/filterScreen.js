@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, View, Text, StyleSheet, FlatList, Dimensions, Image, Pressable } from 'react-native';
+import { SafeAreaView, View, Text, StyleSheet, FlatList, Dimensions, Image, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import { Colors } from '../../../styles';
 import { IconButton } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,139 +16,22 @@ import {
     getVehicleModelTableList,
     getEventTableList,
     getTaskTableList,
-    getLostDropChartData
+    getLostDropChartData,
+    getTargetParametersData,
+    getEmployeesDropDownData
 } from '../../../redux/homeReducer';
+import { showAlertMessage, showToast } from '../../../utils/toast';
 
 const screenWidth = Dimensions.get("window").width;
 const buttonWidth = (screenWidth - 100) / 2;
 const dateFormat = "YYYY-MM-DD";
 
-const tempData = {
-    "Level1": {
-        "sublevels": [
-            {
-                "id": 261,
-                "cananicalName": "Asia",
-                "code": "Asia",
-                "name": "Asia",
-                "parentId": "0",
-                "type": "Level1",
-                "refParentId": "0",
-                "orgId": 1,
-                "active": "Y",
-                "locationNodeDefId": 169,
-                "childs": null,
-                "disabled": "Y",
-                "order": 1
-            }
-        ]
-    },
-    "Level2": {
-        "sublevels": [
-            {
-                "id": 262,
-                "cananicalName": "Asia/India",
-                "code": "India",
-                "name": "India",
-                "parentId": "261",
-                "type": "Level2",
-                "refParentId": "261",
-                "orgId": 1,
-                "active": "Y",
-                "locationNodeDefId": 170,
-                "childs": null,
-                "disabled": "Y",
-                "order": 2
-            },
-            {
-                "id": 266,
-                "cananicalName": "Asia/Japan",
-                "code": "Japan",
-                "name": "Japan",
-                "parentId": "261",
-                "type": "Level2",
-                "refParentId": "261",
-                "orgId": 1,
-                "active": "Y",
-                "locationNodeDefId": 170,
-                "childs": null,
-                "disabled": "Y",
-                "order": 2
-            }
-        ]
-    },
-    "Level3": {
-        "sublevels": [
-            {
-                "id": 263,
-                "cananicalName": "Asia/India/Telangana",
-                "code": "Telangana",
-                "name": "Telangana",
-                "parentId": "262",
-                "type": "Level3",
-                "refParentId": "262",
-                "orgId": 1,
-                "active": "Y",
-                "locationNodeDefId": 171,
-                "childs": null,
-                "disabled": "Y",
-                "order": 3
-            },
-            {
-                "id": 267,
-                "cananicalName": "Asia/Japan/Tokyo",
-                "code": "Tokyo",
-                "name": "Tokyo",
-                "parentId": "266",
-                "type": "Level3",
-                "refParentId": "266",
-                "orgId": 1,
-                "active": "Y",
-                "locationNodeDefId": 171,
-                "childs": null,
-                "disabled": "Y",
-                "order": 3
-            }
-        ]
-    },
-    "Level4": {
-        "sublevels": [
-            {
-                "id": 264,
-                "cananicalName": "Asia/India/Telangana/Hyderabad",
-                "code": "Hyderabad",
-                "name": "Hyderabad",
-                "parentId": "263",
-                "type": "Level4",
-                "refParentId": "263",
-                "orgId": 1,
-                "active": "Y",
-                "locationNodeDefId": 172,
-                "childs": null,
-                "disabled": "Y",
-                "order": 4
-            }
-        ]
-    },
-    "Level5": {
-        "sublevels": [
-            {
-                "id": 265,
-                "cananicalName": "Asia/India/Telangana/Hyderabad/500089",
-                "code": "500089",
-                "name": "Manikonda",
-                "parentId": "264",
-                "type": "Level5",
-                "refParentId": "264",
-                "orgId": 1,
-                "active": "Y",
-                "locationNodeDefId": 173,
-                "childs": null,
-                "disabled": "Y",
-                "order": 5
-            }
-        ]
-    }
+const AcitivityLoader = () => {
+    return (
+        <View style={{ width: "100%", height: 50, justifyContent: "center", alignItems: "center" }}>
+            <ActivityIndicator size={"small"} color={Colors.GRAY} />
+        </View>
+    )
 }
 
 const FilterScreen = ({ navigation }) => {
@@ -165,16 +48,21 @@ const FilterScreen = ({ navigation }) => {
     const [fromDate, setFromDate] = useState("");
     const [toDate, setToDate] = useState("");
     const [nameKeyList, setNameKeyList] = useState([]);
-    const [employeeId, setEmployeeId] = useState("");
+    const [userData, setUserData] = useState({ branchId: "", orgId: "", employeeId: "", employeeName: "" })
+    const [employeeTitleNameList, setEmloyeeTitleNameList] = useState([]);
+    const [employeeDropDownDataLocal, setEmployeeDropDownDataLocal] = useState({});
+    const [dropDownFrom, setDropDownFrom] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         getAsyncData();
     }, [])
 
     const getAsyncData = async (startDate, endDate) => {
-        let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
-        if (empId) {
-            setEmployeeId(empId);
+        const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            setUserData({ branchId: jsonObj.branchId, orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName })
         }
     }
 
@@ -201,6 +89,16 @@ const FilterScreen = ({ navigation }) => {
         setDropDownData([...data])
         setSelectedItemIndex(index);
         setShowDropDownModel(true);
+        setDropDownFrom("ORG_TABLE")
+    }
+
+    const dropDownItemClicked2 = (index) => {
+
+        const data = employeeDropDownDataLocal[employeeTitleNameList[index]];
+        setDropDownData([...data])
+        setSelectedItemIndex(index);
+        setShowDropDownModel(true);
+        setDropDownFrom("EMPLOYEE_TABLE")
     }
 
     const updateSelectedItems = (data, index) => {
@@ -281,6 +179,13 @@ const FilterScreen = ({ navigation }) => {
         setTotalDataObj({ ...totalDataObjLocal });
     }
 
+    const updateSelectedItemsForEmployeeDropDown = (data, index) => {
+        let key = employeeTitleNameList[index];
+        const newTotalDataObjLocal = { ...employeeDropDownDataLocal };
+        newTotalDataObjLocal[key] = data;
+        setEmployeeDropDownDataLocal({ ...newTotalDataObjLocal });
+    }
+
     const clearBtnClicked = () => {
 
         const totalDataObjLocal = { ...totalDataObj };
@@ -320,24 +225,43 @@ const FilterScreen = ({ navigation }) => {
             }
         }
         // console.log("selectedIds: ", selectedIds);
-        getDashboadTableDataFromServer(selectedIds);
+        if (selectedIds.length > 0) {
+            setIsLoading(true);
+            getDashboadTableDataFromServer(selectedIds, "LEVEL");
+        } else {
+            showToast("Please select any value")
+        }
     }
 
-    const getDashboadTableDataFromServer = (selectedIds) => {
+    const getDashboadTableDataFromServer = (selectedIds, from) => {
 
         const payload = {
             "startDate": fromDate,
             "endDate": toDate,
-            "loggedInEmpId": employeeId,
-            "levelSelected": selectedIds
+            "loggedInEmpId": userData.employeeId,
+        }
+        if (from == "LEVEL") {
+            payload["levelSelected"] = selectedIds;
+        } else {
+            payload["empSelected"] = selectedIds;
         }
         dispatch(getLeadSourceTableList(payload));
         dispatch(getVehicleModelTableList(payload));
         dispatch(getEventTableList(payload));
         dispatch(getLostDropChartData(payload));
-        getTaskTableDataFromServer(employeeId, payload);
-        dispatch(updateFilterDropDownData(totalDataObj))
-        navigation.goBack();
+        dispatch(updateFilterDropDownData(totalDataObj));
+        getTaskTableDataFromServer(payload);
+        getTargetParametersDataFromServer(payload);
+
+        const payload1 = {
+            orgId: userData.orgId,
+            empId: userData.employeeId,
+            selectedIds: selectedIds
+        }
+        dispatch(getEmployeesDropDownData(payload1));
+        if (from == "EMPLOYEE") {
+            navigation.goBack();
+        }
     }
 
     const getTaskTableDataFromServer = (oldPayload) => {
@@ -348,6 +272,77 @@ const FilterScreen = ({ navigation }) => {
             "size": 10
         }
         dispatch(getTaskTableList(payload));
+    }
+
+    const getTargetParametersDataFromServer = (payload) => {
+        const payload1 = {
+            ...payload,
+            "pageNo": 0,
+            "size": 10
+        }
+        dispatch(getTargetParametersData(payload1));
+    }
+
+    useEffect(() => {
+        if (selector.employees_drop_down_data) {
+            let names = [];
+            let newDataObj = {};
+            for (let key in selector.employees_drop_down_data) {
+                names.push(key);
+                const arrayData = selector.employees_drop_down_data[key];
+                const newArray = [];
+                if (arrayData.length > 0) {
+                    arrayData.forEach((element) => {
+                        newArray.push({
+                            ...element,
+                            id: element.code,
+                            selected: false
+                        })
+                    })
+                }
+                newDataObj[key] = newArray;
+            }
+            setEmloyeeTitleNameList(names);
+            setEmployeeDropDownDataLocal(newDataObj);
+        }
+        setIsLoading(false);
+    }, [selector.employees_drop_down_data])
+
+    const clearBtnForEmployeeData = () => {
+        let newDataObj = {};
+        for (let key in employeeDropDownDataLocal) {
+            const arrayData = employeeDropDownDataLocal[key];
+            const newArray = [];
+            if (arrayData.length > 0) {
+                arrayData.forEach((element) => {
+                    newArray.push({
+                        ...element,
+                        selected: false
+                    })
+                })
+            }
+            newDataObj[key] = newArray;
+        }
+        setEmployeeDropDownDataLocal(newDataObj);
+    }
+
+    const submitBtnForEmployeeData = () => {
+        let selectedIds = [];
+        for (let key in employeeDropDownDataLocal) {
+            const arrayData = employeeDropDownDataLocal[key];
+            arrayData.forEach((element) => {
+                if (element.selected === true) {
+                    selectedIds.push(element.code);
+                }
+            })
+        }
+        console.log("selectedIds: ", selectedIds);
+        if (selectedIds.length > 0) {
+            getDashboadTableDataFromServer(selectedIds, "EMPLOYEE");
+        }
+        else {
+            showToast("Please select any value")
+        }
     }
 
     const updateSelectedDate = (date, key) => {
@@ -379,7 +374,11 @@ const FilterScreen = ({ navigation }) => {
                 data={dropDownData}
                 onRequestClose={() => setShowDropDownModel(false)}
                 selectedItems={(item) => {
-                    updateSelectedItems(item, selectedItemIndex);
+                    if (dropDownFrom === "ORG_TABLE") {
+                        updateSelectedItems(item, selectedItemIndex);
+                    } else {
+                        updateSelectedItemsForEmployeeDropDown(item, selectedItemIndex);
+                    }
                     setShowDropDownModel(false);
                 }}
             />
@@ -400,100 +399,139 @@ const FilterScreen = ({ navigation }) => {
                 }}
                 onRequestClose={() => setShowDatePicker(false)}
             />
-            <View style={{ flex: 1, paddingVertical: 10, paddingHorizontal: 15, backgroundColor: Colors.WHITE }}>
-                <View style={{ flexDirection: "row", justifyContent: "space-evenly", paddingBottom: 5, borderColor: Colors.BORDER_COLOR, borderWidth: 1 }}>
-                    <View style={{ width: "48%" }}>
-                        <DateSelectItem
-                            label={"From Date"}
-                            value={fromDate}
-                            onPress={() => showDatePickerMethod("FROM_DATE")}
-                        />
-                    </View>
+            <ScrollView>
+                <View style={{ flex: 1, paddingVertical: 10, paddingHorizontal: 15, backgroundColor: Colors.WHITE }}>
+                    <View style={{ flexDirection: "row", justifyContent: "space-evenly", paddingBottom: 5, borderColor: Colors.BORDER_COLOR, borderWidth: 1 }}>
+                        <View style={{ width: "48%" }}>
+                            <DateSelectItem
+                                label={"From Date"}
+                                value={fromDate}
+                                onPress={() => showDatePickerMethod("FROM_DATE")}
+                            />
+                        </View>
 
-                    <View style={{ width: "48%" }}>
-                        <DateSelectItem
-                            label={"To Date"}
-                            value={toDate}
-                            onPress={() => showDatePickerMethod("TO_DATE")}
-                        />
+                        <View style={{ width: "48%" }}>
+                            <DateSelectItem
+                                label={"To Date"}
+                                value={toDate}
+                                onPress={() => showDatePickerMethod("TO_DATE")}
+                            />
+                        </View>
                     </View>
-                </View>
-                <View style={{ borderColor: Colors.BORDER_COLOR, borderWidth: 1 }}>
-                    <FlatList
-                        data={nameKeyList}
-                        keyExtractor={(item, index) => index.toString()}
-                        renderItem={({ item, index }) => {
+                    <View style={{ borderColor: Colors.BORDER_COLOR, borderWidth: 1 }}>
+                        <FlatList
+                            data={nameKeyList}
+                            scrollEnabled={false}
+                            keyExtractor={(item, index) => index.toString()}
+                            renderItem={({ item, index }) => {
 
-                            const data = totalDataObj[item].sublevels;
-                            let selectedNames = "";
-                            data.forEach((obj, index) => {
-                                if (obj.selected != undefined && obj.selected == true) {
-                                    selectedNames += obj.name + ", "
+                                const data = totalDataObj[item].sublevels;
+                                let selectedNames = "";
+                                data.forEach((obj, index) => {
+                                    if (obj.selected != undefined && obj.selected == true) {
+                                        selectedNames += obj.name + ", "
+                                    }
+                                })
+
+                                if (selectedNames.length > 0) {
+                                    selectedNames = selectedNames.slice(0, selectedNames.length - 1);
                                 }
-                            })
 
-                            if (selectedNames.length > 0) {
-                                selectedNames = selectedNames.slice(0, selectedNames.length - 1);
-                            }
+                                return (
+                                    <View>
+                                        <DropDownSelectionItem
+                                            label={item}
+                                            value={selectedNames}
+                                            onPress={() => dropDownItemClicked(index)}
+                                        />
+                                    </View>
+                                )
+                            }}
+                        />
+                    </View>
+                    {!isLoading ? (
+                        <View style={styles.submitBtnBckVw}>
+                            <Button
+                                labelStyle={{ color: Colors.RED, textTransform: "none" }}
+                                style={{ width: buttonWidth }}
+                                mode="outlined"
+                                onPress={clearBtnClicked}
+                            >
+                                Clear
+                            </Button>
+                            <Button
+                                labelStyle={{
+                                    color: Colors.WHITE,
+                                    textTransform: "none",
+                                }}
+                                style={{ width: buttonWidth }}
+                                contentStyle={{ backgroundColor: Colors.BLACK }}
+                                mode="contained"
+                                onPress={submitBtnClicked}
+                            >
+                                Submit
+                            </Button>
+                        </View>
+                    ) : <AcitivityLoader />}
+                    {employeeTitleNameList.length > 0 && (
+                        <View>
+                            <View style={{ borderColor: Colors.BORDER_COLOR, borderWidth: 1 }}>
+                                <FlatList
+                                    data={employeeTitleNameList}
+                                    keyExtractor={(item, index) => "EMP_" + index.toString()}
+                                    scrollEnabled={false}
+                                    renderItem={({ item, index }) => {
 
-                            return (
-                                <View>
-                                    <DropDownSelectionItem
-                                        label={item}
-                                        value={selectedNames}
-                                        onPress={() => dropDownItemClicked(index)}
-                                    />
-                                </View>
-                            )
-                        }}
-                    />
+                                        const data = employeeDropDownDataLocal[item];
+                                        let selectedNames = "";
+                                        data.forEach((obj, index) => {
+                                            if (obj.selected != undefined && obj.selected == true) {
+                                                selectedNames += obj.name + ", "
+                                            }
+                                        })
+
+                                        if (selectedNames.length > 0) {
+                                            selectedNames = selectedNames.slice(0, selectedNames.length - 1);
+                                        }
+
+                                        return (
+                                            <View>
+                                                <DropDownSelectionItem
+                                                    label={item}
+                                                    value={selectedNames}
+                                                    onPress={() => dropDownItemClicked2(index)}
+                                                />
+                                            </View>
+                                        )
+                                    }}
+                                />
+                            </View>
+                            <View style={styles.submitBtnBckVw}>
+                                <Button
+                                    labelStyle={{ color: Colors.RED, textTransform: "none" }}
+                                    style={{ width: buttonWidth }}
+                                    mode="outlined"
+                                    onPress={clearBtnForEmployeeData}
+                                >
+                                    Clear
+                                </Button>
+                                <Button
+                                    labelStyle={{
+                                        color: Colors.WHITE,
+                                        textTransform: "none",
+                                    }}
+                                    style={{ width: buttonWidth }}
+                                    contentStyle={{ backgroundColor: Colors.BLACK }}
+                                    mode="contained"
+                                    onPress={submitBtnForEmployeeData}
+                                >
+                                    Submit
+                                </Button>
+                            </View>
+                        </View>
+                    )}
                 </View>
-                <View style={styles.submitBtnBckVw}>
-                    <Button
-                        labelStyle={{ color: Colors.RED, textTransform: "none" }}
-                        style={{ width: buttonWidth }}
-                        mode="outlined"
-                        onPress={clearBtnClicked}
-                    >
-                        Clear
-                    </Button>
-                    <Button
-                        labelStyle={{
-                            color: Colors.WHITE,
-                            textTransform: "none",
-                        }}
-                        style={{ width: buttonWidth }}
-                        contentStyle={{ backgroundColor: Colors.BLACK }}
-                        mode="contained"
-                        onPress={submitBtnClicked}
-                    >
-                        Submit
-                    </Button>
-                </View>
-
-            </View>
-            <View style={styles.view3}>
-                <Button
-                    labelStyle={{ color: Colors.RED, textTransform: "none" }}
-                    style={{ width: buttonWidth }}
-                    mode="outlined"
-                    onPress={clearBtnClicked}
-                >
-                    Clear
-                </Button>
-                <Button
-                    labelStyle={{
-                        color: Colors.WHITE,
-                        textTransform: "none",
-                    }}
-                    style={{ width: buttonWidth }}
-                    contentStyle={{ backgroundColor: Colors.BLACK }}
-                    mode="contained"
-                    onPress={submitBtnClicked}
-                >
-                    Apply
-                </Button>
-            </View>
+            </ScrollView>
         </SafeAreaView>
     );
 };

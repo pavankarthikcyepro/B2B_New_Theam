@@ -142,6 +142,26 @@ export const getLostDropChartData = createAsyncThunk("HOME/getLostDropChartData"
   return json;
 })
 
+export const getTargetParametersData = createAsyncThunk("HOME/getTargetParametersData", async (payload: any, { rejectWithValue }) => {
+
+  const response = await client.post(URL.GET_TARGET_PARAMS(), payload)
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getEmployeesDropDownData = createAsyncThunk("HOME/getEmployeesDropDownData", async (payload: any, { rejectWithValue }) => {
+
+  const response = await client.post(URL.GET_EMPLOYEES_DROP_DOWN_DATA(payload.orgId, payload.empId), payload.selectedIds)
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 const AVAILABLE_SCREENS = [
   {
     "menuId": 81,
@@ -172,7 +192,11 @@ export const homeSlice = createSlice({
     vehicle_model_table_data: [],
     events_table_data: [],
     task_table_data: {},
-    lost_drop_chart_data: {}
+    lost_drop_chart_data: {},
+    employees_drop_down_data: {},
+    target_parameters_data: [],
+    org_is_loading: false,
+    emp_is_loading: false
   },
   reducers: {
     dateSelected: (state, action) => {
@@ -316,7 +340,7 @@ export const homeSlice = createSlice({
         state.task_table_data = {};
       })
       .addCase(getTaskTableList.fulfilled, (state, action) => {
-        console.log("S getTaskTableList: ", JSON.stringify(action.payload));
+        //console.log("S getTaskTableList: ", JSON.stringify(action.payload));
         if (action.payload) {
           state.task_table_data = action.payload;
         }
@@ -329,13 +353,39 @@ export const homeSlice = createSlice({
         state.lost_drop_chart_data = {};
       })
       .addCase(getLostDropChartData.fulfilled, (state, action) => {
-        console.log("S getLostDropChartData: ", JSON.stringify(action.payload));
+        //console.log("S getLostDropChartData: ", JSON.stringify(action.payload));
         if (action.payload) {
           state.lost_drop_chart_data = action.payload;
         }
       })
       .addCase(getLostDropChartData.rejected, (state, action) => {
         state.lost_drop_chart_data = {};
+      })
+      // Get Target Parameters Data
+      .addCase(getTargetParametersData.pending, (state, action) => {
+        state.target_parameters_data = [];
+      })
+      .addCase(getTargetParametersData.fulfilled, (state, action) => {
+        console.log("S getTargetParametersData: ", JSON.stringify(action.payload));
+        if (action.payload) {
+          state.target_parameters_data = action.payload;
+        }
+      })
+      .addCase(getTargetParametersData.rejected, (state, action) => {
+        state.target_parameters_data = [];
+      })
+      // Get Employees Drop Down Data
+      .addCase(getEmployeesDropDownData.pending, (state, action) => {
+        state.employees_drop_down_data = {};
+      })
+      .addCase(getEmployeesDropDownData.fulfilled, (state, action) => {
+        //console.log("S getEmployeesDropDownData: ", JSON.stringify(action.payload));
+        if (action.payload) {
+          state.employees_drop_down_data = action.payload;
+        }
+      })
+      .addCase(getEmployeesDropDownData.rejected, (state, action) => {
+        state.employees_drop_down_data = {};
       })
   }
 });
