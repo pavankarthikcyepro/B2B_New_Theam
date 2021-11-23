@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, StyleSheet, FlatList, Text } from "react-native";
 import { Colors, GlobalStyle } from "../../../../styles";
 import { TasksListComp } from "../../../../components";
+import { EmptyListView } from "../../../../pureComponents";
 import { useDispatch, useSelector } from 'react-redux';
 
 const todaysData = [
@@ -73,7 +74,9 @@ export const TodayScreen = () => {
 
     return (
         <View style={styles.container}>
-            <TasksListComp data={tableData} />
+            {tableData.length > 0 ? (<TasksListComp data={tableData} />) : (
+                <EmptyListView title={"No Data Found"} />
+            )}
         </View>
     )
 }
@@ -94,7 +97,9 @@ export const UpcomingScreen = () => {
 
     return (
         <View style={styles.container}>
-            <TasksListComp data={tableData} />
+            {tableData.length > 0 ? (<TasksListComp data={tableData} />) : (
+                <EmptyListView title={"No Data Found"} />
+            )}
         </View>
     )
 }
@@ -115,7 +120,9 @@ export const PendingScreen = () => {
 
     return (
         <View style={styles.container}>
-            <TasksListComp data={tableData} />
+            {tableData.length > 0 ? (<TasksListComp data={tableData} />) : (
+                <EmptyListView title={"No Data Found"} />
+            )}
         </View>
     )
 }

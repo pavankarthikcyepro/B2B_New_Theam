@@ -443,6 +443,7 @@ const FilterScreen = ({ navigation }) => {
                                             label={item}
                                             value={selectedNames}
                                             onPress={() => dropDownItemClicked(index)}
+                                            takeMinHeight={true}
                                         />
                                     </View>
                                 )
@@ -500,6 +501,7 @@ const FilterScreen = ({ navigation }) => {
                                                     label={item}
                                                     value={selectedNames}
                                                     onPress={() => dropDownItemClicked2(index)}
+                                                    takeMinHeight={true}
                                                 />
                                             </View>
                                         )

@@ -39,7 +39,10 @@ export const LostScreen = () => {
             let namesDataLocal = [];
             if (dataArray.length > 0) {
                 dataArray.forEach(element => {
-                    const randomColor = random_color("hexa");
+                    var x = Math.floor(Math.random() * 256);
+                    var y = Math.floor(Math.random() * 256);
+                    var z = Math.floor(Math.random() * 256);
+                    const rgbValue = `rgba(${x}, ${y}, ${z}, 1)`;
                     const percentage = Number(element.lostPercentage);
                     if (percentage > 0) {
                         chartDataLocal.push({
@@ -47,8 +50,8 @@ export const LostScreen = () => {
                             y: percentage
                         })
                     }
-                    chartColorLocal.push(randomColor);
-                    namesDataLocal.push({ name: percentage + "%" + " " + element.modelName, color: randomColor, value: percentage + "%" })
+                    chartColorLocal.push(rgbValue);
+                    namesDataLocal.push({ name: percentage + "%" + " " + element.modelName, color: rgbValue, value: percentage + "%" })
                 });
             }
             setChartData(chartDataLocal);
@@ -97,7 +100,10 @@ export const DropScreen = () => {
             let namesDataLocal = [];
             if (dataArray.length > 0) {
                 dataArray.forEach(element => {
-                    const randomColor = random_color("hexa");
+                    var x = Math.floor(Math.random() * 256);
+                    var y = Math.floor(Math.random() * 256);
+                    var z = Math.floor(Math.random() * 256);
+                    const rgbValue = `rgba(${x}, ${y}, ${z}, 1)`;
                     const percentage = Number(element.dropPercentage);
                     if (percentage > 0) {
                         chartDataLocal.push({
@@ -105,8 +111,8 @@ export const DropScreen = () => {
                             y: percentage
                         })
                     }
-                    chartColorLocal.push(randomColor);
-                    namesDataLocal.push({ name: percentage + "%" + " " + element.modelName, color: randomColor })
+                    chartColorLocal.push(rgbValue);
+                    namesDataLocal.push({ name: percentage + "%" + " " + element.modelName, color: rgbValue })
                 });
             }
             setChartData(chartDataLocal);

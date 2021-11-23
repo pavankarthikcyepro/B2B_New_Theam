@@ -3,13 +3,13 @@ import { Pressable, View, Text, StyleSheet } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import { Colors, GlobalStyle } from '../styles';
 
-export const DropDownSelectionItem = ({ label, value, onPress, disabled = false }) => {
+export const DropDownSelectionItem = ({ label, value, onPress, disabled = false, takeMinHeight = false }) => {
     return (
         <Pressable onPress={onPress} disabled={disabled}>
-            <View style={styles.container}>
-                <Text style={styles.label}>{value ? label : ""}</Text>
-                <View style={[styles.view3, { paddingBottom: value ? 0 : 20 }]}>
-                    <Text style={[styles.text3, { color: value ? (disabled ? Colors.GRAY : Colors.BLACK) : Colors.GRAY }]} numberOfLines={1}>{value ? value : label}</Text>
+            <View style={[styles.container, { height: takeMinHeight == false ? 65 : 50 }]}>
+                <Text style={[styles.label, { fontSize: !takeMinHeight ? 12 : 10 }]}>{value ? label : ""}</Text>
+                <View style={[styles.view3, { height: !takeMinHeight ? 40 : 30, marginBottom: !takeMinHeight ? (value ? 0 : 20) : (value ? 0 : 10) }]}>
+                    <Text style={[styles.text3, { color: value ? (disabled ? Colors.GRAY : Colors.BLACK) : Colors.GRAY, fontSize: !takeMinHeight ? 16 : 14 }]} numberOfLines={1}>{value ? value : label}</Text>
                     <IconButton
                         icon="menu-down"
                         color={disabled ? Colors.GRAY : Colors.BLACK}

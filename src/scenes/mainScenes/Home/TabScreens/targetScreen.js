@@ -2,64 +2,11 @@ import React, { useEffect, useState } from "react";
 import { View, StyleSheet, FlatList, Dimensions } from "react-native";
 import { Colors } from "../../../../styles";
 import { TargetListComp } from "../../../../components";
-import { DropDownSelectionItem, DateSelectItem, ChartNameList } from "../../../../pureComponents";
+import { DropDownSelectionItem, DateSelectItem, ChartNameList, EmptyListView } from "../../../../pureComponents";
 import { NameComp, targetStyle } from "../../../../components/targetListComp";
 import { useDispatch, useSelector } from 'react-redux';
 import { LineChart } from "react-native-chart-kit";
 import { random_color } from "../../../../utils/helperFunctions";
-
-const todaysData = [
-    {
-        "empName": "Admin",
-        "call": 0,
-        "td": 0,
-        "v": 0,
-        "pb": 0,
-        "d": 0,
-        "pending": 229,
-        "sno": 1
-    },
-    {
-        "empName": "Admin First",
-        "call": 0,
-        "td": 0,
-        "v": 0,
-        "pb": 0,
-        "d": 0,
-        "pending": 229,
-        "sno": 1
-    },
-    {
-        "empName": "Admin Second",
-        "call": 0,
-        "td": 0,
-        "v": 0,
-        "pb": 0,
-        "d": 0,
-        "pending": 229,
-        "sno": 1
-    },
-    {
-        "empName": "Admin First",
-        "call": 0,
-        "td": 0,
-        "v": 0,
-        "pb": 0,
-        "d": 0,
-        "pending": 229,
-        "sno": 1
-    },
-    {
-        "empName": "Admin Second Frist",
-        "call": 0,
-        "td": 0,
-        "v": 0,
-        "pb": 0,
-        "d": 0,
-        "pending": 229,
-        "sno": 1
-    }
-]
 
 // const paramtersTitlesData = ["Parameter", "E", "TD", "HV", "VC", "B", "Ex", "R", "F", "I", "Ex-W", "Acc.", "Ev"]
 const paramtersTitlesData = ["Parameter", "Target", "Achivement", "Achivement %", "ShortFall", "ShortFall %"]
@@ -127,13 +74,13 @@ export const ParameterScreen = () => {
                         renderItem={({ item, index }) => {
 
                             return (
-                                <View style={{ alignItems: "center", paddingHorizontal: 5 }}>
+                                <View style={{ alignItems: "flex-start", paddingHorizontal: 5 }}>
                                     <NameComp label={item.paramShortName} labelStyle={targetStyle.dataTextStyle} />
                                     <NameComp label={item.target} labelStyle={targetStyle.dataTextStyle} />
                                     <NameComp label={item.achievment} labelStyle={targetStyle.dataTextStyle} />
-                                    <NameComp label={item.achivementPerc} labelStyle={targetStyle.dataTextStyle} />
+                                    <NameComp label={Number(item.achivementPerc) + "%"} labelStyle={targetStyle.dataTextStyle} />
                                     <NameComp label={item.shortfall} labelStyle={targetStyle.dataTextStyle} />
-                                    <NameComp label={item.shortFallPerc} labelStyle={targetStyle.dataTextStyle} />
+                                    <NameComp label={Number(item.shortFallPerc) + "%"} labelStyle={targetStyle.dataTextStyle} />
                                 </View>
                             )
                         }}
@@ -148,37 +95,39 @@ export const ParameterScreen = () => {
                     />
                 </View>
                 {chartData.length > 0 && (
-                    <LineChart
-                        data={{
-                            labels: chartTitles,
-                            datasets: chartData,
-                            legend: [] // optional
-                        }}
-                        width={Dimensions.get("window").width - 30} // from react-native
-                        height={200}
-                        yAxisInterval={1} // optional, defaults to 1
-                        chartConfig={{
-                            backgroundColor: "#e8e7e6",
-                            backgroundGradientFrom: "#dcdedc",
-                            backgroundGradientTo: "#e1e6e1",
-                            decimalPlaces: 2, // optional, defaults to 2dp
-                            color: (opacity = 1) => "#040504",
-                            labelColor: (opacity = 1) => "#040504",
-                            style: {
-                                borderRadius: 16
-                            },
-                            propsForDots: {
-                                r: "6",
-                                strokeWidth: "2",
-                                stroke: "#ffa726"
-                            }
-                        }}
-                        bezier
-                        style={{
-                            marginVertical: 4,
-                            borderRadius: 8,
-                        }}
-                    />
+                    <View style={{ alignItems: 'center', overflow: 'hidden' }}>
+                        <LineChart
+                            data={{
+                                labels: chartTitles,
+                                datasets: chartData,
+                                legend: [] // optional
+                            }}
+                            width={Dimensions.get("window").width - 40} // from react-native
+                            height={200}
+                            yAxisInterval={1} // optional, defaults to 1
+                            chartConfig={{
+                                backgroundColor: "#e8e7e6",
+                                backgroundGradientFrom: "#dcdedc",
+                                backgroundGradientTo: "#e1e6e1",
+                                decimalPlaces: 2, // optional, defaults to 2dp
+                                color: (opacity = 1) => "#040504",
+                                labelColor: (opacity = 1) => "#040504",
+                                style: {
+                                    borderRadius: 16
+                                },
+                                propsForDots: {
+                                    r: "6",
+                                    strokeWidth: "2",
+                                    stroke: "#ffa726"
+                                }
+                            }}
+                            bezier
+                            style={{
+                                marginVertical: 4,
+                                borderRadius: 8,
+                            }}
+                        />
+                    </View>
                 )}
             </View>
         </View>
@@ -201,7 +150,9 @@ export const LeadSourceScreen = () => {
 
     return (
         <View style={styles.container}>
-            <TargetListComp data={tableData} titlesData={leadSourceTitlesData} from={"LEAD_SOURCE"} />
+            {tableData.length > 0 ? (<TargetListComp data={tableData} titlesData={leadSourceTitlesData} from={"LEAD_SOURCE"} />) : (
+                <EmptyListView title={"No Data Found"} />
+            )}
         </View>
     )
 }
@@ -222,7 +173,9 @@ export const VehicleModelScreen = () => {
 
     return (
         <View style={styles.container}>
-            <TargetListComp data={tableData} titlesData={vehicleModelTitlesData} from={"VEHICLE_MODEL"} />
+            {tableData.length > 0 ? (<TargetListComp data={tableData} titlesData={vehicleModelTitlesData} from={"VEHICLE_MODEL"} />) : (
+                <EmptyListView title={"No Data Found"} />
+            )}
         </View>
     )
 }
@@ -243,7 +196,9 @@ export const EventScreen = () => {
 
     return (
         <View style={styles.container}>
-            <TargetListComp data={tableData} titlesData={eventTitlesData} from={"EVENT"} />
+            {tableData.length > 0 ? (<TargetListComp data={tableData} titlesData={eventTitlesData} from={"EVENT"} />) : (
+                <EmptyListView title={"No Data Found"} />
+            )}
         </View>
     )
 }
