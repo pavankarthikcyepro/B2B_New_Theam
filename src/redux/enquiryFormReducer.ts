@@ -450,6 +450,12 @@ const enquiryDetailsOverViewSlice = createSlice({
       switch (keyId) {
         case "DATE_OF_BIRTH":
           state.dateOfBirth = selectedDate;
+          const given = moment(selectedDate, "DD/MM/YYYY");
+          const current = moment().startOf('day');
+          const total = Number(moment.duration(current.diff(given)).asYears()).toFixed(0);
+          if (Number(total) > 0) {
+            state.age = total;
+          }
           break;
         case "ANNIVERSARY_DATE":
           state.anniversaryDate = selectedDate;

@@ -12,6 +12,7 @@ import {
 } from "../jsonData/enquiryFormScreenJsonData";
 import { convertTimeStampToDateString } from "../utils/helperFunctions";
 import { showToastRedAlert } from "../utils/toast";
+import moment from "moment";
 
 const dropDownData = [
   {
@@ -591,6 +592,12 @@ const prebookingFormSlice = createSlice({
       switch (state.datePickerKeyId) {
         case "DATE_OF_BIRTH":
           state.date_of_birth = selectedDate;
+          const given = moment(selectedDate, "DD/MM/YYYY");
+          const current = moment().startOf('day');
+          const total = Number(moment.duration(current.diff(given)).asYears()).toFixed(0);
+          if (Number(total) > 0) {
+            state.age = total;
+          }
           break;
         case "CUSTOMER_PREFERRED_DATE":
           state.customer_preferred_date = selectedDate;
