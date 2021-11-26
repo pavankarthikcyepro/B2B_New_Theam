@@ -105,7 +105,7 @@ export const TargetListComp = ({ data, titlesData, from }) => {
                 }}
                 onRequestClose={() => setShowDatePicker(false)}
             />
-            <View style={{ flexDirection: "row", justifyContent: "space-evenly", margin: 5, paddingBottom: 5, borderColor: Colors.BORDER_COLOR, borderWidth: 1 }}>
+            {/* <View style={{ flexDirection: "row", justifyContent: "space-evenly", margin: 5, paddingBottom: 5, borderColor: Colors.BORDER_COLOR, borderWidth: 1 }}>
                 <View style={{ width: "40%" }}>
                     <DateAndDropDownSelectItem
                         label={"Branch"}
@@ -121,15 +121,10 @@ export const TargetListComp = ({ data, titlesData, from }) => {
                         value={selctedDate}
                         onPress={() => setShowDatePicker(true)}
                     />
-                    {/* <DateSelectItem
-                        label={"Date"}
-                        value={selctedDate}
-                        onPress={() => setShowDatePicker(true)}
-                    /> */}
                 </View>
-            </View>
+            </View> */}
             {/* <View style={{ height: 10 }}></View> */}
-            <View style={{ width: "100%", flexDirection: "row" }}>
+            <View style={{ width: "100%", flexDirection: "row", marginTop: 10 }}>
                 <View style={{ width: "15%", flexDirection: "column", backgroundColor: Colors.WHITE, paddingLeft: 8 }}>
                     {titlesData.map((item, index) => {
                         return (
