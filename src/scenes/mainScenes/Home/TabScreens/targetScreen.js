@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, FlatList, Dimensions } from "react-native";
+import { View, StyleSheet, FlatList, Dimensions, Text } from "react-native";
 import { Colors } from "../../../../styles";
 import { TargetListComp } from "../../../../components";
 import { DropDownSelectionItem, DateSelectItem, ChartNameList, EmptyListView } from "../../../../pureComponents";
-import { NameComp, targetStyle } from "../../../../components/targetListComp";
+import { targetStyle } from "../../../../components/targetListComp";
 import { useDispatch, useSelector } from 'react-redux';
 import { LineChart } from "react-native-chart-kit";
 import { random_color } from "../../../../utils/helperFunctions";
 
 // const paramtersTitlesData = ["Parameter", "E", "TD", "HV", "VC", "B", "Ex", "R", "F", "I", "Ex-W", "Acc.", "Ev"]
 const paramtersTitlesData = ["Parameter", "Target", "Achivement", "Achivement %", "ShortFall", "ShortFall %"]
-const chartTitles = ["Target", "Achivement", "ShortFall"]
+const chartTitles = ["Target", "Achivement", "ShortFall"];
+const parameterTitlesForData = ["E", "TD", "HV", "B", "EX", "R", "F", "I", "Ex-W", "Acc.", "Ev"];
 
 const eventTitlesData = ["Event Name", "E", "T", "V", "B", "R", "L"]
 const vehicleModelTitlesData = ["Model", "E", "T", "V", "B", "R", "L"]
@@ -19,6 +20,16 @@ const leadSourceTitlesData = ["Lead", "E", "T", "V", "B", "R", "L"]
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 4;
 
+const NameComp = ({ label, labelStyle = {}, showColon = false }) => {
+
+    return (
+        <View style={{ height: 20, flexDirection: 'row', justifyContent: "center", alignItems: "center", }}>
+            <Text style={[targetStyle.textStyle, labelStyle]} numberOfLines={1}>{label}</Text>
+            {/* {showColon ? <Text style={[targetStyle.textStyle]}>{":"}</Text> : null} */}
+        </View>
+    )
+}
+
 export const ParameterScreen = () => {
 
     const selector = useSelector((state) => state.homeReducer);
@@ -26,11 +37,13 @@ export const ParameterScreen = () => {
     const [tableData, setTableData] = useState([]);
     const [chartData, setChartData] = useState([]);
     const [namesData, setNamesData] = useState([]);
+    const [tableDataObject, setTableDataObject] = useState({});
 
     useEffect(() => {
         if (selector.target_parameters_data) {
             const chartDataLocal = [];
             const namesDataLocal = [];
+            const dataObj = {};
             if (selector.target_parameters_data.length > 0) {
                 selector.target_parameters_data.forEach((object) => {
                     // const randomColor = random_color("rgba");
@@ -44,8 +57,10 @@ export const ParameterScreen = () => {
                         strokeWidth: 2
                     })
                     namesDataLocal.push({ name: object.paramName, color: rgbValue })
+                    dataObj[object.paramShortName.toLowerCase()] = object;
                 })
             }
+            setTableDataObject(dataObj);
             setTableData(selector.target_parameters_data);
             console.log("chartDataLocal: ", chartDataLocal)
             setChartData(chartDataLocal);
@@ -67,20 +82,21 @@ export const ParameterScreen = () => {
                 </View>
                 <View style={{ width: "78%" }}>
                     <FlatList
-                        data={tableData}
+                        data={parameterTitlesForData}
                         keyExtractor={(item, index) => "Target" + index.toString()}
                         horizontal={true}
                         showsHorizontalScrollIndicator={false}
                         renderItem={({ item, index }) => {
 
+                            const object = tableDataObject[item.toLowerCase()];
                             return (
                                 <View style={{ alignItems: "flex-start", paddingHorizontal: 5 }}>
-                                    <NameComp label={item.paramShortName} labelStyle={targetStyle.dataTextStyle} />
-                                    <NameComp label={item.target} labelStyle={targetStyle.dataTextStyle} />
-                                    <NameComp label={item.achievment} labelStyle={targetStyle.dataTextStyle} />
-                                    <NameComp label={Number(item.achivementPerc) + "%"} labelStyle={targetStyle.dataTextStyle} />
-                                    <NameComp label={item.shortfall} labelStyle={targetStyle.dataTextStyle} />
-                                    <NameComp label={Number(item.shortFallPerc) + "%"} labelStyle={targetStyle.dataTextStyle} />
+                                    <NameComp label={item} labelStyle={targetStyle.dataTextStyle} />
+                                    <NameComp label={object?.target} labelStyle={targetStyle.dataTextStyle} />
+                                    <NameComp label={object?.achievment} labelStyle={targetStyle.dataTextStyle} />
+                                    <NameComp label={Number(object?.achivementPerc) + "%"} labelStyle={targetStyle.dataTextStyle} />
+                                    <NameComp label={object?.shortfall} labelStyle={targetStyle.dataTextStyle} />
+                                    <NameComp label={Number(object?.shortFallPerc) + "%"} labelStyle={targetStyle.dataTextStyle} />
                                 </View>
                             )
                         }}
@@ -150,7 +166,7 @@ export const LeadSourceScreen = () => {
 
     return (
         <View style={styles.container}>
-            {tableData.length > 0 ? (<TargetListComp data={tableData} titlesData={leadSourceTitlesData} from={"LEAD_SOURCE"} />) : (
+            {tableData.length > 0 ? (<TargetListComp data={tableData} titlesData={leadSourceTitlesData} from={"LEAD_SOURCE"} totalWidth={screenWidth - 30} />) : (
                 <EmptyListView title={"No Data Found"} />
             )}
         </View>
@@ -173,7 +189,7 @@ export const VehicleModelScreen = () => {
 
     return (
         <View style={styles.container}>
-            {tableData.length > 0 ? (<TargetListComp data={tableData} titlesData={vehicleModelTitlesData} from={"VEHICLE_MODEL"} />) : (
+            {tableData.length > 0 ? (<TargetListComp data={tableData} titlesData={vehicleModelTitlesData} from={"VEHICLE_MODEL"} totalWidth={screenWidth - 30} />) : (
                 <EmptyListView title={"No Data Found"} />
             )}
         </View>
@@ -196,7 +212,7 @@ export const EventScreen = () => {
 
     return (
         <View style={styles.container}>
-            {tableData.length > 0 ? (<TargetListComp data={tableData} titlesData={eventTitlesData} from={"EVENT"} />) : (
+            {tableData.length > 0 ? (<TargetListComp data={tableData} titlesData={eventTitlesData} from={"EVENT"} totalWidth={screenWidth - 30} />) : (
                 <EmptyListView title={"No Data Found"} />
             )}
         </View>

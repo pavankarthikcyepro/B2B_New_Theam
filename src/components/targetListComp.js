@@ -7,12 +7,12 @@ import moment from "moment";
 import { IconButton } from "react-native-paper";
 import { useDispatch, useSelector } from 'react-redux';
 
-export const NameComp = ({ label, labelStyle = {}, showColon = false }) => {
+export const NameComp = ({ label, labelStyle = {}, width = 0, showColon = false }) => {
 
     return (
-        <View style={{ height: 20, paddingRight: 2, flexDirection: 'row' }}>
+        <View style={{ height: 20, flexDirection: 'row', justifyContent: "center", alignItems: "center", width: width }}>
             <Text style={[targetStyle.textStyle, labelStyle]} numberOfLines={1}>{label}</Text>
-            {showColon ? <Text style={[targetStyle.textStyle]}>{":"}</Text> : null}
+            {/* {showColon ? <Text style={[targetStyle.textStyle]}>{":"}</Text> : null} */}
         </View>
     )
 }
@@ -48,7 +48,7 @@ const dummyData = [
     }
 ]
 
-export const TargetListComp = ({ data, titlesData, from }) => {
+export const TargetListComp = ({ data, titlesData, from, totalWidth }) => {
 
     const [showDropDownModel, setShowDropDownModel] = useState(false);
     const [value, setValue] = useState("");
@@ -75,6 +75,8 @@ export const TargetListComp = ({ data, titlesData, from }) => {
                 break;
         }
     }, [selector.lead_source_table_data, selector.vehicle_model_table_data])
+
+    const itemWidth = totalWidth / titlesData.length;
 
     return (
         <View>
@@ -124,15 +126,15 @@ export const TargetListComp = ({ data, titlesData, from }) => {
                 </View>
             </View> */}
             {/* <View style={{ height: 10 }}></View> */}
-            <View style={{ width: "100%", flexDirection: "row", marginTop: 10 }}>
-                <View style={{ width: "15%", flexDirection: "column", backgroundColor: Colors.WHITE, paddingLeft: 8 }}>
+            <View>
+                <View style={{ flexDirection: "row", backgroundColor: Colors.WHITE, }}>
                     {titlesData.map((item, index) => {
                         return (
-                            <NameComp key={index} label={item} labelStyle={targetStyle.titleStyle} showColon={true} />
+                            <NameComp key={index} label={item} labelStyle={targetStyle.titleStyle} width={itemWidth} />
                         )
                     })}
                 </View>
-                <View style={{ width: "85%" }}>
+                <View style={{}}>
                     <FlatList
                         data={data}
                         keyExtractor={(item, index) => "Target" + index.toString()}
@@ -142,40 +144,40 @@ export const TargetListComp = ({ data, titlesData, from }) => {
 
                             if (from == "LEAD_SOURCE") {
                                 return (
-                                    <View style={{ alignItems: "center", paddingHorizontal: 5 }}>
-                                        <NameComp label={item.lead} labelStyle={targetStyle.dataTextStyle} />
-                                        <NameComp label={item.e} labelStyle={targetStyle.dataTextStyle} />
-                                        <NameComp label={item.t} labelStyle={targetStyle.dataTextStyle} />
-                                        <NameComp label={item.v} labelStyle={targetStyle.dataTextStyle} />
-                                        <NameComp label={item.b} labelStyle={targetStyle.dataTextStyle} />
-                                        <NameComp label={item.r} labelStyle={targetStyle.dataTextStyle} />
-                                        <NameComp label={item.l} labelStyle={targetStyle.dataTextStyle} />
+                                    <View style={{ alignItems: "center", flexDirection: "row", width: totalWidth, height: 25, justifyContent: "center" }}>
+                                        <NameComp label={item.lead} labelStyle={targetStyle.dataTextStyle} width={itemWidth} />
+                                        <NameComp label={item.e} labelStyle={targetStyle.dataTextStyle} width={itemWidth} />
+                                        <NameComp label={item.t} labelStyle={targetStyle.dataTextStyle} width={itemWidth} />
+                                        <NameComp label={item.v} labelStyle={targetStyle.dataTextStyle} width={itemWidth} />
+                                        <NameComp label={item.b} labelStyle={targetStyle.dataTextStyle} width={itemWidth} />
+                                        <NameComp label={item.r} labelStyle={targetStyle.dataTextStyle} width={itemWidth} />
+                                        <NameComp label={item.l} labelStyle={targetStyle.dataTextStyle} width={itemWidth} />
                                     </View>
                                 )
                             }
                             else if (from == "VEHICLE_MODEL") {
                                 return (
-                                    <View style={{ alignItems: "center", paddingHorizontal: 5 }}>
-                                        <NameComp label={item.model} labelStyle={targetStyle.dataTextStyle} />
-                                        <NameComp label={item.e} labelStyle={targetStyle.dataTextStyle} />
-                                        <NameComp label={item.t} labelStyle={targetStyle.dataTextStyle} />
-                                        <NameComp label={item.v} labelStyle={targetStyle.dataTextStyle} />
-                                        <NameComp label={item.b} labelStyle={targetStyle.dataTextStyle} />
-                                        <NameComp label={item.r} labelStyle={targetStyle.dataTextStyle} />
-                                        <NameComp label={item.l} labelStyle={targetStyle.dataTextStyle} />
+                                    <View style={{ alignItems: "center", flexDirection: "row", width: totalWidth, height: 25, justifyContent: "center" }}>
+                                        <NameComp label={item.model} labelStyle={targetStyle.dataTextStyle} width={itemWidth} />
+                                        <NameComp label={item.e} labelStyle={targetStyle.dataTextStyle} width={itemWidth} />
+                                        <NameComp label={item.t} labelStyle={targetStyle.dataTextStyle} width={itemWidth} />
+                                        <NameComp label={item.v} labelStyle={targetStyle.dataTextStyle} width={itemWidth} />
+                                        <NameComp label={item.b} labelStyle={targetStyle.dataTextStyle} width={itemWidth} />
+                                        <NameComp label={item.r} labelStyle={targetStyle.dataTextStyle} width={itemWidth} />
+                                        <NameComp label={item.l} labelStyle={targetStyle.dataTextStyle} width={itemWidth} />
                                     </View>
                                 )
                             }
                             else if (from == "EVENT") {
                                 return (
-                                    <View style={{ alignItems: "center", paddingHorizontal: 5 }}>
-                                        <NameComp label={item.eventName} labelStyle={targetStyle.dataTextStyle} />
-                                        <NameComp label={item.e} labelStyle={targetStyle.dataTextStyle} />
-                                        <NameComp label={item.t} labelStyle={targetStyle.dataTextStyle} />
-                                        <NameComp label={item.v} labelStyle={targetStyle.dataTextStyle} />
-                                        <NameComp label={item.b} labelStyle={targetStyle.dataTextStyle} />
-                                        <NameComp label={item.r} labelStyle={targetStyle.dataTextStyle} />
-                                        <NameComp label={item.l} labelStyle={targetStyle.dataTextStyle} />
+                                    <View style={{ alignItems: "center", flexDirection: "row", width: totalWidth, height: 25, justifyContent: "center" }}>
+                                        <NameComp label={item.eventName} labelStyle={targetStyle.dataTextStyle} width={itemWidth} />
+                                        <NameComp label={item.e} labelStyle={targetStyle.dataTextStyle} width={itemWidth} />
+                                        <NameComp label={item.t} labelStyle={targetStyle.dataTextStyle} width={itemWidth} />
+                                        <NameComp label={item.v} labelStyle={targetStyle.dataTextStyle} width={itemWidth} />
+                                        <NameComp label={item.b} labelStyle={targetStyle.dataTextStyle} width={itemWidth} />
+                                        <NameComp label={item.r} labelStyle={targetStyle.dataTextStyle} width={itemWidth} />
+                                        <NameComp label={item.l} labelStyle={targetStyle.dataTextStyle} width={itemWidth} />
                                     </View>
                                 )
                             }
@@ -183,6 +185,15 @@ export const TargetListComp = ({ data, titlesData, from }) => {
                     />
                 </View>
             </View>
+            {/* <View style={{ width: "100%", flexDirection: "row", marginTop: 10 }}>
+                <View style={{ width: "15%", flexDirection: "column", backgroundColor: Colors.WHITE, paddingLeft: 8 }}>
+                    {titlesData.map((item, index) => {
+                        return (
+                            <NameComp key={index} label={item} labelStyle={targetStyle.titleStyle} showColon={true} />
+                        )
+                    })}
+                </View>
+            </View> */}
 
         </View>
     )

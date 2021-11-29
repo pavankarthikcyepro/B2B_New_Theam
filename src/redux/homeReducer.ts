@@ -340,7 +340,7 @@ export const homeSlice = createSlice({
         state.task_table_data = {};
       })
       .addCase(getTaskTableList.fulfilled, (state, action) => {
-        //console.log("S getTaskTableList: ", JSON.stringify(action.payload));
+        console.log("S getTaskTableList: ", JSON.stringify(action.payload));
         if (action.payload) {
           state.task_table_data = action.payload;
         }
