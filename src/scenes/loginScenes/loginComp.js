@@ -54,24 +54,6 @@ const LoginScreen = ({ navigation }) => {
 
   useEffect(() => {
 
-    if (selector.status == "sucess") {
-      //signIn(selector.authToken);
-      dispatch(showLoader());
-      AsyncStore.storeData(AsyncStore.Keys.USER_NAME, selector.userData.userName);
-      AsyncStore.storeData(AsyncStore.Keys.ORG_ID, selector.userData.orgId);
-      AsyncStore.storeData(AsyncStore.Keys.REFRESH_TOKEN, selector.userData.refreshToken);
-      AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, selector.userData.idToken).then(() => {
-        //dispatch(getMenuList(selector.userData.userName));
-        // dispatch(getCustomerTypeList());
-        // dispatch(getCarModalList(selector.userData.orgId))
-        signIn(selector.authToken);
-        dispatch(clearState());
-      });
-    }
-  }, [selector.status])
-
-  useEffect(() => {
-
     if (selector.offlineStatus == "completed") {
       setTimeout(() => {
         dispatch(showLoader());
@@ -116,9 +98,6 @@ const LoginScreen = ({ navigation }) => {
       return;
     }
 
-    // console.log("employeeId: ", employeeId);
-    // console.log("password: ", password);
-
     let object = {
       "empname": employeeId,
       "password": password
@@ -126,6 +105,24 @@ const LoginScreen = ({ navigation }) => {
 
     dispatch(postUserData(object));
   };
+
+  useEffect(() => {
+
+    if (selector.status == "sucess") {
+      //signIn(selector.authToken);
+      dispatch(showLoader());
+      AsyncStore.storeData(AsyncStore.Keys.USER_NAME, selector.userData.userName);
+      AsyncStore.storeData(AsyncStore.Keys.ORG_ID, selector.userData.orgId);
+      AsyncStore.storeData(AsyncStore.Keys.REFRESH_TOKEN, selector.userData.refreshToken);
+      AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, selector.userData.idToken).then(() => {
+        //dispatch(getMenuList(selector.userData.userName));
+        // dispatch(getCustomerTypeList());
+        // dispatch(getCarModalList(selector.userData.orgId))
+        signIn(selector.authToken);
+        dispatch(clearState());
+      });
+    }
+  }, [selector.status])
 
   const forgotClicked = () => {
     navigation.navigate(AuthNavigator.AuthStackIdentifiers.FORGOT);

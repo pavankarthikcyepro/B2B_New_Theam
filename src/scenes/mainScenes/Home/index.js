@@ -1,9 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, View, Text, StyleSheet, FlatList, Dimensions, Image, Pressable, Alert, TouchableOpacity } from 'react-native';
+import { SafeAreaView, View, Text, StyleSheet, FlatList, Dimensions, Image, Pressable, Alert, TouchableOpacity, ScrollView } from 'react-native';
 import { Colors } from '../../../styles';
-import { Searchbar } from 'react-native-paper';
-import { IconButton } from 'react-native-paper';
+import { IconButton, Card } from 'react-native-paper';
 import VectorImage from 'react-native-vector-image';
 import { useDispatch, useSelector } from 'react-redux';
 import { FILTER } from '../../../assets/svg';
@@ -21,7 +20,9 @@ import {
   getEventTableList,
   getTaskTableList,
   getLostDropChartData,
-  getTargetParametersData
+  getTargetParametersData,
+  getSalesData,
+  getSalesComparisonData
 } from '../../../redux/homeReducer';
 import { DateRangeComp, DatePickerComponent, SortAndFilterComp } from '../../../components';
 import { DateModalComp } from "../../../components/dateModalComp";
@@ -34,9 +35,28 @@ import moment from 'moment';
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 30) / 2;
 
+const widthForBoxItem = (screenWidth - 30) / 3;
+
+const BoxComp = ({ width, name, value }) => {
+  return (
+    <View style={{ width: width, padding: 2 }}>
+      <View style={styles.boxView}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <IconButton icon={'filter-outline'} size={12} color={Colors.DARK_GRAY} style={{ margin: 0, padding: 0 }} />
+          <Text style={{ fontSize: 12, fontWeight: "600" }}>{value}</Text>
+        </View>
+        <Text style={{ fontSize: 12, fontWeight: "600", color: Colors.DARK_GRAY }}>{name}</Text>
+      </View>
+    </View>
+  )
+}
+
+const titleNames = ["Sales Today", "Visitors Today", "Total Earnings", "Pending Orders", "Total Revenue", "Drop Revenue"];
+
 const HomeScreen = ({ navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
+  const [salesDataAry, setSalesDataAry] = useState([]);
 
   useEffect(() => {
     getMenuListFromServer();
@@ -98,6 +118,8 @@ const HomeScreen = ({ navigation }) => {
       "size": 10
     }
     dispatch(getTaskTableList(payload));
+    dispatch(getSalesData(payload));
+    dispatch(getSalesComparisonData(payload));
   }
 
   const getTargetParametersDataFromServer = (payload) => {
@@ -109,11 +131,20 @@ const HomeScreen = ({ navigation }) => {
     dispatch(getTargetParametersData(payload1));
   }
 
+  useEffect(() => {
+    if (selector.sales_data) {
+      const dataObj = selector.sales_data;
+      const data = [dataObj.todaySales, dataObj.todayVisitors, dataObj.totalEarnings, dataObj.pendingOrders, dataObj.totalRevenue, dataObj.dropRevenue]
+      setSalesDataAry(data);
+    }
+  }, [selector.sales_data])
+
   return (
     <SafeAreaView style={styles.container}>
 
-      <View style={{ flex: 1, paddingVertical: 10, paddingHorizontal: 15, }}>
-        {/* <View style={{ flexDirection: 'row', height: 60, alignItems: 'center', justifyContent: 'space-between' }}>
+      <ScrollView style={{}}>
+        <View style={{ flex: 1, paddingVertical: 10, paddingHorizontal: 15, }}>
+          {/* <View style={{ flexDirection: 'row', height: 60, alignItems: 'center', justifyContent: 'space-between' }}>
 
           <Searchbar
             style={{ width: "90%" }}
@@ -129,19 +160,34 @@ const HomeScreen = ({ navigation }) => {
           />
         </View> */}
 
-        <View style={styles.dateVw}>
-          <Text style={styles.text3}>{"My Dashboard"}</Text>
-          <TouchableOpacity onPress={() => navigation.navigate(HomeStackIdentifiers.filter)}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={[styles.text1, { color: Colors.RED }]}>{'Filters'}</Text>
-              <IconButton icon={'filter-outline'} size={20} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
-            </View>
-          </TouchableOpacity>
+          <View style={styles.dateVw}>
+            <Text style={styles.text3}>{"My Dashboard"}</Text>
+            <TouchableOpacity onPress={() => navigation.navigate(HomeStackIdentifiers.filter)}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={[styles.text1, { color: Colors.RED }]}>{'Filters'}</Text>
+                <IconButton icon={'filter-outline'} size={20} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          <View style={{ marginBottom: 5 }}>
+            <FlatList
+              data={titleNames}
+              numColumns={3}
+              horizontal={false}
+              renderItem={({ item, index }) => {
+                return (
+                  <View>
+                    <BoxComp width={widthForBoxItem} name={item} value={salesDataAry[index]} />
+                  </View>
+                )
+              }}
+            />
+          </View>
+          <DashboardTopTabNavigator />
+
         </View>
-
-        <DashboardTopTabNavigator />
-
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -200,6 +246,14 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     paddingLeft: 5,
     height: 50,
+  },
+  boxView: {
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: Colors.BORDER_COLOR,
+    backgroundColor: Colors.WHITE,
+    paddingVertical: 5
   },
 });
 

@@ -162,6 +162,26 @@ export const getEmployeesDropDownData = createAsyncThunk("HOME/getEmployeesDropD
   return json;
 })
 
+export const getSalesData = createAsyncThunk("HOME/getSalesData", async (payload: any, { rejectWithValue }) => {
+
+  const response = await client.post(URL.GET_SALES_DATA(), payload)
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getSalesComparisonData = createAsyncThunk("HOME/getSalesComparisonData", async (payload: any, { rejectWithValue }) => {
+
+  const response = await client.post(URL.GET_SALES_COMPARISON_DATA(), payload)
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 const AVAILABLE_SCREENS = [
   {
     "menuId": 81,
@@ -196,7 +216,9 @@ export const homeSlice = createSlice({
     employees_drop_down_data: {},
     target_parameters_data: [],
     org_is_loading: false,
-    emp_is_loading: false
+    emp_is_loading: false,
+    sales_data: {},
+    sales_comparison_data: []
   },
   reducers: {
     dateSelected: (state, action) => {
@@ -204,7 +226,7 @@ export const homeSlice = createSlice({
     },
     updateFilterDropDownData: (state, action) => {
       state.filter_drop_down_data = action.payload;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getMenuList.fulfilled, (state, action) => {
@@ -301,7 +323,7 @@ export const homeSlice = createSlice({
         state.lead_source_table_data = [];
       })
       .addCase(getLeadSourceTableList.fulfilled, (state, action) => {
-        // console.log("S getLeadSourceTableList: ", JSON.stringify(action.payload));
+        //console.log("S getLeadSourceTableList: ", JSON.stringify(action.payload));
         if (action.payload) {
           state.lead_source_table_data = action.payload;
         }
@@ -314,7 +336,7 @@ export const homeSlice = createSlice({
         state.vehicle_model_table_data = [];
       })
       .addCase(getVehicleModelTableList.fulfilled, (state, action) => {
-        // console.log("S getVehicleModelTableList: ", JSON.stringify(action.payload));
+        //console.log("S getVehicleModelTableList: ", JSON.stringify(action.payload));
         if (action.payload) {
           state.vehicle_model_table_data = action.payload;
         }
@@ -340,7 +362,7 @@ export const homeSlice = createSlice({
         state.task_table_data = {};
       })
       .addCase(getTaskTableList.fulfilled, (state, action) => {
-        console.log("S getTaskTableList: ", JSON.stringify(action.payload));
+        //console.log("S getTaskTableList: ", JSON.stringify(action.payload));
         if (action.payload) {
           state.task_table_data = action.payload;
         }
@@ -366,7 +388,7 @@ export const homeSlice = createSlice({
         state.target_parameters_data = [];
       })
       .addCase(getTargetParametersData.fulfilled, (state, action) => {
-        console.log("S getTargetParametersData: ", JSON.stringify(action.payload));
+        //console.log("S getTargetParametersData: ", JSON.stringify(action.payload));
         if (action.payload) {
           state.target_parameters_data = action.payload;
         }
@@ -386,6 +408,32 @@ export const homeSlice = createSlice({
       })
       .addCase(getEmployeesDropDownData.rejected, (state, action) => {
         state.employees_drop_down_data = {};
+      })
+      // Get Sales Data
+      .addCase(getSalesData.pending, (state, action) => {
+        state.sales_data = {};
+      })
+      .addCase(getSalesData.fulfilled, (state, action) => {
+        //console.log("S getSalesData: ", JSON.stringify(action.payload));
+        if (action.payload) {
+          state.sales_data = action.payload;
+        }
+      })
+      .addCase(getSalesData.rejected, (state, action) => {
+        state.sales_data = {};
+      })
+      // Get Sales Comparison Data
+      .addCase(getSalesComparisonData.pending, (state, action) => {
+        state.sales_comparison_data = [];
+      })
+      .addCase(getSalesComparisonData.fulfilled, (state, action) => {
+        //console.log("S getSalesComparisonData: ", JSON.stringify(action.payload));
+        if (action.payload) {
+          state.sales_comparison_data = action.payload;
+        }
+      })
+      .addCase(getSalesComparisonData.rejected, (state, action) => {
+        state.sales_comparison_data = [];
       })
   }
 });

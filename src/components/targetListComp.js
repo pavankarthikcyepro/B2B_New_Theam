@@ -138,8 +138,9 @@ export const TargetListComp = ({ data, titlesData, from, totalWidth }) => {
                     <FlatList
                         data={data}
                         keyExtractor={(item, index) => "Target" + index.toString()}
-                        horizontal={true}
+                        horizontal={false}
                         showsHorizontalScrollIndicator={false}
+                        showsVerticalScrollIndicator={false}
                         renderItem={({ item, index }) => {
 
                             if (from == "LEAD_SOURCE") {

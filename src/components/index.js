@@ -14,7 +14,7 @@ import { DonutChartComp } from "./donutChartComp";
 import { TasksListComp } from "./tasksListComp";
 import { TargetListComp } from "./targetListComp";
 import { DashboadFilterModalComp } from "./dashboardFilterModalComp";
-
+import { LineGraphComp } from "./lineGraphComp";
 export {
     ButtonComp,
     CallUserComponent,
@@ -30,5 +30,6 @@ export {
     DonutChartComp,
     TasksListComp,
     TargetListComp,
-    DashboadFilterModalComp
+    DashboadFilterModalComp,
+    LineGraphComp
 };

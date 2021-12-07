@@ -43,8 +43,9 @@ export const TasksListComp = ({ data, totalWidth }) => {
                 <FlatList
                     data={data}
                     keyExtractor={(item, index) => "Task" + index.toString()}
-                    horizontal={true}
+                    horizontal={false}
                     showsHorizontalScrollIndicator={false}
+                    showsVerticalScrollIndicator={false}
                     renderItem={({ item, index }) => {
 
                         return (

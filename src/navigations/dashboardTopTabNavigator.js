@@ -3,13 +3,15 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import DataScreen, { LostScreen, DropScreen } from "../scenes/mainScenes/Home/TabScreens/dataScreen";
 import TargetScreen, { ParameterScreen, LiveScreen, EventScreen, LeadSourceScreen, VehicleModelScreen } from "../scenes/mainScenes/Home/TabScreens/targetScreen";
 import TasksScreen, { TodayScreen, UpcomingScreen, PendingScreen } from "../scenes/mainScenes/Home/TabScreens/tasksScreen";
+import { SalesComparisonScreen } from "../scenes/mainScenes/Home/TabScreens/salesComparisonScreen";
 
 import { Colors } from "../styles";
 
 const DashboardTopTabNavigatorIdentifiers = {
     data: "DATA",
     target: "TARGET",
-    tasks: "TASKS"
+    tasks: "TASKS",
+    salesComp: "SALES_COMPAR"
 };
 
 const DataTopTabIdentifiers = {
@@ -180,6 +182,11 @@ const DashboardTopTabNavigator = () => {
                 name={DashboardTopTabNavigatorIdentifiers.target}
                 component={TargetTopTabNavigator}
                 options={{ title: "Target/Achiv" }}
+            />
+            <DashboardTopTab.Screen
+                name={DashboardTopTabNavigatorIdentifiers.salesComp}
+                component={SalesComparisonScreen}
+                options={{ title: "Sales" }}
             />
         </DashboardTopTab.Navigator>
     );

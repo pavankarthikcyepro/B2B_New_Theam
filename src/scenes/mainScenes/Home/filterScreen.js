@@ -18,7 +18,9 @@ import {
     getTaskTableList,
     getLostDropChartData,
     getTargetParametersData,
-    getEmployeesDropDownData
+    getEmployeesDropDownData,
+    getSalesData,
+    getSalesComparisonData
 } from '../../../redux/homeReducer';
 import { showAlertMessage, showToast } from '../../../utils/toast';
 
@@ -272,6 +274,8 @@ const FilterScreen = ({ navigation }) => {
             "size": 10
         }
         dispatch(getTaskTableList(payload));
+        dispatch(getSalesData(payload));
+        dispatch(getSalesComparisonData(payload));
     }
 
     const getTargetParametersDataFromServer = (payload) => {
