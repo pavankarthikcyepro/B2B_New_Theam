@@ -37,21 +37,24 @@ const itemWidth = (screenWidth - 30) / 2;
 
 const widthForBoxItem = (screenWidth - 30) / 3;
 
-const BoxComp = ({ width, name, value }) => {
+const BoxComp = ({ width, name, value, iconName, bgColor }) => {
   return (
     <View style={{ width: width, padding: 2 }}>
-      <View style={styles.boxView}>
+      <View style={[styles.boxView, { backgroundColor: bgColor }]}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <IconButton icon={'filter-outline'} size={12} color={Colors.DARK_GRAY} style={{ margin: 0, padding: 0 }} />
-          <Text style={{ fontSize: 12, fontWeight: "600" }}>{value}</Text>
+          <IconButton icon={iconName} size={12} color={Colors.WHITE} style={{ margin: 0, padding: 0 }} />
+          <Text style={{ fontSize: 12, fontWeight: "600", color: Colors.WHITE }}>{value}</Text>
         </View>
-        <Text style={{ fontSize: 12, fontWeight: "600", color: Colors.DARK_GRAY }}>{name}</Text>
+        <Text style={{ fontSize: 12, fontWeight: "600", color: Colors.WHITE }}>{name}</Text>
       </View>
     </View>
   )
 }
 
-const titleNames = ["Sales Today", "Visitors Today", "Total Earnings", "Pending Orders", "Total Revenue", "Drop Revenue"];
+const titleNames = ["Live Bookings", "Complaints", "Deliveries", "Loss In Revenue", "Pending Tasks"];
+const iconNames = ["shopping", "account-supervisor", "currency-usd", "cart", "currency-usd"];
+const colorNames = ["#85b1f4", "#f1ab48", "#79e069", "#e36e7a", "#5acce8"]
+
 
 const HomeScreen = ({ navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
@@ -134,7 +137,7 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     if (selector.sales_data) {
       const dataObj = selector.sales_data;
-      const data = [dataObj.todaySales, dataObj.todayVisitors, dataObj.totalEarnings, dataObj.pendingOrders, dataObj.totalRevenue, dataObj.dropRevenue]
+      const data = [dataObj.todaySales, dataObj.todayVisitors, dataObj.totalEarnings, dataObj.dropRevenue, dataObj.pendingOrders]
       setSalesDataAry(data);
     }
   }, [selector.sales_data])
@@ -178,7 +181,7 @@ const HomeScreen = ({ navigation }) => {
               renderItem={({ item, index }) => {
                 return (
                   <View>
-                    <BoxComp width={widthForBoxItem} name={item} value={salesDataAry[index]} />
+                    <BoxComp width={widthForBoxItem} name={item} value={salesDataAry[index]} iconName={iconNames[index]} bgColor={colorNames[index]} />
                   </View>
                 )
               }}

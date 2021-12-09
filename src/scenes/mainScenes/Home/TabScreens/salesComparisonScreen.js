@@ -74,11 +74,11 @@ export const SalesComparisonScreen = () => {
     return (
         <View style={[styles.container, { paddingTop: 10 }]}>
 
-            <View style={{ width: "100%", marginTop: 15 }}>
+            <View style={{ width: "100%", marginTop: 5 }}>
                 <View style={{ width: "23%", paddingLeft: 5 }}>
                     <View style={{ flexDirection: "row", padding: 3 }}>
-                        <Text style={[targetStyle.textStyle, { width: 100 }]}>{"Model"}</Text>
-                        <Text style={[targetStyle.textStyle]}>{"Sales"}</Text>
+                        <Text style={[targetStyle.textStyle, { width: 100, fontWeight: "600" }]}>{"Model"}</Text>
+                        <Text style={[targetStyle.textStyle, { fontWeight: "600" }]}>{"Sales"}</Text>
                     </View>
                 </View>
                 <View style={{ width: "78%", padding: 3 }}>
@@ -106,9 +106,9 @@ export const SalesComparisonScreen = () => {
                         itemWidth={itemWidth}
                     />
                 </View> */}
-                {chartData.length > 0 && (
+                {(chartData.length > 0 && chartNamesData.length > 0) && (
                     <View style={{ alignItems: 'center', overflow: 'hidden' }}>
-                        <LineGraphComp chartTitles={chartNamesData} chartData={chartData} width={Dimensions.get("window").width - 40} />
+                        <LineGraphComp chartTitles={chartNamesData} chartData={chartData} width={screenWidth - 40} />
                     </View>
                 )}
             </View>
