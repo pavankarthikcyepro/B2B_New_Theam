@@ -35,9 +35,9 @@ export const getTestDriveDseEmployeeListApi = createAsyncThunk("TEST_DRIVE_SLICE
   return json;
 })
 
-export const getDriversListApi = createAsyncThunk("TEST_DRIVE_SLICE/getDriversListApi", async (payload, { rejectWithValue }) => {
+export const getDriversListApi = createAsyncThunk("TEST_DRIVE_SLICE/getDriversListApi", async (branchId, { rejectWithValue }) => {
 
-  const response = await client.get(URL.GET_DRIVERS_LIST());
+  const response = await client.get(URL.GET_DRIVERS_LIST(branchId));
   const json = await response.json()
   if (!response.ok) {
     return rejectWithValue(json);

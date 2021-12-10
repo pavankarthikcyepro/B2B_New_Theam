@@ -90,7 +90,6 @@ const TestDriveScreen = ({ route, navigation }) => {
     updateBasicDetails(taskData);
     getAsyncstoreData();
     dispatch(getTestDriveDseEmployeeListApi());
-    dispatch(getDriversListApi());
   }, []);
 
   const getAsyncstoreData = async () => {
@@ -106,6 +105,7 @@ const TestDriveScreen = ({ route, navigation }) => {
         }
         dispatch(getTestDriveVehicleListApi(payload))
         dispatch(getTaskDetailsApi(taskId));
+        dispatch(getDriversListApi(jsonObj.branchId));
       }
       else {
         showToast("You don't have access to view this task");
