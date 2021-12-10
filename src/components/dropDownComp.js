@@ -100,20 +100,22 @@ const DropDownComponant = ({ visible = false, multiple = false, headerTitle = "S
 
                             {multiple ? <FlatList
                                 data={multipleData}
+                                style={{ height: faltListHeight }}
                                 keyExtractor={(item, index) => index.toString()}
                                 renderItem={({ item, index }) => {
                                     return (
                                         <Pressable onPress={() => itemSelected(index)}>
                                             <View>
                                                 <List.Item
-                                                    titleStyle={{ fontSize: 16, fontWeight: '400' }}
+                                                    titleStyle={{ fontSize: 14, fontWeight: '400' }}
                                                     title={item.name}
+                                                    style={{ height: 40 }}
                                                     description={""}
                                                     titleNumberOfLines={1}
                                                     descriptionEllipsizeMode={'tail'}
                                                     left={props => <List.Icon {...props} icon={item.selected ? "checkbox-marked" : "checkbox-blank-outline"} color={item.selected ? Colors.RED : Colors.GRAY} style={{ margin: 0 }} />}
                                                 />
-                                                <Divider />
+                                                {/* <Divider /> */}
                                             </View>
                                         </Pressable>
                                     )

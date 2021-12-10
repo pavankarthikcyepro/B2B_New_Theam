@@ -34,7 +34,7 @@ export const PreEnquiryItem = ({
     <Pressable onPress={onPress}>
       <View style={[styles.container, { backgroundColor: bgColor }]}>
         <View style={styles.leftView}>
-          <Text style={styles.text1}>
+          <Text style={styles.text1} numberOfLines={1}>
             {name + " "}{" "}
             <Text
               style={[
@@ -74,7 +74,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.LIGHT_GRAY,
     alignItems: "center",
   },
-  leftView: {},
+  leftView: {
+    maxWidth: "70%"
+  },
   rightView: {
     alignItems: "flex-end",
   },

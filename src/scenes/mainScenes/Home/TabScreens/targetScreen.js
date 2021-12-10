@@ -92,9 +92,9 @@ export const ParameterScreen = () => {
                                     <NameComp label={item} labelStyle={targetStyle.dataTextStyle} />
                                     <NameComp label={object?.target} labelStyle={targetStyle.dataTextStyle} />
                                     <NameComp label={object?.achievment} labelStyle={targetStyle.dataTextStyle} />
-                                    <NameComp label={Number(object?.achivementPerc) + "%"} labelStyle={targetStyle.dataTextStyle} />
+                                    <NameComp label={object?.achivementPerc} labelStyle={targetStyle.dataTextStyle} />
                                     <NameComp label={object?.shortfall} labelStyle={targetStyle.dataTextStyle} />
-                                    <NameComp label={Number(object?.shortFallPerc) + "%"} labelStyle={targetStyle.dataTextStyle} />
+                                    <NameComp label={object?.shortFallPerc} labelStyle={targetStyle.dataTextStyle} />
                                 </View>
                             )
                         }}
