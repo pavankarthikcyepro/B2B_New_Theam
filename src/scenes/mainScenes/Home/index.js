@@ -145,9 +145,58 @@ const HomeScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
 
-      <ScrollView style={{}}>
+      <View style={{ flex: 1, padding: 10 }}>
+        <FlatList
+          data={[1, 2, 3]}
+          listKey={"TOP_FLAT_LIST"}
+          keyExtractor={(item, index) => "TOP" + index.toString()}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item, index }) => {
+
+            if (index === 0) {
+              return (
+                <View style={styles.dateVw}>
+                  <Text style={styles.text3}>{"My Dashboard"}</Text>
+                  <TouchableOpacity onPress={() => navigation.navigate(HomeStackIdentifiers.filter)}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <Text style={[styles.text1, { color: Colors.RED }]}>{'Filters'}</Text>
+                      <IconButton icon={'filter-outline'} size={20} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              )
+            }
+            else if (index === 1) {
+              return (
+                <View style={{ marginBottom: 5 }}>
+                  <FlatList
+                    data={titleNames}
+                    listKey={"BOX_COMP"}
+                    keyExtractor={(item, index) => "BOX" + index.toString()}
+                    numColumns={3}
+                    horizontal={false}
+                    renderItem={({ item, index }) => {
+                      return (
+                        <View>
+                          <BoxComp width={widthForBoxItem} name={item} value={salesDataAry[index]} iconName={iconNames[index]} bgColor={colorNames[index]} />
+                        </View>
+                      )
+                    }}
+                  />
+                </View>
+              )
+            }
+            else if (index === 2) {
+              return (
+                <DashboardTopTabNavigator />
+              )
+            }
+          }}
+        />
+      </View>
+      {/* <ScrollView style={{}}>
         <View style={{ flex: 1, paddingVertical: 10, paddingHorizontal: 15, }}>
-          {/* <View style={{ flexDirection: 'row', height: 60, alignItems: 'center', justifyContent: 'space-between' }}>
+          <View style={{ flexDirection: 'row', height: 60, alignItems: 'center', justifyContent: 'space-between' }}>
 
           <Searchbar
             style={{ width: "90%" }}
@@ -161,36 +210,10 @@ const HomeScreen = ({ navigation }) => {
             source={FILTER}
             style={{ tintColor: Colors.DARK_GRAY }}
           />
-        </View> */}
-
-          <View style={styles.dateVw}>
-            <Text style={styles.text3}>{"My Dashboard"}</Text>
-            <TouchableOpacity onPress={() => navigation.navigate(HomeStackIdentifiers.filter)}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Text style={[styles.text1, { color: Colors.RED }]}>{'Filters'}</Text>
-                <IconButton icon={'filter-outline'} size={20} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
-              </View>
-            </TouchableOpacity>
-          </View>
-
-          <View style={{ marginBottom: 5 }}>
-            <FlatList
-              data={titleNames}
-              numColumns={3}
-              horizontal={false}
-              renderItem={({ item, index }) => {
-                return (
-                  <View>
-                    <BoxComp width={widthForBoxItem} name={item} value={salesDataAry[index]} iconName={iconNames[index]} bgColor={colorNames[index]} />
-                  </View>
-                )
-              }}
-            />
-          </View>
-          <DashboardTopTabNavigator />
+        </View>
 
         </View>
-      </ScrollView>
+      </ScrollView> */}
     </SafeAreaView>
   );
 };

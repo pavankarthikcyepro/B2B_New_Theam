@@ -48,7 +48,7 @@ const dummyData = [
     }
 ]
 
-export const TargetListComp = ({ data, titlesData, from, totalWidth }) => {
+export const TargetListComp = ({ data, titlesData, from, totalWidth, type }) => {
 
     const [showDropDownModel, setShowDropDownModel] = useState(false);
     const [value, setValue] = useState("");
@@ -137,7 +137,8 @@ export const TargetListComp = ({ data, titlesData, from, totalWidth }) => {
                 <View style={{}}>
                     <FlatList
                         data={data}
-                        keyExtractor={(item, index) => "Target" + index.toString()}
+                        listKey={from}
+                        keyExtractor={(item, index) => from + index.toString()}
                         horizontal={false}
                         showsHorizontalScrollIndicator={false}
                         showsVerticalScrollIndicator={false}

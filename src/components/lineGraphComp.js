@@ -1,4 +1,4 @@
-import React, { } from "react";
+import React, { PureComponent } from "react";
 import { } from "react-native";
 import { LineChart, BarChart } from "react-native-chart-kit";
 
@@ -45,38 +45,48 @@ const data = {
     ]
 };
 
-export const LineGraphComp = ({ chartTitles, chartData, width, type = "LINE" }) => {
+export class LineGraphComp extends PureComponent {
 
-    if (type === "BAR") {
+    constructor() {
+        super()
+    }
+
+    render() {
+        if (this.props.type === "BAR") {
+            return (
+                <BarChart
+                    data={data}
+                    width={this.props.width} // from react-native
+                    height={200}
+                    // yAxisInterval={1} // optional, defaults to 1
+                    chartConfig={chartConfig2}
+                    verticalLabelRotation={0}
+                    style={{}}
+                />
+            )
+        }
+
         return (
-            <BarChart
-                data={data}
-                width={width} // from react-native
+            <LineChart
+                data={{
+                    labels: this.props.chartTitles,
+                    datasets: this.props.chartData,
+                    legend: [] // optional
+                }}
+                width={this.props.width} // from react-native
                 height={200}
-                // yAxisInterval={1} // optional, defaults to 1
-                chartConfig={chartConfig2}
-                verticalLabelRotation={0}
-                style={{}}
+                yAxisInterval={1} // optional, defaults to 1
+                chartConfig={chartConfig}
+                bezier
+                style={{
+                    marginVertical: 4,
+                    borderRadius: 8,
+                }}
             />
         )
     }
 
-    return (
-        <LineChart
-            data={{
-                labels: chartTitles,
-                datasets: chartData,
-                legend: [] // optional
-            }}
-            width={width} // from react-native
-            height={200}
-            yAxisInterval={1} // optional, defaults to 1
-            chartConfig={chartConfig}
-            bezier
-            style={{
-                marginVertical: 4,
-                borderRadius: 8,
-            }}
-        />
-    )
 }
+
+// export const LineGraphComp = ({ chartTitles, chartData, width, type = "LINE" }) => {
+// }

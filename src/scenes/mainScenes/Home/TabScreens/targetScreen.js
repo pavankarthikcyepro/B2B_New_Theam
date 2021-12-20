@@ -81,6 +81,7 @@ export const ParameterScreen = () => {
                 <View style={{ width: "78%" }}>
                     <FlatList
                         data={parameterTitlesForData}
+                        listKey="TARGET"
                         keyExtractor={(item, index) => "Target" + index.toString()}
                         horizontal={true}
                         showsHorizontalScrollIndicator={false}
@@ -106,6 +107,7 @@ export const ParameterScreen = () => {
                     <ChartNameList
                         data={namesData}
                         itemWidth={itemWidth}
+                        type={"TARGET_DATA_LIST"}
                     />
                 </View>
                 {chartData.length > 0 && (
@@ -162,6 +164,7 @@ export const LeadSourceScreen = () => {
                     <ChartNameList
                         data={namesData}
                         itemWidth={itemWidth}
+                        type={"LEAD_SOURCE_LIST"}
                     />
                 </View>
                 {chartData.length > 0 && (
@@ -216,6 +219,7 @@ export const VehicleModelScreen = () => {
                     <ChartNameList
                         data={namesData}
                         itemWidth={itemWidth}
+                        type={"VEHICLE_MODEL_LIST"}
                     />
                 </View>
                 {chartData.length > 0 && (
@@ -270,6 +274,7 @@ export const EventScreen = () => {
                     <ChartNameList
                         data={namesData}
                         itemWidth={itemWidth}
+                        type={"EVENT_LIST"}
                     />
                 </View>
                 {chartData.length > 0 && (

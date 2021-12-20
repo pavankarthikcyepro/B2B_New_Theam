@@ -76,7 +76,7 @@ export const TodayScreen = () => {
 
     return (
         <View style={styles.container}>
-            {tableData.length > 0 ? (<TasksListComp data={tableData} totalWidth={screenWidth - 30} />) : (
+            {tableData.length > 0 ? (<TasksListComp data={tableData} totalWidth={screenWidth - 30} type={"TODAY"} />) : (
                 <EmptyListView title={"No Data Found"} />
             )}
         </View>
@@ -99,7 +99,7 @@ export const UpcomingScreen = () => {
 
     return (
         <View style={styles.container}>
-            {tableData.length > 0 ? (<TasksListComp data={tableData} totalWidth={screenWidth - 30} />) : (
+            {tableData.length > 0 ? (<TasksListComp data={tableData} totalWidth={screenWidth - 30} type={"UPCOMING"} />) : (
                 <EmptyListView title={"No Data Found"} />
             )}
         </View>
@@ -122,7 +122,7 @@ export const PendingScreen = () => {
 
     return (
         <View style={styles.container}>
-            {tableData.length > 0 ? (<TasksListComp data={tableData} totalWidth={screenWidth - 30} />) : (
+            {tableData.length > 0 ? (<TasksListComp data={tableData} totalWidth={screenWidth - 30} type={"PENDING"} />) : (
                 <EmptyListView title={"No Data Found"} />
             )}
         </View>

@@ -84,6 +84,7 @@ export const SalesComparisonScreen = () => {
                 <View style={{ width: "78%", padding: 3 }}>
                     <FlatList
                         data={tableData}
+                        listKey={"SALES_COMPARISON"}
                         keyExtractor={(item, index) => "Sales_Comp" + index.toString()}
                         showsVerticalScrollIndicator={false}
                         renderItem={({ item, index }) => {

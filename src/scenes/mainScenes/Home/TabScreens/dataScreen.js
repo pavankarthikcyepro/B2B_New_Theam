@@ -69,6 +69,7 @@ export const LostScreen = () => {
                 <ChartNameList
                     data={namesData}
                     itemWidth={itemWidth}
+                    type={"LOST_PIE_CHART"}
                 />
             </View>
 
@@ -131,6 +132,7 @@ export const DropScreen = () => {
                 <ChartNameList
                     data={namesData}
                     itemWidth={itemWidth}
+                    type={"DROP_PIE_CHART"}
                 />
             </View>
 
