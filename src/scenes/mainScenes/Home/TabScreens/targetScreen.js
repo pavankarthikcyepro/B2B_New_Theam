@@ -112,7 +112,7 @@ export const ParameterScreen = () => {
                 </View>
                 {chartData.length > 0 && (
                     <View style={{ alignItems: 'center', overflow: 'hidden' }}>
-                        <LineGraphComp chartTitles={chartTitles} chartData={chartData} width={Dimensions.get("window").width - 40} type="LINE" />
+                        <LineGraphComp chartTitles={chartTitles} chartData={chartData} width={Dimensions.get("window").width - 40} type="BAR" />
                     </View>
                 )}
             </View>

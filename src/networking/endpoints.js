@@ -15,24 +15,43 @@
 // export const orgnaizationHirarchy = "http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/oh";
 // export const dashboard = "http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/dashboard";
 
-// Dev Urls:
+export const hrms_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8088/hrms";
+export const sales_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales";
+export const roleManagement_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8089/role-management";
+export const vehicleInfoService_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8090/vehicle-information-service";
 
-//New End Points July21 20 for Dev  Server
-export const hrms_url = "http://ec2-3-109-35-105.ap-south-1.compute.amazonaws.com:8083/hrms";
-export const sales_url = "http://ec2-3-7-117-218.ap-south-1.compute.amazonaws.com:8081/sales";
-export const roleManagement_url = "http://ec2-3-109-35-105.ap-south-1.compute.amazonaws.com:8084/role-management";
-export const vehicleInfoService_url = "http://ec2-3-109-35-105.ap-south-1.compute.amazonaws.com:8082/vehicle-information-service";
+export const ops_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8084/ops";
+export const inventory_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8087/inventory";
+export const vehicleServices_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8083/vehicle-services";
+export const admin_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8082/admin";
+export const notificationServices_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8086/notification-service";
+export const customerService_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8085/customer-service";
+export const dynamicReports_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/dynamic-reports";
+export const dynamicForms = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/dynamic-forms";
+export const orgnaizationHirarchy = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/oh";
+export const dashboard = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/dashboard";
 
-export const ops_url = "http://ec2-3-108-253-173.ap-south-1.compute.amazonaws.com:8085/ops";
-export const inventory_url = "http://ec2-3-108-253-173.ap-south-1.compute.amazonaws.com:8086/inventory";
-export const vehicleServices_url = "http://ec2-3-7-117-218.ap-south-1.compute.amazonaws.com:8085/vehicle-services";
-export const admin_url = "http://ec2-3-7-117-218.ap-south-1.compute.amazonaws.com:8082/admin";
-export const notificationServices_url = "http://ec2-3-108-253-173.ap-south-1.compute.amazonaws.com:8083/notification-service";
-export const customerService_url = "http://ec2-3-108-253-173.ap-south-1.compute.amazonaws.com:8084/customer-service";
-export const dynamicReports_url = "http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/dynamic-reports";
-export const dynamicForms = "http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/dynamic-forms";
-export const orgnaizationHirarchy = "http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/oh";
-export const dashboard = "http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/dashboard";
+// Dev End Points
+/*
+
+export const hrms_url = "http://dev-server-loadbalancer-1565082376.ap-south-1.elb.amazonaws.com:8088/hrms";
+export const sales_url = "http://dev-server-loadbalancer-1565082376.ap-south-1.elb.amazonaws.com:8081/sales";
+export const roleManagement_url = "http://dev-server-loadbalancer-1565082376.ap-south-1.elb.amazonaws.com:8089/role-management";
+export const vehicleInfoService_url = "http://dev-server-loadbalancer-1565082376.ap-south-1.elb.amazonaws.com:8090/vehicle-information-service";
+
+export const ops_url = "http://dev-server-loadbalancer-1565082376.ap-south-1.elb.amazonaws.com:8084/ops";
+export const inventory_url = "http://dev-server-loadbalancer-1565082376.ap-south-1.elb.amazonaws.com:8087/inventory";
+export const vehicleServices_url = "http://dev-server-loadbalancer-1565082376.ap-south-1.elb.amazonaws.com:8083/vehicle-services";
+export const admin_url = "http://dev-server-loadbalancer-1565082376.ap-south-1.elb.amazonaws.com:8082/admin";
+export const notificationServices_url = "http://dev-server-loadbalancer-1565082376.ap-south-1.elb.amazonaws.com:8086/notification-service";
+export const customerService_url = "http://dev-server-loadbalancer-1565082376.ap-south-1.elb.amazonaws.com:8085/customer-service";
+export const dynamicReports_url = "http://dev-server-loadbalancer-1565082376.ap-south-1.elb.amazonaws.com:8091/dynamic-reports";
+export const dynamicForms = "http://dev-server-loadbalancer-1565082376.ap-south-1.elb.amazonaws.com:8091/dynamic-forms";
+export const orgnaizationHirarchy = "http://dev-server-loadbalancer-1565082376.ap-south-1.elb.amazonaws.com:8091/oh";
+export const dashboard = "http://dev-server-loadbalancer-1565082376.ap-south-1.elb.amazonaws.com:8091/dashboard";
+
+*/
+
 
 const URL = {
     LOGIN: () => hrms_url + "/emplogin",

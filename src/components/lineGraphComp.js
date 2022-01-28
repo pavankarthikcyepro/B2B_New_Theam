@@ -23,11 +23,11 @@ const chartConfig = {
 
 const chartConfig2 = {
     backgroundGradientFrom: "#bababa",
-    backgroundGradientFromOpacity: 0,
+    backgroundGradientFromOpacity: 0.2,
     backgroundGradientTo: "#bababa",
-    backgroundGradientToOpacity: 0.5,
-    color: (opacity = 1) => `rgba(255, 110, 26, ${opacity})`,
-    labelColor: (opacity = 1) => "#040504",
+    backgroundGradientToOpacity: 1,
+    color: (opacity = 1) => `rgba(224, 7, 7, ${opacity})`,
+    labelColor: (opacity = 1) => "#000000",
     strokeWidth: 2, // optional, default 3
     barPercentage: 0.5,
     useShadowColorFromDataset: false // optional
@@ -57,11 +57,17 @@ export class LineGraphComp extends PureComponent {
                 <BarChart
                     data={data}
                     width={this.props.width} // from react-native
-                    height={200}
+                    height={220}
+                    showBarTops={true}
+                    //showValuesOnTopOfBars={true}
                     // yAxisInterval={1} // optional, defaults to 1
                     chartConfig={chartConfig2}
-                    verticalLabelRotation={0}
-                    style={{}}
+                    verticalLabelRotation={17}
+                    horizontalLabelRotation={0}
+                    style={{
+                        marginVertical: 0,
+                        borderRadius: 8,
+                    }}
                 />
             )
         }
@@ -77,7 +83,7 @@ export class LineGraphComp extends PureComponent {
                 height={200}
                 yAxisInterval={1} // optional, defaults to 1
                 chartConfig={chartConfig}
-                bezier
+                //  bezier
                 style={{
                     marginVertical: 4,
                     borderRadius: 8,
