@@ -244,16 +244,19 @@ const PreEnquiryScreen = ({ navigation }) => {
                                 }
 
                                 return (
-                                    < PreEnquiryItem
-                                        bgColor={color}
-                                        name={item.firstName + " " + item.lastName}
-                                        subName={item.enquirySource}
-                                        date={item.createdDate}
-                                        enquiryCategory={item.enquiryCategory}
-                                        modelName={item.model}
-                                        onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq, { itemData: item, fromCreatePreEnquiry: false })}
-                                        onCallPress={() => callNumber(item.phone)}
-                                    />
+                                    <>
+                                        < PreEnquiryItem
+                                            bgColor={color}
+                                            name={item.firstName + " " + item.lastName}
+                                            subName={item.enquirySource}
+                                            date={item.createdDate}
+                                            enquiryCategory={item.enquiryCategory}
+                                            modelName={item.model}
+                                            onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq, { itemData: item, fromCreatePreEnquiry: false })}
+                                            onCallPress={() => callNumber(item.phone)}
+                                        />
+                                        <View style={GlobalStyle.underline}></View>
+                                    </>
                                 )
                             }}
                         />

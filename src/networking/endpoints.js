@@ -128,8 +128,8 @@ const URL = {
     GET_EVENTS: () => {
         return ops_url + `/dms/getAllServiceEventsByFilterByStatus`;
     }, // getAllServiceEventsByFilter replaced by getAllServiceEventsByFilterByStatus
-    GET_SOURCE_OF_ENQUIRY: () => {
-        return sales_url + "/master-data/source-of-enquiry";
+    GET_SOURCE_OF_ENQUIRY: (orgId) => {
+        return sales_url + `/master-data/source-of-enquiry/${orgId}`;
     },
     GET_DROP_DATA: () => {
         return dynamicForms + "/dropdown";

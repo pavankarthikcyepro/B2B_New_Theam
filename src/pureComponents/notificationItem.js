@@ -6,7 +6,7 @@ import { Colors, GlobalStyle } from '../styles';
 export const NotificationItem = ({ title, date }) => {
 
     return (
-        <View style={[styles.item, GlobalStyle.shadow]}>
+        <View style={[styles.item]}>
             <Text style={styles.title}>{title}</Text>
             <Text style={[styles.title, styles.text2]}>{date}</Text>
         </View>

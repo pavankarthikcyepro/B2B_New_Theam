@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View, SafeAreaView, SectionList, StatusBar } from "react-native";
-import { Colors } from "../../styles";
+import { Colors, GlobalStyle } from "../../styles";
 import { useDispatch, useSelector } from 'react-redux';
 import { NotificationItem } from '../../pureComponents/notificationItem';
 import { Button } from 'react-native-paper';
@@ -19,8 +19,10 @@ const NotificationScreen = () => {
         renderItem={({ item }) => {
 
           return (
-            <View>
-              <NotificationItem title={item.name} date={item.date} />
+            <View style={{}}>
+              <View style={GlobalStyle.shadow}>
+                <NotificationItem title={item.name} date={item.date} />
+              </View>
             </View>
           )
         }}

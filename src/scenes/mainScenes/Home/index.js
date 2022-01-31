@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { SafeAreaView, View, Text, StyleSheet, FlatList, Dimensions, Image, Pressable, Alert, TouchableOpacity, ScrollView } from 'react-native';
-import { Colors } from '../../../styles';
+import { Colors, GlobalStyle } from '../../../styles';
 import { IconButton, Card } from 'react-native-paper';
 import VectorImage from 'react-native-vector-image';
 import { useDispatch, useSelector } from 'react-redux';
@@ -31,6 +31,7 @@ import { DashboardTopTabNavigator } from '../../../navigations/dashboardTopTabNa
 import { HomeStackIdentifiers } from '../../../navigations/appNavigator';
 import * as AsyncStore from '../../../asyncStore';
 import moment from 'moment';
+import { TargetAchivementComp } from './targetAchivementComp';
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 30) / 2;
@@ -65,7 +66,6 @@ const HomeScreen = ({ navigation }) => {
     getMenuListFromServer();
     getCarModalListFromServer();
     dispatch(getCustomerTypeList());
-    dispatch(getSourceOfEnquiryList());
   }, [])
 
   const getMenuListFromServer = async () => {
@@ -90,6 +90,7 @@ const HomeScreen = ({ navigation }) => {
         branchId: dataObj.branchId
       }
       dispatch(getOrganaizationHirarchyList(payload));
+      dispatch(getSourceOfEnquiryList(dataObj.orgId));
       getDashboadTableDataFromServer(dataObj.empId);
     }
   }, [selector.login_employee_details]);
@@ -188,7 +189,12 @@ const HomeScreen = ({ navigation }) => {
             }
             else if (index === 2) {
               return (
-                <DashboardTopTabNavigator />
+                <View style={[]}>
+                  <View style={[GlobalStyle.shadow, { padding: 10, backgroundColor: Colors.WHITE, borderRadius: 8 }]}>
+                    <TargetAchivementComp />
+                  </View>
+                </View>
+                //<DashboardTopTabNavigator />
               )
             }
           }}

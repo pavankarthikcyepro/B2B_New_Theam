@@ -148,7 +148,7 @@ const SideMenuScreen = ({ navigation }) => {
           <Text style={styles.text1}>{role}</Text>
         </View>
 
-        <View style={{ marginTop: 15 }}>
+        <View style={{ marginTop: 5 }}>
           <Text style={styles.text2}>
             {"Email: "}
             <Text style={[styles.text2, { color: Colors.SKY_BLUE }]}>

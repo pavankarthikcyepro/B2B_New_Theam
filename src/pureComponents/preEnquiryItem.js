@@ -97,14 +97,15 @@ const styles = StyleSheet.create({
   modelBckView: {
     paddingHorizontal: 5,
     paddingVertical: 3,
-    backgroundColor: Colors.RED,
+    borderWidth: 1,
+    borderColor: Colors.RED,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 4
   },
   text4: {
     fontSize: 12,
-    fontWeight: "400",
-    color: Colors.WHITE
+    fontWeight: "600",
+    color: Colors.RED
   }
 });
