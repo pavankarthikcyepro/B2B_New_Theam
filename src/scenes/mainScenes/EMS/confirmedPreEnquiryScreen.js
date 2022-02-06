@@ -20,8 +20,10 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     const dispatch = useDispatch();
     const { itemData, fromCreatePreEnquiry } = route.params;
     const [employeeId, setEmployeeId] = useState("");
+    const [organizationId, setOrganizationId] = useState("");
     const [showEmployeeSelectModel, setEmployeeSelectModel] = useState(false);
     const [employeesData, setEmployeesData] = useState([]);
+    const [branchId, setBranchId] = useState("");
 
     React.useLayoutEffect(() => {
         navigation.setOptions({
@@ -55,6 +57,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     useEffect(() => {
 
         getAsyncStorageData();
+        getBranchId();
 
         // api calls
         dispatch(getPreEnquiryDetails(itemData.universalId));
@@ -67,6 +70,25 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
             BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
         }
     }, []);
+
+    const getBranchId = () => {
+
+        AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then((branchId) => {
+            console.log("branch id:", branchId)
+            setBranchId(branchId);
+        });
+    }
+
+    const getAsyncStorageData = async () => {
+        const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            console.log("json:", jsonObj);
+            setOrganizationId(jsonObj.orgId);
+            setEmployeeId(jsonObj.empId);
+        }
+    };
 
     useEffect(() => {
 
@@ -126,13 +148,6 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         }
     }, [selector.change_enquiry_status, selector.change_enquiry_response])
 
-    const getAsyncStorageData = async () => {
-        let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
-        if (empId) {
-            setEmployeeId(empId);
-        }
-    }
-
     displayCreateEnquiryAlert = (data) => {
         Alert.alert(
             'Enquiry Created Successfully',
@@ -168,8 +183,13 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     const createEnquiryClicked = () => {
 
         if (selector.pre_enquiry_details) {
-            const id = selector.pre_enquiry_details.dmsLeadDto.sourceOfEnquiry;
-            dispatch(getEmployeesListApi(id));
+            const sourceOfEnquiryId = selector.pre_enquiry_details.dmsLeadDto.sourceOfEnquiry;
+            const data = {
+                sourceId: sourceOfEnquiryId,
+                orgId: organizationId,
+                branchId: branchId
+            }
+            dispatch(getEmployeesListApi(data));
         }
     }
 

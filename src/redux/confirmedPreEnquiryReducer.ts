@@ -21,8 +21,8 @@ export const noThanksApi = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/noThanksApi",
     return json;
 })
 
-export const getEmployeesListApi = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/getEmployeesListApi", async (sourceOfEnquiryId, { rejectWithValue }) => {
-    const response = await client.get(URL.SOURCE_OF_ENQUIRY_ENQUIRY(sourceOfEnquiryId))
+export const getEmployeesListApi = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/getEmployeesListApi", async (data: any, { rejectWithValue }) => {
+    const response = await client.get(URL.SOURCE_OF_ENQUIRY_ENQUIRY(data.sourceId, data.orgId, data.branchId))
     const json = await response.json()
     if (!response.ok) {
         return rejectWithValue(json);

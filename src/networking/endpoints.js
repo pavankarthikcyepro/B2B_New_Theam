@@ -74,8 +74,8 @@ const URL = {
     TASKS_PRE_ENQUIRY: () => sales_url + '/workflow/lead/universalId/',
     ASSIGN_TASK: () => sales_url + "/dms/task",
     CHANGE_ENQUIRY_STATUS: () => sales_url + "/dms/lead/stage/",
-    SOURCE_OF_ENQUIRY_ENQUIRY: (sourceOfEnquiryId) => {
-        return sales_url + "/employees/source-of-enquiry/" + `${sourceOfEnquiryId}`
+    SOURCE_OF_ENQUIRY_ENQUIRY: (sourceOfEnquiryId, orgId, branchId) => {
+        return sales_url + "/employees/source-of-enquiry/" + `${sourceOfEnquiryId}/${orgId}/${branchId}`
     },
     SALES_CONSULTANT: () => sales_url + "/lead/sales-consultant/manual",
     CREATE_CONTACT: () => sales_url + "",
