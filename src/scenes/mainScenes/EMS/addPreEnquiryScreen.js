@@ -66,6 +66,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     getAsyncstoreData();
     setExistingData();
     updateCarModelsData();
+    getBranchId()
     // getCustomerTypeListFromDB();
     // getCarModalListFromDB();
   }, []);
@@ -75,9 +76,8 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
 
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
-      setUserData({ branchId: jsonObj.branchId, orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName })
+      setUserData({ orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName })
       setOrganizationId(jsonObj.orgId);
-      setBranchId(jsonObj.branchId);
       setEmployeeName(jsonObj.empName);
 
       if (jsonObj.hrmsRole === "Reception") {
@@ -99,6 +99,14 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       }
     }
   };
+
+  const getBranchId = () => {
+
+    AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then((branchId) => {
+      console.log("branch id:", branchId)
+      setBranchId(branchId);
+    });
+  }
 
   const updateCarModelsData = () => {
     let modalList = [];

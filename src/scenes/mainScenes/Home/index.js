@@ -65,6 +65,7 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     getMenuListFromServer();
     getCarModalListFromServer();
+    getLoginEmployeeDetailsFromAsyn();
     dispatch(getCustomerTypeList());
   }, [])
 
@@ -82,18 +83,19 @@ const HomeScreen = ({ navigation }) => {
     }
   }
 
-  useEffect(() => {
-    if (selector.login_employee_details) {
-      const dataObj = selector.login_employee_details;
+  const getLoginEmployeeDetailsFromAsyn = async () => {
+    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
       const payload = {
-        orgId: dataObj.orgId,
-        branchId: dataObj.branchId
+        orgId: jsonObj.orgId,
+        branchId: jsonObj.branchId
       }
       dispatch(getOrganaizationHirarchyList(payload));
-      dispatch(getSourceOfEnquiryList(dataObj.orgId));
-      getDashboadTableDataFromServer(dataObj.empId);
+      dispatch(getSourceOfEnquiryList(jsonObj.orgId));
+      getDashboadTableDataFromServer(jsonObj.empId);
     }
-  }, [selector.login_employee_details]);
+  }
 
   const getDashboadTableDataFromServer = (empId) => {
     const dateFormat = "YYYY-MM-DD";
@@ -189,12 +191,12 @@ const HomeScreen = ({ navigation }) => {
             }
             else if (index === 2) {
               return (
-                <View style={[]}>
-                  <View style={[GlobalStyle.shadow, { padding: 10, backgroundColor: Colors.WHITE, borderRadius: 8 }]}>
-                    <TargetAchivementComp />
-                  </View>
-                </View>
-                //<DashboardTopTabNavigator />
+                // <View style={[]}>
+                //   <View style={[GlobalStyle.shadow, { padding: 10, backgroundColor: Colors.WHITE, borderRadius: 8 }]}>
+                //     <TargetAchivementComp />
+                //   </View>
+                // </View>
+                <DashboardTopTabNavigator />
               )
             }
           }}

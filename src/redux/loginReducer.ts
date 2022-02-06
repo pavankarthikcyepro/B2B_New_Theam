@@ -22,7 +22,10 @@ interface LoginState {
     offlineStatus: string,
     menuListStatus: string,
     userData: object,
-    empId: string
+    empId: string,
+    menuList: any,
+    login_employee_details: any,
+    branchesList: any
 }
 
 interface ErrorMessage {
@@ -33,7 +36,7 @@ interface ErrorMessage {
 const initialState: LoginState = {
     // employeeId: "ksudhakar",
     // password: "Bharat@123",
-    employeeId: "",
+    employeeId: "systemadmin",
     password: "Master@123",
     securePassword: true,
     showLoginErr: false,
@@ -48,7 +51,10 @@ const initialState: LoginState = {
     offlineStatus: "",
     userData: {},
     empId: "",
-    menuListStatus: ""
+    menuListStatus: "",
+    menuList: [],
+    login_employee_details: {},
+    branchesList: []
 }
 
 export const postUserData = createAsyncThunk('LOGIN_SLICE/postUserData', async (inputData, { rejectWithValue }) => {
@@ -151,9 +157,6 @@ export const loginSlice = createSlice({
                 state.passwordErrMessage = action.payload.message;
             }
         },
-        showLoader: (state, action) => {
-            state.showLoader = !state.showLoader;
-        }
     },
     extraReducers: (builder) => {
         builder
@@ -170,6 +173,7 @@ export const loginSlice = createSlice({
                     state.authToken = dataObj.idToken;
                     state.userName = dataObj.userName;
                     state.userData = dataObj;
+                    AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, dataObj.idToken);
                 } else if (dataObj.reason) {
                     showToastRedAlert(dataObj.reason);
                 }
@@ -206,13 +210,40 @@ export const loginSlice = createSlice({
                 state.isLoading = false;
                 state.offlineStatus = "completed"
             })
+            .addCase(getMenuList.pending, (state, action) => {
+                state.menuListStatus = 'pending';
+                state.isLoading = true;
+            })
             .addCase(getMenuList.fulfilled, (state, action) => {
-                console.log('menu_list: ', action.payload);
+
                 const dmsEntityObj = action.payload.dmsEntity;
                 const empId = dmsEntityObj.loginEmployee.empId;
+
+                const menuList = dmsEntityObj.menuList;
+
+                if (menuList.length > 0) {
+                    let newMenuList = [];
+                    menuList.forEach((item) => {
+                        newMenuList.push({
+                            screen: item.menuId,
+                            title: item.displayName
+                        })
+                    });
+                    state.menuList = newMenuList;
+                }
+
                 AsyncStore.storeData(AsyncStore.Keys.EMP_ID, empId.toString());
+                AsyncStore.storeData(AsyncStore.Keys.LOGIN_EMPLOYEE, JSON.stringify(dmsEntityObj.loginEmployee));
+
+                state.login_employee_details = dmsEntityObj.loginEmployee;
+                state.branchesList = dmsEntityObj.loginEmployee.branchs;
                 state.empId = empId;
                 state.menuListStatus = "completed";
+                state.isLoading = false;
+            })
+            .addCase(getMenuList.rejected, (state, action) => {
+                state.menuListStatus = 'failed';
+                state.isLoading = false;
             })
             .addCase(getCustomerTypeList.fulfilled, (state, action) => {
                 console.log('customer_type_list: ', action.payload);
@@ -236,7 +267,7 @@ export const loginSlice = createSlice({
 })
 
 
-export const { clearState, updateEmployeeId, updatePassword, updateSecurePassword, showErrorMessage, showLoader } = loginSlice.actions;
+export const { clearState, updateEmployeeId, updatePassword, updateSecurePassword, showErrorMessage } = loginSlice.actions;
 
 export default loginSlice.reducer;
 

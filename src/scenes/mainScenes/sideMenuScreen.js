@@ -30,7 +30,7 @@ const teleCollerMenu = ["Home", "Settings"];
 const SideMenuScreen = ({ navigation }) => {
 
   const selector = useSelector((state) => state.sideMenuReducer);
-  const homeSelector = useSelector((state) => state.homeReducer);
+  const homeSelector = useSelector((state) => state.loginReducer);
   // const isFocused = useIsFocused();
 
   const { signOut } = React.useContext(AuthContext);
@@ -112,6 +112,7 @@ const SideMenuScreen = ({ navigation }) => {
     AsyncStore.storeData(AsyncStore.Keys.USER_NAME, "");
     AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, "");
     AsyncStore.storeData(AsyncStore.Keys.LOGIN_EMPLOYEE, "");
+    AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_ID, "");
     navigation.closeDrawer()
     //realm.close();
     signOut();

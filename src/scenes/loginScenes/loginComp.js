@@ -22,7 +22,6 @@ import {
   updateSecurePassword,
   showErrorMessage,
   postUserData,
-  showLoader,
   getPreEnquiryData,
   getMenuList,
   getCustomerTypeList,
@@ -33,6 +32,7 @@ import { IconButton } from "react-native-paper";
 import { AuthContext } from "../../utils/authContext";
 import { LoaderComponent } from '../../components';
 import * as AsyncStore from '../../asyncStore';
+import { showAlertMessage, showToast } from "../../utils/toast";
 
 const ScreenWidth = Dimensions.get("window").width;
 const ScreenHeight = Dimensions.get("window").height;
@@ -54,26 +54,13 @@ const LoginScreen = ({ navigation }) => {
 
   useEffect(() => {
 
-    if (selector.offlineStatus == "completed") {
-      setTimeout(() => {
-        dispatch(showLoader());
-        signIn(selector.authToken);
-        dispatch(clearState());
-      }, 3000);
-    }
+    // if (selector.offlineStatus == "completed") {
+    //   setTimeout(() => {
+    //     signIn(selector.authToken);
+    //     dispatch(clearState());
+    //   }, 3000);
+    // }
   }, [selector.offlineStatus])
-
-  useEffect(() => {
-
-    if (selector.menuListStatus == "completed") {
-      getPreEnquiryListFromServer();
-    }
-  }, [selector.menuListStatus])
-
-  const getPreEnquiryListFromServer = async () => {
-    let endUrl = "?limit=10&offset=" + "0" + "&status=PREENQUIRY&empId=" + selector.empId;
-    dispatch(getPreEnquiryData(endUrl))
-  }
 
   const loginClicked = () => {
 
@@ -110,19 +97,39 @@ const LoginScreen = ({ navigation }) => {
 
     if (selector.status == "sucess") {
       //signIn(selector.authToken);
-      dispatch(showLoader());
       AsyncStore.storeData(AsyncStore.Keys.USER_NAME, selector.userData.userName);
       AsyncStore.storeData(AsyncStore.Keys.ORG_ID, selector.userData.orgId);
       AsyncStore.storeData(AsyncStore.Keys.REFRESH_TOKEN, selector.userData.refreshToken);
       AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, selector.userData.idToken).then(() => {
-        //dispatch(getMenuList(selector.userData.userName));
+        dispatch(getMenuList(selector.userData.userName));
         // dispatch(getCustomerTypeList());
         // dispatch(getCarModalList(selector.userData.orgId))
-        signIn(selector.authToken);
-        dispatch(clearState());
+        // signIn(selector.authToken);
+        // dispatch(clearState());
       });
+    } else {
     }
   }, [selector.status])
+
+  useEffect(() => {
+
+    if (selector.menuListStatus == "completed") {
+      console.log("branchList: ", selector.branchesList.length);
+      navigation.navigate(AuthNavigator.AuthStackIdentifiers.SELECT_BRANCH, { branches: selector.branchesList })
+
+      // signIn(selector.authToken);
+      // dispatch(clearState());
+      //getPreEnquiryListFromServer();
+    }
+    else if (selector.menuListStatus == "failed") {
+      showToast("something went wrong");
+    }
+  }, [selector.menuListStatus, selector.branchesList])
+
+  const getPreEnquiryListFromServer = async () => {
+    let endUrl = "?limit=10&offset=" + "0" + "&status=PREENQUIRY&empId=" + selector.empId;
+    dispatch(getPreEnquiryData(endUrl))
+  }
 
   const forgotClicked = () => {
     navigation.navigate(AuthNavigator.AuthStackIdentifiers.FORGOT);
@@ -141,7 +148,7 @@ const LoginScreen = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
 
       <LoaderComponent
-        visible={selector.showLoader}
+        visible={selector.isLoading}
         onRequestClose={() => { }}
       />
 
