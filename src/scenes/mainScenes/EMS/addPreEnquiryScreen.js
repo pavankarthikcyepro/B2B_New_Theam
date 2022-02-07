@@ -61,12 +61,14 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   const [showEventModel, setShowEventModel] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [datePickerId, setDatePickerId] = useState("");
+  const [userToken, setUserToken] = useState("");
 
   useEffect(() => {
     getAsyncstoreData();
     setExistingData();
     updateCarModelsData();
     getBranchId()
+    getAuthToken()
     // getCustomerTypeListFromDB();
     // getCarModalListFromDB();
   }, []);
@@ -103,8 +105,14 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   const getBranchId = () => {
 
     AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then((branchId) => {
-      console.log("branch id:", branchId)
       setBranchId(branchId);
+    });
+  }
+
+  const getAuthToken = () => {
+
+    AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
+      setUserToken(branchId);
     });
   }
 
@@ -309,8 +317,47 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       return;
     }
 
+    // Genereate new ref number
+    getReferenceNumber();
+  };
+
+  const getReferenceNumber = async () => {
+
+    const bodyObj = {
+      "branchid": Number(branchId),
+      "leadstage": "PREENQUIRY",
+      "orgid": userData.orgId
+    }
+
+    await fetch(URL.CUSTOMER_LEAD_REFERENCE(), {
+      method: "POST",
+      headers: {
+        'Accept': "application/json",
+        'Content-Type': 'application/json',
+        "auth-token": userToken
+      },
+      body: JSON.stringify(bodyObj)
+    })
+      .then((response) => response.json())
+      .then((jsonObj) => {
+
+        if (jsonObj.success == true) {
+          const dmsEntiry = jsonObj.dmsEntity;
+          const refNumber = dmsEntiry.leadCustomerReference.referencenumber;
+          makeCreatePreEnquiry(refNumber);
+        } else {
+          showToast("Refrence number failed")
+        }
+      })
+      .catch(error => {
+        showToastRedAlert(error.message);
+      })
+  }
+
+  const makeCreatePreEnquiry = (refNumber) => {
+
     const dmsContactDtoObj = {
-      branchId: branchId,
+      branchId: Number(branchId),
       createdBy: employeeName,
       customerType: selector.customerType,
       firstName: selector.firstName,
@@ -326,11 +373,8 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       status: "PREENQUIRY",
     };
 
-    // TODO:-
-    // "referencenumber": "PEQ11020421-391"
-
     const dmsLeadDtoObj = {
-      branchId: branchId,
+      branchId: Number(branchId),
       createdBy: employeeName,
       enquirySegment: selector.enquiryType,
       firstName: selector.firstName,
@@ -342,6 +386,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       model: selector.carModel,
       sourceOfEnquiry: selector.sourceOfEnquiryId,
       eventCode: selector.eventName,
+      referencenumber: refNumber,
       dmsAddresses: [
         {
           addressType: "Communication",
@@ -397,7 +442,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       body: formData,
     };
     dispatch(createPreEnquiry(dataObj));
-  };
+  }
 
   // Handle Create Enquiry response
   useEffect(() => {
