@@ -33,8 +33,8 @@ const EnquiryScreen = ({ navigation }) => {
   useEffect(() => {
 
     // Get Data From Server
-    const currentDate = moment().format(dateFormat)
-    const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(1, 'months').startOf('month').format(dateFormat);
+    const currentDate = moment().add(1, "day").format(dateFormat)
+    const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
     setSelectedFromDate(lastMonthFirstDate);
     setSelectedToDate(currentDate);
     getAsyncData(lastMonthFirstDate, currentDate);

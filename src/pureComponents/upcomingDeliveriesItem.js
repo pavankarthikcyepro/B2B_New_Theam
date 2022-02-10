@@ -46,14 +46,9 @@ export const UpcomingDeliveriesItem = ({
           <NameComp label={'Chassis No'} value={chasissNo} />
         </View>
         <View style={styles.rightView}>
-          <Button
-            mode="contained"
-            contentStyle={{ height: modelName ? 30 : 0, backgroundColor: Colors.RED }}
-            labelStyle={{ fontSize: 12, fontWeight: "600" }}
-            onPress={() => console.log("Pressed")}
-          >
-            {modelName}
-          </Button>
+          <View style={styles.modelBckView}>
+            <Text style={styles.text4}>{modelName}</Text>
+          </View>
           <IconButton
             icon="phone"
             color={Colors.GREEN}
@@ -104,5 +99,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: 'center',
     height: 25
+  },
+  modelBckView: {
+    paddingHorizontal: 5,
+    paddingVertical: 3,
+    borderWidth: 1,
+    borderColor: Colors.RED,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 4
+  },
+  text4: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: Colors.RED
   }
 });

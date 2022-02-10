@@ -115,10 +115,17 @@ const LoginScreen = ({ navigation }) => {
 
     if (selector.menuListStatus == "completed") {
       console.log("branchList: ", selector.branchesList.length);
-      navigation.navigate(AuthNavigator.AuthStackIdentifiers.SELECT_BRANCH, { branches: selector.branchesList })
-
-      // signIn(selector.authToken);
-      // dispatch(clearState());
+      if (selector.branchesList.length > 1) {
+        navigation.navigate(AuthNavigator.AuthStackIdentifiers.SELECT_BRANCH, { branches: selector.branchesList })
+      }
+      else if (selector.branchesList.length > 0) {
+        const branchId = selector.branchesList[0].branchId;
+        AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_ID, branchId.toString());
+        signIn(selector.authToken);
+        dispatch(clearState());
+      } else {
+        showToast("No branches found")
+      }
       //getPreEnquiryListFromServer();
     }
     else if (selector.menuListStatus == "failed") {

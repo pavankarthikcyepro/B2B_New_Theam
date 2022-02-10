@@ -32,16 +32,6 @@ export const createPreEnquiry = createAsyncThunk('ADD_PRE_ENQUIRY_SLICE/createPr
     return json;
 })
 
-export const createReferenceNumber = createAsyncThunk('ADD_PRE_ENQUIRY_SLICE/createReferenceNumber', async (payload: any, { rejectWithValue }) => {
-
-    const response = await client.post(URL.CUSTOMER_LEAD_REFERENCE(), payload);
-    const json = await response.json()
-    if (!response.ok) {
-        return rejectWithValue(json);
-    }
-    return json;
-})
-
 export const continueToCreatePreEnquiry = createAsyncThunk('ADD_PRE_ENQUIRY_SLICE/continueToCreatePreEnquiry', async (data, { rejectWithValue }) => {
 
     const response = await client.post(data['url'], data['body']);
@@ -113,8 +103,6 @@ export const addPreEnquirySlice = createSlice({
         create_enquiry_response_obj: {},
         event_list: [],
         event_list_response_status: "",
-        referenceNumber: "",
-        referenceNumberStatus: ""
     },
     reducers: {
         clearState: (state) => {
@@ -316,23 +304,6 @@ export const addPreEnquirySlice = createSlice({
                 console.log("F getEventListApi: ", JSON.stringify(action.payload));
                 state.event_list_response_status = "failed";
                 state.isLoading = false;
-            })
-            // Create Ref Number
-            .addCase(createReferenceNumber.pending, (state, action) => {
-
-                state.referenceNumber = "";
-            })
-            .addCase(createReferenceNumber.fulfilled, (state, action) => {
-
-                if (action.payload.success == true) {
-                    const dmsEntiry = action.payload.dmsEntity;
-                    const refNumber = dmsEntiry.leadCustomerReference.referencenumber;
-                    state.referenceNumber = refNumber;
-                }
-            })
-            .addCase(createReferenceNumber.rejected, (state, action) => {
-
-                state.referenceNumber = "";
             })
     }
 });

@@ -2727,7 +2727,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 <Button
                   mode="contained"
                   color={Colors.RED}
-                  disabled={selector.isLoading}
+                  disabled={uploadedImagesDataObj.receipt ? (selector.isLoading == true ? true : false) : true}
                   labelStyle={{ textTransform: "none" }}
                   onPress={proceedToBookingClicked}
                 >
