@@ -92,6 +92,40 @@ import URL from "../../../networking/endpoints";
 
 const rupeeSymbol = "\u20B9";
 
+const CheckboxTextAndAmountComp = ({
+  title,
+  amount,
+  titleStyle = {},
+  amoutStyle = {},
+  isChecked = false,
+  onPress
+}) => {
+  return (
+    <View style={[styles.textAndAmountView, { paddingLeft: 2 }]} >
+      <View style={{ flex: 1, flexDirection: "row", alignItems: 'center' }}>
+        <Checkbox.Android
+          style={{ padding: 0, margin: 0 }}
+          status={isChecked ? 'checked' : 'unchecked'}
+          color={Colors.BLUE}
+          uncheckedColor={Colors.GRAY}
+          onPress={onPress}
+        />
+        <Text
+          style={[
+            { fontSize: 14, fontWeight: "400", maxWidth: "70%", color: Colors.GRAY },
+            titleStyle,
+          ]}
+        >
+          {title}
+        </Text>
+      </View>
+      <Text style={[{ fontSize: 14, fontWeight: "400" }, amoutStyle]}>
+        {rupeeSymbol + " " + amount}
+      </Text>
+    </View>
+  );
+};
+
 const TextAndAmountComp = ({
   title,
   amount,
@@ -163,6 +197,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [showSubmitDropBtn, setShowSubmitDropBtn] = useState(false);
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
   const [isRejectSelected, setIsRejectSelected] = useState(false);
+  const [userToken, setUserToken] = useState("");
+
+  const [handlingChargSlctd, setHandlingChargSlctd] = useState(false);
+  const [essentialKitSlctd, setEssentialKitSlctd] = useState(false);
+  const [fastTagSlctd, setFastTagSlctd] = useState(false);
 
   useLayoutEffect(() => {
 
@@ -187,9 +226,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     setComponentAppear(true);
     getAsyncstoreData();
+    getAuthToken();
     dispatch(getCustomerTypesApi());
     setCarModelsDataFromBase();
     getPreBookingDetailsFromServer();
+    getBanksListFromServer();
 
     BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
     return () => {
@@ -235,10 +276,35 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
   }
 
+  const getAuthToken = () => {
+
+    AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
+      setUserToken(token);
+    });
+  }
+
   const getPreBookingDetailsFromServer = () => {
     if (universalId) {
       dispatch(getPrebookingDetailsApi(universalId));
     }
+  }
+
+  const getBanksListFromServer = async () => {
+
+    await fetch(URL.GET_BANK_DETAILS(), {
+      method: "GET",
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'auth-token': userToken
+      }
+    })
+      .then((response) => response.json())
+      .then((json) => {
+        console.log(json)
+      })
+      .catch((error) => { })
+
   }
 
   const setCarModelsDataFromBase = () => {
@@ -551,7 +617,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
   }
 
-  const calculateOnRoadPrice = () => {
+  const calculateOnRoadPrice = (handleSelected, essentialSelected, fastTagSelected) => {
 
     let totalPrice = 0;
     totalPrice += priceInfomationData.ex_showroom_price;
@@ -560,11 +626,17 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     totalPrice += selectedInsurencePrice;
     totalPrice += selectedAddOnsPrice;
     totalPrice += selectedWarrentyPrice;
-    totalPrice += priceInfomationData.handling_charges;
-    totalPrice += priceInfomationData.essential_kit;
+    if (handleSelected) {
+      totalPrice += priceInfomationData.handling_charges;
+    }
+    if (essentialSelected) {
+      totalPrice += priceInfomationData.essential_kit;
+    }
     totalPrice += getTcsAmount();
     totalPrice += selectedPaidAccessoriesPrice;
-    totalPrice += priceInfomationData.fast_tag;
+    if (fastTagSelected) {
+      totalPrice += priceInfomationData.fast_tag;
+    }
     setTotalOnRoadPrice(totalPrice);
     setTotalOnRoadPriceAfterDiscount(totalPrice);
   }
@@ -1374,6 +1446,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     style={{ height: 65, width: "100%" }}
                     value={selector.age}
                     label={"Age"}
+                    maxLength={3}
                     keyboardType={"number-pad"}
                     onChangeText={(text) =>
                       dispatch(setCustomerDetails({ key: "AGE", text: text }))
@@ -1986,7 +2059,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   fontWeight: "600",
                 }}
                 descriptionStyle={{
-                  color: openAccordian === "6" ? Colors.WHITE : Colors.RED,
+                  color: openAccordian === "6" ? Colors.WHITE : Colors.BLUE,
                   paddingTop: 5, fontSize: 16, fontWeight: "600"
                 }}
                 style={{
@@ -2079,10 +2152,26 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 </View>
                 <Text style={GlobalStyle.underline}></Text>
 
-                <TextAndAmountComp title={"Handling Charges:"} amount={priceInfomationData.handling_charges.toFixed(2)} />
+                <CheckboxTextAndAmountComp
+                  title={"Handling Charges:"}
+                  amount={handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : "0.00"}
+                  isChecked={handlingChargSlctd}
+                  onPress={() => {
+                    setHandlingChargSlctd(!handlingChargSlctd);
+                    calculateOnRoadPrice(!handlingChargSlctd, essentialKitSlctd, fastTagSlctd);
+                  }}
+                />
                 <Text style={GlobalStyle.underline}></Text>
 
-                <TextAndAmountComp title={"Essential Kit:"} amount={priceInfomationData.essential_kit.toFixed(2)} />
+                <CheckboxTextAndAmountComp
+                  title={"Essential Kit:"}
+                  amount={essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : "0.00"}
+                  isChecked={essentialKitSlctd}
+                  onPress={() => {
+                    setEssentialKitSlctd(!essentialKitSlctd);
+                    calculateOnRoadPrice(handlingChargSlctd, !essentialKitSlctd, fastTagSlctd);
+                  }}
+                />
                 <Text style={GlobalStyle.underline}></Text>
 
                 <TextAndAmountComp
@@ -2096,7 +2185,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 </Pressable>
                 <Text style={GlobalStyle.underline}></Text>
 
-                <TextAndAmountComp title={"Fast Tag:"} amount={priceInfomationData.fast_tag.toFixed(2)} />
+                <CheckboxTextAndAmountComp
+                  title={"Fast Tag:"}
+                  amount={fastTagSlctd ? priceInfomationData.fast_tag.toFixed(2) : "0.00"}
+                  isChecked={fastTagSlctd}
+                  onPress={() => {
+                    setFastTagSlctd(!fastTagSlctd)
+                    calculateOnRoadPrice(handlingChargSlctd, essentialKitSlctd, !fastTagSlctd);
+                  }}
+                />
                 <Text style={GlobalStyle.underline}></Text>
 
                 <TextAndAmountComp
@@ -2120,7 +2217,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   fontWeight: "600",
                 }}
                 descriptionStyle={{
-                  color: openAccordian === "7" ? Colors.WHITE : Colors.RED,
+                  color: openAccordian === "7" ? Colors.WHITE : Colors.BLUE,
                   paddingTop: 5, fontSize: 16, fontWeight: "600"
                 }}
                 style={{
@@ -2134,6 +2231,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   value={selector.consumer_offer}
                   showLeftAffixText={true}
                   leftAffixText={rupeeSymbol}
+                  keyboardType='number-pad'
                   onChangeText={(text) =>
                     dispatch(
                       setOfferPriceDetails({
@@ -2149,6 +2247,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   label={"Exchange Offer:"}
                   value={selector.exchange_offer}
                   showLeftAffixText={true}
+                  keyboardType='number-pad'
                   leftAffixText={rupeeSymbol}
                   onChangeText={(text) =>
                     dispatch(
@@ -2166,6 +2265,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   value={selector.corporate_offer}
                   showLeftAffixText={true}
                   leftAffixText={rupeeSymbol}
+                  keyboardType='number-pad'
                   onChangeText={(text) =>
                     dispatch(
                       setOfferPriceDetails({
@@ -2181,6 +2281,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   label={"Promotional Offer:"}
                   value={selector.promotional_offer}
                   showLeftAffixText={true}
+                  keyboardType='number-pad'
                   leftAffixText={rupeeSymbol}
                   onChangeText={(text) =>
                     dispatch(
@@ -2197,6 +2298,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   label={"Cash Discount:"}
                   value={selector.cash_discount}
                   showLeftAffixText={true}
+                  keyboardType='number-pad'
                   leftAffixText={rupeeSymbol}
                   onChangeText={(text) =>
                     dispatch(
@@ -2213,6 +2315,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   label={"Foc Accessories:"}
                   value={selector.for_accessories}
                   showLeftAffixText={true}
+                  keyboardType='number-pad'
                   leftAffixText={rupeeSymbol}
                   onChangeText={(text) =>
                     dispatch(
@@ -2229,6 +2332,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   label={"Additional Offer 1:"}
                   value={selector.additional_offer_1}
                   showLeftAffixText={true}
+                  keyboardType='number-pad'
                   leftAffixText={rupeeSymbol}
                   onChangeText={(text) =>
                     dispatch(
@@ -2245,6 +2349,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   label={"Additional Offer 2:"}
                   value={selector.additional_offer_2}
                   showLeftAffixText={true}
+                  keyboardType='number-pad'
                   leftAffixText={rupeeSymbol}
                   onChangeText={(text) =>
                     dispatch(

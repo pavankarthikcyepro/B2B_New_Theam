@@ -300,7 +300,7 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
 
     displayCreateEnquiryAlert = () => {
         let refNumber = "";
-        if (selector.update_enquiry_details_response) {
+        if (selector.update_enquiry_details_response && identifier != "PROCEED_TO_BOOKING") {
             refNumber = selector.update_enquiry_details_response.dmsLeadDto.referencenumber;
         }
         let title = identifier === "PROCEED_TO_BOOKING" ? 'Booking Created Successfully' : 'Pre Booking Created Successfully';

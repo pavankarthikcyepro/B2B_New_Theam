@@ -59,26 +59,26 @@ const ComplaintsScreen = ({ navigation }) => {
       "reportIdentifier": 1215,
       "paginationRequired": true,
       "empId": empId,
-      // "where": [
-      //   {
-      //     "type": "date",
-      //     "key": "from_date.fromDATE(dl.createddatetime)",
-      //     "values": [
-      //       {
-      //         "value": startDate
-      //       }
-      //     ]
-      //   },
-      //   {
-      //     "type": "date",
-      //     "key": "to_date.toDATE(dl.createddatetime)",
-      //     "values": [
-      //       {
-      //         "value": endDate
-      //       }
-      //     ]
-      //   }
-      // ]
+      "where": [
+        {
+          "type": "date",
+          "key": "from_date.fromDATE(dl.createddatetime)",
+          "values": [
+            {
+              "value": startDate
+            }
+          ]
+        },
+        {
+          "type": "date",
+          "key": "to_date.toDATE(dl.createddatetime)",
+          "values": [
+            {
+              "value": endDate
+            }
+          ]
+        }
+      ]
     }
   }
 

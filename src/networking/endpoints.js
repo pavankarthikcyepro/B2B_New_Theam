@@ -30,6 +30,7 @@ export const dynamicReports_url = "http://automatestaging-724985329.ap-south-1.e
 export const dynamicForms = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/dynamic-forms";
 export const orgnaizationHirarchy = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/oh";
 export const dashboard = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/dashboard";
+export const dfGetAll = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/df-get-all"
 
 // Dev End Points
 /*
@@ -171,7 +172,8 @@ const URL = {
     },
     GET_TARGET_PARAMS: () => dashboard + "/v2/get_target_params",
     GET_SALES_DATA: () => dashboard + "/v2/get_sales_data",
-    GET_SALES_COMPARISON_DATA: () => dashboard + "/v2/get_sales_comparsion_data"
+    GET_SALES_COMPARISON_DATA: () => dashboard + "/v2/get_sales_comparsion_data",
+    GET_BANK_DETAILS: () => dfGetAll + "/1/bankFinancier"
 }
 
 // http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/oh/active-dropdowns/13/412

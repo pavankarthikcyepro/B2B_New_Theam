@@ -1215,6 +1215,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   value={selector.occupation}
                   label={"Occupation*"}
                   keyboardType={"default"}
+                  maxLength={40}
                   onChangeText={(text) =>
                     dispatch(
                       setCustomerProfile({ key: "OCCUPATION", text: text })
@@ -1227,6 +1228,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   value={selector.designation}
                   label={"Designation*"}
                   keyboardType={"default"}
+                  maxLength={40}
                   onChangeText={(text) =>
                     dispatch(
                       setCustomerProfile({ key: "DESIGNATION", text: text })
@@ -1581,6 +1583,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.pincode}
                   label={"Pincode*"}
+                  maxLength={6}
                   keyboardType={"phone-pad"}
                   onChangeText={(text) =>
                     dispatch(
@@ -1622,6 +1625,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.houseNum}
                   label={"H.No*"}
+                  maxLength={50}
                   keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
@@ -1634,6 +1638,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.streetName}
                   label={"Street Name*"}
+                  maxLength={50}
                   keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
@@ -1649,6 +1654,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.village}
                   label={"Village/Town*"}
+                  maxLength={50}
                   keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
@@ -1661,6 +1667,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.city}
                   label={"City*"}
+                  maxLength={50}
                   keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
@@ -1673,6 +1680,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.district}
                   label={"District*"}
+                  maxLength={50}
                   keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
@@ -1685,6 +1693,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.state}
                   label={"State*"}
+                  maxLength={50}
                   keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
@@ -1719,6 +1728,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.p_pincode}
                   label={"Pincode*"}
+                  maxLength={6}
                   keyboardType={"phone-pad"}
                   onChangeText={(text) =>
                     dispatch(
@@ -1765,6 +1775,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   label={"H.No*"}
                   keyboardType={"default"}
+                  maxLength={50}
                   value={selector.p_houseNum}
                   onChangeText={(text) =>
                     dispatch(
@@ -1780,6 +1791,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   label={"Street Name*"}
                   keyboardType={"default"}
+                  maxLength={50}
                   value={selector.p_streetName}
                   onChangeText={(text) =>
                     dispatch(
@@ -1795,6 +1807,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.p_village}
                   label={"Village/Town*"}
+                  maxLength={50}
                   keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
@@ -1810,6 +1823,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.p_city}
                   label={"City*"}
+                  maxLength={50}
                   keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
@@ -1822,6 +1836,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.p_district}
                   label={"District*"}
+                  maxLength={50}
                   keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
@@ -1837,6 +1852,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.p_state}
                   label={"State*"}
+                  maxLength={50}
                   keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
@@ -2250,6 +2266,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       style={{ height: 65, width: "100%" }}
                       label={"Variant"}
                       editable={true}
+                      maxLength={40}
                       value={selector.c_variant}
                       onChangeText={(text) =>
                         dispatch(
@@ -2266,6 +2283,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       style={{ height: 65, width: "100%" }}
                       label={"Color"}
                       editable={true}
+                      maxLength={40}
                       value={selector.c_color}
                       onChangeText={(text) =>
                         dispatch(

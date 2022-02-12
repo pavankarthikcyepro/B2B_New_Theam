@@ -62,6 +62,7 @@ const SelectBranchComp = ({ route, navigation }) => {
                                             value="first"
                                             color={Colors.RED}
                                             uncheckedColor={Colors.GRAY}
+                                            onPress={() => setSelectedBranchId(item.branchId)}
                                             status={item.branchId == selectedBranchId ? 'checked' : 'unchecked'}
                                         />
                                         <Text style={styles.titleNameStyle}>{item.branchName}</Text>

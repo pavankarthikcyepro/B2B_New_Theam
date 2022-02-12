@@ -112,7 +112,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   const getAuthToken = () => {
 
     AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
-      setUserToken(branchId);
+      setUserToken(token);
     });
   }
 
@@ -531,7 +531,12 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         setDataForDropDown([...homeSelector.source_of_enquiry_list]);
         break;
       case "EVENT_NAME":
-        setDataForDropDown([...selector.event_list]);
+        if (selector.event_list.length > 0) {
+          setDataForDropDown([...selector.event_list]);
+        } else {
+          showToast("No events found")
+          return;
+        }
         break;
     }
     setDropDownKey(key);
@@ -545,6 +550,10 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   }
 
   const getEventListFromServer = (startDate, endDate) => {
+
+    if (startDate === undefined || startDate === null || endDate === undefined || endDate === null) {
+      return;
+    }
 
     const payload = {
       startDate: startDate,
@@ -645,6 +654,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               style={styles.textInputComp}
               value={selector.firstName}
               label={"First Name*"}
+              maxLength={30}
               keyboardType={"default"}
               onChangeText={(text) =>
                 dispatch(
@@ -658,6 +668,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               style={styles.textInputComp}
               value={selector.lastName}
               label={"Last Name*"}
+              maxLength={30}
               keyboardType={"default"}
               onChangeText={(text) =>
                 dispatch(setPreEnquiryDetails({ key: "LAST_NAME", text: text }))
@@ -695,6 +706,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               style={styles.textInputComp}
               value={selector.email}
               label={"Email-Id"}
+              maxLength={40}
               keyboardType={"email-address"}
               onChangeText={(text) =>
                 dispatch(setPreEnquiryDetails({ key: "EMAIL", text: text }))

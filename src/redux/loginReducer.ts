@@ -124,6 +124,7 @@ export const loginSlice = createSlice({
             state.userData = {};
             state.empId = "";
             state.menuListStatus = "";
+            state.branchesList = [];
         },
         updateEmployeeId: (state, action: PayloadAction<string>) => {
             let employeeId = action.payload;

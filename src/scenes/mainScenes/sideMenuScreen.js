@@ -111,6 +111,7 @@ const SideMenuScreen = ({ navigation }) => {
 
     AsyncStore.storeData(AsyncStore.Keys.USER_NAME, "");
     AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, "");
+    AsyncStore.storeData(AsyncStore.Keys.EMP_ID, "");
     AsyncStore.storeData(AsyncStore.Keys.LOGIN_EMPLOYEE, "");
     AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_ID, "");
     navigation.closeDrawer()
