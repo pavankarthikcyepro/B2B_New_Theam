@@ -324,6 +324,7 @@ const prebookingFormSlice = createSlice({
     form_or_pan: "",
     customer_type_category: "",
     adhaar_number: "",
+    pan_number: "",
     relationship_proof: "",
     gstin_number: "",
     // Booking Drop
@@ -449,6 +450,7 @@ const prebookingFormSlice = createSlice({
       state.form_or_pan = "";
       state.customer_type_category = "";
       state.adhaar_number = "";
+      state.pan_number = "";
       state.relationship_proof = "";
       state.gstin_number = "";
       // Booking Drop
@@ -824,6 +826,8 @@ const prebookingFormSlice = createSlice({
         case "ADHAR":
           state.adhaar_number = text;
           break;
+        case "PAN_NUMBER":
+          state.pan_number = text;
         case "RELATIONSHIP_PROOF":
           state.relationship_proof = text;
           break;
@@ -1017,6 +1021,24 @@ const prebookingFormSlice = createSlice({
       state.booking_payment_mode = dataObj.modeOfPayment ? dataObj.modeOfPayment : "";
       state.delivery_location = dataObj.deliveryLocation ? dataObj.deliveryLocation : "";
       state.vechicle_registration = dataObj.otherVehicle ? dataObj.otherVehicle : false;
+    },
+    updateDmsAttachments: (state, action) => {
+
+      state.pan_number = "";
+      state.adhaar_number = "";
+
+      const dmsAttachments = action.payload;
+      const attachments = [...dmsAttachments];
+      if (attachments.length > 0) {
+        attachments.forEach((item, index) => {
+          if (item.documentType === "pan") {
+            state.pan_number = item.documentNumber;
+          }
+          else if (item.documentType === "aadhar") {
+            state.adhaar_number = item.documentNumber;
+          }
+        })
+      }
     }
   },
   extraReducers: (builder) => {
@@ -1376,5 +1398,6 @@ export const {
   updateModelSelectionData,
   updateFinancialData,
   updateBookingPaymentData,
+  updateDmsAttachments
 } = prebookingFormSlice.actions;
 export default prebookingFormSlice.reducer;

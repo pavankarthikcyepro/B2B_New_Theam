@@ -169,11 +169,9 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       itemData.pincode = dms.dmsAddresses ? dms.dmsAddresses[0].pincode : "";
       itemData.leadStage = dms.leadStage;
       itemData.universalId = dms.crmUniversalId;
+      itemData.referencenumber = dms.referencenumber;
       if (!fromEdit) {
-        navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq, {
-          itemData,
-          fromCreatePreEnquiry: true,
-        });
+        showSucessAlert(itemData);
       } else {
         navigation.popToTop();
       }
@@ -185,6 +183,34 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         showToast(response.message);
       }
     }
+  };
+
+  const showSucessAlert = (itemData) => {
+
+    const title = `Pre-Enquiry Successfully Created \n Ref Num: ${itemData.referencenumber}`
+
+    Alert.alert(
+      title,
+      "Do you want to continue to create Enquiry",
+      [
+        {
+          text: "No, Thanks",
+          style: "cancel",
+          onPress: () => {
+            navigation.popToTop();
+          }
+        },
+        {
+          text: "Create Enquiry", onPress: () => {
+            navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq, {
+              itemData,
+              fromCreatePreEnquiry: true,
+            });
+          }
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   const confirmToCreateLeadAgain = (response) => {
@@ -447,7 +473,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   // Handle Create Enquiry response
   useEffect(() => {
     if (selector.create_enquiry_response_obj.errorMessage === "") {
-      //navigation.goBack();
       gotoConfirmPreEnquiryScreen(selector.create_enquiry_response_obj);
     } else if (selector.errorMsg) {
       showToast(selector.errorMsg);

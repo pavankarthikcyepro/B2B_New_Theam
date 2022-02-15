@@ -43,6 +43,7 @@ import {
   updateModelSelectionData,
   updateFinancialData,
   updateBookingPaymentData,
+  updateDmsAttachments,
   getOnRoadPriceAndInsurenceDetailsApi,
   getPaidAccessoriesListApi,
   dropPreBooingApi,
@@ -357,6 +358,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       dispatch(updateBookingPaymentData(dmsLeadDto.dmsBooking));
       // Update Attachment details
       saveAttachmentDetailsInLocalObject(dmsLeadDto.dmsAttachments);
+      dispatch(updateDmsAttachments(dmsLeadDto.dmsAttachments))
 
       // Update Paid Accesories
       if (dmsLeadDto.dmsAccessories.length > 0) {
@@ -377,7 +379,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           documentPath: item.documentPath,
           documentType: item.documentType,
           fileName: item.fileName,
-          keyName: item.keyName
+          keyName: item.keyName,
+          documentNumber: item.documentNumber
         }
         dataObj[item.documentType] = obj;
       })
@@ -1950,6 +1953,17 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 {selector.form_or_pan === "PAN" && (
                   <View>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.pan_number}
+                      label={"PAN Number*"}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setDocumentUploadDetails({ key: "PAN_NUMBER", text: text })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"PAN"}

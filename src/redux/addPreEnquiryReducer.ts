@@ -241,6 +241,7 @@ export const addPreEnquirySlice = createSlice({
             .addCase(createPreEnquiry.pending, (state, action) => {
                 state.isLoading = true;
                 state.status = "pending";
+                state.create_enquiry_response_obj = {};
             })
             .addCase(createPreEnquiry.fulfilled, (state, action) => {
                 //console.log('res2: ', action.payload);
@@ -258,7 +259,7 @@ export const addPreEnquirySlice = createSlice({
                 }
                 state.isLoading = false;
                 state.status = "failed";
-                console.log('res3: ', action.payload);
+                state.create_enquiry_response_obj = {};
             })
             .addCase(updatePreEnquiry.pending, (state, action) => {
                 state.isLoading = true;
