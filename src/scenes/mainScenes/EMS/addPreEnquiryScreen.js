@@ -584,7 +584,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       startDate: startDate,
       endDate: endDate,
       empId: userData.employeeId,
-      branchId: userData.branchId,
+      branchId: branchId,
       orgId: userData.orgId
     }
     dispatch(getEventListApi(payload));

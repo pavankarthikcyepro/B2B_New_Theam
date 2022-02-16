@@ -1245,6 +1245,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     )
   }
 
+  const emiCal = (principle, tenure, interestRate) => {
+    if (principle !== '' && tenure !== '' && interestRate !== '') {
+      let P = principle;
+      const R = interestRate;
+      const N = tenure;
+      const monthlyInterstRatio = (R / 100) / 12;
+      const top = Math.pow((1 + monthlyInterstRatio), N);
+      const bottom = top - 1;
+      const sp = top / bottom;
+      const emi = ((P * monthlyInterstRatio) * sp);
+      const full = N * emi;
+      const interest = full - P;
+      let int_pge = (interest / full) * 100;
+      dispatch(setFinancialDetails({ key: "EMI", text: Math.round(emi).toString() }))
+    }
+  }
+
   if (!componentAppear) {
     return (
       <View style={styles.initialContainer}>
@@ -1779,10 +1796,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               </List.Accordion>
               <View style={styles.space}></View>
 
-              {/* // 4.Financial Details */}
+              {/* // 4.Document Upload */}
               <List.Accordion
                 id={"4"}
-                title={"Financial Details"}
+                title={"Document Upload"}
                 titleStyle={{
                   color: openAccordian === "4" ? Colors.WHITE : Colors.BLACK,
                   fontSize: 16,
@@ -1791,158 +1808,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 style={{
                   backgroundColor:
                     openAccordian === "4" ? Colors.RED : Colors.WHITE,
-                }}
-              >
-                <DropDownSelectionItem
-                  label={"Retail Finance"}
-                  value={selector.retail_finance}
-                  onPress={() => showDropDownModelMethod("RETAIL_FINANCE", "Retail Finance")}
-                />
-
-                {selector.retail_finance === "Out House" ? (
-                  <View>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Bank/Finance Name"}
-                      value={selector.bank_or_finance_name}
-                      onChangeText={(text) => dispatch(setFinancialDetails({ key: "BANK_R_FINANCE_NAME", text: text, }))}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Location"}
-                      value={selector.location}
-                      onChangeText={(text) => dispatch(setFinancialDetails({ key: "LOCATION", text: text }))}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>
-                ) : null}
-
-                {selector.retail_finance === "Leashing" && (
-                  <View>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Leashing Name"}
-                      value={selector.leashing_name}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setFinancialDetails({
-                            key: "LEASHING_NAME",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>
-                )}
-
-                {selector.retail_finance === "In House" && (
-                  <DropDownSelectionItem
-                    label={"Finance Category"}
-                    value={selector.finance_category}
-                    onPress={() => showDropDownModelMethod("FINANCE_CATEGORY", "Finance Category")}
-                  />)}
-
-                {selector.retail_finance === "In House" && (
-                  <View>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Down Payment*"}
-                      value={selector.down_payment}
-                      keyboardType={"number-pad"}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setFinancialDetails({ key: "DOWN_PAYMENT", text: text })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>
-                )}
-
-                {(selector.retail_finance === "In House" ||
-                  selector.retail_finance === "Out House") && (
-                    <View>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Loan Amount*"}
-                        keyboardType={"number-pad"}
-                        value={selector.loan_amount}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setFinancialDetails({ key: "LOAN_AMOUNT", text: text })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Rate of Interest*"}
-                        keyboardType={"number-pad"}
-                        value={selector.rate_of_interest}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setFinancialDetails({
-                              key: "RATE_OF_INTEREST",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  )}
-
-                {selector.retail_finance === "In House" && (
-                  <View>
-                    <DropDownSelectionItem
-                      label={"Bank/Financer"}
-                      value={selector.bank_or_finance}
-                      onPress={() => showDropDownModelMethod("BANK_FINANCE", "Bank/Financer")}
-                    />
-
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Loan of Tenure(Months)"}
-                      value={selector.loan_of_tenure}
-                      keyboardType={"number-pad"}
-                      onChangeText={(text) => dispatch(setFinancialDetails({ key: "LOAN_OF_TENURE", text: text }))}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"EMI*"}
-                      value={selector.emi}
-                      keyboardType={"number-pad"}
-                      onChangeText={(text) => dispatch(setFinancialDetails({ key: "EMI", text: text }))}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-
-                    <DropDownSelectionItem
-                      label={"Approx Annual Income"}
-                      value={selector.approx_annual_income}
-                      onPress={() => showDropDownModelMethod("APPROX_ANNUAL_INCOME", "Approx Annual Income")}
-                    />
-                  </View>
-                )}
-              </List.Accordion>
-              <View style={styles.space}></View>
-
-              {/* // 5.Document Upload */}
-              <List.Accordion
-                id={"5"}
-                title={"Document Upload"}
-                titleStyle={{
-                  color: openAccordian === "5" ? Colors.WHITE : Colors.BLACK,
-                  fontSize: 16,
-                  fontWeight: "600",
-                }}
-                style={{
-                  backgroundColor:
-                    openAccordian === "5" ? Colors.RED : Colors.WHITE,
                 }}
               >
                 <DropDownSelectionItem
@@ -2062,23 +1927,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               </List.Accordion>
               <View style={styles.space}></View>
 
-              {/* // 6.Price Confirmation */}
+              {/* // 5.Price Confirmation */}
               <List.Accordion
-                id={"6"}
+                id={"5"}
                 title={"Price Confirmation"}
                 description={rupeeSymbol + " " + totalOnRoadPrice.toFixed(2)}
                 titleStyle={{
-                  color: openAccordian === "6" ? Colors.WHITE : Colors.BLACK,
+                  color: openAccordian === "5" ? Colors.WHITE : Colors.BLACK,
                   fontSize: 16,
                   fontWeight: "600",
                 }}
                 descriptionStyle={{
-                  color: openAccordian === "6" ? Colors.WHITE : Colors.BLUE,
+                  color: openAccordian === "5" ? Colors.WHITE : Colors.BLUE,
                   paddingTop: 5, fontSize: 16, fontWeight: "600"
                 }}
                 style={{
                   backgroundColor:
-                    openAccordian === "6" ? Colors.RED : Colors.WHITE,
+                    openAccordian === "5" ? Colors.RED : Colors.WHITE,
                 }}
               >
                 <TextAndAmountComp title={"Ex-Showroom Price:"} amount={priceInfomationData.ex_showroom_price.toFixed(2)} />
@@ -2220,23 +2085,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               </List.Accordion>
               <View style={styles.space}></View>
 
-              {/* // 7.Offer Price */}
+              {/* // 6.Offer Price */}
               <List.Accordion
-                id={"7"}
+                id={"6"}
                 title={"Offer Price"}
                 description={rupeeSymbol + " " + totalOnRoadPriceAfterDiscount.toFixed(2)}
                 titleStyle={{
-                  color: openAccordian === "7" ? Colors.WHITE : Colors.BLACK,
+                  color: openAccordian === "6" ? Colors.WHITE : Colors.BLACK,
                   fontSize: 16,
                   fontWeight: "600",
                 }}
                 descriptionStyle={{
-                  color: openAccordian === "7" ? Colors.WHITE : Colors.BLUE,
+                  color: openAccordian === "6" ? Colors.WHITE : Colors.BLUE,
                   paddingTop: 5, fontSize: 16, fontWeight: "600"
                 }}
                 style={{
                   backgroundColor:
-                    openAccordian === "7" ? Colors.RED : Colors.WHITE,
+                    openAccordian === "6" ? Colors.RED : Colors.WHITE,
                 }}
               >
                 <TextinputComp
@@ -2383,6 +2248,164 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   amoutStyle={{ fontSize: 18, fontWeight: "800" }}
                 />
                 <Text style={GlobalStyle.underline}></Text>
+              </List.Accordion>
+              <View style={styles.space}></View>
+
+              {/* // 7.Financial Details */}
+              <List.Accordion
+                id={"7"}
+                title={"Financial Details"}
+                titleStyle={{
+                  color: openAccordian === "7" ? Colors.WHITE : Colors.BLACK,
+                  fontSize: 16,
+                  fontWeight: "600",
+                }}
+                style={{
+                  backgroundColor:
+                    openAccordian === "7" ? Colors.RED : Colors.WHITE,
+                }}
+              >
+                <DropDownSelectionItem
+                  label={"Retail Finance"}
+                  value={selector.retail_finance}
+                  onPress={() => showDropDownModelMethod("RETAIL_FINANCE", "Retail Finance")}
+                />
+
+                {selector.retail_finance === "Out House" ? (
+                  <View>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Bank/Finance Name"}
+                      value={selector.bank_or_finance_name}
+                      onChangeText={(text) => dispatch(setFinancialDetails({ key: "BANK_R_FINANCE_NAME", text: text, }))}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Location"}
+                      value={selector.location}
+                      onChangeText={(text) => dispatch(setFinancialDetails({ key: "LOCATION", text: text }))}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                ) : null}
+
+                {selector.retail_finance === "Leashing" && (
+                  <View>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Leashing Name"}
+                      value={selector.leashing_name}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setFinancialDetails({
+                            key: "LEASHING_NAME",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                )}
+
+                {selector.retail_finance === "In House" && (
+                  <DropDownSelectionItem
+                    label={"Finance Category"}
+                    value={selector.finance_category}
+                    onPress={() => showDropDownModelMethod("FINANCE_CATEGORY", "Finance Category")}
+                  />)}
+
+                {selector.retail_finance === "In House" && (
+                  <View>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Down Payment*"}
+                      value={selector.down_payment}
+                      keyboardType={"number-pad"}
+                      onChangeText={(text) => {
+                        if (text.length > 0) {
+                          const downPayment = Number(text);
+                          const loanAmount = (totalOnRoadPrice - downPayment).toFixed(0);
+                          dispatch(setFinancialDetails({ key: "LOAN_AMOUNT", text: `${loanAmount}` }))
+                        } else {
+                          dispatch(setFinancialDetails({ key: "LOAN_AMOUNT", text: "0" }))
+                        }
+                        dispatch(setFinancialDetails({ key: "DOWN_PAYMENT", text: text }))
+                      }}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                )}
+
+                {(selector.retail_finance === "In House" ||
+                  selector.retail_finance === "Out House") && (
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Loan Amount*"}
+                        keyboardType={"number-pad"}
+                        value={selector.loan_amount}
+                        onChangeText={(text) => {
+                          // Calculate EMI
+                          emiCal(text, selector.rate_of_interest, selector.loan_of_tenure)
+                          dispatch(setFinancialDetails({ key: "LOAN_AMOUNT", text: text }))
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Rate of Interest*"}
+                        keyboardType={"number-pad"}
+                        value={selector.rate_of_interest}
+                        onChangeText={(text) => {
+                          // Calculate EMI
+                          emiCal(selector.loan_amount, text, selector.loan_of_tenure)
+                          dispatch(setFinancialDetails({ key: "RATE_OF_INTEREST", text: text }))
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
+
+                {selector.retail_finance === "In House" && (
+                  <View>
+                    <DropDownSelectionItem
+                      label={"Bank/Financer"}
+                      value={selector.bank_or_finance}
+                      onPress={() => showDropDownModelMethod("BANK_FINANCE", "Bank/Financer")}
+                    />
+
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Loan of Tenure(Months)"}
+                      value={selector.loan_of_tenure}
+                      keyboardType={"number-pad"}
+                      onChangeText={(text) => {
+                        // Calculate EMI
+                        emiCal(selector.loan_amount, text, text)
+                        dispatch(setFinancialDetails({ key: "LOAN_OF_TENURE", text: text }))
+                      }}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"EMI*"}
+                      value={selector.emi}
+                      keyboardType={"number-pad"}
+                      onChangeText={(text) => dispatch(setFinancialDetails({ key: "EMI", text: text }))}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+
+                    <DropDownSelectionItem
+                      label={"Approx Annual Income"}
+                      value={selector.approx_annual_income}
+                      onPress={() => showDropDownModelMethod("APPROX_ANNUAL_INCOME", "Approx Annual Income")}
+                    />
+                  </View>
+                )}
               </List.Accordion>
               <View style={styles.space}></View>
 

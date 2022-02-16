@@ -34,7 +34,7 @@ export const CustomerTypesObj = {
         },
         {
             "id": "5",
-            "name": "Gevernament"
+            "name": "Government"
         },
         {
             "id": "6",
