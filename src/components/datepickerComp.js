@@ -10,7 +10,6 @@ const DatePickerComponent = ({ visible = false, onRequestClose, value, mode = "d
 
     if (Platform.OS === "android") {
 
-        console.log('working android')
         if (!visible) {
             return null;
         }
