@@ -90,6 +90,7 @@ import { getPreBookingData } from "../../../redux/preBookingReducer";
 import { showToast, showToastRedAlert, showToastSucess } from "../../../utils/toast";
 import { convertDateStringToMillisecondsUsingMoment } from "../../../utils/helperFunctions";
 import URL from "../../../networking/endpoints";
+import uuid from 'react-native-uuid';
 
 const rupeeSymbol = "\u20B9";
 
@@ -1196,7 +1197,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const formData = new FormData();
     const fileType = photoUri.substring(photoUri.lastIndexOf(".") + 1);
     const fileNameArry = photoUri.substring(photoUri.lastIndexOf('/') + 1).split('.');
-    const fileName = fileNameArry.length > 0 ? fileNameArry[0] : "None";
+    // const fileName = fileNameArry.length > 0 ? fileNameArry[0] : "None";
+    const fileName = uuid.v4();
     formData.append('file', {
       name: `${fileName}-.${fileType}`,
       type: `image/${fileType}`,

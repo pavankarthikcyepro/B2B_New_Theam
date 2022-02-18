@@ -7,6 +7,7 @@ import {
 } from "../jsonData/enquiryFormScreenJsonData";
 import { convertTimeStampToDateString } from "../utils/helperFunctions";
 import moment from "moment";
+import { showToastRedAlert } from "../utils/toast";
 
 export const getEnquiryDetailsApi = createAsyncThunk("ENQUIRY_FORM_SLICE/getEnquiryDetailsApi", async (universalId, { rejectWithValue }) => {
 
@@ -1053,6 +1054,9 @@ const enquiryDetailsOverViewSlice = createSlice({
     })
     builder.addCase(updateEnquiryDetailsApi.rejected, (state, action) => {
       console.log("F updateEnquiryDetailsApi: ", JSON.stringify(action.payload));
+      if (action.payload["message"] != undefined) {
+        showToastRedAlert(action.payload["message"])
+      }
       state.update_enquiry_details_response = "failed";
       state.isLoading = false;
     })

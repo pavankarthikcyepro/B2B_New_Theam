@@ -113,6 +113,7 @@ import URL from "../../../networking/endpoints";
 import { getEnquiryList } from "../../../redux/enquiryReducer";
 import { AppNavigator } from "../../../navigations";
 import { isValidateAlphabetics } from "../../../utils/helperFunctions";
+import uuid from 'react-native-uuid';
 
 const theme = {
   ...DefaultTheme,
@@ -1031,10 +1032,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
     const formData = new FormData();
     const fileType = photoUri.substring(photoUri.lastIndexOf(".") + 1);
-    const fileNameArry = photoUri
-      .substring(photoUri.lastIndexOf("/") + 1)
-      .split(".");
-    const fileName = fileNameArry.length > 0 ? fileNameArry[0] : "None";
+    const fileNameArry = photoUri.substring(photoUri.lastIndexOf("/") + 1).split(".");
+    // const fileName = fileNameArry.length > 0 ? fileNameArry[0] : "None";
+    const fileName = uuid.v4();
+    console.log("uuid: ", fileName);
     formData.append("file", {
       name: `${fileName}-.${fileType}`,
       type: `image/${fileType}`,
@@ -2669,6 +2670,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     value={selector.r_kms_driven_or_odometer_reading}
                     label={"Kms-Driven/Odometer Reading"}
                     keyboardType={"number-pad"}
+                    maxLength={7}
                     onChangeText={(text) =>
                       dispatch(
                         setReplacementBuyerDetails({
