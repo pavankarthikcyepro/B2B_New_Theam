@@ -1869,6 +1869,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.adhaar_number}
                   label={"Aadhaar Number*"}
+                  keyboardType='number-pad'
+                  maxLength={12}
                   onChangeText={(text) =>
                     dispatch(
                       setDocumentUploadDetails({ key: "ADHAR", text: text })
@@ -1887,6 +1889,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.relationship_proof}
                   label={"Relationship Number*"}
+                  keyboardType='number-pad'
                   onChangeText={(text) =>
                     dispatch(
                       setDocumentUploadDetails({
@@ -2557,6 +2560,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         style={styles.textInputStyle}
                         value={selector.d_brand_name}
                         label={"Brand Name"}
+                        maxLength={50}
                         onChangeText={(text) =>
                           dispatch(
                             setBookingDropDetails({
@@ -2576,6 +2580,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         style={styles.textInputStyle}
                         value={selector.d_dealer_name}
                         label={"Dealer Name"}
+                        maxLength={50}
                         onChangeText={(text) =>
                           dispatch(
                             setBookingDropDetails({
@@ -2590,6 +2595,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         style={styles.textInputStyle}
                         value={selector.d_location}
                         label={"Location"}
+                        maxLength={50}
                         onChangeText={(text) =>
                           dispatch(
                             setBookingDropDetails({
@@ -2609,6 +2615,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         style={styles.textInputStyle}
                         value={selector.d_model}
                         label={"Model"}
+                        maxLength={50}
                         onChangeText={(text) => dispatch(setBookingDropDetails({ key: "DROP_MODEL", text: text }))}
                       />
                       <Text style={GlobalStyle.underline}></Text>
@@ -2619,6 +2626,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     style={styles.textInputStyle}
                     value={selector.drop_remarks}
                     label={"Remarks"}
+                    maxLength={50}
                     onChangeText={(text) =>
                       dispatch(
                         setBookingDropDetails({

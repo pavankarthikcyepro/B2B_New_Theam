@@ -1272,6 +1272,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       value={selector.company_name}
                       label={"Company Name"}
                       keyboardType={"default"}
+                      maxLength={50}
                       onChangeText={(text) =>
                         dispatch(
                           setCustomerProfile({
@@ -1497,6 +1498,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   value={selector.relationName}
                   label={"Relation Name*"}
                   keyboardType={"default"}
+                  maxLength={50}
                   onChangeText={(text) =>
                     dispatch(
                       setPersonalIntro({ key: "RELATION_NAME", text: text })
@@ -2347,6 +2349,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       value={selector.c_dealership_name}
                       label={"DealerShip Name"}
                       keyboardType={"default"}
+                      maxLength={50}
                       onChangeText={(text) =>
                         dispatch(
                           setCustomerNeedAnalysis({
@@ -2362,6 +2365,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       value={selector.c_dealership_location}
                       label={"DealerShip Location"}
                       keyboardType={"default"}
+                      maxLength={50}
                       onChangeText={(text) =>
                         dispatch(
                           setCustomerNeedAnalysis({
@@ -2377,6 +2381,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       value={selector.c_dealership_pending_reason}
                       label={"Dealership Pending Reason"}
                       keyboardType={"default"}
+                      maxLength={50}
                       onChangeText={(text) =>
                         dispatch(
                           setCustomerNeedAnalysis({
@@ -2395,6 +2400,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   value={selector.c_voice_of_customer_remarks}
                   label={"Voice of Customer Remarks "}
                   keyboardType={"default"}
+                  maxLength={50}
                   onChangeText={(text) =>
                     dispatch(
                       setCustomerNeedAnalysis({
@@ -2478,6 +2484,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     style={styles.textInputStyle}
                     value={selector.a_varient}
                     label={"Varient"}
+                    maxLength={50}
                     onChangeText={(text) =>
                       dispatch(
                         setAdditionalBuyerDetails({
@@ -2492,6 +2499,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     style={styles.textInputStyle}
                     value={selector.a_color}
                     label={"Color"}
+                    maxLength={50}
                     onChangeText={(text) =>
                       dispatch(
                         setAdditionalBuyerDetails({
@@ -2506,6 +2514,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     style={styles.textInputStyle}
                     value={selector.a_reg_no}
                     label={"Reg. No."}
+                    maxLength={50}
                     keyboardType={"default"}
                     onChangeText={(text) =>
                       dispatch(
@@ -2615,6 +2624,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     label={"Varient"}
                     editable={true}
                     value={selector.r_varient}
+                    maxLength={50}
                     onChangeText={(text) =>
                       dispatch(
                         setReplacementBuyerDetails({
@@ -2630,6 +2640,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     style={{ height: 65, width: "100%" }}
                     label={"Color"}
                     editable={true}
+                    maxLength={50}
                     value={selector.r_color}
                     onChangeText={(text) =>
                       dispatch(
@@ -2712,6 +2723,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         value={selector.r_hypothication_name}
                         label={"Hypothication Name"}
                         keyboardType={"default"}
+                        maxLength={50}
                         onChangeText={(text) =>
                           dispatch(
                             setReplacementBuyerDetails({
@@ -2727,6 +2739,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         value={selector.r_hypothication_branch}
                         label={"Hypothication Branch"}
                         keyboardType={"default"}
+                        maxLength={50}
                         onChangeText={(text) =>
                           dispatch(
                             setReplacementBuyerDetails({
@@ -2879,6 +2892,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         value={selector.r_insurence_company_name}
                         label={"Insurance Company Name"}
                         keyboardType={"default"}
+                        maxLength={50}
                         onChangeText={(text) =>
                           dispatch(
                             setReplacementBuyerDetails({

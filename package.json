@@ -9,7 +9,9 @@
     "test": "jest",
     "lint": "eslint .",
     "clean-ios": "cd ios && rm -rf build/ && pod install && cd ..",
-    "clean-android": "cd android && ./gradlew clean && ./gradlew cleanBuildCache && cd .. && npx jetify"
+    "clean-android": "cd android && ./gradlew clean && ./gradlew cleanBuildCache && cd .. && npx jetify",
+    "android-dev-bundle": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res",
+    "debug-apk": "cd android && ./gradlew assembleDebug && cd .."
   },
   "dependencies": {
     "@klarna/react-native-vector-drawable": "^0.3.0",
