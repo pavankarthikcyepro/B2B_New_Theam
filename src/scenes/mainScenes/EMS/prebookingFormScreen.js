@@ -408,14 +408,19 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       const dmsOnRoadPriceDtoObj = selector.on_road_price_dto_list_response[0];
       // setSelectedInsurencePrice(dmsOnRoadPriceDtoObj.)
       setSelectedWarrentyPrice(dmsOnRoadPriceDtoObj.warrantyAmount);
-      if (dmsOnRoadPriceDtoObj.handlingCharges && dmsOnRoadPriceDtoObj.handlingCharges > 0) {
+      if (dmsOnRoadPriceDtoObj.handling_charges && dmsOnRoadPriceDtoObj.handling_charges > 0) {
         setHandlingChargSlctd(true);
         calculateOnRoadPrice(true, essentialKitSlctd, fastTagSlctd);
       }
-      if (dmsOnRoadPriceDtoObj.essentialKit && dmsOnRoadPriceDtoObj.essentialKit > 0) {
+      if (dmsOnRoadPriceDtoObj.essential_kit && dmsOnRoadPriceDtoObj.essential_kit > 0) {
         setEssentialKitSlctd(true);
         calculateOnRoadPrice(handlingChargSlctd, true, fastTagSlctd);
       }
+      if (dmsOnRoadPriceDtoObj.fast_tag && dmsOnRoadPriceDtoObj.fast_tag > 0) {
+        setFastTagSlctd(true);
+        calculateOnRoadPrice(handlingChargSlctd, essentialKitSlctd, true);
+      }
+    
       if (dmsOnRoadPriceDtoObj.insuranceAddonData && dmsOnRoadPriceDtoObj.insuranceAddonData.length > 0) {
         let addOnPrice = 0;
         dmsOnRoadPriceDtoObj.insuranceAddonData.forEach((element, index) => {
@@ -647,10 +652,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
     totalPrice += getTcsAmount();
     totalPrice += selectedPaidAccessoriesPrice;
-    // if (fastTagSelected) {
-    //   totalPrice += priceInfomationData.fast_tag;
-    // }
-    totalPrice += priceInfomationData.fast_tag
+    if (fastTagSelected) {
+      totalPrice += priceInfomationData.fast_tag;
+    }
+   // totalPrice += priceInfomationData.fast_tag
     setTotalOnRoadPrice(totalPrice);
     setTotalOnRoadPriceAfterDiscount(totalPrice);
   }
@@ -699,6 +704,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     postOnRoadPriceTable.focAccessories = selector.for_accessories;
     postOnRoadPriceTable.handlingCharges = handlingChargSlctd ? priceInfomationData.handling_charges : 0;
     postOnRoadPriceTable.essentialKit = essentialKitSlctd ? priceInfomationData.essential_kit : 0;
+    postOnRoadPriceTable.fast_tag = fastTagSlctd ? priceInfomationData.fast_tag : 0;
     postOnRoadPriceTable.id = postOnRoadPriceTable.id ? postOnRoadPriceTable.id : 0;
     postOnRoadPriceTable.insuranceAddonData = selectedInsurenceAddons;
     postOnRoadPriceTable.insuranceAmount = selectedInsurencePrice;
@@ -2079,7 +2085,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 </Pressable>
                 <Text style={GlobalStyle.underline}></Text>
 
-                {/* <CheckboxTextAndAmountComp
+                 <CheckboxTextAndAmountComp
                   title={"Fast Tag:"}
                   amount={fastTagSlctd ? priceInfomationData.fast_tag.toFixed(2) : "0.00"}
                   isChecked={fastTagSlctd}
@@ -2087,12 +2093,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     setFastTagSlctd(!fastTagSlctd)
                     calculateOnRoadPrice(handlingChargSlctd, essentialKitSlctd, !fastTagSlctd);
                   }}
-                /> */}
-                <TextAndAmountComp
+                /> 
+                <Text style={GlobalStyle.underline}></Text>
+                
+                {/* <TextAndAmountComp
                   title={"Fast Tag:"}
                   amount={priceInfomationData.fast_tag.toFixed(2)}
                 />
-                <Text style={GlobalStyle.underline}></Text>
+                <Text style={GlobalStyle.underline}></Text> */}
 
                 <TextAndAmountComp
                   title={"On Road Price:"}
