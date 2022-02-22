@@ -9,7 +9,7 @@ const NameComp = ({ label, value, labelStyle = {}, valueStyle = {} }) => {
   return (
     <View style={styles.bckVw}>
       <Text style={[styles.text3, labelStyle]}>{label}</Text>
-      <Text style={[styles.text4, valueStyle]}>{":  " + value}</Text>
+      <Text style={[styles.text4, valueStyle]}>{" :  " + value}</Text>
     </View>
   )
 }
@@ -87,9 +87,9 @@ const styles = StyleSheet.create({
   },
   text3: {
     color: Colors.GRAY,
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '400',
-    width: 65
+    width: 75
   },
   text4: {
     fontSize: 14,
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
   bckVw: {
     flexDirection: "row",
     alignItems: 'center',
-    height: 25
+    height: 27
   },
   modelBckView: {
     paddingHorizontal: 5,
