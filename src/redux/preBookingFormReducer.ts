@@ -1094,7 +1094,7 @@ const prebookingFormSlice = createSlice({
       state.isLoading = true;
     })
     builder.addCase(getPaidAccessoriesListApi.fulfilled, (state, action) => {
-      console.log("S getPaidAccessoriesListApi: ", JSON.stringify(action.payload));
+      //console.log("S getPaidAccessoriesListApi: ", JSON.stringify(action.payload));
       if (action.payload.success == true) {
         state.paid_accessories_list = action.payload.accessorylist;
       }

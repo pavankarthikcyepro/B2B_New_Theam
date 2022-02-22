@@ -416,6 +416,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setEssentialKitSlctd(true);
         calculateOnRoadPrice(handlingChargSlctd, true, fastTagSlctd);
       }
+      if (dmsOnRoadPriceDtoObj.fast_tag && dmsOnRoadPriceDtoObj.fast_tag > 0) {
+        setFastTagSlctd(true);
+        calculateOnRoadPrice(handlingChargSlctd, essentialKitSlctd, true);
+      }
       if (dmsOnRoadPriceDtoObj.insuranceAddonData && dmsOnRoadPriceDtoObj.insuranceAddonData.length > 0) {
         let addOnPrice = 0;
         dmsOnRoadPriceDtoObj.insuranceAddonData.forEach((element, index) => {
@@ -647,10 +651,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
     totalPrice += getTcsAmount();
     totalPrice += selectedPaidAccessoriesPrice;
-    // if (fastTagSelected) {
-    //   totalPrice += priceInfomationData.fast_tag;
-    // }
-    totalPrice += priceInfomationData.fast_tag
+    if (fastTagSelected) {
+      totalPrice += priceInfomationData.fast_tag;
+    }
+    // totalPrice += priceInfomationData.fast_tag
     setTotalOnRoadPrice(totalPrice);
     setTotalOnRoadPriceAfterDiscount(totalPrice);
   }
@@ -699,6 +703,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     postOnRoadPriceTable.focAccessories = selector.for_accessories;
     postOnRoadPriceTable.handlingCharges = handlingChargSlctd ? priceInfomationData.handling_charges : 0;
     postOnRoadPriceTable.essentialKit = essentialKitSlctd ? priceInfomationData.essential_kit : 0;
+    postOnRoadPriceTable.fast_tag = fastTagSlctd ? priceInfomationData.fast_tag : 0;
     postOnRoadPriceTable.id = postOnRoadPriceTable.id ? postOnRoadPriceTable.id : 0;
     postOnRoadPriceTable.insuranceAddonData = selectedInsurenceAddons;
     postOnRoadPriceTable.insuranceAmount = selectedInsurencePrice;
@@ -2079,7 +2084,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 </Pressable>
                 <Text style={GlobalStyle.underline}></Text>
 
-                {/* <CheckboxTextAndAmountComp
+                <CheckboxTextAndAmountComp
                   title={"Fast Tag:"}
                   amount={fastTagSlctd ? priceInfomationData.fast_tag.toFixed(2) : "0.00"}
                   isChecked={fastTagSlctd}
@@ -2087,11 +2092,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     setFastTagSlctd(!fastTagSlctd)
                     calculateOnRoadPrice(handlingChargSlctd, essentialKitSlctd, !fastTagSlctd);
                   }}
-                /> */}
-                <TextAndAmountComp
+                />
+                {/* <TextAndAmountComp
                   title={"Fast Tag:"}
                   amount={priceInfomationData.fast_tag.toFixed(2)}
-                />
+                /> */}
                 <Text style={GlobalStyle.underline}></Text>
 
                 <TextAndAmountComp
@@ -2549,11 +2554,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     value={selector.drop_reason}
                     onPress={() => showDropDownModelMethod("DROP_REASON", "Drop Reason")}
                   />
-                  <DropDownSelectionItem
-                    label={"Drop Sub Reason"}
-                    value={selector.drop_sub_reason}
-                    onPress={() => showDropDownModelMethod("DROP_SUB_REASON", "Drop Sub Reason")}
-                  />
+                  {(selector.drop_reason.replace(/\s/g, "").toLowerCase() == "losttocompetitor" || selector.drop_reason.replace(/\s/g, "").toLowerCase() == "losttoco-dealer") ? (
+                    <DropDownSelectionItem
+                      label={"Drop Sub Reason"}
+                      value={selector.drop_sub_reason}
+                      onPress={() => showDropDownModelMethod("DROP_SUB_REASON", "Drop Sub Reason")}
+                    />
+                  ) : null}
+
                   {(selector.drop_reason === "Lost to Competitor" || selector.drop_reason === "Lost to Used Cars from Co-Dealer") ? (
                     <View>
                       <TextinputComp
