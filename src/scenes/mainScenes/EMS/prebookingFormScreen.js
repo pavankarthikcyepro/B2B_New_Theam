@@ -88,7 +88,7 @@ import {
 import { AppNavigator } from "../../../navigations";
 import { getPreBookingData } from "../../../redux/preBookingReducer";
 import { showToast, showToastRedAlert, showToastSucess } from "../../../utils/toast";
-import { convertDateStringToMillisecondsUsingMoment } from "../../../utils/helperFunctions";
+import { convertDateStringToMillisecondsUsingMoment, emiCalculator } from "../../../utils/helperFunctions";
 import URL from "../../../networking/endpoints";
 import uuid from 'react-native-uuid';
 
@@ -1271,20 +1271,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   }
 
   const emiCal = (principle, tenure, interestRate) => {
-    if (principle !== '' && tenure !== '' && interestRate !== '') {
-      let P = principle;
-      const R = interestRate;
-      const N = tenure;
-      const monthlyInterstRatio = (R / 100) / 12;
-      const top = Math.pow((1 + monthlyInterstRatio), N);
-      const bottom = top - 1;
-      const sp = top / bottom;
-      const emi = ((P * monthlyInterstRatio) * sp);
-      const full = N * emi;
-      const interest = full - P;
-      let int_pge = (interest / full) * 100;
-      dispatch(setFinancialDetails({ key: "EMI", text: Math.round(emi).toString() }))
-    }
+    const amount = emiCalculator(principle, tenure, interestRate);
+    dispatch(setFinancialDetails({ key: "EMI", text: amount }))
   }
 
   if (!componentAppear) {

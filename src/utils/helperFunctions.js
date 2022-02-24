@@ -133,3 +133,21 @@ export const rgbaColor = () => {
   const rgbValue = `rgba(${x}, ${y}, ${z}, 1)`;
   return rgbValue;
 }
+
+export const emiCalculator = (principle, tenure, interestRate) => {
+  if (principle !== '' && tenure !== '' && interestRate !== '') {
+    let P = principle;
+    const R = interestRate;
+    const N = tenure;
+    const monthlyInterstRatio = (R / 100) / 12;
+    const top = Math.pow((1 + monthlyInterstRatio), N);
+    const bottom = top - 1;
+    const sp = top / bottom;
+    const emi = ((P * monthlyInterstRatio) * sp);
+    const full = N * emi;
+    const interest = full - P;
+    let int_pge = (interest / full) * 100;
+    return Math.round(emi).toString()
+  }
+  return ""
+}

@@ -108,6 +108,7 @@ import * as AsyncStore from "../../../asyncStore";
 import {
   convertDateStringToMilliseconds,
   convertDateStringToMillisecondsUsingMoment,
+  emiCalculator,
 } from "../../../utils/helperFunctions";
 import URL from "../../../networking/endpoints";
 import { getEnquiryList } from "../../../redux/enquiryReducer";
@@ -1097,6 +1098,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     );
   };
 
+  const emiCal = (principle, tenure, interestRate) => {
+    const amount = emiCalculator(principle, tenure, interestRate);
+    dispatch(setFinancialDetails({ key: "EMI", text: amount }))
+  }
+
   if (!componentAppear) {
     return (
       <View style={styles.initialContainer}>
@@ -2041,14 +2047,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         label={"Loan Amount*"}
                         keyboardType={"default"}
                         value={selector.loan_amount}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setFinancialDetails({
-                              key: "LOAN_AMOUNT",
-                              text: text,
-                            })
-                          )
-                        }
+                        onChangeText={(text) => {
+                          emiCal(text, selector.rate_of_interest, selector.loan_of_tenure)
+                          dispatch(setFinancialDetails({ key: "LOAN_AMOUNT", text: text }))
+                        }}
                       />
                       <Text style={GlobalStyle.underline}></Text>
                       <TextinputComp
@@ -2056,14 +2058,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         label={"Rate of Interest*"}
                         keyboardType={"default"}
                         value={selector.rate_of_interest}
-                        onChangeText={(text) =>
+                        onChangeText={(text) => {
+                          emiCal(selector.loan_amount, text, selector.loan_of_tenure)
                           dispatch(
                             setFinancialDetails({
                               key: "RATE_OF_INTEREST",
                               text: text,
                             })
                           )
-                        }
+                        }}
                       />
                       <Text style={GlobalStyle.underline}></Text>
                     </View>
@@ -2084,14 +2087,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       label={"Loan of Tenure(Months)"}
                       keyboardType={"default"}
                       value={selector.loan_of_tenure}
-                      onChangeText={(text) =>
+                      onChangeText={(text) => {
+                        emiCal(selector.loan_amount, selector.rate_of_interest, text)
                         dispatch(
                           setFinancialDetails({
                             key: "LOAN_OF_TENURE",
                             text: text,
                           })
                         )
-                      }
+                      }}
                     />
                     <Text style={GlobalStyle.underline}></Text>
 

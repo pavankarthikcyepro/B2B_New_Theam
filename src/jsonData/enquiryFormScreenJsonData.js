@@ -616,7 +616,7 @@ export const Enquiry_Drop_Reasons = [
   },
   {
     id: "7",
-    name: "Lost to Competition",
+    name: "Lost to Competitor",
   },
   {
     id: "8",
