@@ -99,6 +99,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           );
         }
       }
+
     }
   };
 
@@ -553,6 +554,10 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         setDataForDropDown([...selector.customer_type_list]);
         break;
       case "SOURCE_OF_ENQUIRY":
+        if (homeSelector.source_of_enquiry_list.length === 0) {
+          showToast("No data found");
+          return;
+        }
         setDataForDropDown([...homeSelector.source_of_enquiry_list]);
         break;
       case "EVENT_NAME":
@@ -802,6 +807,21 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               disabled={fromEdit}
               onPress={() => showDropDownModelMethod("SOURCE_OF_ENQUIRY", "Select Source of Pre-Enquiry")}
             />
+
+            {selector.sourceOfEnquiry === "Other" ? (
+              <View>
+                <TextinputComp
+                  style={styles.textInputComp}
+                  value={selector.other_company_name}
+                  label={"Other"}
+                  keyboardType={"default"}
+                  onChangeText={(text) =>
+                    dispatch(setPreEnquiryDetails({ key: "OTHER_COMPANY_NAME", text: text }))
+                  }
+                />
+                <Text style={styles.devider}></Text>
+              </View>
+            ) : null}
 
             {selector.sourceOfEnquiry === "Event" ? (
               <View>

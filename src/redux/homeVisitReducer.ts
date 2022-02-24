@@ -143,14 +143,14 @@ const slice = createSlice({
         // Validate OTP
         builder.addCase(validateOtpApi.pending, (state, action) => {
             state.isLoading = true;
-            state.validate_otp_response_status = "";
+            state.validate_otp_response_status = "pending";
         })
         builder.addCase(validateOtpApi.fulfilled, (state, action) => {
             console.log("S validateOtpApi: ", JSON.stringify(action.payload));
             if (action.payload.reason === "Success") {
                 state.validate_otp_response_status = "successs";
             }
-            if (action.payload["reason"]) {
+            else if (action.payload["reason"]) {
                 showToastRedAlert(action.payload["reason"]);
                 state.validate_otp_response_status = "failed";
             }

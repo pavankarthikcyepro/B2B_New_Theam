@@ -86,6 +86,7 @@ export const addPreEnquirySlice = createSlice({
         eventEndDate: "",
         companyName: "",
         other: "",
+        other_company_name: "",
         drop_down_data: [],
         drop_down_key_id: "",
         show_drop_down: false,
@@ -119,6 +120,8 @@ export const addPreEnquirySlice = createSlice({
             state.sourceOfEnquiry = "";
             state.sourceOfEnquiryId = null;
             state.companyName = "";
+            state.other = "";
+            state.other_company_name = "";
             state.eventName = "";
             state.eventStartDate = "";
             state.eventEndDate = "";
@@ -198,6 +201,9 @@ export const addPreEnquirySlice = createSlice({
                     break;
                 case "OTHER":
                     state.other = text;
+                    break;
+                case "OTHER_COMPANY_NAME":
+                    state.other_company_name = text;
                     break;
                 case "PINCODE":
                     state.pincode = text;

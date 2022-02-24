@@ -927,6 +927,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         setDataForDropDown([...a_model_types]);
         break;
       case "DROP_REASON":
+        if (Enquiry_Drop_Reasons.length === 0) {
+          showToast("No Drop Reasons found");
+          return;
+        }
         setDataForDropDown([...Enquiry_Drop_Reasons]);
         break;
       case "RF_SOURCE":
@@ -2930,16 +2934,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       showDropDownModelMethod("DROP_REASON", "Drop Reason")
                     }
                   />
-                  <DropDownSelectionItem
-                    label={"Drop Sub Reason"}
-                    value={selector.drop_sub_reason}
-                    onPress={() =>
-                      showDropDownModelMethod(
-                        "DROP_SUB_REASON",
-                        "Drop Sub Reason"
-                      )
-                    }
-                  />
+                  {(selector.drop_reason.replace(/\s/g, "").toLowerCase() == "losttocompetitor" || selector.drop_reason.replace(/\s/g, "").toLowerCase() == "losttoco-dealer") ? (
+                    <DropDownSelectionItem
+                      label={"Drop Sub Reason"}
+                      value={selector.drop_sub_reason}
+                      onPress={() => showDropDownModelMethod("DROP_SUB_REASON", "Drop Sub Reason")}
+                    />
+                  ) : null}
+
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.drop_remarks}

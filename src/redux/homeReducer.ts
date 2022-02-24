@@ -291,6 +291,7 @@ export const homeSlice = createSlice({
         state.source_of_enquiry_list = [];
       })
       .addCase(getSourceOfEnquiryList.fulfilled, (state, action) => {
+        console.log("getSourceOfEnquiryList S: ", JSON.stringify(action.payload))
         if (action.payload) {
           const sourceList = action.payload;
           let modalList = [];

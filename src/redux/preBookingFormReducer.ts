@@ -1219,6 +1219,7 @@ const prebookingFormSlice = createSlice({
       state.isLoading = true;
     })
     builder.addCase(getDropDataApi.fulfilled, (state, action) => {
+
       if (action.payload) {
         const newTypeData = action.payload.map(element => {
           return {

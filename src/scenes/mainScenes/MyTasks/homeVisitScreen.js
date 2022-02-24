@@ -129,6 +129,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
 
   const changeStatusForTask = (actionType) => {
     Keyboard.dismiss();
+
     if (selector.task_details_response?.taskId !== taskId) {
       return;
     }
@@ -198,6 +199,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
     dispatch(validateOtpApi(payload));
   }
 
+  // Verify otp response
   useEffect(() => {
     if (selector.validate_otp_response_status === "successs") {
       changeStatusForTask("CLOSE_TASK");

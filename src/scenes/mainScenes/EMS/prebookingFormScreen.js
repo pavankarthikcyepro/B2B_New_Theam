@@ -560,9 +560,17 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setDataForDropDown([...Vehicle_Types]);
         break;
       case "DROP_REASON":
+        if (selector.drop_reasons_list.length === 0) {
+          showToast("No Drop Reasons found");
+          return;
+        }
         setDataForDropDown([...selector.drop_reasons_list]);
         break;
       case "DROP_SUB_REASON":
+        if (selector.drop_sub_reasons_list.length === 0) {
+          showToast("No Drop Sub Reasons found");
+          return;
+        }
         setDataForDropDown([...selector.drop_sub_reasons_list]);
         break;
       case "CUSTOMER_TYPE_CATEGORY":
