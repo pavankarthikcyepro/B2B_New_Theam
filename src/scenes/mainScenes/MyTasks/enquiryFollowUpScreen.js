@@ -328,6 +328,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
               style={styles.textInputStyle}
               label={"Reason*"}
               value={selector.reason}
+              maxLength={50}
               onChangeText={(text) => {
                 dispatch(
                   setEnquiryFollowUpDetails({ key: "REASON", text: text })
@@ -339,6 +340,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
             <TextinputComp
               style={styles.textInputStyle}
               label={"Customer Remarks*"}
+              maxLength={50}
               value={selector.customer_remarks}
               onChangeText={(text) =>
                 dispatch(
@@ -355,6 +357,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
               style={styles.textInputStyle}
               label={"Employee Remarks*"}
               value={selector.employee_remarks}
+              maxLength={50}
               onChangeText={(text) =>
                 dispatch(
                   setEnquiryFollowUpDetails({

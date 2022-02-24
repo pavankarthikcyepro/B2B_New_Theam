@@ -221,6 +221,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
               style={styles.textInputStyle}
               label={"Reason"}
               value={selector.reason}
+              maxLength={50}
               onChangeText={(text) => {
                 dispatch(setHomeVisitDetails({ key: "REASON", text: text }));
               }}
@@ -229,6 +230,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
             <TextinputComp
               style={styles.textInputStyle}
               label={"Customer Remarks"}
+              maxLength={50}
               value={selector.customer_remarks}
               onChangeText={(text) =>
                 dispatch(
@@ -240,6 +242,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
             <TextinputComp
               style={styles.textInputStyle}
               label={"Employee Remarks"}
+              maxLength={50}
               value={selector.employee_remarks}
               onChangeText={(text) =>
                 dispatch(
