@@ -1835,6 +1835,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       style={styles.textInputStyle}
                       value={selector.pan_number}
                       label={"PAN Number*"}
+                      maxLength={10}
                       onChangeText={(text) =>
                         dispatch(
                           setDocumentUploadDetails({ key: "PAN_NUMBER", text: text })

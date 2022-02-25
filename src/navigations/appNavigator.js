@@ -72,6 +72,17 @@ const SearchIcon = () => {
     />
   );
 };
+const RefreshIcon = ({ navigation }) => {
+  return (
+    <IconButton
+      icon="refresh"
+      color={Colors.WHITE}
+      size={30}
+      onPress={() => console.log('refresh icon pressed')}
+    />
+  );
+};
+
 
 const NotficationIcon = ({ navigation, identifier }) => {
   return (
@@ -191,6 +202,7 @@ const EmsStackNavigator = ({ navigation }) => {
             return (
               <View style={{ flexDirection: "row" }}>
                 {/* <SearchIcon /> */}
+                <RefreshIcon />
                 <NotficationIcon
                   navigation={navigation}
                   identifier={"NOTIF_2"}

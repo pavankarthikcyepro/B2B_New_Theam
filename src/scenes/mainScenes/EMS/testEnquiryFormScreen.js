@@ -978,6 +978,7 @@ const TestEnquiryFormScreen = ({ navigation }) => {
                                 style={styles.textInputStyle}
                                 value={selector.pan_number}
                                 label={"Pan Number*"}
+                                maxLength={10}
                                 onChangeText={(text) =>
                                     dispatch(setUploadDocuments({ key: "PAN", text: text }))
                                 }

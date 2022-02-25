@@ -393,7 +393,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.firstName = selector.firstName;
     dataObj.lastName = selector.lastName;
     dataObj.phone = selector.mobile;
-    dataObj.secondaryPhone = selector.alterMobile;
+ //   dataObj.secondaryPhone = selector.alterMobile;
     dataObj.gender = selector.gender;
     dataObj.relation = selector.relation;
     dataObj.salutation = selector.salutaion;
@@ -2789,7 +2789,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     }
                   />
                   <View style={styles.view2}>
-                    <Text style={styles.looking_any_text}>{"Insurence"}</Text>
+                    <Text style={styles.looking_any_text}>{"Insurance"}</Text>
                     <Checkbox.Android
                       status={
                         selector.r_insurence_checked ? "checked" : "unchecked"

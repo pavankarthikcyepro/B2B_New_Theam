@@ -779,6 +779,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                   style={styles.textInputComp}
                   value={selector.companyName}
                   label={"Company Name"}
+                  maxLength={50}
                   keyboardType={"default"}
                   onChangeText={(text) => dispatch(setPreEnquiryDetails({ key: "COMPANY_NAME", text: text }))}
                 />
