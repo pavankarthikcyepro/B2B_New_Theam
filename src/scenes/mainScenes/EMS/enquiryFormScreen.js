@@ -393,7 +393,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.firstName = selector.firstName;
     dataObj.lastName = selector.lastName;
     dataObj.phone = selector.mobile;
- //   dataObj.secondaryPhone = selector.alterMobile;
+    dataObj.secondaryPhone = selector.alterMobile;
     dataObj.gender = selector.gender;
     dataObj.relation = selector.relation;
     dataObj.salutation = selector.salutaion;
@@ -1529,7 +1529,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.alterMobile}
-                  label={"Alternate Mobile Number*"}
+                  label={"Alternate Mobile Number"}
                   keyboardType={"phone-pad"}
                   maxLength={10}
                   onChangeText={(text) =>
