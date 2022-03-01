@@ -2934,8 +2934,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <DropDownSelectionItem
                     label={"Drop Reason"}
                     value={selector.drop_reason}
-                    onPress={() =>
-                      showDropDownModelMethod("DROP_REASON", "Drop Reason")
+                    onPress={() => showDropDownModelMethod("DROP_REASON", "Drop Reason")
                     }
                   />
                   {(selector.drop_reason.replace(/\s/g, "").toLowerCase() == "losttocompetitor" || selector.drop_reason.replace(/\s/g, "").toLowerCase() == "losttoco-dealer") ? (
@@ -2945,7 +2944,72 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       onPress={() => showDropDownModelMethod("DROP_SUB_REASON", "Drop Sub Reason")}
                     />
                   ) : null}
+                  {(selector.drop_reason === "Lost to Competitor" || selector.drop_reason === "Lost to Used Cars from Co-Dealer") ? (
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.d_brand_name}
+                        label={"Brand Name"}
+                        maxLength={50}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setBookingDropDetails({
+                              key: "DROP_BRAND_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  ) : null}
+                  {(selector.drop_reason === "Lost to Competitor" || selector.drop_reason === "Lost to Used Cars from Co-Dealer" || selector.drop_reason === "Lost to Co-dealer") ? (
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.d_dealer_name}
+                        label={"Dealer Name"}
+                        maxLength={50}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setBookingDropDetails({
+                              key: "DROP_DEALER_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
 
+                        <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.d_location}
+                        label={"Location"}
+                        maxLength={50}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setBookingDropDetails({
+                              key: "DROP_LOCATION",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  ) : null}
+                  {(selector.drop_reason === "Lost to Competitor" || selector.drop_reason === "Lost to Used Cars from Co-Dealer") ? (
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.d_model}
+                        label={"Model"}
+                        maxLength={50}
+                        onChangeText={(text) => dispatch(setBookingDropDetails({ key: "DROP_MODEL", text: text }))}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  ) : null}     
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.drop_remarks}
