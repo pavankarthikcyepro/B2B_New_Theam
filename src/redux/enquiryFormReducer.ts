@@ -231,6 +231,10 @@ const enquiryDetailsOverViewSlice = createSlice({
     drop_reason: "",
     drop_sub_reason: "",
     drop_remarks: "",
+    d_brand_name: "",
+    d_dealer_name: "",
+    d_location: "",
+    d_model: "",
     // data variables
     enquiry_details_response: null,
     update_enquiry_details_response: null,
@@ -793,6 +797,18 @@ const enquiryDetailsOverViewSlice = createSlice({
       switch (key) {
         case "DROP_REMARKS":
           state.drop_remarks = text;
+          break;
+        case "DROP_BRAND_NAME":
+          state.d_brand_name = text;
+          break;
+        case "DROP_DEALER_NAME":
+          state.d_dealer_name = text;
+          break;
+        case "DROP_LOCATION":
+          state.d_location = text;
+          break;
+        case "DROP_MODEL":
+          state.d_model = text;
           break;
       }
     },

@@ -814,16 +814,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dmsLeadDropInfo: {
         additionalRemarks: selector.drop_remarks,
         branchId: userData.branchId,
-        brandName: "",
-        dealerName: "",
+        brandName: selector.d_brand_name,
+        dealerName: selector.d_dealer_name,
+        location: selector.d_location,
+        model: selector.d_model,
         leadId: leadId,
         crmUniversalId: universalId,
         lostReason: selector.drop_reason,
         organizationId: userData.orgId,
         otherReason: "",
         droppedBy: userData.employeeId,
-        location: "",
-        model: "",
         stage: "ENQUIRY",
         status: "ENQUIRY",
       },
@@ -2954,7 +2954,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         maxLength={50}
                         onChangeText={(text) =>
                           dispatch(
-                            setBookingDropDetails({
+                            setEnquiryDropDetails({
                               key: "DROP_BRAND_NAME",
                               text: text,
                             })
@@ -2973,7 +2973,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         maxLength={50}
                         onChangeText={(text) =>
                           dispatch(
-                            setBookingDropDetails({
+                            setEnquiryDropDetails({
                               key: "DROP_DEALER_NAME",
                               text: text,
                             })
@@ -2981,7 +2981,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         }
                       />
 
-                        <Text style={GlobalStyle.underline}></Text>
+                      <Text style={GlobalStyle.underline}></Text>
                       <TextinputComp
                         style={styles.textInputStyle}
                         value={selector.d_location}
@@ -2989,7 +2989,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         maxLength={50}
                         onChangeText={(text) =>
                           dispatch(
-                            setBookingDropDetails({
+                            setEnquiryDropDetails({
                               key: "DROP_LOCATION",
                               text: text,
                             })
@@ -3006,11 +3006,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         value={selector.d_model}
                         label={"Model"}
                         maxLength={50}
-                        onChangeText={(text) => dispatch(setBookingDropDetails({ key: "DROP_MODEL", text: text }))}
+                        onChangeText={(text) => dispatch(setEnquiryDropDetails({ key: "DROP_MODEL", text: text }))}
                       />
                       <Text style={GlobalStyle.underline}></Text>
                     </View>
-                  ) : null}     
+                  ) : null}
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.drop_remarks}
