@@ -2917,6 +2917,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               ) : null}
 
               {isDropSelected ? <View style={styles.space}></View> : null}
+              {/* 10. Drop section */}
               {isDropSelected ? (
                 <List.Accordion
                   id={"9"}

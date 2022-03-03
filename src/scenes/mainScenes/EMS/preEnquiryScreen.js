@@ -35,10 +35,11 @@ const PreEnquiryScreen = ({ navigation }) => {
     useEffect(() => {
 
         // Get Data From Server
-        const currentDate = moment().add(1, "day").format(dateFormat)
+        const currentDate = moment().add(0, "day").format(dateFormat)
         const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
         setSelectedFromDate(lastMonthFirstDate);
-        setSelectedToDate(currentDate);
+        const tomorrowDate = moment().add(1, "day").format(dateFormat)
+        setSelectedToDate(tomorrowDate);
         getAsyncData(lastMonthFirstDate, currentDate);
 
     }, [])
