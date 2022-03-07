@@ -76,6 +76,10 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   const getAsyncstoreData = async () => {
     const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
 
+    // http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails?organizationId=1
+
+    // http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails?organizationId=1
+
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       setUserData({ orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName })

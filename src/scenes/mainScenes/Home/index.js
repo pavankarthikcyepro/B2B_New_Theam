@@ -91,6 +91,7 @@ const HomeScreen = ({ navigation }) => {
         orgId: jsonObj.orgId,
         branchId: jsonObj.branchId
       }
+      console.log("jsonObj: ", jsonObj);
       dispatch(getOrganaizationHirarchyList(payload));
       dispatch(getSourceOfEnquiryList(jsonObj.orgId));
       getDashboadTableDataFromServer(jsonObj.empId);

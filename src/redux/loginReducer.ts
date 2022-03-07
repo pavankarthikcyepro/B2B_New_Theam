@@ -34,10 +34,10 @@ interface ErrorMessage {
 }
 
 const initialState: LoginState = {
-    // employeeId: "ksudhakar",
-    // password: "Bharat@123",
-    employeeId: "systemadmin",
-    password: "Master@123",
+    employeeId: "",
+    password: "",
+    // employeeId: "systemadmin",
+    // password: "Master@123",
     securePassword: true,
     showLoginErr: false,
     showPasswordErr: false,
