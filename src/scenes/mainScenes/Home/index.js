@@ -1,8 +1,8 @@
 
-import React, { useState, useEffect } from 'react';
-import { SafeAreaView, View, Text, StyleSheet, FlatList, Dimensions, Image, Pressable, Alert, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
+import { SafeAreaView, View, Text, StyleSheet, FlatList, Dimensions, Pressable, Alert, TouchableOpacity, ScrollView } from 'react-native';
 import { Colors, GlobalStyle } from '../../../styles';
-import { IconButton, Card } from 'react-native-paper';
+import { IconButton, Card, Button } from 'react-native-paper';
 import VectorImage from 'react-native-vector-image';
 import { useDispatch, useSelector } from 'react-redux';
 import { FILTER } from '../../../assets/svg';
@@ -57,17 +57,44 @@ const iconNames = ["shopping", "account-supervisor", "currency-usd", "cart", "cu
 const colorNames = ["#85b1f4", "#f1ab48", "#79e069", "#e36e7a", "#5acce8"]
 
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
   const [salesDataAry, setSalesDataAry] = useState([]);
 
+  useLayoutEffect(() => {
+
+    navigation.setOptions({
+      headerRight: () => (
+        <Button mode="outlined" onPress={moveToSelectBranch}>
+          {route.params?.branchName || ""}
+        </Button>
+      ),
+    });
+  }, [navigation]);
+
   useEffect(() => {
+
     getMenuListFromServer();
     getCarModalListFromServer();
     getLoginEmployeeDetailsFromAsyn();
     dispatch(getCustomerTypeList());
-  }, [])
+
+    const unsubscribe = navigation.addListener('focus', () => {
+      AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_NAME).then((branchName) => {
+        console.log("branchNameTest: ", branchName)
+        navigation.setParams({
+          branchName: branchName,
+        });
+      });
+    });
+
+    return unsubscribe;
+  }, [navigation])
+
+  const moveToSelectBranch = () => {
+    navigation.navigate(AppNavigator.HomeStackIdentifiers.select_branch, { isFromLogin: false, })
+  }
 
   const getMenuListFromServer = async () => {
     let name = await AsyncStore.getData(AsyncStore.Keys.USER_NAME);

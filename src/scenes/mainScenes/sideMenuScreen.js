@@ -114,6 +114,7 @@ const SideMenuScreen = ({ navigation }) => {
     AsyncStore.storeData(AsyncStore.Keys.EMP_ID, "");
     AsyncStore.storeData(AsyncStore.Keys.LOGIN_EMPLOYEE, "");
     AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_ID, "");
+    AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_NAME, "");
     navigation.closeDrawer()
     //realm.close();
     signOut();

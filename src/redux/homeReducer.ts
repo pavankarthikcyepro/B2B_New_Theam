@@ -218,7 +218,8 @@ export const homeSlice = createSlice({
     org_is_loading: false,
     emp_is_loading: false,
     sales_data: {},
-    sales_comparison_data: []
+    sales_comparison_data: [],
+    branchesList: []
   },
   reducers: {
     dateSelected: (state, action) => {
@@ -229,30 +230,38 @@ export const homeSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(getMenuList.fulfilled, (state, action) => {
-      //console.log('menu_list: ', action.payload);
-      const dmsEntityObj = action.payload.dmsEntity;
-      const menuList = dmsEntityObj.menuList;
 
-      if (menuList.length > 0) {
-        let newMenuList = [];
-        menuList.forEach((item) => {
-          newMenuList.push({
-            screen: item.menuId,
-            title: item.displayName
-          })
-        });
-        state.menuList = newMenuList;
-      }
+    builder
+      .addCase(getMenuList.pending, (state, action) => {
+        state.branchesList = [];
+      })
+      .addCase(getMenuList.fulfilled, (state, action) => {
+        //console.log('menu_list: ', action.payload);
+        const dmsEntityObj = action.payload.dmsEntity;
+        const menuList = dmsEntityObj.menuList;
 
-      const empId = dmsEntityObj.loginEmployee.empId;
-      AsyncStore.storeData(AsyncStore.Keys.EMP_ID, empId.toString());
-      state.login_employee_details = dmsEntityObj.loginEmployee;
-      AsyncStore.storeData(AsyncStore.Keys.LOGIN_EMPLOYEE, JSON.stringify(dmsEntityObj.loginEmployee));
-      state.employeeId = empId;
-    })
+        if (menuList.length > 0) {
+          let newMenuList = [];
+          menuList.forEach((item) => {
+            newMenuList.push({
+              screen: item.menuId,
+              title: item.displayName
+            })
+          });
+          state.menuList = newMenuList;
+        }
+
+        const empId = dmsEntityObj.loginEmployee.empId;
+        AsyncStore.storeData(AsyncStore.Keys.EMP_ID, empId.toString());
+        state.login_employee_details = dmsEntityObj.loginEmployee;
+        AsyncStore.storeData(AsyncStore.Keys.LOGIN_EMPLOYEE, JSON.stringify(dmsEntityObj.loginEmployee));
+        state.employeeId = empId;
+        console.log("branches: ", dmsEntityObj.loginEmployee.branchs)
+        state.branchesList = dmsEntityObj.loginEmployee.branchs;
+        AsyncStore.storeData("BRANCHES_DATA", JSON.stringify(dmsEntityObj.loginEmployee.branchs))
+      })
       .addCase(getMenuList.rejected, (state, action) => {
-
+        state.branchesList = [];
       })
       // Get Car modal list
       .addCase(getCarModalList.pending, (state, action) => {
@@ -291,7 +300,7 @@ export const homeSlice = createSlice({
         state.source_of_enquiry_list = [];
       })
       .addCase(getSourceOfEnquiryList.fulfilled, (state, action) => {
-        console.log("getSourceOfEnquiryList S: ", JSON.stringify(action.payload))
+        //console.log("getSourceOfEnquiryList S: ", JSON.stringify(action.payload))
         if (action.payload) {
           const sourceList = action.payload;
           let modalList = [];

@@ -62,6 +62,9 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [datePickerId, setDatePickerId] = useState("");
   const [userToken, setUserToken] = useState("");
+  const [firstNameErrorHandler, setFirstNameErrorHandler] = useState({ showError: false, msg: "" })
+  const [lastNameErrorHandler, setLastNameErrorHandler] = useState({ showError: false, msg: "" })
+  const [subSourceData, setSubSourceData] = useState([]);
 
   useEffect(() => {
     getAsyncstoreData();
@@ -294,26 +297,32 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     Keyboard.dismiss();
 
     if (
+      selector.enquiryType.length == 0 ||
+      selector.customerType.length == 0 ||
       selector.firstName.length == 0 ||
       selector.lastName.length == 0 ||
       selector.mobile.length == 0 ||
       selector.carModel.length == 0 ||
-      selector.enquiryType.length == 0 ||
       selector.sourceOfEnquiry.length == 0 ||
-      selector.customerType.length == 0 ||
       selector.pincode.length == 0
     ) {
       showToastRedAlert("Please fill required fields");
       return;
     }
 
-    if (!isValidateAlphabetics(selector.firstName)) {
-      showToast("please enter alphabetics only in firstname ");
-      return;
-    }
-    if (!isValidateAlphabetics(selector.lastName)) {
-      showToast("please enter alphabetics only in lastname ");
-      return;
+    const enquirySegmentName = selector.enquiryType.replace(/\s/g, "").toLowerCase();
+    if (enquirySegmentName !== "commercial" && enquirySegmentName !== "company") {
+
+      if (!isValidateAlphabetics(selector.firstName)) {
+        // showToast("please enter alphabetics only in firstname ");
+        setFirstNameErrorHandler({ showError: true, msg: "please enter alphabetics only" })
+        return;
+      }
+      if (!isValidateAlphabetics(selector.lastName)) {
+        // showToast("please enter alphabetics only in lastname ");
+        setLastNameErrorHandler({ showError: true, msg: "please enter alphabetics only" })
+        return;
+      }
     }
 
     if (selector.mobile.length != 10) {
@@ -564,6 +573,9 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         }
         setDataForDropDown([...homeSelector.source_of_enquiry_list]);
         break;
+      case "SUB_SOURCE_OF_ENQUIRY":
+        setDataForDropDown([...subSourceData]);
+        break;
       case "EVENT_NAME":
         if (selector.event_list.length > 0) {
           setDataForDropDown([...selector.event_list]);
@@ -606,6 +618,19 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     }
   }, [selector.eventStartDate, selector.eventEndDate]);
 
+
+  updateSubSourceData = (item) => {
+    console.log("item: ", item);
+    if (item.subsource && item.subsource.length > 0) {
+      const updatedData = item.subsource.map((item) => {
+        return { ...item, name: item.subSource }
+      })
+      setSubSourceData(updatedData);
+    } else {
+      setSubSourceData([]);
+    }
+  }
+
   return (
     <SafeAreaView style={styles.container}>
 
@@ -618,8 +643,11 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         selectedItems={(item) => {
           console.log("selected: ", item);
 
-          if (dropDownKey === "SOURCE_OF_ENQUIRY" && item.name === "Event") {
-            getEventListFromServer();
+          if (dropDownKey === "SOURCE_OF_ENQUIRY") {
+            if (item.name === "Event") {
+              getEventListFromServer();
+            }
+            updateSubSourceData(item);
           }
           setShowDropDownModel(false);
           dispatch(setDropDownData({ key: dropDownKey, value: item.name, id: item.id }));
@@ -683,18 +711,41 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             </Button>
           </View>
 
-          <View style={[{ borderRadius: 6 }]}>
+          <View style={[{ borderRadius: 6, backgroundColor: Colors.WHITE }]}>
+            <DropDownSelectionItem
+              label={"Enquiry Segment*"}
+              value={selector.enquiryType}
+              onPress={() =>
+                showDropDownModelMethod(
+                  "ENQUIRY_SEGMENT",
+                  "Select Enquiry Segment"
+                )
+              }
+            />
+            <DropDownSelectionItem
+              label={"Customer Type*"}
+              value={selector.customerType}
+              onPress={() =>
+                showDropDownModelMethod("CUSTOMER_TYPE", "Select Customer Type")
+              }
+            />
+
             <TextinputComp
               style={styles.textInputComp}
               value={selector.firstName}
               label={"First Name*"}
+              editable={(selector.enquiryType.length > 0 && selector.customerType.length > 0) ? true : false}
               maxLength={30}
+              disabled={(selector.enquiryType.length > 0 && selector.customerType.length > 0) ? false : true}
               keyboardType={"default"}
-              onChangeText={(text) =>
-                dispatch(
-                  setPreEnquiryDetails({ key: "FIRST_NAME", text: text })
-                )
-              }
+              error={firstNameErrorHandler.showError}
+              errorMsg={firstNameErrorHandler.msg}
+              onChangeText={(text) => {
+                if (firstNameErrorHandler.showError) {
+                  setFirstNameErrorHandler({ showError: false, msg: "" })
+                }
+                dispatch(setPreEnquiryDetails({ key: "FIRST_NAME", text: text }))
+              }}
             />
             <Text style={styles.devider}></Text>
 
@@ -702,11 +753,18 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               style={styles.textInputComp}
               value={selector.lastName}
               label={"Last Name*"}
+              editable={(selector.enquiryType.length > 0 && selector.customerType.length > 0) ? true : false}
               maxLength={30}
+              disabled={(selector.enquiryType.length > 0 && selector.customerType.length > 0) ? false : true}
               keyboardType={"default"}
-              onChangeText={(text) =>
+              error={lastNameErrorHandler.showError}
+              errorMsg={lastNameErrorHandler.msg}
+              onChangeText={(text) => {
+                if (lastNameErrorHandler.showError) {
+                  setFirstNameErrorHandler({ showError: false, msg: "" })
+                }
                 dispatch(setPreEnquiryDetails({ key: "LAST_NAME", text: text }))
-              }
+              }}
             />
             <Text style={styles.devider}></Text>
 
@@ -716,9 +774,9 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               label={"Mobile Number*"}
               keyboardType={"phone-pad"}
               maxLength={10}
-              onChangeText={(text) =>
+              onChangeText={(text) => {
                 dispatch(setPreEnquiryDetails({ key: "MOBILE", text: text }))
-              }
+              }}
             />
             <Text style={styles.devider}></Text>
 
@@ -753,23 +811,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               value={selector.carModel}
               onPress={() =>
                 showDropDownModelMethod("CAR_MODEL", "Select Model")
-              }
-            />
-            <DropDownSelectionItem
-              label={"Enquiry Segment*"}
-              value={selector.enquiryType}
-              onPress={() =>
-                showDropDownModelMethod(
-                  "ENQUIRY_SEGMENT",
-                  "Select Enquiry Segment"
-                )
-              }
-            />
-            <DropDownSelectionItem
-              label={"Customer Type*"}
-              value={selector.customerType}
-              onPress={() =>
-                showDropDownModelMethod("CUSTOMER_TYPE", "Select Customer Type")
               }
             />
 
@@ -812,6 +853,15 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               disabled={fromEdit}
               onPress={() => showDropDownModelMethod("SOURCE_OF_ENQUIRY", "Select Source of Pre-Enquiry")}
             />
+
+            {subSourceData.length > 0 && (
+              <DropDownSelectionItem
+                label={"Sub Source of Create Lead*"}
+                value={selector.subSourceOfEnquiry}
+                disabled={fromEdit}
+                onPress={() => showDropDownModelMethod("SUB_SOURCE_OF_ENQUIRY", "Select Sub Source of Pre-Enquiry")}
+              />
+            )}
 
             {selector.sourceOfEnquiry === "Other" ? (
               <View>

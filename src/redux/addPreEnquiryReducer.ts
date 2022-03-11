@@ -81,6 +81,8 @@ export const addPreEnquirySlice = createSlice({
         customerType: "",
         sourceOfEnquiry: "",
         sourceOfEnquiryId: null,
+        subSourceOfEnquiry: "",
+        subSourceOfEnquiryId: null,
         eventName: "",
         eventStartDate: "",
         eventEndDate: "",
@@ -158,6 +160,12 @@ export const addPreEnquirySlice = createSlice({
                     }
                     state.sourceOfEnquiry = value;
                     state.sourceOfEnquiryId = id;
+                    state.subSourceOfEnquiry = "";
+                    state.subSourceOfEnquiryId = null;
+                    break;
+                case "SUB_SOURCE_OF_ENQUIRY":
+                    state.subSourceOfEnquiry = value;
+                    state.subSourceOfEnquiryId = id;
                     break;
                 case "EVENT_NAME":
                     state.eventName = value;

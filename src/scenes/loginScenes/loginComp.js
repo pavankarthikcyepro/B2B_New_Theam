@@ -9,6 +9,7 @@ import {
   Animated,
   Image,
   Modal,
+  TextInput,
   KeyboardAvoidingView
 } from "react-native";
 import { Colors } from "../../styles";
@@ -33,6 +34,8 @@ import { AuthContext } from "../../utils/authContext";
 import { LoaderComponent } from '../../components';
 import * as AsyncStore from '../../asyncStore';
 import { showAlertMessage, showToast } from "../../utils/toast";
+// import { TextInput } from 'react-native-paper';
+
 
 const ScreenWidth = Dimensions.get("window").width;
 const ScreenHeight = Dimensions.get("window").height;
@@ -43,6 +46,9 @@ const LoginScreen = ({ navigation }) => {
   const dispatch = useDispatch();
   const fadeAnima = useRef(new Animated.Value(0)).current;
   const { signIn } = React.useContext(AuthContext);
+  const [text, setText] = React.useState("");
+  const [number, onChangeNumber] = React.useState(null);
+
 
   useEffect(() => {
     Animated.timing(fadeAnima, {
@@ -93,6 +99,7 @@ const LoginScreen = ({ navigation }) => {
     dispatch(postUserData(object));
   };
 
+  // Handle Login Success Response
   useEffect(() => {
 
     if (selector.status == "sucess") {
@@ -100,6 +107,7 @@ const LoginScreen = ({ navigation }) => {
       AsyncStore.storeData(AsyncStore.Keys.USER_NAME, selector.userData.userName);
       AsyncStore.storeData(AsyncStore.Keys.ORG_ID, selector.userData.orgId);
       AsyncStore.storeData(AsyncStore.Keys.REFRESH_TOKEN, selector.userData.refreshToken);
+
       AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, selector.userData.idToken).then(() => {
         dispatch(getMenuList(selector.userData.userName));
         // dispatch(getCustomerTypeList());
@@ -116,11 +124,13 @@ const LoginScreen = ({ navigation }) => {
     if (selector.menuListStatus == "completed") {
       console.log("branchList: ", selector.branchesList.length);
       if (selector.branchesList.length > 1) {
-        navigation.navigate(AuthNavigator.AuthStackIdentifiers.SELECT_BRANCH, { branches: selector.branchesList })
+        navigation.navigate(AuthNavigator.AuthStackIdentifiers.SELECT_BRANCH, { isFromLogin: true, branches: selector.branchesList })
       }
       else if (selector.branchesList.length > 0) {
         const branchId = selector.branchesList[0].branchId;
+        const branchName = selector.branchesList[0].branchName;
         AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_ID, branchId.toString());
+        AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_NAME, branchName);
         signIn(selector.authToken);
         dispatch(clearState());
       } else {

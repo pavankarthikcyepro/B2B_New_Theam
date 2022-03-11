@@ -18,30 +18,56 @@ const SelectBranchComp = ({ route, navigation }) => {
     const [checked, setChecked] = React.useState('first');
     const [branchList, setBranchList] = useState([]);
     const [selectedBranchId, setSelectedBranchId] = useState("");
+    const [selectedBranchName, setSelectedBranchName] = useState("");
     const { signIn } = React.useContext(AuthContext);
     const dispatch = useDispatch();
 
-    React.useEffect(() => {
+    React.useEffect(async () => {
 
-        const branches = route.params.branches;
-        setBranchList(branches);
+        let branchList = [];
+        if (route.params.isFromLogin) {
+            branchList = route.params.branches;
+        } else {
+            try {
+                const branchData = await AsyncStore.getData("BRANCHES_DATA");
+                branchList = JSON.parse(branchData);
+            }
+            catch (err) {
+                branchList = [];
+            }
+
+            const branchId = await AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID);
+            setSelectedBranchId(branchId);
+            const branchName = await AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_NAME);
+            setSelectedBranchName(branchName);
+        }
+        setBranchList(branchList);
     }, [])
 
     const branchSelected = (selectedItem) => {
 
-        setSelectedBranchId(selectedItem.branchId)
+        setSelectedBranchId(selectedItem.branchId);
+        setSelectedBranchName(selectedItem.branchName);
     }
 
     const proceedBtnClicked = () => {
 
-        if (selectedBranchId != "") {
-            AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
-                AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_ID, selectedBranchId.toString());
-                signIn(token);
-                dispatch(clearState());
-            })
-        } else {
-            showToast("Please select branch")
+        if (route.params.isFromLogin) {
+            if (selectedBranchId != "") {
+                AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
+                    AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_ID, selectedBranchId.toString());
+                    AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_NAME, selectedBranchName);
+                    signIn(token);
+                    dispatch(clearState());
+                })
+            } else {
+                showToast("Please select branch")
+            }
+        }
+        else {
+            AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_ID, selectedBranchId.toString());
+            AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_NAME, selectedBranchName);
+            navigation.goBack();
         }
     }
 
@@ -74,9 +100,9 @@ const SelectBranchComp = ({ route, navigation }) => {
                 />
 
             </View>
-            <View style={{ width: "100%", height: 50, justifyContent: "center", alignItems: "center" }}>
+            <View style={{ width: "100%", height: 45, justifyContent: "center", alignItems: "center" }}>
                 <ButtonComp
-                    title={"Proceed"}
+                    title={route.params.isFromLogin ? "Proceed" : "Update"}
                     width={150}
                     onPress={proceedBtnClicked}
                 />
