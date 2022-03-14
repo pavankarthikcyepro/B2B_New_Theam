@@ -64,33 +64,48 @@ const HomeScreen = ({ route, navigation }) => {
 
   useLayoutEffect(() => {
 
-    navigation.setOptions({
-      headerRight: () => (
-        <Button mode="outlined" onPress={moveToSelectBranch}>
-          {route.params?.branchName || ""}
-        </Button>
-      ),
-    });
+    if (route.params?.branchName) {
+      navigation.setOptions({
+        headerRight: () => (
+          <TouchableOpacity onPress={moveToSelectBranch}>
+            <View style={{ paddingLeft: 5, paddingRight: 2, paddingVertical: 2, borderColor: Colors.WHITE, borderWidth: 1, borderRadius: 4, flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+              <Text style={{ fontSize: 10, fontWeight: "600", color: Colors.WHITE }}>{route.params?.branchName || ""}</Text>
+              <IconButton
+                icon="menu-down"
+                style={{ padding: 0, margin: 0 }}
+                color={Colors.WHITE}
+                size={15}
+              />
+            </View>
+          </TouchableOpacity>
+        ),
+      });
+    }
   }, [navigation]);
 
   useEffect(() => {
 
+    updateBranchNameInHeader()
     getMenuListFromServer();
     getCarModalListFromServer();
     getLoginEmployeeDetailsFromAsyn();
     dispatch(getCustomerTypeList());
 
     const unsubscribe = navigation.addListener('focus', () => {
-      AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_NAME).then((branchName) => {
-        console.log("branchNameTest: ", branchName)
-        navigation.setParams({
-          branchName: branchName,
-        });
-      });
+      updateBranchNameInHeader()
     });
 
     return unsubscribe;
   }, [navigation])
+
+  const updateBranchNameInHeader = () => {
+    AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_NAME).then((branchName) => {
+      console.log("branchNameTest: ", branchName)
+      navigation.setParams({
+        branchName: branchName,
+      });
+    });
+  }
 
   const moveToSelectBranch = () => {
     navigation.navigate(AppNavigator.HomeStackIdentifiers.select_branch, { isFromLogin: false, })
@@ -118,7 +133,7 @@ const HomeScreen = ({ route, navigation }) => {
         orgId: jsonObj.orgId,
         branchId: jsonObj.branchId
       }
-      console.log("jsonObj: ", jsonObj);
+      // console.log("jsonObj: ", jsonObj);
       dispatch(getOrganaizationHirarchyList(payload));
       dispatch(getSourceOfEnquiryList(jsonObj.orgId));
       getDashboadTableDataFromServer(jsonObj.empId);

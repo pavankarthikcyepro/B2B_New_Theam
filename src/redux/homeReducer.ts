@@ -256,7 +256,6 @@ export const homeSlice = createSlice({
         state.login_employee_details = dmsEntityObj.loginEmployee;
         AsyncStore.storeData(AsyncStore.Keys.LOGIN_EMPLOYEE, JSON.stringify(dmsEntityObj.loginEmployee));
         state.employeeId = empId;
-        console.log("branches: ", dmsEntityObj.loginEmployee.branchs)
         state.branchesList = dmsEntityObj.loginEmployee.branchs;
         AsyncStore.storeData("BRANCHES_DATA", JSON.stringify(dmsEntityObj.loginEmployee.branchs))
       })

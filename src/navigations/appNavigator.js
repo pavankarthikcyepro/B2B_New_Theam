@@ -156,6 +156,7 @@ const HomeStackNavigator = ({ navigation }) => {
       <HomeStack.Screen
         name="Home"
         component={HomeScreen}
+        initialParams={{ branchName: "test" }}
         options={{
           title: "Dashboard",
           headerLeft: () => <MenuIcon navigation={navigation} />,
