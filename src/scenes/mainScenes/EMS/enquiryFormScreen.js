@@ -353,7 +353,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("Please fill required fields in Financial Details");
       return;
     }
-
+     if (!isValidateAlphabetics(selector.leashing_name)) {
+      showToast("Please enter alphabetics only in leashing name");
+      return;
+    }
     if (!selector.enquiry_details_response) {
       return;
     }
@@ -2024,6 +2027,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
                       label={"Down Payment*"}
+                      maxLength={10}
                       keyboardType={"default"}
                       value={selector.down_payment}
                       onChangeText={(text) =>
@@ -2045,7 +2049,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       <TextinputComp
                         style={{ height: 65, width: "100%" }}
                         label={"Loan Amount*"}
-                        keyboardType={"default"}
+                      keyboardType={"default"}
+                       maxLength={10}
                         value={selector.loan_amount}
                         onChangeText={(text) => {
                           emiCal(text, selector.rate_of_interest, selector.loan_of_tenure)
@@ -2056,7 +2061,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       <TextinputComp
                         style={{ height: 65, width: "100%" }}
                         label={"Rate of Interest*"}
-                        keyboardType={"default"}
+                      keyboardType={"default"}
+                      maxLength={10}
                         value={selector.rate_of_interest}
                         onChangeText={(text) => {
                           emiCal(selector.loan_amount, text, selector.loan_of_tenure)
@@ -2086,6 +2092,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       style={{ height: 65, width: "100%" }}
                       label={"Loan of Tenure(Months)"}
                       keyboardType={"default"}
+                       maxLength={3}
                       value={selector.loan_of_tenure}
                       onChangeText={(text) => {
                         emiCal(selector.loan_amount, selector.rate_of_interest, text)
@@ -2589,6 +2596,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         style={{ height: 65, width: "100%" }}
                         label={"Make Other Name"}
                         editable={true}
+                        maxLength={50}
                         value={selector.r_make_other_name}
                         onChangeText={(text) =>
                           dispatch(
@@ -2613,6 +2621,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         style={{ height: 65, width: "100%" }}
                         label={"Model Other Name"}
                         editable={true}
+                        maxLength={50}
                         value={selector.r_model_other_name}
                         onChangeText={(text) =>
                           dispatch(
