@@ -1,6 +1,10 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
-import { convertTimeStampToDateString, convertToTime } from "../utils/helperFunctions";
+import {
+  convertTimeStampToDateString,
+  convertToTime,
+} from "../utils/helperFunctions";
 import URL from "../networking/endpoints";
+import moment from "moment";
 import { client } from "../networking/client";
 
 interface EnquiryFollowUpTextModel {
@@ -13,24 +17,29 @@ interface CustomerDetailModel {
   text: string;
 }
 
-export const getTaskDetailsApi = createAsyncThunk("ENQUIRY_FOLLOW_UP_SLICE/getTaskDetailsApi", async (taskId, { rejectWithValue }) => {
-
-  const response = await client.get(URL.GET_TASK_DETAILS(taskId));
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const getTaskDetailsApi = createAsyncThunk(
+  "ENQUIRY_FOLLOW_UP_SLICE/getTaskDetailsApi",
+  async (taskId, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_TASK_DETAILS(taskId));
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
-export const updateTaskApi = createAsyncThunk("ENQUIRY_FOLLOW_UP_SLICE/updateTaskApi", async (body, { rejectWithValue }) => {
-  const response = await client.put(URL.ASSIGN_TASK(), body)
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const updateTaskApi = createAsyncThunk(
+  "ENQUIRY_FOLLOW_UP_SLICE/updateTaskApi",
+  async (body, { rejectWithValue }) => {
+    const response = await client.put(URL.ASSIGN_TASK(), body);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
 const slice = createSlice({
   name: "ENQUIRY_FOLLOW_UP_SLICE",
@@ -43,6 +52,8 @@ const slice = createSlice({
     is_loading_for_task_update: false,
     update_task_response_status: null,
     task_status: "",
+    minDate: null,
+    maxDate: null,
     //*enquiry follow up *//
     reason: "",
     customer_remarks: "",
@@ -59,7 +70,10 @@ const slice = createSlice({
       state.update_task_response_status = null;
       state.task_status = "";
     },
-    setEnquiryFollowUpDetails: (state, action: PayloadAction<EnquiryFollowUpTextModel>) => {
+    setEnquiryFollowUpDetails: (
+      state,
+      action: PayloadAction<EnquiryFollowUpTextModel>
+    ) => {
       const { key, text } = action.payload;
       switch (key) {
         case "REASON":
@@ -83,6 +97,17 @@ const slice = createSlice({
       }
     },
     setDatePicker: (state, action) => {
+      console.log("date start and end");
+      switch (action.payload) {
+        case "ACTUAL_START_TIME":
+          state.minDate = new Date();
+          state.maxDate = null;
+          break;
+        case "ACTUAL_END_TIME":
+          state.minDate = new Date();
+          state.maxDate = null;
+          break;
+      }
       state.datePickerKeyId = action.payload;
       state.showDatepicker = !state.showDatepicker;
     },
@@ -105,36 +130,50 @@ const slice = createSlice({
       if (action.payload.success === true && action.payload.dmsEntity) {
         const taskObj = action.payload.dmsEntity.task;
         state.reason = taskObj.reason ? taskObj.reason : "";
-        state.customer_remarks = taskObj.customerRemarks ? taskObj.customerRemarks : "";
-        state.employee_remarks = taskObj.employeeRemarks ? taskObj.employeeRemarks : "";
-        const stratDate = taskObj.taskActualStartTime ? taskObj.taskActualStartTime : "";
-        state.actual_start_time = convertTimeStampToDateString(stratDate, "DD/MM/YYYY");
-        const endDate = taskObj.taskActualEndTime ? taskObj.taskActualEndTime : "";
-        state.actual_end_time = convertTimeStampToDateString(endDate, "DD/MM/YYYY");
+        state.customer_remarks = taskObj.customerRemarks
+          ? taskObj.customerRemarks
+          : "";
+        state.employee_remarks = taskObj.employeeRemarks
+          ? taskObj.employeeRemarks
+          : "";
+        const stratDate = taskObj.taskActualStartTime
+          ? taskObj.taskActualStartTime
+          : "";
+        state.actual_start_time = convertTimeStampToDateString(
+          stratDate,
+          "DD/MM/YYYY"
+        );
+        const endDate = taskObj.taskActualEndTime
+          ? taskObj.taskActualEndTime
+          : "";
+        state.actual_end_time = convertTimeStampToDateString(
+          endDate,
+          "DD/MM/YYYY"
+        );
         state.task_status = taskObj.taskStatus;
         state.task_details_response = action.payload.dmsEntity.task;
       } else {
         state.task_details_response = null;
       }
-    })
+    });
     builder.addCase(getTaskDetailsApi.rejected, (state, action) => {
       state.task_details_response = null;
-    })
+    });
     builder.addCase(updateTaskApi.pending, (state, action) => {
       state.is_loading_for_task_update = true;
       state.update_task_response_status = null;
-    })
+    });
     builder.addCase(updateTaskApi.fulfilled, (state, action) => {
-      console.log("S updateTaskApi", JSON.stringify(action.payload))
+      console.log("S updateTaskApi", JSON.stringify(action.payload));
       state.is_loading_for_task_update = false;
       state.update_task_response_status = "success";
-    })
+    });
     builder.addCase(updateTaskApi.rejected, (state, action) => {
-      console.log("F updateTaskApi", JSON.stringify(action.payload))
+      console.log("F updateTaskApi", JSON.stringify(action.payload));
       state.is_loading_for_task_update = false;
       state.update_task_response_status = "failed";
-    })
-  }
+    });
+  },
 });
 
 export const {

@@ -13,7 +13,11 @@ import {
 import { ButtonComp } from "../../../components";
 import { Checkbox, Button, IconButton } from "react-native-paper";
 import { Colors, GlobalStyle } from "../../../styles";
-import { TextinputComp, DropDownComponant, DatePickerComponent } from "../../../components";
+import {
+  TextinputComp,
+  DropDownComponant,
+  DatePickerComponent,
+} from "../../../components";
 import { EmsStackIdentifiers } from "../../../navigations/appNavigator";
 import {
   clearState,
@@ -27,16 +31,25 @@ import {
   setExistingDetails,
   continueToCreatePreEnquiry,
   getEventListApi,
-  updateSelectedDate
+  updateSelectedDate,
 } from "../../../redux/addPreEnquiryReducer";
 import { useDispatch, useSelector } from "react-redux";
-import { isMobileNumber, isEmail, convertToDate } from "../../../utils/helperFunctions";
+import {
+  isMobileNumber,
+  isEmail,
+  isPincode,
+  convertToDate,
+} from "../../../utils/helperFunctions";
 import { sales_url } from "../../../networking/endpoints";
 import realm from "../../../database/realm";
 import { AppNavigator } from "../../../navigations";
 import { DropDownSelectionItem, DateSelectItem } from "../../../pureComponents";
 import * as AsyncStore from "../../../asyncStore";
-import { showAlertMessage, showToast, showToastRedAlert } from "../../../utils/toast";
+import {
+  showAlertMessage,
+  showToast,
+  showToastRedAlert,
+} from "../../../utils/toast";
 import URL from "../../../networking/endpoints";
 import { isValidateAlphabetics } from "../../../utils/helperFunctions";
 
@@ -45,13 +58,22 @@ const screenWidth = Dimensions.get("window").width;
 const AddPreEnquiryScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.addPreEnquiryReducer);
   const homeSelector = useSelector((state) => state.homeReducer);
-  const { vehicle_modal_list, customer_type_list } = useSelector((state) => state.homeReducer);
+  const { vehicle_modal_list, customer_type_list } = useSelector(
+    (state) => state.homeReducer
+  );
   const dispatch = useDispatch();
   const [organizationId, setOrganizationId] = useState(0);
   const [branchId, setBranchId] = useState(0);
   const [employeeName, setEmployeeName] = useState("");
-  const [userData, setUserData] = useState({ branchId: "", orgId: "", employeeId: "", employeeName: "" })
-  const [existingPreEnquiryDetails, setExistingPreEnquiryDetails] = useState({});
+  const [userData, setUserData] = useState({
+    branchId: "",
+    orgId: "",
+    employeeId: "",
+    employeeName: "",
+  });
+  const [existingPreEnquiryDetails, setExistingPreEnquiryDetails] = useState(
+    {}
+  );
   const [fromEdit, setFromEdit] = useState(false);
   const [dataForCarModels, setDataForCarModels] = useState([]);
   const [showDropDownModel, setShowDropDownModel] = useState(false);
@@ -62,22 +84,30 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [datePickerId, setDatePickerId] = useState("");
   const [userToken, setUserToken] = useState("");
-  const [firstNameErrorHandler, setFirstNameErrorHandler] = useState({ showError: false, msg: "" })
-  const [lastNameErrorHandler, setLastNameErrorHandler] = useState({ showError: false, msg: "" })
+  const [firstNameErrorHandler, setFirstNameErrorHandler] = useState({
+    showError: false,
+    msg: "",
+  });
+  const [lastNameErrorHandler, setLastNameErrorHandler] = useState({
+    showError: false,
+    msg: "",
+  });
   const [subSourceData, setSubSourceData] = useState([]);
 
   useEffect(() => {
     getAsyncstoreData();
     setExistingData();
     updateCarModelsData();
-    getBranchId()
-    getAuthToken()
+    getBranchId();
+    getAuthToken();
     // getCustomerTypeListFromDB();
     // getCarModalListFromDB();
   }, []);
 
   const getAsyncstoreData = async () => {
-    const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    const employeeData = await AsyncStore.getData(
+      AsyncStore.Keys.LOGIN_EMPLOYEE
+    );
 
     // http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails?organizationId=1
 
@@ -85,7 +115,11 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
 
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
-      setUserData({ orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName })
+      setUserData({
+        orgId: jsonObj.orgId,
+        employeeId: jsonObj.empId,
+        employeeName: jsonObj.empName,
+      });
       setOrganizationId(jsonObj.orgId);
       setEmployeeName(jsonObj.empName);
 
@@ -94,7 +128,12 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           (item) => item.name == "Showroom"
         );
         if (resultAry.length > 0) {
-          dispatch(setDropDownData({ key: "SOURCE_OF_ENQUIRY", value: resultAry[0].name, id: resultAry[0].id, })
+          dispatch(
+            setDropDownData({
+              key: "SOURCE_OF_ENQUIRY",
+              value: resultAry[0].name,
+              id: resultAry[0].id,
+            })
           );
         }
       } else if (jsonObj.hrmsRole === "Tele Caller") {
@@ -102,27 +141,29 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           (item) => item.name == "Digital Marketing"
         );
         if (resultAry.length > 0) {
-          dispatch(setDropDownData({ key: "SOURCE_OF_ENQUIRY", value: resultAry[0].name, id: resultAry[0].id, })
+          dispatch(
+            setDropDownData({
+              key: "SOURCE_OF_ENQUIRY",
+              value: resultAry[0].name,
+              id: resultAry[0].id,
+            })
           );
         }
       }
-
     }
   };
 
   const getBranchId = () => {
-
     AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then((branchId) => {
       setBranchId(branchId);
     });
-  }
+  };
 
   const getAuthToken = () => {
-
     AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
       setUserToken(token);
     });
-  }
+  };
 
   const updateCarModelsData = () => {
     let modalList = [];
@@ -194,8 +235,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   };
 
   const showSucessAlert = (itemData) => {
-
-    const title = `Pre-Enquiry Successfully Created \n Ref Num: ${itemData.referencenumber}`
+    const title = `Pre-Enquiry Successfully Created \n Ref Num: ${itemData.referencenumber}`;
 
     Alert.alert(
       title,
@@ -206,15 +246,19 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           style: "cancel",
           onPress: () => {
             navigation.popToTop();
-          }
+          },
         },
         {
-          text: "Create Enquiry", onPress: () => {
-            navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq, {
-              itemData,
-              fromCreatePreEnquiry: true,
-            });
-          }
+          text: "Create Enquiry",
+          onPress: () => {
+            navigation.navigate(
+              AppNavigator.EmsStackIdentifiers.confirmedPreEnq,
+              {
+                itemData,
+                fromCreatePreEnquiry: true,
+              }
+            );
+          },
         },
       ],
       { cancelable: false }
@@ -310,17 +354,27 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       return;
     }
 
-    const enquirySegmentName = selector.enquiryType.replace(/\s/g, "").toLowerCase();
-    if (enquirySegmentName !== "commercial" && enquirySegmentName !== "company") {
-
+    const enquirySegmentName = selector.enquiryType
+      .replace(/\s/g, "")
+      .toLowerCase();
+    if (
+      enquirySegmentName !== "commercial" &&
+      enquirySegmentName !== "company"
+    ) {
       if (!isValidateAlphabetics(selector.firstName)) {
         // showToast("please enter alphabetics only in firstname ");
-        setFirstNameErrorHandler({ showError: true, msg: "please enter alphabetics only" })
+        setFirstNameErrorHandler({
+          showError: true,
+          msg: "please enter alphabetics only",
+        });
         return;
       }
       if (!isValidateAlphabetics(selector.lastName)) {
         // showToast("please enter alphabetics only in lastname ");
-        setLastNameErrorHandler({ showError: true, msg: "please enter alphabetics only" })
+        setLastNameErrorHandler({
+          showError: true,
+          msg: "please enter alphabetics only",
+        });
         return;
       }
     }
@@ -340,11 +394,10 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (selector.pincode.length != 6) {
+    if (selector.pincode.length > 0 && !isPincode(selector.pincode)) {
       showToast("Please enter valid pincode");
       return;
     }
-
     if (selector.sourceOfEnquiry === "Event") {
       if (selector.eventName.length === 0) {
         showToast("Please select event details");
@@ -362,40 +415,37 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   };
 
   const getReferenceNumber = async () => {
-
     const bodyObj = {
-      "branchid": Number(branchId),
-      "leadstage": "PREENQUIRY",
-      "orgid": userData.orgId
-    }
+      branchid: Number(branchId),
+      leadstage: "PREENQUIRY",
+      orgid: userData.orgId,
+    };
 
     await fetch(URL.CUSTOMER_LEAD_REFERENCE(), {
       method: "POST",
       headers: {
-        'Accept': "application/json",
-        'Content-Type': 'application/json',
-        "auth-token": userToken
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "auth-token": userToken,
       },
-      body: JSON.stringify(bodyObj)
+      body: JSON.stringify(bodyObj),
     })
       .then((response) => response.json())
       .then((jsonObj) => {
-
         if (jsonObj.success == true) {
           const dmsEntiry = jsonObj.dmsEntity;
           const refNumber = dmsEntiry.leadCustomerReference.referencenumber;
           makeCreatePreEnquiry(refNumber);
         } else {
-          showToast("Refrence number failed")
+          showToast("Refrence number failed");
         }
       })
-      .catch(error => {
+      .catch((error) => {
         showToastRedAlert(error.message);
-      })
-  }
+      });
+  };
 
   const makeCreatePreEnquiry = (refNumber) => {
-
     const dmsContactDtoObj = {
       branchId: Number(branchId),
       createdBy: employeeName,
@@ -482,7 +532,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       body: formData,
     };
     dispatch(createPreEnquiry(dataObj));
-  }
+  };
 
   // Handle Create Enquiry response
   useEffect(() => {
@@ -580,7 +630,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         if (selector.event_list.length > 0) {
           setDataForDropDown([...selector.event_list]);
         } else {
-          showToast("No events found")
+          showToast("No events found");
           return;
         }
         break;
@@ -592,12 +642,16 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
 
   const showDatePickerMethod = (key) => {
     setShowDatePicker(true);
-    setDatePickerId(key)
-  }
+    setDatePickerId(key);
+  };
 
   const getEventListFromServer = (startDate, endDate) => {
-
-    if (startDate === undefined || startDate === null || endDate === undefined || endDate === null) {
+    if (
+      startDate === undefined ||
+      startDate === null ||
+      endDate === undefined ||
+      endDate === null
+    ) {
       return;
     }
 
@@ -606,10 +660,10 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       endDate: endDate,
       empId: userData.employeeId,
       branchId: branchId,
-      orgId: userData.orgId
-    }
+      orgId: userData.orgId,
+    };
     dispatch(getEventListApi(payload));
-  }
+  };
 
   // Handle When Event dates selected
   useEffect(() => {
@@ -618,22 +672,20 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     }
   }, [selector.eventStartDate, selector.eventEndDate]);
 
-
   updateSubSourceData = (item) => {
     console.log("item: ", item);
     if (item.subsource && item.subsource.length > 0) {
       const updatedData = item.subsource.map((item) => {
-        return { ...item, name: item.subSource }
-      })
+        return { ...item, name: item.subSource };
+      });
       setSubSourceData(updatedData);
     } else {
       setSubSourceData([]);
     }
-  }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-
       {/* // select modal */}
       <DropDownComponant
         visible={showDropDownModel}
@@ -650,7 +702,9 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             updateSubSourceData(item);
           }
           setShowDropDownModel(false);
-          dispatch(setDropDownData({ key: dropDownKey, value: item.name, id: item.id }));
+          dispatch(
+            setDropDownData({ key: dropDownKey, value: item.name, id: item.id })
+          );
         }}
       />
 
@@ -662,12 +716,16 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           console.log("date: ", selectedDate);
           if (Platform.OS === "android") {
             if (selectedDate) {
-              dispatch(updateSelectedDate({ key: datePickerId, text: selectedDate }))
+              dispatch(
+                updateSelectedDate({ key: datePickerId, text: selectedDate })
+              );
             }
           } else {
-            dispatch(updateSelectedDate({ key: datePickerId, text: selectedDate }))
+            dispatch(
+              updateSelectedDate({ key: datePickerId, text: selectedDate })
+            );
           }
-          setShowDatePicker(false)
+          setShowDatePicker(false);
         }}
         onRequestClose={() => setShowDatePicker(false)}
       />
@@ -734,17 +792,29 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               style={styles.textInputComp}
               value={selector.firstName}
               label={"First Name*"}
-              editable={(selector.enquiryType.length > 0 && selector.customerType.length > 0) ? true : false}
+              editable={
+                selector.enquiryType.length > 0 &&
+                selector.customerType.length > 0
+                  ? true
+                  : false
+              }
               maxLength={30}
-              disabled={(selector.enquiryType.length > 0 && selector.customerType.length > 0) ? false : true}
+              disabled={
+                selector.enquiryType.length > 0 &&
+                selector.customerType.length > 0
+                  ? false
+                  : true
+              }
               keyboardType={"default"}
               error={firstNameErrorHandler.showError}
               errorMsg={firstNameErrorHandler.msg}
               onChangeText={(text) => {
                 if (firstNameErrorHandler.showError) {
-                  setFirstNameErrorHandler({ showError: false, msg: "" })
+                  setFirstNameErrorHandler({ showError: false, msg: "" });
                 }
-                dispatch(setPreEnquiryDetails({ key: "FIRST_NAME", text: text }))
+                dispatch(
+                  setPreEnquiryDetails({ key: "FIRST_NAME", text: text })
+                );
               }}
             />
             <Text style={styles.devider}></Text>
@@ -753,17 +823,29 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               style={styles.textInputComp}
               value={selector.lastName}
               label={"Last Name*"}
-              editable={(selector.enquiryType.length > 0 && selector.customerType.length > 0) ? true : false}
+              editable={
+                selector.enquiryType.length > 0 &&
+                selector.customerType.length > 0
+                  ? true
+                  : false
+              }
               maxLength={30}
-              disabled={(selector.enquiryType.length > 0 && selector.customerType.length > 0) ? false : true}
+              disabled={
+                selector.enquiryType.length > 0 &&
+                selector.customerType.length > 0
+                  ? false
+                  : true
+              }
               keyboardType={"default"}
               error={lastNameErrorHandler.showError}
               errorMsg={lastNameErrorHandler.msg}
               onChangeText={(text) => {
                 if (lastNameErrorHandler.showError) {
-                  setFirstNameErrorHandler({ showError: false, msg: "" })
+                  setFirstNameErrorHandler({ showError: false, msg: "" });
                 }
-                dispatch(setPreEnquiryDetails({ key: "LAST_NAME", text: text }))
+                dispatch(
+                  setPreEnquiryDetails({ key: "LAST_NAME", text: text })
+                );
               }}
             />
             <Text style={styles.devider}></Text>
@@ -775,7 +857,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               keyboardType={"phone-pad"}
               maxLength={10}
               onChangeText={(text) => {
-                dispatch(setPreEnquiryDetails({ key: "MOBILE", text: text }))
+                dispatch(setPreEnquiryDetails({ key: "MOBILE", text: text }));
               }}
             />
             <Text style={styles.devider}></Text>
@@ -815,10 +897,10 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             />
 
             {selector.customerType === "Corporate" ||
-              selector.customerType === "Government" ||
-              selector.customerType === "Retired" ||
-              selector.customerType === "Fleet" ||
-              selector.customerType === "Institution" ? (
+            selector.customerType === "Government" ||
+            selector.customerType === "Retired" ||
+            selector.customerType === "Fleet" ||
+            selector.customerType === "Institution" ? (
               <View>
                 <TextinputComp
                   style={styles.textInputComp}
@@ -826,7 +908,11 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                   label={"Company Name"}
                   maxLength={50}
                   keyboardType={"default"}
-                  onChangeText={(text) => dispatch(setPreEnquiryDetails({ key: "COMPANY_NAME", text: text }))}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setPreEnquiryDetails({ key: "COMPANY_NAME", text: text })
+                    )
+                  }
                 />
                 <Text style={styles.devider}></Text>
               </View>
@@ -851,7 +937,12 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               label={"Source of Create Lead*"}
               value={selector.sourceOfEnquiry}
               disabled={fromEdit}
-              onPress={() => showDropDownModelMethod("SOURCE_OF_ENQUIRY", "Select Source of Pre-Enquiry")}
+              onPress={() =>
+                showDropDownModelMethod(
+                  "SOURCE_OF_ENQUIRY",
+                  "Select Source of Pre-Enquiry"
+                )
+              }
             />
 
             {subSourceData.length > 0 && (
@@ -859,7 +950,12 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                 label={"Sub Source of Create Lead*"}
                 value={selector.subSourceOfEnquiry}
                 disabled={fromEdit}
-                onPress={() => showDropDownModelMethod("SUB_SOURCE_OF_ENQUIRY", "Select Sub Source of Pre-Enquiry")}
+                onPress={() =>
+                  showDropDownModelMethod(
+                    "SUB_SOURCE_OF_ENQUIRY",
+                    "Select Sub Source of Pre-Enquiry"
+                  )
+                }
               />
             )}
 
@@ -871,7 +967,12 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                   label={"Other"}
                   keyboardType={"default"}
                   onChangeText={(text) =>
-                    dispatch(setPreEnquiryDetails({ key: "OTHER_COMPANY_NAME", text: text }))
+                    dispatch(
+                      setPreEnquiryDetails({
+                        key: "OTHER_COMPANY_NAME",
+                        text: text,
+                      })
+                    )
                   }
                 />
                 <Text style={styles.devider}></Text>
@@ -894,10 +995,14 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                   label={"Event Name"}
                   value={selector.eventName}
                   disabled={fromEdit}
-                  onPress={() => showDropDownModelMethod("EVENT_NAME", "Select Event Name")}
+                  onPress={() =>
+                    showDropDownModelMethod("EVENT_NAME", "Select Event Name")
+                  }
                 />
                 {selector.event_list.length === 0 ? (
-                  <View style={{ backgroundColor: Colors.WHITE, paddingLeft: 12 }}>
+                  <View
+                    style={{ backgroundColor: Colors.WHITE, paddingLeft: 12 }}
+                  >
                     <Text style={styles.noEventsText}>{"No Events Found"}</Text>
                   </View>
                 ) : null}
@@ -971,8 +1076,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "400",
     color: Colors.RED,
-    paddingVertical: 5
-  }
+    paddingVertical: 5,
+  },
 });
 
 {
