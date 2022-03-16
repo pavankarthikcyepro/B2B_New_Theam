@@ -3,7 +3,8 @@ import { Linking, Alert, Platform } from "react-native";
 import moment from "moment";
 
 export const isMobileNumber = (mobile) => {
-  var regex = /^[1-9]{1}[0-9]{9}$/; // /^\d{10}$/
+  // var regex = /^[1-9]{1}[0-9]{9}$/; // /^\d{10}$/
+  var regex = /^[0-9]{10}$/;
   if (regex.test(mobile)) {
     return true;
   }

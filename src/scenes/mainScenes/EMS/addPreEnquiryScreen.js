@@ -379,11 +379,14 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       }
     }
 
-    if (selector.mobile.length != 10) {
-      showToast("Please enter valid mobile number");
+    // if (selector.mobile.length != 10 && !isMobileNumber(selector.mobile))  {
+    //   showToast("Please enter valid mobile number");
+    //   return;
+    // }
+ if (selector.mobile.length > 0 && !isMobileNumber(selector.mobile)) {
+      showToast("Please enter valid number");
       return;
     }
-
     if (selector.alterMobile.length > 0 && selector.alterMobile.length != 10) {
       showToast("Please enter valid alternate mobile number");
       return;
@@ -877,6 +880,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             <Text style={styles.devider}></Text>
 
             <TextinputComp
+              
               style={styles.textInputComp}
               value={selector.email}
               label={"Email-Id"}
@@ -924,6 +928,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                   style={styles.textInputComp}
                   value={selector.other}
                   label={"Other"}
+                  maxLength={50}
                   keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(setPreEnquiryDetails({ key: "OTHER", text: text }))
@@ -966,6 +971,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                   value={selector.other_company_name}
                   label={"Other"}
                   keyboardType={"default"}
+                  maxLength={50}
                   onChangeText={(text) =>
                     dispatch(
                       setPreEnquiryDetails({

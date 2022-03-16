@@ -97,7 +97,6 @@ const slice = createSlice({
       }
     },
     setDatePicker: (state, action) => {
-      console.log("date start and end");
       switch (action.payload) {
         case "ACTUAL_START_TIME":
           state.minDate = new Date();
@@ -114,9 +113,11 @@ const slice = createSlice({
     updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
       const selectedDate = convertTimeStampToDateString(text, "DD/MM/YYYY");
+      const keyId = key ? key : state.datePickerKeyId;
       switch (state.datePickerKeyId) {
         case "ACTUAL_START_TIME":
           state.actual_start_time = selectedDate;
+
           break;
         case "ACTUAL_END_TIME":
           state.actual_end_time = selectedDate;

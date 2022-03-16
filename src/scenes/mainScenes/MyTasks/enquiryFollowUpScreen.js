@@ -210,7 +210,6 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       showToast("Please enter alphabetics only in employee remarks");
       return;
     }
-
     const newTaskObj = { ...selector.task_details_response };
     newTaskObj.reason = selector.reason;
     newTaskObj.customerRemarks = selector.customer_remarks;
@@ -218,6 +217,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     newTaskObj.taskActualStartTime = convertDateStringToMillisecondsUsingMoment(
       selector.actual_start_time
     );
+    // dataObj.dmsExpectedDeliveryDate = convertDateStringToMillisecondsUsingMoment(selector.expected_delivery_date);
     newTaskObj.taskActualEndTime = convertDateStringToMillisecondsUsingMoment(
       selector.actual_end_time
     );
@@ -279,6 +279,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
         mode={"date"}
         minimumDate={selector.minDate}
         value={new Date(Date.now())}
+        minimumDate={selector.minDate}
         onChange={(event, selectedDate) => {
           console.log("date: ", selectedDate);
           if (Platform.OS === "android") {
@@ -373,6 +374,9 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
               label={"Actual Start Date"}
               value={selector.actual_start_time}
               onPress={() => dispatch(setDatePicker("ACTUAL_START_TIME"))}
+              //  value={selector.expected_delivery_date}
+                  // onPress={() =>
+                    // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
             />
             <Text style={GlobalStyle.underline}></Text>
             <DateSelectItem
