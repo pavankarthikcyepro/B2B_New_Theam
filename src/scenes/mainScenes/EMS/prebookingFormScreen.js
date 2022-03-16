@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Pressable,
-  BackHandler
+  BackHandler,
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { useDispatch, useSelector } from "react-redux";
@@ -57,16 +57,19 @@ import {
   postBookingAmountApi,
   getPaymentDetailsApi,
   getBookingAmountDetailsApi,
-  getAssignedTasksApi
+  getAssignedTasksApi,
 } from "../../../redux/preBookingFormReducer";
 import {
   RadioTextItem,
   CustomerAccordianHeaderItem,
   ImageSelectItem,
   DateSelectItem,
-  DropDownSelectionItem
+  DropDownSelectionItem,
 } from "../../../pureComponents";
-import { ImagePickerComponent, SelectOtherVehicleComponant } from "../../../components";
+import {
+  ImagePickerComponent,
+  SelectOtherVehicleComponant,
+} from "../../../components";
 import { Checkbox, List, Button, IconButton } from "react-native-paper";
 import * as AsyncStore from "../../../asyncStore";
 import {
@@ -76,21 +79,28 @@ import {
   Finance_Types,
   Finance_Category_Types,
   Bank_Financer_Types,
-  Approx_Auual_Income_Types
+  Approx_Auual_Income_Types,
 } from "../../../jsonData/enquiryFormScreenJsonData";
 import {
   Payment_At_Types,
   Booking_Payment_Types,
   Vehicle_Types,
   Drop_reasons,
-  Customer_Category_Types
+  Customer_Category_Types,
 } from "../../../jsonData/prebookingFormScreenJsonData";
 import { AppNavigator } from "../../../navigations";
 import { getPreBookingData } from "../../../redux/preBookingReducer";
-import { showToast, showToastRedAlert, showToastSucess } from "../../../utils/toast";
-import { convertDateStringToMillisecondsUsingMoment, emiCalculator } from "../../../utils/helperFunctions";
+import {
+  showToast,
+  showToastRedAlert,
+  showToastSucess,
+} from "../../../utils/toast";
+import {
+  convertDateStringToMillisecondsUsingMoment,
+  emiCalculator,
+} from "../../../utils/helperFunctions";
 import URL from "../../../networking/endpoints";
-import uuid from 'react-native-uuid';
+import uuid from "react-native-uuid";
 
 const rupeeSymbol = "\u20B9";
 
@@ -100,21 +110,26 @@ const CheckboxTextAndAmountComp = ({
   titleStyle = {},
   amoutStyle = {},
   isChecked = false,
-  onPress
+  onPress,
 }) => {
   return (
-    <View style={[styles.textAndAmountView, { paddingLeft: 2 }]} >
-      <View style={{ flex: 1, flexDirection: "row", alignItems: 'center' }}>
+    <View style={[styles.textAndAmountView, { paddingLeft: 2 }]}>
+      <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
         <Checkbox.Android
           style={{ padding: 0, margin: 0 }}
-          status={isChecked ? 'checked' : 'unchecked'}
+          status={isChecked ? "checked" : "unchecked"}
           color={Colors.BLUE}
           uncheckedColor={Colors.GRAY}
           onPress={onPress}
         />
         <Text
           style={[
-            { fontSize: 14, fontWeight: "400", maxWidth: "70%", color: Colors.GRAY },
+            {
+              fontSize: 14,
+              fontWeight: "400",
+              maxWidth: "70%",
+              color: Colors.GRAY,
+            },
             titleStyle,
           ]}
         >
@@ -135,10 +150,15 @@ const TextAndAmountComp = ({
   amoutStyle = {},
 }) => {
   return (
-    <View style={styles.textAndAmountView} >
+    <View style={styles.textAndAmountView}>
       <Text
         style={[
-          { fontSize: 14, fontWeight: "400", maxWidth: "70%", color: Colors.GRAY },
+          {
+            fontSize: 14,
+            fontWeight: "400",
+            maxWidth: "70%",
+            color: Colors.GRAY,
+          },
           titleStyle,
         ]}
       >
@@ -152,21 +172,32 @@ const TextAndAmountComp = ({
 };
 
 const PrebookingFormScreen = ({ route, navigation }) => {
-
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.preBookingFormReducer);
   const { universalId } = route.params;
   const [openAccordian, setOpenAccordian] = useState(0);
   const [componentAppear, setComponentAppear] = useState(false);
-  const [userData, setUserData] = useState({ branchId: "", orgId: "", employeeId: "", employeeName: "", isManager: false, editEnable: false, isPreBookingApprover: false })
+  const [userData, setUserData] = useState({
+    branchId: "",
+    orgId: "",
+    employeeId: "",
+    employeeName: "",
+    isManager: false,
+    editEnable: false,
+    isPreBookingApprover: false,
+  });
   const [showDropDownModel, setShowDropDownModel] = useState(false);
-  const [showMultipleDropDownData, setShowMultipleDropDownData] = useState(false);
+  const [showMultipleDropDownData, setShowMultipleDropDownData] =
+    useState(false);
   const [dataForDropDown, setDataForDropDown] = useState([]);
   const [dropDownKey, setDropDownKey] = useState("");
   const [dropDownTitle, setDropDownTitle] = useState("Select Data");
-  const { vehicle_modal_list } = useSelector(state => state.homeReducer);
+  const { vehicle_modal_list } = useSelector((state) => state.homeReducer);
   const [carModelsData, setCarModelsData] = useState([]);
-  const [selectedCarVarientsData, setSelectedCarVarientsData] = useState({ varientList: [], varientListForDropDown: [] });
+  const [selectedCarVarientsData, setSelectedCarVarientsData] = useState({
+    varientList: [],
+    varientListForDropDown: [],
+  });
   const [carColorsData, setCarColorsData] = useState([]);
   const [selectedModelId, setSelectedModelId] = useState(0);
   const [selectedVarientId, setSelectedVarientId] = useState(0);
@@ -176,9 +207,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [selectedInsurencePrice, setSelectedInsurencePrice] = useState(0);
   const [selectedAddOnsPrice, setSelectedAddOnsPrice] = useState(0);
   const [selectedWarrentyPrice, setSelectedWarrentyPrice] = useState(0);
-  const [selectedPaidAccessoriesPrice, setSelectedPaidAccessoriesPrice] = useState(0);
+  const [selectedPaidAccessoriesPrice, setSelectedPaidAccessoriesPrice] =
+    useState(0);
   const [totalOnRoadPrice, setTotalOnRoadPrice] = useState(0);
-  const [totalOnRoadPriceAfterDiscount, setTotalOnRoadPriceAfterDiscount] = useState(0);
+  const [totalOnRoadPriceAfterDiscount, setTotalOnRoadPriceAfterDiscount] =
+    useState(0);
   const [priceInfomationData, setPriceInformationData] = useState({
     ex_showroom_price: 0,
     ex_showroom_price_csd: 0,
@@ -189,13 +222,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     essential_kit: 0,
     fast_tag: 0,
     vehicle_road_tax: 0,
-  })
+  });
   const [isDropSelected, setIsDropSelected] = useState(false);
   const [typeOfActionDispatched, setTypeOfActionDispatched] = useState("");
   const [selectedPaidAccessories, setSelectedPaidAccessories] = useState([]);
   const [selectedInsurenceAddons, setSelectedInsurenceAddons] = useState([]);
   const [showApproveRejectBtn, setShowApproveRejectBtn] = useState(false);
-  const [showPrebookingPaymentSection, setShowPrebookingPaymentSection] = useState(false);
+  const [showPrebookingPaymentSection, setShowPrebookingPaymentSection] =
+    useState(false);
   const [showSubmitDropBtn, setShowSubmitDropBtn] = useState(false);
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
   const [isRejectSelected, setIsRejectSelected] = useState(false);
@@ -206,7 +240,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [fastTagSlctd, setFastTagSlctd] = useState(false);
 
   useLayoutEffect(() => {
-
     navigation.setOptions({
       headerLeft: () => (
         <IconButton
@@ -222,10 +255,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const goParentScreen = () => {
     navigation.goBack();
     dispatch(clearState());
-  }
+  };
 
   useEffect(() => {
-
     setComponentAppear(true);
     getAsyncstoreData();
     getAuthToken();
@@ -234,111 +266,146 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     getPreBookingDetailsFromServer();
     getBanksListFromServer();
 
-    BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
+    BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
     return () => {
-      BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
+      BackHandler.removeEventListener(
+        "hardwareBackPress",
+        handleBackButtonClick
+      );
     };
   }, [navigation]);
 
   const handleBackButtonClick = () => {
     goParentScreen();
     return true;
-  }
+  };
 
   useEffect(() => {
     calculateOnRoadPrice();
-  }, [priceInfomationData, selectedInsurencePrice, selectedAddOnsPrice, selectedWarrentyPrice, selectedPaidAccessoriesPrice, selector.vechicle_registration])
+  }, [
+    priceInfomationData,
+    selectedInsurencePrice,
+    selectedAddOnsPrice,
+    selectedWarrentyPrice,
+    selectedPaidAccessoriesPrice,
+    selector.vechicle_registration,
+  ]);
 
   useEffect(() => {
     calculateOnRoadPriceAfterDiscount();
-  }, [selector.consumer_offer, selector.exchange_offer, selector.corporate_offer, selector.promotional_offer, selector.cash_discount, selector.for_accessories, selector.additional_offer_1, selector.additional_offer_2]);
+  }, [
+    selector.consumer_offer,
+    selector.exchange_offer,
+    selector.corporate_offer,
+    selector.promotional_offer,
+    selector.cash_discount,
+    selector.for_accessories,
+    selector.additional_offer_1,
+    selector.additional_offer_2,
+  ]);
 
   const getAsyncstoreData = async () => {
-    const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    const employeeData = await AsyncStore.getData(
+      AsyncStore.Keys.LOGIN_EMPLOYEE
+    );
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
-      let isManager = false, editEnable = false;
+      let isManager = false,
+        editEnable = false;
       let isPreBookingApprover = false;
-      if (jsonObj.hrmsRole === "MD" || jsonObj.hrmsRole === "General Manager" || jsonObj.hrmsRole === "Manager") {
+      if (
+        jsonObj.hrmsRole === "MD" ||
+        jsonObj.hrmsRole === "General Manager" ||
+        jsonObj.hrmsRole === "Manager"
+      ) {
         isManager = true;
       }
-      if (jsonObj.roles.includes('PreBooking Approver')) {
+      if (jsonObj.roles.includes("PreBooking Approver")) {
         editEnable = true;
         isPreBookingApprover = true;
       }
-      setUserData({ branchId: jsonObj.branchId, orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName, isManager: isManager, editEnable: editEnable, isPreBookingApprover: isPreBookingApprover })
+      setUserData({
+        branchId: jsonObj.branchId,
+        orgId: jsonObj.orgId,
+        employeeId: jsonObj.empId,
+        employeeName: jsonObj.empName,
+        isManager: isManager,
+        editEnable: editEnable,
+        isPreBookingApprover: isPreBookingApprover,
+      });
       dispatch(getPaidAccessoriesListApi(jsonObj.orgId));
 
       const payload = {
-        "bu": jsonObj.orgId,
-        "dropdownType": "PreBookDropReas",
-        "parentId": 0
-      }
+        bu: jsonObj.orgId,
+        dropdownType: "PreBookDropReas",
+        parentId: 0,
+      };
       dispatch(getDropDataApi(payload));
     }
-  }
+  };
 
   const getAuthToken = () => {
-
     AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
       setUserToken(token);
     });
-  }
+  };
 
   const getPreBookingDetailsFromServer = () => {
     if (universalId) {
       dispatch(getPrebookingDetailsApi(universalId));
     }
-  }
+  };
 
   const getBanksListFromServer = async () => {
-
     await fetch(URL.GET_BANK_DETAILS(), {
       method: "GET",
       headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        'auth-token': userToken
-      }
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "auth-token": userToken,
+      },
     })
       .then((response) => response.json())
       .then((json) => {
-        console.log(json)
+        console.log(json);
       })
-      .catch((error) => { })
-
-  }
+      .catch((error) => {});
+  };
 
   const setCarModelsDataFromBase = () => {
     let modalList = [];
     if (vehicle_modal_list.length > 0) {
-      vehicle_modal_list.forEach(item => {
-        modalList.push({ id: item.vehicleId, name: item.model })
+      vehicle_modal_list.forEach((item) => {
+        modalList.push({ id: item.vehicleId, name: item.model });
       });
     }
     setCarModelsData([...modalList]);
-  }
+  };
 
   // Handle Pre-Booking Details Response
   useEffect(() => {
     if (selector.pre_booking_details_response) {
-
       let dmsContactOrAccountDto;
-      if (selector.pre_booking_details_response.hasOwnProperty("dmsAccountDto")) {
-        dmsContactOrAccountDto = selector.pre_booking_details_response.dmsAccountDto;
-      }
-      else if (selector.pre_booking_details_response.hasOwnProperty("dmsContactDto")) {
-        dmsContactOrAccountDto = selector.pre_booking_details_response.dmsContactDto;
+      if (
+        selector.pre_booking_details_response.hasOwnProperty("dmsAccountDto")
+      ) {
+        dmsContactOrAccountDto =
+          selector.pre_booking_details_response.dmsAccountDto;
+      } else if (
+        selector.pre_booking_details_response.hasOwnProperty("dmsContactDto")
+      ) {
+        dmsContactOrAccountDto =
+          selector.pre_booking_details_response.dmsContactDto;
       }
       const dmsLeadDto = selector.pre_booking_details_response.dmsLeadDto;
-      dispatch(getOnRoadPriceDtoListApi(dmsLeadDto.id))
-      if (dmsLeadDto.leadStatus === 'ENQUIRYCOMPLETED') {
+      dispatch(getOnRoadPriceDtoListApi(dmsLeadDto.id));
+      if (dmsLeadDto.leadStatus === "ENQUIRYCOMPLETED") {
         setShowSubmitDropBtn(true);
       }
-      if (dmsLeadDto.leadStatus === 'SENTFORAPPROVAL') {
+      if (dmsLeadDto.leadStatus === "SENTFORAPPROVAL") {
         setShowApproveRejectBtn(true);
       }
-      if (dmsLeadDto.leadStatus === 'PREBOOKINGCOMPLETED') {
+      if (dmsLeadDto.leadStatus === "PREBOOKINGCOMPLETED") {
         setShowPrebookingPaymentSection(true);
         // Get Payment Details
         dispatch(getPaymentDetailsApi(dmsLeadDto.id));
@@ -359,17 +426,20 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       dispatch(updateBookingPaymentData(dmsLeadDto.dmsBooking));
       // Update Attachment details
       saveAttachmentDetailsInLocalObject(dmsLeadDto.dmsAttachments);
-      dispatch(updateDmsAttachments(dmsLeadDto.dmsAttachments))
+      dispatch(updateDmsAttachments(dmsLeadDto.dmsAttachments));
 
       // Update Paid Accesories
       if (dmsLeadDto.dmsAccessories.length > 0) {
-        let initialValue = 0
-        const totalPrice = dmsLeadDto.dmsAccessories.reduce((preValue, currentValue) => preValue + currentValue.amount, initialValue);
+        let initialValue = 0;
+        const totalPrice = dmsLeadDto.dmsAccessories.reduce(
+          (preValue, currentValue) => preValue + currentValue.amount,
+          initialValue
+        );
         setSelectedPaidAccessoriesPrice(totalPrice);
       }
-      setSelectedPaidAccessories([...dmsLeadDto.dmsAccessories])
+      setSelectedPaidAccessories([...dmsLeadDto.dmsAccessories]);
     }
-  }, [selector.pre_booking_details_response])
+  }, [selector.pre_booking_details_response]);
 
   const saveAttachmentDetailsInLocalObject = (dmsAttachments) => {
     const attachments = [...dmsAttachments];
@@ -381,13 +451,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           documentType: item.documentType,
           fileName: item.fileName,
           keyName: item.keyName,
-          documentNumber: item.documentNumber
-        }
+          documentNumber: item.documentNumber,
+        };
         dataObj[item.documentType] = obj;
-      })
-      setUploadedImagesDataObj({ ...dataObj })
+      });
+      setUploadedImagesDataObj({ ...dataObj });
     }
-  }
+  };
 
   useEffect(() => {
     if (selector.model_drop_down_data_update_status === "update") {
@@ -397,10 +467,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
   const getPreBookingListFromServer = async () => {
     if (userData.employeeId) {
-      let endUrl = "?limit=10&offset=" + "0" + "&status=PREBOOKING&empId=" + empId;
+      let endUrl =
+        "?limit=10&offset=" + "0" + "&status=PREBOOKING&empId=" + empId;
       dispatch(getPreBookingData(endUrl));
     }
-  }
+  };
 
   // Handle getOnRoadPriceDtoListApi response
   useEffect(() => {
@@ -408,11 +479,17 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       const dmsOnRoadPriceDtoObj = selector.on_road_price_dto_list_response[0];
       // setSelectedInsurencePrice(dmsOnRoadPriceDtoObj.)
       setSelectedWarrentyPrice(dmsOnRoadPriceDtoObj.warrantyAmount);
-      if (dmsOnRoadPriceDtoObj.handlingCharges && dmsOnRoadPriceDtoObj.handlingCharges > 0) {
+      if (
+        dmsOnRoadPriceDtoObj.handlingCharges &&
+        dmsOnRoadPriceDtoObj.handlingCharges > 0
+      ) {
         setHandlingChargSlctd(true);
         calculateOnRoadPrice(true, essentialKitSlctd, fastTagSlctd);
       }
-      if (dmsOnRoadPriceDtoObj.essentialKit && dmsOnRoadPriceDtoObj.essentialKit > 0) {
+      if (
+        dmsOnRoadPriceDtoObj.essentialKit &&
+        dmsOnRoadPriceDtoObj.essentialKit > 0
+      ) {
         setEssentialKitSlctd(true);
         calculateOnRoadPrice(handlingChargSlctd, true, fastTagSlctd);
       }
@@ -420,7 +497,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setFastTagSlctd(true);
         calculateOnRoadPrice(handlingChargSlctd, essentialKitSlctd, true);
       }
-      if (dmsOnRoadPriceDtoObj.insuranceAddonData && dmsOnRoadPriceDtoObj.insuranceAddonData.length > 0) {
+      if (
+        dmsOnRoadPriceDtoObj.insuranceAddonData &&
+        dmsOnRoadPriceDtoObj.insuranceAddonData.length > 0
+      ) {
         let addOnPrice = 0;
         dmsOnRoadPriceDtoObj.insuranceAddonData.forEach((element, index) => {
           addOnPrice += element.insuranceAmount;
@@ -428,27 +508,30 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setSelectedAddOnsPrice(addOnPrice);
       }
     }
-  }, [selector.on_road_price_dto_list_response])
+  }, [selector.on_road_price_dto_list_response]);
 
   useEffect(() => {
     if (selector.vehicle_on_road_price_insurence_details_response) {
-
-      const varientTypes = selector.vehicle_on_road_price_insurence_details_response.insurance_vareint_mapping || [];
+      const varientTypes =
+        selector.vehicle_on_road_price_insurence_details_response
+          .insurance_vareint_mapping || [];
       if (varientTypes.length > 0) {
         let newFormatVarientTypes = [];
         varientTypes.forEach((item) => {
           newFormatVarientTypes.push({
             ...item,
-            name: item.policy_name
-          })
+            name: item.policy_name,
+          });
           if (selector.insurance_type === item.policy_name) {
             setSelectedInsurencePrice(item.cost);
           }
-        })
+        });
         setInsurenceVarientTypes([...newFormatVarientTypes]);
       }
 
-      const allWarrentyTypes = selector.vehicle_on_road_price_insurence_details_response.extended_waranty || [];
+      const allWarrentyTypes =
+        selector.vehicle_on_road_price_insurence_details_response
+          .extended_waranty || [];
       if (allWarrentyTypes.length > 0) {
         for (const object of allWarrentyTypes) {
           if (object.varient_id === selectedVarientId) {
@@ -459,10 +542,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 if (Number(item.cost) !== 0) {
                   newFormatWarrentyTypes.push({
                     ...item,
-                    name: item.document_name
-                  })
+                    name: item.document_name,
+                  });
                 }
-              })
+              });
               setWarrentyTypes([...newFormatWarrentyTypes]);
             }
             break;
@@ -470,7 +553,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         }
       }
 
-      const allInsuranceAddOnTypes = selector.vehicle_on_road_price_insurence_details_response.insuranceAddOn || [];
+      const allInsuranceAddOnTypes =
+        selector.vehicle_on_road_price_insurence_details_response
+          .insuranceAddOn || [];
       if (allInsuranceAddOnTypes.length > 0) {
         for (const object of allInsuranceAddOnTypes) {
           if (object.varient_id === selectedVarientId) {
@@ -480,21 +565,22 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               newFormatAddOnTypes.push({
                 ...item,
                 selected: false,
-                name: item.document_name
-              })
-            })
+                name: item.document_name,
+              });
+            });
             setInsurenceAddOnTypes([...newFormatAddOnTypes]);
             break;
           }
         }
       }
 
-      setPriceInformationData({ ...selector.vehicle_on_road_price_insurence_details_response });
+      setPriceInformationData({
+        ...selector.vehicle_on_road_price_insurence_details_response,
+      });
     }
-  }, [selector.vehicle_on_road_price_insurence_details_response])
+  }, [selector.vehicle_on_road_price_insurence_details_response]);
 
   const showDropDownModelMethod = (key, headerText) => {
-
     Keyboard.dismiss();
 
     switch (key) {
@@ -580,11 +666,16 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     setDropDownKey(key);
     setDropDownTitle(headerText);
     setShowDropDownModel(true);
-  }
+  };
 
-  const updateVariantModelsData = (selectedModelName, fromInitialize, selectedVarientName) => {
-
-    if (!selectedModelName || selectedModelName.length === 0) { return }
+  const updateVariantModelsData = (
+    selectedModelName,
+    fromInitialize,
+    selectedVarientName
+  ) => {
+    if (!selectedModelName || selectedModelName.length === 0) {
+      return;
+    }
 
     let arrTemp = vehicle_modal_list.filter(function (obj) {
       return obj.model === selectedModelName;
@@ -596,23 +687,35 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       let mArray = carModelObj.varients;
       setSelectedModelId(carModelObj.vehicleId);
       if (mArray.length) {
-        mArray.forEach(item => {
+        mArray.forEach((item) => {
           newArray.push({
             id: item.id,
-            name: item.name
-          })
-        })
-        setSelectedCarVarientsData({ varientList: [...mArray], varientListForDropDown: [...newArray] });
+            name: item.name,
+          });
+        });
+        setSelectedCarVarientsData({
+          varientList: [...mArray],
+          varientListForDropDown: [...newArray],
+        });
         if (fromInitialize) {
-          updateColorsDataForSelectedVarient(selectedVarientName, [...mArray], carModelObj.vehicleId)
+          updateColorsDataForSelectedVarient(
+            selectedVarientName,
+            [...mArray],
+            carModelObj.vehicleId
+          );
         }
       }
     }
-  }
+  };
 
-  const updateColorsDataForSelectedVarient = (selectedVarientName, varientList, modelId) => {
-
-    if (!selectedVarientName || selectedVarientName.length === 0) { return }
+  const updateColorsDataForSelectedVarient = (
+    selectedVarientName,
+    varientList,
+    modelId
+  ) => {
+    if (!selectedVarientName || selectedVarientName.length === 0) {
+      return;
+    }
 
     let arrTemp = varientList.filter(function (obj) {
       return obj.name === selectedVarientName;
@@ -623,27 +726,35 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       let newArray = [];
       let mArray = carModelObj.vehicleImages;
       const varientId = carModelObj.id;
-      setSelectedVarientId(varientId)
+      setSelectedVarientId(varientId);
       if (mArray.length) {
-        mArray.map(item => {
+        mArray.map((item) => {
           newArray.push({
             id: item.id,
-            name: item.color
-          })
-        })
+            name: item.color,
+          });
+        });
         const obj = {
           fuelType: carModelObj.fuelType,
-          transmissionType: carModelObj.transmission_type
-        }
+          transmissionType: carModelObj.transmission_type,
+        };
         dispatch(updateFuelAndTransmissionType(obj));
-        dispatch(getOnRoadPriceAndInsurenceDetailsApi({ orgId: userData.orgId, varientId: varientId }))
+        dispatch(
+          getOnRoadPriceAndInsurenceDetailsApi({
+            orgId: userData.orgId,
+            varientId: varientId,
+          })
+        );
         setCarColorsData([...newArray]);
       }
     }
-  }
+  };
 
-  const calculateOnRoadPrice = (handleSelected, essentialSelected, fastTagSelected) => {
-
+  const calculateOnRoadPrice = (
+    handleSelected,
+    essentialSelected,
+    fastTagSelected
+  ) => {
     let totalPrice = 0;
     totalPrice += priceInfomationData.ex_showroom_price;
     totalPrice += getLifeTax();
@@ -665,10 +776,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     // totalPrice += priceInfomationData.fast_tag
     setTotalOnRoadPrice(totalPrice);
     setTotalOnRoadPriceAfterDiscount(totalPrice);
-  }
+  };
 
   const calculateOnRoadPriceAfterDiscount = () => {
-
     let totalPrice = totalOnRoadPrice;
     totalPrice -= Number(selector.consumer_offer);
     totalPrice -= Number(selector.exchange_offer);
@@ -679,24 +789,30 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     totalPrice -= Number(selector.additional_offer_1);
     totalPrice -= Number(selector.additional_offer_2);
     setTotalOnRoadPriceAfterDiscount(totalPrice);
-  }
+  };
 
   const submitClicked = () => {
-
     Keyboard.dismiss();
 
-    if (selector.booking_amount.length === 0 || selector.payment_at.length === 0 || selector.booking_payment_mode.length === 0) {
+    if (
+      selector.booking_amount.length === 0 ||
+      selector.payment_at.length === 0 ||
+      selector.booking_payment_mode.length === 0
+    ) {
       showToast("Please enter booking details");
-      return
+      return;
     }
 
-    if (selector.customer_preferred_date.length === 0 || selector.tentative_delivery_date.length === 0) {
+    if (
+      selector.customer_preferred_date.length === 0 ||
+      selector.tentative_delivery_date.length === 0
+    ) {
       showToast("Please enter commitment details");
-      return
+      return;
     }
 
     if (!selector.pre_booking_details_response.dmsLeadDto) {
-      return
+      return;
     }
 
     let postOnRoadPriceTable = {};
@@ -706,22 +822,33 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     postOnRoadPriceTable.corporateCheck = "";
     postOnRoadPriceTable.corporateName = "";
     postOnRoadPriceTable.corporateOffer = selector.corporate_offer;
-    postOnRoadPriceTable.exShowroomPrice = priceInfomationData.ex_showroom_price;
+    postOnRoadPriceTable.exShowroomPrice =
+      priceInfomationData.ex_showroom_price;
     postOnRoadPriceTable.offerData = [];
     postOnRoadPriceTable.focAccessories = selector.for_accessories;
-    postOnRoadPriceTable.handlingCharges = handlingChargSlctd ? priceInfomationData.handling_charges : 0;
-    postOnRoadPriceTable.essentialKit = essentialKitSlctd ? priceInfomationData.essential_kit : 0;
-    postOnRoadPriceTable.fast_tag = fastTagSlctd ? priceInfomationData.fast_tag : 0;
-    postOnRoadPriceTable.id = postOnRoadPriceTable.id ? postOnRoadPriceTable.id : 0;
+    postOnRoadPriceTable.handlingCharges = handlingChargSlctd
+      ? priceInfomationData.handling_charges
+      : 0;
+    postOnRoadPriceTable.essentialKit = essentialKitSlctd
+      ? priceInfomationData.essential_kit
+      : 0;
+    postOnRoadPriceTable.fast_tag = fastTagSlctd
+      ? priceInfomationData.fast_tag
+      : 0;
+    postOnRoadPriceTable.id = postOnRoadPriceTable.id
+      ? postOnRoadPriceTable.id
+      : 0;
     postOnRoadPriceTable.insuranceAddonData = selectedInsurenceAddons;
     postOnRoadPriceTable.insuranceAmount = selectedInsurencePrice;
     postOnRoadPriceTable.insuranceType = selector.insurance_type;
-    postOnRoadPriceTable.lead_id = selector.pre_booking_details_response.dmsLeadDto.id;
+    postOnRoadPriceTable.lead_id =
+      selector.pre_booking_details_response.dmsLeadDto.id;
     postOnRoadPriceTable.lifeTax = getLifeTax();
     postOnRoadPriceTable.onRoadPrice = totalOnRoadPrice;
     postOnRoadPriceTable.finalPrice = totalOnRoadPriceAfterDiscount;
     postOnRoadPriceTable.promotionalOffers = selector.promotional_offer;
-    postOnRoadPriceTable.registrationCharges = priceInfomationData.registration_charges;
+    postOnRoadPriceTable.registrationCharges =
+      priceInfomationData.registration_charges;
     postOnRoadPriceTable.specialScheme = selector.consumer_offer;
     postOnRoadPriceTable.exchangeOffers = selector.exchange_offer;
     postOnRoadPriceTable.tcs = getTcsAmount();
@@ -729,15 +856,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     postOnRoadPriceTable.warrantyName = selector.warranty;
 
     dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable));
-  }
+  };
 
   // Handle On Road Price Response
   useEffect(() => {
-
     if (selector.send_onRoad_price_details_response) {
-
       if (!selector.pre_booking_details_response) {
-        return
+        return;
       }
 
       let dmsContactOrAccountDto = {};
@@ -745,58 +870,61 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       let formData;
 
       const dmsEntity = selector.pre_booking_details_response;
-      if (dmsEntity.hasOwnProperty('dmsContactDto'))
-        dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsContactDto);
-      else if (dmsEntity.hasOwnProperty('dmsAccountDto'))
-        dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsAccountDto);
+      if (dmsEntity.hasOwnProperty("dmsContactDto"))
+        dmsContactOrAccountDto = mapContactOrAccountDto(
+          dmsEntity.dmsContactDto
+        );
+      else if (dmsEntity.hasOwnProperty("dmsAccountDto"))
+        dmsContactOrAccountDto = mapContactOrAccountDto(
+          dmsEntity.dmsAccountDto
+        );
 
-      if (dmsEntity.hasOwnProperty('dmsLeadDto'))
+      if (dmsEntity.hasOwnProperty("dmsLeadDto"))
         dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
 
-      if (selector.pre_booking_details_response.hasOwnProperty('dmsContactDto')) {
+      if (
+        selector.pre_booking_details_response.hasOwnProperty("dmsContactDto")
+      ) {
         formData = {
-          "dmsContactDto": dmsContactOrAccountDto,
-          "dmsLeadDto": dmsLeadDto
-        }
+          dmsContactDto: dmsContactOrAccountDto,
+          dmsLeadDto: dmsLeadDto,
+        };
       } else {
         formData = {
-          "dmsAccountDto": dmsContactOrAccountDto,
-          "dmsLeadDto": dmsLeadDto
-        }
+          dmsAccountDto: dmsContactOrAccountDto,
+          dmsLeadDto: dmsLeadDto,
+        };
       }
 
       console.log("Data: ", JSON.stringify(formData));
 
-      setTypeOfActionDispatched("UPDATE_PRE_BOOKING")
+      setTypeOfActionDispatched("UPDATE_PRE_BOOKING");
       dispatch(updatePrebookingDetailsApi(formData));
     }
-  }, [selector.send_onRoad_price_details_response])
+  }, [selector.send_onRoad_price_details_response]);
 
   const approveOrRejectMethod = (type) => {
-
     if (!selector.pre_booking_details_response) {
-      return
+      return;
     }
 
     let dmsEntity = { ...selector.pre_booking_details_response };
     let dmsLeadDto = { ...dmsEntity.dmsLeadDto };
     if (type === "APPROVE") {
-      dmsLeadDto.leadStatus = 'PREBOOKINGCOMPLETED';
-    }
-    else if (type === "REJECT") {
-
+      dmsLeadDto.leadStatus = "PREBOOKINGCOMPLETED";
+    } else if (type === "REJECT") {
       if (selector.reject_remarks.length == 0) {
         showToast("Please enter reject remarks");
         return;
       }
 
-      dmsLeadDto.leadStatus = 'REJECTED';
+      dmsLeadDto.leadStatus = "REJECTED";
       dmsLeadDto.remarks = selector.reject_remarks;
     }
     dmsEntity.dmsLeadDto = dmsLeadDto;
-    setTypeOfActionDispatched("UPDATE_PRE_BOOKING")
+    setTypeOfActionDispatched("UPDATE_PRE_BOOKING");
     dispatch(updatePrebookingDetailsApi(dmsEntity));
-  }
+  };
 
   // Handle Update Pre-Booking Details Response
   useEffect(() => {
@@ -813,7 +941,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   }, [selector.update_pre_booking_details_response]);
 
   const mapContactOrAccountDto = (prevData) => {
-
     let dataObj = { ...prevData };
     dataObj.salutation = selector.salutation;
     dataObj.firstName = selector.first_name;
@@ -821,28 +948,35 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     dataObj.phone = selector.mobile;
     dataObj.email = selector.email;
     dataObj.gender = selector.gender;
-    dataObj.dateOfBirth = convertDateStringToMillisecondsUsingMoment(selector.date_of_birth);
+    dataObj.dateOfBirth = convertDateStringToMillisecondsUsingMoment(
+      selector.date_of_birth
+    );
     dataObj.age = selector.age ? Number(selector.age) : 0;
     dataObj.customerType = selector.customer_type;
     return dataObj;
-  }
+  };
 
   const mapLeadDto = (prevData) => {
-
     let dataObj = { ...prevData };
     dataObj.enquirySegment = selector.enquiry_segment;
     dataObj.maritalStatus = selector.marital_status;
     dataObj.occasion = selector.occasion;
 
-    dataObj.commitmentDeliveryPreferredDate = convertDateStringToMillisecondsUsingMoment(selector.customer_preferred_date);
-    dataObj.commitmentDeliveryTentativeDate = convertDateStringToMillisecondsUsingMoment(selector.tentative_delivery_date);
+    dataObj.commitmentDeliveryPreferredDate =
+      convertDateStringToMillisecondsUsingMoment(
+        selector.customer_preferred_date
+      );
+    dataObj.commitmentDeliveryTentativeDate =
+      convertDateStringToMillisecondsUsingMoment(
+        selector.tentative_delivery_date
+      );
     dataObj.otherVehicleRcNo = selector.vehicle_type;
     dataObj.otherVehicleType = selector.registration_number;
     dataObj.gstNumber = selector.gstin_number;
     dataObj.customerCategoryType = selector.customer_type_category;
     dataObj.documentType = selector.form_or_pan;
 
-    dataObj.leadStatus = 'SENTFORAPPROVAL';
+    dataObj.leadStatus = "SENTFORAPPROVAL";
     dataObj.leadStage = "PREBOOKING";
     dataObj.dmsAddresses = mapDMSAddress(dataObj.dmsAddresses);
     dataObj.dmsLeadProducts = mapLeadProducts(dataObj.dmsLeadProducts);
@@ -851,16 +985,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     dataObj.dmsAttachments = mapDmsAttachments(dataObj.dmsAttachments);
     dataObj.dmsAccessories = selectedPaidAccessories;
     return dataObj;
-  }
+  };
 
   const mapDMSAddress = (prevDmsAddresses) => {
-
     let dmsAddresses = [...prevDmsAddresses];
     if (dmsAddresses.length == 2) {
       dmsAddresses.forEach((address, index) => {
         let dataObj = { ...address };
-        if (address.addressType === 'Communication') {
-
+        if (address.addressType === "Communication") {
           dataObj.pincode = selector.pincode;
           dataObj.houseNo = selector.house_number;
           dataObj.street = selector.street_name;
@@ -870,9 +1002,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           dataObj.state = selector.state;
           dataObj.urban = selector.urban_or_rural === 1 ? true : false;
           dataObj.rural = selector.urban_or_rural === 2 ? true : false;
-
-        } else if (address.addressType === 'Permanent') {
-
+        } else if (address.addressType === "Permanent") {
           dataObj.pincode = selector.p_pincode;
           dataObj.houseNo = selector.p_houseNum;
           dataObj.street = selector.p_streetName;
@@ -887,10 +1017,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       });
     }
     return dmsAddresses;
-  }
+  };
 
   const mapLeadProducts = (prevDmsLeadProducts) => {
-
     let dmsLeadProducts = [...prevDmsLeadProducts];
     let dataObj = {};
     if (dmsLeadProducts.length > 0) {
@@ -903,10 +1032,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     dataObj.transimmisionType = selector.transmission_type;
     dmsLeadProducts[0] = dataObj;
     return dmsLeadProducts;
-  }
+  };
 
   const mapDmsFinanceDetails = (prevDmsFinancedetails) => {
-
     let dmsfinancedetails = [...prevDmsFinancedetails];
     let dataObj = {};
     if (dmsfinancedetails.length > 0) {
@@ -915,7 +1043,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     dataObj.financeType = selector.retail_finance;
     dataObj.financeCategory = selector.finance_category;
     dataObj.downPayment = selector.down_payment;
-    dataObj.loanAmount = selector.loan_amount ? Number(selector.loan_amount) : null;
+    dataObj.loanAmount = selector.loan_amount
+      ? Number(selector.loan_amount)
+      : null;
     dataObj.rateOfInterest = selector.rate_of_interest;
     dataObj.expectedTenureYears = selector.loan_of_tenure;
     dataObj.emi = selector.emi;
@@ -930,43 +1060,47 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
     dmsfinancedetails[0] = dataObj;
     return dmsfinancedetails;
-  }
+  };
 
   const mapDmsBookingDetails = (preDmsBooking, leadId) => {
     let dmsBooking = { ...preDmsBooking };
     dmsBooking.id = dmsBooking.id ? dmsBooking.id : 0;
     dmsBooking.leadId = leadId;
-    dmsBooking.bookingAmount = Number(selector.booking_amount)
-    let trimStr = selector.payment_at.replace(/\s+/g, '');
+    dmsBooking.bookingAmount = Number(selector.booking_amount);
+    let trimStr = selector.payment_at.replace(/\s+/g, "");
     dmsBooking.paymentAt = trimStr;
-    let trimStr2 = selector.booking_payment_mode.replace(/\s+/g, '');
+    let trimStr2 = selector.booking_payment_mode.replace(/\s+/g, "");
     dmsBooking.modeOfPayment = trimStr2;
     dmsBooking.otherVehicle = selector.vechicle_registration;
     dmsBooking.deliveryLocation = selector.delivery_location;
     console.log("dmsBooking: ", dmsBooking);
     return dmsBooking;
-  }
+  };
 
   const mapDmsAttachments = (prevDmsAttachments) => {
-
     let dmsAttachments = [...prevDmsAttachments];
     if (dmsAttachments.length > 0) {
       dmsAttachments.forEach((obj, index) => {
         const item = uploadedImagesDataObj[obj.documentType];
         console.log("uploadedImagesDataObj2: ", uploadedImagesDataObj);
-        const object = formatAttachment({ ...obj }, item, index, obj.documentType);
+        const object = formatAttachment(
+          { ...obj },
+          item,
+          index,
+          obj.documentType
+        );
         dmsAttachments[index] = object;
-      })
+      });
     } else {
       console.log("uploadedImagesDataObj1: ", uploadedImagesDataObj);
       Object.keys(uploadedImagesDataObj).forEach((key, index) => {
         const item = uploadedImagesDataObj[key];
         const object = formatAttachment({}, item, index, item.documentType);
         dmsAttachments.push(object);
-      })
+      });
     }
     return dmsAttachments;
-  }
+  };
 
   const formatAttachment = (data, photoObj, index, typeOfDocument) => {
     let object = { ...data };
@@ -992,18 +1126,20 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         object.documentNumber = selector.r_reg_no;
         break;
     }
-    return object
-  }
+    return object;
+  };
 
   const proceedToCancelPreBooking = () => {
-
-    if (selector.drop_remarks.length === 0 || selector.drop_reason.length === 0) {
-      showToastRedAlert("Please enter details for drop")
-      return
+    if (
+      selector.drop_remarks.length === 0 ||
+      selector.drop_reason.length === 0
+    ) {
+      showToastRedAlert("Please enter details for drop");
+      return;
     }
 
     if (!selector.pre_booking_details_response) {
-      return
+      return;
     }
 
     let enquiryDetailsObj = { ...selector.pre_booking_details_response };
@@ -1013,58 +1149,62 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     let leadId = selector.pre_booking_details_response.dmsLeadDto.id;
     if (!leadId) {
-      showToast("lead id not found")
-      return
+      showToast("lead id not found");
+      return;
     }
 
     const payload = {
-      "dmsLeadDropInfo": {
-        "additionalRemarks": selector.drop_remarks,
-        "branchId": userData.branchId,
-        "brandName": selector.d_brand_name,
-        "dealerName": selector.d_dealer_name,
-        "leadId": leadId,
-        "crmUniversalId": universalId,
-        "lostReason": selector.drop_reason,
-        "lostSubReason": selector.drop_sub_reason,
-        "organizationId": userData.orgId,
-        "otherReason": "",
-        "droppedBy": userData.employeeId,
-        "location": selector.d_location,
-        "model": selector.d_model,
-        "stage": "PREBOOKING",
-        "status": "PREBOOKING"
-      }
-    }
+      dmsLeadDropInfo: {
+        additionalRemarks: selector.drop_remarks,
+        branchId: userData.branchId,
+        brandName: selector.d_brand_name,
+        dealerName: selector.d_dealer_name,
+        leadId: leadId,
+        crmUniversalId: universalId,
+        lostReason: selector.drop_reason,
+        lostSubReason: selector.drop_sub_reason,
+        organizationId: userData.orgId,
+        otherReason: "",
+        droppedBy: userData.employeeId,
+        location: selector.d_location,
+        model: selector.d_model,
+        stage: "PREBOOKING",
+        status: "PREBOOKING",
+      },
+    };
     setTypeOfActionDispatched("DROP_ENQUIRY");
     dispatch(dropPreBooingApi(payload));
     dispatch(updatePrebookingDetailsApi(enquiryDetailsObj));
-  }
+  };
 
   const proceedToBookingClicked = () => {
-
     let leadId = selector.pre_booking_details_response.dmsLeadDto.id;
     if (!leadId) {
-      showToast("lead id not found")
-      return
+      showToast("lead id not found");
+      return;
     }
 
-    let bookingId = selector.pre_booking_details_response.dmsLeadDto.dmsBooking.id;
+    let bookingId =
+      selector.pre_booking_details_response.dmsLeadDto.dmsBooking.id;
     if (!bookingId) {
-      showToast("lead id not found")
-      return
+      showToast("lead id not found");
+      return;
     }
 
     const paymentMode = selector.booking_payment_mode.replace(/\s/g, "");
-    let paymentDate = ""
+    let paymentDate = "";
     if (paymentMode === "InternetBanking") {
-      paymentDate = convertDateStringToMillisecondsUsingMoment(selector.transaction_date);
-    }
-    else if (paymentMode === "Cheque") {
-      paymentDate = convertDateStringToMillisecondsUsingMoment(selector.cheque_date);
-    }
-    else if (paymentMode === "DD") {
-      paymentDate = convertDateStringToMillisecondsUsingMoment(selector.dd_date);
+      paymentDate = convertDateStringToMillisecondsUsingMoment(
+        selector.transaction_date
+      );
+    } else if (paymentMode === "Cheque") {
+      paymentDate = convertDateStringToMillisecondsUsingMoment(
+        selector.cheque_date
+      );
+    } else if (paymentMode === "DD") {
+      paymentDate = convertDateStringToMillisecondsUsingMoment(
+        selector.dd_date
+      );
     }
 
     let payload = {};
@@ -1084,8 +1224,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     payload.transferToMobile = selector.transfer_to_mobile;
     payload.typeUpi = selector.type_of_upi;
     payload.utrNo = selector.utr_no;
-    dispatch(preBookingPaymentApi(payload))
-  }
+    dispatch(preBookingPaymentApi(payload));
+  };
 
   // 1. payment, lead, booking
 
@@ -1096,34 +1236,37 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     } else if (selector.pre_booking_payment_response_status === "failed") {
       showToastRedAlert("Something went wrong");
     }
-  }, [selector.pre_booking_payment_response_status])
+  }, [selector.pre_booking_payment_response_status]);
 
   const sendBookingAmount = () => {
-
     let leadId = selector.pre_booking_details_response.dmsLeadDto.id;
     if (!leadId) {
-      showToast("lead id not found")
-      return
+      showToast("lead id not found");
+      return;
     }
 
-    let bookingAmount = selector.pre_booking_details_response.dmsLeadDto.dmsBooking.bookingAmount;
+    let bookingAmount =
+      selector.pre_booking_details_response.dmsLeadDto.dmsBooking.bookingAmount;
     if (!bookingAmount) {
-      showToast("lead id not found")
-      return
+      showToast("lead id not found");
+      return;
     }
 
     let payload = {};
-    if (selector.existing_booking_amount_response && selector.existing_booking_amount_response.length > 0) {
+    if (
+      selector.existing_booking_amount_response &&
+      selector.existing_booking_amount_response.length > 0
+    ) {
       payload = { ...selector.existing_booking_amount_response[0] };
     }
-    payload.id = payload.id ? payload.id : 0
+    payload.id = payload.id ? payload.id : 0;
     payload.paymentName = "Booking Advance Amount";
     payload.amount = bookingAmount;
     payload.leadId = leadId;
 
-    const finalPayload = [payload]
-    dispatch(postBookingAmountApi(finalPayload))
-  }
+    const finalPayload = [payload];
+    dispatch(postBookingAmountApi(finalPayload));
+  };
 
   // Handle Booking Amount Response
   useEffect(() => {
@@ -1137,14 +1280,30 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
   // Handle Assigned Tasks Response
   useEffect(() => {
-    if (selector.assigned_tasks_list_status === "success" && selector.assigned_tasks_list) {
+    if (
+      selector.assigned_tasks_list_status === "success" &&
+      selector.assigned_tasks_list
+    ) {
       if (selector.assigned_tasks_list.length > 0) {
-        const filteredAry = selector.assigned_tasks_list.filter(item => item.taskName === "Proceed to Booking");
-        if (filteredAry.length == 0) { return }
+        const filteredAry = selector.assigned_tasks_list.filter(
+          (item) => item.taskName === "Proceed to Booking"
+        );
+        if (filteredAry.length == 0) {
+          return;
+        }
         const taskData = filteredAry[0];
         const taskId = taskData.taskId;
         const taskStatus = taskData.taskStatus;
-        navigation.navigate(AppNavigator.MyTasksStackIdentifiers.proceedToPreBooking, { identifier: "PROCEED_TO_BOOKING", taskId, universalId, taskStatus, taskData: taskData });
+        navigation.navigate(
+          AppNavigator.MyTasksStackIdentifiers.proceedToPreBooking,
+          {
+            identifier: "PROCEED_TO_BOOKING",
+            taskId,
+            universalId,
+            taskStatus,
+            taskData: taskData,
+          }
+        );
         dispatch(clearState());
       }
     } else if (selector.assigned_tasks_list_status === "failed") {
@@ -1153,44 +1312,47 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   }, [selector.assigned_tasks_list_status]);
 
   const updatePaidAccessroies = (tableData) => {
-
     let totalPrice = 0;
     let newFormatSelectedAccessories = [];
     tableData.forEach((item) => {
       if (item.selected) {
         totalPrice += item.cost;
         newFormatSelectedAccessories.push({
-          "amount": item.cost,
-          "accessoriesName": item.partNo,
-          "leadId": selector.pre_booking_details_response.dmsLeadDto.id,
-          "allotmentStatus": null
-        })
+          amount: item.cost,
+          accessoriesName: item.partNo,
+          leadId: selector.pre_booking_details_response.dmsLeadDto.id,
+          allotmentStatus: null,
+        });
       }
-    })
+    });
     setSelectedPaidAccessoriesPrice(totalPrice);
     setSelectedPaidAccessories([...newFormatSelectedAccessories]);
-  }
+  };
 
   const getLifeTax = () => {
     switch (selector.enquiry_segment) {
-      case 'Handicapped':
+      case "Handicapped":
         return selector.vechicle_registration === true ? 1000 : 500;
-      case 'Personal':
-        return selector.vechicle_registration === true ? priceInfomationData.ex_showroom_price * 0.14 : priceInfomationData.ex_showroom_price * 0.12;
+      case "Personal":
+        return selector.vechicle_registration === true
+          ? priceInfomationData.ex_showroom_price * 0.14
+          : priceInfomationData.ex_showroom_price * 0.12;
       default:
         return priceInfomationData.ex_showroom_price * 0.14;
     }
-  }
+  };
 
   const getTcsAmount = () => {
     let amount = 0;
     if (priceInfomationData.ex_showroom_price > 1000000) {
-      amount = priceInfomationData.ex_showroom_price * (priceInfomationData.tcs_percentage / 100);
+      amount =
+        priceInfomationData.ex_showroom_price *
+        (priceInfomationData.tcs_percentage / 100);
     } else {
       amount = priceInfomationData.tcs_amount;
     }
-    return amount
-  }
+    return amount;
+  };
 
   const updateAccordian = (selectedIndex) => {
     if (selectedIndex != openAccordian) {
@@ -1201,7 +1363,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   };
 
   const uploadSelectedImage = async (selectedPhoto, keyId) => {
-
     const photoUri = selectedPhoto.uri;
     if (!photoUri) {
       return;
@@ -1209,13 +1370,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     const formData = new FormData();
     const fileType = photoUri.substring(photoUri.lastIndexOf(".") + 1);
-    const fileNameArry = photoUri.substring(photoUri.lastIndexOf('/') + 1).split('.');
+    const fileNameArry = photoUri
+      .substring(photoUri.lastIndexOf("/") + 1)
+      .split(".");
     // const fileName = fileNameArry.length > 0 ? fileNameArry[0] : "None";
     const fileName = uuid.v4();
-    formData.append('file', {
+    formData.append("file", {
       name: `${fileName}-.${fileType}`,
       type: `image/${fileType}`,
-      uri: Platform.OS === 'ios' ? photoUri.replace('file://', '') : photoUri
+      uri: Platform.OS === "ios" ? photoUri.replace("file://", "") : photoUri,
     });
     formData.append("universalId", universalId);
 
@@ -1241,11 +1404,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
 
     await fetch(URL.UPLOAD_DOCUMENT(), {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
-      body: formData
+      body: formData,
     })
       .then((response) => response.json())
       .then((response) => {
@@ -1257,23 +1420,25 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         }
       })
       .catch((error) => {
-        showToastRedAlert(error.message ? error.message : "Something went wrong");
-        console.error('error', error);
+        showToastRedAlert(
+          error.message ? error.message : "Something went wrong"
+        );
+        console.error("error", error);
       });
-  }
+  };
 
   const DisplaySelectedImage = ({ fileName }) => {
     return (
       <View style={styles.selectedImageBckVw}>
         <Text style={styles.selectedImageTextStyle}>{fileName}</Text>
       </View>
-    )
-  }
+    );
+  };
 
   const emiCal = (principle, tenure, interestRate) => {
     const amount = emiCalculator(principle, tenure, interestRate);
-    dispatch(setFinancialDetails({ key: "EMI", text: amount }))
-  }
+    dispatch(setFinancialDetails({ key: "EMI", text: amount }));
+  };
 
   if (!componentAppear) {
     return (
@@ -1307,41 +1472,47 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           setShowMultipleDropDownData(false);
           if (dropDownKey === "MODEL") {
             updateVariantModelsData(item.name, false);
-          }
-          else if (dropDownKey === "VARIENT") {
-            updateColorsDataForSelectedVarient(item.name, selectedCarVarientsData.varientList, selectedModelId);
-          }
-          else if (dropDownKey === "INSURANCE_TYPE") {
+          } else if (dropDownKey === "VARIENT") {
+            updateColorsDataForSelectedVarient(
+              item.name,
+              selectedCarVarientsData.varientList,
+              selectedModelId
+            );
+          } else if (dropDownKey === "INSURANCE_TYPE") {
             setSelectedInsurencePrice(item.cost);
-          }
-          else if (dropDownKey === "WARRANTY") {
+          } else if (dropDownKey === "WARRANTY") {
             setSelectedWarrentyPrice(Number(item.cost));
-          }
-          else if (dropDownKey === "DROP_REASON") {
+          } else if (dropDownKey === "DROP_REASON") {
             const payload = {
-              "bu": userData.orgId,
-              "dropdownType": "PreBook_Lost_Com_Sub_Reas",
-              "parentId": item.id
-            }
-            dispatch(getDropSubReasonDataApi(payload))
-          }
-          else if (dropDownKey === "INSURENCE_ADD_ONS") {
+              bu: userData.orgId,
+              dropdownType: "PreBook_Lost_Com_Sub_Reas",
+              parentId: item.id,
+            };
+            dispatch(getDropSubReasonDataApi(payload));
+          } else if (dropDownKey === "INSURENCE_ADD_ONS") {
             let totalCost = 0;
             let names = "";
             let insurenceAddOns = [];
             if (item.length > 0) {
               item.forEach((obj, index) => {
                 totalCost += Number(obj.cost);
-                names += obj.name + ((index + 1) < item.length ? ", " : "");
-                insurenceAddOns.push({ insuranceAmount: obj.cost, insuranceAddonName: obj.name })
-              })
+                names += obj.name + (index + 1 < item.length ? ", " : "");
+                insurenceAddOns.push({
+                  insuranceAmount: obj.cost,
+                  insuranceAddonName: obj.name,
+                });
+              });
             }
             setSelectedAddOnsPrice(totalCost);
             setSelectedInsurenceAddons([...insurenceAddOns]);
-            dispatch(setDropDownData({ key: dropDownKey, value: names, id: "" }));
-            return
+            dispatch(
+              setDropDownData({ key: dropDownKey, value: names, id: "" })
+            );
+            return;
           }
-          dispatch(setDropDownData({ key: dropDownKey, value: item.name, id: item.id }));
+          dispatch(
+            setDropDownData({ key: dropDownKey, value: item.name, id: item.id })
+          );
         }}
       />
 
@@ -1359,8 +1530,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             } else {
               dispatch(updateSelectedDate({ key: "", text: selectedDate }));
             }
-          }
-          else {
+          } else {
             dispatch(updateSelectedDate({ key: "", text: selectedDate }));
           }
         }}
@@ -1377,7 +1547,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         enabled
         keyboardVerticalOffset={100}
       >
-
         {/* // 1. Customer Details */}
         <ScrollView
           automaticallyAdjustContentInsets={true}
@@ -1409,7 +1578,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 <DropDownSelectionItem
                   label={"Salutation"}
                   value={selector.salutation}
-                  onPress={() => showDropDownModelMethod("SALUTATION", "Salutation")}
+                  onPress={() =>
+                    showDropDownModelMethod("SALUTATION", "Salutation")
+                  }
                 />
 
                 <TextinputComp
@@ -1430,7 +1601,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   label={"Last Name*"}
                   keyboardType={"default"}
                   onChangeText={(text) =>
-                    dispatch(setCustomerDetails({ key: "LAST_NAME", text: text }))
+                    dispatch(
+                      setCustomerDetails({ key: "LAST_NAME", text: text })
+                    )
                   }
                 />
                 <Text style={GlobalStyle.underline}></Text>
@@ -1457,41 +1630,57 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 <DropDownSelectionItem
                   label={"Enquiry Segment"}
                   value={selector.enquiry_segment}
-                  onPress={() => showDropDownModelMethod("ENQUIRY_SEGMENT", "Enquiry Segment")}
+                  onPress={() =>
+                    showDropDownModelMethod(
+                      "ENQUIRY_SEGMENT",
+                      "Enquiry Segment"
+                    )
+                  }
                 />
                 <DropDownSelectionItem
                   label={"Customer Type"}
                   value={selector.customer_type}
-                  onPress={() => showDropDownModelMethod("CUSTOMER_TYPE", "Customer Type")}
+                  onPress={() =>
+                    showDropDownModelMethod("CUSTOMER_TYPE", "Customer Type")
+                  }
                 />
-                {selector.enquiry_segment.toLowerCase() === "personal" ? <View>
-                  <DropDownSelectionItem
-                    label={"Gender"}
-                    value={selector.gender}
-                    onPress={() => showDropDownModelMethod("GENDER", "Gender")}
-                  />
-                  <DateSelectItem
-                    label={"Date Of Birth"}
-                    value={selector.date_of_birth}
-                    onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
-                  />
-                  <TextinputComp
-                    style={{ height: 65, width: "100%" }}
-                    value={selector.age}
-                    label={"Age"}
-                    maxLength={3}
-                    keyboardType={"number-pad"}
-                    onChangeText={(text) =>
-                      dispatch(setCustomerDetails({ key: "AGE", text: text }))
-                    }
-                  />
-                  <Text style={GlobalStyle.underline}></Text>
-                  <DropDownSelectionItem
-                    label={"Marital Status"}
-                    value={selector.marital_status}
-                    onPress={() => showDropDownModelMethod("MARITAL_STATUS", "Marital Status")}
-                  />
-                </View> : null}
+                {selector.enquiry_segment.toLowerCase() === "personal" ? (
+                  <View>
+                    <DropDownSelectionItem
+                      label={"Gender"}
+                      value={selector.gender}
+                      onPress={() =>
+                        showDropDownModelMethod("GENDER", "Gender")
+                      }
+                    />
+                    <DateSelectItem
+                      label={"Date Of Birth"}
+                      value={selector.date_of_birth}
+                      onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
+                    />
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      value={selector.age}
+                      label={"Age"}
+                      maxLength={3}
+                      keyboardType={"number-pad"}
+                      onChangeText={(text) =>
+                        dispatch(setCustomerDetails({ key: "AGE", text: text }))
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <DropDownSelectionItem
+                      label={"Marital Status"}
+                      value={selector.marital_status}
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "MARITAL_STATUS",
+                          "Marital Status"
+                        )
+                      }
+                    />
+                  </View>
+                ) : null}
               </List.Accordion>
               <View style={styles.space}></View>
 
@@ -1514,7 +1703,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   value={selector.pincode}
                   label={"Pincode*"}
                   keyboardType={"number-pad"}
-                  onChangeText={(text) => dispatch(setCommunicationAddress({ key: "PINCODE", text: text }))}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setCommunicationAddress({ key: "PINCODE", text: text })
+                    )
+                  }
                 />
                 <Text style={GlobalStyle.underline}></Text>
                 <View style={styles.radioGroupBcVw}>
@@ -1562,6 +1755,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.street_name}
                   label={"Street Name*"}
+                  maxLength={40}
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({
@@ -1576,6 +1770,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.village}
                   label={"Village*"}
+                  maxLength={40}
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({ key: "VILLAGE", text: text })
@@ -1587,8 +1782,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.city}
                   label={"City*"}
+                  maxLength={40}
                   onChangeText={(text) =>
-                    dispatch(setCommunicationAddress({ key: "CITY", text: text }))
+                    dispatch(
+                      setCommunicationAddress({ key: "CITY", text: text })
+                    )
                   }
                 />
                 <Text style={GlobalStyle.underline}></Text>
@@ -1596,6 +1794,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.district}
                   label={"District*"}
+                  maxLength={40}
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({ key: "DISTRICT", text: text })
@@ -1607,6 +1806,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.state}
                   label={"State*"}
+                  maxLength={40}
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({ key: "STATE", text: text })
@@ -1621,7 +1821,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <Checkbox.Android
                     uncheckedColor={Colors.GRAY}
                     color={Colors.RED}
-                    status={selector.permanent_address ? "checked" : "unchecked"}
+                    status={
+                      selector.permanent_address ? "checked" : "unchecked"
+                    }
                     onPress={() =>
                       dispatch(
                         setCommunicationAddress({
@@ -1826,7 +2028,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 <DropDownSelectionItem
                   label={"Form60/PAN"}
                   value={selector.form_or_pan}
-                  onPress={() => showDropDownModelMethod("FORM_60_PAN", "Retail Finance")}
+                  onPress={() =>
+                    showDropDownModelMethod("FORM_60_PAN", "Retail Finance")
+                  }
                 />
 
                 {selector.form_or_pan === "PAN" && (
@@ -1838,7 +2042,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       maxLength={10}
                       onChangeText={(text) =>
                         dispatch(
-                          setDocumentUploadDetails({ key: "PAN_NUMBER", text: text })
+                          setDocumentUploadDetails({
+                            key: "PAN_NUMBER",
+                            text: text,
+                          })
                         )
                       }
                     />
@@ -1849,7 +2056,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
                       />
                     </View>
-                    {uploadedImagesDataObj.pan ? <DisplaySelectedImage fileName={uploadedImagesDataObj.pan.fileName} /> : null}
+                    {uploadedImagesDataObj.pan ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.pan.fileName}
+                      />
+                    ) : null}
                     <Text style={GlobalStyle.underline}></Text>
                   </View>
                 )}
@@ -1859,10 +2070,16 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Form60"}
-                        onPress={() => dispatch(setImagePicker("UPLOAD_FORM60"))}
+                        onPress={() =>
+                          dispatch(setImagePicker("UPLOAD_FORM60"))
+                        }
                       />
                     </View>
-                    {uploadedImagesDataObj.form60 ? <DisplaySelectedImage fileName={uploadedImagesDataObj.form60.fileName} /> : null}
+                    {uploadedImagesDataObj.form60 ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.form60.fileName}
+                      />
+                    ) : null}
                     <Text style={GlobalStyle.underline}></Text>
                   </View>
                 )}
@@ -1871,7 +2088,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.adhaar_number}
                   label={"Aadhaar Number*"}
-                  keyboardType='number-pad'
+                  keyboardType="number-pad"
                   maxLength={12}
                   onChangeText={(text) =>
                     dispatch(
@@ -1885,13 +2102,17 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     name={"Upload Adhar"}
                     onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
                   />
-                  {uploadedImagesDataObj.aadhar ? <DisplaySelectedImage fileName={uploadedImagesDataObj.aadhar.fileName} /> : null}
+                  {uploadedImagesDataObj.aadhar ? (
+                    <DisplaySelectedImage
+                      fileName={uploadedImagesDataObj.aadhar.fileName}
+                    />
+                  ) : null}
                 </View>
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.relationship_proof}
                   label={"Relationship Number*"}
-                  keyboardType='number-pad'
+                  keyboardType="number-pad"
                   onChangeText={(text) =>
                     dispatch(
                       setDocumentUploadDetails({
@@ -1905,10 +2126,16 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 <View style={styles.select_image_bck_vw}>
                   <ImageSelectItem
                     name={"Relationship Proof"}
-                    onPress={() => dispatch(setImagePicker("UPLOAD_RELATION_PROOF"))}
+                    onPress={() =>
+                      dispatch(setImagePicker("UPLOAD_RELATION_PROOF"))
+                    }
                   />
                 </View>
-                {uploadedImagesDataObj.relationshipProof ? <DisplaySelectedImage fileName={uploadedImagesDataObj.relationshipProof.fileName} /> : null}
+                {uploadedImagesDataObj.relationshipProof ? (
+                  <DisplaySelectedImage
+                    fileName={uploadedImagesDataObj.relationshipProof.fileName}
+                  />
+                ) : null}
                 <Text style={GlobalStyle.underline}></Text>
 
                 {selector.customer_type === "Individual" && (
@@ -1916,13 +2143,21 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <DropDownSelectionItem
                       label={"Customer Type Category"}
                       value={selector.customer_type_category}
-                      onPress={() => showDropDownModelMethod("CUSTOMER_TYPE_CATEGORY", "Customer Type Category")}
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "CUSTOMER_TYPE_CATEGORY",
+                          "Customer Type Category"
+                        )
+                      }
                     />
                     <Text style={GlobalStyle.underline}></Text>
                   </View>
                 )}
 
-                {(selector.enquiry_segment === "Company" && selector.customer_type === "Institution") || (selector.customer_type_category == "B2B" || selector.customer_type_category == "B2C") ? (
+                {(selector.enquiry_segment === "Company" &&
+                  selector.customer_type === "Institution") ||
+                selector.customer_type_category == "B2B" ||
+                selector.customer_type_category == "B2C" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -1940,7 +2175,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <Text style={GlobalStyle.underline}></Text>
                   </View>
                 ) : null}
-
               </List.Accordion>
               <View style={styles.space}></View>
 
@@ -1956,14 +2190,19 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 }}
                 descriptionStyle={{
                   color: openAccordian === "5" ? Colors.WHITE : Colors.BLUE,
-                  paddingTop: 5, fontSize: 16, fontWeight: "600"
+                  paddingTop: 5,
+                  fontSize: 16,
+                  fontWeight: "600",
                 }}
                 style={{
                   backgroundColor:
                     openAccordian === "5" ? Colors.RED : Colors.WHITE,
                 }}
               >
-                <TextAndAmountComp title={"Ex-Showroom Price:"} amount={priceInfomationData.ex_showroom_price.toFixed(2)} />
+                <TextAndAmountComp
+                  title={"Ex-Showroom Price:"}
+                  amount={priceInfomationData.ex_showroom_price.toFixed(2)}
+                />
                 <View style={styles.radioGroupBcVw}>
                   <Checkbox.Android
                     style={{ margin: 0, padding: 0 }}
@@ -1978,7 +2217,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           key: "VECHILE_REGISTRATION",
                           text: "",
                         })
-                      )
+                      );
                     }}
                   />
                   <Text style={styles.checkboxAddText}>
@@ -1986,26 +2225,36 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   </Text>
                 </View>
 
-                {selector.vechicle_registration ? <View>
-                  <DropDownSelectionItem
-                    label={"Vehicle Type"}
-                    value={selector.vehicle_type}
-                    onPress={() => showDropDownModelMethod("VEHICLE_TYPE", "Vehicle Type")}
-                  />
-                  <TextinputComp
-                    style={styles.textInputStyle}
-                    value={selector.registration_number}
-                    label={"Reg. No"}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setPriceConformationDetails({ key: "REGISTRATION_NUMBER", text: text })
-                      )
-                    }
-                  />
-                  <Text style={GlobalStyle.underline}></Text>
-                </View> : null}
+                {selector.vechicle_registration ? (
+                  <View>
+                    <DropDownSelectionItem
+                      label={"Vehicle Type"}
+                      value={selector.vehicle_type}
+                      onPress={() =>
+                        showDropDownModelMethod("VEHICLE_TYPE", "Vehicle Type")
+                      }
+                    />
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.registration_number}
+                      label={"Reg. No"}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setPriceConformationDetails({
+                            key: "REGISTRATION_NUMBER",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                ) : null}
 
-                <TextAndAmountComp title={"Life Tax:"} amount={getLifeTax().toFixed(2)} />
+                <TextAndAmountComp
+                  title={"Life Tax:"}
+                  amount={getLifeTax().toFixed(2)}
+                />
                 <Text style={GlobalStyle.underline}></Text>
 
                 <TextAndAmountComp
@@ -2019,10 +2268,17 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <DropDownSelectionItem
                       label={"Insurance Type"}
                       value={selector.insurance_type}
-                      onPress={() => showDropDownModelMethod("INSURANCE_TYPE", "Insurance Type")}
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "INSURANCE_TYPE",
+                          "Insurance Type"
+                        )
+                      }
                     />
                   </View>
-                  <Text style={styles.shadowText}>{rupeeSymbol + " " + selectedInsurencePrice.toFixed(2)}</Text>
+                  <Text style={styles.shadowText}>
+                    {rupeeSymbol + " " + selectedInsurencePrice.toFixed(2)}
+                  </Text>
                 </View>
 
                 <View style={styles.symbolview}>
@@ -2030,10 +2286,17 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <DropDownSelectionItem
                       label={"Add-on Insurance"}
                       value={selector.add_on_insurance}
-                      onPress={() => showDropDownModelMethod("INSURENCE_ADD_ONS", "Add-on Insurance")}
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "INSURENCE_ADD_ONS",
+                          "Add-on Insurance"
+                        )
+                      }
                     />
                   </View>
-                  <Text style={styles.shadowText}>{rupeeSymbol + " " + selectedAddOnsPrice.toFixed(2)}</Text>
+                  <Text style={styles.shadowText}>
+                    {rupeeSymbol + " " + selectedAddOnsPrice.toFixed(2)}
+                  </Text>
                 </View>
 
                 <View style={styles.symbolview}>
@@ -2041,31 +2304,51 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <DropDownSelectionItem
                       label={"Warranty"}
                       value={selector.warranty}
-                      onPress={() => showDropDownModelMethod("WARRANTY", "Warranty")}
+                      onPress={() =>
+                        showDropDownModelMethod("WARRANTY", "Warranty")
+                      }
                     />
                   </View>
-                  <Text style={styles.shadowText}>{rupeeSymbol + " " + selectedWarrentyPrice.toFixed(2)}</Text>
+                  <Text style={styles.shadowText}>
+                    {rupeeSymbol + " " + selectedWarrentyPrice.toFixed(2)}
+                  </Text>
                 </View>
                 <Text style={GlobalStyle.underline}></Text>
 
                 <CheckboxTextAndAmountComp
                   title={"Handling Charges:"}
-                  amount={handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : "0.00"}
+                  amount={
+                    handlingChargSlctd
+                      ? priceInfomationData.handling_charges.toFixed(2)
+                      : "0.00"
+                  }
                   isChecked={handlingChargSlctd}
                   onPress={() => {
                     setHandlingChargSlctd(!handlingChargSlctd);
-                    calculateOnRoadPrice(!handlingChargSlctd, essentialKitSlctd, fastTagSlctd);
+                    calculateOnRoadPrice(
+                      !handlingChargSlctd,
+                      essentialKitSlctd,
+                      fastTagSlctd
+                    );
                   }}
                 />
                 <Text style={GlobalStyle.underline}></Text>
 
                 <CheckboxTextAndAmountComp
                   title={"Essential Kit:"}
-                  amount={essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : "0.00"}
+                  amount={
+                    essentialKitSlctd
+                      ? priceInfomationData.essential_kit.toFixed(2)
+                      : "0.00"
+                  }
                   isChecked={essentialKitSlctd}
                   onPress={() => {
                     setEssentialKitSlctd(!essentialKitSlctd);
-                    calculateOnRoadPrice(handlingChargSlctd, !essentialKitSlctd, fastTagSlctd);
+                    calculateOnRoadPrice(
+                      handlingChargSlctd,
+                      !essentialKitSlctd,
+                      fastTagSlctd
+                    );
                   }}
                 />
                 <Text style={GlobalStyle.underline}></Text>
@@ -2076,18 +2359,39 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 />
                 <Text style={GlobalStyle.underline}></Text>
 
-                <Pressable onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.paidAccessories, { accessorylist: selector.paid_accessories_list, callback: updatePaidAccessroies })}>
-                  <TextAndAmountComp title={"Paid Accessories:"} amount={selectedPaidAccessoriesPrice.toFixed(2)} />
+                <Pressable
+                  onPress={() =>
+                    navigation.navigate(
+                      AppNavigator.EmsStackIdentifiers.paidAccessories,
+                      {
+                        accessorylist: selector.paid_accessories_list,
+                        callback: updatePaidAccessroies,
+                      }
+                    )
+                  }
+                >
+                  <TextAndAmountComp
+                    title={"Paid Accessories:"}
+                    amount={selectedPaidAccessoriesPrice.toFixed(2)}
+                  />
                 </Pressable>
                 <Text style={GlobalStyle.underline}></Text>
 
                 <CheckboxTextAndAmountComp
                   title={"Fast Tag:"}
-                  amount={fastTagSlctd ? priceInfomationData.fast_tag.toFixed(2) : "0.00"}
+                  amount={
+                    fastTagSlctd
+                      ? priceInfomationData.fast_tag.toFixed(2)
+                      : "0.00"
+                  }
                   isChecked={fastTagSlctd}
                   onPress={() => {
-                    setFastTagSlctd(!fastTagSlctd)
-                    calculateOnRoadPrice(handlingChargSlctd, essentialKitSlctd, !fastTagSlctd);
+                    setFastTagSlctd(!fastTagSlctd);
+                    calculateOnRoadPrice(
+                      handlingChargSlctd,
+                      essentialKitSlctd,
+                      !fastTagSlctd
+                    );
                   }}
                 />
                 {/* <TextAndAmountComp
@@ -2110,7 +2414,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               <List.Accordion
                 id={"6"}
                 title={"Offer Price"}
-                description={rupeeSymbol + " " + totalOnRoadPriceAfterDiscount.toFixed(2)}
+                description={
+                  rupeeSymbol + " " + totalOnRoadPriceAfterDiscount.toFixed(2)
+                }
                 titleStyle={{
                   color: openAccordian === "6" ? Colors.WHITE : Colors.BLACK,
                   fontSize: 16,
@@ -2118,7 +2424,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 }}
                 descriptionStyle={{
                   color: openAccordian === "6" ? Colors.WHITE : Colors.BLUE,
-                  paddingTop: 5, fontSize: 16, fontWeight: "600"
+                  paddingTop: 5,
+                  fontSize: 16,
+                  fontWeight: "600",
                 }}
                 style={{
                   backgroundColor:
@@ -2131,7 +2439,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   value={selector.consumer_offer}
                   showLeftAffixText={true}
                   leftAffixText={rupeeSymbol}
-                  keyboardType='number-pad'
+                  keyboardType="number-pad"
                   onChangeText={(text) =>
                     dispatch(
                       setOfferPriceDetails({
@@ -2147,7 +2455,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   label={"Exchange Offer:"}
                   value={selector.exchange_offer}
                   showLeftAffixText={true}
-                  keyboardType='number-pad'
+                  keyboardType="number-pad"
                   leftAffixText={rupeeSymbol}
                   onChangeText={(text) =>
                     dispatch(
@@ -2165,7 +2473,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   value={selector.corporate_offer}
                   showLeftAffixText={true}
                   leftAffixText={rupeeSymbol}
-                  keyboardType='number-pad'
+                  keyboardType="number-pad"
                   onChangeText={(text) =>
                     dispatch(
                       setOfferPriceDetails({
@@ -2181,7 +2489,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   label={"Promotional Offer:"}
                   value={selector.promotional_offer}
                   showLeftAffixText={true}
-                  keyboardType='number-pad'
+                  keyboardType="number-pad"
                   leftAffixText={rupeeSymbol}
                   onChangeText={(text) =>
                     dispatch(
@@ -2198,7 +2506,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   label={"Cash Discount:"}
                   value={selector.cash_discount}
                   showLeftAffixText={true}
-                  keyboardType='number-pad'
+                  keyboardType="number-pad"
                   leftAffixText={rupeeSymbol}
                   onChangeText={(text) =>
                     dispatch(
@@ -2215,7 +2523,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   label={"Foc Accessories:"}
                   value={selector.for_accessories}
                   showLeftAffixText={true}
-                  keyboardType='number-pad'
+                  keyboardType="number-pad"
                   leftAffixText={rupeeSymbol}
                   onChangeText={(text) =>
                     dispatch(
@@ -2232,7 +2540,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   label={"Additional Offer 1:"}
                   value={selector.additional_offer_1}
                   showLeftAffixText={true}
-                  keyboardType='number-pad'
+                  keyboardType="number-pad"
                   leftAffixText={rupeeSymbol}
                   onChangeText={(text) =>
                     dispatch(
@@ -2249,7 +2557,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   label={"Additional Offer 2:"}
                   value={selector.additional_offer_2}
                   showLeftAffixText={true}
-                  keyboardType='number-pad'
+                  keyboardType="number-pad"
                   leftAffixText={rupeeSymbol}
                   onChangeText={(text) =>
                     dispatch(
@@ -2289,7 +2597,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 <DropDownSelectionItem
                   label={"Retail Finance"}
                   value={selector.retail_finance}
-                  onPress={() => showDropDownModelMethod("RETAIL_FINANCE", "Retail Finance")}
+                  onPress={() =>
+                    showDropDownModelMethod("RETAIL_FINANCE", "Retail Finance")
+                  }
                 />
 
                 {selector.retail_finance === "Out House" ? (
@@ -2298,7 +2608,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       style={{ height: 65, width: "100%" }}
                       label={"Bank/Finance Name"}
                       value={selector.bank_or_finance_name}
-                      onChangeText={(text) => dispatch(setFinancialDetails({ key: "BANK_R_FINANCE_NAME", text: text, }))}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setFinancialDetails({
+                            key: "BANK_R_FINANCE_NAME",
+                            text: text,
+                          })
+                        )
+                      }
                     />
                     <Text style={GlobalStyle.underline}></Text>
 
@@ -2306,7 +2623,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       style={{ height: 65, width: "100%" }}
                       label={"Location"}
                       value={selector.location}
-                      onChangeText={(text) => dispatch(setFinancialDetails({ key: "LOCATION", text: text }))}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setFinancialDetails({ key: "LOCATION", text: text })
+                        )
+                      }
                     />
                     <Text style={GlobalStyle.underline}></Text>
                   </View>
@@ -2335,8 +2656,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <DropDownSelectionItem
                     label={"Finance Category"}
                     value={selector.finance_category}
-                    onPress={() => showDropDownModelMethod("FINANCE_CATEGORY", "Finance Category")}
-                  />)}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "FINANCE_CATEGORY",
+                        "Finance Category"
+                      )
+                    }
+                  />
+                )}
 
                 {selector.retail_finance === "In House" && (
                   <View>
@@ -2348,12 +2675,29 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       onChangeText={(text) => {
                         if (text.length > 0) {
                           const downPayment = Number(text);
-                          const loanAmount = (totalOnRoadPrice - downPayment).toFixed(0);
-                          dispatch(setFinancialDetails({ key: "LOAN_AMOUNT", text: `${loanAmount}` }))
+                          const loanAmount = (
+                            totalOnRoadPrice - downPayment
+                          ).toFixed(0);
+                          dispatch(
+                            setFinancialDetails({
+                              key: "LOAN_AMOUNT",
+                              text: `${loanAmount}`,
+                            })
+                          );
                         } else {
-                          dispatch(setFinancialDetails({ key: "LOAN_AMOUNT", text: "0" }))
+                          dispatch(
+                            setFinancialDetails({
+                              key: "LOAN_AMOUNT",
+                              text: "0",
+                            })
+                          );
                         }
-                        dispatch(setFinancialDetails({ key: "DOWN_PAYMENT", text: text }))
+                        dispatch(
+                          setFinancialDetails({
+                            key: "DOWN_PAYMENT",
+                            text: text,
+                          })
+                        );
                       }}
                     />
                     <Text style={GlobalStyle.underline}></Text>
@@ -2362,40 +2706,60 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 {(selector.retail_finance === "In House" ||
                   selector.retail_finance === "Out House") && (
-                    <View>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Loan Amount*"}
-                        keyboardType={"number-pad"}
-                        value={selector.loan_amount}
-                        onChangeText={(text) => {
-                          // Calculate EMI
-                          emiCal(text, selector.rate_of_interest, selector.loan_of_tenure)
-                          dispatch(setFinancialDetails({ key: "LOAN_AMOUNT", text: text }))
-                        }}
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Rate of Interest*"}
-                        keyboardType={"number-pad"}
-                        value={selector.rate_of_interest}
-                        onChangeText={(text) => {
-                          // Calculate EMI
-                          emiCal(selector.loan_amount, text, selector.loan_of_tenure)
-                          dispatch(setFinancialDetails({ key: "RATE_OF_INTEREST", text: text }))
-                        }}
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  )}
+                  <View>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Loan Amount*"}
+                      keyboardType={"number-pad"}
+                      value={selector.loan_amount}
+                      onChangeText={(text) => {
+                        // Calculate EMI
+                        emiCal(
+                          text,
+                          selector.rate_of_interest,
+                          selector.loan_of_tenure
+                        );
+                        dispatch(
+                          setFinancialDetails({
+                            key: "LOAN_AMOUNT",
+                            text: text,
+                          })
+                        );
+                      }}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Rate of Interest*"}
+                      keyboardType={"number-pad"}
+                      value={selector.rate_of_interest}
+                      onChangeText={(text) => {
+                        // Calculate EMI
+                        emiCal(
+                          selector.loan_amount,
+                          text,
+                          selector.loan_of_tenure
+                        );
+                        dispatch(
+                          setFinancialDetails({
+                            key: "RATE_OF_INTEREST",
+                            text: text,
+                          })
+                        );
+                      }}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                )}
 
                 {selector.retail_finance === "In House" && (
                   <View>
                     <DropDownSelectionItem
                       label={"Bank/Financer"}
                       value={selector.bank_or_finance}
-                      onPress={() => showDropDownModelMethod("BANK_FINANCE", "Bank/Financer")}
+                      onPress={() =>
+                        showDropDownModelMethod("BANK_FINANCE", "Bank/Financer")
+                      }
                     />
 
                     <TextinputComp
@@ -2405,8 +2769,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       keyboardType={"number-pad"}
                       onChangeText={(text) => {
                         // Calculate EMI
-                        emiCal(selector.loan_amount, text, text)
-                        dispatch(setFinancialDetails({ key: "LOAN_OF_TENURE", text: text }))
+                        emiCal(selector.loan_amount, text, text);
+                        dispatch(
+                          setFinancialDetails({
+                            key: "LOAN_OF_TENURE",
+                            text: text,
+                          })
+                        );
                       }}
                     />
                     <Text style={GlobalStyle.underline}></Text>
@@ -2416,14 +2785,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       label={"EMI*"}
                       value={selector.emi}
                       keyboardType={"number-pad"}
-                      onChangeText={(text) => dispatch(setFinancialDetails({ key: "EMI", text: text }))}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setFinancialDetails({ key: "EMI", text: text })
+                        )
+                      }
                     />
                     <Text style={GlobalStyle.underline}></Text>
 
                     <DropDownSelectionItem
                       label={"Approx Annual Income"}
                       value={selector.approx_annual_income}
-                      onPress={() => showDropDownModelMethod("APPROX_ANNUAL_INCOME", "Approx Annual Income")}
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "APPROX_ANNUAL_INCOME",
+                          "Approx Annual Income"
+                        )
+                      }
                     />
                   </View>
                 )}
@@ -2464,13 +2842,20 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 <DropDownSelectionItem
                   label={"Payment At"}
                   value={selector.payment_at}
-                  onPress={() => showDropDownModelMethod("PAYMENT_AT", "Payment At")}
+                  onPress={() =>
+                    showDropDownModelMethod("PAYMENT_AT", "Payment At")
+                  }
                 />
 
                 <DropDownSelectionItem
                   label={"Booking Payment Mode"}
                   value={selector.booking_payment_mode}
-                  onPress={() => showDropDownModelMethod("BOOKING_PAYMENT_MODE", "Booking Payment Mode")}
+                  onPress={() =>
+                    showDropDownModelMethod(
+                      "BOOKING_PAYMENT_MODE",
+                      "Booking Payment Mode"
+                    )
+                  }
                 />
               </List.Accordion>
               <View style={styles.space}></View>
@@ -2531,7 +2916,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               </List.Accordion>
               <View style={styles.space}></View>
               {/* // 10.Drop */}
-              {isDropSelected ? (<View style={styles.space}></View>) : null}
+              {isDropSelected ? <View style={styles.space}></View> : null}
               {isDropSelected ? (
                 <List.Accordion
                   id={"10"}
@@ -2549,17 +2934,29 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <DropDownSelectionItem
                     label={"Drop Reason"}
                     value={selector.drop_reason}
-                    onPress={() => showDropDownModelMethod("DROP_REASON", "Drop Reason")}
+                    onPress={() =>
+                      showDropDownModelMethod("DROP_REASON", "Drop Reason")
+                    }
                   />
-                  {(selector.drop_reason.replace(/\s/g, "").toLowerCase() == "losttocompetitor" || selector.drop_reason.replace(/\s/g, "").toLowerCase() == "losttoco-dealer") ? (
+                  {selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
+                    "losttocompetitor" ||
+                  selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
+                    "losttoco-dealer" ? (
                     <DropDownSelectionItem
                       label={"Drop Sub Reason"}
                       value={selector.drop_sub_reason}
-                      onPress={() => showDropDownModelMethod("DROP_SUB_REASON", "Drop Sub Reason")}
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "DROP_SUB_REASON",
+                          "Drop Sub Reason"
+                        )
+                      }
                     />
                   ) : null}
 
-                  {(selector.drop_reason === "Lost to Competitor" || selector.drop_reason === "Lost to Used Cars from Co-Dealer") ? (
+                  {selector.drop_reason === "Lost to Competitor" ||
+                  selector.drop_reason ===
+                    "Lost to Used Cars from Co-Dealer" ? (
                     <View>
                       <TextinputComp
                         style={styles.textInputStyle}
@@ -2579,7 +2976,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     </View>
                   ) : null}
 
-                  {(selector.drop_reason === "Lost to Competitor" || selector.drop_reason === "Lost to Used Cars from Co-Dealer" || selector.drop_reason === "Lost to Co-Dealer") ? (
+                  {selector.drop_reason === "Lost to Competitor" ||
+                  selector.drop_reason === "Lost to Used Cars from Co-Dealer" ||
+                  selector.drop_reason === "Lost to Co-Dealer" ? (
                     <View>
                       <TextinputComp
                         style={styles.textInputStyle}
@@ -2614,14 +3013,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     </View>
                   ) : null}
 
-                  {(selector.drop_reason === "Lost to Competitor" || selector.drop_reason === "Lost to Used Cars from Co-Dealer") ? (
+                  {selector.drop_reason === "Lost to Competitor" ||
+                  selector.drop_reason ===
+                    "Lost to Used Cars from Co-Dealer" ? (
                     <View>
                       <TextinputComp
                         style={styles.textInputStyle}
                         value={selector.d_model}
                         label={"Model"}
                         maxLength={50}
-                        onChangeText={(text) => dispatch(setBookingDropDetails({ key: "DROP_MODEL", text: text }))}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setBookingDropDetails({
+                              key: "DROP_MODEL",
+                              text: text,
+                            })
+                          )
+                        }
                       />
                       <Text style={GlobalStyle.underline}></Text>
                     </View>
@@ -2645,7 +3053,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 </List.Accordion>
               ) : null}
               {/* // 11.Reject */}
-              {isRejectSelected ? (<View style={styles.space}></View>) : null}
+              {isRejectSelected ? <View style={styles.space}></View> : null}
               {isRejectSelected && (
                 <List.Accordion
                   id={"11"}
@@ -2677,7 +3085,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 </List.Accordion>
               )}
               {/* // 12.Payment Details */}
-              {showPrebookingPaymentSection ? (<View style={styles.space}></View>) : null}
+              {showPrebookingPaymentSection ? (
+                <View style={styles.space}></View>
+              ) : null}
               {showPrebookingPaymentSection ? (
                 <List.Accordion
                   id={"12"}
@@ -2688,7 +3098,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     fontWeight: "600",
                   }}
                   style={{
-                    backgroundColor: openAccordian === "12" ? Colors.RED : Colors.WHITE,
+                    backgroundColor:
+                      openAccordian === "12" ? Colors.RED : Colors.WHITE,
                   }}
                 >
                   <View>
@@ -2698,7 +3109,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         onPress={() => dispatch(setImagePicker("RECEIPT_DOC"))}
                       />
                     </View>
-                    {uploadedImagesDataObj.receipt ? <DisplaySelectedImage fileName={uploadedImagesDataObj.receipt.fileName} /> : null}
+                    {uploadedImagesDataObj.receipt ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.receipt.fileName}
+                      />
+                    ) : null}
                     <Text style={GlobalStyle.underline}></Text>
                   </View>
                   {selector.booking_payment_mode === "UPI" && (
@@ -2721,7 +3136,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         style={styles.textInputStyle}
                         value={selector.transfer_from_mobile}
                         label={"Transfer From Mobile"}
-                        keyboardType={'number-pad'}
+                        keyboardType={"number-pad"}
                         onChangeText={(text) =>
                           dispatch(
                             setPreBookingPaymentDetials({
@@ -2736,7 +3151,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         style={styles.textInputStyle}
                         value={selector.transfer_to_mobile}
                         label={"Transfer To Mobile"}
-                        keyboardType={'number-pad'}
+                        keyboardType={"number-pad"}
                         onChangeText={(text) =>
                           dispatch(
                             setPreBookingPaymentDetials({
@@ -2750,28 +3165,41 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     </View>
                   )}
 
-                  {(selector.booking_payment_mode === "InternetBanking" || selector.booking_payment_mode === "Internet Banking") && (
+                  {(selector.booking_payment_mode === "InternetBanking" ||
+                    selector.booking_payment_mode === "Internet Banking") && (
                     <View>
                       <TextinputComp
                         style={styles.textInputStyle}
                         value={selector.utr_no}
                         label={"UTR No"}
                         onChangeText={(text) =>
-                          dispatch(setPreBookingPaymentDetials({ key: "UTR_NO", text: text }))
+                          dispatch(
+                            setPreBookingPaymentDetials({
+                              key: "UTR_NO",
+                              text: text,
+                            })
+                          )
                         }
                       />
                       <Text style={GlobalStyle.underline}></Text>
                       <DateSelectItem
                         label={"Transaction Date"}
                         value={selector.transaction_date}
-                        onPress={() => dispatch(setDatePicker("TRANSACTION_DATE"))}
+                        onPress={() =>
+                          dispatch(setDatePicker("TRANSACTION_DATE"))
+                        }
                       />
                       <TextinputComp
                         style={styles.textInputStyle}
                         value={selector.comapany_bank_name}
                         label={"Company Bank Name"}
                         onChangeText={(text) =>
-                          dispatch(setPreBookingPaymentDetials({ key: "COMPANY_BANK_NAME", text: text }))
+                          dispatch(
+                            setPreBookingPaymentDetials({
+                              key: "COMPANY_BANK_NAME",
+                              text: text,
+                            })
+                          )
                         }
                       />
                       <Text style={GlobalStyle.underline}></Text>
@@ -2797,9 +3225,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <DateSelectItem
                         label={"Cheque Date"}
                         value={selector.cheque_date}
-                        onPress={() =>
-                          dispatch(setDatePicker("CHEQUE_DATE"))
-                        }
+                        onPress={() => dispatch(setDatePicker("CHEQUE_DATE"))}
                       />
                     </View>
                   )}
@@ -2823,16 +3249,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <DateSelectItem
                         label={"DD Date"}
                         value={selector.dd_date}
-                        onPress={() =>
-                          dispatch(setDatePicker("DD_DATE"))
-                        }
+                        onPress={() => dispatch(setDatePicker("DD_DATE"))}
                       />
                     </View>
                   )}
-
                 </List.Accordion>
               ) : null}
-
             </List.AccordionGroup>
 
             {!isDropSelected && showSubmitDropBtn && !userData.isManager && (
@@ -2859,65 +3281,81 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               </View>
             )}
 
-            {showApproveRejectBtn && userData.isPreBookingApprover && !isDropSelected && (
-              <View style={styles.actionBtnView}>
-                <Button
-                  mode="contained"
-                  style={{ width: 120 }}
-                  color={Colors.GREEN}
-                  disabled={selector.isLoading}
-                  labelStyle={{ textTransform: "none" }}
-                  onPress={() => approveOrRejectMethod("APPROVE")}
-                >
-                  Approve
-                </Button>
+            {showApproveRejectBtn &&
+              userData.isPreBookingApprover &&
+              !isDropSelected && (
+                <View style={styles.actionBtnView}>
+                  <Button
+                    mode="contained"
+                    style={{ width: 120 }}
+                    color={Colors.GREEN}
+                    disabled={selector.isLoading}
+                    labelStyle={{ textTransform: "none" }}
+                    onPress={() => approveOrRejectMethod("APPROVE")}
+                  >
+                    Approve
+                  </Button>
+                  <Button
+                    mode="contained"
+                    color={Colors.RED}
+                    disabled={selector.isLoading}
+                    labelStyle={{ textTransform: "none" }}
+                    onPress={() =>
+                      isRejectSelected
+                        ? approveOrRejectMethod("REJECT")
+                        : setIsRejectSelected(true)
+                    }
+                  >
+                    {isRejectSelected ? "Send" : "Reject"}
+                  </Button>
+                </View>
+              )}
+
+            {showPrebookingPaymentSection &&
+              !userData.isManager &&
+              !isDropSelected && (
+                <View style={styles.actionBtnView}>
+                  <Button
+                    mode="contained"
+                    style={{ width: 120 }}
+                    color={Colors.BLACK}
+                    disabled={selector.isLoading}
+                    labelStyle={{ textTransform: "none" }}
+                    onPress={() => setIsDropSelected(true)}
+                  >
+                    Drop
+                  </Button>
+                  <Button
+                    mode="contained"
+                    color={Colors.RED}
+                    disabled={
+                      uploadedImagesDataObj.receipt
+                        ? selector.isLoading == true
+                          ? true
+                          : false
+                        : true
+                    }
+                    labelStyle={{ textTransform: "none" }}
+                    onPress={proceedToBookingClicked}
+                  >
+                    Proceed To Booking
+                  </Button>
+                </View>
+              )}
+
+            {isDropSelected && (
+              <View style={styles.prebookingBtnView}>
                 <Button
                   mode="contained"
                   color={Colors.RED}
                   disabled={selector.isLoading}
                   labelStyle={{ textTransform: "none" }}
-                  onPress={() => isRejectSelected ? approveOrRejectMethod("REJECT") : setIsRejectSelected(true)}
+                  onPress={proceedToCancelPreBooking}
                 >
-                  {isRejectSelected ? "Send" : "Reject"}
+                  Proceed To Cancellation
                 </Button>
               </View>
             )}
-
-            {showPrebookingPaymentSection && !userData.isManager && !isDropSelected && (
-              <View style={styles.actionBtnView}>
-                <Button
-                  mode="contained"
-                  style={{ width: 120 }}
-                  color={Colors.BLACK}
-                  disabled={selector.isLoading}
-                  labelStyle={{ textTransform: "none" }}
-                  onPress={() => setIsDropSelected(true)}
-                >
-                  Drop
-                </Button>
-                <Button
-                  mode="contained"
-                  color={Colors.RED}
-                  disabled={uploadedImagesDataObj.receipt ? (selector.isLoading == true ? true : false) : true}
-                  labelStyle={{ textTransform: "none" }}
-                  onPress={proceedToBookingClicked}
-                >
-                  Proceed To Booking
-                </Button>
-              </View>
-            )}
-
-            {isDropSelected && (<View style={styles.prebookingBtnView}>
-              <Button
-                mode="contained"
-                color={Colors.RED}
-                disabled={selector.isLoading}
-                labelStyle={{ textTransform: "none" }}
-                onPress={proceedToCancelPreBooking}
-              >
-                Proceed To Cancellation
-              </Button>
-            </View>)}
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -3034,11 +3472,11 @@ const styles = StyleSheet.create({
     minHeight: 40,
     paddingVertical: 5,
     alignItems: "center",
-    backgroundColor: Colors.WHITE
+    backgroundColor: Colors.WHITE,
   },
   offerPriceTextInput: {
     height: 55,
-    width: "100%"
+    width: "100%",
   },
   actionBtnView: {
     paddingTop: 20,
@@ -3050,18 +3488,18 @@ const styles = StyleSheet.create({
   prebookingBtnView: {
     marginTop: 20,
     flexDirection: "row",
-    justifyContent: 'center',
+    justifyContent: "center",
     alignItems: "center",
   },
   selectedImageBckVw: {
     paddingLeft: 12,
     paddingRight: 15,
     paddingBottom: 5,
-    backgroundColor: Colors.WHITE
+    backgroundColor: Colors.WHITE,
   },
   selectedImageTextStyle: {
     fontSize: 12,
-    fontWeight: '400',
-    color: Colors.DARK_GRAY
-  }
+    fontWeight: "400",
+    color: Colors.DARK_GRAY,
+  },
 });

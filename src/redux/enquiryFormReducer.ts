@@ -9,56 +9,66 @@ import { convertTimeStampToDateString } from "../utils/helperFunctions";
 import moment from "moment";
 import { showToastRedAlert } from "../utils/toast";
 
-export const getEnquiryDetailsApi = createAsyncThunk("ENQUIRY_FORM_SLICE/getEnquiryDetailsApi", async (universalId, { rejectWithValue }) => {
-
-  const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const getEnquiryDetailsApi = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/getEnquiryDetailsApi",
+  async (universalId, { rejectWithValue }) => {
+    const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
-export const updateEnquiryDetailsApi = createAsyncThunk("ENQUIRY_FORM_SLICE/updateEnquiryDetailsApi", async (payload, { rejectWithValue }) => {
-
-  const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const updateEnquiryDetailsApi = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/updateEnquiryDetailsApi",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
-export const dropEnquiryApi = createAsyncThunk("ENQUIRY_FORM_SLICE/dropEnquiryApi", async (payload, { rejectWithValue }) => {
-
-  const response = await client.post(URL.DROP_ENQUIRY(), payload);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const dropEnquiryApi = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/dropEnquiryApi",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.DROP_ENQUIRY(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
-export const getCustomerTypesApi = createAsyncThunk("ENQUIRY_FORM_SLICE/getCustomerTypesApi", async (universalId, { rejectWithValue }) => {
-
-  const response = await client.get(URL.GET_CUSTOMER_TYPES());
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const getCustomerTypesApi = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/getCustomerTypesApi",
+  async (universalId, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_CUSTOMER_TYPES());
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
-export const getPendingTasksApi = createAsyncThunk("ENQUIRY_FORM_SLICE/getPendingTasksApi", async (endUrl, { rejectWithValue }) => {
-
-  const url = URL.TASKS_PRE_ENQUIRY() + endUrl;
-  const response = await client.get(url);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+export const getPendingTasksApi = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/getPendingTasksApi",
+  async (endUrl, { rejectWithValue }) => {
+    const url = URL.TASKS_PRE_ENQUIRY() + endUrl;
+    const response = await client.get(url);
+    const json = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
   }
-  return json;
-})
+);
 
 interface PersonalIntroModel {
   key: string;
@@ -238,7 +248,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     // data variables
     enquiry_details_response: null,
     update_enquiry_details_response: null,
-    customer_types_response: null
+    customer_types_response: null,
   },
   reducers: {
     clearState: (state, action) => {
@@ -267,7 +277,8 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.enquiry_segment = value;
           state.customer_type = "";
           if (state.customer_types_response) {
-            state.customer_types_data = state.customer_types_response[value.toLowerCase()];
+            state.customer_types_data =
+              state.customer_types_response[value.toLowerCase()];
           }
           break;
         case "CUSTOMER_TYPE":
@@ -456,8 +467,10 @@ const enquiryDetailsOverViewSlice = createSlice({
         case "DATE_OF_BIRTH":
           state.dateOfBirth = selectedDate;
           const given = moment(selectedDate, "DD/MM/YYYY");
-          const current = moment().startOf('day');
-          const total = Number(moment.duration(current.diff(given)).asYears()).toFixed(0);
+          const current = moment().startOf("day");
+          const total = Number(
+            moment.duration(current.diff(given)).asYears()
+          ).toFixed(0);
           if (Number(total) > 0) {
             state.age = total;
           }
@@ -466,13 +479,12 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.anniversaryDate = selectedDate;
           break;
         case "EXPECTED_DELIVERY_DATE":
-
           let categoryType = "";
           if (selectedDate) {
             const currentDate = moment().format("DD/MM/YYYY");
-            const startDate = moment(currentDate, "DD/MM/YYYY")
+            const startDate = moment(currentDate, "DD/MM/YYYY");
             var endDate = moment(selectedDate, "DD/MM/YYYY");
-            var daysCount = endDate.diff(startDate, 'days');
+            var daysCount = endDate.diff(startDate, "days");
             if (daysCount) {
               if (daysCount <= 7) {
                 categoryType = "Hot";
@@ -674,7 +686,8 @@ const enquiryDetailsOverViewSlice = createSlice({
       const { key, text } = action.payload;
       switch (key) {
         case "CHECK_BOX":
-          state.c_looking_for_any_other_brand_checked = !state.c_looking_for_any_other_brand_checked;
+          state.c_looking_for_any_other_brand_checked =
+            !state.c_looking_for_any_other_brand_checked;
           break;
         case "C_MAKE_OTHER_NAME":
           state.c_make_other_name = text;
@@ -813,71 +826,127 @@ const enquiryDetailsOverViewSlice = createSlice({
       }
     },
     updateDmsContactOrAccountDtoData: (state, action) => {
-
       // dmsContactOrAccountDto
       const dms_C_Or_A_Dto = action.payload;
       state.email = dms_C_Or_A_Dto.email ? dms_C_Or_A_Dto.email : "";
-      state.firstName = dms_C_Or_A_Dto.firstName ? dms_C_Or_A_Dto.firstName : "";
+      state.firstName = dms_C_Or_A_Dto.firstName
+        ? dms_C_Or_A_Dto.firstName
+        : "";
       state.lastName = dms_C_Or_A_Dto.lastName ? dms_C_Or_A_Dto.lastName : "";
       state.mobile = dms_C_Or_A_Dto.phone ? dms_C_Or_A_Dto.phone : "";
-      state.alterMobile = dms_C_Or_A_Dto.secondaryPhone ? dms_C_Or_A_Dto.secondaryPhone : "";
+      state.alterMobile = dms_C_Or_A_Dto.secondaryPhone
+        ? dms_C_Or_A_Dto.secondaryPhone
+        : "";
       state.gender = dms_C_Or_A_Dto.gender ? dms_C_Or_A_Dto.gender : "";
       state.relation = dms_C_Or_A_Dto.relation ? dms_C_Or_A_Dto.relation : "";
-      state.salutaion = dms_C_Or_A_Dto.salutation ? dms_C_Or_A_Dto.salutation : "";
-      state.relationName = dms_C_Or_A_Dto.relationName ? dms_C_Or_A_Dto.relationName : "";
+      state.salutaion = dms_C_Or_A_Dto.salutation
+        ? dms_C_Or_A_Dto.salutation
+        : "";
+      state.relationName = dms_C_Or_A_Dto.relationName
+        ? dms_C_Or_A_Dto.relationName
+        : "";
       state.age = dms_C_Or_A_Dto.age ? dms_C_Or_A_Dto.age.toString() : "0";
 
       if (state.salutaion) {
-        state.gender_types_data = Gender_Data_Obj[state.salutaion.toLowerCase()];
-        state.relation_types_data = Relation_Data_Obj[state.salutaion.toLowerCase()];
+        state.gender_types_data =
+          Gender_Data_Obj[state.salutaion.toLowerCase()];
+        state.relation_types_data =
+          Relation_Data_Obj[state.salutaion.toLowerCase()];
       }
 
-      const dateOfBirth = dms_C_Or_A_Dto.dateOfBirth ? dms_C_Or_A_Dto.dateOfBirth : "";
-      state.dateOfBirth = convertTimeStampToDateString(dateOfBirth, "DD/MM/YYYY");
-      const anniversaryDate = dms_C_Or_A_Dto.anniversaryDate ? dms_C_Or_A_Dto.anniversaryDate : "";
-      state.anniversaryDate = convertTimeStampToDateString(anniversaryDate, "DD/MM/YYYY");
-      state.approx_annual_income = dms_C_Or_A_Dto.annualRevenue ? dms_C_Or_A_Dto.annualRevenue : "";
+      const dateOfBirth = dms_C_Or_A_Dto.dateOfBirth
+        ? dms_C_Or_A_Dto.dateOfBirth
+        : "";
+      state.dateOfBirth = convertTimeStampToDateString(
+        dateOfBirth,
+        "DD/MM/YYYY"
+      );
+      const anniversaryDate = dms_C_Or_A_Dto.anniversaryDate
+        ? dms_C_Or_A_Dto.anniversaryDate
+        : "";
+      state.anniversaryDate = convertTimeStampToDateString(
+        anniversaryDate,
+        "DD/MM/YYYY"
+      );
+      state.approx_annual_income = dms_C_Or_A_Dto.annualRevenue
+        ? dms_C_Or_A_Dto.annualRevenue
+        : "";
       state.company_name = dms_C_Or_A_Dto.company ? dms_C_Or_A_Dto.company : "";
-      state.customer_type = dms_C_Or_A_Dto.customerType ? dms_C_Or_A_Dto.customerType : "";
-      state.designation = dms_C_Or_A_Dto.designation ? dms_C_Or_A_Dto.designation : "";
-      state.kms_travelled_month = dms_C_Or_A_Dto.kmsTravelledInMonth ? dms_C_Or_A_Dto.kmsTravelledInMonth : "";
-      state.members = dms_C_Or_A_Dto.membersInFamily ? dms_C_Or_A_Dto.membersInFamily : "";
-      state.occupation = dms_C_Or_A_Dto.occupation ? dms_C_Or_A_Dto.occupation : "";
-      state.prime_expectation_from_car = dms_C_Or_A_Dto.primeExpectationFromCar ? dms_C_Or_A_Dto.primeExpectationFromCar : "";
-      state.who_drives = dms_C_Or_A_Dto.whoDrives ? dms_C_Or_A_Dto.whoDrives : "";
+      state.customer_type = dms_C_Or_A_Dto.customerType
+        ? dms_C_Or_A_Dto.customerType
+        : "";
+      state.designation = dms_C_Or_A_Dto.designation
+        ? dms_C_Or_A_Dto.designation
+        : "";
+      state.kms_travelled_month = dms_C_Or_A_Dto.kmsTravelledInMonth
+        ? dms_C_Or_A_Dto.kmsTravelledInMonth
+        : "";
+      state.members = dms_C_Or_A_Dto.membersInFamily
+        ? dms_C_Or_A_Dto.membersInFamily
+        : "";
+      state.occupation = dms_C_Or_A_Dto.occupation
+        ? dms_C_Or_A_Dto.occupation
+        : "";
+      state.prime_expectation_from_car = dms_C_Or_A_Dto.primeExpectationFromCar
+        ? dms_C_Or_A_Dto.primeExpectationFromCar
+        : "";
+      state.who_drives = dms_C_Or_A_Dto.whoDrives
+        ? dms_C_Or_A_Dto.whoDrives
+        : "";
 
-      state.rf_by_first_name = dms_C_Or_A_Dto.referedByFirstname ? dms_C_Or_A_Dto.referedByFirstname : "";
-      state.rf_by_last_name = dms_C_Or_A_Dto.referedByLastname ? dms_C_Or_A_Dto.referedByLastname : "";
-      state.rf_by_mobile = dms_C_Or_A_Dto.refferedMobileNo ? dms_C_Or_A_Dto.refferedMobileNo : "";
-      state.rf_by_source = dms_C_Or_A_Dto.refferedSource ? dms_C_Or_A_Dto.refferedSource : "";
-      state.rf_by_source_location = dms_C_Or_A_Dto.reffered_Sourcelocation ? dms_C_Or_A_Dto.reffered_Sourcelocation : "";
+      state.rf_by_first_name = dms_C_Or_A_Dto.referedByFirstname
+        ? dms_C_Or_A_Dto.referedByFirstname
+        : "";
+      state.rf_by_last_name = dms_C_Or_A_Dto.referedByLastname
+        ? dms_C_Or_A_Dto.referedByLastname
+        : "";
+      state.rf_by_mobile = dms_C_Or_A_Dto.refferedMobileNo
+        ? dms_C_Or_A_Dto.refferedMobileNo
+        : "";
+      state.rf_by_source = dms_C_Or_A_Dto.refferedSource
+        ? dms_C_Or_A_Dto.refferedSource
+        : "";
+      state.rf_by_source_location = dms_C_Or_A_Dto.reffered_Sourcelocation
+        ? dms_C_Or_A_Dto.reffered_Sourcelocation
+        : "";
     },
     updateDmsLeadDtoData: (state, action) => {
-
       const dmsLeadDto = action.payload;
       state.buyer_type = dmsLeadDto.buyerType ? dmsLeadDto.buyerType : "";
-      state.enquiry_category = dmsLeadDto.enquiryCategory ? dmsLeadDto.enquiryCategory : "";
-      state.enquiry_segment = dmsLeadDto.enquirySegment ? dmsLeadDto.enquirySegment : "";
+      state.enquiry_category = dmsLeadDto.enquiryCategory
+        ? dmsLeadDto.enquiryCategory
+        : "";
+      state.enquiry_segment = dmsLeadDto.enquirySegment
+        ? dmsLeadDto.enquirySegment
+        : "";
       if (state.customer_types_response && state.enquiry_segment) {
-        state.customer_types_data = state.customer_types_response[state.enquiry_segment.toLowerCase()];
+        state.customer_types_data =
+          state.customer_types_response[state.enquiry_segment.toLowerCase()];
       }
-      state.source_of_enquiry = dmsLeadDto.enquirySource ? dmsLeadDto.enquirySource : "";
-      state.sub_source_of_enquiry = dmsLeadDto.subSource ? dmsLeadDto.subSource : "";
+      state.source_of_enquiry = dmsLeadDto.enquirySource
+        ? dmsLeadDto.enquirySource
+        : "";
+      state.sub_source_of_enquiry = dmsLeadDto.subSource
+        ? dmsLeadDto.subSource
+        : "";
       state.event_code = dmsLeadDto.eventCode ? dmsLeadDto.eventCode : "";
-      const deliveryDate = dmsLeadDto.dmsExpectedDeliveryDate ? dmsLeadDto.dmsExpectedDeliveryDate : "";
-      state.expected_delivery_date = convertTimeStampToDateString(deliveryDate, "DD/MM/YYYY");
+      const deliveryDate = dmsLeadDto.dmsExpectedDeliveryDate
+        ? dmsLeadDto.dmsExpectedDeliveryDate
+        : "";
+      state.expected_delivery_date = convertTimeStampToDateString(
+        deliveryDate,
+        "DD/MM/YYYY"
+      );
       state.model = dmsLeadDto.model ? dmsLeadDto.model : "";
 
       // documentType: dmsLeadDto.documentType === null ? '' : dmsLeadDto.documentType,
       // modeOfPayment: dmsLeadDto.modeOfPayment === null ? '' : dmsLeadDto.modeOfPayment,
     },
     updateDmsAddressData: (state, action) => {
-
       const dmsAddresses = action.payload;
       if (dmsAddresses.length == 2) {
         dmsAddresses.forEach((address) => {
-          if (address.addressType === 'Communication') {
-
+          if (address.addressType === "Communication") {
             state.pincode = address.pincode ? address.pincode : "";
             state.houseNum = address.houseNo ? address.houseNo : "";
             state.streetName = address.street ? address.street : "";
@@ -893,9 +962,7 @@ const enquiryDetailsOverViewSlice = createSlice({
               urbanOrRural = 2;
             }
             state.urban_or_rural = urbanOrRural;
-
-          } else if (address.addressType === 'Permanent') {
-
+          } else if (address.addressType === "Permanent") {
             state.p_pincode = address.pincode ? address.pincode : "";
             state.p_houseNum = address.houseNo ? address.houseNo : "";
             state.p_streetName = address.street ? address.street : "";
@@ -915,7 +982,6 @@ const enquiryDetailsOverViewSlice = createSlice({
       }
     },
     updateModelSelectionData: (state, action) => {
-
       const dmsLeadProducts = action.payload;
       let dataObj: any = {};
       if (dmsLeadProducts.length > 0) {
@@ -926,7 +992,9 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.varient = dataObj.variant ? dataObj.variant : "";
       state.color = dataObj.color ? dataObj.color : "";
       state.fuel_type = dataObj.fuel ? dataObj.fuel : "";
-      state.transmission_type = dataObj.transimmisionType ? dataObj.transimmisionType : "";
+      state.transmission_type = dataObj.transimmisionType
+        ? dataObj.transimmisionType
+        : "";
       state.model_drop_down_data_update_statu = "update";
     },
     updateFinancialData: (state, action) => {
@@ -936,17 +1004,35 @@ const enquiryDetailsOverViewSlice = createSlice({
         dataObj = { ...dmsfinancedetails[0] };
       }
       state.retail_finance = dataObj.financeType ? dataObj.financeType : "";
-      state.finance_category = dataObj.financeCategory ? dataObj.financeCategory : "";
-      state.down_payment = dataObj.downPayment ? dataObj.downPayment.toString() : "";
-      state.loan_amount = dataObj.loanAmount ? dataObj.loanAmount.toString() : "";
-      state.bank_or_finance = dataObj.financeCompany ? dataObj.financeCompany : "";
-      state.bank_or_finance_name = dataObj.financeCompany ? dataObj.financeCompany : "";
-      state.rate_of_interest = dataObj.rateOfInterest ? dataObj.rateOfInterest : "";
-      state.loan_of_tenure = dataObj.expectedTenureYears ? dataObj.expectedTenureYears : "";
+      state.finance_category = dataObj.financeCategory
+        ? dataObj.financeCategory
+        : "";
+      state.down_payment = dataObj.downPayment
+        ? dataObj.downPayment.toString()
+        : "";
+      state.loan_amount = dataObj.loanAmount
+        ? dataObj.loanAmount.toString()
+        : "";
+      state.bank_or_finance = dataObj.financeCompany
+        ? dataObj.financeCompany
+        : "";
+      state.bank_or_finance_name = dataObj.financeCompany
+        ? dataObj.financeCompany
+        : "";
+      state.rate_of_interest = dataObj.rateOfInterest
+        ? dataObj.rateOfInterest
+        : "";
+      state.loan_of_tenure = dataObj.expectedTenureYears
+        ? dataObj.expectedTenureYears
+        : "";
       state.emi = dataObj.emi ? dataObj.emi.toString() : "";
-      state.approx_annual_income = dataObj.annualIncome ? dataObj.annualIncome : "";
+      state.approx_annual_income = dataObj.annualIncome
+        ? dataObj.annualIncome
+        : "";
       state.location = dataObj.location ? dataObj.location : "";
-      state.leashing_name = dataObj.financeCompany ? dataObj.financeCompany : "";
+      state.leashing_name = dataObj.financeCompany
+        ? dataObj.financeCompany
+        : "";
     },
     updateCustomerNeedAnalysisData: (state, action) => {
       const dmsLeadScoreCards = action.payload;
@@ -955,7 +1041,10 @@ const enquiryDetailsOverViewSlice = createSlice({
         dataObj = { ...dmsLeadScoreCards[0] };
       }
 
-      state.c_looking_for_any_other_brand_checked = dataObj.lookingForAnyOtherBrand ? dataObj.lookingForAnyOtherBrand : false;
+      state.c_looking_for_any_other_brand_checked =
+        dataObj.lookingForAnyOtherBrand
+          ? dataObj.lookingForAnyOtherBrand
+          : false;
       state.c_make = dataObj.brand ? dataObj.brand : "";
       state.c_model = dataObj.model ? dataObj.model : "";
       state.c_make_other_name = dataObj.otherMake ? dataObj.otherMake : "";
@@ -966,11 +1055,21 @@ const enquiryDetailsOverViewSlice = createSlice({
       // TODO:- Need to check transmission type in response
       state.c_transmission_type = "";
       state.c_price_range = dataObj.priceRange ? dataObj.priceRange : "";
-      state.c_on_road_price = dataObj.onRoadPriceanyDifference ? dataObj.onRoadPriceanyDifference : "";
-      state.c_dealership_name = dataObj.dealershipName ? dataObj.dealershipName : "";
-      state.c_dealership_location = dataObj.dealershipLocation ? dataObj.dealershipLocation : "";
-      state.c_dealership_pending_reason = dataObj.decisionPendingReason ? dataObj.decisionPendingReason : "";
-      state.c_voice_of_customer_remarks = dataObj.voiceofCustomerRemarks ? dataObj.voiceofCustomerRemarks : "";
+      state.c_on_road_price = dataObj.onRoadPriceanyDifference
+        ? dataObj.onRoadPriceanyDifference
+        : "";
+      state.c_dealership_name = dataObj.dealershipName
+        ? dataObj.dealershipName
+        : "";
+      state.c_dealership_location = dataObj.dealershipLocation
+        ? dataObj.dealershipLocation
+        : "";
+      state.c_dealership_pending_reason = dataObj.decisionPendingReason
+        ? dataObj.decisionPendingReason
+        : "";
+      state.c_voice_of_customer_remarks = dataObj.voiceofCustomerRemarks
+        ? dataObj.voiceofCustomerRemarks
+        : "";
     },
     updateAdditionalOrReplacementBuyerData: (state, action) => {
       const dmsExchagedetails = action.payload;
@@ -985,41 +1084,88 @@ const enquiryDetailsOverViewSlice = createSlice({
         state.a_varient = dataObj.varient ? dataObj.varient : "";
         state.a_color = dataObj.color ? dataObj.color : "";
         state.a_reg_no = dataObj.regNo ? dataObj.regNo : "";
-      }
-      else if (dataObj.buyerType === "Replacement Buyer") {
-
+      } else if (dataObj.buyerType === "Replacement Buyer") {
         state.r_reg_no = dataObj.regNo ? dataObj.regNo : "";
         state.r_make = dataObj.brand ? dataObj.brand : "";
         state.r_model = dataObj.model ? dataObj.model : "";
         state.r_varient = dataObj.varient ? dataObj.varient : "";
         state.r_color = dataObj.color ? dataObj.color : "";
         state.r_fuel_type = dataObj.fuelType ? dataObj.fuelType : "";
-        state.r_transmission_type = dataObj.transmission ? dataObj.transmission : "";
-        const yearOfManfac = dataObj.yearofManufacture ? dataObj.yearofManufacture : "";
-        state.r_mfg_year = convertTimeStampToDateString(yearOfManfac, "DD/MM/YYYY");
+        state.r_transmission_type = dataObj.transmission
+          ? dataObj.transmission
+          : "";
+        const yearOfManfac = dataObj.yearofManufacture
+          ? dataObj.yearofManufacture
+          : "";
+        state.r_mfg_year = convertTimeStampToDateString(
+          yearOfManfac,
+          "DD/MM/YYYY"
+        );
 
-        state.r_kms_driven_or_odometer_reading = dataObj.kiloMeters ? dataObj.kiloMeters : "";
-        state.r_expected_price = dataObj.expectedPrice ? dataObj.expectedPrice.toString() : "";
+        state.r_kms_driven_or_odometer_reading = dataObj.kiloMeters
+          ? dataObj.kiloMeters
+          : "";
+        state.r_expected_price = dataObj.expectedPrice
+          ? dataObj.expectedPrice.toString()
+          : "";
 
-        state.r_hypothication_checked = dataObj.hypothicationRequirement ? dataObj.hypothicationRequirement : false;
-        state.r_hypothication_name = dataObj.hypothication ? dataObj.hypothication : "";
-        state.r_hypothication_branch = dataObj.hypothicationBranch ? dataObj.hypothicationBranch : "";
+        state.r_hypothication_checked = dataObj.hypothicationRequirement
+          ? dataObj.hypothicationRequirement
+          : false;
+        state.r_hypothication_name = dataObj.hypothication
+          ? dataObj.hypothication
+          : "";
+        state.r_hypothication_branch = dataObj.hypothicationBranch
+          ? dataObj.hypothicationBranch
+          : "";
 
-        const registrationDate = dataObj.registrationDate ? dataObj.registrationDate : "";
-        state.r_registration_date = convertTimeStampToDateString(registrationDate, "DD/MM/YYYY");
+        const registrationDate = dataObj.registrationDate
+          ? dataObj.registrationDate
+          : "";
+        state.r_registration_date = convertTimeStampToDateString(
+          registrationDate,
+          "DD/MM/YYYY"
+        );
 
-        const registrationValidityDate = dataObj.registrationValidityDate ? dataObj.registrationValidityDate : "";
-        state.r_registration_validity_date = convertTimeStampToDateString(registrationValidityDate, "DD/MM/YYYY");
+        const registrationValidityDate = dataObj.registrationValidityDate
+          ? dataObj.registrationValidityDate
+          : "";
+        state.r_registration_validity_date = convertTimeStampToDateString(
+          registrationValidityDate,
+          "DD/MM/YYYY"
+        );
 
-        state.r_insurence_checked = dataObj.insuranceAvailable ? (dataObj.insuranceAvailable === "true" ? true : false) : false;
-        state.r_insurence_document_checked = dataObj.insuranceDocumentAvailable ? dataObj.insuranceDocumentAvailable : false;
-        state.r_insurence_company_name = dataObj.insuranceCompanyName ? dataObj.insuranceCompanyName : "";
-        state.r_insurence_expiry_date = dataObj.insuranceExpiryDate ? dataObj.insuranceExpiryDate : "";
-        state.r_insurence_type = dataObj.insuranceType ? dataObj.insuranceType : "";
-        const insurenceFromDate = dataObj.insuranceFromDate ? dataObj.insuranceFromDate : "";
-        state.r_insurence_from_date = convertTimeStampToDateString(insurenceFromDate, "DD/MM/YYYY");
-        const insurenceToDate = dataObj.insuranceToDate ? dataObj.insuranceToDate : "";
-        state.r_insurence_to_date = convertTimeStampToDateString(insurenceToDate, "DD/MM/YYYY");
+        state.r_insurence_checked = dataObj.insuranceAvailable
+          ? dataObj.insuranceAvailable === "true"
+            ? true
+            : false
+          : false;
+        state.r_insurence_document_checked = dataObj.insuranceDocumentAvailable
+          ? dataObj.insuranceDocumentAvailable
+          : false;
+        state.r_insurence_company_name = dataObj.insuranceCompanyName
+          ? dataObj.insuranceCompanyName
+          : "";
+        state.r_insurence_expiry_date = dataObj.insuranceExpiryDate
+          ? dataObj.insuranceExpiryDate
+          : "";
+        state.r_insurence_type = dataObj.insuranceType
+          ? dataObj.insuranceType
+          : "";
+        const insurenceFromDate = dataObj.insuranceFromDate
+          ? dataObj.insuranceFromDate
+          : "";
+        state.r_insurence_from_date = convertTimeStampToDateString(
+          insurenceFromDate,
+          "DD/MM/YYYY"
+        );
+        const insurenceToDate = dataObj.insuranceToDate
+          ? dataObj.insuranceToDate
+          : "";
+        state.r_insurence_to_date = convertTimeStampToDateString(
+          insurenceToDate,
+          "DD/MM/YYYY"
+        );
       }
     },
     updateDmsAttachmentDetails: (state, action) => {
@@ -1034,86 +1180,92 @@ const enquiryDetailsOverViewSlice = createSlice({
               state.adhaar_number = item.documentNumber;
               break;
           }
-        })
+        });
       }
     },
     updateFuelAndTransmissionType: (state, action) => {
       state.fuel_type = action.payload.fuelType;
       state.transmission_type = action.payload.transmissionType;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getEnquiryDetailsApi.pending, (state) => {
       state.isLoading = true;
       state.enquiry_details_response = null;
-    })
+    });
     builder.addCase(getEnquiryDetailsApi.fulfilled, (state, action) => {
       if (action.payload.dmsEntity) {
         state.enquiry_details_response = action.payload.dmsEntity;
       }
       state.isLoading = false;
-    })
+    });
     builder.addCase(getEnquiryDetailsApi.rejected, (state, action) => {
       state.isLoading = false;
-    })
+    });
     // Update Enquiry Details
     builder.addCase(updateEnquiryDetailsApi.pending, (state, action) => {
       state.update_enquiry_details_response = "pending";
       state.isLoading = true;
-    })
+    });
     builder.addCase(updateEnquiryDetailsApi.fulfilled, (state, action) => {
-      console.log("S updateEnquiryDetailsApi: ", JSON.stringify(action.payload));
+      console.log(
+        "S updateEnquiryDetailsApi: ",
+        JSON.stringify(action.payload)
+      );
       if (action.payload.success == true) {
         state.update_enquiry_details_response = "success";
       }
       state.isLoading = false;
-    })
+    });
     builder.addCase(updateEnquiryDetailsApi.rejected, (state, action) => {
-      console.log("F updateEnquiryDetailsApi: ", JSON.stringify(action.payload));
+      console.log(
+        "F updateEnquiryDetailsApi: ",
+        JSON.stringify(action.payload)
+      );
       if (action.payload["message"] != undefined) {
-        showToastRedAlert(action.payload["message"])
+        showToastRedAlert(action.payload["message"]);
       }
       state.update_enquiry_details_response = "failed";
       state.isLoading = false;
-    })
+    });
     // Drop Enquiry
     builder.addCase(dropEnquiryApi.pending, (state, action) => {
       state.enquiry_drop_response_status = "pending";
       state.isLoading = true;
-    })
+    });
     builder.addCase(dropEnquiryApi.fulfilled, (state, action) => {
       if (action.payload.status === "SUCCESS") {
         state.enquiry_drop_response_status = "success";
       }
       state.isLoading = false;
-    })
+    });
     builder.addCase(dropEnquiryApi.rejected, (state, action) => {
       state.enquiry_drop_response_status = "failed";
       state.isLoading = false;
-    })
+    });
     // Get Pending Tasks
     builder.addCase(getPendingTasksApi.pending, (state, action) => {
       state.get_pending_tasks_response_status = "pending";
       state.get_pending_tasks_response_list = [];
       state.isLoading = true;
-    })
+    });
     builder.addCase(getPendingTasksApi.fulfilled, (state, action) => {
       if (action.payload.success === true) {
         state.get_pending_tasks_response_status = "success";
         state.get_pending_tasks_response_list = action.payload.dmsEntity.tasks;
       }
       state.isLoading = false;
-    })
+    });
     builder.addCase(getPendingTasksApi.rejected, (state, action) => {
       state.get_pending_tasks_response_status = "failed";
       state.get_pending_tasks_response_list = [];
       state.isLoading = false;
-    })
+    });
     // Get Customer Types
     builder.addCase(getCustomerTypesApi.pending, (state, action) => {
       state.customer_types_response = null;
       state.isLoading = true;
-    })
+    });
     builder.addCase(getCustomerTypesApi.fulfilled, (state, action) => {
       //console.log("S getCustomerTypesApi: ", JSON.stringify(action.payload));
       if (action.payload) {
@@ -1121,8 +1273,8 @@ const enquiryDetailsOverViewSlice = createSlice({
         let personalTypes = [];
         let commercialTypes = [];
         let companyTypes = [];
-        customerTypes.forEach(customer => {
-          const obj = { id: customer.id, name: customer.customerType }
+        customerTypes.forEach((customer) => {
+          const obj = { id: customer.id, name: customer.customerType };
           if (customer.customerType === "Fleet") {
             commercialTypes.push(obj);
           } else if (customer.customerType === "Institution") {
@@ -1132,20 +1284,20 @@ const enquiryDetailsOverViewSlice = createSlice({
           }
         });
         const obj = {
-          "personal": personalTypes,
-          "commercial": commercialTypes,
-          "company": companyTypes,
-          "handicapped": companyTypes
-        }
+          personal: personalTypes,
+          commercial: commercialTypes,
+          company: companyTypes,
+          handicapped: companyTypes,
+        };
         state.customer_types_response = obj;
       }
       state.isLoading = false;
-    })
+    });
     builder.addCase(getCustomerTypesApi.rejected, (state, action) => {
       state.customer_types_response = null;
       state.isLoading = false;
-    })
-  }
+    });
+  },
 });
 
 export const {
@@ -1172,6 +1324,6 @@ export const {
   updateFuelAndTransmissionType,
   updateCustomerNeedAnalysisData,
   updateAdditionalOrReplacementBuyerData,
-  updateDmsAttachmentDetails
+  updateDmsAttachmentDetails,
 } = enquiryDetailsOverViewSlice.actions;
 export default enquiryDetailsOverViewSlice.reducer;

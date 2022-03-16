@@ -21,9 +21,17 @@ export const isEmail = (email) => {
   return false;
 };
 
+export const isPincode = (pincode) => {
+  var patterns = /^[0-9]*$/;
+  if (patterns.test(pincode)) {
+    return true;
+  }
+  return false;
+};
+
 export const isValidateAlphabetics = (text) => {
   // const regex = /^[a-zA-Z]+$/;
-  const regex = /^[a-zA-Z ]*$/
+  const regex = /^[a-zA-Z ]*$/;
   if (regex.test(text)) {
     return true;
   }
@@ -114,18 +122,36 @@ export const convertDateStringToMillisecondsUsingMoment = (
 export const random_color = (format) => {
   var rint = Math.floor(0x100000000 * Math.random());
   switch (format) {
-    case 'hex':
-      return '#' + ('00000' + rint.toString(16)).slice(-6).toUpperCase();
-    case 'hexa':
-      return '#' + ('0000000' + rint.toString(16)).slice(-8).toUpperCase();
-    case 'rgb':
-      return 'rgb(' + (rint & 255) + ',' + (rint >> 8 & 255) + ',' + (rint >> 16 & 255) + ')';
-    case 'rgba':
-      return 'rgba(' + (rint & 255) + ',' + (rint >> 8 & 255) + ',' + (rint >> 16 & 255) + ',' + (rint >> 24 & 255) / 255 + ')';
+    case "hex":
+      return "#" + ("00000" + rint.toString(16)).slice(-6).toUpperCase();
+    case "hexa":
+      return "#" + ("0000000" + rint.toString(16)).slice(-8).toUpperCase();
+    case "rgb":
+      return (
+        "rgb(" +
+        (rint & 255) +
+        "," +
+        ((rint >> 8) & 255) +
+        "," +
+        ((rint >> 16) & 255) +
+        ")"
+      );
+    case "rgba":
+      return (
+        "rgba(" +
+        (rint & 255) +
+        "," +
+        ((rint >> 8) & 255) +
+        "," +
+        ((rint >> 16) & 255) +
+        "," +
+        ((rint >> 24) & 255) / 255 +
+        ")"
+      );
     default:
       return rint;
   }
-}
+};
 
 export const rgbaColor = () => {
   var x = Math.floor(Math.random() * 256);
@@ -133,22 +159,22 @@ export const rgbaColor = () => {
   var z = Math.floor(Math.random() * 256);
   const rgbValue = `rgba(${x}, ${y}, ${z}, 1)`;
   return rgbValue;
-}
+};
 
 export const emiCalculator = (principle, tenure, interestRate) => {
-  if (principle !== '' && tenure !== '' && interestRate !== '') {
+  if (principle !== "" && tenure !== "" && interestRate !== "") {
     let P = principle;
     const R = interestRate;
     const N = tenure;
-    const monthlyInterstRatio = (R / 100) / 12;
-    const top = Math.pow((1 + monthlyInterstRatio), N);
+    const monthlyInterstRatio = R / 100 / 12;
+    const top = Math.pow(1 + monthlyInterstRatio, N);
     const bottom = top - 1;
     const sp = top / bottom;
-    const emi = ((P * monthlyInterstRatio) * sp);
+    const emi = P * monthlyInterstRatio * sp;
     const full = N * emi;
     const interest = full - P;
     let int_pge = (interest / full) * 100;
-    return Math.round(emi).toString()
+    return Math.round(emi).toString();
   }
-  return ""
-}
+  return "";
+};

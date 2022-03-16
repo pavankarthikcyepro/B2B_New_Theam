@@ -277,6 +277,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       <DatePickerComponent
         visible={selector.showDatepicker}
         mode={"date"}
+        minimumDate={selector.minDate}
         value={new Date(Date.now())}
         minimumDate={selector.minDate}
         onChange={(event, selectedDate) => {
@@ -306,24 +307,24 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
           <View style={[GlobalStyle.shadow]}>
             {(identifier === "ENQUIRY_FOLLOW_UP" ||
               identifier === "PRE_ENQUIRY_FOLLOW_UP") && (
-                <View>
-                  <DropDownSelectionItem
-                    label={"Model"}
-                    value={selector.model}
-                    onPress={() =>
-                      setDropDownDataForModel("MODEL", "Select Model")
-                    }
-                  />
+              <View>
+                <DropDownSelectionItem
+                  label={"Model"}
+                  value={selector.model}
+                  onPress={() =>
+                    setDropDownDataForModel("MODEL", "Select Model")
+                  }
+                />
 
-                  <DropDownSelectionItem
-                    label={"Varient"}
-                    value={selector.varient}
-                    onPress={() =>
-                      setDropDownDataForModel("VARIENT", "Select Varient")
-                    }
-                  />
-                </View>
-              )}
+                <DropDownSelectionItem
+                  label={"Varient"}
+                  value={selector.varient}
+                  onPress={() =>
+                    setDropDownDataForModel("VARIENT", "Select Varient")
+                  }
+                />
+              </View>
+            )}
 
             <TextinputComp
               style={styles.textInputStyle}
