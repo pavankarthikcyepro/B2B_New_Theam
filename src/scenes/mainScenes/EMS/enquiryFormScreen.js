@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Alert,
-  BackHandler
+  BackHandler,
 } from "react-native";
 import {
   DefaultTheme,
@@ -96,7 +96,7 @@ import {
   Fuel_Types,
   Enquiry_Drop_Reasons,
   Insurence_Types,
-  Referred_By_Source
+  Referred_By_Source,
 } from "../../../jsonData/enquiryFormScreenJsonData";
 import {
   showAlertMessage,
@@ -114,7 +114,7 @@ import URL from "../../../networking/endpoints";
 import { getEnquiryList } from "../../../redux/enquiryReducer";
 import { AppNavigator } from "../../../navigations";
 import { isValidateAlphabetics } from "../../../utils/helperFunctions";
-import uuid from 'react-native-uuid';
+import uuid from "react-native-uuid";
 
 const theme = {
   ...DefaultTheme,
@@ -157,10 +157,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   });
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
   const [typeOfActionDispatched, setTypeOfActionDispatched] = useState("");
-  const [minOrMaxDate, setMinOrMaxDate] = useState({ minDate: null, maxDate: null });
+  const [minOrMaxDate, setMinOrMaxDate] = useState({
+    minDate: null,
+    maxDate: null,
+  });
 
   useLayoutEffect(() => {
-
     navigation.setOptions({
       headerLeft: () => (
         <IconButton
@@ -171,12 +173,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         />
       ),
     });
-  }, [navigation])
+  }, [navigation]);
 
   const goParentScreen = () => {
     navigation.goBack();
     dispatch(clearState());
-  }
+  };
 
   useEffect(() => {
     getAsyncstoreData();
@@ -185,19 +187,24 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dispatch(getCustomerTypesApi());
     setCarModelsDataFromBase();
 
-    BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
+    BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
     return () => {
-      BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
+      BackHandler.removeEventListener(
+        "hardwareBackPress",
+        handleBackButtonClick
+      );
     };
   }, []);
 
   const handleBackButtonClick = () => {
     goParentScreen();
     return true;
-  }
+  };
 
   const getAsyncstoreData = async () => {
-    const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    const employeeData = await AsyncStore.getData(
+      AsyncStore.Keys.LOGIN_EMPLOYEE
+    );
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       setUserData({
@@ -252,7 +259,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       // Update Customer Need Analysys
       dispatch(updateCustomerNeedAnalysisData(dmsLeadDto.dmsLeadScoreCards));
       // Update Additional ore Replacement Buyer Data
-      dispatch(updateAdditionalOrReplacementBuyerData(dmsLeadDto.dmsExchagedetails));
+      dispatch(
+        updateAdditionalOrReplacementBuyerData(dmsLeadDto.dmsExchagedetails)
+      );
       // Update Attachment details
       saveAttachmentDetailsInLocalObject(dmsLeadDto.dmsAttachments);
       dispatch(updateDmsAttachmentDetails(dmsLeadDto.dmsAttachments));
@@ -301,7 +310,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("Please fill required fields in Customer Profile");
       return;
     }
-
     if (!isValidateAlphabetics(selector.occupation)) {
       showToast("Please enter alphabetics only in occupation");
       return;
@@ -318,7 +326,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
 
     if (selector.enquiry_segment.toLowerCase() == "personal") {
-      if (selector.dateOfBirth.length == 0 || selector.anniversaryDate.length == 0) {
+      if (
+        selector.dateOfBirth.length == 0 ||
+        selector.anniversaryDate.length == 0
+      ) {
         showToast("Please fill required fields in Personal Intro");
         return;
       }
@@ -353,7 +364,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("Please fill required fields in Financial Details");
       return;
     }
-
+    if (!isValidateAlphabetics(selector.leashing_name)) {
+      showToast("Please enter alphabetics only in leashing name");
+      return;
+    }
     if (!selector.enquiry_details_response) {
       return;
     }
@@ -388,7 +402,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const mapContactOrAccountDto = (prevData) => {
     let dataObj = { ...prevData };
-    dataObj.dateOfBirth = convertDateStringToMillisecondsUsingMoment(selector.dateOfBirth);
+    dataObj.dateOfBirth = convertDateStringToMillisecondsUsingMoment(
+      selector.dateOfBirth
+    );
     dataObj.email = selector.email;
     dataObj.firstName = selector.firstName;
     dataObj.lastName = selector.lastName;
@@ -403,7 +419,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.occupation = selector.occupation;
     dataObj.designation = selector.designation;
     dataObj.customerType = selector.customer_type;
-    dataObj.anniversaryDate = convertDateStringToMillisecondsUsingMoment(selector.anniversaryDate);
+    dataObj.anniversaryDate = convertDateStringToMillisecondsUsingMoment(
+      selector.anniversaryDate
+    );
     dataObj.annualRevenue = selector.approx_annual_income;
     dataObj.company = selector.company_name;
     dataObj.companyName = selector.company_name;
@@ -428,7 +446,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.enquirySource = selector.source_of_enquiry;
     dataObj.eventCode = selector.event_code;
     dataObj.subSource = selector.sub_source_of_enquiry;
-    dataObj.dmsExpectedDeliveryDate = convertDateStringToMillisecondsUsingMoment(selector.expected_delivery_date);
+    dataObj.dmsExpectedDeliveryDate =
+      convertDateStringToMillisecondsUsingMoment(
+        selector.expected_delivery_date
+      );
     dataObj.model = selector.model;
     dataObj.leadStatus = "ENQUIRYCOMPLETED";
     dataObj.dmsAddresses = mapDMSAddress(dataObj.dmsAddresses);
@@ -497,7 +518,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.financeType = selector.retail_finance;
     dataObj.financeCategory = selector.finance_category;
     dataObj.downPayment = selector.down_payment;
-    dataObj.loanAmount = selector.loan_amount ? Number(selector.loan_amount) : null;
+    dataObj.loanAmount = selector.loan_amount
+      ? Number(selector.loan_amount)
+      : null;
     dataObj.rateOfInterest = selector.rate_of_interest;
     dataObj.expectedTenureYears = selector.loan_of_tenure;
     dataObj.emi = selector.emi;
@@ -780,7 +803,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const getEnquiryListFromServer = () => {
     if (userData.employeeId) {
-      let endUrl = "?limit=10&offset=" + "0" + "&status=ENQUIRY&empId=" + userData.employeeId;
+      let endUrl =
+        "?limit=10&offset=" +
+        "0" +
+        "&status=ENQUIRY&empId=" +
+        userData.employeeId;
       dispatch(getEnquiryList(endUrl));
     }
   };
@@ -1037,7 +1064,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
     const formData = new FormData();
     const fileType = photoUri.substring(photoUri.lastIndexOf(".") + 1);
-    const fileNameArry = photoUri.substring(photoUri.lastIndexOf("/") + 1).split(".");
+    const fileNameArry = photoUri
+      .substring(photoUri.lastIndexOf("/") + 1)
+      .split(".");
     // const fileName = fileNameArry.length > 0 ? fileNameArry[0] : "None";
     const fileName = uuid.v4();
     console.log("uuid: ", fileName);
@@ -1100,8 +1129,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const emiCal = (principle, tenure, interestRate) => {
     const amount = emiCalculator(principle, tenure, interestRate);
-    dispatch(setFinancialDetails({ key: "EMI", text: amount }))
-  }
+    dispatch(setFinancialDetails({ key: "EMI", text: amount }));
+  };
 
   if (!componentAppear) {
     return (
@@ -1161,7 +1190,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             console.log("date: ", selectedDate);
             if (Platform.OS === "android") {
               if (!selectedDate) {
-                dispatch(updateSelectedDate({ key: "NONE", text: selectedDate }));
+                dispatch(
+                  updateSelectedDate({ key: "NONE", text: selectedDate })
+                );
               } else {
                 dispatch(updateSelectedDate({ key: "", text: selectedDate }));
               }
@@ -1316,20 +1347,27 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   </View>
                 )}
 
-                {(selector.source_of_enquiry.toLowerCase().trim().replace(/ /g, "") === "digitalmarketing" || selector.source_of_enquiry.toLowerCase().trim().replace(/ /g, "") === "socialnetwork") && (
-                  <View>
-                    <DropDownSelectionItem
-                      label={"Sub Source Of Enquiry"}
-                      value={selector.sub_source_of_enquiry}
-                      onPress={() =>
-                        showDropDownModelMethod(
-                          "SUB_SOURCE_OF_ENQUIRY",
-                          "Sub Source Of Enquiry"
-                        )
-                      }
-                    />
-                  </View>
-                )}
+                {(selector.source_of_enquiry
+                  .toLowerCase()
+                  .trim()
+                  .replace(/ /g, "") === "digitalmarketing" ||
+                  selector.source_of_enquiry
+                    .toLowerCase()
+                    .trim()
+                    .replace(/ /g, "") === "socialnetwork") && (
+                    <View>
+                      <DropDownSelectionItem
+                        label={"Sub Source Of Enquiry"}
+                        value={selector.sub_source_of_enquiry}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "SUB_SOURCE_OF_ENQUIRY",
+                            "Sub Source Of Enquiry"
+                          )
+                        }
+                      />
+                    </View>
+                  )}
 
                 {selector.source_of_enquiry.toLowerCase() === "reference" && (
                   <View>
@@ -1338,7 +1376,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       value={selector.rf_by_first_name}
                       label={"Referred BY First Name"}
                       keyboardType={"default"}
-                      onChangeText={(text) => dispatch(setCustomerProfile({ key: "RF_FIRST_NAME", text: text, }))}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setCustomerProfile({
+                            key: "RF_FIRST_NAME",
+                            text: text,
+                          })
+                        )
+                      }
                     />
                     <Text style={GlobalStyle.underline}></Text>
                     <TextinputComp
@@ -1346,7 +1391,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       value={selector.rf_by_last_name}
                       label={"Referred BY Last Name"}
                       keyboardType={"default"}
-                      onChangeText={(text) => dispatch(setCustomerProfile({ key: "RF_LAST_NAME", text: text, }))}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setCustomerProfile({
+                            key: "RF_LAST_NAME",
+                            text: text,
+                          })
+                        )
+                      }
                     />
                     <Text style={GlobalStyle.underline}></Text>
                     <TextinputComp
@@ -1355,20 +1407,36 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       label={"Referred BY Mobile"}
                       keyboardType={"number-pad"}
                       maxLength={10}
-                      onChangeText={(text) => dispatch(setCustomerProfile({ key: "RF_MOBILE", text: text, }))}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setCustomerProfile({ key: "RF_MOBILE", text: text })
+                        )
+                      }
                     />
                     <Text style={GlobalStyle.underline}></Text>
                     <DropDownSelectionItem
                       label={"Referred BY Source"}
                       value={selector.rf_by_source}
-                      onPress={() => showDropDownModelMethod("RF_SOURCE", "Referred BY Source")}
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "RF_SOURCE",
+                          "Referred BY Source"
+                        )
+                      }
                     />
                     <TextinputComp
                       style={styles.textInputStyle}
                       value={selector.rf_by_source_location}
                       label={"Referred BY Source Location"}
                       keyboardType={"default"}
-                      onChangeText={(text) => dispatch(setCustomerProfile({ key: "RF_SOURCE_LOCATION", text: text, }))}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setCustomerProfile({
+                            key: "RF_SOURCE_LOCATION",
+                            text: text,
+                          })
+                        )
+                      }
                     />
                     <Text style={GlobalStyle.underline}></Text>
                   </View>
@@ -2024,6 +2092,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
                       label={"Down Payment*"}
+                      maxLength={10}
                       keyboardType={"default"}
                       value={selector.down_payment}
                       onChangeText={(text) =>
@@ -2046,6 +2115,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         style={{ height: 65, width: "100%" }}
                         label={"Loan Amount*"}
                         keyboardType={"default"}
+                        maxLength={10}
                         value={selector.loan_amount}
                         onChangeText={(text) => {
                           emiCal(text, selector.rate_of_interest, selector.loan_of_tenure)
@@ -2057,6 +2127,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         style={{ height: 65, width: "100%" }}
                         label={"Rate of Interest*"}
                         keyboardType={"default"}
+                        maxLength={10}
                         value={selector.rate_of_interest}
                         onChangeText={(text) => {
                           emiCal(selector.loan_amount, text, selector.loan_of_tenure)
@@ -2086,15 +2157,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       style={{ height: 65, width: "100%" }}
                       label={"Loan of Tenure(Months)"}
                       keyboardType={"default"}
+                      maxLength={3}
                       value={selector.loan_of_tenure}
                       onChangeText={(text) => {
-                        emiCal(selector.loan_amount, selector.rate_of_interest, text)
+                        emiCal(
+                          selector.loan_amount,
+                          selector.rate_of_interest,
+                          text
+                        );
                         dispatch(
                           setFinancialDetails({
                             key: "LOAN_OF_TENURE",
                             text: text,
                           })
-                        )
+                        );
                       }}
                     />
                     <Text style={GlobalStyle.underline}></Text>
@@ -2233,6 +2309,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           style={{ height: 65, width: "100%" }}
                           label={"Make Other Name"}
                           editable={true}
+                          maxLength={50}
                           value={selector.c_make_other_name}
                           onChangeText={(text) =>
                             dispatch(
@@ -2450,6 +2527,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         style={{ height: 65, width: "100%" }}
                         label={"Make Other Name"}
                         editable={true}
+                        maxLength={50}
                         value={selector.a_make_other_name}
                         onChangeText={(text) =>
                           dispatch(
@@ -2474,6 +2552,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         style={{ height: 65, width: "100%" }}
                         label={"Model Other Name"}
                         editable={true}
+                        maxLength={50}
                         value={selector.a_model_other_name}
                         onChangeText={(text) =>
                           dispatch(
@@ -2556,6 +2635,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     style={styles.textInputStyle}
                     value={selector.r_reg_no}
                     label={"Reg. No."}
+                    maxLength={50}
                     keyboardType={"default"}
                     onChangeText={(text) =>
                       dispatch(
@@ -2589,6 +2669,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         style={{ height: 65, width: "100%" }}
                         label={"Make Other Name"}
                         editable={true}
+                        maxLength={50}
                         value={selector.r_make_other_name}
                         onChangeText={(text) =>
                           dispatch(
@@ -2613,6 +2694,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         style={{ height: 65, width: "100%" }}
                         label={"Model Other Name"}
                         editable={true}
+                        maxLength={50}
                         value={selector.r_model_other_name}
                         onChangeText={(text) =>
                           dispatch(
@@ -2935,17 +3017,28 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <DropDownSelectionItem
                     label={"Drop Reason"}
                     value={selector.drop_reason}
-                    onPress={() => showDropDownModelMethod("DROP_REASON", "Drop Reason")
+                    onPress={() =>
+                      showDropDownModelMethod("DROP_REASON", "Drop Reason")
                     }
                   />
-                  {(selector.drop_reason.replace(/\s/g, "").toLowerCase() == "losttocompetitor" || selector.drop_reason.replace(/\s/g, "").toLowerCase() == "losttoco-dealer") ? (
+                  {selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
+                    "losttocompetitor" ||
+                    selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
+                    "losttoco-dealer" ? (
                     <DropDownSelectionItem
                       label={"Drop Sub Reason"}
                       value={selector.drop_sub_reason}
-                      onPress={() => showDropDownModelMethod("DROP_SUB_REASON", "Drop Sub Reason")}
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "DROP_SUB_REASON",
+                          "Drop Sub Reason"
+                        )
+                      }
                     />
                   ) : null}
-                  {(selector.drop_reason === "Lost to Competitor" || selector.drop_reason === "Lost to Used Cars from Co-Dealer") ? (
+                  {selector.drop_reason === "Lost to Competitor" ||
+                    selector.drop_reason ===
+                    "Lost to Used Cars from Co-Dealer" ? (
                     <View>
                       <TextinputComp
                         style={styles.textInputStyle}
@@ -2964,7 +3057,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       <Text style={GlobalStyle.underline}></Text>
                     </View>
                   ) : null}
-                  {(selector.drop_reason === "Lost to Competitor" || selector.drop_reason === "Lost to Used Cars from Co-Dealer" || selector.drop_reason === "Lost to Co-dealer") ? (
+                  {selector.drop_reason === "Lost to Competitor" ||
+                    selector.drop_reason === "Lost to Used Cars from Co-Dealer" ||
+                    selector.drop_reason === "Lost to Co-dealer" ? (
                     <View>
                       <TextinputComp
                         style={styles.textInputStyle}
@@ -2999,14 +3094,23 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       <Text style={GlobalStyle.underline}></Text>
                     </View>
                   ) : null}
-                  {(selector.drop_reason === "Lost to Competitor" || selector.drop_reason === "Lost to Used Cars from Co-Dealer") ? (
+                  {selector.drop_reason === "Lost to Competitor" ||
+                    selector.drop_reason ===
+                    "Lost to Used Cars from Co-Dealer" ? (
                     <View>
                       <TextinputComp
                         style={styles.textInputStyle}
                         value={selector.d_model}
                         label={"Model"}
                         maxLength={50}
-                        onChangeText={(text) => dispatch(setEnquiryDropDetails({ key: "DROP_MODEL", text: text }))}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setEnquiryDropDetails({
+                              key: "DROP_MODEL",
+                              text: text,
+                            })
+                          )
+                        }
                       />
                       <Text style={GlobalStyle.underline}></Text>
                     </View>
