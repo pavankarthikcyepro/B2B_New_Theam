@@ -35,9 +35,9 @@ export const getTestDriveDseEmployeeListApi = createAsyncThunk("TEST_DRIVE_SLICE
   return json;
 })
 
-export const getDriversListApi = createAsyncThunk("TEST_DRIVE_SLICE/getDriversListApi", async (branchId, { rejectWithValue }) => {
+export const getDriversListApi = createAsyncThunk("TEST_DRIVE_SLICE/getDriversListApi", async (orgId, { rejectWithValue }) => {
 
-  const response = await client.get(URL.GET_DRIVERS_LIST(branchId));
+  const response = await client.get(URL.GET_DRIVERS_LIST(orgId));
   const json = await response.json()
   if (!response.ok) {
     return rejectWithValue(json);
@@ -225,12 +225,17 @@ const testDriveSlice = createSlice({
       state.test_drive_vehicle_list_for_drop_down = [];
     })
     builder.addCase(getTestDriveDseEmployeeListApi.fulfilled, (state, action) => {
+      // console.log("getTestDriveDseEmployeeListApi S: ", action.payload);
       if (action.payload.dmsEntity) {
         state.employees_list = action.payload.dmsEntity.employees;
       }
     })
     // Get Driviers List
+    builder.addCase(getDriversListApi.pending, (state, action) => {
+      state.drivers_list = [];
+    })
     builder.addCase(getDriversListApi.fulfilled, (state, action) => {
+      console.log("getDriversListApi S: ", action.payload);
       if (action.payload.dmsEntity) {
         const driversList = action.payload.dmsEntity.employees;
         let newFormatDriversList = [];
@@ -242,6 +247,10 @@ const testDriveSlice = createSlice({
         })
         state.drivers_list = newFormatDriversList;
       }
+    })
+    builder.addCase(getDriversListApi.rejected, (state, action) => {
+      console.log("getDriversListApi F: ", action.payload);
+      state.drivers_list = [];
     })
     // Book Test Drive Appointment
     builder.addCase(bookTestDriveAppointmentApi.pending, (state, action) => {
