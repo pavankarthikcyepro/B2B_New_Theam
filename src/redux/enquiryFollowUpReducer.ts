@@ -51,6 +51,8 @@ const slice = createSlice({
     varient: "",
     actual_start_time: "",
     actual_end_time: "",
+    minDate: null,
+    maxDate: null,
   },
   reducers: {
     clearState: (state, action) => {
@@ -83,15 +85,27 @@ const slice = createSlice({
       }
     },
     setDatePicker: (state, action) => {
+            switch (action.payload) {
+        case "ACTUAL_START_TIME":
+          state.minDate = new Date();
+          state.maxDate = null;
+          break;
+        case "ACTUAL_END_TIME":
+          state.minDate = new Date();
+          state.maxDate = null;
+          break;
+      }
       state.datePickerKeyId = action.payload;
       state.showDatepicker = !state.showDatepicker;
     },
     updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
       const selectedDate = convertTimeStampToDateString(text, "DD/MM/YYYY");
+      const keyId = key ? key : state.datePickerKeyId
       switch (state.datePickerKeyId) {
         case "ACTUAL_START_TIME":
           state.actual_start_time = selectedDate;
+          
           break;
         case "ACTUAL_END_TIME":
           state.actual_end_time = selectedDate;
