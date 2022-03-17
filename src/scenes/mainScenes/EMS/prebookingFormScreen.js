@@ -281,7 +281,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-    calculateOnRoadPrice();
+    calculateOnRoadPrice(handlingChargSlctd, essentialKitSlctd, fastTagSlctd);
   }, [
     priceInfomationData,
     selectedInsurencePrice,
@@ -367,9 +367,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     })
       .then((response) => response.json())
       .then((json) => {
-        console.log(json);
+        // console.log(json);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
 
   const setCarModelsDataFromBase = () => {
@@ -479,24 +479,24 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       const dmsOnRoadPriceDtoObj = selector.on_road_price_dto_list_response[0];
       // setSelectedInsurencePrice(dmsOnRoadPriceDtoObj.)
       setSelectedWarrentyPrice(dmsOnRoadPriceDtoObj.warrantyAmount);
-      if (
-        dmsOnRoadPriceDtoObj.handlingCharges &&
-        dmsOnRoadPriceDtoObj.handlingCharges > 0
-      ) {
+      let handlingChargeSlctdLocal = handlingChargSlctd;
+      let essentialKitSlctdLocal = essentialKitSlctd;
+      let fastTagSlctdLocal = fastTagSlctd;
+
+      if (dmsOnRoadPriceDtoObj.handlingCharges && dmsOnRoadPriceDtoObj.handlingCharges > 0) {
         setHandlingChargSlctd(true);
-        calculateOnRoadPrice(true, essentialKitSlctd, fastTagSlctd);
+        handlingChargeSlctdLocal = true;
       }
-      if (
-        dmsOnRoadPriceDtoObj.essentialKit &&
-        dmsOnRoadPriceDtoObj.essentialKit > 0
-      ) {
+      if (dmsOnRoadPriceDtoObj.essentialKit && dmsOnRoadPriceDtoObj.essentialKit > 0) {
         setEssentialKitSlctd(true);
-        calculateOnRoadPrice(handlingChargSlctd, true, fastTagSlctd);
+        essentialKitSlctdLocal = true;
       }
       if (dmsOnRoadPriceDtoObj.fast_tag && dmsOnRoadPriceDtoObj.fast_tag > 0) {
         setFastTagSlctd(true);
-        calculateOnRoadPrice(handlingChargSlctd, essentialKitSlctd, true);
+        fastTagSlctdLocal = true;
       }
+      calculateOnRoadPrice(handlingChargeSlctdLocal, essentialKitSlctdLocal, fastTagSlctdLocal);
+
       if (
         dmsOnRoadPriceDtoObj.insuranceAddonData &&
         dmsOnRoadPriceDtoObj.insuranceAddonData.length > 0
@@ -896,8 +896,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         };
       }
 
-      console.log("Data: ", JSON.stringify(formData));
-
       setTypeOfActionDispatched("UPDATE_PRE_BOOKING");
       dispatch(updatePrebookingDetailsApi(formData));
     }
@@ -1073,7 +1071,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     dmsBooking.modeOfPayment = trimStr2;
     dmsBooking.otherVehicle = selector.vechicle_registration;
     dmsBooking.deliveryLocation = selector.delivery_location;
-    console.log("dmsBooking: ", dmsBooking);
+    // console.log("dmsBooking: ", dmsBooking);
     return dmsBooking;
   };
 
@@ -1082,7 +1080,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     if (dmsAttachments.length > 0) {
       dmsAttachments.forEach((obj, index) => {
         const item = uploadedImagesDataObj[obj.documentType];
-        console.log("uploadedImagesDataObj2: ", uploadedImagesDataObj);
+        // console.log("uploadedImagesDataObj2: ", uploadedImagesDataObj);
         const object = formatAttachment(
           { ...obj },
           item,
@@ -1092,7 +1090,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         dmsAttachments[index] = object;
       });
     } else {
-      console.log("uploadedImagesDataObj1: ", uploadedImagesDataObj);
+      // console.log("uploadedImagesDataObj1: ", uploadedImagesDataObj);
       Object.keys(uploadedImagesDataObj).forEach((key, index) => {
         const item = uploadedImagesDataObj[key];
         const object = formatAttachment({}, item, index, item.documentType);
@@ -1458,7 +1456,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           console.log("imageObj: ", data, keyId);
           uploadSelectedImage(data, keyId);
         }}
-        // onDismiss={() => dispatch(setImagePicker(""))}
+      // onDismiss={() => dispatch(setImagePicker(""))}
       />
 
       <DropDownComponant
@@ -2156,8 +2154,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 {(selector.enquiry_segment === "Company" &&
                   selector.customer_type === "Institution") ||
-                selector.customer_type_category == "B2B" ||
-                selector.customer_type_category == "B2C" ? (
+                  selector.customer_type_category == "B2B" ||
+                  selector.customer_type_category == "B2C" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -2706,51 +2704,51 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 {(selector.retail_finance === "In House" ||
                   selector.retail_finance === "Out House") && (
-                  <View>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Loan Amount*"}
-                      keyboardType={"number-pad"}
-                      value={selector.loan_amount}
-                      onChangeText={(text) => {
-                        // Calculate EMI
-                        emiCal(
-                          text,
-                          selector.rate_of_interest,
-                          selector.loan_of_tenure
-                        );
-                        dispatch(
-                          setFinancialDetails({
-                            key: "LOAN_AMOUNT",
-                            text: text,
-                          })
-                        );
-                      }}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Rate of Interest*"}
-                      keyboardType={"number-pad"}
-                      value={selector.rate_of_interest}
-                      onChangeText={(text) => {
-                        // Calculate EMI
-                        emiCal(
-                          selector.loan_amount,
-                          text,
-                          selector.loan_of_tenure
-                        );
-                        dispatch(
-                          setFinancialDetails({
-                            key: "RATE_OF_INTEREST",
-                            text: text,
-                          })
-                        );
-                      }}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>
-                )}
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Loan Amount*"}
+                        keyboardType={"number-pad"}
+                        value={selector.loan_amount}
+                        onChangeText={(text) => {
+                          // Calculate EMI
+                          emiCal(
+                            text,
+                            selector.rate_of_interest,
+                            selector.loan_of_tenure
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "LOAN_AMOUNT",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Rate of Interest*"}
+                        keyboardType={"number-pad"}
+                        value={selector.rate_of_interest}
+                        onChangeText={(text) => {
+                          // Calculate EMI
+                          emiCal(
+                            selector.loan_amount,
+                            text,
+                            selector.loan_of_tenure
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "RATE_OF_INTEREST",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
 
                 {selector.retail_finance === "In House" && (
                   <View>
@@ -2940,7 +2938,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   />
                   {selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
                     "losttocompetitor" ||
-                  selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
+                    selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
                     "losttoco-dealer" ? (
                     <DropDownSelectionItem
                       label={"Drop Sub Reason"}
@@ -2955,7 +2953,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ) : null}
 
                   {selector.drop_reason === "Lost to Competitor" ||
-                  selector.drop_reason ===
+                    selector.drop_reason ===
                     "Lost to Used Cars from Co-Dealer" ? (
                     <View>
                       <TextinputComp
@@ -2977,8 +2975,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ) : null}
 
                   {selector.drop_reason === "Lost to Competitor" ||
-                  selector.drop_reason === "Lost to Used Cars from Co-Dealer" ||
-                  selector.drop_reason === "Lost to Co-Dealer" ? (
+                    selector.drop_reason === "Lost to Used Cars from Co-Dealer" ||
+                    selector.drop_reason === "Lost to Co-Dealer" ? (
                     <View>
                       <TextinputComp
                         style={styles.textInputStyle}
@@ -3014,7 +3012,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ) : null}
 
                   {selector.drop_reason === "Lost to Competitor" ||
-                  selector.drop_reason ===
+                    selector.drop_reason ===
                     "Lost to Used Cars from Co-Dealer" ? (
                     <View>
                       <TextinputComp
@@ -3167,44 +3165,44 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                   {(selector.booking_payment_mode === "InternetBanking" ||
                     selector.booking_payment_mode === "Internet Banking") && (
-                    <View>
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.utr_no}
-                        label={"UTR No"}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setPreBookingPaymentDetials({
-                              key: "UTR_NO",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                      <DateSelectItem
-                        label={"Transaction Date"}
-                        value={selector.transaction_date}
-                        onPress={() =>
-                          dispatch(setDatePicker("TRANSACTION_DATE"))
-                        }
-                      />
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.comapany_bank_name}
-                        label={"Company Bank Name"}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setPreBookingPaymentDetials({
-                              key: "COMPANY_BANK_NAME",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  )}
+                      <View>
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.utr_no}
+                          label={"UTR No"}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setPreBookingPaymentDetials({
+                                key: "UTR_NO",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                        <DateSelectItem
+                          label={"Transaction Date"}
+                          value={selector.transaction_date}
+                          onPress={() =>
+                            dispatch(setDatePicker("TRANSACTION_DATE"))
+                          }
+                        />
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.comapany_bank_name}
+                          label={"Company Bank Name"}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setPreBookingPaymentDetials({
+                                key: "COMPANY_BANK_NAME",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
+                    )}
 
                   {selector.booking_payment_mode === "Cheque" && (
                     <View>
