@@ -17,6 +17,7 @@ interface CustomerDetailModel {
   text: string;
 }
 
+
 export const getTaskDetailsApi = createAsyncThunk(
   "ENQUIRY_FOLLOW_UP_SLICE/getTaskDetailsApi",
   async (taskId, { rejectWithValue }) => {

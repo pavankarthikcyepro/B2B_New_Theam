@@ -61,6 +61,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
   const { vehicle_modal_list } = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
   const [showDropDownModel, setShowDropDownModel] = useState(false);
+  const [dataForCarModels, setDataForCarModels] = useState([])
   const [dropDownTitle, setDropDownTitle] = useState("");
   const [dataForDropDown, setDataForDropDown] = useState([]);
   const [dropDownKey, setDropDownKey] = useState("");
@@ -241,8 +242,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     setActionType(type);
     dispatch(updateTaskApi(newTaskObj));
   };
-
-  const setDropDownDataForModel = (key, title) => {
+   const setDropDownDataForModel = (key, title) => {
     switch (key) {
       case "MODEL":
         setDataForDropDown([...carModelsData]);
@@ -250,7 +250,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       case "VARIENT":
         setDataForDropDown([...modelVarientsData]);
         break;
-    }
+  }
     setShowDropDownModel(true);
     setDropDownTitle(title);
     setDropDownKey(key);
@@ -279,7 +279,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
         mode={"date"}
         minimumDate={selector.minDate}
         value={new Date(Date.now())}
-        minimumDate={selector.minDate}
+      
         onChange={(event, selectedDate) => {
           console.log("date: ", selectedDate);
           if (Platform.OS === "android") {
@@ -310,9 +310,9 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
               <View>
                 <DropDownSelectionItem
                   label={"Model"}
-                  value={selector.model}
+                  value={selector.carModel}
                   onPress={() =>
-                    setDropDownDataForModel("MODEL", "Select Model")
+                    setDropDownDataForModel("CAR_MODEL", "Select Model")
                   }
                 />
 

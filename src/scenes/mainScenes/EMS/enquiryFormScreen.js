@@ -368,6 +368,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("Please enter alphabetics only in leashing name");
       return;
     }
+      if (!isValidateAlphabetics(selector.r_model_other_name)) {
+      showToast("Please enter proper model other name");
+      return;
+    }
+    if (selector.r_insurence_company_name.length == 0) {
+      showToast("Please enter the proper insurance company name");
+      return;
+    }
     if (!selector.enquiry_details_response) {
       return;
     }
@@ -3119,6 +3127,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     style={styles.textInputStyle}
                     value={selector.drop_remarks}
                     label={"Remarks"}
+                    maxLength={50}
                     onChangeText={(text) =>
                       dispatch(
                         setEnquiryDropDetails({
