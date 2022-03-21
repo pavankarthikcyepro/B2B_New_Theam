@@ -54,8 +54,8 @@ const initialState: LoginState = {
   menuListStatus: "",
   menuList: [],
   login_employee_details: {},
-  branchesList: []
-}
+  branchesList: [],
+};
 
 export const postUserData = createAsyncThunk(
   "LOGIN_SLICE/postUserData",

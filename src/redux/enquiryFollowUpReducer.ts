@@ -17,6 +17,7 @@ interface CustomerDetailModel {
   text: string;
 }
 
+
 export const getTaskDetailsApi = createAsyncThunk(
   "ENQUIRY_FOLLOW_UP_SLICE/getTaskDetailsApi",
   async (taskId, { rejectWithValue }) => {
@@ -124,7 +125,7 @@ const slice = createSlice({
     updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
       const selectedDate = convertTimeStampToDateString(text, "DD/MM/YYYY");
-      const keyId = key ? key : state.datePickerKeyId
+      const keyId = key ? key : state.datePickerKeyId;
       switch (state.datePickerKeyId) {
         case "ACTUAL_START_TIME":
           state.actual_start_time = selectedDate;

@@ -792,6 +792,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
   const submitClicked = () => {
     Keyboard.dismiss();
+    if (selector.marital_status.length == 0) {
+      showToast("Please fill the martial status");
+      return;
+    }
 
     if (
       selector.booking_amount.length === 0 ||
@@ -1616,6 +1620,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   style={{ height: 65, width: "100%" }}
                   value={selector.first_name}
                   label={"First Name*"}
+                  maxLength={50}
                   keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
@@ -1629,6 +1634,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   value={selector.last_name}
                   label={"Last Name*"}
                   keyboardType={"default"}
+                  maxLength={50}
                   onChangeText={(text) =>
                     dispatch(
                       setCustomerDetails({ key: "LAST_NAME", text: text })
@@ -2666,11 +2672,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   </View>
                 ) : null}
 
-                {selector.retail_finance === "Leashing" && (
+                {selector.retail_finance === "Leasing" && (
                   <View>
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
-                      label={"Leashing Name"}
+                      label={"Leasing Name"}
+                      maxLength={50}
                       value={selector.leashing_name}
                       onChangeText={(text) =>
                         dispatch(
@@ -2918,6 +2925,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   style={{ height: 65, width: "100%" }}
                   label={"Occasion*"}
                   value={selector.occasion}
+                  maxLength={50}
                   onChangeText={(text) =>
                     dispatch(
                       setCommitmentDetails({ key: "OCCASION", text: text })
@@ -2935,6 +2943,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 <TextinputComp
                   style={{ height: 65, width: "100%" }}
                   label={"Delivery Location*"}
+                  maxLength={50}
                   value={selector.delivery_location}
                   onChangeText={(text) =>
                     dispatch(

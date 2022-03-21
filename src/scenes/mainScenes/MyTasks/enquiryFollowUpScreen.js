@@ -62,6 +62,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
   const { vehicle_modal_list } = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
   const [showDropDownModel, setShowDropDownModel] = useState(false);
+  const [dataForCarModels, setDataForCarModels] = useState([]);
   const [dropDownTitle, setDropDownTitle] = useState("");
   const [dataForDropDown, setDataForDropDown] = useState([]);
   const [dropDownKey, setDropDownKey] = useState("");
@@ -249,7 +250,6 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     setActionType(type);
     dispatch(updateTaskApi(newTaskObj));
   };
-
   const setDropDownDataForModel = (key, title) => {
     switch (key) {
       case "MODEL":
@@ -273,7 +273,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
           if (dropDownKey === "MODEL") {
-            updateModelVarientsData(item.name);
+            updateModelVarientsData(item.name, false);
           }
           dispatch(
             setEnquiryFollowUpDetails({ key: dropDownKey, text: item.name })

@@ -347,7 +347,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("please enter alphabetics only in relationname");
       return;
     }
-
+    if (!isValidateAlphabetics(selector.streetName)) {
+      showToast("Please enter alphabetics only in street name");
+      return;
+    }
     if (
       selector.houseNum.length == 0 ||
       selector.streetName.length == 0 ||
@@ -365,7 +368,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
     if (!isValidateAlphabetics(selector.leashing_name)) {
-      showToast("Please enter alphabetics only in leashing name");
+      showToast("Please enter alphabetics only in leasing name");
+      return;
+    }
+    if (!isValidateAlphabetics(selector.r_model_other_name)) {
+      showToast("Please enter proper model other name");
+      return;
+    }
+    if (selector.r_insurence_company_name.length == 0) {
+      showToast("Please enter the proper insurance company name");
       return;
     }
     if (!selector.enquiry_details_response) {
@@ -2091,7 +2102,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <View>
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
-                      label={"Leashing Name"}
+                      label={"Leasing Name"}
+                      maxLength={50}
                       keyboardType={"default"}
                       value={selector.leashing_name}
                       onChangeText={(text) =>
@@ -2151,8 +2163,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         maxLength={10}
                         value={selector.loan_amount}
                         onChangeText={(text) => {
-                          emiCal(text, selector.rate_of_interest, selector.loan_of_tenure)
-                          dispatch(setFinancialDetails({ key: "LOAN_AMOUNT", text: text }))
+                          emiCal(
+                            text,
+                            selector.rate_of_interest,
+                            selector.loan_of_tenure
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "LOAN_AMOUNT",
+                              text: text,
+                            })
+                          );
                         }}
                       />
                       <Text style={GlobalStyle.underline}></Text>
@@ -2163,13 +2184,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         maxLength={10}
                         value={selector.rate_of_interest}
                         onChangeText={(text) => {
-                          emiCal(selector.loan_amount, text, selector.loan_of_tenure)
+                          emiCal(
+                            selector.loan_amount,
+                            text,
+                            selector.loan_of_tenure
+                          );
                           dispatch(
                             setFinancialDetails({
                               key: "RATE_OF_INTEREST",
                               text: text,
                             })
-                          )
+                          );
                         }}
                       />
                       <Text style={GlobalStyle.underline}></Text>
@@ -3156,6 +3181,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     style={styles.textInputStyle}
                     value={selector.drop_remarks}
                     label={"Remarks"}
+                    maxLength={50}
                     onChangeText={(text) =>
                       dispatch(
                         setEnquiryDropDetails({
