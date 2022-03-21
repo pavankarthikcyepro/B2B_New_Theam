@@ -387,7 +387,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       showToast("Please enter valid number");
       return;
     }
-    if (selector.alterMobile.length > 0 && selector.alterMobile.length != 10) {
+    if (selector.alterMobile.length > 0 && !isMobileNumber (selector.alterMobile)) {
       showToast("Please enter valid alternate mobile number");
       return;
     }

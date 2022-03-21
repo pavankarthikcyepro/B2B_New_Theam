@@ -371,6 +371,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("Please enter alphabetics only in leasing name");
       return;
     }
+    if (!isValidateAlphabetics(selector.r_model_other_name)) {
+      showToast("Please enter proper model other name");
+      return;
+    }
+    if (selector.r_insurence_company_name.length == 0) {
+      showToast("Please enter the proper insurance company name");
+      return;
+    }
     if (!selector.enquiry_details_response) {
       return;
     }
@@ -757,7 +765,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           element.taskName === "Evaluation" &&
           (element.taskStatus === "" || element.taskStatus === "ASSIGNED") &&
           selector.enquiry_details_response.dmsLeadDto.buyerType ===
-            "Replacement Buyer"
+          "Replacement Buyer"
         ) {
           pendingTaskNames.push("Evaluation : Pending \n");
         }
@@ -1305,11 +1313,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
 
                 {selector.customer_type.toLowerCase() === "fleet" ||
-                selector.customer_type.toLowerCase() === "institution" ||
-                selector.customer_type.toLowerCase() === "corporate" ||
-                selector.customer_type.toLowerCase() === "government" ||
-                selector.customer_type.toLowerCase() === "retired" ||
-                selector.customer_type.toLowerCase() === "other" ? (
+                  selector.customer_type.toLowerCase() === "institution" ||
+                  selector.customer_type.toLowerCase() === "corporate" ||
+                  selector.customer_type.toLowerCase() === "government" ||
+                  selector.customer_type.toLowerCase() === "retired" ||
+                  selector.customer_type.toLowerCase() === "other" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -1358,19 +1366,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     .toLowerCase()
                     .trim()
                     .replace(/ /g, "") === "socialnetwork") && (
-                  <View>
-                    <DropDownSelectionItem
-                      label={"Sub Source Of Enquiry"}
-                      value={selector.sub_source_of_enquiry}
-                      onPress={() =>
-                        showDropDownModelMethod(
-                          "SUB_SOURCE_OF_ENQUIRY",
-                          "Sub Source Of Enquiry"
-                        )
-                      }
-                    />
-                  </View>
-                )}
+                    <View>
+                      <DropDownSelectionItem
+                        label={"Sub Source Of Enquiry"}
+                        value={selector.sub_source_of_enquiry}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "SUB_SOURCE_OF_ENQUIRY",
+                            "Sub Source Of Enquiry"
+                          )
+                        }
+                      />
+                    </View>
+                  )}
 
                 {selector.source_of_enquiry.toLowerCase() === "reference" && (
                   <View>
@@ -2114,51 +2122,51 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {(selector.retail_finance === "In House" ||
                   selector.retail_finance === "Out House") && (
-                  <View>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Loan Amount*"}
-                      keyboardType={"default"}
-                      maxLength={10}
-                      value={selector.loan_amount}
-                      onChangeText={(text) => {
-                        emiCal(
-                          text,
-                          selector.rate_of_interest,
-                          selector.loan_of_tenure
-                        );
-                        dispatch(
-                          setFinancialDetails({
-                            key: "LOAN_AMOUNT",
-                            text: text,
-                          })
-                        );
-                      }}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Rate of Interest*"}
-                      keyboardType={"default"}
-                      maxLength={10}
-                      value={selector.rate_of_interest}
-                      onChangeText={(text) => {
-                        emiCal(
-                          selector.loan_amount,
-                          text,
-                          selector.loan_of_tenure
-                        );
-                        dispatch(
-                          setFinancialDetails({
-                            key: "RATE_OF_INTEREST",
-                            text: text,
-                          })
-                        );
-                      }}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>
-                )}
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Loan Amount*"}
+                        keyboardType={"default"}
+                        maxLength={10}
+                        value={selector.loan_amount}
+                        onChangeText={(text) => {
+                          emiCal(
+                            text,
+                            selector.rate_of_interest,
+                            selector.loan_of_tenure
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "LOAN_AMOUNT",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Rate of Interest*"}
+                        keyboardType={"default"}
+                        maxLength={10}
+                        value={selector.rate_of_interest}
+                        onChangeText={(text) => {
+                          emiCal(
+                            selector.loan_amount,
+                            text,
+                            selector.loan_of_tenure
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "RATE_OF_INTEREST",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
 
                 {selector.retail_finance === "In House" && (
                   <View>
@@ -2515,7 +2523,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
               </List.Accordion>
               {selector.buyer_type == "Additional Buyer" ||
-              selector.buyer_type == "Replacement Buyer" ? (
+                selector.buyer_type == "Replacement Buyer" ? (
                 <View style={styles.space}></View>
               ) : null}
               {/* // 8.Additional Buyer */}
@@ -3040,7 +3048,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   />
                   {selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
                     "losttocompetitor" ||
-                  selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
+                    selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
                     "losttoco-dealer" ? (
                     <DropDownSelectionItem
                       label={"Drop Sub Reason"}
@@ -3054,7 +3062,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     />
                   ) : null}
                   {selector.drop_reason === "Lost to Competitor" ||
-                  selector.drop_reason ===
+                    selector.drop_reason ===
                     "Lost to Used Cars from Co-Dealer" ? (
                     <View>
                       <TextinputComp
@@ -3075,8 +3083,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     </View>
                   ) : null}
                   {selector.drop_reason === "Lost to Competitor" ||
-                  selector.drop_reason === "Lost to Used Cars from Co-Dealer" ||
-                  selector.drop_reason === "Lost to Co-dealer" ? (
+                    selector.drop_reason === "Lost to Used Cars from Co-Dealer" ||
+                    selector.drop_reason === "Lost to Co-dealer" ? (
                     <View>
                       <TextinputComp
                         style={styles.textInputStyle}
@@ -3112,7 +3120,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     </View>
                   ) : null}
                   {selector.drop_reason === "Lost to Competitor" ||
-                  selector.drop_reason ===
+                    selector.drop_reason ===
                     "Lost to Used Cars from Co-Dealer" ? (
                     <View>
                       <TextinputComp
@@ -3136,6 +3144,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     style={styles.textInputStyle}
                     value={selector.drop_remarks}
                     label={"Remarks"}
+                    maxLength={50}
                     onChangeText={(text) =>
                       dispatch(
                         setEnquiryDropDetails({

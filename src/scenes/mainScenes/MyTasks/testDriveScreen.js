@@ -64,7 +64,8 @@ const TestDriveScreen = ({ route, navigation }) => {
   const [dataForDropDown, setDataForDropDown] = useState([]);
   const [dropDownKey, setDropDownKey] = useState("");
   const [dropDownTitle, setDropDownTitle] = useState("Select Data");
-  const [userData, setUserData] = useState({ branchId: "", orgId: "", employeeId: "", employeeName: "" })
+  const [userData, setUserData] = useState({ orgId: "", employeeId: "", employeeName: "" })
+  const [selectedBranchId, setSelectedBranchId] = useState("");
   const [showDatePickerModel, setShowDatePickerModel] = useState(false);
   const [datePickerKey, setDatePickerKey] = useState("");
   const [datePickerMode, setDatePickerMode] = useState("date");
@@ -98,14 +99,19 @@ const TestDriveScreen = ({ route, navigation }) => {
       const jsonObj = JSON.parse(employeeData);
       const roles = jsonObj.roles || [];
       if (roles.includes("Testdrive_DSE") || roles.includes("Testdrive_Manager")) {
-        setUserData({ branchId: jsonObj.branchId, orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName })
-        const payload = {
-          barnchId: jsonObj.branchId,
-          orgId: jsonObj.orgId
-        }
-        dispatch(getTestDriveVehicleListApi(payload))
-        dispatch(getTaskDetailsApi(taskId));
-        dispatch(getDriversListApi(jsonObj.branchId));
+        setUserData({ orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName })
+
+        // Get Branch Id
+        AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then((branchId) => {
+          setSelectedBranchId(branchId);
+          const payload = {
+            barnchId: branchId,
+            orgId: jsonObj.orgId
+          }
+          dispatch(getTestDriveVehicleListApi(payload));
+          dispatch(getTaskDetailsApi(taskId));
+          dispatch(getDriversListApi(jsonObj.orgId));
+        });
       }
       else {
         showToast("You don't have access to view this task");
@@ -141,7 +147,7 @@ const TestDriveScreen = ({ route, navigation }) => {
 
     if (selector.task_details_response.entityModuleId) {
       const payload = {
-        barnchId: userData.branchId,
+        barnchId: selectedBranchId,
         orgId: userData.orgId,
         entityModuleId: selector.task_details_response.entityModuleId
       }
@@ -380,7 +386,7 @@ const TestDriveScreen = ({ route, navigation }) => {
 
     let appointmentObj = {
       "address": customerAddress,
-      "branchId": userData.branchId,
+      "branchId": selectedBranchId,
       "customerHaveingDl": customerHavingDrivingLicense === 1 ? true : false,
       "customerId": universalId,
       "dseId": selectedDseDetails.id,
@@ -531,6 +537,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       <DatePickerComponent
         visible={showDatePickerModel}
         mode={datePickerMode}
+        minimumDate={new Date(Date.now())}
         value={new Date(Date.now())}
         onChange={(event, selectedDate) => {
           console.log("date: ", selectedDate);

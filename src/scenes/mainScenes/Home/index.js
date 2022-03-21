@@ -69,7 +69,7 @@ const HomeScreen = ({ route, navigation }) => {
         headerRight: () => (
           <TouchableOpacity onPress={moveToSelectBranch}>
             <View style={{ paddingLeft: 5, paddingRight: 2, paddingVertical: 2, borderColor: Colors.WHITE, borderWidth: 1, borderRadius: 4, flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
-              <Text style={{ fontSize: 10, fontWeight: "600", color: Colors.WHITE }}>{route.params?.branchName || ""}</Text>
+              <Text style={{ fontSize: 10, fontWeight: "600", color: Colors.WHITE, width: 65 }} numberOfLines={1} >{route.params?.branchName || ""}</Text>
               <IconButton
                 icon="menu-down"
                 style={{ padding: 0, margin: 0 }}

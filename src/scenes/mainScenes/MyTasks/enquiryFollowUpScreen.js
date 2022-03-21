@@ -242,7 +242,6 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     setActionType(type);
     dispatch(updateTaskApi(newTaskObj));
   };
-
   const setDropDownDataForModel = (key, title) => {
     switch (key) {
       case "MODEL":
@@ -307,24 +306,24 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
           <View style={[GlobalStyle.shadow]}>
             {(identifier === "ENQUIRY_FOLLOW_UP" ||
               identifier === "PRE_ENQUIRY_FOLLOW_UP") && (
-              <View>
-                <DropDownSelectionItem
-                  label={"Model"}
-                  value={selector.model}
-                  onPress={() =>
-                    setDropDownDataForModel("MODEL", "Select Model")
-                  }
-                />
+                <View>
+                  <DropDownSelectionItem
+                    label={"Model"}
+                    value={selector.carModel}
+                    onPress={() =>
+                      setDropDownDataForModel("CAR_MODEL", "Select Model")
+                    }
+                  />
 
-                <DropDownSelectionItem
-                  label={"Varient"}
-                  value={selector.varient}
-                  onPress={() =>
-                    setDropDownDataForModel("VARIENT", "Select Varient")
-                  }
-                />
-              </View>
-            )}
+                  <DropDownSelectionItem
+                    label={"Varient"}
+                    value={selector.varient}
+                    onPress={() =>
+                      setDropDownDataForModel("VARIENT", "Select Varient")
+                    }
+                  />
+                </View>
+              )}
 
             <TextinputComp
               style={styles.textInputStyle}
@@ -374,9 +373,9 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
               label={"Actual Start Date"}
               value={selector.actual_start_time}
               onPress={() => dispatch(setDatePicker("ACTUAL_START_TIME"))}
-              //  value={selector.expected_delivery_date}
-              // onPress={() =>
-              // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
+            //  value={selector.expected_delivery_date}
+            // onPress={() =>
+            // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
             />
             <Text style={GlobalStyle.underline}></Text>
             <DateSelectItem
