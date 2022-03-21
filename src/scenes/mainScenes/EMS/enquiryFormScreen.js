@@ -347,7 +347,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("please enter alphabetics only in relationname");
       return;
     }
-
+    if (!isValidateAlphabetics(selector.streetName)) {
+      showToast("Please enter alphabetics only in street name");
+      return;
+    }
     if (
       selector.houseNum.length == 0 ||
       selector.streetName.length == 0 ||
@@ -365,7 +368,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
     if (!isValidateAlphabetics(selector.leashing_name)) {
-      showToast("Please enter alphabetics only in leashing name");
+      showToast("Please enter alphabetics only in leasing name");
       return;
     }
     if (!selector.enquiry_details_response) {
@@ -2058,7 +2061,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <View>
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
-                      label={"Leashing Name"}
+                      label={"Leasing Name"}
+                      maxLength={50}
                       keyboardType={"default"}
                       value={selector.leashing_name}
                       onChangeText={(text) =>

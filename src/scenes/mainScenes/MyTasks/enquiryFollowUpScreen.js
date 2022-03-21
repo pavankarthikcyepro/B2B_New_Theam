@@ -61,6 +61,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
   const { vehicle_modal_list } = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
   const [showDropDownModel, setShowDropDownModel] = useState(false);
+  const [dataForCarModels, setDataForCarModels] = useState([]);
   const [dropDownTitle, setDropDownTitle] = useState("");
   const [dataForDropDown, setDataForDropDown] = useState([]);
   const [dropDownKey, setDropDownKey] = useState("");
@@ -265,7 +266,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
           if (dropDownKey === "MODEL") {
-            updateModelVarientsData(item.name);
+            updateModelVarientsData(item.name, false);
           }
           dispatch(
             setEnquiryFollowUpDetails({ key: dropDownKey, text: item.name })
@@ -279,7 +280,6 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
         mode={"date"}
         minimumDate={selector.minDate}
         value={new Date(Date.now())}
-        minimumDate={selector.minDate}
         onChange={(event, selectedDate) => {
           console.log("date: ", selectedDate);
           if (Platform.OS === "android") {
@@ -375,8 +375,8 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
               value={selector.actual_start_time}
               onPress={() => dispatch(setDatePicker("ACTUAL_START_TIME"))}
               //  value={selector.expected_delivery_date}
-                  // onPress={() =>
-                    // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
+              // onPress={() =>
+              // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
             />
             <Text style={GlobalStyle.underline}></Text>
             <DateSelectItem
