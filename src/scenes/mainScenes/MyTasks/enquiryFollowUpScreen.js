@@ -22,6 +22,7 @@ import {
   updateSelectedDate,
   getTaskDetailsApi,
   updateTaskApi,
+  getEnquiryDetailsApi
 } from "../../../redux/enquiryFollowUpReducer";
 import { DateSelectItem } from "../../../pureComponents";
 import { convertDateStringToMillisecondsUsingMoment } from "../../../utils/helperFunctions";
@@ -56,7 +57,7 @@ const LocalButtonComp = ({ title, onPress, disabled }) => {
 };
 
 const EnquiryFollowUpScreen = ({ route, navigation }) => {
-  const { taskId, identifier } = route.params;
+  const { taskId, identifier, universalId } = route.params;
   const selector = useSelector((state) => state.enquiryFollowUpReducer);
   const { vehicle_modal_list } = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
@@ -90,6 +91,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     getAsyncStorageData();
     setCarModelsDataFromBase();
     dispatch(getTaskDetailsApi(taskId));
+    getEnquiryDetailsFromServer();
   }, []);
 
   const getAsyncStorageData = async () => {
@@ -98,6 +100,12 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       setEmpId(employeeId);
     }
   };
+
+  const getEnquiryDetailsFromServer = () => {
+    if (universalId) {
+      dispatch(getEnquiryDetailsApi(universalId));
+    }
+  }
 
   const setCarModelsDataFromBase = () => {
     let modalList = [];
@@ -279,7 +287,6 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
         mode={"date"}
         minimumDate={selector.minDate}
         value={new Date(Date.now())}
-        minimumDate={selector.minDate}
         onChange={(event, selectedDate) => {
           console.log("date: ", selectedDate);
           if (Platform.OS === "android") {
@@ -307,24 +314,24 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
           <View style={[GlobalStyle.shadow]}>
             {(identifier === "ENQUIRY_FOLLOW_UP" ||
               identifier === "PRE_ENQUIRY_FOLLOW_UP") && (
-              <View>
-                <DropDownSelectionItem
-                  label={"Model"}
-                  value={selector.model}
-                  onPress={() =>
-                    setDropDownDataForModel("MODEL", "Select Model")
-                  }
-                />
+                <View>
+                  <DropDownSelectionItem
+                    label={"Model"}
+                    value={selector.model}
+                    onPress={() =>
+                      setDropDownDataForModel("MODEL", "Select Model")
+                    }
+                  />
 
-                <DropDownSelectionItem
-                  label={"Varient"}
-                  value={selector.varient}
-                  onPress={() =>
-                    setDropDownDataForModel("VARIENT", "Select Varient")
-                  }
-                />
-              </View>
-            )}
+                  <DropDownSelectionItem
+                    label={"Varient"}
+                    value={selector.varient}
+                    onPress={() =>
+                      setDropDownDataForModel("VARIENT", "Select Varient")
+                    }
+                  />
+                </View>
+              )}
 
             <TextinputComp
               style={styles.textInputStyle}
@@ -374,9 +381,9 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
               label={"Actual Start Date"}
               value={selector.actual_start_time}
               onPress={() => dispatch(setDatePicker("ACTUAL_START_TIME"))}
-              //  value={selector.expected_delivery_date}
-                  // onPress={() =>
-                    // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
+            //  value={selector.expected_delivery_date}
+            // onPress={() =>
+            // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
             />
             <Text style={GlobalStyle.underline}></Text>
             <DateSelectItem

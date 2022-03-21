@@ -1119,10 +1119,39 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       });
   };
 
-  const DisplaySelectedImage = ({ fileName }) => {
+  const deteleButtonPressed = (from) => {
+
+    const imagesDataObj = { ...uploadedImagesDataObj };
+    switch (from) {
+      case "PAN":
+        delete imagesDataObj.pan;
+        break
+      case "AADHAR":
+        delete imagesDataObj.aadhar;
+        break
+      case "REGDOC":
+        delete imagesDataObj.REGDOC;
+        break
+      case "INSURENCE":
+        delete imagesDataObj.insurance;
+        break
+      default:
+        break
+    }
+    setUploadedImagesDataObj({ ...imagesDataObj })
+  }
+
+  const DisplaySelectedImage = ({ fileName, from }) => {
     return (
       <View style={styles.selectedImageBckVw}>
-        <Text style={styles.selectedImageTextStyle}>{fileName}</Text>
+        <Text style={styles.selectedImageTextStyle} numberOfLines={1}>{fileName}</Text>
+        <IconButton
+          icon="close-circle-outline"
+          color={Colors.RED}
+          style={{ padding: 0, margin: 0 }}
+          size={15}
+          onPress={() => deteleButtonPressed(from)}
+        />
       </View>
     );
   };
@@ -1292,6 +1321,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 <DropDownSelectionItem
                   label={"Customer Type"}
+                  disabled={!selector.enableEdit}
                   value={selector.customer_type}
                   onPress={() =>
                     showDropDownModelMethod(
@@ -1546,6 +1576,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   value={selector.firstName}
                   label={"First Name*"}
                   keyboardType={"default"}
+                  editable={selector.enableEdit}
                   onChangeText={(text) =>
                     dispatch(
                       setPersonalIntro({ key: "FIRST_NAME", text: text })
@@ -1557,6 +1588,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.lastName}
                   label={"Last Name*"}
+                  editable={selector.enableEdit}
                   keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(setPersonalIntro({ key: "LAST_NAME", text: text }))
@@ -1587,6 +1619,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.mobile}
                   label={"Mobile Number*"}
+                  editable={selector.enableEdit}
                   maxLength={10}
                   keyboardType={"phone-pad"}
                   onChangeText={(text) =>
@@ -2236,6 +2269,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 {uploadedImagesDataObj.pan ? (
                   <DisplaySelectedImage
                     fileName={uploadedImagesDataObj.pan.fileName}
+                    from={"PAN"}
                   />
                 ) : null}
                 <TextinputComp
@@ -2258,6 +2292,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 {uploadedImagesDataObj.aadhar ? (
                   <DisplaySelectedImage
                     fileName={uploadedImagesDataObj.aadhar.fileName}
+                    from={"AADHAR"}
                   />
                 ) : null}
               </List.Accordion>
@@ -2656,6 +2691,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   {uploadedImagesDataObj.REGDOC ? (
                     <DisplaySelectedImage
                       fileName={uploadedImagesDataObj.REGDOC.fileName}
+                      from={"REGDOC"}
                     />
                   ) : null}
                   <DropDownSelectionItem
@@ -2927,6 +2963,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       {uploadedImagesDataObj.insurance ? (
                         <DisplaySelectedImage
                           fileName={uploadedImagesDataObj.insurance.fileName}
+                          from={"INSURENCE"}
                         />
                       ) : null}
                     </View>
@@ -3279,13 +3316,17 @@ const styles = StyleSheet.create({
   },
   selectedImageBckVw: {
     paddingLeft: 12,
-    paddingRight: 15,
+    paddingRight: 10,
     paddingBottom: 5,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     backgroundColor: Colors.WHITE,
   },
   selectedImageTextStyle: {
     fontSize: 12,
     fontWeight: "400",
+    width: "80%",
     color: Colors.DARK_GRAY,
   },
 });

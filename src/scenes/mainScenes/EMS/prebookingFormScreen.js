@@ -228,8 +228,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [selectedPaidAccessories, setSelectedPaidAccessories] = useState([]);
   const [selectedInsurenceAddons, setSelectedInsurenceAddons] = useState([]);
   const [showApproveRejectBtn, setShowApproveRejectBtn] = useState(false);
-  const [showPrebookingPaymentSection, setShowPrebookingPaymentSection] =
-    useState(false);
+  const [showPrebookingPaymentSection, setShowPrebookingPaymentSection] = useState(false);
   const [showSubmitDropBtn, setShowSubmitDropBtn] = useState(false);
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
   const [isRejectSelected, setIsRejectSelected] = useState(false);
@@ -1425,10 +1424,42 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       });
   };
 
-  const DisplaySelectedImage = ({ fileName }) => {
+  const deteleButtonPressed = (from) => {
+
+    const imagesDataObj = { ...uploadedImagesDataObj };
+    switch (from) {
+      case "PAN":
+        delete imagesDataObj.pan;
+        break
+      case "FORM60":
+        delete imagesDataObj.form60;
+        break
+      case "AADHAR":
+        delete imagesDataObj.aadhar;
+        break
+      case "RELATION_PROOF":
+        delete imagesDataObj.relationshipProof;
+        break
+      case "RECEIPT":
+        delete imagesDataObj.receipt;
+        break
+      default:
+        break
+    }
+    setUploadedImagesDataObj({ ...imagesDataObj })
+  }
+
+  const DisplaySelectedImage = ({ fileName, from }) => {
     return (
       <View style={styles.selectedImageBckVw}>
-        <Text style={styles.selectedImageTextStyle}>{fileName}</Text>
+        <Text style={styles.selectedImageTextStyle} numberOfLines={1}>{fileName}</Text>
+        <IconButton
+          icon="close-circle-outline"
+          color={Colors.RED}
+          style={{ padding: 0, margin: 0 }}
+          size={15}
+          onPress={() => deteleButtonPressed(from)}
+        />
       </View>
     );
   };
@@ -2057,6 +2088,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.pan ? (
                       <DisplaySelectedImage
                         fileName={uploadedImagesDataObj.pan.fileName}
+                        from={"PAN"}
                       />
                     ) : null}
                     <Text style={GlobalStyle.underline}></Text>
@@ -2076,6 +2108,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.form60 ? (
                       <DisplaySelectedImage
                         fileName={uploadedImagesDataObj.form60.fileName}
+                        from={"FORM60"}
                       />
                     ) : null}
                     <Text style={GlobalStyle.underline}></Text>
@@ -2103,6 +2136,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   {uploadedImagesDataObj.aadhar ? (
                     <DisplaySelectedImage
                       fileName={uploadedImagesDataObj.aadhar.fileName}
+                      from={"AADHAR"}
                     />
                   ) : null}
                 </View>
@@ -2132,6 +2166,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 {uploadedImagesDataObj.relationshipProof ? (
                   <DisplaySelectedImage
                     fileName={uploadedImagesDataObj.relationshipProof.fileName}
+                    from={"RELATION_PROOF"}
                   />
                 ) : null}
                 <Text style={GlobalStyle.underline}></Text>
@@ -3110,6 +3145,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.receipt ? (
                       <DisplaySelectedImage
                         fileName={uploadedImagesDataObj.receipt.fileName}
+                        from={"RECEIPT"}
                       />
                     ) : null}
                     <Text style={GlobalStyle.underline}></Text>
@@ -3491,13 +3527,17 @@ const styles = StyleSheet.create({
   },
   selectedImageBckVw: {
     paddingLeft: 12,
-    paddingRight: 15,
+    paddingRight: 10,
     paddingBottom: 5,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     backgroundColor: Colors.WHITE,
   },
   selectedImageTextStyle: {
     fontSize: 12,
     fontWeight: "400",
+    width: "80%",
     color: Colors.DARK_GRAY,
   },
 });

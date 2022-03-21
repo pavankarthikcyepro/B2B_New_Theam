@@ -252,6 +252,7 @@ const enquiryDetailsOverViewSlice = createSlice({
   },
   reducers: {
     clearState: (state, action) => {
+      state.enableEdit = false;
       state.enquiry_details_response = null;
       state.update_enquiry_details_response = null;
       state.get_pending_tasks_response_status = "";
