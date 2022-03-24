@@ -375,10 +375,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("Please enter proper model other name");
       return;
     }
-    if (selector.r_insurence_company_name.length == 0) {
-      showToast("Please enter the proper insurance company name");
-      return;
+
+    if (selector.buyer_type === "Replacement Buyer") {
+      if (selector.r_insurence_company_name.length == 0) {
+        showToast("Please enter the proper insurance company name");
+        return;
+      }
     }
+
     if (!selector.enquiry_details_response) {
       return;
     }
