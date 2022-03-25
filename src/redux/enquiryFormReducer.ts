@@ -1171,6 +1171,8 @@ const enquiryDetailsOverViewSlice = createSlice({
     },
     updateDmsAttachmentDetails: (state, action) => {
       const dmsAttachments = action.payload;
+      state.pan_number = "";
+      state.adhaar_number = "";
       if (dmsAttachments.length > 0) {
         dmsAttachments.forEach((item, index) => {
           switch (item.documentType) {

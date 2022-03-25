@@ -98,8 +98,10 @@ export const slice = createSlice({
         }
     },
     extraReducers: (builder) => {
+        builder.addCase(getPreEnquiryDetails.pending, (state, action) => {
+            state.isLoading = true;
+        })
         builder.addCase(getPreEnquiryDetails.fulfilled, (state, action) => {
-            // console.log("res: ", JSON.stringify(action.payload));
             state.pre_enquiry_details = action.payload.dmsEntity;
             state.isLoading = false;
         })
@@ -114,12 +116,10 @@ export const slice = createSlice({
             state.employees_list_status = "";
         })
         builder.addCase(getEmployeesListApi.fulfilled, (state, action) => {
-            console.log("S getEmployeesListApi: ", JSON.stringify(action.payload));
             state.employees_list = action.payload.dmsEntity.employeeDTOs || [];
             state.employees_list_status = "success";
         })
         builder.addCase(getEmployeesListApi.rejected, (state, action) => {
-            console.log("F getEmployeesListApi: ", JSON.stringify(action.payload));
             state.employees_list = [];
             state.employees_list_status = "failed";
             if (action.payload["message"]) {
@@ -130,22 +130,42 @@ export const slice = createSlice({
             state.create_enquiry_loading = true;
         })
         builder.addCase(getaAllTasks.fulfilled, (state, action) => {
-            console.log("getaAllTasks: ", JSON.stringify(action.payload));
             const dmsEntity = action.payload.dmsEntity;
             state.all_pre_enquiry_tasks = dmsEntity.tasks || [];
+            state.create_enquiry_loading = false;
+        })
+        builder.addCase(getaAllTasks.rejected, (state, action) => {
+            state.create_enquiry_loading = false;
+        })
+        builder.addCase(assignTaskApi.pending, (state, action) => {
+            state.assign_task_status = "pending";
         })
         builder.addCase(assignTaskApi.fulfilled, (state, action) => {
-            console.log("assignTaskApi: ", JSON.stringify(action.payload));
             state.assign_task_status = "success";
         })
+        builder.addCase(assignTaskApi.rejected, (state, action) => {
+            state.assign_task_status = "failed";
+        })
+        builder.addCase(changeEnquiryStatusApi.pending, (state, action) => {
+            state.change_enquiry_response = {};
+            state.change_enquiry_status = "Pending";
+        })
         builder.addCase(changeEnquiryStatusApi.fulfilled, (state, action) => {
-            console.log("changeEnquiryStatusApi: ", JSON.stringify(action.payload));
             state.change_enquiry_response = action.payload;
             state.change_enquiry_status = "success";
         })
+        builder.addCase(changeEnquiryStatusApi.rejected, (state, action) => {
+            state.change_enquiry_response = {};
+            state.change_enquiry_status = "failed";
+        })
+        builder.addCase(updateEmployeeApi.pending, (state, action) => {
+            state.update_employee_status = "pending";
+        })
         builder.addCase(updateEmployeeApi.fulfilled, (state, action) => {
-            console.log("updateEmployeeApi: ", JSON.stringify(action.payload));
             state.update_employee_status = "success";
+        })
+        builder.addCase(updateEmployeeApi.rejected, (state, action) => {
+            state.update_employee_status = "failed";
         })
     }
 });

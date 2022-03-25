@@ -118,6 +118,7 @@ export const addPreEnquirySlice = createSlice({
     errorMsg: "",
     vehicle_modal_list: [],
     customer_type_list: [],
+    createEnquiryStatus: "",
     create_enquiry_response_obj: {},
     event_list: [],
     event_list_response_status: "",
@@ -145,6 +146,7 @@ export const addPreEnquirySlice = createSlice({
       state.isLoading = false;
       state.status = "";
       state.errorMsg = "";
+      state.createEnquiryStatus = "";
       state.create_enquiry_response_obj = {};
       state.event_list = [];
       state.event_list_response_status = "";
@@ -269,7 +271,7 @@ export const addPreEnquirySlice = createSlice({
     builder
       .addCase(createPreEnquiry.pending, (state, action) => {
         state.isLoading = true;
-        state.status = "pending";
+        state.createEnquiryStatus = "pending";
         state.create_enquiry_response_obj = {};
       })
       .addCase(createPreEnquiry.fulfilled, (state, action) => {
@@ -280,6 +282,7 @@ export const addPreEnquirySlice = createSlice({
           state.create_enquiry_response_obj = action.payload;
         }
         state.isLoading = false;
+        state.createEnquiryStatus = "success";
       })
       .addCase(createPreEnquiry.rejected, (state, action) => {
         const message = action.payload["message"] || "";
@@ -287,7 +290,7 @@ export const addPreEnquirySlice = createSlice({
           showToast(message);
         }
         state.isLoading = false;
-        state.status = "failed";
+        state.createEnquiryStatus = "failed";
         state.create_enquiry_response_obj = {};
       })
       .addCase(updatePreEnquiry.pending, (state, action) => {

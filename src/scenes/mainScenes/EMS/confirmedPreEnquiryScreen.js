@@ -173,7 +173,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
     const editButton = () => {
         if (!selector.isLoading) {
-            navigation.navigate(AppNavigator.EmsStackIdentifiers.addPreEnq, {
+            navigation.push(AppNavigator.EmsStackIdentifiers.addPreEnq, {
                 preEnquiryDetails: selector.pre_enquiry_details,
                 fromEdit: true
             })

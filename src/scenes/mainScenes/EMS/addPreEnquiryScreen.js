@@ -102,6 +102,15 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     getAuthToken();
     // getCustomerTypeListFromDB();
     // getCarModalListFromDB();
+    console.log("useEffect called")
+    const UnSubscribe = navigation.addListener("focus", () => {
+      console.log("useEffect focus called")
+      if (route.params?.fromEdit === false) {
+        dispatch(clearState());
+      }
+    })
+
+    return UnSubscribe;
   }, []);
 
   const getAsyncstoreData = async () => {
@@ -176,7 +185,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   };
 
   const setExistingData = () => {
-    if (route.params != null && route.params !== undefined) {
+    if (route.params?.fromEdit != null && route.params.fromEdit === true) {
       const preEnquiryDetails = route.params.preEnquiryDetails;
       const fromEdit = route.params.fromEdit;
       setExistingPreEnquiryDetails(preEnquiryDetails);
@@ -222,6 +231,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       if (!fromEdit) {
         showSucessAlert(itemData);
       } else {
+        showSucessAlert("Successfully Updated")
         navigation.popToTop();
       }
       dispatch(clearState());
@@ -229,7 +239,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       if (response.accountId != null && response.contactId != null) {
         confirmToCreateLeadAgain(response);
       } else {
-        showToast(response.message);
+        showToast(response.message || "something went wrong");
       }
     }
   };
@@ -274,13 +284,13 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           text: "Cancel",
           style: "cancel",
         },
-        { text: "Create Lead", onPress: () => proceedToCreateLead(response) },
+        { text: "Create Lead", onPress: () => proceedToCreateLeadMethod(response) },
       ],
       { cancelable: false }
     );
   };
 
-  proceedToCreateLead = (data) => {
+  proceedToCreateLeadMethod = (data) => {
     let formData = {
       branchId: branchId,
       createdBy: employeeName,
@@ -383,11 +393,11 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     //   showToast("Please enter valid mobile number");
     //   return;
     // }
- if (selector.mobile.length > 0 && !isMobileNumber(selector.mobile)) {
+    if (selector.mobile.length > 0 && !isMobileNumber(selector.mobile)) {
       showToast("Please enter valid number");
       return;
     }
-    if (selector.alterMobile.length > 0 && !isMobileNumber (selector.alterMobile)) {
+    if (selector.alterMobile.length > 0 && !isMobileNumber(selector.alterMobile)) {
       showToast("Please enter valid alternate mobile number");
       return;
     }
@@ -539,7 +549,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
 
   // Handle Create Enquiry response
   useEffect(() => {
-    if (selector.create_enquiry_response_obj.errorMessage === "") {
+    if (selector.createEnquiryStatus === "success") {
       gotoConfirmPreEnquiryScreen(selector.create_enquiry_response_obj);
     } else if (selector.errorMsg) {
       showToast(selector.errorMsg);
@@ -614,9 +624,17 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         setDataForDropDown([...dataForCarModels]);
         break;
       case "ENQUIRY_SEGMENT":
+        if (selector.enquiry_type_list.length === 0) {
+          showToast("No Enquiry Types found");
+          return
+        }
         setDataForDropDown([...selector.enquiry_type_list]);
         break;
       case "CUSTOMER_TYPE":
+        if (selector.customer_type_list.length === 0) {
+          showToast("No Customer Types found");
+          return
+        }
         setDataForDropDown([...selector.customer_type_list]);
         break;
       case "SOURCE_OF_ENQUIRY":
@@ -630,12 +648,11 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         setDataForDropDown([...subSourceData]);
         break;
       case "EVENT_NAME":
-        if (selector.event_list.length > 0) {
-          setDataForDropDown([...selector.event_list]);
-        } else {
+        if (homeSelector.event_list.length === 0) {
           showToast("No events found");
           return;
         }
+        setDataForDropDown([...selector.event_list]);
         break;
     }
     setDropDownKey(key);
@@ -797,14 +814,14 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               label={"First Name*"}
               editable={
                 selector.enquiryType.length > 0 &&
-                selector.customerType.length > 0
+                  selector.customerType.length > 0
                   ? true
                   : false
               }
               maxLength={30}
               disabled={
                 selector.enquiryType.length > 0 &&
-                selector.customerType.length > 0
+                  selector.customerType.length > 0
                   ? false
                   : true
               }
@@ -828,14 +845,14 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               label={"Last Name*"}
               editable={
                 selector.enquiryType.length > 0 &&
-                selector.customerType.length > 0
+                  selector.customerType.length > 0
                   ? true
                   : false
               }
               maxLength={30}
               disabled={
                 selector.enquiryType.length > 0 &&
-                selector.customerType.length > 0
+                  selector.customerType.length > 0
                   ? false
                   : true
               }
@@ -880,7 +897,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             <Text style={styles.devider}></Text>
 
             <TextinputComp
-              
+
               style={styles.textInputComp}
               value={selector.email}
               label={"Email-Id"}
@@ -901,10 +918,10 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             />
 
             {selector.customerType === "Corporate" ||
-            selector.customerType === "Government" ||
-            selector.customerType === "Retired" ||
-            selector.customerType === "Fleet" ||
-            selector.customerType === "Institution" ? (
+              selector.customerType === "Government" ||
+              selector.customerType === "Retired" ||
+              selector.customerType === "Fleet" ||
+              selector.customerType === "Institution" ? (
               <View>
                 <TextinputComp
                   style={styles.textInputComp}
@@ -1085,14 +1102,3 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
 });
-
-{
-  /* <DropDownComponant
-                visible={multiDropdownVisible}
-                multiple={true}
-                selectedItems={(items) => {
-                    console.log('selected: ', items);
-                    setMultiDropDownVisible(false);
-                }}
-            /> */
-}
