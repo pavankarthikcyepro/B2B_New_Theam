@@ -1646,6 +1646,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.alterMobile}
                   label={"Alternate Mobile Number"}
+                  editable={selector.enableEdit}
                   keyboardType={"phone-pad"}
                   maxLength={10}
                   onChangeText={(text) =>
@@ -1659,6 +1660,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.email}
                   label={"Email ID*"}
+                  editable={selector.enableEdit}
                   keyboardType={"email-address"}
                   onChangeText={(text) =>
                     dispatch(setPersonalIntro({ key: "EMAIL", text: text }))
