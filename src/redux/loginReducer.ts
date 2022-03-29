@@ -192,7 +192,7 @@ export const loginSlice = createSlice({
         console.log("res3: ", action.payload);
         state.status = "failed";
         state.isLoading = false;
-        if (action.payload["errorMessage"]) {
+        if (action.payload != undefined && action.payload["errorMessage"]) {
           showToastRedAlert(action.payload["errorMessage"]);
         }
       })
