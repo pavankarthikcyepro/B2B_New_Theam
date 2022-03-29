@@ -102,13 +102,13 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     getAuthToken();
     // getCustomerTypeListFromDB();
     // getCarModalListFromDB();
-    console.log("useEffect called")
+    console.log("useEffect called");
     const UnSubscribe = navigation.addListener("focus", () => {
-      console.log("useEffect focus called")
+      console.log("useEffect focus called");
       if (route.params?.fromEdit === false) {
         dispatch(clearState());
       }
-    })
+    });
 
     return UnSubscribe;
   }, []);
@@ -231,7 +231,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       if (!fromEdit) {
         showSucessAlert(itemData);
       } else {
-        showSucessAlert("Successfully Updated")
+        showSucessAlert("Successfully Updated");
         navigation.popToTop();
       }
       dispatch(clearState());
@@ -284,7 +284,10 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           text: "Cancel",
           style: "cancel",
         },
-        { text: "Create Lead", onPress: () => proceedToCreateLeadMethod(response) },
+        {
+          text: "Create Lead",
+          onPress: () => proceedToCreateLeadMethod(response),
+        },
       ],
       { cancelable: false }
     );
@@ -397,7 +400,10 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       showToast("Please enter valid number");
       return;
     }
-    if (selector.alterMobile.length > 0 && !isMobileNumber(selector.alterMobile)) {
+    if (
+      selector.alterMobile.length > 0 &&
+      !isMobileNumber(selector.alterMobile)
+    ) {
       showToast("Please enter valid alternate mobile number");
       return;
     }
@@ -626,14 +632,14 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       case "ENQUIRY_SEGMENT":
         if (selector.enquiry_type_list.length === 0) {
           showToast("No Enquiry Types found");
-          return
+          return;
         }
         setDataForDropDown([...selector.enquiry_type_list]);
         break;
       case "CUSTOMER_TYPE":
         if (selector.customer_type_list.length === 0) {
           showToast("No Customer Types found");
-          return
+          return;
         }
         setDataForDropDown([...selector.customer_type_list]);
         break;
@@ -814,14 +820,14 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               label={"First Name*"}
               editable={
                 selector.enquiryType.length > 0 &&
-                  selector.customerType.length > 0
+                selector.customerType.length > 0
                   ? true
                   : false
               }
               maxLength={30}
               disabled={
                 selector.enquiryType.length > 0 &&
-                  selector.customerType.length > 0
+                selector.customerType.length > 0
                   ? false
                   : true
               }
@@ -845,14 +851,14 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               label={"Last Name*"}
               editable={
                 selector.enquiryType.length > 0 &&
-                  selector.customerType.length > 0
+                selector.customerType.length > 0
                   ? true
                   : false
               }
               maxLength={30}
               disabled={
                 selector.enquiryType.length > 0 &&
-                  selector.customerType.length > 0
+                selector.customerType.length > 0
                   ? false
                   : true
               }
@@ -897,7 +903,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             <Text style={styles.devider}></Text>
 
             <TextinputComp
-
               style={styles.textInputComp}
               value={selector.email}
               label={"Email-Id"}
@@ -918,10 +923,10 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             />
 
             {selector.customerType === "Corporate" ||
-              selector.customerType === "Government" ||
-              selector.customerType === "Retired" ||
-              selector.customerType === "Fleet" ||
-              selector.customerType === "Institution" ? (
+            selector.customerType === "Government" ||
+            selector.customerType === "Retired" ||
+            selector.customerType === "Fleet" ||
+            selector.customerType === "Institution" ? (
               <View>
                 <TextinputComp
                   style={styles.textInputComp}

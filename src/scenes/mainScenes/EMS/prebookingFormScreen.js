@@ -97,6 +97,7 @@ import {
 } from "../../../utils/toast";
 import {
   convertDateStringToMillisecondsUsingMoment,
+  isValidateAlphabetics,
   emiCalculator,
 } from "../../../utils/helperFunctions";
 import URL from "../../../networking/endpoints";
@@ -228,7 +229,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [selectedPaidAccessories, setSelectedPaidAccessories] = useState([]);
   const [selectedInsurenceAddons, setSelectedInsurenceAddons] = useState([]);
   const [showApproveRejectBtn, setShowApproveRejectBtn] = useState(false);
-  const [showPrebookingPaymentSection, setShowPrebookingPaymentSection] = useState(false);
+  const [showPrebookingPaymentSection, setShowPrebookingPaymentSection] =
+    useState(false);
   const [showSubmitDropBtn, setShowSubmitDropBtn] = useState(false);
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
   const [isRejectSelected, setIsRejectSelected] = useState(false);
@@ -368,7 +370,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       .then((json) => {
         // console.log(json);
       })
-      .catch((error) => { });
+      .catch((error) => {});
   };
 
   const setCarModelsDataFromBase = () => {
@@ -482,11 +484,17 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       let essentialKitSlctdLocal = essentialKitSlctd;
       let fastTagSlctdLocal = fastTagSlctd;
 
-      if (dmsOnRoadPriceDtoObj.handlingCharges && dmsOnRoadPriceDtoObj.handlingCharges > 0) {
+      if (
+        dmsOnRoadPriceDtoObj.handlingCharges &&
+        dmsOnRoadPriceDtoObj.handlingCharges > 0
+      ) {
         setHandlingChargSlctd(true);
         handlingChargeSlctdLocal = true;
       }
-      if (dmsOnRoadPriceDtoObj.essentialKit && dmsOnRoadPriceDtoObj.essentialKit > 0) {
+      if (
+        dmsOnRoadPriceDtoObj.essentialKit &&
+        dmsOnRoadPriceDtoObj.essentialKit > 0
+      ) {
         setEssentialKitSlctd(true);
         essentialKitSlctdLocal = true;
       }
@@ -494,7 +502,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setFastTagSlctd(true);
         fastTagSlctdLocal = true;
       }
-      calculateOnRoadPrice(handlingChargeSlctdLocal, essentialKitSlctdLocal, fastTagSlctdLocal);
+      calculateOnRoadPrice(
+        handlingChargeSlctdLocal,
+        essentialKitSlctdLocal,
+        fastTagSlctdLocal
+      );
 
       if (
         dmsOnRoadPriceDtoObj.insuranceAddonData &&
@@ -792,6 +804,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
   const submitClicked = () => {
     Keyboard.dismiss();
+
+    if (!isValidateAlphabetics(selector.first_name)) {
+      showToast("please enter alphabetics only in firstname");
+      return;
+    }
+    if (!isValidateAlphabetics(selector.last_name)) {
+      showToast("please enter alphabetics only in lastname");
+      return;
+    }
     if (selector.marital_status.length == 0) {
       showToast("Please fill the martial status");
       return;
@@ -934,7 +955,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         showToastSucess("Successfully Pre-Booking Dropped");
         getPreBookingListFromServer();
       } else if (typeOfActionDispatched === "UPDATE_PRE_BOOKING") {
-        showToastSucess("Successfully Pre-Booking Updated");
+        showToastSucess("Successfully Sent for Manager Approval");
       }
       dispatch(clearState());
       navigation.goBack();
@@ -1429,34 +1450,35 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   };
 
   const deteleButtonPressed = (from) => {
-
     const imagesDataObj = { ...uploadedImagesDataObj };
     switch (from) {
       case "PAN":
         delete imagesDataObj.pan;
-        break
+        break;
       case "FORM60":
         delete imagesDataObj.form60;
-        break
+        break;
       case "AADHAR":
         delete imagesDataObj.aadhar;
-        break
+        break;
       case "RELATION_PROOF":
         delete imagesDataObj.relationshipProof;
-        break
+        break;
       case "RECEIPT":
         delete imagesDataObj.receipt;
-        break
+        break;
       default:
-        break
+        break;
     }
-    setUploadedImagesDataObj({ ...imagesDataObj })
-  }
+    setUploadedImagesDataObj({ ...imagesDataObj });
+  };
 
   const DisplaySelectedImage = ({ fileName, from }) => {
     return (
       <View style={styles.selectedImageBckVw}>
-        <Text style={styles.selectedImageTextStyle} numberOfLines={1}>{fileName}</Text>
+        <Text style={styles.selectedImageTextStyle} numberOfLines={1}>
+          {fileName}
+        </Text>
         <IconButton
           icon="close-circle-outline"
           color={Colors.RED}
@@ -1491,7 +1513,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           console.log("imageObj: ", data, keyId);
           uploadSelectedImage(data, keyId);
         }}
-      // onDismiss={() => dispatch(setImagePicker(""))}
+        // onDismiss={() => dispatch(setImagePicker(""))}
       />
 
       <DropDownComponant
@@ -2195,8 +2217,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 {(selector.enquiry_segment === "Company" &&
                   selector.customer_type === "Institution") ||
-                  selector.customer_type_category == "B2B" ||
-                  selector.customer_type_category == "B2C" ? (
+                selector.customer_type_category == "B2B" ||
+                selector.customer_type_category == "B2C" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -2746,51 +2768,51 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 {(selector.retail_finance === "In House" ||
                   selector.retail_finance === "Out House") && (
-                    <View>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Loan Amount*"}
-                        keyboardType={"number-pad"}
-                        value={selector.loan_amount}
-                        onChangeText={(text) => {
-                          // Calculate EMI
-                          emiCal(
-                            text,
-                            selector.rate_of_interest,
-                            selector.loan_of_tenure
-                          );
-                          dispatch(
-                            setFinancialDetails({
-                              key: "LOAN_AMOUNT",
-                              text: text,
-                            })
-                          );
-                        }}
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Rate of Interest*"}
-                        keyboardType={"number-pad"}
-                        value={selector.rate_of_interest}
-                        onChangeText={(text) => {
-                          // Calculate EMI
-                          emiCal(
-                            selector.loan_amount,
-                            text,
-                            selector.loan_of_tenure
-                          );
-                          dispatch(
-                            setFinancialDetails({
-                              key: "RATE_OF_INTEREST",
-                              text: text,
-                            })
-                          );
-                        }}
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  )}
+                  <View>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Loan Amount*"}
+                      keyboardType={"number-pad"}
+                      value={selector.loan_amount}
+                      onChangeText={(text) => {
+                        // Calculate EMI
+                        emiCal(
+                          text,
+                          selector.rate_of_interest,
+                          selector.loan_of_tenure
+                        );
+                        dispatch(
+                          setFinancialDetails({
+                            key: "LOAN_AMOUNT",
+                            text: text,
+                          })
+                        );
+                      }}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Rate of Interest*"}
+                      keyboardType={"number-pad"}
+                      value={selector.rate_of_interest}
+                      onChangeText={(text) => {
+                        // Calculate EMI
+                        emiCal(
+                          selector.loan_amount,
+                          text,
+                          selector.loan_of_tenure
+                        );
+                        dispatch(
+                          setFinancialDetails({
+                            key: "RATE_OF_INTEREST",
+                            text: text,
+                          })
+                        );
+                      }}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                )}
 
                 {selector.retail_finance === "In House" && (
                   <View>
@@ -2982,7 +3004,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   />
                   {selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
                     "losttocompetitor" ||
-                    selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
+                  selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
                     "losttoco-dealer" ? (
                     <DropDownSelectionItem
                       label={"Drop Sub Reason"}
@@ -2997,7 +3019,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ) : null}
 
                   {selector.drop_reason === "Lost to Competitor" ||
-                    selector.drop_reason ===
+                  selector.drop_reason ===
                     "Lost to Used Cars from Co-Dealer" ? (
                     <View>
                       <TextinputComp
@@ -3019,8 +3041,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ) : null}
 
                   {selector.drop_reason === "Lost to Competitor" ||
-                    selector.drop_reason === "Lost to Used Cars from Co-Dealer" ||
-                    selector.drop_reason === "Lost to Co-Dealer" ? (
+                  selector.drop_reason === "Lost to Used Cars from Co-Dealer" ||
+                  selector.drop_reason === "Lost to Co-Dealer" ? (
                     <View>
                       <TextinputComp
                         style={styles.textInputStyle}
@@ -3056,7 +3078,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ) : null}
 
                   {selector.drop_reason === "Lost to Competitor" ||
-                    selector.drop_reason ===
+                  selector.drop_reason ===
                     "Lost to Used Cars from Co-Dealer" ? (
                     <View>
                       <TextinputComp
@@ -3210,44 +3232,44 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                   {(selector.booking_payment_mode === "InternetBanking" ||
                     selector.booking_payment_mode === "Internet Banking") && (
-                      <View>
-                        <TextinputComp
-                          style={styles.textInputStyle}
-                          value={selector.utr_no}
-                          label={"UTR No"}
-                          onChangeText={(text) =>
-                            dispatch(
-                              setPreBookingPaymentDetials({
-                                key: "UTR_NO",
-                                text: text,
-                              })
-                            )
-                          }
-                        />
-                        <Text style={GlobalStyle.underline}></Text>
-                        <DateSelectItem
-                          label={"Transaction Date"}
-                          value={selector.transaction_date}
-                          onPress={() =>
-                            dispatch(setDatePicker("TRANSACTION_DATE"))
-                          }
-                        />
-                        <TextinputComp
-                          style={styles.textInputStyle}
-                          value={selector.comapany_bank_name}
-                          label={"Company Bank Name"}
-                          onChangeText={(text) =>
-                            dispatch(
-                              setPreBookingPaymentDetials({
-                                key: "COMPANY_BANK_NAME",
-                                text: text,
-                              })
-                            )
-                          }
-                        />
-                        <Text style={GlobalStyle.underline}></Text>
-                      </View>
-                    )}
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.utr_no}
+                        label={"UTR No"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setPreBookingPaymentDetials({
+                              key: "UTR_NO",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <DateSelectItem
+                        label={"Transaction Date"}
+                        value={selector.transaction_date}
+                        onPress={() =>
+                          dispatch(setDatePicker("TRANSACTION_DATE"))
+                        }
+                      />
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.comapany_bank_name}
+                        label={"Company Bank Name"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setPreBookingPaymentDetials({
+                              key: "COMPANY_BANK_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
 
                   {selector.booking_payment_mode === "Cheque" && (
                     <View>
