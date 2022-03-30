@@ -376,70 +376,70 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         showToast("Please fill required fields in leasing name");
         return;
       }
-      if (!isValidateAlphabetics(selector.r_model_other_name)) {
-        showToast("Please enter proper model other name");
+    }
+    if (!isValidateAlphabetics(selector.r_model_other_name)) {
+      showToast("Please enter proper model other name");
+      return;
+    }
+
+    if (selector.buyer_type === "Additional Buyer") {
+      if (
+        selector.a_make == 0 ||
+        selector.a_model == 0 ||
+        selector.a_varient == 0 ||
+        selector.a_color == 0 ||
+        selector.a_reg_no == 0
+      ) {
+        showToast("Please fill required fields in Addtional buyer ");
         return;
       }
+      if (!isValidateAlphabetics(selector.a_varient)) {
+        showToast("Please enter alphabetics only in varient ");
+        return;
+      }
+      if (!isValidateAlphabetics(selector.a_color)) {
+        showToast("Please enter alphabetics only in color ");
+        return;
+      }
+      if (!isValidateAlphabetics(selector.a_reg_no)) {
+        showToast("Please enter alphabetics only in reg no ");
+        return;
+      }
+    }
 
-      if (selector.buyer_type === "Additional Buyer") {
-        if (
-          selector.a_make == 0 ||
-          selector.a_model == 0 ||
-          selector.a_varient == 0 ||
-          selector.a_color == 0 ||
-          selector.a_reg_no == 0
-        ) {
-          showToast("Please fill required fields in Addtional buyer ");
-          return;
-        }
-        if (!isValidateAlphabetics(selector.a_varient)) {
-          showToast("Please enter alphabetics only in varient ");
-          return;
-        }
-        if (!isValidateAlphabetics(selector.a_color)) {
+    if (selector.buyer_type === "Replacement Buyer") {
+      if (selector.r_color.length > 0) {
+        if (!isValidateAlphabetics(selector.r_color)) {
           showToast("Please enter alphabetics only in color ");
           return;
         }
-        if (!isValidateAlphabetics(selector.a_reg_no)) {
-          showToast("Please enter alphabetics only in reg no ");
-          return;
-        }
       }
 
-      if (selector.buyer_type === "Replacement Buyer") {
-        if (selector.r_color.length > 0) {
-          if (!isValidateAlphabetics(selector.r_color)) {
-            showToast("Please enter alphabetics only in color ");
-            return;
-          }
-        }
-
-        if (selector.r_insurence_company_name.length == 0) {
-          showToast("Please enter the proper insurance company name");
-          return;
-        }
-      }
-
-      if (!isValidateAlphabetics(selector.r_model_other_name)) {
-        showToast("Please enter proper model other name");
+      if (selector.r_insurence_company_name.length == 0) {
+        showToast("Please enter the proper insurance company name");
         return;
       }
+    }
 
-      if (selector.buyer_type === "Replacement Buyer") {
-        if (selector.r_insurence_company_name.length > 0) {
-          if (!isValidateAlphabetics(selector.r_insurence_company_name)) {
-            showToast("Please fill the insurance company name");
-            return;
-          }
+    if (!isValidateAlphabetics(selector.r_model_other_name)) {
+      showToast("Please enter proper model other name");
+      return;
+    }
+
+    if (selector.buyer_type === "Replacement Buyer") {
+      if (selector.r_insurence_company_name.length > 0) {
+        if (!isValidateAlphabetics(selector.r_insurence_company_name)) {
+          showToast("Please fill the insurance company name");
+          return;
         }
       }
+    }
 
-      if (selector.c_looking_for_any_other_brand_checked === true) {
-        if (selector.c_dealership_name.length > 0) {
-          if (!isValidateAlphabetics(selector.c_dealership_name)) {
-            showToast("please enter the validate Dealership name");
-            return;
-          }
+    if (selector.c_looking_for_any_other_brand_checked === true) {
+      if (selector.c_dealership_name.length > 0) {
+        if (!isValidateAlphabetics(selector.c_dealership_name)) {
+          showToast("please enter the validate Dealership name");
+          return;
         }
       }
     }
