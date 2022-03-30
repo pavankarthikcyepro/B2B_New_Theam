@@ -367,22 +367,38 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("Please fill required fields in Financial Details");
       return;
     }
-    if (!isValidateAlphabetics(selector.leashing_name)) {
-      showToast("Please enter alphabetics only in leasing name");
+    if (selector.retail_finance == 'Leasing') {
+       if (selector.leashing_name.length == 0) {
+      showToast("Please fill required fields in leasing name");
       return;
     }
-    if (!isValidateAlphabetics(selector.r_model_other_name)) {
-      showToast("Please enter proper model other name");
-      return;
-    }
-
-    if (selector.buyer_type === "Replacement Buyer") {
-      if (selector.r_insurence_company_name.length == 0) {
-        showToast("Please enter the proper insurance company name");
+      if (!isValidateAlphabetics(selector.leashing_name)) {
+        showToast("Please enter proper leasing name");
         return;
       }
     }
 
+    if (!isValidateAlphabetics(selector.r_model_other_name)) {
+      showToast("Please enter proper model other name");
+      return;
+    }
+  
+    if (selector.buyer_type === "Replacement Buyer") {
+      if (selector.r_insurence_company_name.length > 0) {
+        if (!isValidateAlphabetics(selector.r_insurence_company_name)) {
+          showToast("Please fill the insurance company name");
+          return;
+        }
+      }
+    }
+    
+    if (selector.c_looking_for_any_other_brand_checked === true) {
+      if (selector.c_dealership_name.length > 0) {
+        if (!isValidateAlphabetics(selector.c_dealership_name)) {
+          showToast("please enter the validate Dealership name");
+        }
+      }
+    }
     if (!selector.enquiry_details_response) {
       return;
     }
@@ -1325,6 +1341,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 <DropDownSelectionItem
                   label={"Enquiry Segment*"}
+                  disabled={!selector.enableEdit}
                   value={selector.enquiry_segment}
                   onPress={() =>
                     showDropDownModelMethod(
@@ -2049,7 +2066,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
               </List.Accordion>
               <View style={styles.space}></View>
-              {/* // 5.Financial Details*/}
+              {/* // 5.
+              */}
               <List.Accordion
                 id={"5"}
                 title={"Financial Details"}
@@ -2104,13 +2122,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   </View>
                 ) : null}
 
-                {selector.retail_finance === "Leashing" && (
+                  {selector.retail_finance === "Leasing" && (
                   <View>
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
                       label={"Leasing Name"}
                       maxLength={50}
-                      keyboardType={"default"}
                       value={selector.leashing_name}
                       onChangeText={(text) =>
                         dispatch(
