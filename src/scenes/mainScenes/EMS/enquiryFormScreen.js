@@ -377,6 +377,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         return;
       }
     }
+
     if (!isValidateAlphabetics(selector.r_model_other_name)) {
       showToast("Please enter proper model other name");
       return;
