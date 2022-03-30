@@ -367,2053 +367,2301 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("Please fill required fields in Financial Details");
       return;
     }
-    if (!isValidateAlphabetics(selector.leashing_name)) {
-      showToast("Please enter alphabetics only in leasing name");
-      return;
-    }
-    if (!isValidateAlphabetics(selector.r_model_other_name)) {
-      showToast("Please enter proper model other name");
-      return;
-    }
+    if (selector.retail_finance == 'Leasing') {
+      if (selector.leashing_name.length == 0) {
+        showToast("Please fill required fields in leasing name");
+        return;
+      }
+      if (!isValidateAlphabetics(selector.r_model_other_name)) {
+        showToast("Please enter proper model other name");
+        return;
+      }
 
-    if (selector.buyer_type === "Additional Buyer") {
-      if (
-        selector.a_make == 0 ||
-        selector.a_model == 0 ||
-        selector.a_varient == 0 ||
-        selector.a_color == 0 ||
-        selector.a_reg_no == 0
-      ) {
-        showToast("Please fill required fields in Addtional buyer ");
-        return;
-      }
-      if (!isValidateAlphabetics(selector.a_varient)) {
-        showToast("Please enter alphabetics only in varient ");
-        return;
-      }
-      if (!isValidateAlphabetics(selector.a_color)) {
-        showToast("Please enter alphabetics only in color ");
-        return;
-      }
-      if (!isValidateAlphabetics(selector.a_reg_no)) {
-        showToast("Please enter alphabetics only in reg no ");
-        return;
-      }
-    }
-
-    if (selector.buyer_type === "Replacement Buyer") {
-      if (selector.r_color.length > 0) {
-        if (!isValidateAlphabetics(selector.r_color)) {
+      if (selector.buyer_type === "Additional Buyer") {
+        if (
+          selector.a_make == 0 ||
+          selector.a_model == 0 ||
+          selector.a_varient == 0 ||
+          selector.a_color == 0 ||
+          selector.a_reg_no == 0
+        ) {
+          showToast("Please fill required fields in Addtional buyer ");
+          return;
+        }
+        if (!isValidateAlphabetics(selector.a_varient)) {
+          showToast("Please enter alphabetics only in varient ");
+          return;
+        }
+        if (!isValidateAlphabetics(selector.a_color)) {
           showToast("Please enter alphabetics only in color ");
           return;
         }
-      }
-
-      if (selector.r_insurence_company_name.length == 0) {
-        showToast("Please enter the proper insurance company name");
-        return;
-      }
-    }
-
-    if (!selector.enquiry_details_response) {
-      return;
-    }
-
-    let dmsContactOrAccountDto = {};
-    let dmsLeadDto = {};
-    let formData;
-
-    const dmsEntity = selector.enquiry_details_response;
-    if (dmsEntity.hasOwnProperty("dmsContactDto"))
-      dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsContactDto);
-    else if (dmsEntity.hasOwnProperty("dmsAccountDto"))
-      dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsAccountDto);
-
-    if (dmsEntity.hasOwnProperty("dmsLeadDto"))
-      dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
-
-    if (selector.enquiry_details_response.hasOwnProperty("dmsContactDto")) {
-      formData = {
-        dmsContactDto: dmsContactOrAccountDto,
-        dmsLeadDto: dmsLeadDto,
-      };
-    } else {
-      formData = {
-        dmsAccountDto: dmsContactOrAccountDto,
-        dmsLeadDto: dmsLeadDto,
-      };
-    }
-    setTypeOfActionDispatched("UPDATE_ENQUIRY");
-    dispatch(updateEnquiryDetailsApi(formData));
-  };
-
-  const mapContactOrAccountDto = (prevData) => {
-    let dataObj = { ...prevData };
-    dataObj.dateOfBirth = convertDateStringToMillisecondsUsingMoment(
-      selector.dateOfBirth
-    );
-    dataObj.email = selector.email;
-    dataObj.firstName = selector.firstName;
-    dataObj.lastName = selector.lastName;
-    dataObj.phone = selector.mobile;
-    dataObj.secondaryPhone = selector.alterMobile;
-    dataObj.gender = selector.gender;
-    dataObj.relation = selector.relation;
-    dataObj.salutation = selector.salutaion;
-    dataObj.relationName = selector.relationName;
-    dataObj.age = selector.age;
-
-    dataObj.occupation = selector.occupation;
-    dataObj.designation = selector.designation;
-    dataObj.customerType = selector.customer_type;
-    dataObj.anniversaryDate = convertDateStringToMillisecondsUsingMoment(
-      selector.anniversaryDate
-    );
-    dataObj.annualRevenue = selector.approx_annual_income;
-    dataObj.company = selector.company_name;
-    dataObj.companyName = selector.company_name;
-    dataObj.kmsTravelledInMonth = selector.kms_travelled_month;
-    dataObj.membersInFamily = selector.members;
-    dataObj.primeExpectationFromCar = selector.prime_expectation_from_car;
-    dataObj.whoDrives = selector.who_drives;
-
-    dataObj.referedByFirstname = selector.rf_by_first_name;
-    dataObj.referedByLastname = selector.rf_by_last_name;
-    dataObj.refferedMobileNo = selector.rf_by_mobile;
-    dataObj.refferedSource = selector.rf_by_source;
-    dataObj.reffered_Sourcelocation = selector.rf_by_source_location;
-    return dataObj;
-  };
-
-  const mapLeadDto = (prevData) => {
-    let dataObj = { ...prevData };
-    dataObj.buyerType = selector.buyer_type;
-    dataObj.enquiryCategory = selector.enquiry_category;
-    dataObj.enquirySegment = selector.enquiry_segment;
-    dataObj.enquirySource = selector.source_of_enquiry;
-    dataObj.eventCode = selector.event_code;
-    dataObj.subSource = selector.sub_source_of_enquiry;
-    dataObj.dmsExpectedDeliveryDate =
-      convertDateStringToMillisecondsUsingMoment(
-        selector.expected_delivery_date
-      );
-    dataObj.model = selector.model;
-    dataObj.leadStatus = "ENQUIRYCOMPLETED";
-    dataObj.dmsAddresses = mapDMSAddress(dataObj.dmsAddresses);
-    dataObj.dmsLeadProducts = mapLeadProducts(dataObj.dmsLeadProducts);
-    dataObj.dmsfinancedetails = mapDmsFinanceDetails(dataObj.dmsfinancedetails);
-    dataObj.dmsLeadScoreCards = mapDmsLeadScoreCards(dataObj.dmsLeadScoreCards);
-    dataObj.dmsExchagedetails = mapExchangeDetails(dataObj.dmsExchagedetails);
-    dataObj.dmsAttachments = mapDmsAttachments(dataObj.dmsAttachments);
-    return dataObj;
-  };
-
-  const mapDMSAddress = (prevDmsAddresses) => {
-    let dmsAddresses = [...prevDmsAddresses];
-    if (dmsAddresses.length == 2) {
-      dmsAddresses.forEach((address, index) => {
-        let dataObj = { ...address };
-        if (address.addressType === "Communication") {
-          dataObj.pincode = selector.pincode;
-          dataObj.houseNo = selector.houseNum;
-          dataObj.street = selector.streetName;
-          dataObj.village = selector.village;
-          dataObj.city = selector.city;
-          dataObj.district = selector.district;
-          dataObj.state = selector.state;
-          dataObj.urban = selector.urban_or_rural === 1 ? true : false;
-          dataObj.rural = selector.urban_or_rural === 2 ? true : false;
-        } else if (address.addressType === "Permanent") {
-          dataObj.pincode = selector.p_pincode;
-          dataObj.houseNo = selector.p_houseNum;
-          dataObj.street = selector.p_streetName;
-          dataObj.village = selector.p_village;
-          dataObj.city = selector.p_city;
-          dataObj.district = selector.p_district;
-          dataObj.state = selector.p_state;
-          dataObj.urban = selector.p_urban_or_rural === 1 ? true : false;
-          dataObj.rural = selector.p_urban_or_rural === 2 ? true : false;
-        }
-        dmsAddresses[index] = dataObj;
-      });
-    }
-    return dmsAddresses;
-  };
-
-  const mapLeadProducts = (prevDmsLeadProducts) => {
-    let dmsLeadProducts = [...prevDmsLeadProducts];
-    let dataObj = {};
-    if (dmsLeadProducts.length > 0) {
-      dataObj = { ...dmsLeadProducts[0] };
-    }
-    dataObj.id = dataObj.id ? dataObj.id : 0;
-    dataObj.model = selector.model;
-    dataObj.variant = selector.varient;
-    dataObj.color = selector.color;
-    dataObj.fuel = selector.fuel_type;
-    dataObj.transimmisionType = selector.transmission_type;
-    dmsLeadProducts[0] = dataObj;
-    return dmsLeadProducts;
-  };
-
-  const mapDmsFinanceDetails = (prevDmsFinancedetails) => {
-    let dmsfinancedetails = [...prevDmsFinancedetails];
-    let dataObj = {};
-    if (dmsfinancedetails.length > 0) {
-      dataObj = { ...dmsfinancedetails[0] };
-    }
-    dataObj.financeType = selector.retail_finance;
-    dataObj.financeCategory = selector.finance_category;
-    dataObj.downPayment = selector.down_payment;
-    dataObj.loanAmount = selector.loan_amount
-      ? Number(selector.loan_amount)
-      : null;
-    dataObj.rateOfInterest = selector.rate_of_interest;
-    dataObj.expectedTenureYears = selector.loan_of_tenure;
-    dataObj.emi = selector.emi;
-    dataObj.annualIncome = selector.approx_annual_income;
-    dataObj.location = selector.location;
-    if (selector.retail_finance === "In House") {
-      dataObj.financeCompany = selector.bank_or_finance;
-    } else if (selector.retail_finance === "Out House") {
-      dataObj.financeCompany = selector.bank_or_finance_name;
-    } else if (selector.retail_finance === "Leashing") {
-      dataObj.financeCompany = selector.leashing_name;
-    }
-    dmsfinancedetails[0] = dataObj;
-    return dmsfinancedetails;
-  };
-
-  const mapDmsLeadScoreCards = (prevDmsLeadScoreCards) => {
-    let dmsLeadScoreCards = [...prevDmsLeadScoreCards];
-    let dataObj = {};
-    if (dmsLeadScoreCards.length > 0) {
-      dataObj = { ...dmsLeadScoreCards[0] };
-    }
-    dataObj.lookingForAnyOtherBrand =
-      selector.c_looking_for_any_other_brand_checked;
-    dataObj.brand = selector.c_make;
-    dataObj.model = selector.c_model;
-    dataObj.otherMake = selector.c_make_other_name;
-    dataObj.otherModel = selector.c_model_other_name;
-    dataObj.variant = selector.c_variant;
-    dataObj.color = selector.c_color;
-    dataObj.fuel = selector.c_fuel_type;
-    dataObj.priceRange = selector.c_price_range;
-    dataObj.onRoadPriceanyDifference = selector.c_on_road_price;
-    dataObj.dealershipName = selector.c_dealership_name;
-    dataObj.dealershipLocation = selector.c_dealership_location;
-    dataObj.decisionPendingReason = selector.c_dealership_pending_reason;
-    dataObj.voiceofCustomerRemarks = selector.c_voice_of_customer_remarks;
-    dmsLeadScoreCards[0] = dataObj;
-    return dmsLeadScoreCards;
-  };
-
-  const mapExchangeDetails = (prevDmsExchagedetails) => {
-    let dmsExchagedetails = [...prevDmsExchagedetails];
-    if (dmsExchagedetails.length > 0) {
-      const dataObj = formatExchangeDetails(dmsExchagedetails[0]);
-      dmsExchagedetails[0] = dataObj;
-    } else {
-      const dataObj = formatExchangeDetails({});
-      dmsExchagedetails[0] = dataObj;
-    }
-    return dmsExchagedetails;
-  };
-
-  const formatExchangeDetails = (prevData) => {
-    let dataObj = { ...prevData };
-    if (selector.buyer_type === "Additional Buyer") {
-      dataObj.buyerType = selector.buyer_type;
-      dataObj.brand = selector.a_make;
-      dataObj.model = selector.a_model;
-      dataObj.varient = selector.a_varient;
-      dataObj.color = selector.a_color;
-      dataObj.regNo = selector.a_reg_no;
-    } else if (selector.buyer_type === "Replacement Buyer") {
-      dataObj.buyerType = selector.buyer_type;
-      dataObj.regNo = selector.r_reg_no;
-      dataObj.brand = selector.r_make;
-      dataObj.model = selector.r_model;
-      dataObj.varient = selector.r_varient;
-      dataObj.color = selector.r_color;
-      dataObj.fuelType = selector.r_fuel_type;
-      dataObj.transmission = selector.r_transmission_type;
-      // Pending
-      dataObj.yearofManufacture = convertDateStringToMillisecondsUsingMoment(
-        selector.r_mfg_year
-      );
-      dataObj.kiloMeters = selector.r_kms_driven_or_odometer_reading;
-      dataObj.expectedPrice = selector.r_expected_price
-        ? Number(selector.r_expected_price)
-        : null;
-      dataObj.hypothicationRequirement = selector.r_hypothication_checked;
-      dataObj.hypothication = selector.r_hypothication_name;
-      dataObj.hypothicationBranch = selector.r_hypothication_branch;
-      // Pending
-      dataObj.registrationDate = convertDateStringToMillisecondsUsingMoment(
-        selector.r_registration_date
-      );
-      dataObj.registrationValidityDate =
-        convertDateStringToMillisecondsUsingMoment(
-          selector.r_registration_validity_date
-        );
-      dataObj.insuranceAvailable = `${selector.r_insurence_checked}`;
-      dataObj.insuranceDocumentAvailable =
-        selector.r_insurence_document_checked;
-      dataObj.insuranceCompanyName = selector.r_insurence_company_name;
-      // Pending
-      dataObj.insuranceExpiryDate = convertDateStringToMillisecondsUsingMoment(
-        selector.r_insurence_expiry_date
-      );
-      dataObj.insuranceType = selector.r_insurence_type;
-      // Pending
-      dataObj.insuranceFromDate = convertDateStringToMillisecondsUsingMoment(
-        selector.r_insurence_from_date
-      );
-      dataObj.insuranceToDate = convertDateStringToMillisecondsUsingMoment(
-        selector.r_insurence_to_date
-      );
-    }
-    return dataObj;
-  };
-
-  const mapDmsAttachments = (prevDmsAttachments) => {
-    let dmsAttachments = [...prevDmsAttachments];
-    if (dmsAttachments.length > 0) {
-      dmsAttachments.forEach((obj, index) => {
-        const item = uploadedImagesDataObj[obj.documentType];
-        const object = formatAttachment(
-          { ...obj },
-          item,
-          index,
-          obj.documentType
-        );
-        dmsAttachments[index] = object;
-      });
-    } else {
-      Object.keys(uploadedImagesDataObj).forEach((key, index) => {
-        const item = uploadedImagesDataObj[key];
-        const object = formatAttachment({}, item, index, item.documentType);
-        dmsAttachments.push(object);
-      });
-    }
-    return dmsAttachments;
-  };
-
-  const formatAttachment = (data, photoObj, index, typeOfDocument) => {
-    let object = { ...data };
-    object.branchId = userData.branchId;
-    object.ownerName = userData.employeeName;
-    object.orgId = userData.orgId;
-    object.documentType = photoObj.documentType;
-    object.documentPath = photoObj.documentPath;
-    object.keyName = photoObj.keyName;
-    object.fileName = photoObj.fileName;
-    object.createdBy = new Date().getTime();
-    object.id = `${index}`;
-    object.modifiedBy = userData.employeeName;
-    object.ownerId = userData.employeeId;
-    switch (typeOfDocument) {
-      case "pan":
-        object.documentNumber = selector.pan_number;
-        break;
-      case "aadhar":
-        object.documentNumber = selector.adhaar_number;
-        break;
-      case "REGDOC":
-        object.documentNumber = selector.r_reg_no;
-        break;
-    }
-    return object;
-  };
-
-  const showPendingTaskAlert = (data = [], probookingTaskObj) => {
-    if (data.length > 0) {
-      let taskNames = "";
-      let enableProceedToPrebooking = false;
-      data.forEach((item) => {
-        if (item === "Proceed to Pre Booking") {
-          enableProceedToPrebooking = true;
-        } else {
-          taskNames += item;
-        }
-      });
-
-      if (enableProceedToPrebooking) {
-        const dataObj = probookingTaskObj;
-        const taskId = dataObj.taskId;
-        const universalId = dataObj.universalId;
-        const taskStatus = dataObj.taskStatus;
-
-        Alert.alert(
-          "Below tasks are pending, do you want to continue to proceed pre-booking",
-          taskNames,
-          [
-            {
-              text: "Cancel",
-              onPress: () => console.log("Cancel Pressed"),
-              style: "cancel",
-            },
-            {
-              text: "Proceed",
-              onPress: () => {
-                navigation.navigate(
-                  AppNavigator.EmsStackIdentifiers.proceedToPreBooking,
-                  {
-                    identifier: "PROCEED_TO_PRE_BOOKING",
-                    taskId,
-                    universalId,
-                    taskStatus,
-                  }
-                );
-              },
-            },
-          ]
-        );
-      } else {
-        showAlertMessage("Below tasks are pending...", taskNames);
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (
-      selector.get_pending_tasks_response_status === "success" &&
-      selector.get_pending_tasks_response_list.length > 0
-    ) {
-      let pendingTaskNames = [];
-      let proBookingTaskObj = {};
-      selector.get_pending_tasks_response_list.forEach((element) => {
-        if (
-          element.taskName === "Test Drive" &&
-          (element.taskStatus === "" || element.taskStatus === "ASSIGNED")
-        ) {
-          pendingTaskNames.push("Test Drive : Pending \n");
-        }
-        if (
-          element.taskName === "Home Visit" &&
-          (element.taskStatus === "" || element.taskStatus === "ASSIGNED")
-        ) {
-          pendingTaskNames.push("Home Visit : Pending \n");
-        }
-        if (
-          element.taskName === "Evaluation" &&
-          (element.taskStatus === "" || element.taskStatus === "ASSIGNED") &&
-          selector.enquiry_details_response.dmsLeadDto.buyerType ===
-            "Replacement Buyer"
-        ) {
-          pendingTaskNames.push("Evaluation : Pending \n");
-        }
-        if (
-          element.taskName === "Proceed to Pre Booking" &&
-          element.assignee.empId === userData.employeeId &&
-          element.universalId === universalId
-        ) {
-          pendingTaskNames.push("Proceed to Pre Booking");
-          proBookingTaskObj = element;
-        }
-      });
-      showPendingTaskAlert(pendingTaskNames, proBookingTaskObj);
-    }
-  }, [
-    selector.get_pending_tasks_response_status,
-    selector.get_pending_tasks_response_list,
-  ]);
-
-  const proceedToPreBookingClicked = () => {
-    if (universalId) {
-      const endUrl = universalId + "?" + "stage=Enquiry";
-      dispatch(getPendingTasksApi(endUrl));
-    }
-  };
-
-  // useEffect(() => {
-  //   if (selector.enquiry_drop_response_status === "success") {
-  //     showToastSucess("Sucessfully Enquiry Dropped.")
-  //     navigation.goBack();
-  //   }
-  // }, [selector.enquiry_drop_response_status]);
-
-  useEffect(() => {
-    if (selector.update_enquiry_details_response === "success") {
-      if (typeOfActionDispatched === "DROP_ENQUIRY") {
-        showToastSucess("Successfully Enquiry Dropped");
-        getEnquiryListFromServer();
-      } else if (typeOfActionDispatched === "UPDATE_ENQUIRY") {
-        showToastSucess("Successfully Enquiry Updated");
-      }
-      dispatch(clearState());
-      navigation.goBack();
-    }
-  }, [selector.update_enquiry_details_response]);
-
-  const getEnquiryListFromServer = () => {
-    if (userData.employeeId) {
-      let endUrl =
-        "?limit=10&offset=" +
-        "0" +
-        "&status=ENQUIRY&empId=" +
-        userData.employeeId;
-      dispatch(getEnquiryList(endUrl));
-    }
-  };
-
-  const proceedToCancelEnquiry = () => {
-    if (
-      selector.drop_remarks.length === 0 ||
-      selector.drop_reason.length === 0
-    ) {
-      showToastRedAlert("Please enter details for drop");
-      return;
-    }
-
-    if (!selector.enquiry_details_response) {
-      return;
-    }
-
-    let enquiryDetailsObj = { ...selector.enquiry_details_response };
-    let dmsLeadDto = { ...enquiryDetailsObj.dmsLeadDto };
-    dmsLeadDto.leadStatus = "ENQUIRYCOMPLETED";
-    dmsLeadDto.leadStage = "DROPPED";
-    enquiryDetailsObj.dmsLeadDto = dmsLeadDto;
-
-    let leadId = selector.enquiry_details_response.dmsLeadDto.id;
-    if (!leadId) {
-      showToast("lead id not found");
-      return;
-    }
-
-    const payload = {
-      dmsLeadDropInfo: {
-        additionalRemarks: selector.drop_remarks,
-        branchId: userData.branchId,
-        brandName: selector.d_brand_name,
-        dealerName: selector.d_dealer_name,
-        location: selector.d_location,
-        model: selector.d_model,
-        leadId: leadId,
-        crmUniversalId: universalId,
-        lostReason: selector.drop_reason,
-        organizationId: userData.orgId,
-        otherReason: "",
-        droppedBy: userData.employeeId,
-        stage: "ENQUIRY",
-        status: "ENQUIRY",
-      },
-    };
-    setTypeOfActionDispatched("DROP_ENQUIRY");
-    dispatch(dropEnquiryApi(payload));
-    dispatch(updateEnquiryDetailsApi(enquiryDetailsObj));
-  };
-
-  const showDropDownModelMethod = (key, headerText) => {
-    Keyboard.dismiss();
-
-    switch (key) {
-      case "ENQUIRY_SEGMENT":
-        setDataForDropDown([...Enquiry_Segment_Data]);
-        break;
-      case "CUSTOMER_TYPE":
-        setDataForDropDown([...selector.customer_types_data]);
-        break;
-      case "SUB_SOURCE_OF_ENQUIRY":
-        setDataForDropDown([...Enquiry_Sub_Source_Type_Data]);
-        break;
-      case "ENQUIRY_CATEGORY":
-        setDataForDropDown([...Enquiry_Category_Type_Data]);
-        break;
-      case "BUYER_TYPE":
-        setDataForDropDown([...Buyer_Type_Data]);
-        break;
-      case "KMS_TRAVELLED":
-        setDataForDropDown([...Kms_Travelled_Type_Data]);
-        break;
-      case "WHO_DRIVES":
-        setDataForDropDown([...Who_Drive_Type_Data]);
-        break;
-      case "MEMBERS":
-        setDataForDropDown([...How_Many_Family_Members_Data]);
-        break;
-      case "PRIME_EXPECTATION_CAR":
-        setDataForDropDown([...Prime_Exception_Types_Data]);
-        break;
-      case "SALUTATION":
-        setDataForDropDown([...Salutation_Types]);
-        break;
-      case "GENDER":
-        setDataForDropDown([...selector.gender_types_data]);
-        break;
-      case "RELATION":
-        setDataForDropDown([...selector.relation_types_data]);
-        break;
-      case "MODEL":
-        setDataForDropDown([...carModelsData]);
-        break;
-      case "VARIENT":
-        setDataForDropDown([...selectedCarVarientsData.varientListForDropDown]);
-        break;
-      case "COLOR":
-        setDataForDropDown([...carColorsData]);
-        break;
-      case "RETAIL_FINANCE":
-        setDataForDropDown([...Finance_Types]);
-        break;
-      case "FINANCE_CATEGORY":
-        setDataForDropDown([...Finance_Category_Types]);
-        break;
-      case "BANK_FINANCE":
-        setDataForDropDown([...Bank_Financer_Types]);
-        break;
-      case "APPROX_ANNUAL_INCOME":
-        setDataForDropDown([...Approx_Auual_Income_Types]);
-        break;
-      case "C_MAKE":
-        setDataForDropDown([...All_Car_Brands]);
-        break;
-      case "C_MODEL":
-        setDataForDropDown([...c_model_types]);
-        break;
-      case "C_FUEL_TYPE":
-        setDataForDropDown([...Fuel_Types]);
-        break;
-      case "C_TRANSMISSION_TYPE":
-        setDataForDropDown([...Transmission_Types]);
-        break;
-      case "R_MAKE":
-        setDataForDropDown([...All_Car_Brands]);
-        break;
-      case "R_MODEL":
-        setDataForDropDown([...r_model_types]);
-        break;
-      case "R_FUEL_TYPE":
-        setDataForDropDown([...Fuel_Types]);
-        break;
-      case "R_TRANSMISSION_TYPE":
-        setDataForDropDown([...Transmission_Types]);
-        break;
-      case "R_INSURENCE_TYPE":
-        setDataForDropDown([...Insurence_Types]);
-        break;
-      case "A_MAKE":
-        setDataForDropDown([...All_Car_Brands]);
-        break;
-      case "A_MODEL":
-        setDataForDropDown([...a_model_types]);
-        break;
-      case "DROP_REASON":
-        if (Enquiry_Drop_Reasons.length === 0) {
-          showToast("No Drop Reasons found");
+        if (!isValidateAlphabetics(selector.a_reg_no)) {
+          showToast("Please enter alphabetics only in reg no ");
           return;
         }
-        setDataForDropDown([...Enquiry_Drop_Reasons]);
-        break;
-      case "RF_SOURCE":
-        setDataForDropDown([...Referred_By_Source]);
-        break;
-    }
-    setDropDownKey(key);
-    setDropDownTitle(headerText);
-    setShowDropDownModel(true);
-  };
-
-  const updateVariantModelsData = (
-    selectedModelName,
-    fromInitialize,
-    selectedVarientName
-  ) => {
-    if (!selectedModelName || selectedModelName.length === 0) {
-      return;
-    }
-
-    let arrTemp = vehicle_modal_list.filter(function (obj) {
-      return obj.model === selectedModelName;
-    });
-
-    let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
-    if (carModelObj !== undefined) {
-      let newArray = [];
-      let mArray = carModelObj.varients;
-      if (mArray.length) {
-        mArray.forEach((item) => {
-          newArray.push({
-            id: item.id,
-            name: item.name,
-          });
-        });
-        setSelectedCarVarientsData({
-          varientList: [...mArray],
-          varientListForDropDown: [...newArray],
-        });
-        if (fromInitialize) {
-          updateColorsDataForSelectedVarient(selectedVarientName, [...mArray]);
-        }
       }
-    }
-  };
 
-  const updateColorsDataForSelectedVarient = (
-    selectedVarientName,
-    varientList
-  ) => {
-    if (!selectedVarientName || selectedVarientName.length === 0) {
-      return;
-    }
-
-    let arrTemp = varientList.filter(function (obj) {
-      return obj.name === selectedVarientName;
-    });
-
-    let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
-    if (carModelObj !== undefined) {
-      let newArray = [];
-      let mArray = carModelObj.vehicleImages;
-      if (mArray.length) {
-        mArray.map((item) => {
-          newArray.push({
-            id: item.id,
-            name: item.color,
-          });
-        });
-        const obj = {
-          fuelType: carModelObj.fuelType,
-          transmissionType: carModelObj.transmission_type,
-        };
-        dispatch(updateFuelAndTransmissionType(obj));
-        setCarColorsData([...newArray]);
-      }
-    }
-  };
-
-  updateModelTypesForCustomerNeedAnalysis = (brandName, dropDownKey) => {
-    let modelsData = [];
-    All_Car_Brands.forEach((item) => {
-      if (item.name === brandName) {
-        modelsData = item.models;
-      }
-    });
-    console.log("modelsData: ", modelsData);
-    switch (dropDownKey) {
-      case "C_MAKE":
-        return set_c_model_types([...modelsData]);
-      case "R_MAKE":
-        return set_r_model_types([...modelsData]);
-      case "A_MAKE":
-        return set_a_model_types([...modelsData]);
-    }
-  };
-
-  const uploadSelectedImage = async (selectedPhoto, keyId) => {
-    const photoUri = selectedPhoto.uri;
-    if (!photoUri) {
-      return;
-    }
-
-    const formData = new FormData();
-    const fileType = photoUri.substring(photoUri.lastIndexOf(".") + 1);
-    const fileNameArry = photoUri
-      .substring(photoUri.lastIndexOf("/") + 1)
-      .split(".");
-    // const fileName = fileNameArry.length > 0 ? fileNameArry[0] : "None";
-    const fileName = uuid.v4();
-    console.log("uuid: ", fileName);
-    formData.append("file", {
-      name: `${fileName}-.${fileType}`,
-      type: `image/${fileType}`,
-      uri: Platform.OS === "ios" ? photoUri.replace("file://", "") : photoUri,
-    });
-    formData.append("universalId", universalId);
-
-    switch (keyId) {
-      case "UPLOAD_PAN":
-        formData.append("documentType", "pan");
-        break;
-      case "UPLOAD_ADHAR":
-        formData.append("documentType", "aadhar");
-        break;
-      case "UPLOAD_REG_DOC":
-        formData.append("documentType", "REGDOC");
-        break;
-      case "UPLOAD_INSURENCE":
-        formData.append("documentType", "insurance");
-        break;
-      default:
-        formData.append("documentType", "default");
-        break;
-    }
-
-    await fetch(URL.UPLOAD_DOCUMENT(), {
-      method: "POST",
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      body: formData,
-    })
-      .then((response) => response.json())
-      .then((response) => {
-        //console.log('response', response);
-        if (response) {
-          const dataObj = { ...uploadedImagesDataObj };
-          dataObj[response.documentType] = response;
-          setUploadedImagesDataObj({ ...dataObj });
-        }
-      })
-      .catch((error) => {
-        showToastRedAlert(
-          error.message ? error.message : "Something went wrong"
-        );
-        console.error("error", error);
-      });
-  };
-
-  const deteleButtonPressed = (from) => {
-    const imagesDataObj = { ...uploadedImagesDataObj };
-    switch (from) {
-      case "PAN":
-        delete imagesDataObj.pan;
-        break;
-      case "AADHAR":
-        delete imagesDataObj.aadhar;
-        break;
-      case "REGDOC":
-        delete imagesDataObj.REGDOC;
-        break;
-      case "INSURENCE":
-        delete imagesDataObj.insurance;
-        break;
-      default:
-        break;
-    }
-    setUploadedImagesDataObj({ ...imagesDataObj });
-  };
-
-  const DisplaySelectedImage = ({ fileName, from }) => {
-    return (
-      <View style={styles.selectedImageBckVw}>
-        <Text style={styles.selectedImageTextStyle} numberOfLines={1}>
-          {fileName}
-        </Text>
-        <IconButton
-          icon="close-circle-outline"
-          color={Colors.RED}
-          style={{ padding: 0, margin: 0 }}
-          size={15}
-          onPress={() => deteleButtonPressed(from)}
-        />
-      </View>
-    );
-  };
-
-  const emiCal = (principle, tenure, interestRate) => {
-    const amount = emiCalculator(principle, tenure, interestRate);
-    dispatch(setFinancialDetails({ key: "EMI", text: amount }));
-  };
-
-  if (!componentAppear) {
-    return (
-      <View style={styles.initialContainer}>
-        <ActivityIndicator size="small" color={Colors.RED} />
-      </View>
-    );
-  }
-
-  return (
-    <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
-      <ImagePickerComponent
-        visible={selector.showImagePicker}
-        keyId={selector.imagePickerKeyId}
-        selectedImage={(data, keyId) => {
-          console.log("imageObj: ", data, keyId);
-          uploadSelectedImage(data, keyId);
-        }}
-        onDismiss={() => dispatch(setImagePicker(""))}
-      />
-
-      <DropDownComponant
-        visible={showDropDownModel}
-        headerTitle={dropDownTitle}
-        data={dataForDropDown}
-        onRequestClose={() => setShowDropDownModel(false)}
-        selectedItems={(item) => {
-          if (dropDownKey === "MODEL") {
-            updateVariantModelsData(item.name, false);
-          } else if (dropDownKey === "VARIENT") {
-            updateColorsDataForSelectedVarient(
-              item.name,
-              selectedCarVarientsData.varientList
-            );
-          } else if (
-            dropDownKey === "C_MAKE" ||
-            dropDownKey === "R_MAKE" ||
-            dropDownKey === "A_MAKE"
-          ) {
-            updateModelTypesForCustomerNeedAnalysis(item.name, dropDownKey);
+      if (selector.buyer_type === "Replacement Buyer") {
+        if (selector.r_color.length > 0) {
+          if (!isValidateAlphabetics(selector.r_color)) {
+            showToast("Please enter alphabetics only in color ");
+            return;
           }
-          setShowDropDownModel(false);
-          dispatch(
-            setDropDownData({ key: dropDownKey, value: item.name, id: item.id })
-          );
-        }}
-      />
+        }
 
-      {selector.showDatepicker && (
-        <DatePickerComponent
-          visible={selector.showDatepicker}
-          mode={"date"}
-          value={new Date(Date.now())}
-          minimumDate={selector.minDate}
-          maximumDate={selector.maxDate}
-          onChange={(event, selectedDate) => {
-            console.log("date: ", selectedDate);
-            if (Platform.OS === "android") {
-              if (!selectedDate) {
-                dispatch(
-                  updateSelectedDate({ key: "NONE", text: selectedDate })
-                );
+        if (selector.r_insurence_company_name.length == 0) {
+          showToast("Please enter the proper insurance company name");
+          return;
+        }
+      }
+
+      if (!isValidateAlphabetics(selector.r_model_other_name)) {
+        showToast("Please enter proper model other name");
+        return;
+      }
+
+      if (selector.buyer_type === "Replacement Buyer") {
+        if (selector.r_insurence_company_name.length > 0) {
+          if (!isValidateAlphabetics(selector.r_insurence_company_name)) {
+            showToast("Please fill the insurance company name");
+            return;
+          }
+        }
+      }
+
+      if (selector.c_looking_for_any_other_brand_checked === true) {
+        if (selector.c_dealership_name.length > 0) {
+          if (!isValidateAlphabetics(selector.c_dealership_name)) {
+            showToast("please enter the validate Dealership name");
+            return;
+          }
+        }
+      }
+
+      if (selector.leashing_name.length > 0 && !isValidateAlphabetics(selector.leashing_name)) {
+        showToast("Please enter proper leasing name");
+        return;
+      }
+
+      if (!selector.enquiry_details_response) {
+        return;
+      }
+
+      let dmsContactOrAccountDto = {};
+      let dmsLeadDto = {};
+      let formData;
+
+      const dmsEntity = selector.enquiry_details_response;
+      if (dmsEntity.hasOwnProperty("dmsContactDto"))
+        dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsContactDto);
+      else if (dmsEntity.hasOwnProperty("dmsAccountDto"))
+        dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsAccountDto);
+
+      if (dmsEntity.hasOwnProperty("dmsLeadDto"))
+        dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
+
+      if (selector.enquiry_details_response.hasOwnProperty("dmsContactDto")) {
+        formData = {
+          dmsContactDto: dmsContactOrAccountDto,
+          dmsLeadDto: dmsLeadDto,
+        };
+      } else {
+        formData = {
+          dmsAccountDto: dmsContactOrAccountDto,
+          dmsLeadDto: dmsLeadDto,
+        };
+      }
+      setTypeOfActionDispatched("UPDATE_ENQUIRY");
+      dispatch(updateEnquiryDetailsApi(formData));
+    };
+
+    const mapContactOrAccountDto = (prevData) => {
+      let dataObj = { ...prevData };
+      dataObj.dateOfBirth = convertDateStringToMillisecondsUsingMoment(
+        selector.dateOfBirth
+      );
+      dataObj.email = selector.email;
+      dataObj.firstName = selector.firstName;
+      dataObj.lastName = selector.lastName;
+      dataObj.phone = selector.mobile;
+      dataObj.secondaryPhone = selector.alterMobile;
+      dataObj.gender = selector.gender;
+      dataObj.relation = selector.relation;
+      dataObj.salutation = selector.salutaion;
+      dataObj.relationName = selector.relationName;
+      dataObj.age = selector.age;
+
+      dataObj.occupation = selector.occupation;
+      dataObj.designation = selector.designation;
+      dataObj.customerType = selector.customer_type;
+      dataObj.anniversaryDate = convertDateStringToMillisecondsUsingMoment(
+        selector.anniversaryDate
+      );
+      dataObj.annualRevenue = selector.approx_annual_income;
+      dataObj.company = selector.company_name;
+      dataObj.companyName = selector.company_name;
+      dataObj.kmsTravelledInMonth = selector.kms_travelled_month;
+      dataObj.membersInFamily = selector.members;
+      dataObj.primeExpectationFromCar = selector.prime_expectation_from_car;
+      dataObj.whoDrives = selector.who_drives;
+
+      dataObj.referedByFirstname = selector.rf_by_first_name;
+      dataObj.referedByLastname = selector.rf_by_last_name;
+      dataObj.refferedMobileNo = selector.rf_by_mobile;
+      dataObj.refferedSource = selector.rf_by_source;
+      dataObj.reffered_Sourcelocation = selector.rf_by_source_location;
+      return dataObj;
+    };
+
+    const mapLeadDto = (prevData) => {
+      let dataObj = { ...prevData };
+      dataObj.buyerType = selector.buyer_type;
+      dataObj.enquiryCategory = selector.enquiry_category;
+      dataObj.enquirySegment = selector.enquiry_segment;
+      dataObj.enquirySource = selector.source_of_enquiry;
+      dataObj.eventCode = selector.event_code;
+      dataObj.subSource = selector.sub_source_of_enquiry;
+      dataObj.dmsExpectedDeliveryDate =
+        convertDateStringToMillisecondsUsingMoment(
+          selector.expected_delivery_date
+        );
+      dataObj.model = selector.model;
+      dataObj.leadStatus = "ENQUIRYCOMPLETED";
+      dataObj.dmsAddresses = mapDMSAddress(dataObj.dmsAddresses);
+      dataObj.dmsLeadProducts = mapLeadProducts(dataObj.dmsLeadProducts);
+      dataObj.dmsfinancedetails = mapDmsFinanceDetails(dataObj.dmsfinancedetails);
+      dataObj.dmsLeadScoreCards = mapDmsLeadScoreCards(dataObj.dmsLeadScoreCards);
+      dataObj.dmsExchagedetails = mapExchangeDetails(dataObj.dmsExchagedetails);
+      dataObj.dmsAttachments = mapDmsAttachments(dataObj.dmsAttachments);
+      return dataObj;
+    };
+
+    const mapDMSAddress = (prevDmsAddresses) => {
+      let dmsAddresses = [...prevDmsAddresses];
+      if (dmsAddresses.length == 2) {
+        dmsAddresses.forEach((address, index) => {
+          let dataObj = { ...address };
+          if (address.addressType === "Communication") {
+            dataObj.pincode = selector.pincode;
+            dataObj.houseNo = selector.houseNum;
+            dataObj.street = selector.streetName;
+            dataObj.village = selector.village;
+            dataObj.city = selector.city;
+            dataObj.district = selector.district;
+            dataObj.state = selector.state;
+            dataObj.urban = selector.urban_or_rural === 1 ? true : false;
+            dataObj.rural = selector.urban_or_rural === 2 ? true : false;
+          } else if (address.addressType === "Permanent") {
+            dataObj.pincode = selector.p_pincode;
+            dataObj.houseNo = selector.p_houseNum;
+            dataObj.street = selector.p_streetName;
+            dataObj.village = selector.p_village;
+            dataObj.city = selector.p_city;
+            dataObj.district = selector.p_district;
+            dataObj.state = selector.p_state;
+            dataObj.urban = selector.p_urban_or_rural === 1 ? true : false;
+            dataObj.rural = selector.p_urban_or_rural === 2 ? true : false;
+          }
+          dmsAddresses[index] = dataObj;
+        });
+      }
+      return dmsAddresses;
+    };
+
+    const mapLeadProducts = (prevDmsLeadProducts) => {
+      let dmsLeadProducts = [...prevDmsLeadProducts];
+      let dataObj = {};
+      if (dmsLeadProducts.length > 0) {
+        dataObj = { ...dmsLeadProducts[0] };
+      }
+      dataObj.id = dataObj.id ? dataObj.id : 0;
+      dataObj.model = selector.model;
+      dataObj.variant = selector.varient;
+      dataObj.color = selector.color;
+      dataObj.fuel = selector.fuel_type;
+      dataObj.transimmisionType = selector.transmission_type;
+      dmsLeadProducts[0] = dataObj;
+      return dmsLeadProducts;
+    };
+
+    const mapDmsFinanceDetails = (prevDmsFinancedetails) => {
+      let dmsfinancedetails = [...prevDmsFinancedetails];
+      let dataObj = {};
+      if (dmsfinancedetails.length > 0) {
+        dataObj = { ...dmsfinancedetails[0] };
+      }
+      dataObj.financeType = selector.retail_finance;
+      dataObj.financeCategory = selector.finance_category;
+      dataObj.downPayment = selector.down_payment;
+      dataObj.loanAmount = selector.loan_amount
+        ? Number(selector.loan_amount)
+        : null;
+      dataObj.rateOfInterest = selector.rate_of_interest;
+      dataObj.expectedTenureYears = selector.loan_of_tenure;
+      dataObj.emi = selector.emi;
+      dataObj.annualIncome = selector.approx_annual_income;
+      dataObj.location = selector.location;
+      if (selector.retail_finance === "In House") {
+        dataObj.financeCompany = selector.bank_or_finance;
+      } else if (selector.retail_finance === "Out House") {
+        dataObj.financeCompany = selector.bank_or_finance_name;
+      } else if (selector.retail_finance === "Leashing") {
+        dataObj.financeCompany = selector.leashing_name;
+      }
+      dmsfinancedetails[0] = dataObj;
+      return dmsfinancedetails;
+    };
+
+    const mapDmsLeadScoreCards = (prevDmsLeadScoreCards) => {
+      let dmsLeadScoreCards = [...prevDmsLeadScoreCards];
+      let dataObj = {};
+      if (dmsLeadScoreCards.length > 0) {
+        dataObj = { ...dmsLeadScoreCards[0] };
+      }
+      dataObj.lookingForAnyOtherBrand =
+        selector.c_looking_for_any_other_brand_checked;
+      dataObj.brand = selector.c_make;
+      dataObj.model = selector.c_model;
+      dataObj.otherMake = selector.c_make_other_name;
+      dataObj.otherModel = selector.c_model_other_name;
+      dataObj.variant = selector.c_variant;
+      dataObj.color = selector.c_color;
+      dataObj.fuel = selector.c_fuel_type;
+      dataObj.priceRange = selector.c_price_range;
+      dataObj.onRoadPriceanyDifference = selector.c_on_road_price;
+      dataObj.dealershipName = selector.c_dealership_name;
+      dataObj.dealershipLocation = selector.c_dealership_location;
+      dataObj.decisionPendingReason = selector.c_dealership_pending_reason;
+      dataObj.voiceofCustomerRemarks = selector.c_voice_of_customer_remarks;
+      dmsLeadScoreCards[0] = dataObj;
+      return dmsLeadScoreCards;
+    };
+
+    const mapExchangeDetails = (prevDmsExchagedetails) => {
+      let dmsExchagedetails = [...prevDmsExchagedetails];
+      if (dmsExchagedetails.length > 0) {
+        const dataObj = formatExchangeDetails(dmsExchagedetails[0]);
+        dmsExchagedetails[0] = dataObj;
+      } else {
+        const dataObj = formatExchangeDetails({});
+        dmsExchagedetails[0] = dataObj;
+      }
+      return dmsExchagedetails;
+    };
+
+    const formatExchangeDetails = (prevData) => {
+      let dataObj = { ...prevData };
+      if (selector.buyer_type === "Additional Buyer") {
+        dataObj.buyerType = selector.buyer_type;
+        dataObj.brand = selector.a_make;
+        dataObj.model = selector.a_model;
+        dataObj.varient = selector.a_varient;
+        dataObj.color = selector.a_color;
+        dataObj.regNo = selector.a_reg_no;
+      } else if (selector.buyer_type === "Replacement Buyer") {
+        dataObj.buyerType = selector.buyer_type;
+        dataObj.regNo = selector.r_reg_no;
+        dataObj.brand = selector.r_make;
+        dataObj.model = selector.r_model;
+        dataObj.varient = selector.r_varient;
+        dataObj.color = selector.r_color;
+        dataObj.fuelType = selector.r_fuel_type;
+        dataObj.transmission = selector.r_transmission_type;
+        // Pending
+        dataObj.yearofManufacture = convertDateStringToMillisecondsUsingMoment(
+          selector.r_mfg_year
+        );
+        dataObj.kiloMeters = selector.r_kms_driven_or_odometer_reading;
+        dataObj.expectedPrice = selector.r_expected_price
+          ? Number(selector.r_expected_price)
+          : null;
+        dataObj.hypothicationRequirement = selector.r_hypothication_checked;
+        dataObj.hypothication = selector.r_hypothication_name;
+        dataObj.hypothicationBranch = selector.r_hypothication_branch;
+        // Pending
+        dataObj.registrationDate = convertDateStringToMillisecondsUsingMoment(
+          selector.r_registration_date
+        );
+        dataObj.registrationValidityDate =
+          convertDateStringToMillisecondsUsingMoment(
+            selector.r_registration_validity_date
+          );
+        dataObj.insuranceAvailable = `${selector.r_insurence_checked}`;
+        dataObj.insuranceDocumentAvailable =
+          selector.r_insurence_document_checked;
+        dataObj.insuranceCompanyName = selector.r_insurence_company_name;
+        // Pending
+        dataObj.insuranceExpiryDate = convertDateStringToMillisecondsUsingMoment(
+          selector.r_insurence_expiry_date
+        );
+        dataObj.insuranceType = selector.r_insurence_type;
+        // Pending
+        dataObj.insuranceFromDate = convertDateStringToMillisecondsUsingMoment(
+          selector.r_insurence_from_date
+        );
+        dataObj.insuranceToDate = convertDateStringToMillisecondsUsingMoment(
+          selector.r_insurence_to_date
+        );
+      }
+      return dataObj;
+    };
+
+    const mapDmsAttachments = (prevDmsAttachments) => {
+      let dmsAttachments = [...prevDmsAttachments];
+      if (dmsAttachments.length > 0) {
+        dmsAttachments.forEach((obj, index) => {
+          const item = uploadedImagesDataObj[obj.documentType];
+          const object = formatAttachment(
+            { ...obj },
+            item,
+            index,
+            obj.documentType
+          );
+          dmsAttachments[index] = object;
+        });
+      } else {
+        Object.keys(uploadedImagesDataObj).forEach((key, index) => {
+          const item = uploadedImagesDataObj[key];
+          const object = formatAttachment({}, item, index, item.documentType);
+          dmsAttachments.push(object);
+        });
+      }
+      return dmsAttachments;
+    };
+
+    const formatAttachment = (data, photoObj, index, typeOfDocument) => {
+      let object = { ...data };
+      object.branchId = userData.branchId;
+      object.ownerName = userData.employeeName;
+      object.orgId = userData.orgId;
+      object.documentType = photoObj.documentType;
+      object.documentPath = photoObj.documentPath;
+      object.keyName = photoObj.keyName;
+      object.fileName = photoObj.fileName;
+      object.createdBy = new Date().getTime();
+      object.id = `${index}`;
+      object.modifiedBy = userData.employeeName;
+      object.ownerId = userData.employeeId;
+      switch (typeOfDocument) {
+        case "pan":
+          object.documentNumber = selector.pan_number;
+          break;
+        case "aadhar":
+          object.documentNumber = selector.adhaar_number;
+          break;
+        case "REGDOC":
+          object.documentNumber = selector.r_reg_no;
+          break;
+      }
+      return object;
+    };
+
+    const showPendingTaskAlert = (data = [], probookingTaskObj) => {
+      if (data.length > 0) {
+        let taskNames = "";
+        let enableProceedToPrebooking = false;
+        data.forEach((item) => {
+          if (item === "Proceed to Pre Booking") {
+            enableProceedToPrebooking = true;
+          } else {
+            taskNames += item;
+          }
+        });
+
+        if (enableProceedToPrebooking) {
+          const dataObj = probookingTaskObj;
+          const taskId = dataObj.taskId;
+          const universalId = dataObj.universalId;
+          const taskStatus = dataObj.taskStatus;
+
+          Alert.alert(
+            "Below tasks are pending, do you want to continue to proceed pre-booking",
+            taskNames,
+            [
+              {
+                text: "Cancel",
+                onPress: () => console.log("Cancel Pressed"),
+                style: "cancel",
+              },
+              {
+                text: "Proceed",
+                onPress: () => {
+                  navigation.navigate(
+                    AppNavigator.EmsStackIdentifiers.proceedToPreBooking,
+                    {
+                      identifier: "PROCEED_TO_PRE_BOOKING",
+                      taskId,
+                      universalId,
+                      taskStatus,
+                    }
+                  );
+                },
+              },
+            ]
+          );
+        } else {
+          showAlertMessage("Below tasks are pending...", taskNames);
+        }
+      }
+    };
+
+    useEffect(() => {
+      if (
+        selector.get_pending_tasks_response_status === "success" &&
+        selector.get_pending_tasks_response_list.length > 0
+      ) {
+        let pendingTaskNames = [];
+        let proBookingTaskObj = {};
+        selector.get_pending_tasks_response_list.forEach((element) => {
+          if (
+            element.taskName === "Test Drive" &&
+            (element.taskStatus === "" || element.taskStatus === "ASSIGNED")
+          ) {
+            pendingTaskNames.push("Test Drive : Pending \n");
+          }
+          if (
+            element.taskName === "Home Visit" &&
+            (element.taskStatus === "" || element.taskStatus === "ASSIGNED")
+          ) {
+            pendingTaskNames.push("Home Visit : Pending \n");
+          }
+          if (
+            element.taskName === "Evaluation" &&
+            (element.taskStatus === "" || element.taskStatus === "ASSIGNED") &&
+            selector.enquiry_details_response.dmsLeadDto.buyerType ===
+            "Replacement Buyer"
+          ) {
+            pendingTaskNames.push("Evaluation : Pending \n");
+          }
+          if (
+            element.taskName === "Proceed to Pre Booking" &&
+            element.assignee.empId === userData.employeeId &&
+            element.universalId === universalId
+          ) {
+            pendingTaskNames.push("Proceed to Pre Booking");
+            proBookingTaskObj = element;
+          }
+        });
+        showPendingTaskAlert(pendingTaskNames, proBookingTaskObj);
+      }
+    }, [
+      selector.get_pending_tasks_response_status,
+      selector.get_pending_tasks_response_list,
+    ]);
+
+    const proceedToPreBookingClicked = () => {
+      if (universalId) {
+        const endUrl = universalId + "?" + "stage=Enquiry";
+        dispatch(getPendingTasksApi(endUrl));
+      }
+    };
+
+    // useEffect(() => {
+    //   if (selector.enquiry_drop_response_status === "success") {
+    //     showToastSucess("Sucessfully Enquiry Dropped.")
+    //     navigation.goBack();
+    //   }
+    // }, [selector.enquiry_drop_response_status]);
+
+    useEffect(() => {
+      if (selector.update_enquiry_details_response === "success") {
+        if (typeOfActionDispatched === "DROP_ENQUIRY") {
+          showToastSucess("Successfully Enquiry Dropped");
+          getEnquiryListFromServer();
+        } else if (typeOfActionDispatched === "UPDATE_ENQUIRY") {
+          showToastSucess("Successfully Enquiry Updated");
+        }
+        dispatch(clearState());
+        navigation.goBack();
+      }
+    }, [selector.update_enquiry_details_response]);
+
+    const getEnquiryListFromServer = () => {
+      if (userData.employeeId) {
+        let endUrl =
+          "?limit=10&offset=" +
+          "0" +
+          "&status=ENQUIRY&empId=" +
+          userData.employeeId;
+        dispatch(getEnquiryList(endUrl));
+      }
+    };
+
+    const proceedToCancelEnquiry = () => {
+      if (
+        selector.drop_remarks.length === 0 ||
+        selector.drop_reason.length === 0
+      ) {
+        showToastRedAlert("Please enter details for drop");
+        return;
+      }
+
+      if (!selector.enquiry_details_response) {
+        return;
+      }
+
+      let enquiryDetailsObj = { ...selector.enquiry_details_response };
+      let dmsLeadDto = { ...enquiryDetailsObj.dmsLeadDto };
+      dmsLeadDto.leadStatus = "ENQUIRYCOMPLETED";
+      dmsLeadDto.leadStage = "DROPPED";
+      enquiryDetailsObj.dmsLeadDto = dmsLeadDto;
+
+      let leadId = selector.enquiry_details_response.dmsLeadDto.id;
+      if (!leadId) {
+        showToast("lead id not found");
+        return;
+      }
+
+      const payload = {
+        dmsLeadDropInfo: {
+          additionalRemarks: selector.drop_remarks,
+          branchId: userData.branchId,
+          brandName: selector.d_brand_name,
+          dealerName: selector.d_dealer_name,
+          location: selector.d_location,
+          model: selector.d_model,
+          leadId: leadId,
+          crmUniversalId: universalId,
+          lostReason: selector.drop_reason,
+          organizationId: userData.orgId,
+          otherReason: "",
+          droppedBy: userData.employeeId,
+          stage: "ENQUIRY",
+          status: "ENQUIRY",
+        },
+      };
+      setTypeOfActionDispatched("DROP_ENQUIRY");
+      dispatch(dropEnquiryApi(payload));
+      dispatch(updateEnquiryDetailsApi(enquiryDetailsObj));
+    };
+
+    const showDropDownModelMethod = (key, headerText) => {
+      Keyboard.dismiss();
+
+      switch (key) {
+        case "ENQUIRY_SEGMENT":
+          setDataForDropDown([...Enquiry_Segment_Data]);
+          break;
+        case "CUSTOMER_TYPE":
+          setDataForDropDown([...selector.customer_types_data]);
+          break;
+        case "SUB_SOURCE_OF_ENQUIRY":
+          setDataForDropDown([...Enquiry_Sub_Source_Type_Data]);
+          break;
+        case "ENQUIRY_CATEGORY":
+          setDataForDropDown([...Enquiry_Category_Type_Data]);
+          break;
+        case "BUYER_TYPE":
+          setDataForDropDown([...Buyer_Type_Data]);
+          break;
+        case "KMS_TRAVELLED":
+          setDataForDropDown([...Kms_Travelled_Type_Data]);
+          break;
+        case "WHO_DRIVES":
+          setDataForDropDown([...Who_Drive_Type_Data]);
+          break;
+        case "MEMBERS":
+          setDataForDropDown([...How_Many_Family_Members_Data]);
+          break;
+        case "PRIME_EXPECTATION_CAR":
+          setDataForDropDown([...Prime_Exception_Types_Data]);
+          break;
+        case "SALUTATION":
+          setDataForDropDown([...Salutation_Types]);
+          break;
+        case "GENDER":
+          setDataForDropDown([...selector.gender_types_data]);
+          break;
+        case "RELATION":
+          setDataForDropDown([...selector.relation_types_data]);
+          break;
+        case "MODEL":
+          setDataForDropDown([...carModelsData]);
+          break;
+        case "VARIENT":
+          setDataForDropDown([...selectedCarVarientsData.varientListForDropDown]);
+          break;
+        case "COLOR":
+          setDataForDropDown([...carColorsData]);
+          break;
+        case "RETAIL_FINANCE":
+          setDataForDropDown([...Finance_Types]);
+          break;
+        case "FINANCE_CATEGORY":
+          setDataForDropDown([...Finance_Category_Types]);
+          break;
+        case "BANK_FINANCE":
+          setDataForDropDown([...Bank_Financer_Types]);
+          break;
+        case "APPROX_ANNUAL_INCOME":
+          setDataForDropDown([...Approx_Auual_Income_Types]);
+          break;
+        case "C_MAKE":
+          setDataForDropDown([...All_Car_Brands]);
+          break;
+        case "C_MODEL":
+          setDataForDropDown([...c_model_types]);
+          break;
+        case "C_FUEL_TYPE":
+          setDataForDropDown([...Fuel_Types]);
+          break;
+        case "C_TRANSMISSION_TYPE":
+          setDataForDropDown([...Transmission_Types]);
+          break;
+        case "R_MAKE":
+          setDataForDropDown([...All_Car_Brands]);
+          break;
+        case "R_MODEL":
+          setDataForDropDown([...r_model_types]);
+          break;
+        case "R_FUEL_TYPE":
+          setDataForDropDown([...Fuel_Types]);
+          break;
+        case "R_TRANSMISSION_TYPE":
+          setDataForDropDown([...Transmission_Types]);
+          break;
+        case "R_INSURENCE_TYPE":
+          setDataForDropDown([...Insurence_Types]);
+          break;
+        case "A_MAKE":
+          setDataForDropDown([...All_Car_Brands]);
+          break;
+        case "A_MODEL":
+          setDataForDropDown([...a_model_types]);
+          break;
+        case "DROP_REASON":
+          if (Enquiry_Drop_Reasons.length === 0) {
+            showToast("No Drop Reasons found");
+            return;
+          }
+          setDataForDropDown([...Enquiry_Drop_Reasons]);
+          break;
+        case "RF_SOURCE":
+          setDataForDropDown([...Referred_By_Source]);
+          break;
+      }
+      setDropDownKey(key);
+      setDropDownTitle(headerText);
+      setShowDropDownModel(true);
+    };
+
+    const updateVariantModelsData = (
+      selectedModelName,
+      fromInitialize,
+      selectedVarientName
+    ) => {
+      if (!selectedModelName || selectedModelName.length === 0) {
+        return;
+      }
+
+      let arrTemp = vehicle_modal_list.filter(function (obj) {
+        return obj.model === selectedModelName;
+      });
+
+      let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
+      if (carModelObj !== undefined) {
+        let newArray = [];
+        let mArray = carModelObj.varients;
+        if (mArray.length) {
+          mArray.forEach((item) => {
+            newArray.push({
+              id: item.id,
+              name: item.name,
+            });
+          });
+          setSelectedCarVarientsData({
+            varientList: [...mArray],
+            varientListForDropDown: [...newArray],
+          });
+          if (fromInitialize) {
+            updateColorsDataForSelectedVarient(selectedVarientName, [...mArray]);
+          }
+        }
+      }
+    };
+
+    const updateColorsDataForSelectedVarient = (
+      selectedVarientName,
+      varientList
+    ) => {
+      if (!selectedVarientName || selectedVarientName.length === 0) {
+        return;
+      }
+
+      let arrTemp = varientList.filter(function (obj) {
+        return obj.name === selectedVarientName;
+      });
+
+      let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
+      if (carModelObj !== undefined) {
+        let newArray = [];
+        let mArray = carModelObj.vehicleImages;
+        if (mArray.length) {
+          mArray.map((item) => {
+            newArray.push({
+              id: item.id,
+              name: item.color,
+            });
+          });
+          const obj = {
+            fuelType: carModelObj.fuelType,
+            transmissionType: carModelObj.transmission_type,
+          };
+          dispatch(updateFuelAndTransmissionType(obj));
+          setCarColorsData([...newArray]);
+        }
+      }
+    };
+
+    updateModelTypesForCustomerNeedAnalysis = (brandName, dropDownKey) => {
+      let modelsData = [];
+      All_Car_Brands.forEach((item) => {
+        if (item.name === brandName) {
+          modelsData = item.models;
+        }
+      });
+      console.log("modelsData: ", modelsData);
+      switch (dropDownKey) {
+        case "C_MAKE":
+          return set_c_model_types([...modelsData]);
+        case "R_MAKE":
+          return set_r_model_types([...modelsData]);
+        case "A_MAKE":
+          return set_a_model_types([...modelsData]);
+      }
+    };
+
+    const uploadSelectedImage = async (selectedPhoto, keyId) => {
+      const photoUri = selectedPhoto.uri;
+      if (!photoUri) {
+        return;
+      }
+
+      const formData = new FormData();
+      const fileType = photoUri.substring(photoUri.lastIndexOf(".") + 1);
+      const fileNameArry = photoUri
+        .substring(photoUri.lastIndexOf("/") + 1)
+        .split(".");
+      // const fileName = fileNameArry.length > 0 ? fileNameArry[0] : "None";
+      const fileName = uuid.v4();
+      console.log("uuid: ", fileName);
+      formData.append("file", {
+        name: `${fileName}-.${fileType}`,
+        type: `image/${fileType}`,
+        uri: Platform.OS === "ios" ? photoUri.replace("file://", "") : photoUri,
+      });
+      formData.append("universalId", universalId);
+
+      switch (keyId) {
+        case "UPLOAD_PAN":
+          formData.append("documentType", "pan");
+          break;
+        case "UPLOAD_ADHAR":
+          formData.append("documentType", "aadhar");
+          break;
+        case "UPLOAD_REG_DOC":
+          formData.append("documentType", "REGDOC");
+          break;
+        case "UPLOAD_INSURENCE":
+          formData.append("documentType", "insurance");
+          break;
+        default:
+          formData.append("documentType", "default");
+          break;
+      }
+
+      await fetch(URL.UPLOAD_DOCUMENT(), {
+        method: "POST",
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        body: formData,
+      })
+        .then((response) => response.json())
+        .then((response) => {
+          //console.log('response', response);
+          if (response) {
+            const dataObj = { ...uploadedImagesDataObj };
+            dataObj[response.documentType] = response;
+            setUploadedImagesDataObj({ ...dataObj });
+          }
+        })
+        .catch((error) => {
+          showToastRedAlert(
+            error.message ? error.message : "Something went wrong"
+          );
+          console.error("error", error);
+        });
+    };
+
+    const deteleButtonPressed = (from) => {
+      const imagesDataObj = { ...uploadedImagesDataObj };
+      switch (from) {
+        case "PAN":
+          delete imagesDataObj.pan;
+          break;
+        case "AADHAR":
+          delete imagesDataObj.aadhar;
+          break;
+        case "REGDOC":
+          delete imagesDataObj.REGDOC;
+          break;
+        case "INSURENCE":
+          delete imagesDataObj.insurance;
+          break;
+        default:
+          break;
+      }
+      setUploadedImagesDataObj({ ...imagesDataObj });
+    };
+
+    const DisplaySelectedImage = ({ fileName, from }) => {
+      return (
+        <View style={styles.selectedImageBckVw}>
+          <Text style={styles.selectedImageTextStyle} numberOfLines={1}>
+            {fileName}
+          </Text>
+          <IconButton
+            icon="close-circle-outline"
+            color={Colors.RED}
+            style={{ padding: 0, margin: 0 }}
+            size={15}
+            onPress={() => deteleButtonPressed(from)}
+          />
+        </View>
+      );
+    };
+
+    const emiCal = (principle, tenure, interestRate) => {
+      const amount = emiCalculator(principle, tenure, interestRate);
+      dispatch(setFinancialDetails({ key: "EMI", text: amount }));
+    };
+
+    if (!componentAppear) {
+      return (
+        <View style={styles.initialContainer}>
+          <ActivityIndicator size="small" color={Colors.RED} />
+        </View>
+      );
+    }
+
+    return (
+      <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
+        <ImagePickerComponent
+          visible={selector.showImagePicker}
+          keyId={selector.imagePickerKeyId}
+          selectedImage={(data, keyId) => {
+            console.log("imageObj: ", data, keyId);
+            uploadSelectedImage(data, keyId);
+          }}
+          onDismiss={() => dispatch(setImagePicker(""))}
+        />
+
+        <DropDownComponant
+          visible={showDropDownModel}
+          headerTitle={dropDownTitle}
+          data={dataForDropDown}
+          onRequestClose={() => setShowDropDownModel(false)}
+          selectedItems={(item) => {
+            if (dropDownKey === "MODEL") {
+              updateVariantModelsData(item.name, false);
+            } else if (dropDownKey === "VARIENT") {
+              updateColorsDataForSelectedVarient(
+                item.name,
+                selectedCarVarientsData.varientList
+              );
+            } else if (
+              dropDownKey === "C_MAKE" ||
+              dropDownKey === "R_MAKE" ||
+              dropDownKey === "A_MAKE"
+            ) {
+              updateModelTypesForCustomerNeedAnalysis(item.name, dropDownKey);
+            }
+            setShowDropDownModel(false);
+            dispatch(
+              setDropDownData({ key: dropDownKey, value: item.name, id: item.id })
+            );
+          }}
+        />
+
+        {selector.showDatepicker && (
+          <DatePickerComponent
+            visible={selector.showDatepicker}
+            mode={"date"}
+            value={new Date(Date.now())}
+            minimumDate={selector.minDate}
+            maximumDate={selector.maxDate}
+            onChange={(event, selectedDate) => {
+              console.log("date: ", selectedDate);
+              if (Platform.OS === "android") {
+                if (!selectedDate) {
+                  dispatch(
+                    updateSelectedDate({ key: "NONE", text: selectedDate })
+                  );
+                } else {
+                  dispatch(updateSelectedDate({ key: "", text: selectedDate }));
+                }
               } else {
                 dispatch(updateSelectedDate({ key: "", text: selectedDate }));
               }
-            } else {
-              dispatch(updateSelectedDate({ key: "", text: selectedDate }));
-            }
+            }}
+            onRequestClose={() => dispatch(setDatePicker())}
+          />
+        )}
+
+        <View style={styles.view1}>
+          <Text style={styles.titleText}>{"Details Overview"}</Text>
+          <IconButton
+            icon={selector.enableEdit ? "account-edit" : "account-edit-outline"}
+            color={Colors.DARK_GRAY}
+            size={30}
+            style={{ paddingRight: 0 }}
+            onPress={() => dispatch(setEditable())}
+          />
+        </View>
+
+        <KeyboardAvoidingView
+          style={{
+            flex: 1,
+            flexDirection: "column",
+            justifyContent: "center",
           }}
-          onRequestClose={() => dispatch(setDatePicker())}
-        />
-      )}
-
-      <View style={styles.view1}>
-        <Text style={styles.titleText}>{"Details Overview"}</Text>
-        <IconButton
-          icon={selector.enableEdit ? "account-edit" : "account-edit-outline"}
-          color={Colors.DARK_GRAY}
-          size={30}
-          style={{ paddingRight: 0 }}
-          onPress={() => dispatch(setEditable())}
-        />
-      </View>
-
-      <KeyboardAvoidingView
-        style={{
-          flex: 1,
-          flexDirection: "column",
-          justifyContent: "center",
-        }}
-        behavior={Platform.OS == "ios" ? "padding" : "height"}
-        enabled
-        keyboardVerticalOffset={100}
-      >
-        <ScrollView
-          automaticallyAdjustContentInsets={true}
-          bounces={true}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ padding: 10 }}
-          keyboardShouldPersistTaps={"handled"}
-          style={{ flex: 1 }}
+          behavior={Platform.OS == "ios" ? "padding" : "height"}
+          enabled
+          keyboardVerticalOffset={100}
         >
-          <View style={styles.baseVw}>
-            <List.AccordionGroup
-              expandedId={openAccordian}
-              onAccordionPress={(expandedId) => updateAccordian(expandedId)}
-            >
-              {/* 1.Customer Profile */}
-              <List.Accordion
-                id={"1"}
-                title={"Customer Profile"}
-                titleStyle={{
-                  color: openAccordian === "1" ? Colors.WHITE : Colors.BLACK,
-                  fontSize: 16,
-                  fontWeight: "600",
-                }}
-                style={{
-                  backgroundColor:
-                    openAccordian === "1" ? Colors.RED : Colors.WHITE,
-                }}
+          <ScrollView
+            automaticallyAdjustContentInsets={true}
+            bounces={true}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ padding: 10 }}
+            keyboardShouldPersistTaps={"handled"}
+            style={{ flex: 1 }}
+          >
+            <View style={styles.baseVw}>
+              <List.AccordionGroup
+                expandedId={openAccordian}
+                onAccordionPress={(expandedId) => updateAccordian(expandedId)}
               >
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.occupation}
-                  label={"Occupation*"}
-                  keyboardType={"default"}
-                  maxLength={40}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCustomerProfile({ key: "OCCUPATION", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.designation}
-                  label={"Designation*"}
-                  keyboardType={"default"}
-                  maxLength={40}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCustomerProfile({ key: "DESIGNATION", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
+                {/* 1.Customer Profile */}
+                <List.Accordion
+                  id={"1"}
+                  title={"Customer Profile"}
+                  titleStyle={{
+                    color: openAccordian === "1" ? Colors.WHITE : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={{
+                    backgroundColor:
+                      openAccordian === "1" ? Colors.RED : Colors.WHITE,
+                  }}
+                >
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.occupation}
+                    label={"Occupation*"}
+                    keyboardType={"default"}
+                    maxLength={40}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCustomerProfile({ key: "OCCUPATION", text: text })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.designation}
+                    label={"Designation*"}
+                    keyboardType={"default"}
+                    maxLength={40}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCustomerProfile({ key: "DESIGNATION", text: text })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
 
-                <DropDownSelectionItem
-                  label={"Enquiry Segment*"}
-                  value={selector.enquiry_segment}
-                  onPress={() =>
-                    showDropDownModelMethod(
-                      "ENQUIRY_SEGMENT",
-                      "Select Enquiry Segment"
-                    )
-                  }
-                />
-
-                <DropDownSelectionItem
-                  label={"Customer Type"}
-                  disabled={!selector.enableEdit}
-                  value={selector.customer_type}
-                  onPress={() =>
-                    showDropDownModelMethod(
-                      "CUSTOMER_TYPE",
-                      "Select Customer Type"
-                    )
-                  }
-                />
-
-                {selector.customer_type.toLowerCase() === "fleet" ||
-                selector.customer_type.toLowerCase() === "institution" ||
-                selector.customer_type.toLowerCase() === "corporate" ||
-                selector.customer_type.toLowerCase() === "government" ||
-                selector.customer_type.toLowerCase() === "retired" ||
-                selector.customer_type.toLowerCase() === "other" ? (
-                  <View>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.company_name}
-                      label={"Company Name"}
-                      keyboardType={"default"}
-                      maxLength={50}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCustomerProfile({
-                            key: "COMPANY_NAME",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>
-                ) : null}
-
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.source_of_enquiry}
-                  label={"Source Of Enquiry"}
-                  editable={false}
-                />
-                <Text style={GlobalStyle.underline}></Text>
-
-                {selector.source_of_enquiry.toLowerCase() === "event" && (
-                  <View>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.event_code}
-                      label={"Event Code"}
-                      editable={false}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>
-                )}
-
-                {(selector.source_of_enquiry
-                  .toLowerCase()
-                  .trim()
-                  .replace(/ /g, "") === "digitalmarketing" ||
-                  selector.source_of_enquiry
-                    .toLowerCase()
-                    .trim()
-                    .replace(/ /g, "") === "socialnetwork") && (
-                  <View>
-                    <DropDownSelectionItem
-                      label={"Sub Source Of Enquiry"}
-                      value={selector.sub_source_of_enquiry}
-                      onPress={() =>
-                        showDropDownModelMethod(
-                          "SUB_SOURCE_OF_ENQUIRY",
-                          "Sub Source Of Enquiry"
-                        )
-                      }
-                    />
-                  </View>
-                )}
-
-                {selector.source_of_enquiry.toLowerCase() === "reference" && (
-                  <View>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.rf_by_first_name}
-                      label={"Referred BY First Name"}
-                      keyboardType={"default"}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCustomerProfile({
-                            key: "RF_FIRST_NAME",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.rf_by_last_name}
-                      label={"Referred BY Last Name"}
-                      keyboardType={"default"}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCustomerProfile({
-                            key: "RF_LAST_NAME",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.rf_by_mobile}
-                      label={"Referred BY Mobile"}
-                      keyboardType={"number-pad"}
-                      maxLength={10}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCustomerProfile({ key: "RF_MOBILE", text: text })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <DropDownSelectionItem
-                      label={"Referred BY Source"}
-                      value={selector.rf_by_source}
-                      onPress={() =>
-                        showDropDownModelMethod(
-                          "RF_SOURCE",
-                          "Referred BY Source"
-                        )
-                      }
-                    />
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.rf_by_source_location}
-                      label={"Referred BY Source Location"}
-                      keyboardType={"default"}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCustomerProfile({
-                            key: "RF_SOURCE_LOCATION",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>
-                )}
-
-                <DateSelectItem
-                  label={"Expected Delivery Date"}
-                  value={selector.expected_delivery_date}
-                  onPress={() =>
-                    dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
-                  }
-                />
-
-                <DropDownSelectionItem
-                  label={"Enquiry Category"}
-                  value={selector.enquiry_category}
-                  onPress={() =>
-                    showDropDownModelMethod(
-                      "ENQUIRY_CATEGORY",
-                      "Enquiry Category"
-                    )
-                  }
-                />
-
-                <DropDownSelectionItem
-                  label={"Buyer Type"}
-                  value={selector.buyer_type}
-                  onPress={() =>
-                    showDropDownModelMethod("BUYER_TYPE", "Buyer Type")
-                  }
-                />
-
-                <DropDownSelectionItem
-                  label={"KMs Travelled in Month"}
-                  value={selector.kms_travelled_month}
-                  onPress={() =>
-                    showDropDownModelMethod(
-                      "KMS_TRAVELLED",
-                      "KMs Travelled in Month"
-                    )
-                  }
-                />
-
-                <DropDownSelectionItem
-                  label={"Who Drives"}
-                  value={selector.who_drives}
-                  onPress={() =>
-                    showDropDownModelMethod("WHO_DRIVES", "Who Drives")
-                  }
-                />
-
-                <DropDownSelectionItem
-                  label={"How many members in your family?"}
-                  value={selector.members}
-                  onPress={() =>
-                    showDropDownModelMethod(
-                      "MEMBERS",
-                      "How many members in your family?"
-                    )
-                  }
-                />
-
-                <DropDownSelectionItem
-                  label={"What is prime expectation from the car?"}
-                  value={selector.prime_expectation_from_car}
-                  onPress={() =>
-                    showDropDownModelMethod(
-                      "PRIME_EXPECTATION_CAR",
-                      "What is prime expectation from the car?"
-                    )
-                  }
-                />
-              </List.Accordion>
-              <View style={styles.space}></View>
-              {/* 2. Personal Intro */}
-              <List.Accordion
-                id={"2"}
-                title="Personal Intro"
-                titleStyle={{
-                  color: openAccordian === "2" ? Colors.WHITE : Colors.BLACK,
-                  fontSize: 16,
-                  fontWeight: "600",
-                }}
-                style={{
-                  backgroundColor:
-                    openAccordian === "2" ? Colors.RED : Colors.WHITE,
-                }}
-              >
-                <DropDownSelectionItem
-                  label={"Salutation*"}
-                  value={selector.salutaion}
-                  onPress={() =>
-                    showDropDownModelMethod("SALUTATION", "Select Salutation")
-                  }
-                />
-
-                {selector.enquiry_segment.toLowerCase() == "personal" ? (
                   <DropDownSelectionItem
-                    label={"Gender"}
-                    value={selector.gender}
-                    onPress={() => showDropDownModelMethod("GENDER", "Gender")}
-                  />
-                ) : null}
-
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.firstName}
-                  label={"First Name*"}
-                  keyboardType={"default"}
-                  editable={selector.enableEdit}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setPersonalIntro({ key: "FIRST_NAME", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.lastName}
-                  label={"Last Name*"}
-                  editable={selector.enableEdit}
-                  keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(setPersonalIntro({ key: "LAST_NAME", text: text }))
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <DropDownSelectionItem
-                  label={"Relation"}
-                  value={selector.relation}
-                  onPress={() =>
-                    showDropDownModelMethod("RELATION", "Relation")
-                  }
-                />
-
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.relationName}
-                  label={"Relation Name*"}
-                  keyboardType={"default"}
-                  maxLength={50}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setPersonalIntro({ key: "RELATION_NAME", text: text })
-                    )
-                  }
-                />
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.mobile}
-                  label={"Mobile Number*"}
-                  editable={selector.enableEdit}
-                  maxLength={10}
-                  keyboardType={"phone-pad"}
-                  onChangeText={(text) =>
-                    dispatch(setPersonalIntro({ key: "MOBILE", text: text }))
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.alterMobile}
-                  label={"Alternate Mobile Number"}
-                  editable={selector.enableEdit}
-                  keyboardType={"phone-pad"}
-                  maxLength={10}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setPersonalIntro({ key: "ALTER_MOBILE", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.email}
-                  label={"Email ID*"}
-                  editable={selector.enableEdit}
-                  keyboardType={"email-address"}
-                  onChangeText={(text) =>
-                    dispatch(setPersonalIntro({ key: "EMAIL", text: text }))
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.age}
-                  label={"Age"}
-                  keyboardType={"phone-pad"}
-                  maxLength={10}
-                  onChangeText={(text) =>
-                    dispatch(setPersonalIntro({ key: "AGE", text: text }))
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                {selector.enquiry_segment.toLowerCase() == "personal" ? (
-                  <View>
-                    <DateSelectItem
-                      label={"Date Of Birth"}
-                      value={selector.dateOfBirth}
-                      onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
-                    />
-                    <DateSelectItem
-                      label={"Anniversary Date"}
-                      value={selector.anniversaryDate}
-                      onPress={() =>
-                        dispatch(setDatePicker("ANNIVERSARY_DATE"))
-                      }
-                    />
-                  </View>
-                ) : null}
-              </List.Accordion>
-              <View style={styles.space}></View>
-              {/* // 3.Communication Address */}
-              <List.Accordion
-                id={"3"}
-                title={"Communication Address"}
-                titleStyle={{
-                  color: openAccordian === "3" ? Colors.WHITE : Colors.BLACK,
-                  fontSize: 16,
-                  fontWeight: "600",
-                }}
-                style={{
-                  backgroundColor:
-                    openAccordian === "3" ? Colors.RED : Colors.WHITE,
-                }}
-              >
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.pincode}
-                  label={"Pincode*"}
-                  maxLength={6}
-                  keyboardType={"phone-pad"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({ key: "PINCODE", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <View style={styles.radioGroupBcVw}>
-                  <RadioTextItem
-                    label={"Urban"}
-                    value={"urban"}
-                    status={selector.urban_or_rural === 1 ? true : false}
-                    onPress={() =>
-                      dispatch(
-                        setCommunicationAddress({
-                          key: "RURAL_URBAN",
-                          text: "1",
-                        })
-                      )
-                    }
-                  />
-                  <RadioTextItem
-                    label={"Rural"}
-                    value={"rural"}
-                    status={selector.urban_or_rural === 2 ? true : false}
-                    onPress={() =>
-                      dispatch(
-                        setCommunicationAddress({
-                          key: "RURAL_URBAN",
-                          text: "2",
-                        })
-                      )
-                    }
-                  />
-                </View>
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.houseNum}
-                  label={"H.No*"}
-                  maxLength={50}
-                  keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({ key: "HOUSE_NO", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.streetName}
-                  label={"Street Name*"}
-                  maxLength={50}
-                  keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({
-                        key: "STREET_NAME",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.village}
-                  label={"Village/Town*"}
-                  maxLength={50}
-                  keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({ key: "VILLAGE", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.city}
-                  label={"City*"}
-                  maxLength={50}
-                  keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({ key: "CITY", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.district}
-                  label={"District*"}
-                  maxLength={50}
-                  keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({ key: "DISTRICT", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.state}
-                  label={"State*"}
-                  maxLength={50}
-                  keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({ key: "STATE", text: text })
-                    )
-                  }
-                />
-
-                {/* // Permanent Addresss */}
-                <View style={styles.radioGroupBcVw}>
-                  <Text style={styles.permanentAddText}>
-                    {"Permanent Address"}
-                  </Text>
-                  <Checkbox.Android
-                    uncheckedColor={Colors.GRAY}
-                    color={Colors.RED}
-                    status={
-                      selector.permanent_address ? "checked" : "unchecked"
-                    }
-                    onPress={() =>
-                      dispatch(
-                        setCommunicationAddress({
-                          key: "PERMANENT_ADDRESS",
-                          text: "",
-                        })
-                      )
-                    }
-                  />
-                </View>
-
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.p_pincode}
-                  label={"Pincode*"}
-                  maxLength={6}
-                  keyboardType={"phone-pad"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({
-                        key: "P_PINCODE",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-
-                <View style={styles.radioGroupBcVw}>
-                  <RadioTextItem
-                    label={"Urban"}
-                    value={"urban"}
-                    status={selector.p_urban_or_rural === 1 ? true : false}
-                    onPress={() =>
-                      dispatch(
-                        setCommunicationAddress({
-                          key: "P_RURAL_URBAN",
-                          text: "1",
-                        })
-                      )
-                    }
-                  />
-                  <RadioTextItem
-                    label={"Rural"}
-                    value={"rural"}
-                    status={selector.p_urban_or_rural === 2 ? true : false}
-                    onPress={() =>
-                      dispatch(
-                        setCommunicationAddress({
-                          key: "P_RURAL_URBAN",
-                          text: "2",
-                        })
-                      )
-                    }
-                  />
-                </View>
-                <Text style={GlobalStyle.underline}></Text>
-
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  label={"H.No*"}
-                  keyboardType={"default"}
-                  maxLength={50}
-                  value={selector.p_houseNum}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({
-                        key: "P_HOUSE_NO",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  label={"Street Name*"}
-                  keyboardType={"default"}
-                  maxLength={50}
-                  value={selector.p_streetName}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({
-                        key: "P_STREET_NAME",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.p_village}
-                  label={"Village/Town*"}
-                  maxLength={50}
-                  keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({
-                        key: "P_VILLAGE",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.p_city}
-                  label={"City*"}
-                  maxLength={50}
-                  keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({ key: "P_CITY", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.p_district}
-                  label={"District*"}
-                  maxLength={50}
-                  keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({
-                        key: "P_DISTRICT",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.p_state}
-                  label={"State*"}
-                  maxLength={50}
-                  keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({ key: "P_STATE", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-              </List.Accordion>
-              <View style={styles.space}></View>
-              {/* // 4.Modal Selection */}
-              <List.Accordion
-                id={"4"}
-                title={"Modal Selection"}
-                titleStyle={{
-                  color: openAccordian === "4" ? Colors.WHITE : Colors.BLACK,
-                  fontSize: 16,
-                  fontWeight: "600",
-                }}
-                style={{
-                  backgroundColor:
-                    openAccordian === "4" ? Colors.RED : Colors.WHITE,
-                }}
-              >
-                <DropDownSelectionItem
-                  label={"Model"}
-                  value={selector.model}
-                  onPress={() =>
-                    showDropDownModelMethod("MODEL", "Select Model")
-                  }
-                />
-
-                <DropDownSelectionItem
-                  label={"Varient"}
-                  value={selector.varient}
-                  onPress={() =>
-                    showDropDownModelMethod("VARIENT", "Select Varient")
-                  }
-                />
-
-                <DropDownSelectionItem
-                  label={"Color"}
-                  value={selector.color}
-                  onPress={() =>
-                    showDropDownModelMethod("COLOR", "Select Color")
-                  }
-                />
-
-                <TextinputComp
-                  style={{ height: 65, width: "100%" }}
-                  label={"Fuel Type"}
-                  editable={false}
-                  value={selector.fuel_type}
-                />
-                <Text style={GlobalStyle.underline}></Text>
-
-                <TextinputComp
-                  style={{ height: 65, width: "100%" }}
-                  label={"Transmission Type"}
-                  editable={false}
-                  value={selector.transmission_type}
-                />
-                <Text style={GlobalStyle.underline}></Text>
-              </List.Accordion>
-              <View style={styles.space}></View>
-              {/* // 5.Financial Details*/}
-              <List.Accordion
-                id={"5"}
-                title={"Financial Details"}
-                titleStyle={{
-                  color: openAccordian === "5" ? Colors.WHITE : Colors.BLACK,
-                  fontSize: 16,
-                  fontWeight: "600",
-                }}
-                style={{
-                  backgroundColor:
-                    openAccordian === "5" ? Colors.RED : Colors.WHITE,
-                }}
-              >
-                <DropDownSelectionItem
-                  label={"Retail Finance"}
-                  value={selector.retail_finance}
-                  onPress={() =>
-                    showDropDownModelMethod("RETAIL_FINANCE", "Retail Finance")
-                  }
-                />
-
-                {selector.retail_finance === "Out House" ? (
-                  <View>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Bank/Finance Name"}
-                      keyboardType={"default"}
-                      value={selector.bank_or_finance_name}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setFinancialDetails({
-                            key: "BANK_R_FINANCE_NAME",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Location"}
-                      keyboardType={"default"}
-                      value={selector.location}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setFinancialDetails({ key: "LOCATION", text: text })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>
-                ) : null}
-
-                {selector.retail_finance === "Leashing" && (
-                  <View>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Leasing Name"}
-                      maxLength={50}
-                      keyboardType={"default"}
-                      value={selector.leashing_name}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setFinancialDetails({
-                            key: "LEASHING_NAME",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>
-                )}
-
-                {selector.retail_finance === "In House" && (
-                  <DropDownSelectionItem
-                    label={"Finance Category"}
-                    value={selector.finance_category}
+                    label={"Enquiry Segment*"}
+                    disabled={!selector.enableEdit}
+                    value={selector.enquiry_segment}
                     onPress={() =>
                       showDropDownModelMethod(
-                        "FINANCE_CATEGORY",
-                        "Finance Category"
+                        "ENQUIRY_SEGMENT",
+                        "Select Enquiry Segment"
                       )
                     }
                   />
-                )}
 
-                {selector.retail_finance === "In House" && (
-                  <View>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Down Payment*"}
-                      maxLength={10}
-                      keyboardType={"default"}
-                      value={selector.down_payment}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setFinancialDetails({
-                            key: "DOWN_PAYMENT",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>
-                )}
+                  <DropDownSelectionItem
+                    label={"Customer Type"}
+                    disabled={!selector.enableEdit}
+                    value={selector.customer_type}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "CUSTOMER_TYPE",
+                        "Select Customer Type"
+                      )
+                    }
+                  />
 
-                {(selector.retail_finance === "In House" ||
-                  selector.retail_finance === "Out House") && (
-                  <View>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Loan Amount*"}
-                      keyboardType={"default"}
-                      maxLength={10}
-                      value={selector.loan_amount}
-                      onChangeText={(text) => {
-                        emiCal(
-                          text,
-                          selector.rate_of_interest,
-                          selector.loan_of_tenure
-                        );
-                        dispatch(
-                          setFinancialDetails({
-                            key: "LOAN_AMOUNT",
-                            text: text,
-                          })
-                        );
-                      }}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Rate of Interest*"}
-                      keyboardType={"default"}
-                      maxLength={10}
-                      value={selector.rate_of_interest}
-                      onChangeText={(text) => {
-                        emiCal(
-                          selector.loan_amount,
-                          text,
-                          selector.loan_of_tenure
-                        );
-                        dispatch(
-                          setFinancialDetails({
-                            key: "RATE_OF_INTEREST",
-                            text: text,
-                          })
-                        );
-                      }}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>
-                )}
+                  {selector.customer_type.toLowerCase() === "fleet" ||
+                    selector.customer_type.toLowerCase() === "institution" ||
+                    selector.customer_type.toLowerCase() === "corporate" ||
+                    selector.customer_type.toLowerCase() === "government" ||
+                    selector.customer_type.toLowerCase() === "retired" ||
+                    selector.customer_type.toLowerCase() === "other" ? (
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.company_name}
+                        label={"Company Name"}
+                        keyboardType={"default"}
+                        maxLength={50}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCustomerProfile({
+                              key: "COMPANY_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  ) : null}
 
-                {selector.retail_finance === "In House" && (
-                  <View>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.source_of_enquiry}
+                    label={"Source Of Enquiry"}
+                    editable={false}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+
+                  {selector.source_of_enquiry.toLowerCase() === "event" && (
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.event_code}
+                        label={"Event Code"}
+                        editable={false}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
+
+                  {(selector.source_of_enquiry
+                    .toLowerCase()
+                    .trim()
+                    .replace(/ /g, "") === "digitalmarketing" ||
+                    selector.source_of_enquiry
+                      .toLowerCase()
+                      .trim()
+                      .replace(/ /g, "") === "socialnetwork") && (
+                      <View>
+                        <DropDownSelectionItem
+                          label={"Sub Source Of Enquiry"}
+                          value={selector.sub_source_of_enquiry}
+                          onPress={() =>
+                            showDropDownModelMethod(
+                              "SUB_SOURCE_OF_ENQUIRY",
+                              "Sub Source Of Enquiry"
+                            )
+                          }
+                        />
+                      </View>
+                    )}
+
+                  {selector.source_of_enquiry.toLowerCase() === "reference" && (
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.rf_by_first_name}
+                        label={"Referred BY First Name"}
+                        keyboardType={"default"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCustomerProfile({
+                              key: "RF_FIRST_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.rf_by_last_name}
+                        label={"Referred BY Last Name"}
+                        keyboardType={"default"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCustomerProfile({
+                              key: "RF_LAST_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.rf_by_mobile}
+                        label={"Referred BY Mobile"}
+                        keyboardType={"number-pad"}
+                        maxLength={10}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCustomerProfile({ key: "RF_MOBILE", text: text })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <DropDownSelectionItem
+                        label={"Referred BY Source"}
+                        value={selector.rf_by_source}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "RF_SOURCE",
+                            "Referred BY Source"
+                          )
+                        }
+                      />
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.rf_by_source_location}
+                        label={"Referred BY Source Location"}
+                        keyboardType={"default"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCustomerProfile({
+                              key: "RF_SOURCE_LOCATION",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
+
+                  <DateSelectItem
+                    label={"Expected Delivery Date"}
+                    value={selector.expected_delivery_date}
+                    onPress={() =>
+                      dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
+                    }
+                  />
+
+                  <DropDownSelectionItem
+                    label={"Enquiry Category"}
+                    value={selector.enquiry_category}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "ENQUIRY_CATEGORY",
+                        "Enquiry Category"
+                      )
+                    }
+                  />
+
+                  <DropDownSelectionItem
+                    label={"Buyer Type"}
+                    value={selector.buyer_type}
+                    onPress={() =>
+                      showDropDownModelMethod("BUYER_TYPE", "Buyer Type")
+                    }
+                  />
+
+                  <DropDownSelectionItem
+                    label={"KMs Travelled in Month"}
+                    value={selector.kms_travelled_month}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "KMS_TRAVELLED",
+                        "KMs Travelled in Month"
+                      )
+                    }
+                  />
+
+                  <DropDownSelectionItem
+                    label={"Who Drives"}
+                    value={selector.who_drives}
+                    onPress={() =>
+                      showDropDownModelMethod("WHO_DRIVES", "Who Drives")
+                    }
+                  />
+
+                  <DropDownSelectionItem
+                    label={"How many members in your family?"}
+                    value={selector.members}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "MEMBERS",
+                        "How many members in your family?"
+                      )
+                    }
+                  />
+
+                  <DropDownSelectionItem
+                    label={"What is prime expectation from the car?"}
+                    value={selector.prime_expectation_from_car}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "PRIME_EXPECTATION_CAR",
+                        "What is prime expectation from the car?"
+                      )
+                    }
+                  />
+                </List.Accordion>
+                <View style={styles.space}></View>
+                {/* 2. Personal Intro */}
+                <List.Accordion
+                  id={"2"}
+                  title="Personal Intro"
+                  titleStyle={{
+                    color: openAccordian === "2" ? Colors.WHITE : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={{
+                    backgroundColor:
+                      openAccordian === "2" ? Colors.RED : Colors.WHITE,
+                  }}
+                >
+                  <DropDownSelectionItem
+                    label={"Salutation*"}
+                    value={selector.salutaion}
+                    onPress={() =>
+                      showDropDownModelMethod("SALUTATION", "Select Salutation")
+                    }
+                  />
+
+                  {selector.enquiry_segment.toLowerCase() == "personal" ? (
                     <DropDownSelectionItem
-                      label={"Bank/Financer"}
-                      value={selector.bank_or_finance}
+                      label={"Gender"}
+                      value={selector.gender}
+                      onPress={() => showDropDownModelMethod("GENDER", "Gender")}
+                    />
+                  ) : null}
+
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.firstName}
+                    label={"First Name*"}
+                    keyboardType={"default"}
+                    editable={selector.enableEdit}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setPersonalIntro({ key: "FIRST_NAME", text: text })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.lastName}
+                    label={"Last Name*"}
+                    editable={selector.enableEdit}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(setPersonalIntro({ key: "LAST_NAME", text: text }))
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <DropDownSelectionItem
+                    label={"Relation"}
+                    value={selector.relation}
+                    onPress={() =>
+                      showDropDownModelMethod("RELATION", "Relation")
+                    }
+                  />
+
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.relationName}
+                    label={"Relation Name*"}
+                    keyboardType={"default"}
+                    maxLength={50}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setPersonalIntro({ key: "RELATION_NAME", text: text })
+                      )
+                    }
+                  />
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.mobile}
+                    label={"Mobile Number*"}
+                    editable={selector.enableEdit}
+                    maxLength={10}
+                    keyboardType={"phone-pad"}
+                    onChangeText={(text) =>
+                      dispatch(setPersonalIntro({ key: "MOBILE", text: text }))
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.alterMobile}
+                    label={"Alternate Mobile Number"}
+                    editable={selector.enableEdit}
+                    keyboardType={"phone-pad"}
+                    maxLength={10}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setPersonalIntro({ key: "ALTER_MOBILE", text: text })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.email}
+                    label={"Email ID*"}
+                    editable={selector.enableEdit}
+                    keyboardType={"email-address"}
+                    onChangeText={(text) =>
+                      dispatch(setPersonalIntro({ key: "EMAIL", text: text }))
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.age}
+                    label={"Age"}
+                    keyboardType={"phone-pad"}
+                    maxLength={10}
+                    onChangeText={(text) =>
+                      dispatch(setPersonalIntro({ key: "AGE", text: text }))
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  {selector.enquiry_segment.toLowerCase() == "personal" ? (
+                    <View>
+                      <DateSelectItem
+                        label={"Date Of Birth"}
+                        value={selector.dateOfBirth}
+                        onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
+                      />
+                      <DateSelectItem
+                        label={"Anniversary Date"}
+                        value={selector.anniversaryDate}
+                        onPress={() =>
+                          dispatch(setDatePicker("ANNIVERSARY_DATE"))
+                        }
+                      />
+                    </View>
+                  ) : null}
+                </List.Accordion>
+                <View style={styles.space}></View>
+                {/* // 3.Communication Address */}
+                <List.Accordion
+                  id={"3"}
+                  title={"Communication Address"}
+                  titleStyle={{
+                    color: openAccordian === "3" ? Colors.WHITE : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={{
+                    backgroundColor:
+                      openAccordian === "3" ? Colors.RED : Colors.WHITE,
+                  }}
+                >
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.pincode}
+                    label={"Pincode*"}
+                    maxLength={6}
+                    keyboardType={"phone-pad"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({ key: "PINCODE", text: text })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <View style={styles.radioGroupBcVw}>
+                    <RadioTextItem
+                      label={"Urban"}
+                      value={"urban"}
+                      status={selector.urban_or_rural === 1 ? true : false}
                       onPress={() =>
-                        showDropDownModelMethod("BANK_FINANCE", "Bank/Financer")
-                      }
-                    />
-
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Loan of Tenure(Months)"}
-                      keyboardType={"default"}
-                      maxLength={3}
-                      value={selector.loan_of_tenure}
-                      onChangeText={(text) => {
-                        emiCal(
-                          selector.loan_amount,
-                          selector.rate_of_interest,
-                          text
-                        );
                         dispatch(
-                          setFinancialDetails({
-                            key: "LOAN_OF_TENURE",
-                            text: text,
+                          setCommunicationAddress({
+                            key: "RURAL_URBAN",
+                            text: "1",
                           })
-                        );
-                      }}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"EMI*"}
-                      keyboardType={"default"}
-                      value={selector.emi}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setFinancialDetails({ key: "EMI", text: text })
                         )
                       }
                     />
-                    <Text style={GlobalStyle.underline}></Text>
+                    <RadioTextItem
+                      label={"Rural"}
+                      value={"rural"}
+                      status={selector.urban_or_rural === 2 ? true : false}
+                      onPress={() =>
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "RURAL_URBAN",
+                            text: "2",
+                          })
+                        )
+                      }
+                    />
+                  </View>
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.houseNum}
+                    label={"H.No*"}
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({ key: "HOUSE_NO", text: text })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.streetName}
+                    label={"Street Name*"}
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "STREET_NAME",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.village}
+                    label={"Village/Town*"}
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({ key: "VILLAGE", text: text })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.city}
+                    label={"City*"}
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({ key: "CITY", text: text })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.district}
+                    label={"District*"}
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({ key: "DISTRICT", text: text })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.state}
+                    label={"State*"}
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({ key: "STATE", text: text })
+                      )
+                    }
+                  />
 
+                  {/* // Permanent Addresss */}
+                  <View style={styles.radioGroupBcVw}>
+                    <Text style={styles.permanentAddText}>
+                      {"Permanent Address"}
+                    </Text>
+                    <Checkbox.Android
+                      uncheckedColor={Colors.GRAY}
+                      color={Colors.RED}
+                      status={
+                        selector.permanent_address ? "checked" : "unchecked"
+                      }
+                      onPress={() =>
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "PERMANENT_ADDRESS",
+                            text: "",
+                          })
+                        )
+                      }
+                    />
+                  </View>
+
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.p_pincode}
+                    label={"Pincode*"}
+                    maxLength={6}
+                    keyboardType={"phone-pad"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "P_PINCODE",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+
+                  <View style={styles.radioGroupBcVw}>
+                    <RadioTextItem
+                      label={"Urban"}
+                      value={"urban"}
+                      status={selector.p_urban_or_rural === 1 ? true : false}
+                      onPress={() =>
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "P_RURAL_URBAN",
+                            text: "1",
+                          })
+                        )
+                      }
+                    />
+                    <RadioTextItem
+                      label={"Rural"}
+                      value={"rural"}
+                      status={selector.p_urban_or_rural === 2 ? true : false}
+                      onPress={() =>
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "P_RURAL_URBAN",
+                            text: "2",
+                          })
+                        )
+                      }
+                    />
+                  </View>
+                  <Text style={GlobalStyle.underline}></Text>
+
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    label={"H.No*"}
+                    keyboardType={"default"}
+                    maxLength={50}
+                    value={selector.p_houseNum}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "P_HOUSE_NO",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    label={"Street Name*"}
+                    keyboardType={"default"}
+                    maxLength={50}
+                    value={selector.p_streetName}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "P_STREET_NAME",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.p_village}
+                    label={"Village/Town*"}
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "P_VILLAGE",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.p_city}
+                    label={"City*"}
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({ key: "P_CITY", text: text })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.p_district}
+                    label={"District*"}
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "P_DISTRICT",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.p_state}
+                    label={"State*"}
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({ key: "P_STATE", text: text })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                </List.Accordion>
+                <View style={styles.space}></View>
+                {/* // 4.Modal Selection */}
+                <List.Accordion
+                  id={"4"}
+                  title={"Modal Selection"}
+                  titleStyle={{
+                    color: openAccordian === "4" ? Colors.WHITE : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={{
+                    backgroundColor:
+                      openAccordian === "4" ? Colors.RED : Colors.WHITE,
+                  }}
+                >
+                  <DropDownSelectionItem
+                    label={"Model"}
+                    value={selector.model}
+                    onPress={() =>
+                      showDropDownModelMethod("MODEL", "Select Model")
+                    }
+                  />
+
+                  <DropDownSelectionItem
+                    label={"Varient"}
+                    value={selector.varient}
+                    onPress={() =>
+                      showDropDownModelMethod("VARIENT", "Select Varient")
+                    }
+                  />
+
+                  <DropDownSelectionItem
+                    label={"Color"}
+                    value={selector.color}
+                    onPress={() =>
+                      showDropDownModelMethod("COLOR", "Select Color")
+                    }
+                  />
+
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    label={"Fuel Type"}
+                    editable={false}
+                    value={selector.fuel_type}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    label={"Transmission Type"}
+                    editable={false}
+                    value={selector.transmission_type}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                </List.Accordion>
+                <View style={styles.space}></View>
+                {/* // 5.
+              */}
+                <List.Accordion
+                  id={"5"}
+                  title={"Financial Details"}
+                  titleStyle={{
+                    color: openAccordian === "5" ? Colors.WHITE : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={{
+                    backgroundColor:
+                      openAccordian === "5" ? Colors.RED : Colors.WHITE,
+                  }}
+                >
+                  <DropDownSelectionItem
+                    label={"Retail Finance"}
+                    value={selector.retail_finance}
+                    onPress={() =>
+                      showDropDownModelMethod("RETAIL_FINANCE", "Retail Finance")
+                    }
+                  />
+
+                  {selector.retail_finance === "Out House" ? (
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Bank/Finance Name"}
+                        keyboardType={"default"}
+                        value={selector.bank_or_finance_name}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setFinancialDetails({
+                              key: "BANK_R_FINANCE_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Location"}
+                        keyboardType={"default"}
+                        value={selector.location}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setFinancialDetails({ key: "LOCATION", text: text })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  ) : null}
+
+                  {selector.retail_finance === "Leasing" && (
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Leasing Name"}
+                        maxLength={50}
+                        value={selector.leashing_name}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setFinancialDetails({
+                              key: "LEASHING_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
+
+                  {selector.retail_finance === "In House" && (
                     <DropDownSelectionItem
-                      label={"Approx Annual Income"}
-                      value={selector.approx_annual_income}
+                      label={"Finance Category"}
+                      value={selector.finance_category}
                       onPress={() =>
                         showDropDownModelMethod(
-                          "APPROX_ANNUAL_INCOME",
-                          "Approx Annual Income"
+                          "FINANCE_CATEGORY",
+                          "Finance Category"
+                        )
+                      }
+                    />
+                  )}
+
+                  {selector.retail_finance === "In House" && (
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Down Payment*"}
+                        maxLength={10}
+                        keyboardType={"default"}
+                        value={selector.down_payment}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setFinancialDetails({
+                              key: "DOWN_PAYMENT",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
+
+                  {(selector.retail_finance === "In House" ||
+                    selector.retail_finance === "Out House") && (
+                      <View>
+                        <TextinputComp
+                          style={{ height: 65, width: "100%" }}
+                          label={"Loan Amount*"}
+                          keyboardType={"default"}
+                          maxLength={10}
+                          value={selector.loan_amount}
+                          onChangeText={(text) => {
+                            emiCal(
+                              text,
+                              selector.rate_of_interest,
+                              selector.loan_of_tenure
+                            );
+                            dispatch(
+                              setFinancialDetails({
+                                key: "LOAN_AMOUNT",
+                                text: text,
+                              })
+                            );
+                          }}
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                        <TextinputComp
+                          style={{ height: 65, width: "100%" }}
+                          label={"Rate of Interest*"}
+                          keyboardType={"default"}
+                          maxLength={10}
+                          value={selector.rate_of_interest}
+                          onChangeText={(text) => {
+                            emiCal(
+                              selector.loan_amount,
+                              text,
+                              selector.loan_of_tenure
+                            );
+                            dispatch(
+                              setFinancialDetails({
+                                key: "RATE_OF_INTEREST",
+                                text: text,
+                              })
+                            );
+                          }}
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
+                    )}
+
+                  {selector.retail_finance === "In House" && (
+                    <View>
+                      <DropDownSelectionItem
+                        label={"Bank/Financer"}
+                        value={selector.bank_or_finance}
+                        onPress={() =>
+                          showDropDownModelMethod("BANK_FINANCE", "Bank/Financer")
+                        }
+                      />
+
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Loan of Tenure(Months)"}
+                        keyboardType={"default"}
+                        maxLength={3}
+                        value={selector.loan_of_tenure}
+                        onChangeText={(text) => {
+                          emiCal(
+                            selector.loan_amount,
+                            selector.rate_of_interest,
+                            text
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "LOAN_OF_TENURE",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"EMI*"}
+                        keyboardType={"default"}
+                        value={selector.emi}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setFinancialDetails({ key: "EMI", text: text })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+
+                      <DropDownSelectionItem
+                        label={"Approx Annual Income"}
+                        value={selector.approx_annual_income}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "APPROX_ANNUAL_INCOME",
+                            "Approx Annual Income"
+                          )
+                        }
+                      />
+                    </View>
+                  )}
+                </List.Accordion>
+                <View style={styles.space}></View>
+                {/* // 6.Upload Documents */}
+                <List.Accordion
+                  id={"6"}
+                  title={"Upload Documents"}
+                  titleStyle={{
+                    color: openAccordian === "6" ? Colors.WHITE : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={{
+                    backgroundColor:
+                      openAccordian === "6" ? Colors.RED : Colors.WHITE,
+                  }}
+                >
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.pan_number}
+                    label={"Pan Number*"}
+                    keyboardType={"default"}
+                    maxLength={10}
+                    onChangeText={(text) =>
+                      dispatch(setUploadDocuments({ key: "PAN", text: text }))
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <View style={styles.select_image_bck_vw}>
+                    <ImageSelectItem
+                      name={"Upload Pan"}
+                      onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
+                    />
+                  </View>
+                  {uploadedImagesDataObj.pan ? (
+                    <DisplaySelectedImage
+                      fileName={uploadedImagesDataObj.pan.fileName}
+                      from={"PAN"}
+                    />
+                  ) : null}
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.adhaar_number}
+                    label={"Aadhaar Number*"}
+                    keyboardType={"phone-pad"}
+                    maxLength={12}
+                    onChangeText={(text) =>
+                      dispatch(setUploadDocuments({ key: "ADHAR", text: text }))
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <View style={styles.select_image_bck_vw}>
+                    <ImageSelectItem
+                      name={"Upload Adhar"}
+                      onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
+                    />
+                  </View>
+                  {uploadedImagesDataObj.aadhar ? (
+                    <DisplaySelectedImage
+                      fileName={uploadedImagesDataObj.aadhar.fileName}
+                      from={"AADHAR"}
+                    />
+                  ) : null}
+                </List.Accordion>
+                <View style={styles.space}></View>
+                {/* // 7.Customer Need Analysis */}
+                <List.Accordion
+                  id={"7"}
+                  title={"Customer Need Analysis"}
+                  titleStyle={{
+                    color: openAccordian === "7" ? Colors.WHITE : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={{
+                    backgroundColor:
+                      openAccordian === "7" ? Colors.RED : Colors.WHITE,
+                  }}
+                >
+                  <View style={styles.view2}>
+                    <Text style={styles.looking_any_text}>
+                      {"Looking for any other brand"}
+                    </Text>
+                    <Checkbox.Android
+                      status={
+                        selector.c_looking_for_any_other_brand_checked
+                          ? "checked"
+                          : "unchecked"
+                      }
+                      uncheckedColor={Colors.DARK_GRAY}
+                      color={Colors.RED}
+                      onPress={() =>
+                        dispatch(
+                          setCustomerNeedAnalysis({ key: "CHECK_BOX", text: "" })
                         )
                       }
                     />
                   </View>
-                )}
-              </List.Accordion>
-              <View style={styles.space}></View>
-              {/* // 6.Upload Documents */}
-              <List.Accordion
-                id={"6"}
-                title={"Upload Documents"}
-                titleStyle={{
-                  color: openAccordian === "6" ? Colors.WHITE : Colors.BLACK,
-                  fontSize: 16,
-                  fontWeight: "600",
-                }}
-                style={{
-                  backgroundColor:
-                    openAccordian === "6" ? Colors.RED : Colors.WHITE,
-                }}
-              >
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.pan_number}
-                  label={"Pan Number*"}
-                  keyboardType={"default"}
-                  maxLength={10}
-                  onChangeText={(text) =>
-                    dispatch(setUploadDocuments({ key: "PAN", text: text }))
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <View style={styles.select_image_bck_vw}>
-                  <ImageSelectItem
-                    name={"Upload Pan"}
-                    onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
-                  />
-                </View>
-                {uploadedImagesDataObj.pan ? (
-                  <DisplaySelectedImage
-                    fileName={uploadedImagesDataObj.pan.fileName}
-                    from={"PAN"}
-                  />
-                ) : null}
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.adhaar_number}
-                  label={"Aadhaar Number*"}
-                  keyboardType={"phone-pad"}
-                  maxLength={12}
-                  onChangeText={(text) =>
-                    dispatch(setUploadDocuments({ key: "ADHAR", text: text }))
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <View style={styles.select_image_bck_vw}>
-                  <ImageSelectItem
-                    name={"Upload Adhar"}
-                    onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
-                  />
-                </View>
-                {uploadedImagesDataObj.aadhar ? (
-                  <DisplaySelectedImage
-                    fileName={uploadedImagesDataObj.aadhar.fileName}
-                    from={"AADHAR"}
-                  />
-                ) : null}
-              </List.Accordion>
-              <View style={styles.space}></View>
-              {/* // 7.Customer Need Analysis */}
-              <List.Accordion
-                id={"7"}
-                title={"Customer Need Analysis"}
-                titleStyle={{
-                  color: openAccordian === "7" ? Colors.WHITE : Colors.BLACK,
-                  fontSize: 16,
-                  fontWeight: "600",
-                }}
-                style={{
-                  backgroundColor:
-                    openAccordian === "7" ? Colors.RED : Colors.WHITE,
-                }}
-              >
-                <View style={styles.view2}>
-                  <Text style={styles.looking_any_text}>
-                    {"Looking for any other brand"}
-                  </Text>
-                  <Checkbox.Android
-                    status={
-                      selector.c_looking_for_any_other_brand_checked
-                        ? "checked"
-                        : "unchecked"
-                    }
-                    uncheckedColor={Colors.DARK_GRAY}
-                    color={Colors.RED}
-                    onPress={() =>
+
+                  {selector.c_looking_for_any_other_brand_checked && (
+                    <View>
+                      <DropDownSelectionItem
+                        label={"Make"}
+                        value={selector.c_make}
+                        onPress={() => showDropDownModelMethod("C_MAKE", "Make")}
+                      />
+                      {selector.c_make === "Other" && (
+                        <View>
+                          <TextinputComp
+                            style={{ height: 65, width: "100%" }}
+                            label={"Make Other Name"}
+                            editable={true}
+                            maxLength={50}
+                            value={selector.c_make_other_name}
+                            onChangeText={(text) =>
+                              dispatch(
+                                setCustomerNeedAnalysis({
+                                  key: "C_MAKE_OTHER_NAME",
+                                  text: text,
+                                })
+                              )
+                            }
+                          />
+                          <Text style={GlobalStyle.underline}></Text>
+                        </View>
+                      )}
+                      <DropDownSelectionItem
+                        label={"Model"}
+                        value={selector.c_model}
+                        onPress={() =>
+                          showDropDownModelMethod("C_MODEL", "Model")
+                        }
+                      />
+                      {selector.c_model === "Other" && (
+                        <View>
+                          <TextinputComp
+                            style={{ height: 65, width: "100%" }}
+                            label={"Model Other Name"}
+                            editable={true}
+                            value={selector.c_model_other_name}
+                            onChangeText={(text) =>
+                              dispatch(
+                                setCustomerNeedAnalysis({
+                                  key: "C_MODEL_OTHER_NAME",
+                                  text: text,
+                                })
+                              )
+                            }
+                          />
+                          <Text style={GlobalStyle.underline}></Text>
+                        </View>
+                      )}
+
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Variant"}
+                        editable={true}
+                        maxLength={40}
+                        value={selector.c_variant}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCustomerNeedAnalysis({
+                              key: "C_VARIANT",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Color"}
+                        editable={true}
+                        maxLength={40}
+                        value={selector.c_color}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCustomerNeedAnalysis({
+                              key: "C_COLOR",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+
+                      <DropDownSelectionItem
+                        label={"Fuel Type"}
+                        value={selector.c_fuel_type}
+                        onPress={() =>
+                          showDropDownModelMethod("C_FUEL_TYPE", "Variant")
+                        }
+                      />
+                      <DropDownSelectionItem
+                        label={"Transmission Type"}
+                        value={selector.c_transmission_type}
+                        onPress={() =>
+                          showDropDownModelMethod("C_TRANSMISSION_TYPE", "Color")
+                        }
+                      />
+
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.c_price_range}
+                        label={"Price Range"}
+                        keyboardType={"number-pad"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCustomerNeedAnalysis({
+                              key: "PRICE_RANGE",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.c_on_road_price}
+                        label={"On Road Price"}
+                        keyboardType={"number-pad"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCustomerNeedAnalysis({
+                              key: "ON_ROAD_PRICE",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.c_dealership_name}
+                        label={"DealerShip Name"}
+                        keyboardType={"default"}
+                        maxLength={50}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCustomerNeedAnalysis({
+                              key: "DEALERSHIP_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.c_dealership_location}
+                        label={"DealerShip Location"}
+                        keyboardType={"default"}
+                        maxLength={50}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCustomerNeedAnalysis({
+                              key: "DEALERSHIP_LOCATION",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.c_dealership_pending_reason}
+                        label={"Dealership Pending Reason"}
+                        keyboardType={"default"}
+                        maxLength={50}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCustomerNeedAnalysis({
+                              key: "DEALERSHIP_PENDING_REASON",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
+
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.c_voice_of_customer_remarks}
+                    label={"Voice of Customer Remarks "}
+                    keyboardType={"default"}
+                    maxLength={50}
+                    onChangeText={(text) =>
                       dispatch(
-                        setCustomerNeedAnalysis({ key: "CHECK_BOX", text: "" })
+                        setCustomerNeedAnalysis({
+                          key: "VOICE_OF_CUSTOMER_REMARKS",
+                          text: text,
+                        })
                       )
                     }
                   />
-                </View>
-
-                {selector.c_looking_for_any_other_brand_checked && (
-                  <View>
+                  <Text style={GlobalStyle.underline}></Text>
+                </List.Accordion>
+                {selector.buyer_type == "Additional Buyer" ||
+                  selector.buyer_type == "Replacement Buyer" ? (
+                  <View style={styles.space}></View>
+                ) : null}
+                {/* // 8.Additional Buyer */}
+                {selector.buyer_type == "Additional Buyer" ? (
+                  <List.Accordion
+                    id={"8"}
+                    title={"Additional Buyer"}
+                    titleStyle={{
+                      color: openAccordian === "8" ? Colors.WHITE : Colors.BLACK,
+                      fontSize: 16,
+                      fontWeight: "600",
+                    }}
+                    style={{
+                      backgroundColor:
+                        openAccordian === "8" ? Colors.RED : Colors.WHITE,
+                    }}
+                  >
                     <DropDownSelectionItem
                       label={"Make"}
-                      value={selector.c_make}
-                      onPress={() => showDropDownModelMethod("C_MAKE", "Make")}
+                      value={selector.a_make}
+                      onPress={() => showDropDownModelMethod("A_MAKE", "Make")}
                     />
-                    {selector.c_make === "Other" && (
+                    {selector.a_make === "Other" && (
                       <View>
                         <TextinputComp
                           style={{ height: 65, width: "100%" }}
                           label={"Make Other Name"}
                           editable={true}
                           maxLength={50}
-                          value={selector.c_make_other_name}
+                          value={selector.a_make_other_name}
                           onChangeText={(text) =>
                             dispatch(
-                              setCustomerNeedAnalysis({
-                                key: "C_MAKE_OTHER_NAME",
+                              setAdditionalBuyerDetails({
+                                key: "A_MAKE_OTHER_NAME",
                                 text: text,
                               })
                             )
@@ -2424,22 +2672,164 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     )}
                     <DropDownSelectionItem
                       label={"Model"}
-                      value={selector.c_model}
-                      onPress={() =>
-                        showDropDownModelMethod("C_MODEL", "Model")
-                      }
+                      value={selector.a_model}
+                      onPress={() => showDropDownModelMethod("A_MODEL", "Model")}
                     />
-                    {selector.c_model === "Other" && (
+                    {selector.a_model === "Other" && (
                       <View>
                         <TextinputComp
                           style={{ height: 65, width: "100%" }}
                           label={"Model Other Name"}
                           editable={true}
-                          value={selector.c_model_other_name}
+                          maxLength={50}
+                          value={selector.a_model_other_name}
                           onChangeText={(text) =>
                             dispatch(
-                              setCustomerNeedAnalysis({
-                                key: "C_MODEL_OTHER_NAME",
+                              setAdditionalBuyerDetails({
+                                key: "A_MODEL_OTHER_NAME",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
+                    )}
+
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.a_varient}
+                      label={"Varient"}
+                      maxLength={50}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setAdditionalBuyerDetails({
+                            key: "A_VARIENT",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.a_color}
+                      label={"Color"}
+                      maxLength={50}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setAdditionalBuyerDetails({
+                            key: "A_COLOR",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.a_reg_no}
+                      label={"Reg. No."}
+                      maxLength={50}
+                      keyboardType={"default"}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setAdditionalBuyerDetails({
+                            key: "A_REG_NO",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </List.Accordion>
+                ) : null}
+
+                {/* // 9.Replacement Buyer */}
+                {selector.buyer_type == "Replacement Buyer" ? (
+                  <List.Accordion
+                    id={"9"}
+                    title={"Replacement Buyer"}
+                    titleStyle={{
+                      color: openAccordian === "9" ? Colors.WHITE : Colors.BLACK,
+                      fontSize: 16,
+                      fontWeight: "600",
+                    }}
+                    style={{
+                      backgroundColor:
+                        openAccordian === "9" ? Colors.RED : Colors.WHITE,
+                    }}
+                  >
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.r_reg_no}
+                      label={"Reg. No."}
+                      maxLength={50}
+                      keyboardType={"default"}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setReplacementBuyerDetails({
+                            key: "R_REG_NO",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Upload Reg Doc"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_REG_DOC"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.REGDOC ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.REGDOC.fileName}
+                        from={"REGDOC"}
+                      />
+                    ) : null}
+                    <DropDownSelectionItem
+                      label={"Make"}
+                      value={selector.r_make}
+                      onPress={() => showDropDownModelMethod("R_MAKE", "Make")}
+                    />
+                    {selector.r_make === "Other" && (
+                      <View>
+                        <TextinputComp
+                          style={{ height: 65, width: "100%" }}
+                          label={"Make Other Name"}
+                          editable={true}
+                          maxLength={50}
+                          value={selector.r_make_other_name}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setReplacementBuyerDetails({
+                                key: "R_MAKE_OTHER_NAME",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
+                    )}
+                    <DropDownSelectionItem
+                      label={"Model"}
+                      value={selector.r_model}
+                      onPress={() => showDropDownModelMethod("R_MODEL", "Model")}
+                    />
+                    {selector.r_model === "Other" && (
+                      <View>
+                        <TextinputComp
+                          style={{ height: 65, width: "100%" }}
+                          label={"Model Other Name"}
+                          editable={true}
+                          maxLength={50}
+                          value={selector.r_model_other_name}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setReplacementBuyerDetails({
+                                key: "R_MODEL_OTHER_NAME",
                                 text: text,
                               })
                             )
@@ -2451,14 +2841,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
-                      label={"Variant"}
+                      label={"Varient"}
                       editable={true}
-                      maxLength={40}
-                      value={selector.c_variant}
+                      value={selector.r_varient}
+                      maxLength={50}
                       onChangeText={(text) =>
                         dispatch(
-                          setCustomerNeedAnalysis({
-                            key: "C_VARIANT",
+                          setReplacementBuyerDetails({
+                            key: "R_VARIENT",
                             text: text,
                           })
                         )
@@ -2470,12 +2860,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       style={{ height: 65, width: "100%" }}
                       label={"Color"}
                       editable={true}
-                      maxLength={40}
-                      value={selector.c_color}
+                      maxLength={50}
+                      value={selector.r_color}
                       onChangeText={(text) =>
                         dispatch(
-                          setCustomerNeedAnalysis({
-                            key: "C_COLOR",
+                          setReplacementBuyerDetails({
+                            key: "R_COLOR",
                             text: text,
                           })
                         )
@@ -2485,923 +2875,563 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                     <DropDownSelectionItem
                       label={"Fuel Type"}
-                      value={selector.c_fuel_type}
+                      value={selector.r_fuel_type}
                       onPress={() =>
-                        showDropDownModelMethod("C_FUEL_TYPE", "Variant")
+                        showDropDownModelMethod("R_FUEL_TYPE", "Fuel Type")
                       }
                     />
                     <DropDownSelectionItem
                       label={"Transmission Type"}
-                      value={selector.c_transmission_type}
+                      value={selector.r_transmission_type}
                       onPress={() =>
-                        showDropDownModelMethod("C_TRANSMISSION_TYPE", "Color")
+                        showDropDownModelMethod(
+                          "R_TRANSMISSION_TYPE",
+                          "Transmission Type"
+                        )
                       }
                     />
 
+                    <DateSelectItem
+                      label={"Mth.Yr. of MFG"}
+                      value={selector.r_mfg_year}
+                      onPress={() => dispatch(setDatePicker("R_MFG_YEAR"))}
+                    />
                     <TextinputComp
                       style={styles.textInputStyle}
-                      value={selector.c_price_range}
-                      label={"Price Range"}
+                      value={selector.r_kms_driven_or_odometer_reading}
+                      label={"Kms-Driven/Odometer Reading"}
                       keyboardType={"number-pad"}
+                      maxLength={7}
                       onChangeText={(text) =>
-                        dispatch(
-                          setCustomerNeedAnalysis({
-                            key: "PRICE_RANGE",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.c_on_road_price}
-                      label={"On Road Price"}
-                      keyboardType={"number-pad"}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCustomerNeedAnalysis({
-                            key: "ON_ROAD_PRICE",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.c_dealership_name}
-                      label={"DealerShip Name"}
-                      keyboardType={"default"}
-                      maxLength={50}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCustomerNeedAnalysis({
-                            key: "DEALERSHIP_NAME",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.c_dealership_location}
-                      label={"DealerShip Location"}
-                      keyboardType={"default"}
-                      maxLength={50}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCustomerNeedAnalysis({
-                            key: "DEALERSHIP_LOCATION",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.c_dealership_pending_reason}
-                      label={"Dealership Pending Reason"}
-                      keyboardType={"default"}
-                      maxLength={50}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCustomerNeedAnalysis({
-                            key: "DEALERSHIP_PENDING_REASON",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>
-                )}
-
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.c_voice_of_customer_remarks}
-                  label={"Voice of Customer Remarks "}
-                  keyboardType={"default"}
-                  maxLength={50}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCustomerNeedAnalysis({
-                        key: "VOICE_OF_CUSTOMER_REMARKS",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-              </List.Accordion>
-              {selector.buyer_type == "Additional Buyer" ||
-              selector.buyer_type == "Replacement Buyer" ? (
-                <View style={styles.space}></View>
-              ) : null}
-              {/* // 8.Additional Buyer */}
-              {selector.buyer_type == "Additional Buyer" ? (
-                <List.Accordion
-                  id={"8"}
-                  title={"Additional Buyer"}
-                  titleStyle={{
-                    color: openAccordian === "8" ? Colors.WHITE : Colors.BLACK,
-                    fontSize: 16,
-                    fontWeight: "600",
-                  }}
-                  style={{
-                    backgroundColor:
-                      openAccordian === "8" ? Colors.RED : Colors.WHITE,
-                  }}
-                >
-                  <DropDownSelectionItem
-                    label={"Make"}
-                    value={selector.a_make}
-                    onPress={() => showDropDownModelMethod("A_MAKE", "Make")}
-                  />
-                  {selector.a_make === "Other" && (
-                    <View>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Make Other Name"}
-                        editable={true}
-                        maxLength={50}
-                        value={selector.a_make_other_name}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setAdditionalBuyerDetails({
-                              key: "A_MAKE_OTHER_NAME",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  )}
-                  <DropDownSelectionItem
-                    label={"Model"}
-                    value={selector.a_model}
-                    onPress={() => showDropDownModelMethod("A_MODEL", "Model")}
-                  />
-                  {selector.a_model === "Other" && (
-                    <View>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Model Other Name"}
-                        editable={true}
-                        maxLength={50}
-                        value={selector.a_model_other_name}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setAdditionalBuyerDetails({
-                              key: "A_MODEL_OTHER_NAME",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  )}
-
-                  <TextinputComp
-                    style={styles.textInputStyle}
-                    value={selector.a_varient}
-                    label={"Varient"}
-                    maxLength={50}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setAdditionalBuyerDetails({
-                          key: "A_VARIENT",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={GlobalStyle.underline}></Text>
-                  <TextinputComp
-                    style={styles.textInputStyle}
-                    value={selector.a_color}
-                    label={"Color"}
-                    maxLength={50}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setAdditionalBuyerDetails({
-                          key: "A_COLOR",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={GlobalStyle.underline}></Text>
-                  <TextinputComp
-                    style={styles.textInputStyle}
-                    value={selector.a_reg_no}
-                    label={"Reg. No."}
-                    maxLength={50}
-                    keyboardType={"default"}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setAdditionalBuyerDetails({
-                          key: "A_REG_NO",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={GlobalStyle.underline}></Text>
-                </List.Accordion>
-              ) : null}
-
-              {/* // 9.Replacement Buyer */}
-              {selector.buyer_type == "Replacement Buyer" ? (
-                <List.Accordion
-                  id={"9"}
-                  title={"Replacement Buyer"}
-                  titleStyle={{
-                    color: openAccordian === "9" ? Colors.WHITE : Colors.BLACK,
-                    fontSize: 16,
-                    fontWeight: "600",
-                  }}
-                  style={{
-                    backgroundColor:
-                      openAccordian === "9" ? Colors.RED : Colors.WHITE,
-                  }}
-                >
-                  <TextinputComp
-                    style={styles.textInputStyle}
-                    value={selector.r_reg_no}
-                    label={"Reg. No."}
-                    maxLength={50}
-                    keyboardType={"default"}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setReplacementBuyerDetails({
-                          key: "R_REG_NO",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={GlobalStyle.underline}></Text>
-                  <View style={styles.select_image_bck_vw}>
-                    <ImageSelectItem
-                      name={"Upload Reg Doc"}
-                      onPress={() => dispatch(setImagePicker("UPLOAD_REG_DOC"))}
-                    />
-                  </View>
-                  {uploadedImagesDataObj.REGDOC ? (
-                    <DisplaySelectedImage
-                      fileName={uploadedImagesDataObj.REGDOC.fileName}
-                      from={"REGDOC"}
-                    />
-                  ) : null}
-                  <DropDownSelectionItem
-                    label={"Make"}
-                    value={selector.r_make}
-                    onPress={() => showDropDownModelMethod("R_MAKE", "Make")}
-                  />
-                  {selector.r_make === "Other" && (
-                    <View>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Make Other Name"}
-                        editable={true}
-                        maxLength={50}
-                        value={selector.r_make_other_name}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setReplacementBuyerDetails({
-                              key: "R_MAKE_OTHER_NAME",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  )}
-                  <DropDownSelectionItem
-                    label={"Model"}
-                    value={selector.r_model}
-                    onPress={() => showDropDownModelMethod("R_MODEL", "Model")}
-                  />
-                  {selector.r_model === "Other" && (
-                    <View>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Model Other Name"}
-                        editable={true}
-                        maxLength={50}
-                        value={selector.r_model_other_name}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setReplacementBuyerDetails({
-                              key: "R_MODEL_OTHER_NAME",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  )}
-
-                  <TextinputComp
-                    style={{ height: 65, width: "100%" }}
-                    label={"Varient"}
-                    editable={true}
-                    value={selector.r_varient}
-                    maxLength={50}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setReplacementBuyerDetails({
-                          key: "R_VARIENT",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={GlobalStyle.underline}></Text>
-
-                  <TextinputComp
-                    style={{ height: 65, width: "100%" }}
-                    label={"Color"}
-                    editable={true}
-                    maxLength={50}
-                    value={selector.r_color}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setReplacementBuyerDetails({
-                          key: "R_COLOR",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={GlobalStyle.underline}></Text>
-
-                  <DropDownSelectionItem
-                    label={"Fuel Type"}
-                    value={selector.r_fuel_type}
-                    onPress={() =>
-                      showDropDownModelMethod("R_FUEL_TYPE", "Fuel Type")
-                    }
-                  />
-                  <DropDownSelectionItem
-                    label={"Transmission Type"}
-                    value={selector.r_transmission_type}
-                    onPress={() =>
-                      showDropDownModelMethod(
-                        "R_TRANSMISSION_TYPE",
-                        "Transmission Type"
-                      )
-                    }
-                  />
-
-                  <DateSelectItem
-                    label={"Mth.Yr. of MFG"}
-                    value={selector.r_mfg_year}
-                    onPress={() => dispatch(setDatePicker("R_MFG_YEAR"))}
-                  />
-                  <TextinputComp
-                    style={styles.textInputStyle}
-                    value={selector.r_kms_driven_or_odometer_reading}
-                    label={"Kms-Driven/Odometer Reading"}
-                    keyboardType={"number-pad"}
-                    maxLength={7}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setReplacementBuyerDetails({
-                          key: "R_KMS_DRIVEN_OR_ODOMETER_READING",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={GlobalStyle.underline}></Text>
-
-                  <View style={styles.view2}>
-                    <Text style={styles.looking_any_text}>
-                      {"Hypothication"}
-                    </Text>
-                    <Checkbox.Android
-                      status={
-                        selector.r_hypothication_checked
-                          ? "checked"
-                          : "unchecked"
-                      }
-                      uncheckedColor={Colors.DARK_GRAY}
-                      color={Colors.RED}
-                      onPress={() =>
                         dispatch(
                           setReplacementBuyerDetails({
-                            key: "R_HYPOTHICATION_CHECKED",
-                            text: "",
+                            key: "R_KMS_DRIVEN_OR_ODOMETER_READING",
+                            text: text,
                           })
                         )
                       }
                     />
-                  </View>
+                    <Text style={GlobalStyle.underline}></Text>
 
-                  {selector.r_hypothication_checked && (
-                    <View>
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.r_hypothication_name}
-                        label={"Hypothication Name"}
-                        keyboardType={"default"}
-                        maxLength={50}
-                        onChangeText={(text) =>
+                    <View style={styles.view2}>
+                      <Text style={styles.looking_any_text}>
+                        {"Hypothication"}
+                      </Text>
+                      <Checkbox.Android
+                        status={
+                          selector.r_hypothication_checked
+                            ? "checked"
+                            : "unchecked"
+                        }
+                        uncheckedColor={Colors.DARK_GRAY}
+                        color={Colors.RED}
+                        onPress={() =>
                           dispatch(
                             setReplacementBuyerDetails({
-                              key: "R_HYPOTHICATION_NAME",
-                              text: text,
+                              key: "R_HYPOTHICATION_CHECKED",
+                              text: "",
                             })
                           )
                         }
                       />
-                      <Text style={GlobalStyle.underline}></Text>
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.r_hypothication_branch}
-                        label={"Hypothication Branch"}
-                        keyboardType={"default"}
-                        maxLength={50}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setReplacementBuyerDetails({
-                              key: "R_HYPOTHICATION_BRANCH",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
                     </View>
-                  )}
 
-                  <TextinputComp
-                    style={styles.textInputStyle}
-                    value={selector.r_expected_price}
-                    label={"Expected Price"}
-                    keyboardType={"number-pad"}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setReplacementBuyerDetails({
-                          key: "R_EXP_PRICE",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={GlobalStyle.underline}></Text>
-                  <DateSelectItem
-                    label={"Registration Date"}
-                    value={selector.r_registration_date}
-                    onPress={() => dispatch(setDatePicker("R_REG_DATE"))}
-                  />
-                  <DateSelectItem
-                    label={"Registration Validity Date"}
-                    value={selector.r_registration_validity_date}
-                    onPress={() =>
-                      dispatch(setDatePicker("R_REG_VALIDITY_DATE"))
-                    }
-                  />
-                  <View style={styles.view2}>
-                    <Text style={styles.looking_any_text}>{"Insurance"}</Text>
-                    <Checkbox.Android
-                      status={
-                        selector.r_insurence_checked ? "checked" : "unchecked"
-                      }
-                      uncheckedColor={Colors.DARK_GRAY}
-                      color={Colors.RED}
-                      onPress={() =>
-                        dispatch(
-                          setReplacementBuyerDetails({
-                            key: "R_INSURENCE_CHECKED",
-                            text: "",
-                          })
-                        )
-                      }
-                    />
-                  </View>
-                  {selector.r_insurence_checked && (
-                    <View>
-                      <View style={styles.view2}>
-                        <Text style={styles.looking_any_text}>
-                          {"Insurance Document"}
-                        </Text>
-                        <Checkbox.Android
-                          status={
-                            selector.r_insurence_document_checked
-                              ? "checked"
-                              : "unchecked"
-                          }
-                          uncheckedColor={Colors.DARK_GRAY}
-                          color={Colors.RED}
-                          onPress={() =>
+                    {selector.r_hypothication_checked && (
+                      <View>
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.r_hypothication_name}
+                          label={"Hypothication Name"}
+                          keyboardType={"default"}
+                          maxLength={50}
+                          onChangeText={(text) =>
                             dispatch(
                               setReplacementBuyerDetails({
-                                key: "R_INSURENCE_DOC_CHECKED",
-                                text: "",
+                                key: "R_HYPOTHICATION_NAME",
+                                text: text,
                               })
                             )
                           }
                         />
-                      </View>
-                    </View>
-                  )}
-                  {selector.r_insurence_document_checked && (
-                    <View>
-                      <View style={styles.select_image_bck_vw}>
-                        <ImageSelectItem
-                          name={"Upload Insurence"}
-                          onPress={() =>
-                            dispatch(setImagePicker("UPLOAD_INSURENCE"))
+                        <Text style={GlobalStyle.underline}></Text>
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.r_hypothication_branch}
+                          label={"Hypothication Branch"}
+                          keyboardType={"default"}
+                          maxLength={50}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setReplacementBuyerDetails({
+                                key: "R_HYPOTHICATION_BRANCH",
+                                text: text,
+                              })
+                            )
                           }
                         />
+                        <Text style={GlobalStyle.underline}></Text>
                       </View>
-                      {uploadedImagesDataObj.insurance ? (
-                        <DisplaySelectedImage
-                          fileName={uploadedImagesDataObj.insurance.fileName}
-                          from={"INSURENCE"}
-                        />
-                      ) : null}
-                    </View>
-                  )}
+                    )}
 
-                  {!selector.r_insurence_checked && (
-                    <View>
-                      <DateSelectItem
-                        label={"Insurance Policy Expiry Date"}
-                        value={selector.r_insurence_expiry_date}
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.r_expected_price}
+                      label={"Expected Price"}
+                      keyboardType={"number-pad"}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setReplacementBuyerDetails({
+                            key: "R_EXP_PRICE",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <DateSelectItem
+                      label={"Registration Date"}
+                      value={selector.r_registration_date}
+                      onPress={() => dispatch(setDatePicker("R_REG_DATE"))}
+                    />
+                    <DateSelectItem
+                      label={"Registration Validity Date"}
+                      value={selector.r_registration_validity_date}
+                      onPress={() =>
+                        dispatch(setDatePicker("R_REG_VALIDITY_DATE"))
+                      }
+                    />
+                    <View style={styles.view2}>
+                      <Text style={styles.looking_any_text}>{"Insurance"}</Text>
+                      <Checkbox.Android
+                        status={
+                          selector.r_insurence_checked ? "checked" : "unchecked"
+                        }
+                        uncheckedColor={Colors.DARK_GRAY}
+                        color={Colors.RED}
                         onPress={() =>
                           dispatch(
-                            setDatePicker("R_INSURENCE_POLICIY_EXPIRY_DATE")
+                            setReplacementBuyerDetails({
+                              key: "R_INSURENCE_CHECKED",
+                              text: "",
+                            })
                           )
                         }
                       />
                     </View>
-                  )}
-                  {selector.r_insurence_checked &&
-                    !selector.r_insurence_document_checked && (
+                    {selector.r_insurence_checked && (
                       <View>
-                        <DropDownSelectionItem
-                          label={"Insurance Type"}
-                          value={selector.r_insurence_type}
+                        <View style={styles.view2}>
+                          <Text style={styles.looking_any_text}>
+                            {"Insurance Document"}
+                          </Text>
+                          <Checkbox.Android
+                            status={
+                              selector.r_insurence_document_checked
+                                ? "checked"
+                                : "unchecked"
+                            }
+                            uncheckedColor={Colors.DARK_GRAY}
+                            color={Colors.RED}
+                            onPress={() =>
+                              dispatch(
+                                setReplacementBuyerDetails({
+                                  key: "R_INSURENCE_DOC_CHECKED",
+                                  text: "",
+                                })
+                              )
+                            }
+                          />
+                        </View>
+                      </View>
+                    )}
+                    {selector.r_insurence_document_checked && (
+                      <View>
+                        <View style={styles.select_image_bck_vw}>
+                          <ImageSelectItem
+                            name={"Upload Insurence"}
+                            onPress={() =>
+                              dispatch(setImagePicker("UPLOAD_INSURENCE"))
+                            }
+                          />
+                        </View>
+                        {uploadedImagesDataObj.insurance ? (
+                          <DisplaySelectedImage
+                            fileName={uploadedImagesDataObj.insurance.fileName}
+                            from={"INSURENCE"}
+                          />
+                        ) : null}
+                      </View>
+                    )}
+
+                    {!selector.r_insurence_checked && (
+                      <View>
+                        <DateSelectItem
+                          label={"Insurance Policy Expiry Date"}
+                          value={selector.r_insurence_expiry_date}
                           onPress={() =>
-                            showDropDownModelMethod(
-                              "R_INSURENCE_TYPE",
-                              "Fuel Type"
+                            dispatch(
+                              setDatePicker("R_INSURENCE_POLICIY_EXPIRY_DATE")
                             )
-                          }
-                        />
-                        <DateSelectItem
-                          label={"Insurance From Date"}
-                          value={selector.r_insurence_from_date}
-                          onPress={() =>
-                            dispatch(setDatePicker("R_INSURENCE_FROM_DATE"))
-                          }
-                        />
-                        <DateSelectItem
-                          label={"Insurance To Date"}
-                          value={selector.r_insurence_to_date}
-                          onPress={() =>
-                            dispatch(setDatePicker("R_INSURENCE_TO_DATE"))
                           }
                         />
                       </View>
                     )}
+                    {selector.r_insurence_checked &&
+                      !selector.r_insurence_document_checked && (
+                        <View>
+                          <DropDownSelectionItem
+                            label={"Insurance Type"}
+                            value={selector.r_insurence_type}
+                            onPress={() =>
+                              showDropDownModelMethod(
+                                "R_INSURENCE_TYPE",
+                                "Fuel Type"
+                              )
+                            }
+                          />
+                          <DateSelectItem
+                            label={"Insurance From Date"}
+                            value={selector.r_insurence_from_date}
+                            onPress={() =>
+                              dispatch(setDatePicker("R_INSURENCE_FROM_DATE"))
+                            }
+                          />
+                          <DateSelectItem
+                            label={"Insurance To Date"}
+                            value={selector.r_insurence_to_date}
+                            onPress={() =>
+                              dispatch(setDatePicker("R_INSURENCE_TO_DATE"))
+                            }
+                          />
+                        </View>
+                      )}
 
-                  {!selector.r_insurence_document_checked && (
-                    <View>
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.r_insurence_company_name}
-                        label={"Insurance Company Name"}
-                        keyboardType={"default"}
-                        maxLength={50}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setReplacementBuyerDetails({
-                              key: "R_INSURENCE_CMPNY_NAME",
-                              text: text,
-                            })
+                    {!selector.r_insurence_document_checked && (
+                      <View>
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.r_insurence_company_name}
+                          label={"Insurance Company Name"}
+                          keyboardType={"default"}
+                          maxLength={50}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setReplacementBuyerDetails({
+                                key: "R_INSURENCE_CMPNY_NAME",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
+                    )}
+                  </List.Accordion>
+                ) : null}
+
+                {isDropSelected ? <View style={styles.space}></View> : null}
+                {/* 10. Drop section */}
+                {isDropSelected ? (
+                  <List.Accordion
+                    id={"9"}
+                    title={"Enquiry Drop Section"}
+                    titleStyle={{
+                      color: openAccordian === "9" ? Colors.WHITE : Colors.BLACK,
+                      fontSize: 16,
+                      fontWeight: "600",
+                    }}
+                    style={{
+                      backgroundColor:
+                        openAccordian === "9" ? Colors.RED : Colors.WHITE,
+                    }}
+                  >
+                    <DropDownSelectionItem
+                      label={"Drop Reason"}
+                      value={selector.drop_reason}
+                      onPress={() =>
+                        showDropDownModelMethod("DROP_REASON", "Drop Reason")
+                      }
+                    />
+                    {selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
+                      "losttocompetitor" ||
+                      selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
+                      "losttoco-dealer" ? (
+                      <DropDownSelectionItem
+                        label={"Drop Sub Reason"}
+                        value={selector.drop_sub_reason}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "DROP_SUB_REASON",
+                            "Drop Sub Reason"
                           )
                         }
                       />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  )}
-                </List.Accordion>
-              ) : null}
+                    ) : null}
+                    {selector.drop_reason === "Lost to Competitor" ||
+                      selector.drop_reason ===
+                      "Lost to Used Cars from Co-Dealer" ? (
+                      <View>
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.d_brand_name}
+                          label={"Brand Name"}
+                          maxLength={50}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setEnquiryDropDetails({
+                                key: "DROP_BRAND_NAME",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
+                    ) : null}
+                    {selector.drop_reason === "Lost to Competitor" ||
+                      selector.drop_reason === "Lost to Used Cars from Co-Dealer" ||
+                      selector.drop_reason === "Lost to Co-dealer" ? (
+                      <View>
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.d_dealer_name}
+                          label={"Dealer Name"}
+                          maxLength={50}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setEnquiryDropDetails({
+                                key: "DROP_DEALER_NAME",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
 
-              {isDropSelected ? <View style={styles.space}></View> : null}
-              {/* 10. Drop section */}
-              {isDropSelected ? (
-                <List.Accordion
-                  id={"9"}
-                  title={"Enquiry Drop Section"}
-                  titleStyle={{
-                    color: openAccordian === "9" ? Colors.WHITE : Colors.BLACK,
-                    fontSize: 16,
-                    fontWeight: "600",
-                  }}
-                  style={{
-                    backgroundColor:
-                      openAccordian === "9" ? Colors.RED : Colors.WHITE,
-                  }}
-                >
-                  <DropDownSelectionItem
-                    label={"Drop Reason"}
-                    value={selector.drop_reason}
-                    onPress={() =>
-                      showDropDownModelMethod("DROP_REASON", "Drop Reason")
-                    }
-                  />
-                  {selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
-                    "losttocompetitor" ||
-                  selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
-                    "losttoco-dealer" ? (
-                    <DropDownSelectionItem
-                      label={"Drop Sub Reason"}
-                      value={selector.drop_sub_reason}
-                      onPress={() =>
-                        showDropDownModelMethod(
-                          "DROP_SUB_REASON",
-                          "Drop Sub Reason"
+                        <Text style={GlobalStyle.underline}></Text>
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.d_location}
+                          label={"Location"}
+                          maxLength={50}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setEnquiryDropDetails({
+                                key: "DROP_LOCATION",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
+                    ) : null}
+                    {selector.drop_reason === "Lost to Competitor" ||
+                      selector.drop_reason ===
+                      "Lost to Used Cars from Co-Dealer" ? (
+                      <View>
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.d_model}
+                          label={"Model"}
+                          maxLength={50}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setEnquiryDropDetails({
+                                key: "DROP_MODEL",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
+                    ) : null}
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.drop_remarks}
+                      label={"Remarks"}
+                      maxLength={50}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setEnquiryDropDetails({
+                            key: "DROP_REMARKS",
+                            text: text,
+                          })
                         )
                       }
                     />
-                  ) : null}
-                  {selector.drop_reason === "Lost to Competitor" ||
-                  selector.drop_reason ===
-                    "Lost to Used Cars from Co-Dealer" ? (
-                    <View>
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.d_brand_name}
-                        label={"Brand Name"}
-                        maxLength={50}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setEnquiryDropDetails({
-                              key: "DROP_BRAND_NAME",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  ) : null}
-                  {selector.drop_reason === "Lost to Competitor" ||
-                  selector.drop_reason === "Lost to Used Cars from Co-Dealer" ||
-                  selector.drop_reason === "Lost to Co-dealer" ? (
-                    <View>
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.d_dealer_name}
-                        label={"Dealer Name"}
-                        maxLength={50}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setEnquiryDropDetails({
-                              key: "DROP_DEALER_NAME",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-
-                      <Text style={GlobalStyle.underline}></Text>
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.d_location}
-                        label={"Location"}
-                        maxLength={50}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setEnquiryDropDetails({
-                              key: "DROP_LOCATION",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  ) : null}
-                  {selector.drop_reason === "Lost to Competitor" ||
-                  selector.drop_reason ===
-                    "Lost to Used Cars from Co-Dealer" ? (
-                    <View>
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.d_model}
-                        label={"Model"}
-                        maxLength={50}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setEnquiryDropDetails({
-                              key: "DROP_MODEL",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  ) : null}
-                  <TextinputComp
-                    style={styles.textInputStyle}
-                    value={selector.drop_remarks}
-                    label={"Remarks"}
-                    maxLength={50}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setEnquiryDropDetails({
-                          key: "DROP_REMARKS",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={GlobalStyle.underline}></Text>
-                </List.Accordion>
-              ) : null}
-            </List.AccordionGroup>
-          </View>
-          {!isDropSelected && (
-            <View style={styles.actionBtnView}>
-              <Button
-                mode="contained"
-                style={{ width: 120 }}
-                color={Colors.RED}
-                labelStyle={{ textTransform: "none" }}
-                onPress={() => setIsDropSelected(true)}
-              >
-                Drop
-              </Button>
-              <Button
-                mode="contained"
-                style={{ width: 120 }}
-                color={Colors.BLACK}
-                labelStyle={{ textTransform: "none" }}
-                onPress={submitClicked}
-              >
-                Submit
-              </Button>
+                    <Text style={GlobalStyle.underline}></Text>
+                  </List.Accordion>
+                ) : null}
+              </List.AccordionGroup>
             </View>
-          )}
-          {showPreBookingBtn && !isDropSelected && (
-            <View style={styles.prebookingBtnView}>
-              <Button
-                mode="contained"
-                color={Colors.BLACK}
-                labelStyle={{ textTransform: "none" }}
-                onPress={proceedToPreBookingClicked}
-              >
-                Proceed To PreBooking
-              </Button>
-            </View>
-          )}
-          {isDropSelected && (
-            <View style={styles.prebookingBtnView}>
-              <Button
-                mode="contained"
-                color={Colors.RED}
-                labelStyle={{ textTransform: "none" }}
-                onPress={proceedToCancelEnquiry}
-              >
-                Proceed To Cancellation
-              </Button>
-            </View>
-          )}
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
-  );
-};
+            {!isDropSelected && (
+              <View style={styles.actionBtnView}>
+                <Button
+                  mode="contained"
+                  style={{ width: 120 }}
+                  color={Colors.RED}
+                  labelStyle={{ textTransform: "none" }}
+                  onPress={() => setIsDropSelected(true)}
+                >
+                  Drop
+                </Button>
+                <Button
+                  mode="contained"
+                  style={{ width: 120 }}
+                  color={Colors.BLACK}
+                  labelStyle={{ textTransform: "none" }}
+                  onPress={submitClicked}
+                >
+                  Submit
+                </Button>
+              </View>
+            )}
+            {showPreBookingBtn && !isDropSelected && (
+              <View style={styles.prebookingBtnView}>
+                <Button
+                  mode="contained"
+                  color={Colors.BLACK}
+                  labelStyle={{ textTransform: "none" }}
+                  onPress={proceedToPreBookingClicked}
+                >
+                  Proceed To PreBooking
+                </Button>
+              </View>
+            )}
+            {isDropSelected && (
+              <View style={styles.prebookingBtnView}>
+                <Button
+                  mode="contained"
+                  color={Colors.RED}
+                  labelStyle={{ textTransform: "none" }}
+                  onPress={proceedToCancelEnquiry}
+                >
+                  Proceed To Cancellation
+                </Button>
+              </View>
+            )}
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    );
+  };
 
-export default DetailsOverviewScreen;
+  export default DetailsOverviewScreen;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  initialContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  baseVw: {
-    paddingHorizontal: 10,
-  },
-  shadow: {
-    shadowColor: Colors.DARK_GRAY,
-    shadowOffset: {
-      width: 0,
-      height: 2,
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
     },
-    shadowRadius: 2,
-    shadowOpacity: 0.5,
-    elevation: 3,
-  },
-  textInputStyle: {
-    height: 65,
-    width: "100%",
-  },
-  space: {
-    height: 10,
-  },
-  drop_down_view_style: {
-    paddingTop: 5,
-    flex: 1,
-    backgroundColor: Colors.WHITE,
-  },
-  view1: {
-    height: 60,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginLeft: 20,
-    marginRight: 5,
-  },
-  titleText: {
-    fontSize: 22,
-    fontWeight: "600",
-  },
-  accordianBckVw: {
-    // marginVertical: 5,
-    // borderRadius: 10,
-    backgroundColor: Colors.WHITE,
-  },
-  radioGroupBcVw: {
-    flexDirection: "row",
-    alignItems: "center",
-    height: 65,
-    paddingLeft: 12,
-    backgroundColor: Colors.WHITE,
-  },
-  permanentAddText: {
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  view2: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: Colors.WHITE,
-    paddingTop: 20,
-    paddingLeft: 12,
-  },
-  looking_any_text: {
-    fontSize: 16,
-    fontWeight: "500",
-  },
-  select_image_bck_vw: {
-    minHeight: 50,
-    paddingLeft: 12,
-    backgroundColor: Colors.WHITE,
-  },
-  actionBtnView: {
-    marginTop: 30,
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    alignItems: "center",
-  },
-  prebookingBtnView: {
-    marginTop: 20,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  selectedImageBckVw: {
-    paddingLeft: 12,
-    paddingRight: 10,
-    paddingBottom: 5,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: Colors.WHITE,
-  },
-  selectedImageTextStyle: {
-    fontSize: 12,
-    fontWeight: "400",
-    width: "80%",
-    color: Colors.DARK_GRAY,
-  },
-});
+    initialContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    baseVw: {
+      paddingHorizontal: 10,
+    },
+    shadow: {
+      shadowColor: Colors.DARK_GRAY,
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowRadius: 2,
+      shadowOpacity: 0.5,
+      elevation: 3,
+    },
+    textInputStyle: {
+      height: 65,
+      width: "100%",
+    },
+    space: {
+      height: 10,
+    },
+    drop_down_view_style: {
+      paddingTop: 5,
+      flex: 1,
+      backgroundColor: Colors.WHITE,
+    },
+    view1: {
+      height: 60,
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginLeft: 20,
+      marginRight: 5,
+    },
+    titleText: {
+      fontSize: 22,
+      fontWeight: "600",
+    },
+    accordianBckVw: {
+      // marginVertical: 5,
+      // borderRadius: 10,
+      backgroundColor: Colors.WHITE,
+    },
+    radioGroupBcVw: {
+      flexDirection: "row",
+      alignItems: "center",
+      height: 65,
+      paddingLeft: 12,
+      backgroundColor: Colors.WHITE,
+    },
+    permanentAddText: {
+      fontSize: 16,
+      fontWeight: "600",
+    },
+    view2: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: Colors.WHITE,
+      paddingTop: 20,
+      paddingLeft: 12,
+    },
+    looking_any_text: {
+      fontSize: 16,
+      fontWeight: "500",
+    },
+    select_image_bck_vw: {
+      minHeight: 50,
+      paddingLeft: 12,
+      backgroundColor: Colors.WHITE,
+    },
+    actionBtnView: {
+      marginTop: 30,
+      flexDirection: "row",
+      justifyContent: "space-evenly",
+      alignItems: "center",
+    },
+    prebookingBtnView: {
+      marginTop: 20,
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    selectedImageBckVw: {
+      paddingLeft: 12,
+      paddingRight: 10,
+      paddingBottom: 5,
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      backgroundColor: Colors.WHITE,
+    },
+    selectedImageTextStyle: {
+      fontSize: 12,
+      fontWeight: "400",
+      width: "80%",
+      color: Colors.DARK_GRAY,
+    },
+  });
 
-// left={(props) => (
-//   <VectorImage height={25} width={25} source={PERSONAL_DETAILS} />
-// )}
+  // left={(props) => (
+  //   <VectorImage height={25} width={25} source={PERSONAL_DETAILS} />
+  // )}
 
-{
-  /* <View style={[styles.accordianBckVw, GlobalStyle.shadow, { backgroundColor: "white" }]}>
- 
-</View> */
-}
+  {
+    /* <View style={[styles.accordianBckVw, GlobalStyle.shadow, { backgroundColor: "white" }]}>
+   
+  </View> */
+  }
