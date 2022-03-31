@@ -99,7 +99,6 @@ import {
   convertDateStringToMillisecondsUsingMoment,
   isValidateAlphabetics,
   emiCalculator,
-  isValidateAlphabetics,
 } from "../../../utils/helperFunctions";
 import URL from "../../../networking/endpoints";
 import uuid from "react-native-uuid";
@@ -818,11 +817,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       showToast("Please fill the martial status");
       return;
     }
-   if (selector.retail_finance == 'Leasing') {
-       if (selector.leashing_name.length == 0) {
-      showToast("Please fill required fields in leasing name");
-      return;
-    }
+    if (selector.retail_finance == "Leasing") {
+      if (selector.leashing_name.length == 0) {
+        showToast("Please fill required fields in leasing name");
+        return;
+      }
       if (!isValidateAlphabetics(selector.leashing_name)) {
         showToast("Please enter proper leasing name");
         return;
