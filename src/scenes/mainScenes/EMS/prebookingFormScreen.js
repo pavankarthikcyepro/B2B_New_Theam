@@ -99,7 +99,6 @@ import {
   convertDateStringToMillisecondsUsingMoment,
   isValidateAlphabetics,
   emiCalculator,
-  isValidateAlphabetics,
 } from "../../../utils/helperFunctions";
 import URL from "../../../networking/endpoints";
 import uuid from "react-native-uuid";
@@ -828,8 +827,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         return;
       }
     }
+
+    const bookingAmount = parseInt(selector.booking_amount)
+    if (bookingAmount < 50000) {
+      showToast("please enter booking amount minimum 50000k ");
+      return;
+    }
+
     if (
-      selector.booking_amount.length === 0 ||
       selector.payment_at.length === 0 ||
       selector.booking_payment_mode.length === 0
     ) {
@@ -844,6 +849,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       showToast("Please enter commitment details");
       return;
     }
+
 
     if (!selector.pre_booking_details_response.dmsLeadDto) {
       return;
@@ -1308,6 +1314,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     } else if (selector.booking_amount_response_status === "failed") {
       showToastRedAlert("Something went wrong");
     }
+
   }, [selector.booking_amount_response_status]);
 
   // Handle Assigned Tasks Response
@@ -2183,6 +2190,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   value={selector.relationship_proof}
                   label={"Relationship Number*"}
                   keyboardType="number-pad"
+                  maxLength={10}
                   onChangeText={(text) =>
                     dispatch(
                       setDocumentUploadDetails({

@@ -415,7 +415,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           return;
         }
       }
-
       if (selector.r_insurence_company_name.length == 0) {
         showToast("Please enter the proper insurance company name");
         return;
@@ -435,7 +434,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         }
       }
     }
-
+      if (selector.r_hypothication_checked === true) {
+        if (selector.r_hypothication_name.length > 0) {
+          if (!isValidateAlphabetics(selector.r_hypothication_name)) {
+            showToast("Please enter the proper Hypothication name");
+            return;
+          }
+        }
+        if (selector.r_hypothication_branch.length > 0) {
+          if (!isValidateAlphabetics(selector.r_hypothication_branch)) {
+            showToast("Please enter the proper Hypothication branch");
+            return;
+          }
+        }
+       }
     if (selector.c_looking_for_any_other_brand_checked === true) {
       if (selector.c_dealership_name.length > 0) {
         if (!isValidateAlphabetics(selector.c_dealership_name)) {
