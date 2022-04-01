@@ -38,7 +38,7 @@ const EnquiryScreen = ({ navigation }) => {
     setSelectedFromDate(lastMonthFirstDate);
     const tomorrowDate = moment().add(1, "day").format(dateFormat)
     setSelectedToDate(tomorrowDate);
-    getAsyncData(lastMonthFirstDate, currentDate);
+    getAsyncData(lastMonthFirstDate, tomorrowDate);
   }, []);
 
   const getAsyncData = async (startDate, endDate) => {
