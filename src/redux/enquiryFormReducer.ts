@@ -411,6 +411,9 @@ const enquiryDetailsOverViewSlice = createSlice({
         case "DROP_SUB_REASON":
           state.drop_sub_reason = value;
           break;
+        case "R_INSURENCE_COMPANY_NAME":
+          state.r_insurence_company_name = value;
+          break;
       }
     },
     setDatePicker: (state, action) => {

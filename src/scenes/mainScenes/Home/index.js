@@ -149,7 +149,9 @@ const HomeScreen = ({ route, navigation }) => {
       "endDate": monthLastDate,
       "loggedInEmpId": empId,
       "startDate": monthFirstDate,
-      "levelSelected": null
+      "levelSelected": null,
+      "pageNo": 0,
+      "size": 5
     }
     dispatch(getLeadSourceTableList(payload));
     dispatch(getVehicleModelTableList(payload));
@@ -164,7 +166,7 @@ const HomeScreen = ({ route, navigation }) => {
     const payload = {
       ...oldPayload,
       "pageNo": 0,
-      "size": 10
+      "size": 5
     }
     dispatch(getTaskTableList(payload));
     dispatch(getSalesData(payload));
@@ -175,15 +177,15 @@ const HomeScreen = ({ route, navigation }) => {
     const payload1 = {
       ...payload,
       "pageNo": 0,
-      "size": 10
+      "size": 5
     }
     dispatch(getTargetParametersData(payload1));
   }
 
   useEffect(() => {
-    if (selector.sales_data) {
+    if (Object.keys(selector.sales_data).length > 0) {
       const dataObj = selector.sales_data;
-      const data = [dataObj.todaySales, dataObj.todayVisitors, dataObj.totalEarnings, dataObj.dropRevenue, dataObj.pendingOrders]
+      const data = [dataObj.liveBookings, dataObj.complaints, dataObj.deliveries, dataObj.dropRevenue, dataObj.pendingOrders]
       setSalesDataAry(data);
     }
   }, [selector.sales_data])

@@ -423,7 +423,7 @@ export const homeSlice = createSlice({
         state.sales_data = {};
       })
       .addCase(getSalesData.fulfilled, (state, action) => {
-        //console.log("S getSalesData: ", JSON.stringify(action.payload));
+        console.log("S getSalesData: ", JSON.stringify(action.payload));
         if (action.payload) {
           state.sales_data = action.payload;
         }

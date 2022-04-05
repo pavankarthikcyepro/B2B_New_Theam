@@ -108,6 +108,7 @@ const FilterScreen = ({ navigation }) => {
         console.log("index: ", index)
 
         const totalDataObjLocal = { ...totalDataObj };
+
         if (index > 0) {
             let selectedParendIds = [];
             let unselectedParentIds = [];

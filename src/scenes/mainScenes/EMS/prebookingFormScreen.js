@@ -370,7 +370,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       .then((json) => {
         // console.log(json);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
 
   const setCarModelsDataFromBase = () => {
@@ -817,11 +817,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       showToast("Please fill the martial status");
       return;
     }
-   if (selector.retail_finance == 'Leasing') {
-       if (selector.leashing_name.length == 0) {
-      showToast("Please fill required fields in leasing name");
-      return;
-    }
+
+    if (selector.retail_finance == 'Leasing') {
+      if (selector.leashing_name.length == 0) {
+        showToast("Please fill required fields in leasing name");
+        return;
+      }
       if (!isValidateAlphabetics(selector.leashing_name)) {
         showToast("Please enter proper leasing name");
         return;
@@ -830,7 +831,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     const bookingAmount = parseInt(selector.booking_amount)
     if (bookingAmount < 50000) {
-      showToast("please enter booking amount minimum 50000k ");
+      showToast("please enter booking amount minimum 50000");
       return;
     }
 
@@ -1530,7 +1531,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           console.log("imageObj: ", data, keyId);
           uploadSelectedImage(data, keyId);
         }}
-        // onDismiss={() => dispatch(setImagePicker(""))}
+      // onDismiss={() => dispatch(setImagePicker(""))}
       />
 
       <DropDownComponant
@@ -2235,8 +2236,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 {(selector.enquiry_segment === "Company" &&
                   selector.customer_type === "Institution") ||
-                selector.customer_type_category == "B2B" ||
-                selector.customer_type_category == "B2C" ? (
+                  selector.customer_type_category == "B2B" ||
+                  selector.customer_type_category == "B2C" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -2396,11 +2397,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 <CheckboxTextAndAmountComp
                   title={"Handling Charges:"}
-                  amount={
-                    handlingChargSlctd
-                      ? priceInfomationData.handling_charges.toFixed(2)
-                      : "0.00"
-                  }
+                  amount={priceInfomationData.handling_charges.toFixed(2)}
+                  // amount={handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : "0.00"}
                   isChecked={handlingChargSlctd}
                   onPress={() => {
                     setHandlingChargSlctd(!handlingChargSlctd);
@@ -2415,11 +2413,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 <CheckboxTextAndAmountComp
                   title={"Essential Kit:"}
-                  amount={
-                    essentialKitSlctd
-                      ? priceInfomationData.essential_kit.toFixed(2)
-                      : "0.00"
-                  }
+                  amount={priceInfomationData.essential_kit.toFixed(2)}
+                  // amount={essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : "0.00"}
                   isChecked={essentialKitSlctd}
                   onPress={() => {
                     setEssentialKitSlctd(!essentialKitSlctd);
@@ -2458,11 +2453,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 <CheckboxTextAndAmountComp
                   title={"Fast Tag:"}
-                  amount={
-                    fastTagSlctd
-                      ? priceInfomationData.fast_tag.toFixed(2)
-                      : "0.00"
-                  }
+                  amount={priceInfomationData.fast_tag.toFixed(2)}
+                  // amount={fastTagSlctd ? priceInfomationData.fast_tag.toFixed(2) : "0.00"}
                   isChecked={fastTagSlctd}
                   onPress={() => {
                     setFastTagSlctd(!fastTagSlctd);
@@ -2786,51 +2778,51 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 {(selector.retail_finance === "In House" ||
                   selector.retail_finance === "Out House") && (
-                  <View>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Loan Amount*"}
-                      keyboardType={"number-pad"}
-                      value={selector.loan_amount}
-                      onChangeText={(text) => {
-                        // Calculate EMI
-                        emiCal(
-                          text,
-                          selector.rate_of_interest,
-                          selector.loan_of_tenure
-                        );
-                        dispatch(
-                          setFinancialDetails({
-                            key: "LOAN_AMOUNT",
-                            text: text,
-                          })
-                        );
-                      }}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Rate of Interest*"}
-                      keyboardType={"number-pad"}
-                      value={selector.rate_of_interest}
-                      onChangeText={(text) => {
-                        // Calculate EMI
-                        emiCal(
-                          selector.loan_amount,
-                          text,
-                          selector.loan_of_tenure
-                        );
-                        dispatch(
-                          setFinancialDetails({
-                            key: "RATE_OF_INTEREST",
-                            text: text,
-                          })
-                        );
-                      }}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>
-                )}
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Loan Amount*"}
+                        keyboardType={"number-pad"}
+                        value={selector.loan_amount}
+                        onChangeText={(text) => {
+                          // Calculate EMI
+                          emiCal(
+                            text,
+                            selector.rate_of_interest,
+                            selector.loan_of_tenure
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "LOAN_AMOUNT",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Rate of Interest*"}
+                        keyboardType={"number-pad"}
+                        value={selector.rate_of_interest}
+                        onChangeText={(text) => {
+                          // Calculate EMI
+                          emiCal(
+                            selector.loan_amount,
+                            text,
+                            selector.loan_of_tenure
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "RATE_OF_INTEREST",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
 
                 {selector.retail_finance === "In House" && (
                   <View>
@@ -3022,7 +3014,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   />
                   {selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
                     "losttocompetitor" ||
-                  selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
+                    selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
                     "losttoco-dealer" ? (
                     <DropDownSelectionItem
                       label={"Drop Sub Reason"}
@@ -3037,7 +3029,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ) : null}
 
                   {selector.drop_reason === "Lost to Competitor" ||
-                  selector.drop_reason ===
+                    selector.drop_reason ===
                     "Lost to Used Cars from Co-Dealer" ? (
                     <View>
                       <TextinputComp
@@ -3059,8 +3051,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ) : null}
 
                   {selector.drop_reason === "Lost to Competitor" ||
-                  selector.drop_reason === "Lost to Used Cars from Co-Dealer" ||
-                  selector.drop_reason === "Lost to Co-Dealer" ? (
+                    selector.drop_reason === "Lost to Used Cars from Co-Dealer" ||
+                    selector.drop_reason === "Lost to Co-Dealer" ? (
                     <View>
                       <TextinputComp
                         style={styles.textInputStyle}
@@ -3096,7 +3088,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ) : null}
 
                   {selector.drop_reason === "Lost to Competitor" ||
-                  selector.drop_reason ===
+                    selector.drop_reason ===
                     "Lost to Used Cars from Co-Dealer" ? (
                     <View>
                       <TextinputComp
@@ -3250,44 +3242,44 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                   {(selector.booking_payment_mode === "InternetBanking" ||
                     selector.booking_payment_mode === "Internet Banking") && (
-                    <View>
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.utr_no}
-                        label={"UTR No"}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setPreBookingPaymentDetials({
-                              key: "UTR_NO",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                      <DateSelectItem
-                        label={"Transaction Date"}
-                        value={selector.transaction_date}
-                        onPress={() =>
-                          dispatch(setDatePicker("TRANSACTION_DATE"))
-                        }
-                      />
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.comapany_bank_name}
-                        label={"Company Bank Name"}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setPreBookingPaymentDetials({
-                              key: "COMPANY_BANK_NAME",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  )}
+                      <View>
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.utr_no}
+                          label={"UTR No"}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setPreBookingPaymentDetials({
+                                key: "UTR_NO",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                        <DateSelectItem
+                          label={"Transaction Date"}
+                          value={selector.transaction_date}
+                          onPress={() =>
+                            dispatch(setDatePicker("TRANSACTION_DATE"))
+                          }
+                        />
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.comapany_bank_name}
+                          label={"Company Bank Name"}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setPreBookingPaymentDetials({
+                                key: "COMPANY_BANK_NAME",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
+                    )}
 
                   {selector.booking_payment_mode === "Cheque" && (
                     <View>

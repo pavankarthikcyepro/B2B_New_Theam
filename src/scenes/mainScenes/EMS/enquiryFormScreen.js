@@ -161,6 +161,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     minDate: null,
     maxDate: null,
   });
+  const [insurenceCompayList, serInsurenceCompanyList] = useState([])
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -181,6 +182,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   useEffect(() => {
+    getAuthToken();
     getAsyncstoreData();
     setComponentAppear(true);
     getEnquiryDetailsFromServer();
@@ -201,6 +203,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     return true;
   };
 
+  const getAuthToken = () => {
+    AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
+      if (token.length > 0) {
+        getInsurenceCompanyNamesFromServer(token);
+      }
+    });
+  };
+
+
   const getAsyncstoreData = async () => {
     const employeeData = await AsyncStore.getData(
       AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -212,6 +223,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         orgId: jsonObj.orgId,
         employeeId: jsonObj.empId,
         employeeName: jsonObj.empName,
+      });
+
+      AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
+        if (token.length > 0) {
+          getInsurenceCompanyNamesFromServer(token, jsonObj.orgId);
+        }
       });
     }
   };
@@ -225,6 +242,29 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
     setCarModelsData([...modalList]);
   };
+
+  const getInsurenceCompanyNamesFromServer = async (token, orgId) => {
+    await fetch(URL.GET_INSURENCE_COMPANY_NAMES(orgId), {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "auth-token": token,
+      },
+    })
+      .then((json) => json.json())
+      .then((res) => {
+        if (res != null && res.length > 0) {
+          const companyList = res.map((item, index) => {
+            return { ...item, name: item.company_name }
+          })
+          serInsurenceCompanyList([...companyList]);
+        }
+      })
+      .catch((error) => {
+        showToastRedAlert(error.message);
+      });
+  }
 
   useEffect(() => {
     if (selector.enquiry_details_response) {
@@ -434,20 +474,22 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         }
       }
     }
-      if (selector.r_hypothication_checked === true) {
-        if (selector.r_hypothication_name.length > 0) {
-          if (!isValidateAlphabetics(selector.r_hypothication_name)) {
-            showToast("Please enter the proper Hypothication name");
-            return;
-          }
+
+    if (selector.r_hypothication_checked === true) {
+      if (selector.r_hypothication_name.length > 0) {
+        if (!isValidateAlphabetics(selector.r_hypothication_name)) {
+          showToast("Please enter the proper Hypothication name");
+          return;
         }
-        if (selector.r_hypothication_branch.length > 0) {
-          if (!isValidateAlphabetics(selector.r_hypothication_branch)) {
-            showToast("Please enter the proper Hypothication branch");
-            return;
-          }
+      }
+      if (selector.r_hypothication_branch.length > 0) {
+        if (!isValidateAlphabetics(selector.r_hypothication_branch)) {
+          showToast("Please enter the proper Hypothication branch");
+          return;
         }
-       }
+      }
+    }
+
     if (selector.c_looking_for_any_other_brand_checked === true) {
       if (selector.c_dealership_name.length > 0) {
         if (!isValidateAlphabetics(selector.c_dealership_name)) {
@@ -1058,6 +1100,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       case "RF_SOURCE":
         setDataForDropDown([...Referred_By_Source]);
         break;
+      case "R_INSURENCE_COMPANY_NAME":
+        setDataForDropDown([...insurenceCompayList]);
+        break;
     }
     setDropDownKey(key);
     setDropDownTitle(headerText);
@@ -1132,7 +1177,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
   };
 
-  updateModelTypesForCustomerNeedAnalysis = (brandName, dropDownKey) => {
+  const updateModelTypesForCustomerNeedAnalysis = (brandName, dropDownKey) => {
     let modelsData = [];
     All_Car_Brands.forEach((item) => {
       if (item.name === brandName) {
@@ -3126,7 +3171,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                   {!selector.r_insurence_document_checked && (
                     <View>
-                      <TextinputComp
+                      <DropDownSelectionItem
+                        label={"Insurance Company Name"}
+                        value={selector.r_insurence_company_name}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "R_INSURENCE_COMPANY_NAME",
+                            "Insurence Company Name"
+                          )
+                        }
+                      />
+                      {/* <TextinputComp
                         style={styles.textInputStyle}
                         value={selector.r_insurence_company_name}
                         label={"Insurance Company Name"}
@@ -3140,7 +3195,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                             })
                           )
                         }
-                      />
+                      /> */}
                       <Text style={GlobalStyle.underline}></Text>
                     </View>
                   )}
@@ -3444,12 +3499,3 @@ const styles = StyleSheet.create({
   },
 });
 
-// left={(props) => (
-//   <VectorImage height={25} width={25} source={PERSONAL_DETAILS} />
-// )}
-
-{
-  /* <View style={[styles.accordianBckVw, GlobalStyle.shadow, { backgroundColor: "white" }]}>
- 
-</View> */
-}
