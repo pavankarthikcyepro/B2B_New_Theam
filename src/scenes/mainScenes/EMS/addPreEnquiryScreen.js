@@ -452,6 +452,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       .then((response) => response.json())
       .then((jsonObj) => {
         if (jsonObj.success == true) {
+
           const dmsEntiry = jsonObj.dmsEntity;
           const refNumber = dmsEntiry.leadCustomerReference.referencenumber;
           makeCreatePreEnquiry(refNumber);
@@ -557,7 +558,13 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   useEffect(() => {
     if (selector.createEnquiryStatus === "success") {
       gotoConfirmPreEnquiryScreen(selector.create_enquiry_response_obj);
-    } else if (selector.errorMsg) {
+    }
+    else if (selector.createEnquiryStatus === "failed") {
+      if (selector.create_enquiry_response_obj && selector.create_enquiry_response_obj.accountId != null && selector.create_enquiry_response_obj.contactId != null) {
+        confirmToCreateLeadAgain(selector.create_enquiry_response_obj);
+      } else {
+        showToast(response.message || "something went wrong");
+      }
       showToast(selector.errorMsg);
     }
   }, [
@@ -820,14 +827,14 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               label={"First Name*"}
               editable={
                 selector.enquiryType.length > 0 &&
-                selector.customerType.length > 0
+                  selector.customerType.length > 0
                   ? true
                   : false
               }
               maxLength={30}
               disabled={
                 selector.enquiryType.length > 0 &&
-                selector.customerType.length > 0
+                  selector.customerType.length > 0
                   ? false
                   : true
               }
@@ -851,14 +858,14 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               label={"Last Name*"}
               editable={
                 selector.enquiryType.length > 0 &&
-                selector.customerType.length > 0
+                  selector.customerType.length > 0
                   ? true
                   : false
               }
               maxLength={30}
               disabled={
                 selector.enquiryType.length > 0 &&
-                selector.customerType.length > 0
+                  selector.customerType.length > 0
                   ? false
                   : true
               }
@@ -923,10 +930,10 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             />
 
             {selector.customerType === "Corporate" ||
-            selector.customerType === "Government" ||
-            selector.customerType === "Retired" ||
-            selector.customerType === "Fleet" ||
-            selector.customerType === "Institution" ? (
+              selector.customerType === "Government" ||
+              selector.customerType === "Retired" ||
+              selector.customerType === "Fleet" ||
+              selector.customerType === "Institution" ? (
               <View>
                 <TextinputComp
                   style={styles.textInputComp}

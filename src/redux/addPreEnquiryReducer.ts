@@ -275,23 +275,16 @@ export const addPreEnquirySlice = createSlice({
         state.create_enquiry_response_obj = {};
       })
       .addCase(createPreEnquiry.fulfilled, (state, action) => {
-        //console.log('res2: ', action.payload);
-        if (action.payload.errorMessage) {
-          showToast(action.payload.errorMessage);
-        } else {
-          state.create_enquiry_response_obj = action.payload;
-        }
+        console.log('res2: ', action.payload);
         state.isLoading = false;
+        state.create_enquiry_response_obj = action.payload;
         state.createEnquiryStatus = "success";
       })
       .addCase(createPreEnquiry.rejected, (state, action) => {
-        const message = action.payload["message"] || "";
-        if (message) {
-          showToast(message);
-        }
+        console.log('res3: ', action.payload);
         state.isLoading = false;
+        state.create_enquiry_response_obj = action.payload;
         state.createEnquiryStatus = "failed";
-        state.create_enquiry_response_obj = {};
       })
       .addCase(updatePreEnquiry.pending, (state, action) => {
         state.isLoading = true;
