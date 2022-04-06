@@ -4,7 +4,7 @@ import { Platform } from "react-native";
 if (Platform.OS === "android") {
     Reactotron
         .configure({
-            host: '192.168.0.103'
+            host: 'localhost'
         })
         .useReactNative()
         .connect();

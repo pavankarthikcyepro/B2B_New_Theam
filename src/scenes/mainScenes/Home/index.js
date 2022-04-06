@@ -149,9 +149,7 @@ const HomeScreen = ({ route, navigation }) => {
       "endDate": monthLastDate,
       "loggedInEmpId": empId,
       "startDate": monthFirstDate,
-      "levelSelected": null,
-      "pageNo": 0,
-      "size": 5
+      "levelSelected": null
     }
     dispatch(getLeadSourceTableList(payload));
     dispatch(getVehicleModelTableList(payload));

@@ -26,27 +26,35 @@ interface Item {
   id: string;
 }
 
-export const createPreEnquiry = createAsyncThunk(
-  "ADD_PRE_ENQUIRY_SLICE/createPreEnquiry",
-  async (data, { rejectWithValue }) => {
-    const response = await client.post(data["url"], data["body"]);
+export const createPreEnquiry = createAsyncThunk("ADD_PRE_ENQUIRY_SLICE/createPreEnquiry", async (data, { rejectWithValue }) => {
+  const response = await client.post(data["url"], data["body"]);
+  try {
     const json = await response.json();
-    if (!response.ok) {
+    if (response.status != 200) {
       return rejectWithValue(json);
     }
     return json;
+  } catch (error) {
+    console.log("JSON parse error: ", error + " : " + JSON.stringify(response));
+    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-);
+});
 
 export const continueToCreatePreEnquiry = createAsyncThunk(
   "ADD_PRE_ENQUIRY_SLICE/continueToCreatePreEnquiry",
   async (data, { rejectWithValue }) => {
     const response = await client.post(data["url"], data["body"]);
-    const json = await response.json();
-    if (!response.ok) {
-      return rejectWithValue(json);
+
+    try {
+      const json = await response.json();
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.log("JSON parse error: ", error + " : " + response);
+      return rejectWithValue({ message: "Json parse error: " + response });
     }
-    return json;
   }
 );
 
@@ -54,11 +62,16 @@ export const updatePreEnquiry = createAsyncThunk(
   "ADD_PRE_ENQUIRY_SLICE/updatePreEnquiry",
   async (data, { rejectWithValue }) => {
     const response = await client.put(data["url"], data["body"]);
-    const json = await response.json();
-    if (!response.ok) {
-      return rejectWithValue(json);
+    try {
+      const json = await response.json();
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.log("JSON parse error: ", error + " : " + response);
+      return rejectWithValue({ message: "Json parse error: " + response });
     }
-    return json;
   }
 );
 
@@ -73,11 +86,16 @@ export const getEventListApi = createAsyncThunk(
       URL.GET_EVENT_LIST(payload.startDate, payload.endDate, payload.empId),
       customConfig
     );
-    const json = await response.json();
-    if (!response.ok) {
-      return rejectWithValue(json);
+    try {
+      const json = await response.json();
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.log("JSON parse error: ", error + " : " + response);
+      return rejectWithValue({ message: "Json parse error: " + response });
     }
-    return json;
   }
 );
 
@@ -291,7 +309,7 @@ export const addPreEnquirySlice = createSlice({
         state.status = "pending";
       })
       .addCase(updatePreEnquiry.fulfilled, (state, action) => {
-        console.log("res2: ", action.payload);
+        // console.log("res2: ", action.payload);
         if (action.payload.errorMessage) {
           showToast(action.payload.errorMessage);
         } else {
