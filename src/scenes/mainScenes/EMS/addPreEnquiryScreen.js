@@ -52,15 +52,13 @@ import {
 } from "../../../utils/toast";
 import URL from "../../../networking/endpoints";
 import { isValidateAlphabetics } from "../../../utils/helperFunctions";
+import moment from 'moment';
 
 const screenWidth = Dimensions.get("window").width;
 
 const AddPreEnquiryScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.addPreEnquiryReducer);
   const homeSelector = useSelector((state) => state.homeReducer);
-  const { vehicle_modal_list, customer_type_list } = useSelector(
-    (state) => state.homeReducer
-  );
   const dispatch = useDispatch();
   const [organizationId, setOrganizationId] = useState(0);
   const [branchId, setBranchId] = useState(0);
@@ -97,7 +95,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   useEffect(() => {
     getAsyncstoreData();
     setExistingData();
-    updateCarModelsData();
     getBranchId();
     getAuthToken();
     // getCustomerTypeListFromDB();
@@ -159,6 +156,13 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           );
         }
       }
+
+      // Get User Token
+      AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
+        if (token.length > 0) {
+          geModelsFromServer(jsonObj.empId, token)
+        }
+      });
     }
   };
 
@@ -174,15 +178,45 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     });
   };
 
-  const updateCarModelsData = () => {
-    let modalList = [];
-    if (vehicle_modal_list.length > 0) {
-      vehicle_modal_list.forEach((item) => {
-        modalList.push({ id: item.vehicleId, name: item.model });
-      });
+  const geModelsFromServer = async (empId, token) => {
+    const dateFormat = "YYYY-MM-DD";
+    const currentDate = moment().format(dateFormat)
+    const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+    const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+
+    const payload = {
+      "endDate": monthLastDate,
+      "loggedInEmpId": empId,
+      "startDate": monthFirstDate,
+      "levelSelected": null
     }
-    setDataForCarModels([...modalList]);
-  };
+
+    await fetch(URL.VEHICLE_MODEL_DATA(), {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "auth-token": token,
+      },
+      body: JSON.stringify(payload),
+    })
+      .then((json) => json.json())
+      .then((resp) => {
+        // console.log("modelRes: ", resp)
+        if (resp) {
+          let modalList = [];
+          if (resp.length > 0) {
+            resp.forEach((item) => {
+              modalList.push({ id: item.vehicleId, name: item.model });
+            });
+          }
+          setDataForCarModels([...modalList]);
+        }
+      })
+      .catch((error) => {
+        showToastRedAlert(error.message);
+      });
+  }
 
   const setExistingData = () => {
     if (route.params?.fromEdit != null && route.params.fromEdit === true) {
@@ -440,6 +474,9 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       orgid: userData.orgId,
     };
 
+    // console.log("URL: ", URL.CUSTOMER_LEAD_REFERENCE())
+    // console.log("bodyObj: ", bodyObj)
+
     await fetch(URL.CUSTOMER_LEAD_REFERENCE(), {
       method: "POST",
       headers: {
@@ -563,9 +600,8 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       if (selector.create_enquiry_response_obj && selector.create_enquiry_response_obj.accountId != null && selector.create_enquiry_response_obj.contactId != null) {
         confirmToCreateLeadAgain(selector.create_enquiry_response_obj);
       } else {
-        showToast(response.message || "something went wrong");
+        showToast(selector.create_enquiry_response_obj.message || "something went wrong");
       }
-      showToast(selector.errorMsg);
     }
   }, [
     selector.status,
