@@ -744,8 +744,13 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   updateSubSourceData = (item) => {
     console.log("item: ", item);
     if (item.subsource && item.subsource.length > 0) {
-      const updatedData = item.subsource.map((item) => {
-        return { ...item, name: item.subSource };
+      const updatedData = [];
+      item.subsource.forEach((subItem, index) => {
+        const newItem = { ...subItem };
+        newItem.name = subItem.subSource;
+        if (newItem.status === "Active") {
+          updatedData.push(newItem);
+        };
       });
       setSubSourceData(updatedData);
     } else {
