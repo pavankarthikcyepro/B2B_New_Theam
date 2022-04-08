@@ -159,14 +159,15 @@ const HomeStackNavigator = ({ navigation }) => {
         initialParams={{ branchName: "" }}
         options={{
           title: "Dashboard",
+          headerShown: false,
           headerLeft: () => <MenuIcon navigation={navigation} />,
           headerRight: () => {
             return (
               <View style={{ flexDirection: "row" }}>
-                <NotficationIcon
+                {/* <NotficationIcon
                   navigation={navigation}
                   identifier={"NOTIF_1"}
-                />
+                /> */}
               </View>
             );
           },

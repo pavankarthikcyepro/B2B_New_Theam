@@ -100,10 +100,11 @@ const SelectBranchComp = ({ route, navigation }) => {
                 />
 
             </View>
-            <View style={{ width: "100%", height: 45, justifyContent: "center", alignItems: "center" }}>
+            <View style={{ width: "100%", height: 40, justifyContent: "center", alignItems: "center", bottom: 10 }}>
                 <ButtonComp
                     title={route.params.isFromLogin ? "Proceed" : "Update"}
                     width={150}
+                    height={40}
                     onPress={proceedBtnClicked}
                 />
             </View>

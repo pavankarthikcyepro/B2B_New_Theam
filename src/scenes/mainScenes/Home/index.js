@@ -32,6 +32,7 @@ import { HomeStackIdentifiers } from '../../../navigations/appNavigator';
 import * as AsyncStore from '../../../asyncStore';
 import moment from 'moment';
 import { TargetAchivementComp } from './targetAchivementComp';
+import { HeaderComp } from '../../../components';
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 30) / 2;
@@ -61,26 +62,27 @@ const HomeScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
   const [salesDataAry, setSalesDataAry] = useState([]);
+  const [selectedBranchName, setSelectedBranchName] = useState("");
 
   useLayoutEffect(() => {
 
-    if (route.params?.branchName) {
-      navigation.setOptions({
-        headerRight: () => (
-          <TouchableOpacity onPress={moveToSelectBranch}>
-            <View style={{ paddingLeft: 5, paddingRight: 2, paddingVertical: 2, borderColor: Colors.WHITE, borderWidth: 1, borderRadius: 4, flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
-              <Text style={{ fontSize: 10, fontWeight: "600", color: Colors.WHITE, width: 65 }} numberOfLines={1} >{route.params?.branchName || ""}</Text>
-              <IconButton
-                icon="menu-down"
-                style={{ padding: 0, margin: 0 }}
-                color={Colors.WHITE}
-                size={15}
-              />
-            </View>
-          </TouchableOpacity>
-        ),
-      });
-    }
+    // if (route.params?.branchName) {
+    //   navigation.setOptions({
+    //     headerRight: () => (
+    //       <TouchableOpacity onPress={moveToSelectBranch}>
+    //         <View style={{ paddingLeft: 5, paddingRight: 2, paddingVertical: 2, borderColor: Colors.WHITE, borderWidth: 1, borderRadius: 4, flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+    //           <Text style={{ fontSize: 10, fontWeight: "600", color: Colors.WHITE, width: 65 }} numberOfLines={1} >{route.params?.branchName || ""}</Text>
+    //           <IconButton
+    //             icon="menu-down"
+    //             style={{ padding: 0, margin: 0 }}
+    //             color={Colors.WHITE}
+    //             size={15}
+    //           />
+    //         </View>
+    //       </TouchableOpacity>
+    //     ),
+    //   });
+    // }
   }, [navigation]);
 
   useEffect(() => {
@@ -100,10 +102,8 @@ const HomeScreen = ({ route, navigation }) => {
 
   const updateBranchNameInHeader = () => {
     AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_NAME).then((branchName) => {
-      console.log("branchNameTest: ", branchName)
-      navigation.setParams({
-        branchName: branchName,
-      });
+      // console.log("branchNameTest: ", branchName)
+      setSelectedBranchName(branchName);
     });
   }
 
@@ -190,7 +190,12 @@ const HomeScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-
+      <HeaderComp
+        title={"Dashboard"}
+        branchName={selectedBranchName}
+        menuClicked={() => navigation.openDrawer()}
+        branchClicked={() => moveToSelectBranch()}
+      />
       <View style={{ flex: 1, padding: 10 }}>
         <FlatList
           data={[1, 2, 3]}
