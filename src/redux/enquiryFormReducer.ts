@@ -142,7 +142,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     anniversaryDate: "",
     relation: "",
     gender: "",
-    salutaion: "",
+    salutation: "",
     // Communication Address
     pincode: "",
     urban_or_rural: 0, // 1: urban, 2:
@@ -153,7 +153,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     state: "",
     district: "",
 
-    permanent_address: true,
+    is_permanent_address_same: "",
     p_pincode: "",
     p_urban_or_rural: 0, // 1: urban, 2:
     p_houseNum: "",
@@ -289,13 +289,15 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.rf_by_source = value;
           break;
         case "SALUTATION":
-          if (state.salutaion !== value) {
-            state.gender = "";
+          if (state.salutation !== value) {
+
+            const genderData = Gender_Data_Obj[value.toLowerCase()];
+            state.gender = genderData.length > 0 ? genderData[0].name : "";
             state.relation = "";
-            state.gender_types_data = Gender_Data_Obj[value.toLowerCase()];
+            state.gender_types_data = genderData;
             state.relation_types_data = Relation_Data_Obj[value.toLowerCase()];
           }
-          state.salutaion = value;
+          state.salutation = value;
           break;
         case "GENDER":
           state.gender = value;
@@ -590,8 +592,12 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.state = text;
           break;
         case "PERMANENT_ADDRESS":
-          state.permanent_address = !state.permanent_address;
-          if (state.permanent_address) {
+          if (text === "true") {
+            state.is_permanent_address_same = "YES";
+          } else if (text === "false") {
+            state.is_permanent_address_same = "NO";
+          }
+          if (state.is_permanent_address_same === "YES") {
             state.p_pincode = state.pincode;
             state.p_urban_or_rural = state.urban_or_rural;
             state.p_houseNum = state.houseNum;
@@ -843,7 +849,7 @@ const enquiryDetailsOverViewSlice = createSlice({
         : "";
       state.gender = dms_C_Or_A_Dto.gender ? dms_C_Or_A_Dto.gender : "";
       state.relation = dms_C_Or_A_Dto.relation ? dms_C_Or_A_Dto.relation : "";
-      state.salutaion = dms_C_Or_A_Dto.salutation
+      state.salutation = dms_C_Or_A_Dto.salutation
         ? dms_C_Or_A_Dto.salutation
         : "";
       state.relationName = dms_C_Or_A_Dto.relationName
@@ -851,11 +857,11 @@ const enquiryDetailsOverViewSlice = createSlice({
         : "";
       state.age = dms_C_Or_A_Dto.age ? dms_C_Or_A_Dto.age.toString() : "0";
 
-      if (state.salutaion) {
+      if (state.salutation) {
         state.gender_types_data =
-          Gender_Data_Obj[state.salutaion.toLowerCase()];
+          Gender_Data_Obj[state.salutation.toLowerCase()];
         state.relation_types_data =
-          Relation_Data_Obj[state.salutaion.toLowerCase()];
+          Relation_Data_Obj[state.salutation.toLowerCase()];
       }
 
       const dateOfBirth = dms_C_Or_A_Dto.dateOfBirth
@@ -1193,6 +1199,13 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.fuel_type = action.payload.fuelType;
       state.transmission_type = action.payload.transmissionType;
     },
+    updateAddressByPincode: (state, action) => {
+
+      state.village = action.payload.Block || ""
+      state.city = action.payload.Region || ""
+      state.district = action.payload.District || ""
+      state.state = action.payload.State || ""
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(getEnquiryDetailsApi.pending, (state) => {
@@ -1331,5 +1344,6 @@ export const {
   updateCustomerNeedAnalysisData,
   updateAdditionalOrReplacementBuyerData,
   updateDmsAttachmentDetails,
+  updateAddressByPincode
 } = enquiryDetailsOverViewSlice.actions;
 export default enquiryDetailsOverViewSlice.reducer;

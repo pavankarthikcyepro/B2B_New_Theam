@@ -160,6 +160,7 @@ const EnquiryScreen = ({ navigation }) => {
         value={new Date(Date.now())}
         onChange={(event, selectedDate) => {
           console.log("date: ", selectedDate);
+          setShowDatePicker(false)
           if (Platform.OS === "android") {
             if (selectedDate) {
               updateSelectedDate(selectedDate, datePickerId);
@@ -167,7 +168,6 @@ const EnquiryScreen = ({ navigation }) => {
           } else {
             updateSelectedDate(selectedDate, datePickerId);
           }
-          setShowDatePicker(false)
         }}
         onRequestClose={() => setShowDatePicker(false)}
       />
@@ -237,6 +237,7 @@ const EnquiryScreen = ({ navigation }) => {
                     enquiryCategory={item.enquiryCategory}
                     date={item.createdDate}
                     modelName={item.model}
+                    createdBy={item.createdBy}
                     onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.detailsOverview, { universalId: item.universalId })}
                     onCallPress={() => callNumber(item.phone)}
                   />

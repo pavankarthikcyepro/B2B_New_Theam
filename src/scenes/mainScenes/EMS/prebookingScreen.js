@@ -160,6 +160,7 @@ const PreBookingScreen = ({ navigation }) => {
                 value={new Date(Date.now())}
                 onChange={(event, selectedDate) => {
                     console.log("date: ", selectedDate);
+                    setShowDatePicker(false)
                     if (Platform.OS === "android") {
                         if (selectedDate) {
                             updateSelectedDate(selectedDate, datePickerId);
@@ -167,7 +168,6 @@ const PreBookingScreen = ({ navigation }) => {
                     } else {
                         updateSelectedDate(selectedDate, datePickerId);
                     }
-                    setShowDatePicker(false)
                 }}
                 onRequestClose={() => setShowDatePicker(false)}
             />
@@ -237,6 +237,7 @@ const PreBookingScreen = ({ navigation }) => {
                                         date={item.createdDate}
                                         enquiryCategory={item.enquiryCategory}
                                         modelName={item.model}
+                                        createdBy={item.createdBy}
                                         onPress={() => navigation.navigate(AppNavigator.PreBookingStackIdentifiers.preBookingForm, { universalId: item.universalId })}
                                         onCallPress={() => callNumber(item.phone)}
                                     />

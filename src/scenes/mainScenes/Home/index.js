@@ -134,8 +134,12 @@ const HomeScreen = ({ route, navigation }) => {
         branchId: jsonObj.branchId
       }
       // console.log("jsonObj: ", jsonObj);
-      dispatch(getOrganaizationHirarchyList(payload));
-      dispatch(getSourceOfEnquiryList(jsonObj.orgId));
+      Promise.all([
+        dispatch(getOrganaizationHirarchyList(payload)),
+        dispatch(getSourceOfEnquiryList(jsonObj.orgId))
+      ]).then(() => {
+        console.log('I did everything!');
+      });
       getDashboadTableDataFromServer(jsonObj.empId);
     }
   }
@@ -151,10 +155,16 @@ const HomeScreen = ({ route, navigation }) => {
       "startDate": monthFirstDate,
       "levelSelected": null
     }
-    dispatch(getLeadSourceTableList(payload));
-    dispatch(getVehicleModelTableList(payload));
-    dispatch(getEventTableList(payload));
-    dispatch(getLostDropChartData(payload));
+
+    Promise.all([
+      dispatch(getLeadSourceTableList(payload)),
+      dispatch(getVehicleModelTableList(payload)),
+      dispatch(getEventTableList(payload)),
+      dispatch(getLostDropChartData(payload))
+    ]).then(() => {
+      console.log('I did everything!');
+    });
+
     getTaskTableDataFromServer(empId, payload);
     getTargetParametersDataFromServer(payload);
   }
@@ -166,9 +176,13 @@ const HomeScreen = ({ route, navigation }) => {
       "pageNo": 0,
       "size": 5
     }
-    dispatch(getTaskTableList(payload));
-    dispatch(getSalesData(payload));
-    dispatch(getSalesComparisonData(payload));
+    Promise.all([
+      dispatch(getTaskTableList(payload)),
+      dispatch(getSalesData(payload)),
+      dispatch(getSalesComparisonData(payload))
+    ]).then(() => {
+      console.log('I did everything!');
+    });
   }
 
   const getTargetParametersDataFromServer = (payload) => {
@@ -177,7 +191,11 @@ const HomeScreen = ({ route, navigation }) => {
       "pageNo": 0,
       "size": 5
     }
-    dispatch(getTargetParametersData(payload1));
+    Promise.all([
+      dispatch(getTargetParametersData(payload1))
+    ]).then(() => {
+      console.log('I did everything!');
+    });
   }
 
   useEffect(() => {

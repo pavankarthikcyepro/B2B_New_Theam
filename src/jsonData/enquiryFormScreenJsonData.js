@@ -111,6 +111,7 @@ export const Gender_Data_Obj = {
       name: "Transgender",
     },
   ],
+  "M/S": []
 };
 
 export const Relation_Data_Obj = {

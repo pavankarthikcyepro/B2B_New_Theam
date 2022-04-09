@@ -178,3 +178,25 @@ export const emiCalculator = (principle, tenure, interestRate) => {
   }
   return "";
 };
+
+export const PincodeDetails = async (pincode) => {
+  return await new Promise((resolve, reject) => {
+    fetch(`https://api.postalpincode.in/pincode/${pincode}`, {
+      method: "GET"
+    })
+      .then(json => json.json())
+      .then(res => {
+        if (res != undefined && res.length > 0) {
+          if (res[0].PostOffice != null && res[0].PostOffice.length > 0) {
+            resolve({ ...res[0].PostOffice[0] })
+          } else {
+            reject({});
+          }
+        }
+        else {
+          reject({});
+        }
+      })
+      .catch((err) => reject(err))
+  })
+}

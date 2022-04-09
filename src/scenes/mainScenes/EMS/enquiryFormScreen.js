@@ -68,6 +68,7 @@ import {
   uploadDocumentApi,
   updateDmsAttachmentDetails,
   getPendingTasksApi,
+  updateAddressByPincode
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
@@ -109,6 +110,7 @@ import {
   convertDateStringToMilliseconds,
   convertDateStringToMillisecondsUsingMoment,
   emiCalculator,
+  PincodeDetails,
 } from "../../../utils/helperFunctions";
 import URL from "../../../networking/endpoints";
 import { getEnquiryList } from "../../../redux/enquiryReducer";
@@ -361,7 +363,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (selector.salutaion.length == 0) {
+    if (selector.salutation.length == 0) {
       showToast("Please fill required fields in Personal Intro");
       return;
     }
@@ -548,7 +550,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.secondaryPhone = selector.alterMobile;
     dataObj.gender = selector.gender;
     dataObj.relation = selector.relation;
-    dataObj.salutation = selector.salutaion;
+    dataObj.salutation = selector.salutation;
     dataObj.relationName = selector.relationName;
     dataObj.age = selector.age;
 
@@ -1296,6 +1298,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     );
   };
 
+  const updateAddressDetails = (pincode) => {
+
+    if (pincode.length != 6) {
+      return;
+    }
+
+    PincodeDetails(pincode).then((resolve) => {
+      // dispatch an action to update address
+      dispatch(updateAddressByPincode(resolve));
+    }, rejected => {
+      console.log("rejected...: ", rejected)
+    })
+  }
+
   const emiCal = (principle, tenure, interestRate) => {
     const amount = emiCalculator(principle, tenure, interestRate);
     dispatch(setFinancialDetails({ key: "EMI", text: amount }));
@@ -1373,7 +1389,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         />
       )}
 
-      <View style={styles.view1}>
+      {/* <View style={styles.view1}>
         <Text style={styles.titleText}>{"Details Overview"}</Text>
         <IconButton
           icon={selector.enableEdit ? "account-edit" : "account-edit-outline"}
@@ -1382,7 +1398,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           style={{ paddingRight: 0 }}
           onPress={() => dispatch(setEditable())}
         />
-      </View>
+      </View> */}
 
       <KeyboardAvoidingView
         style={{
@@ -1398,7 +1414,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           automaticallyAdjustContentInsets={true}
           bounces={true}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ padding: 10 }}
+          contentContainerStyle={{ paddingVertical: 10, paddingHorizontal: 5 }}
           keyboardShouldPersistTaps={"handled"}
           style={{ flex: 1 }}
         >
@@ -1414,12 +1430,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 titleStyle={{
                   color: openAccordian === "1" ? Colors.WHITE : Colors.BLACK,
                   fontSize: 16,
-                  fontWeight: "600",
+                  fontWeight: "800",
                 }}
-                style={{
-                  backgroundColor:
-                    openAccordian === "1" ? Colors.RED : Colors.WHITE,
-                }}
+                style={[{
+                  backgroundColor: openAccordian === "1" ? Colors.RED : Colors.WHITE,
+                }, styles.accordianBorder]}
               >
                 <TextinputComp
                   style={styles.textInputStyle}
@@ -1450,7 +1465,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 <DropDownSelectionItem
                   label={"Enquiry Segment*"}
-                  disabled={!selector.enableEdit}
+                  // disabled={!selector.enableEdit}
                   value={selector.enquiry_segment}
                   onPress={() =>
                     showDropDownModelMethod(
@@ -1462,7 +1477,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 <DropDownSelectionItem
                   label={"Customer Type"}
-                  disabled={!selector.enableEdit}
+                  // disabled={!selector.enableEdit}
                   value={selector.customer_type}
                   onPress={() =>
                     showDropDownModelMethod(
@@ -1623,6 +1638,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 <DropDownSelectionItem
                   label={"Enquiry Category"}
+                  disabled={true}
                   value={selector.enquiry_category}
                   onPress={() =>
                     showDropDownModelMethod(
@@ -1691,14 +1707,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={{
-                  backgroundColor:
-                    openAccordian === "2" ? Colors.RED : Colors.WHITE,
-                }}
+                style={[{
+                  backgroundColor: openAccordian === "2" ? Colors.RED : Colors.WHITE,
+                }, styles.accordianBorder]}
               >
                 <DropDownSelectionItem
                   label={"Salutation*"}
-                  value={selector.salutaion}
+                  value={selector.salutation}
                   onPress={() =>
                     showDropDownModelMethod("SALUTATION", "Select Salutation")
                   }
@@ -1717,7 +1732,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   value={selector.firstName}
                   label={"First Name*"}
                   keyboardType={"default"}
-                  editable={selector.enableEdit}
+                  editable={false}
                   onChangeText={(text) =>
                     dispatch(
                       setPersonalIntro({ key: "FIRST_NAME", text: text })
@@ -1729,7 +1744,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.lastName}
                   label={"Last Name*"}
-                  editable={selector.enableEdit}
+                  editable={false}
                   keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(setPersonalIntro({ key: "LAST_NAME", text: text }))
@@ -1760,7 +1775,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.mobile}
                   label={"Mobile Number*"}
-                  editable={selector.enableEdit}
+                  editable={false}
                   maxLength={10}
                   keyboardType={"phone-pad"}
                   onChangeText={(text) =>
@@ -1772,7 +1787,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.alterMobile}
                   label={"Alternate Mobile Number"}
-                  editable={selector.enableEdit}
+                  editable={false}
                   keyboardType={"phone-pad"}
                   maxLength={10}
                   onChangeText={(text) =>
@@ -1786,7 +1801,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.email}
                   label={"Email ID*"}
-                  editable={selector.enableEdit}
                   keyboardType={"email-address"}
                   onChangeText={(text) =>
                     dispatch(setPersonalIntro({ key: "EMAIL", text: text }))
@@ -1831,10 +1845,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={{
-                  backgroundColor:
-                    openAccordian === "3" ? Colors.RED : Colors.WHITE,
-                }}
+                style={[{
+                  backgroundColor: openAccordian === "3" ? Colors.RED : Colors.WHITE,
+                }, styles.accordianBorder]}
               >
                 <TextinputComp
                   style={styles.textInputStyle}
@@ -1842,11 +1855,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   label={"Pincode*"}
                   maxLength={6}
                   keyboardType={"phone-pad"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({ key: "PINCODE", text: text })
-                    )
-                  }
+                  onChangeText={(text) => {
+                    // get addreess by pincode
+                    if (text.length === 6) {
+                      updateAddressDetails(text)
+                    }
+                    dispatch(setCommunicationAddress({ key: "PINCODE", text: text }))
+                  }}
                 />
                 <Text style={GlobalStyle.underline}></Text>
                 <View style={styles.radioGroupBcVw}>
@@ -1958,166 +1973,173 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     )
                   }
                 />
+                <Text style={GlobalStyle.underline}></Text>
+                <View style={{ height: 20, backgroundColor: Colors.WHITE, }}></View>
 
                 {/* // Permanent Addresss */}
-                <View style={styles.radioGroupBcVw}>
+                <View style={{ backgroundColor: Colors.WHITE, paddingLeft: 12 }}>
                   <Text style={styles.permanentAddText}>
-                    {"Permanent Address"}
+                    {"Permanent Address Same as Communication Address"}
                   </Text>
-                  <Checkbox.Android
-                    uncheckedColor={Colors.GRAY}
-                    color={Colors.RED}
-                    status={
-                      selector.permanent_address ? "checked" : "unchecked"
-                    }
-                    onPress={() =>
-                      dispatch(
-                        setCommunicationAddress({
-                          key: "PERMANENT_ADDRESS",
-                          text: "",
-                        })
-                      )
-                    }
-                  />
                 </View>
-
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.p_pincode}
-                  label={"Pincode*"}
-                  maxLength={6}
-                  keyboardType={"phone-pad"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({
-                        key: "P_PINCODE",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-
                 <View style={styles.radioGroupBcVw}>
                   <RadioTextItem
-                    label={"Urban"}
-                    value={"urban"}
-                    status={selector.p_urban_or_rural === 1 ? true : false}
-                    onPress={() =>
-                      dispatch(
-                        setCommunicationAddress({
-                          key: "P_RURAL_URBAN",
-                          text: "1",
-                        })
-                      )
-                    }
+                    label={"Yes"}
+                    value={"yes"}
+                    status={selector.is_permanent_address_same === "YES" ? true : false}
+                    onPress={() => dispatch(setCommunicationAddress({ key: "PERMANENT_ADDRESS", text: "true", }))}
                   />
                   <RadioTextItem
-                    label={"Rural"}
-                    value={"rural"}
-                    status={selector.p_urban_or_rural === 2 ? true : false}
-                    onPress={() =>
-                      dispatch(
-                        setCommunicationAddress({
-                          key: "P_RURAL_URBAN",
-                          text: "2",
-                        })
-                      )
-                    }
+                    label={"No"}
+                    value={"no"}
+                    status={selector.is_permanent_address_same === "NO" ? true : false}
+                    onPress={() => dispatch(setCommunicationAddress({ key: "PERMANENT_ADDRESS", text: "false", }))}
                   />
                 </View>
                 <Text style={GlobalStyle.underline}></Text>
 
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  label={"H.No*"}
-                  keyboardType={"default"}
-                  maxLength={50}
-                  value={selector.p_houseNum}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({
-                        key: "P_HOUSE_NO",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  label={"Street Name*"}
-                  keyboardType={"default"}
-                  maxLength={50}
-                  value={selector.p_streetName}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({
-                        key: "P_STREET_NAME",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.p_village}
-                  label={"Village/Town*"}
-                  maxLength={50}
-                  keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({
-                        key: "P_VILLAGE",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.p_city}
-                  label={"City*"}
-                  maxLength={50}
-                  keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({ key: "P_CITY", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.p_district}
-                  label={"District*"}
-                  maxLength={50}
-                  keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({
-                        key: "P_DISTRICT",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.p_state}
-                  label={"State*"}
-                  maxLength={50}
-                  keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({ key: "P_STATE", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
+                {selector.is_permanent_address_same === "NO" ? (
+                  <View>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.p_pincode}
+                      label={"Pincode*"}
+                      maxLength={6}
+                      keyboardType={"phone-pad"}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "P_PINCODE",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+
+                    <View style={styles.radioGroupBcVw}>
+                      <RadioTextItem
+                        label={"Urban"}
+                        value={"urban"}
+                        status={selector.p_urban_or_rural === 1 ? true : false}
+                        onPress={() =>
+                          dispatch(
+                            setCommunicationAddress({
+                              key: "P_RURAL_URBAN",
+                              text: "1",
+                            })
+                          )
+                        }
+                      />
+                      <RadioTextItem
+                        label={"Rural"}
+                        value={"rural"}
+                        status={selector.p_urban_or_rural === 2 ? true : false}
+                        onPress={() =>
+                          dispatch(
+                            setCommunicationAddress({
+                              key: "P_RURAL_URBAN",
+                              text: "2",
+                            })
+                          )
+                        }
+                      />
+                    </View>
+                    <Text style={GlobalStyle.underline}></Text>
+
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      label={"H.No*"}
+                      keyboardType={"default"}
+                      maxLength={50}
+                      value={selector.p_houseNum}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "P_HOUSE_NO",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      label={"Street Name*"}
+                      keyboardType={"default"}
+                      maxLength={50}
+                      value={selector.p_streetName}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "P_STREET_NAME",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.p_village}
+                      label={"Village/Town*"}
+                      maxLength={50}
+                      keyboardType={"default"}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "P_VILLAGE",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.p_city}
+                      label={"City*"}
+                      maxLength={50}
+                      keyboardType={"default"}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setCommunicationAddress({ key: "P_CITY", text: text })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.p_district}
+                      label={"District*"}
+                      maxLength={50}
+                      keyboardType={"default"}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "P_DISTRICT",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.p_state}
+                      label={"State*"}
+                      maxLength={50}
+                      keyboardType={"default"}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setCommunicationAddress({ key: "P_STATE", text: text })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                ) : null}
+
               </List.Accordion>
               <View style={styles.space}></View>
               {/* // 4.Modal Selection */}
@@ -2129,10 +2151,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={{
-                  backgroundColor:
-                    openAccordian === "4" ? Colors.RED : Colors.WHITE,
-                }}
+                style={[{
+                  backgroundColor: openAccordian === "4" ? Colors.RED : Colors.WHITE,
+                }, styles.accordianBorder]}
               >
                 <DropDownSelectionItem
                   label={"Model"}
@@ -2185,10 +2206,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={{
-                  backgroundColor:
-                    openAccordian === "5" ? Colors.RED : Colors.WHITE,
-                }}
+                style={[{
+                  backgroundColor: openAccordian === "5" ? Colors.RED : Colors.WHITE,
+                }, styles.accordianBorder]}
               >
                 <DropDownSelectionItem
                   label={"Retail Finance"}
@@ -2401,10 +2421,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={{
-                  backgroundColor:
-                    openAccordian === "6" ? Colors.RED : Colors.WHITE,
-                }}
+                style={[{
+                  backgroundColor: openAccordian === "6" ? Colors.RED : Colors.WHITE,
+                }, styles.accordianBorder]}
               >
                 <TextinputComp
                   style={styles.textInputStyle}
@@ -2463,10 +2482,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={{
-                  backgroundColor:
-                    openAccordian === "7" ? Colors.RED : Colors.WHITE,
-                }}
+                style={[{
+                  backgroundColor: openAccordian === "7" ? Colors.RED : Colors.WHITE,
+                }, styles.accordianBorder]}
               >
                 <View style={styles.view2}>
                   <Text style={styles.looking_any_text}>
@@ -2703,10 +2721,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     fontSize: 16,
                     fontWeight: "600",
                   }}
-                  style={{
-                    backgroundColor:
-                      openAccordian === "8" ? Colors.RED : Colors.WHITE,
-                  }}
+                  style={[{
+                    backgroundColor: openAccordian === "8" ? Colors.RED : Colors.WHITE,
+                  }, styles.accordianBorder]}
                 >
                   <DropDownSelectionItem
                     label={"Make"}
@@ -2818,10 +2835,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     fontSize: 16,
                     fontWeight: "600",
                   }}
-                  style={{
-                    backgroundColor:
-                      openAccordian === "9" ? Colors.RED : Colors.WHITE,
-                  }}
+                  style={[{
+                    backgroundColor: openAccordian === "9" ? Colors.RED : Colors.WHITE,
+                  }, styles.accordianBorder]}
                 >
                   <TextinputComp
                     style={styles.textInputStyle}
@@ -3206,17 +3222,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               {/* 10. Drop section */}
               {isDropSelected ? (
                 <List.Accordion
-                  id={"9"}
+                  id={"10"}
                   title={"Enquiry Drop Section"}
                   titleStyle={{
-                    color: openAccordian === "9" ? Colors.WHITE : Colors.BLACK,
+                    color: openAccordian === "10" ? Colors.WHITE : Colors.BLACK,
                     fontSize: 16,
                     fontWeight: "600",
                   }}
-                  style={{
-                    backgroundColor:
-                      openAccordian === "9" ? Colors.RED : Colors.WHITE,
-                  }}
+                  style={[{
+                    backgroundColor: openAccordian === "10" ? Colors.RED : Colors.WHITE,
+                  }, styles.accordianBorder]}
                 >
                   <DropDownSelectionItem
                     label={"Drop Reason"}
@@ -3452,7 +3467,7 @@ const styles = StyleSheet.create({
   },
   permanentAddText: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "700",
   },
   view2: {
     flexDirection: "row",
@@ -3497,5 +3512,10 @@ const styles = StyleSheet.create({
     width: "80%",
     color: Colors.DARK_GRAY,
   },
+  accordianBorder: {
+    borderWidth: 0.5,
+    borderRadius: 4,
+    borderColor: "#7a7b7d"
+  }
 });
 

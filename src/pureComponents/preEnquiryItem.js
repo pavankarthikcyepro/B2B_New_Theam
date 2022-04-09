@@ -12,7 +12,8 @@ export const PreEnquiryItem = ({
   enquiryCategory,
   bgColor = Colors.WHITE,
   onPress,
-  onCallPress
+  onCallPress,
+  createdBy
 }) => {
 
   let textColor = Colors.GREEN;
@@ -45,8 +46,9 @@ export const PreEnquiryItem = ({
               {displayCategoryText}
             </Text>
           </Text>
-          <Text style={[styles.text3, { marginTop: 5 }]}>{subName}</Text>
-          <Text style={styles.text2}>{myDate}</Text>
+          <Text style={[styles.text2]}>{subName}</Text>
+          <Text style={[styles.text3, { color: Colors.BLACK }]}>{createdBy}</Text>
+          <Text style={styles.text3}>{myDate}</Text>
         </View>
         <View style={styles.rightView}>
           <View style={styles.modelBckView}>
@@ -86,13 +88,14 @@ const styles = StyleSheet.create({
   },
   text2: {
     marginTop: 5,
-    fontSize: 12,
-    fontWeight: "400",
-    color: Colors.GRAY,
-  },
-  text3: {
     fontSize: 14,
     fontWeight: "400",
+  },
+  text3: {
+    fontSize: 12,
+    marginTop: 5,
+    fontWeight: "400",
+    color: Colors.GRAY,
   },
   modelBckView: {
     paddingHorizontal: 5,

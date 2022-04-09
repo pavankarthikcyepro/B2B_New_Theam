@@ -168,6 +168,7 @@ const PreEnquiryScreen = ({ navigation }) => {
                 value={new Date(Date.now())}
                 onChange={(event, selectedDate) => {
                     console.log("date: ", selectedDate);
+                    setShowDatePicker(false)
                     if (Platform.OS === "android") {
                         if (selectedDate) {
                             updateSelectedDate(selectedDate, datePickerId);
@@ -175,7 +176,6 @@ const PreEnquiryScreen = ({ navigation }) => {
                     } else {
                         updateSelectedDate(selectedDate, datePickerId);
                     }
-                    setShowDatePicker(false)
                 }}
                 onRequestClose={() => setShowDatePicker(false)}
             />
@@ -253,6 +253,7 @@ const PreEnquiryScreen = ({ navigation }) => {
                                             date={item.createdDate}
                                             enquiryCategory={item.enquiryCategory}
                                             modelName={item.model}
+                                            createdBy={item.createdBy}
                                             onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq, { itemData: item, fromCreatePreEnquiry: false })}
                                             onCallPress={() => callNumber(item.phone)}
                                         />
