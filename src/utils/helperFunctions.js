@@ -1,6 +1,7 @@
 import qs from "qs";
 import { Linking, Alert, Platform } from "react-native";
 import moment from "moment";
+import URL from "../networking/endpoints";
 
 export const isMobileNumber = (mobile) => {
   // var regex = /^[1-9]{1}[0-9]{9}$/; // /^\d{10}$/
@@ -200,3 +201,56 @@ export const PincodeDetails = async (pincode) => {
       .catch((err) => reject(err))
   })
 }
+
+export const GetCarModelList = async (orgId, token = "") => {
+  return await new Promise((resolve, reject) => {
+    const url = URL.VEHICLE_MODELS(orgId);
+    // console.log("url: ", url);
+    fetch(url, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "auth-token": token,
+      },
+    })
+      .then(json => json.json())
+      .then(res => {
+        // console.log("res: ", JSON.stringify(res))
+        if (res != undefined && res.length > 0) {
+          resolve(res);
+        }
+        else {
+          reject([]);
+        }
+      })
+      .catch((err) => reject([]))
+  })
+}
+
+export const GetFinanceBanksList = async (orgId, token) => {
+  return await new Promise((resolve, reject) => {
+    const url = URL.GET_BANK_DETAILS(orgId);
+    // console.log("url: ", url);
+    fetch(url, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "auth-token": token,
+      },
+    })
+      .then(json => json.json())
+      .then(res => {
+        // console.log("res: ", JSON.stringify(res))
+        if (res != undefined && res.length > 0) {
+          resolve(res);
+        }
+        else {
+          reject([]);
+        }
+      })
+      .catch((err) => reject(err))
+  })
+}
+

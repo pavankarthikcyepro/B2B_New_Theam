@@ -134,7 +134,6 @@ export const addPreEnquirySlice = createSlice({
     isLoading: false,
     status: "",
     errorMsg: "",
-    vehicle_modal_list: [],
     customer_type_list: [],
     createEnquiryStatus: "",
     create_enquiry_response_obj: {},
@@ -256,9 +255,6 @@ export const addPreEnquirySlice = createSlice({
     setCustomerTypeList: (state, action) => {
       state.customer_type_list = JSON.parse(action.payload);
     },
-    setCarModalList: (state, action) => {
-      state.vehicle_modal_list = JSON.parse(action.payload);
-    },
     setExistingDetails: (state, action) => {
       const preEnquiryDetails = action.payload.dmsLeadDto;
       let dmsAccountOrContactObj = {};
@@ -358,7 +354,6 @@ export const {
   setPreEnquiryDetails,
   setDropDownData,
   setCustomerTypeList,
-  setCarModalList,
   setExistingDetails,
   updateSelectedDate,
 } = addPreEnquirySlice.actions;

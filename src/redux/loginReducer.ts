@@ -270,7 +270,6 @@ export const loginSlice = createSlice({
         });
       })
       .addCase(getCarModalList.fulfilled, (state, action) => {
-        console.log("vehicle_modal_list: ", action.payload);
         const data = action.payload;
         data.forEach((item) => {
           realm.write(() => {

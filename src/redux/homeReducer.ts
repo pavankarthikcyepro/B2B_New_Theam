@@ -62,16 +62,6 @@ export const getOrganaizationHirarchyList = createAsyncThunk("HOME/getOrganaizat
   return json;
 })
 
-export const getCarModalList = createAsyncThunk("HOME/getCarModalList", async (orgId, { rejectWithValue }) => {
-
-  const response = await client.get(URL.VEHICLE_MODELS(orgId))
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
-  }
-  return json;
-})
-
 export const getCustomerTypeList = createAsyncThunk("HOME/getCustomerTypeList", async (data, { rejectWithValue }) => {
 
   const response = await client.get(URL.CUSTOMER_TYPE())
@@ -201,7 +191,6 @@ export const homeSlice = createSlice({
     tableData: data,
     datesData: dates,
     menuList: [],
-    vehicle_modal_list: [],
     vehicle_model_list_for_filters: [],
     customer_type_list: [],
     source_of_enquiry_list: [],
@@ -261,29 +250,6 @@ export const homeSlice = createSlice({
       })
       .addCase(getMenuList.rejected, (state, action) => {
         state.branchesList = [];
-      })
-      // Get Car modal list
-      .addCase(getCarModalList.pending, (state, action) => {
-        state.vehicle_modal_list = [];
-        state.vehicle_model_list_for_filters = [];
-      })
-      .addCase(getCarModalList.fulfilled, (state, action) => {
-        if (action.payload) {
-          state.vehicle_modal_list = action.payload;
-
-          // For pre-enquiry, enquiry & pre-booking filter's
-          let modalList = [];
-          if (state.vehicle_modal_list.length > 0) {
-            state.vehicle_modal_list.forEach((item) => {
-              modalList.push({ id: item.vehicleId, name: item.model, isChecked: false });
-            });
-          }
-          state.vehicle_model_list_for_filters = modalList;
-        }
-      })
-      .addCase(getCarModalList.rejected, (state, action) => {
-        state.vehicle_modal_list = [];
-        state.vehicle_model_list_for_filters = [];
       })
       .addCase(getCustomerTypeList.fulfilled, (state, action) => {
         //console.log('customer_type_list: ', action.payload);

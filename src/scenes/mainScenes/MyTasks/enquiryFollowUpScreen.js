@@ -25,7 +25,7 @@ import {
   getEnquiryDetailsApi
 } from "../../../redux/enquiryFollowUpReducer";
 import { DateSelectItem } from "../../../pureComponents";
-import { convertDateStringToMillisecondsUsingMoment } from "../../../utils/helperFunctions";
+import { convertDateStringToMillisecondsUsingMoment, GetCarModelList } from "../../../utils/helperFunctions";
 import moment from "moment";
 import {
   showToast,
@@ -59,14 +59,11 @@ const LocalButtonComp = ({ title, onPress, disabled }) => {
 const EnquiryFollowUpScreen = ({ route, navigation }) => {
   const { taskId, identifier, universalId } = route.params;
   const selector = useSelector((state) => state.enquiryFollowUpReducer);
-  const { vehicle_modal_list } = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
   const [showDropDownModel, setShowDropDownModel] = useState(false);
-  const [dataForCarModels, setDataForCarModels] = useState([]);
   const [dropDownTitle, setDropDownTitle] = useState("");
   const [dataForDropDown, setDataForDropDown] = useState([]);
   const [dropDownKey, setDropDownKey] = useState("");
-  const [showDatePickerModel, setShowDatePickerModel] = useState(false);
   const [carModelsData, setCarModelsData] = useState([]);
   const [modelVarientsData, setModelVarientsData] = useState([]);
   const [actionType, setActionType] = useState("");
@@ -90,17 +87,36 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     getAsyncStorageData();
-    setCarModelsDataFromBase();
     dispatch(getTaskDetailsApi(taskId));
     getEnquiryDetailsFromServer();
   }, []);
 
   const getAsyncStorageData = async () => {
-    const employeeId = await AsyncStorage.getData(AsyncStorage.Keys.EMP_ID);
-    if (employeeId) {
-      setEmpId(employeeId);
+    const employeeData = await AsyncStorage.getData(AsyncStorage.Keys.LOGIN_EMPLOYEE);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      setEmpId(jsonObj.empId);
+      getCarModelListFromServer(jsonObj.orgId);
     }
   };
+
+  const getCarModelListFromServer = (orgId) => {
+    // Call Api
+    GetCarModelList(orgId).then((resolve) => {
+      let modalList = [];
+      if (resolve.length > 0) {
+        resolve.forEach((item) => {
+          modalList.push({ id: item.vehicleId, name: item.model, isChecked: false, ...item });
+        });
+      }
+      setCarModelsData([...modalList]);
+    }, (rejected) => {
+      console.log("getCarModelListFromServer Failed")
+    }).finally(() => {
+      // Get Enquiry Details
+      getEnquiryDetailsFromServer();
+    })
+  }
 
   const getEnquiryDetailsFromServer = () => {
     if (universalId) {
@@ -108,22 +124,12 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     }
   }
 
-  const setCarModelsDataFromBase = () => {
-    let modalList = [];
-    if (vehicle_modal_list.length > 0) {
-      vehicle_modal_list.forEach((item) => {
-        modalList.push({ id: item.vehicleId, name: item.model });
-      });
-    }
-    setCarModelsData([...modalList]);
-  };
-
   const updateModelVarientsData = (selectedModelName) => {
     if (!selectedModelName || selectedModelName.length === 0) {
       return;
     }
 
-    let arrTemp = vehicle_modal_list.filter(function (obj) {
+    let arrTemp = carModelsData.filter(function (obj) {
       return obj.model === selectedModelName;
     });
 

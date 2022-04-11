@@ -11,7 +11,6 @@ import { AppNavigator } from '../../../navigations';
 import {
   dateSelected,
   showDateModal,
-  getCarModalList,
   getCustomerTypeList,
   getSourceOfEnquiryList,
   getOrganaizationHirarchyList,
@@ -89,7 +88,6 @@ const HomeScreen = ({ route, navigation }) => {
 
     updateBranchNameInHeader()
     getMenuListFromServer();
-    getCarModalListFromServer();
     getLoginEmployeeDetailsFromAsyn();
     dispatch(getCustomerTypeList());
 
@@ -115,13 +113,6 @@ const HomeScreen = ({ route, navigation }) => {
     let name = await AsyncStore.getData(AsyncStore.Keys.USER_NAME);
     if (name) {
       dispatch(getMenuList(name));
-    }
-  }
-
-  const getCarModalListFromServer = async () => {
-    let orgId = await AsyncStore.getData(AsyncStore.Keys.ORG_ID);
-    if (orgId) {
-      dispatch(getCarModalList(orgId));
     }
   }
 

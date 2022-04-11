@@ -158,7 +158,9 @@ const URL = {
     GET_TARGET_PARAMS: () => dashboard + "/v2/get_target_params",
     GET_SALES_DATA: () => dashboard + "/v2/get_sales_data",
     GET_SALES_COMPARISON_DATA: () => dashboard + "/v2/get_sales_comparsion_data",
-    GET_BANK_DETAILS: () => dfGetAll + "/1/bankFinancier",
+    GET_BANK_DETAILS: (orgId) => {
+        return dfGetAll + `/${orgId}/bankFinancier`;
+    },
     GET_INSURENCE_COMPANY_NAMES: (orgId) => {
         return dfGetAll + `/${orgId}/incuranceCompany`
     }

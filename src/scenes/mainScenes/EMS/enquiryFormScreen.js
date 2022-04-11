@@ -110,6 +110,7 @@ import {
   convertDateStringToMilliseconds,
   convertDateStringToMillisecondsUsingMoment,
   emiCalculator,
+  GetCarModelList,
   PincodeDetails,
 } from "../../../utils/helperFunctions";
 import URL from "../../../networking/endpoints";
@@ -132,7 +133,6 @@ const theme = {
 const DetailsOverviewScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.enquiryFormReducer);
-  const { vehicle_modal_list } = useSelector((state) => state.homeReducer);
   const [openAccordian, setOpenAccordian] = useState("0");
   const [componentAppear, setComponentAppear] = useState(false);
   const { universalId } = route.params;
@@ -184,12 +184,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-    getAuthToken();
     getAsyncstoreData();
     setComponentAppear(true);
-    getEnquiryDetailsFromServer();
     dispatch(getCustomerTypesApi());
-    setCarModelsDataFromBase();
 
     BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
     return () => {
@@ -205,15 +202,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     return true;
   };
 
-  const getAuthToken = () => {
-    AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
-      if (token.length > 0) {
-        getInsurenceCompanyNamesFromServer(token);
-      }
-    });
-  };
-
-
   const getAsyncstoreData = async () => {
     const employeeData = await AsyncStore.getData(
       AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -226,7 +214,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         employeeId: jsonObj.empId,
         employeeName: jsonObj.empName,
       });
+      getCarModelListFromServer(jsonObj.orgId);
 
+      // Get Token
       AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
         if (token.length > 0) {
           getInsurenceCompanyNamesFromServer(token, jsonObj.orgId);
@@ -235,15 +225,23 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
   };
 
-  const setCarModelsDataFromBase = () => {
-    let modalList = [];
-    if (vehicle_modal_list.length > 0) {
-      vehicle_modal_list.forEach((item) => {
-        modalList.push({ id: item.vehicleId, name: item.model });
-      });
-    }
-    setCarModelsData([...modalList]);
-  };
+  const getCarModelListFromServer = (orgId) => {
+    // Call Api
+    GetCarModelList(orgId).then((resolve) => {
+      let modalList = [];
+      if (resolve.length > 0) {
+        resolve.forEach((item) => {
+          modalList.push({ id: item.vehicleId, name: item.model, isChecked: false, ...item });
+        });
+      }
+      setCarModelsData([...modalList]);
+    }, (rejected) => {
+      console.log("getCarModelListFromServer Failed")
+    }).finally(() => {
+      // Get Enquiry Details
+      getEnquiryDetailsFromServer();
+    })
+  }
 
   const getInsurenceCompanyNamesFromServer = async (token, orgId) => {
     await fetch(URL.GET_INSURENCE_COMPANY_NAMES(orgId), {
@@ -1120,7 +1118,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
 
-    let arrTemp = vehicle_modal_list.filter(function (obj) {
+    let arrTemp = carModelsData.filter(function (obj) {
       return obj.model === selectedModelName;
     });
 
@@ -1787,7 +1785,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.alterMobile}
                   label={"Alternate Mobile Number"}
-                  editable={false}
+                  editable={true}
                   keyboardType={"phone-pad"}
                   maxLength={10}
                   onChangeText={(text) =>
@@ -1801,23 +1799,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.email}
                   label={"Email ID*"}
+                  editable={true}
                   keyboardType={"email-address"}
                   onChangeText={(text) =>
                     dispatch(setPersonalIntro({ key: "EMAIL", text: text }))
                   }
                 />
                 <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.age}
-                  label={"Age"}
-                  keyboardType={"phone-pad"}
-                  maxLength={10}
-                  onChangeText={(text) =>
-                    dispatch(setPersonalIntro({ key: "AGE", text: text }))
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
+
                 {selector.enquiry_segment.toLowerCase() == "personal" ? (
                   <View>
                     <DateSelectItem
@@ -1825,6 +1814,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       value={selector.dateOfBirth}
                       onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
                     />
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.age}
+                      label={"Age"}
+                      keyboardType={"phone-pad"}
+                      maxLength={10}
+                      onChangeText={(text) =>
+                        dispatch(setPersonalIntro({ key: "AGE", text: text }))
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
                     <DateSelectItem
                       label={"Anniversary Date"}
                       value={selector.anniversaryDate}
@@ -1910,7 +1910,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.streetName}
                   label={"Street Name*"}
-                  maxLength={50}
+                  maxLength={120}
                   keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
@@ -2196,8 +2196,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
               </List.Accordion>
               <View style={styles.space}></View>
-              {/* // 5.
-              */}
+              {/* // 5. Financial Details*/}
               <List.Accordion
                 id={"5"}
                 title={"Financial Details"}
@@ -2431,9 +2430,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   label={"Pan Number*"}
                   keyboardType={"default"}
                   maxLength={10}
-                  onChangeText={(text) =>
+                  autoCapitalize={'characters'}
+                  onChangeText={(text) => {
                     dispatch(setUploadDocuments({ key: "PAN", text: text }))
-                  }
+                  }}
                 />
                 <Text style={GlobalStyle.underline}></Text>
                 <View style={styles.select_image_bck_vw}>
@@ -3418,6 +3418,7 @@ const styles = StyleSheet.create({
   },
   baseVw: {
     paddingHorizontal: 10,
+    paddingVertical: 5
   },
   shadow: {
     shadowColor: Colors.DARK_GRAY,

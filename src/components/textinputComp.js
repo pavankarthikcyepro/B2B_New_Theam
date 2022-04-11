@@ -4,7 +4,7 @@ import { TextInput, HelperText } from 'react-native-paper';
 import { Colors } from '../styles';
 import PropTypes from 'prop-types';
 
-const TextinputComp = ({ value, mode = 'flat', label, disabled, placeholder, error, errorMsg = "", multiline, numberOfLines, editable, keyboardType = 'default', isSecure = false, showRightIcon = false, maxLength = null, rightIconObj = {}, onChangeText, onRightIconPressed, style = {}, onPressIn, showLeftAffixText = false, leftAffixText = "" }) => {
+const TextinputComp = ({ value, mode = 'flat', label, disabled, placeholder, error, errorMsg = "", multiline, numberOfLines, editable, keyboardType = 'default', isSecure = false, showRightIcon = false, maxLength = null, rightIconObj = {}, onChangeText, onRightIconPressed, style = {}, onPressIn, showLeftAffixText = false, leftAffixText = "", autoCapitalize = "none" }) => {
 
     let rightIconComp = null;
     if (showRightIcon) {
@@ -43,6 +43,7 @@ const TextinputComp = ({ value, mode = 'flat', label, disabled, placeholder, err
                 left={leftText}
                 right={rightIconComp}
                 spellCheck={false}
+                autoCapitalize={autoCapitalize}
                 theme={{ colors: { primary: Colors.GRAY, underlineColor: 'transparent' } }}
                 // onPressIn={onPressIn}
                 onFocus={onPressIn}
@@ -53,6 +54,8 @@ const TextinputComp = ({ value, mode = 'flat', label, disabled, placeholder, err
         </View>
     );
 }
+
+// autoCapitalize = ['none', 'sentences', 'words', 'characters']
 
 // TextinputComp.prototype = {
 //     mode: PropTypes.oneOf(['flat', 'outlined']),

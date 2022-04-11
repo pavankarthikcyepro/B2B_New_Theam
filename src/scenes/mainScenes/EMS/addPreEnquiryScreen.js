@@ -27,7 +27,6 @@ import {
   createPreEnquiry,
   updatePreEnquiry,
   setCustomerTypeList,
-  setCarModalList,
   setExistingDetails,
   continueToCreatePreEnquiry,
   getEventListApi,
@@ -39,6 +38,7 @@ import {
   isEmail,
   isPincode,
   convertToDate,
+  GetCarModelList,
 } from "../../../utils/helperFunctions";
 import { sales_url } from "../../../networking/endpoints";
 import realm from "../../../database/realm";
@@ -98,7 +98,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     getBranchId();
     getAuthToken();
     // getCustomerTypeListFromDB();
-    // getCarModalListFromDB();
     console.log("useEffect called");
     const UnSubscribe = navigation.addListener("focus", () => {
       console.log("useEffect focus called");
@@ -128,6 +127,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       });
       setOrganizationId(jsonObj.orgId);
       setEmployeeName(jsonObj.empName);
+      getCarModelListFromServer(jsonObj.orgId)
 
       if (jsonObj.hrmsRole === "Reception") {
         const resultAry = homeSelector.source_of_enquiry_list.filter(
@@ -156,13 +156,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           );
         }
       }
-
-      // Get User Token
-      AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
-        if (token.length > 0) {
-          geModelsFromServer(jsonObj.empId, token)
-        }
-      });
     }
   };
 
@@ -178,47 +171,25 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     });
   };
 
-  const geModelsFromServer = async (empId, token) => {
-    const dateFormat = "YYYY-MM-DD";
-    const currentDate = moment().format(dateFormat)
-    const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-    const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-
-    const payload = {
-      "endDate": monthLastDate,
-      "loggedInEmpId": empId,
-      "startDate": monthFirstDate,
-      "levelSelected": null
-    }
-
-    await fetch(URL.VEHICLE_MODEL_DATA(), {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "auth-token": token,
-      },
-      body: JSON.stringify(payload),
+  const getCarModelListFromServer = (orgId) => {
+    // Call Api
+    GetCarModelList(orgId).then((resolve) => {
+      let modalList = [];
+      if (resolve.length > 0) {
+        resolve.forEach((item) => {
+          modalList.push({ id: item.vehicleId, name: item.model, isChecked: false });
+        });
+      }
+      setDataForCarModels([...modalList]);
+    }, (rejected) => {
+      console.log("getCarModelListFromServer Failed")
+    }).finally(() => {
+      // Get Enquiry Details
     })
-      .then((json) => json.json())
-      .then((resp) => {
-        // console.log("modelRes: ", resp)
-        if (resp) {
-          let modalList = [];
-          if (resp.length > 0) {
-            resp.forEach((item) => {
-              modalList.push({ id: item.vehicleId, name: item.model });
-            });
-          }
-          setDataForCarModels([...modalList]);
-        }
-      })
-      .catch((error) => {
-        showToastRedAlert(error.message);
-      });
   }
 
   const setExistingData = () => {
+    22
     if (route.params?.fromEdit != null && route.params.fromEdit === true) {
       const preEnquiryDetails = route.params.preEnquiryDetails;
       const fromEdit = route.params.fromEdit;
@@ -233,10 +204,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     dispatch(setCustomerTypeList(JSON.stringify(data)));
   };
 
-  const getCarModalListFromDB = () => {
-    const data = realm.objects("CAR_MODAL_LIST_TABLE");
-    dispatch(setCarModalList(JSON.stringify(data)));
-  };
 
   const gotoConfirmPreEnquiryScreen = (response) => {
     if (response.hasOwnProperty("dmsEntity")) {
