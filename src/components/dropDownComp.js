@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, SafeAreaView, View, Text, StyleSheet, FlatList, Pressable, Dimensions, Platform } from 'react-native';
-import { Colors } from '../styles';
+import { Colors, GlobalStyle } from '../styles';
 import { List, Divider, Button, IconButton } from 'react-native-paper';
 
 const screenHeight = Dimensions.get('window').height;
@@ -91,7 +91,7 @@ const DropDownComponant = ({ visible = false, multiple = false, headerTitle = "S
                                     Done
                                 </Button> : <IconButton
                                     icon="close-circle-outline"
-                                    color={Colors.GRAY}
+                                    color={Colors.WHITE}
                                     size={25}
                                     onPress={onRequestClose}
                                 />}
@@ -135,7 +135,7 @@ const DropDownComponant = ({ visible = false, multiple = false, headerTitle = "S
                                                     descriptionEllipsizeMode={'tail'}
                                                     description={""}
                                                 />
-                                                <Divider />
+                                                <View style={GlobalStyle.underline}></View>
                                             </View>
                                         </Pressable>
                                     )
@@ -158,18 +158,20 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     view1: {
-        backgroundColor: Colors.WHITE
+        backgroundColor: Colors.WHITE,
+        paddingBottom: 20
     },
     view2: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: Colors.LIGHT_GRAY,
+        backgroundColor: Colors.DARK_GRAY,
         height: 50,
         width: '100%',
         paddingLeft: 15
     },
     text1: {
+        color: Colors.WHITE,
         fontSize: 18,
         fontWeight: '600',
     }

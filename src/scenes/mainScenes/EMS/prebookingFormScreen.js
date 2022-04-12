@@ -242,6 +242,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [essentialKitSlctd, setEssentialKitSlctd] = useState(false);
   const [fastTagSlctd, setFastTagSlctd] = useState(false);
   const [financeBanksList, setFinanceBanksList] = useState([]);
+  const [lifeTaxAmount, setLifeTaxAmount] = useState(0);
+  const [tcsAmount, setTcsAmount] = useState(0)
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -512,11 +514,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setFastTagSlctd(true);
         fastTagSlctdLocal = true;
       }
-      calculateOnRoadPrice(
-        handlingChargeSlctdLocal,
-        essentialKitSlctdLocal,
-        fastTagSlctdLocal
-      );
+      calculateOnRoadPrice(handlingChargeSlctdLocal, essentialKitSlctdLocal, fastTagSlctdLocal);
 
       if (
         dmsOnRoadPriceDtoObj.insuranceAddonData &&
@@ -654,12 +652,24 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setDataForDropDown([...Booking_Payment_Types]);
         break;
       case "INSURANCE_TYPE":
+        if (insurenceVarientTypes.length <= 0) {
+          showToast("No Insurence Types Data Found")
+          return
+        }
         setDataForDropDown([...insurenceVarientTypes]);
         break;
       case "WARRANTY":
+        if (warrentyTypes.length <= 0) {
+          showToast("No Warranty Data Found")
+          return
+        }
         setDataForDropDown([...warrentyTypes]);
         break;
       case "INSURENCE_ADD_ONS":
+        if (insurenceAddOnTypes.length <= 0) {
+          showToast("No AddOns Insurence Data Found")
+          return
+        }
         setDataForDropDown([...insurenceAddOnTypes]);
         setShowMultipleDropDownData(true);
         break;
@@ -780,7 +790,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   ) => {
     let totalPrice = 0;
     totalPrice += priceInfomationData.ex_showroom_price;
-    totalPrice += getLifeTax();
+    const lifeTax = getLifeTax();
+    setLifeTaxAmount(lifeTax);
+    totalPrice += lifeTax;
     totalPrice += priceInfomationData.registration_charges;
     totalPrice += selectedInsurencePrice;
     totalPrice += selectedAddOnsPrice;
@@ -791,12 +803,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     if (essentialSelected) {
       totalPrice += priceInfomationData.essential_kit;
     }
-    totalPrice += getTcsAmount();
+    const tcsPrice = getTcsAmount();
+    setTcsAmount(tcsPrice);
+    totalPrice += tcsPrice;
     totalPrice += selectedPaidAccessoriesPrice;
     if (fastTagSelected) {
       totalPrice += priceInfomationData.fast_tag;
     }
-    // totalPrice += priceInfomationData.fast_tag
     setTotalOnRoadPrice(totalPrice);
     setTotalOnRoadPriceAfterDiscount(totalPrice);
   };
@@ -896,7 +909,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     postOnRoadPriceTable.insuranceType = selector.insurance_type;
     postOnRoadPriceTable.lead_id =
       selector.pre_booking_details_response.dmsLeadDto.id;
-    postOnRoadPriceTable.lifeTax = getLifeTax();
+    postOnRoadPriceTable.lifeTax = lifeTaxAmount;
     postOnRoadPriceTable.onRoadPrice = totalOnRoadPrice;
     postOnRoadPriceTable.finalPrice = totalOnRoadPriceAfterDiscount;
     postOnRoadPriceTable.promotionalOffers = selector.promotional_offer;
@@ -904,7 +917,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       priceInfomationData.registration_charges;
     postOnRoadPriceTable.specialScheme = selector.consumer_offer;
     postOnRoadPriceTable.exchangeOffers = selector.exchange_offer;
-    postOnRoadPriceTable.tcs = getTcsAmount();
+    postOnRoadPriceTable.tcs = tcsAmount;
     postOnRoadPriceTable.warrantyAmount = selectedWarrentyPrice;
     postOnRoadPriceTable.warrantyName = selector.warranty;
 
@@ -973,7 +986,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       dmsLeadDto.remarks = selector.reject_remarks;
     }
     dmsEntity.dmsLeadDto = dmsLeadDto;
-    setTypeOfActionDispatched("UPDATE_PRE_BOOKING");
+    setTypeOfActionDispatched(type);
     dispatch(updatePrebookingDetailsApi(dmsEntity));
   };
 
@@ -983,8 +996,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       if (typeOfActionDispatched === "DROP_ENQUIRY") {
         showToastSucess("Successfully Pre-Booking Dropped");
         getPreBookingListFromServer();
-      } else if (typeOfActionDispatched === "UPDATE_PRE_BOOKING") {
+      }
+      else if (typeOfActionDispatched === "UPDATE_PRE_BOOKING") {
         showToastSucess("Successfully Sent for Manager Approval");
+      }
+      else if (typeOfActionDispatched === "APPROVE") {
+        showToastSucess("Pre-Booking Approved");
+      }
+      else if (typeOfActionDispatched === "REJECT") {
+        showToastSucess("Pre-Booking Rejected");
       }
       dispatch(clearState());
       navigation.goBack();
@@ -1397,9 +1417,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const getTcsAmount = () => {
     let amount = 0;
     if (priceInfomationData.ex_showroom_price > 1000000) {
-      amount =
-        priceInfomationData.ex_showroom_price *
-        (priceInfomationData.tcs_percentage / 100);
+      amount = priceInfomationData.ex_showroom_price * (priceInfomationData.tcs_percentage / 100);
     } else {
       amount = priceInfomationData.tcs_amount;
     }
@@ -2351,6 +2369,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       style={styles.textInputStyle}
                       value={selector.registration_number}
                       label={"Reg. No"}
+                      maxLength={15}
+                      autoCapitalize={'characters'}
                       onChangeText={(text) =>
                         dispatch(
                           setPriceConformationDetails({
@@ -2366,7 +2386,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 <TextAndAmountComp
                   title={"Life Tax:"}
-                  amount={getLifeTax().toFixed(2)}
+                  amount={lifeTaxAmount.toFixed(2)}
                 />
                 <Text style={GlobalStyle.underline}></Text>
 
@@ -2462,7 +2482,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 <TextAndAmountComp
                   title={"TCS(>10Lakhs -> %):"}
-                  amount={getTcsAmount().toFixed(2)}
+                  amount={tcsAmount.toFixed(2)}
                 />
                 <Text style={GlobalStyle.underline}></Text>
 

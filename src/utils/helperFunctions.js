@@ -162,20 +162,18 @@ export const rgbaColor = () => {
   return rgbValue;
 };
 
-export const emiCalculator = (principle, tenure, interestRate) => {
-  if (principle !== "" && tenure !== "" && interestRate !== "") {
-    let P = principle;
-    const R = interestRate;
-    const N = tenure;
-    const monthlyInterstRatio = R / 100 / 12;
-    const top = Math.pow(1 + monthlyInterstRatio, N);
-    const bottom = top - 1;
-    const sp = top / bottom;
-    const emi = P * monthlyInterstRatio * sp;
-    const full = N * emi;
-    const interest = full - P;
-    let int_pge = (interest / full) * 100;
-    return Math.round(emi).toString();
+export const emiCalculator = (principle, tenureInMonths, interestRate) => {
+  if (principle !== "" && tenureInMonths !== "" && interestRate !== "") {
+
+    console.log("p: " + principle + " : t: " + tenureInMonths + " : i: " + interestRate)
+    const amount = Number(principle);
+    const months = Number(tenureInMonths);
+    const interest = Number(interestRate) / 1200;
+
+    const emi = Math.round(amount * interest / (1 - (Math.pow(1 / (1 + interest), months))) * 100) / 100;
+    const finalEmi = Math.round(emi).toString();
+    console.log("finalEmi: ", finalEmi);
+    return finalEmi;
   }
   return "";
 };
