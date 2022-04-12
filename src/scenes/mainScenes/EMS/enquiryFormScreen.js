@@ -111,6 +111,7 @@ import {
   convertDateStringToMillisecondsUsingMoment,
   emiCalculator,
   GetCarModelList,
+  GetFinanceBanksList,
   PincodeDetails,
 } from "../../../utils/helperFunctions";
 import URL from "../../../networking/endpoints";
@@ -164,6 +165,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     maxDate: null,
   });
   const [insurenceCompayList, serInsurenceCompanyList] = useState([])
+  const [financeBanksList, setFinanceBanksList] = useState([]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -220,6 +222,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
         if (token.length > 0) {
           getInsurenceCompanyNamesFromServer(token, jsonObj.orgId);
+          getBanksListFromServer(jsonObj.orgId, token)
         }
       });
     }
@@ -265,6 +268,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         showToastRedAlert(error.message);
       });
   }
+
+  const getBanksListFromServer = (orgId, token) => {
+
+    GetFinanceBanksList(orgId, token).then((resp) => {
+      const bankList = resp.map((item) => {
+        return { ...item, name: item.bank_name }
+      })
+      setFinanceBanksList([...bankList]);
+    }, (error) => {
+      console.error(error)
+    })
+  };
 
   useEffect(() => {
     if (selector.enquiry_details_response) {
@@ -1052,7 +1067,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         setDataForDropDown([...Finance_Category_Types]);
         break;
       case "BANK_FINANCE":
-        setDataForDropDown([...Bank_Financer_Types]);
+        setDataForDropDown([...financeBanksList]);
         break;
       case "APPROX_ANNUAL_INCOME":
         setDataForDropDown([...Approx_Auual_Income_Types]);
@@ -2314,11 +2329,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         maxLength={10}
                         value={selector.loan_amount}
                         onChangeText={(text) => {
-                          emiCal(
-                            text,
-                            selector.rate_of_interest,
-                            selector.loan_of_tenure
-                          );
+                          emiCal(text, selector.loan_of_tenure, selector.rate_of_interest);
                           dispatch(
                             setFinancialDetails({
                               key: "LOAN_AMOUNT",
@@ -2335,11 +2346,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         maxLength={10}
                         value={selector.rate_of_interest}
                         onChangeText={(text) => {
-                          emiCal(
-                            selector.loan_amount,
-                            text,
-                            selector.loan_of_tenure
-                          );
+                          emiCal(selector.loan_amount, selector.loan_of_tenure, text);
                           dispatch(
                             setFinancialDetails({
                               key: "RATE_OF_INTEREST",
@@ -2369,16 +2376,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       maxLength={3}
                       value={selector.loan_of_tenure}
                       onChangeText={(text) => {
-                        emiCal(
-                          selector.loan_amount,
-                          selector.rate_of_interest,
-                          text
-                        );
-                        dispatch(
-                          setFinancialDetails({
-                            key: "LOAN_OF_TENURE",
-                            text: text,
-                          })
+                        emiCal(selector.loan_amount, text, selector.rate_of_interest);
+                        dispatch(setFinancialDetails({ key: "LOAN_OF_TENURE", text: text })
                         );
                       }}
                     />

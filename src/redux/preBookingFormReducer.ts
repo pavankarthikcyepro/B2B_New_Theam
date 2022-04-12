@@ -78,22 +78,6 @@ export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk("PREBOONING
   }
 })
 
-export const getPaidAccessoriesListApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getPaidAccessoriesListApi", async (orgId, { rejectWithValue }) => {
-
-  const customConfig = { orgId: orgId };
-  const response = await client.get(URL.GET_PAID_ACCESSORIES_LIST(orgId), customConfig);
-  try {
-    const json = await response.json();
-    if (response.status != 200) {
-      return rejectWithValue(json);
-    }
-    return json;
-  } catch (error) {
-    console.error("getPaidAccessoriesListApi JSON parse error: ", error + " : " + JSON.stringify(response));
-    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
-  }
-})
-
 export const dropPreBooingApi = createAsyncThunk("PREBOONING_FORMS_SLICE/dropPreBooingApi", async (payload, { rejectWithValue }) => {
 
   const response = await client.post(URL.DROP_ENQUIRY(), payload);
@@ -288,7 +272,6 @@ const prebookingFormSlice = createSlice({
     pre_booking_details_response: null,
     customer_types_response: null,
     vehicle_on_road_price_insurence_details_response: null,
-    paid_accessories_list: [],
     pre_booking_drop_response_status: null,
     update_pre_booking_details_response: "",
     on_road_price_dto_list_response: [],
@@ -1172,23 +1155,6 @@ const prebookingFormSlice = createSlice({
     })
     builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.rejected, (state, action) => {
       state.vehicle_on_road_price_insurence_details_response = null;
-      state.isLoading = false;
-    })
-    // Get Paid Asossaries List
-    builder.addCase(getPaidAccessoriesListApi.pending, (state, action) => {
-      state.paid_accessories_list = [];
-      state.isLoading = true;
-    })
-    builder.addCase(getPaidAccessoriesListApi.fulfilled, (state, action) => {
-      //console.log("S getPaidAccessoriesListApi: ", JSON.stringify(action.payload));
-      if (action.payload.success == true) {
-        state.paid_accessories_list = action.payload.accessorylist;
-      }
-      state.isLoading = false;
-    })
-    builder.addCase(getPaidAccessoriesListApi.rejected, (state, action) => {
-      console.log("F getPaidAccessoriesListApi: ", JSON.stringify(action.payload));
-      state.paid_accessories_list = [];
       state.isLoading = false;
     })
     // Drop Pre-Booking

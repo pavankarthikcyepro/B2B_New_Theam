@@ -12,6 +12,7 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
     const { accessorylist } = route.params;
 
     useEffect(() => {
+        console.log("accessorylist: ", accessorylist.length)
         let newFormatTableData = [];
         accessorylist.forEach((item) => {
             newFormatTableData.push({

@@ -45,7 +45,6 @@ import {
   updateBookingPaymentData,
   updateDmsAttachments,
   getOnRoadPriceAndInsurenceDetailsApi,
-  getPaidAccessoriesListApi,
   dropPreBooingApi,
   updatePrebookingDetailsApi,
   getOnRoadPriceDtoListApi,
@@ -102,6 +101,7 @@ import {
   GetCarModelList,
   PincodeDetails,
   GetFinanceBanksList,
+  GetPaidAccessoriesList,
 } from "../../../utils/helperFunctions";
 import URL from "../../../networking/endpoints";
 import uuid from "react-native-uuid";
@@ -244,6 +244,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [financeBanksList, setFinanceBanksList] = useState([]);
   const [lifeTaxAmount, setLifeTaxAmount] = useState(0);
   const [tcsAmount, setTcsAmount] = useState(0)
+  const [paidAccessoriesList, setPaidAccessoriesList] = useState([])
+
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -344,7 +346,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
       // Make Api calls in parallel
       Promise.all([
-        dispatch(getPaidAccessoriesListApi(jsonObj.orgId)),
         dispatch(getDropDataApi(payload)),
         getCarModelListFromServer(jsonObj.orgId),
       ]).then(() => {
@@ -719,6 +720,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       let newArray = [];
       let mArray = carModelObj.varients;
       setSelectedModelId(carModelObj.vehicleId);
+      GetPaidAccessoriesListFromServer(carModelObj.vehicleId, userData.orgId, userToken);
       if (mArray.length) {
         mArray.forEach((item) => {
           newArray.push({
@@ -1423,6 +1425,16 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
     return amount;
   };
+
+  const GetPaidAccessoriesListFromServer = (vehicleId, orgId, token) => {
+
+    // Paid Accessores List
+    GetPaidAccessoriesList(vehicleId, orgId, token).then((res) => {
+      setPaidAccessoriesList([...res]);
+    }, (err) => {
+      console.error("Paid Accossories List: ", err);
+    })
+  }
 
   const updateAccordian = (selectedIndex) => {
     if (selectedIndex != openAccordian) {
@@ -2488,12 +2500,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 <Pressable
                   onPress={() =>
-                    navigation.navigate(
-                      AppNavigator.EmsStackIdentifiers.paidAccessories,
-                      {
-                        accessorylist: selector.paid_accessories_list,
-                        callback: updatePaidAccessroies,
-                      }
+                    navigation.navigate(AppNavigator.EmsStackIdentifiers.paidAccessories, {
+                      accessorylist: paidAccessoriesList,
+                      callback: updatePaidAccessroies,
+                    }
                     )
                   }
                 >
@@ -2839,8 +2849,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           // Calculate EMI
                           emiCal(
                             text,
-                            selector.rate_of_interest,
-                            selector.loan_of_tenure
+                            selector.loan_of_tenure,
+                            selector.rate_of_interest
                           );
                           dispatch(
                             setFinancialDetails({
@@ -2860,8 +2870,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           // Calculate EMI
                           emiCal(
                             selector.loan_amount,
-                            text,
-                            selector.loan_of_tenure
+                            selector.loan_of_tenure,
+                            text
                           );
                           dispatch(
                             setFinancialDetails({
@@ -2892,7 +2902,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       keyboardType={"number-pad"}
                       onChangeText={(text) => {
                         // Calculate EMI
-                        emiCal(selector.loan_amount, text, text);
+                        emiCal(selector.loan_amount, text, selector.rate_of_interest);
                         dispatch(
                           setFinancialDetails({
                             key: "LOAN_OF_TENURE",

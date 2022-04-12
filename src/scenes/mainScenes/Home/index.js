@@ -96,7 +96,7 @@ const HomeScreen = ({ route, navigation }) => {
     });
 
     return unsubscribe;
-  }, [navigation])
+  }, [navigation]);
 
   const updateBranchNameInHeader = () => {
     AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_NAME).then((branchName) => {

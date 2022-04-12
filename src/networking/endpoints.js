@@ -74,8 +74,8 @@ const URL = {
     GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS: (varientId, vehicleId) => {
         return vehicleInfoService_url + `/api/vehicle_on_road_prices/${varientId}/${vehicleId}`;
     },
-    GET_PAID_ACCESSORIES_LIST: (orgId) => {
-        return inventory_url + `/inventory/accessories/${orgId}?pageNo=0&pageSize=1000`
+    GET_PAID_ACCESSORIES_LIST: (vehicleId) => {
+        return inventory_url + `/inventory/accessories/${vehicleId}?pageNo=0&pageSize=100`
     },
     GET_ON_ROAD_PRICE_DTO_LIST: (leadId) => {
         return sales_url + `/on-road-price/lead/${leadId}`
@@ -153,13 +153,14 @@ const URL = {
     TASKS_DATA: () => dashboard + "/v2/get_todays_data",
     GET_LOST_DROP_CHART_DATA: () => dashboard + "/v2/get_lostdrop_data",
     GET_EMPLOYEES_DROP_DOWN_DATA: (orgId, employeeId) => {
+
         return orgnaizationHirarchy + `/active-dropdowns/${orgId}/${employeeId}`
     },
     GET_TARGET_PARAMS: () => dashboard + "/v2/get_target_params",
     GET_SALES_DATA: () => dashboard + "/v2/get_sales_data",
     GET_SALES_COMPARISON_DATA: () => dashboard + "/v2/get_sales_comparsion_data",
     GET_BANK_DETAILS: (orgId) => {
-        return dfGetAll + `/${orgId}/bankFinancier`;
+        return dfGetAll + `/${orgId}/%22Active%22/bankFinancier`;
     },
     GET_INSURENCE_COMPANY_NAMES: (orgId) => {
         return dfGetAll + `/${orgId}/incuranceCompany`

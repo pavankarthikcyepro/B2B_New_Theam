@@ -4,7 +4,7 @@ import { TextInput, HelperText } from 'react-native-paper';
 import { Colors } from '../styles';
 import PropTypes from 'prop-types';
 
-const TextinputComp = ({ value, mode = 'flat', label, disabled, placeholder, error, errorMsg = "", multiline, numberOfLines, editable, keyboardType = 'default', isSecure = false, showRightIcon = false, maxLength = null, rightIconObj = {}, onChangeText, onRightIconPressed, style = {}, onPressIn, showLeftAffixText = false, leftAffixText = "", autoCapitalize = "none" }) => {
+const TextinputComp = ({ value, mode = 'flat', label, disabled, placeholder, error, errorMsg = "", multiline, numberOfLines, editable, keyboardType = 'default', isSecure = false, showRightIcon = false, maxLength = null, rightIconObj = {}, onChangeText, onRightIconPressed, style = {}, onPressIn, showLeftAffixText = false, leftAffixText = "", autoCapitalize = "none", onEndEditing, onPressOut }) => {
 
     let rightIconComp = null;
     if (showRightIcon) {
@@ -47,6 +47,8 @@ const TextinputComp = ({ value, mode = 'flat', label, disabled, placeholder, err
                 theme={{ colors: { primary: Colors.GRAY, underlineColor: 'transparent' } }}
                 // onPressIn={onPressIn}
                 onFocus={onPressIn}
+                onEndEditing={onEndEditing}
+                onPressOut={onPressOut}
             />
             {error ? <HelperText type="error" visible={true} padding={'none'} style={{ color: Colors.RED }}>
                 {errorMsg}

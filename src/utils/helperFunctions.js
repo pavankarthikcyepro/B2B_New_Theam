@@ -165,12 +165,12 @@ export const rgbaColor = () => {
 export const emiCalculator = (principle, tenureInMonths, interestRate) => {
   if (principle !== "" && tenureInMonths !== "" && interestRate !== "") {
 
-    console.log("p: " + principle + " : t: " + tenureInMonths + " : i: " + interestRate)
     const amount = Number(principle);
     const months = Number(tenureInMonths);
     const interest = Number(interestRate) / 1200;
 
-    const emi = Math.round(amount * interest / (1 - (Math.pow(1 / (1 + interest), months))) * 100) / 100;
+    const step1 = (Math.pow(1 / (1 + interest), months))
+    const emi = Math.round(amount * interest / (1 - step1) * 100) / 100;
     const finalEmi = Math.round(emi).toString();
     console.log("finalEmi: ", finalEmi);
     return finalEmi;
@@ -229,7 +229,7 @@ export const GetCarModelList = async (orgId, token = "") => {
 export const GetFinanceBanksList = async (orgId, token) => {
   return await new Promise((resolve, reject) => {
     const url = URL.GET_BANK_DETAILS(orgId);
-    // console.log("url: ", url);
+    console.log("url: ", url);
     fetch(url, {
       method: "GET",
       headers: {
@@ -246,6 +246,37 @@ export const GetFinanceBanksList = async (orgId, token) => {
         }
         else {
           reject([]);
+        }
+      })
+      .catch((err) => reject(err))
+  })
+}
+
+export const GetPaidAccessoriesList = async (vehicleId, orgId, token) => {
+  return await new Promise((resolve, reject) => {
+    const url = URL.GET_PAID_ACCESSORIES_LIST(vehicleId);
+    //console.log("url: ", url);
+    fetch(url, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "auth-token": token,
+        "orgId": orgId,
+      },
+    })
+      .then(json => json.json())
+      .then(res => {
+        //console.log("res: ", JSON.stringify(res))
+        if (res.success == true) {
+          if (res.accessorylist != undefined && res.accessorylist.length > 0) {
+            resolve(res.accessorylist);
+          } else {
+            resolve([])
+          }
+        }
+        else {
+          reject("Get Paid Acceossories List failed");
         }
       })
       .catch((err) => reject(err))

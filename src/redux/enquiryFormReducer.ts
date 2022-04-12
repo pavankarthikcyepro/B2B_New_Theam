@@ -687,6 +687,8 @@ const enquiryDetailsOverViewSlice = createSlice({
         case "LOAN_OF_TENURE":
           state.loan_of_tenure = text;
           break;
+        default:
+          break;
       }
     },
     setCustomerNeedAnalysis: (
