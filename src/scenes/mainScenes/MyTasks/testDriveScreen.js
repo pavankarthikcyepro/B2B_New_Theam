@@ -36,7 +36,7 @@ import { RadioButton } from "react-native-paper";
 import { Button } from "react-native-paper";
 import * as AsyncStore from "../../../asyncStore";
 import { convertToDate, convertToTime } from "../../../utils/helperFunctions";
-import { showToast, showToastRedAlert } from "../../../utils/toast";
+import { showToast, showToastRedAlert, showAlertMessage } from "../../../utils/toast";
 import URL from "../../../networking/endpoints";
 import moment from 'moment';
 
@@ -78,19 +78,20 @@ const TestDriveScreen = ({ route, navigation }) => {
   const [addressType, setAddressType] = useState(0) // 0: nothing, 1: showroom, 2: customer
   const [customerHavingDrivingLicense, setCustomerHavingDrivingLicense] = useState(0) // 0: nothing, 1: yes, 2: no
   const [handleActionButtons, setHandleActionButtons] = useState(0) // 0 : nothing, 1: submit, 2: cancel
-  const [selectedVehicleDetails, setSelectedVehicleDetails] = useState({ model: "", varient: "", fuelType: "", transType: "", vehicleId: "" });
+  const [selectedModel, setSelectedModel] = useState("")
+  const [selectedVehicleDetails, setSelectedVehicleDetails] = useState({ model: "", varient: "", fuelType: "", transType: "", vehicleId: 0, varientId: 0 });
   const [mobie, setMobile] = useState("");
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [selectedDseDetails, setSelectedDseDetails] = useState({ name: "", id: "" });
   const [selectedDriverDetails, setSelectedDriverDetails] = useState({ name: "", id: "" });
   const [customerAddress, setCustomerAddress] = useState("");
+  const [varientListForDropDown, setVarientListForDropDown] = useState([]);
 
   useEffect(() => {
 
     updateBasicDetails(taskData);
     getAsyncstoreData();
-    dispatch(getTestDriveDseEmployeeListApi());
   }, []);
 
   const getAsyncstoreData = async () => {
@@ -108,9 +109,15 @@ const TestDriveScreen = ({ route, navigation }) => {
             barnchId: branchId,
             orgId: jsonObj.orgId
           }
-          dispatch(getTestDriveVehicleListApi(payload));
-          dispatch(getTaskDetailsApi(taskId));
-          dispatch(getDriversListApi(jsonObj.orgId));
+
+          Promise.all([
+            dispatch(getTaskDetailsApi(taskId)),
+            dispatch(getTestDriveVehicleListApi(payload)),
+            dispatch(getTestDriveDseEmployeeListApi(jsonObj.orgId)),
+            dispatch(getDriversListApi(jsonObj.orgId))
+          ]).then(() => {
+            console.log("all done")
+          })
         });
       }
       else {
@@ -143,7 +150,7 @@ const TestDriveScreen = ({ route, navigation }) => {
     }
   }, [selector.task_details_response])
 
-  getTestDriveAppointmentDetailsFromServer = () => {
+  const getTestDriveAppointmentDetailsFromServer = () => {
 
     if (selector.task_details_response.entityModuleId) {
       const payload = {
@@ -185,14 +192,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       const vehicleInfo = taskDetailsObj.vehicleInfo;
 
       // Pending
-      const obj = {
-        id: vehicleInfo.vehicleId,
-        model: vehicleInfo.model,
-        varient: vehicleInfo.varientName,
-        fuelType: vehicleInfo.fuelType,
-        transmissionType: vehicleInfo.transmission_type
-      }
-      updateSelectedVehicleDetails(obj);
+      updateSelectedVehicleDetails(vehicleInfo, false);
     }
 
     const locationType = taskDetailsObj.location ? taskDetailsObj.location : "";
@@ -283,9 +283,24 @@ const TestDriveScreen = ({ route, navigation }) => {
 
     switch (key) {
       case "MODEL":
+        if (selector.test_drive_vehicle_list_for_drop_down.length == 0) {
+          showToast("No Vehicles Found");
+          return;
+        }
         setDataForDropDown([...selector.test_drive_vehicle_list_for_drop_down]);
         break;
+      case "VARIENT":
+        if (varientListForDropDown.length == 0) {
+          showToast("No Varients Found");
+          return;
+        }
+        setDataForDropDown([...varientListForDropDown]);
+        break;
       case "LIST_OF_DRIVERS":
+        if (selector.drivers_list.length == 0) {
+          showToast("No Driver List Found");
+          return;
+        }
         setDataForDropDown([...selector.drivers_list]);
         break;
     }
@@ -297,7 +312,7 @@ const TestDriveScreen = ({ route, navigation }) => {
   const showDatePickerModelMethod = (key, mode) => {
     Keyboard.dismiss();
 
-    if (selectedVehicleDetails.vehicleId.length == 0) {
+    if (selectedVehicleDetails.vehicleId == 0) {
       showToast("Please select model");
       return
     }
@@ -345,14 +360,19 @@ const TestDriveScreen = ({ route, navigation }) => {
       return;
     }
 
-    let varientId = "";
-    let vehicleId = ""
-    selector.test_drive_vehicle_list.forEach(element => {
-      if (element.vehicleInfo.vehicleId == selectedVehicleDetails.vehicleId) {
-        varientId = element.vehicleInfo.varientId;
-        vehicleId = element.id;
-      }
-    });
+    if (selectedVehicleDetails.vehicleId == 0 || selectedVehicleDetails.varientId == 0) {
+      showToast("Please select model & varient");
+      return
+    }
+
+    let varientId = selectedVehicleDetails.vehicleId;
+    let vehicleId = selectedVehicleDetails.varientId;
+    // selector.test_drive_vehicle_list.forEach(element => {
+    //   if (element.vehicleInfo.vehicleId == selectedVehicleDetails.vehicleId && element.vehicleInfo.varientId == selectedVehicleDetails.varientId) {
+    //     varientId = element.vehicleInfo.varientId;
+    //     vehicleId = selectedVehicleDetails.vehicleId;
+    //   }
+    // });
     if (!varientId || !vehicleId) return;
 
     const location = addressType === 1 ? "showroom" : "customer";
@@ -441,13 +461,13 @@ const TestDriveScreen = ({ route, navigation }) => {
   // Handle Update Test Drive Task response
   useEffect(() => {
     if (selector.test_drive_update_task_response === "success") {
-      showAlertMessage(true);
+      showAlertMsg(true);
     } else if (selector.test_drive_update_task_response === "failed") {
-      showAlertMessage(false);
+      showAlertMsg(false);
     }
   }, [selector.test_drive_update_task_response])
 
-  showAlertMessage = (isSucess) => {
+  const showAlertMsg = (isSucess) => {
     let message = isSucess ? "TestDrive Appointment has succeeded" : "TestDrive Appointment has failed"
     Alert.alert(
       "",
@@ -486,13 +506,20 @@ const TestDriveScreen = ({ route, navigation }) => {
     }
   }, [selector.test_drive_date_validate_response])
 
-  const updateSelectedVehicleDetails = (vehicleInfo) => {
+  const updateSelectedVehicleDetails = (vehicleInfo, fromVarient) => {
+
+    //Update Varient List
+    if (selector.test_drive_varients_obj_for_drop_down[item.model]) {
+      const varientsData = selector.test_drive_varients_obj_for_drop_down[item.model];
+      setVarientListForDropDown(varientsData);
+    }
     setSelectedVehicleDetails({
       model: vehicleInfo.model,
-      varient: vehicleInfo.varient,
-      fuelType: vehicleInfo.fuelType,
-      transType: vehicleInfo.transmissionType,
-      vehicleId: vehicleInfo.id
+      varient: fromVarient ? vehicleInfo.varientName : "",
+      fuelType: fromVarient ? vehicleInfo.fuelType : "",
+      transType: fromVarient ? vehicleInfo.transmission_type : "",
+      vehicleId: vehicleInfo.vehicleId,
+      varientId: fromVarient ? vehicleInfo.varientId : 0
     })
   }
 
@@ -525,7 +552,10 @@ const TestDriveScreen = ({ route, navigation }) => {
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
           if (dropDownKey === "MODEL") {
-            updateSelectedVehicleDetails(item);
+            updateSelectedVehicleDetails(item, false);
+          }
+          if (dropDownKey === "VARIENT") {
+            updateSelectedVehicleDetails(item, true);
           }
           if (dropDownKey === "LIST_OF_DRIVERS") {
             setSelectedDriverDetails({ name: item.name, id: item.id });
@@ -541,6 +571,7 @@ const TestDriveScreen = ({ route, navigation }) => {
         value={new Date(Date.now())}
         onChange={(event, selectedDate) => {
           console.log("date: ", selectedDate);
+          setShowDatePickerModel(false)
 
           let formatDate = "";
           if (selectedDate) {
@@ -560,10 +591,8 @@ const TestDriveScreen = ({ route, navigation }) => {
             if (selectedDate) {
               dispatch(updateSelectedDate({ key: datePickerKey, text: formatDate }));
             }
-            setShowDatePickerModel(false)
           } else {
             dispatch(updateSelectedDate({ key: datePickerKey, text: formatDate }));
-            setShowDatePickerModel(false)
           }
         }}
         onRequestClose={() => setShowDatePickerModel(false)}
@@ -597,8 +626,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                 style={{ height: 65, width: "100%" }}
                 value={name}
                 label={"Name*"}
-                editable={false}
-                disabled={true}
+                editable={true}
+                disabled={false}
                 onChangeText={(text) => setName(text)}
               />
               <Text style={GlobalStyle.underline}></Text>
@@ -607,8 +636,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                 value={email}
                 label={"Email ID*"}
                 keyboardType={"email-address"}
-                editable={false}
-                disabled={true}
+                editable={true}
+                disabled={false}
                 onChangeText={(text) => setEmail(text)}
               />
               <Text style={GlobalStyle.underline}></Text>
@@ -618,8 +647,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                 label={"Mobile Number*"}
                 maxLength={10}
                 keyboardType={"phone-pad"}
-                editable={false}
-                disabled={true}
+                editable={true}
+                disabled={false}
                 onChangeText={(text) => setMobile(text)}
               />
               <Text style={GlobalStyle.underline}></Text>
@@ -634,7 +663,8 @@ const TestDriveScreen = ({ route, navigation }) => {
               <DropDownSelectionItem
                 label={"Varient"}
                 value={selectedVehicleDetails.varient}
-                disabled={true}
+                disabled={!isRecordEditable}
+                onPress={() => showDropDownModelMethod("VARIENT", "Model")}
               />
 
               <TextinputComp

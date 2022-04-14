@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { SafeAreaView, View, StyleSheet, Text, FlatList, Pressable } from "react-native";
 import { EmptyListView } from "../../../../pureComponents";
 import { GlobalStyle, Colors } from "../../../../styles";
 import { Button, IconButton } from "react-native-paper";
 import * as AsyncStorage from "../../../../asyncStore";
+import { AccessoriesContext } from ".";
 
 const rupeeSymbol = "\u20B9";
 
@@ -11,6 +12,7 @@ const ChildComp = ({ route, navigation, }) => {
 
     const [tableData, setTableData] = useState([]);
     const { accessorylist, key } = route.params;
+    const myContext = useContext(AccessoriesContext);
 
     useEffect(() => {
         console.log("accessorylist: ", accessorylist.length)
@@ -21,17 +23,43 @@ const ChildComp = ({ route, navigation, }) => {
 
         const data = [...tableData];
         const selectedItem = data[index];
-        if (!selectedItem.selected) {
-
+        const isSelected = selectedItem.selected;
+        if (isSelected) {
+            removeItemInAsyncStorage(key, selectedItem)
+        } else {
+            addItemInAsyncStorage(key, selectedItem)
         }
-        selectedItem.selected = !selectedItem.selected;
+        selectedItem.selected = !isSelected;
         data[index] = selectedItem;
         setTableData([...data]);
-        AsyncStorage.storeData(key, JSON.stringify())
     }
 
-    const updateItemInAsyncStorage = () => {
+    const addItemInAsyncStorage = async (key, item) => {
 
+        const existingData = await AsyncStorage.getData(key);
+        console.log("exis: ", existingData);
+        let data = [];
+        if (!existingData) {
+            data = [item];
+        } else {
+            data = [...JSON.parse(existingData), item];
+        }
+        await AsyncStorage.storeData(key, JSON.stringify(data))
+    }
+
+    const removeItemInAsyncStorage = async (key, item) => {
+
+        const existingData = await AsyncStorage.getData(key);
+        console.log("exis1: ", existingData);
+        if (!existingData) { return }
+        const parsedData = JSON.parse(existingData);
+        let newData = [];
+        parsedData.forEach((obj) => {
+            if (obj.id !== item.id) {
+                newData.push(obj)
+            }
+        })
+        await AsyncStorage.storeData(key, JSON.stringify(newData))
     }
 
     return (

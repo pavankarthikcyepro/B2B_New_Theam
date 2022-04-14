@@ -39,3 +39,23 @@ export const getJsonData = async (key) => {
         return null;
     }
 }
+
+export const multiGetData = async (keys) => {
+    try {
+        const value = await AsyncStorage.multiGet(keys)
+        return value !== null ? value : null;
+    } catch (e) {
+        console.error('Error while retriving data: ', e);
+        return null;
+    }
+}
+
+export const multiRemove = async (keys) => {
+    try {
+        const value = await AsyncStorage.multiRemove(keys)
+        return value !== null ? value : null;
+    } catch (e) {
+        console.error('Error while retriving data: ', e);
+        return null;
+    }
+}

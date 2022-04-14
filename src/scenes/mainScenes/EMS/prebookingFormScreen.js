@@ -157,13 +157,37 @@ const TextAndAmountComp = ({
     <View style={styles.textAndAmountView}>
       <Text
         style={[
-          {
-            fontSize: 14,
-            fontWeight: "400",
-            maxWidth: "70%",
-            color: Colors.GRAY,
-          },
+          styles.leftLabel,
           titleStyle,
+        ]}
+      >
+        {title}
+      </Text>
+      <Text style={[{ fontSize: 14, fontWeight: "400" }, amoutStyle]}>
+        {rupeeSymbol + " " + amount}
+      </Text>
+    </View>
+  );
+};
+
+const PaidAccessoriesTextAndAmountComp = ({
+  title,
+  amount,
+  titleStyle = {},
+  amoutStyle = {},
+}) => {
+  return (
+    <View style={styles.textAndAmountView}>
+      <Text
+        style={[
+          styles.leftLabel,
+          titleStyle,
+          {
+            color: Colors.BLUE,
+            textDecorationLine: "underline",
+            textDecorationStyle: "solid",
+            textDecorationColor: Colors.BLUE
+          }
         ]}
       >
         {title}
@@ -178,7 +202,7 @@ const TextAndAmountComp = ({
 const PrebookingFormScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.preBookingFormReducer);
-  const { universalId } = route.params;
+  const { universalId, accessoriesList } = route.params;
   const [openAccordian, setOpenAccordian] = useState(0);
   const [componentAppear, setComponentAppear] = useState(false);
   const [userData, setUserData] = useState({
@@ -228,7 +252,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   });
   const [isDropSelected, setIsDropSelected] = useState(false);
   const [typeOfActionDispatched, setTypeOfActionDispatched] = useState("");
-  const [selectedPaidAccessories, setSelectedPaidAccessories] = useState([]);
+  const [selectedPaidAccessoriesList, setSelectedPaidAccessoriesList] = useState([]);
   const [selectedInsurenceAddons, setSelectedInsurenceAddons] = useState([]);
   const [showApproveRejectBtn, setShowApproveRejectBtn] = useState(false);
   const [showPrebookingPaymentSection, setShowPrebookingPaymentSection] =
@@ -278,6 +302,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       );
     };
   }, [navigation]);
+
+  useEffect(() => {
+    console.log("accessoriesList: ", accessoriesList)
+    if (route.params?.accessoriesList) {
+      updatePaidAccessroies(route.params?.accessoriesList);
+    }
+  }, [route.params?.accessoriesList])
 
   const handleBackButtonClick = () => {
     goParentScreen();
@@ -451,7 +482,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         );
         setSelectedPaidAccessoriesPrice(totalPrice);
       }
-      setSelectedPaidAccessories([...dmsLeadDto.dmsAccessories]);
+      setSelectedPaidAccessoriesList([...dmsLeadDto.dmsAccessories]);
     }
   }, [selector.pre_booking_details_response]);
 
@@ -1056,7 +1087,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     dataObj.dmsfinancedetails = mapDmsFinanceDetails(dataObj.dmsfinancedetails);
     dataObj.dmsBooking = mapDmsBookingDetails(dataObj.dmsBooking, dataObj.id);
     dataObj.dmsAttachments = mapDmsAttachments(dataObj.dmsAttachments);
-    dataObj.dmsAccessories = selectedPaidAccessories;
+    dataObj.dmsAccessories = selectedPaidAccessoriesList;
     return dataObj;
   };
 
@@ -1386,13 +1417,16 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   }, [selector.assigned_tasks_list_status]);
 
   const updatePaidAccessroies = (tableData) => {
+    console.log("coming here")
     let totalPrice = 0;
     let newFormatSelectedAccessories = [];
     tableData.forEach((item) => {
       if (item.selected) {
         totalPrice += item.cost;
         newFormatSelectedAccessories.push({
+          id: item.id,
           amount: item.cost,
+          partName: item.partName,
           accessoriesName: item.partNo,
           leadId: selector.pre_booking_details_response.dmsLeadDto.id,
           allotmentStatus: null,
@@ -1400,7 +1434,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       }
     });
     setSelectedPaidAccessoriesPrice(totalPrice);
-    setSelectedPaidAccessories([...newFormatSelectedAccessories]);
+    setSelectedPaidAccessoriesList([...newFormatSelectedAccessories]);
   };
 
   const getLifeTax = () => {
@@ -2502,17 +2536,27 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   onPress={() =>
                     navigation.navigate(AppNavigator.EmsStackIdentifiers.paidAccessories, {
                       accessorylist: paidAccessoriesList,
-                      callback: updatePaidAccessroies,
+                      selectedAccessoryList: selectedPaidAccessoriesList
                     }
                     )
                   }
                 >
-                  <TextAndAmountComp
+                  <PaidAccessoriesTextAndAmountComp
                     title={"Paid Accessories:"}
                     amount={selectedPaidAccessoriesPrice.toFixed(2)}
                   />
                 </Pressable>
                 <Text style={GlobalStyle.underline}></Text>
+                {selectedPaidAccessoriesList.length > 0 ? (
+                  <View style={{ backgroundColor: Colors.WHITE, paddingLeft: 12, paddingTop: 5 }}>
+                    {selectedPaidAccessoriesList.map((item, index) => {
+                      return (
+                        <Text style={styles.accessoriText} key={"ACC" + index}>{item.partName + " - " + item.amount}</Text>
+                      )
+                    })}
+                    <Text style={[GlobalStyle.underline, { marginTop: 5 }]}></Text>
+                  </View>
+                ) : null}
 
                 <CheckboxTextAndAmountComp
                   title={"Fast Tag:"}
@@ -3490,7 +3534,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 };
 
@@ -3642,5 +3686,16 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderRadius: 4,
     borderColor: "#7a7b7d"
+  },
+  accessoriText: {
+    fontSize: 10,
+    fontWeight: "400",
+    color: Colors.GRAY
+  },
+  leftLabel: {
+    fontSize: 14,
+    fontWeight: "400",
+    maxWidth: "70%",
+    color: Colors.GRAY,
   }
 });

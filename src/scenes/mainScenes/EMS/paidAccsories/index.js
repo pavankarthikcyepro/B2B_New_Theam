@@ -5,7 +5,9 @@ import { GlobalStyle, Colors } from "../../../../styles";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import ChildComp from "./childComp";
 import { Button, IconButton } from "react-native-paper";
-
+import * as AsyncStorage from "../../../../asyncStore";
+import { AppNavigator } from "../../../../navigations";
+export const AccessoriesContext = React.createContext();
 
 const TopTab = createMaterialTopTabNavigator();
 
@@ -49,8 +51,9 @@ const TopTabNavigator = ({ titles, data }) => {
 
 const PaidAccessoriesScreen = ({ route, navigation }) => {
 
-    const { accessorylist } = route.params;
+    const { accessorylist, selectedAccessoryList } = route.params;
     const [accessoriesData, setAccessoriesData] = useState({ names: [], data: {} });
+    const [defaultContext, setDefaultContext] = useState({});
 
     useEffect(() => {
         console.log("accessorylist: ", accessorylist.length)
@@ -63,26 +66,37 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
                 const newData = [...oldData, newItem];
                 dataObj[item.item] = newData;
             } else {
-                titleNames.push(item.item);
+                titleNames.push(item.item.toUpperCase());
                 dataObj[item.item] = [newItem];
             }
         })
         setAccessoriesData({ names: titleNames, data: dataObj });
+        removeExistingKeysFromAsync(titleNames);
     }, [])
 
-    const addSelected = () => {
-        let itemSelected = false;
-        // for (const item of tableData) {
-        //     if (item.selected) {
-        //         itemSelected = true
-        //         break;
-        //     }
-        // }
+    const removeExistingKeysFromAsync = async (keys) => {
+        await AsyncStorage.multiRemove(keys);
+    }
 
-        // if (itemSelected) {
-        //     route.params.callback(tableData);
-        //     navigation.goBack();
-        // }
+    const addSelected = async () => {
+
+        const data = await AsyncStorage.multiGetData(accessoriesData.names);
+        // console.log("data: ", data)
+        let allData = [];
+        accessoriesData.names.forEach((item, index) => {
+            const selectedData = data[index][1];
+            console.log("selectedData: ", selectedData)
+            if (selectedData) {
+                allData = allData.concat(JSON.parse(selectedData));
+            }
+        })
+        console.log("allData: ", allData)
+
+        navigation.navigate({
+            name: AppNavigator.EmsStackIdentifiers.preBookingForm,
+            params: { accessoriesList: allData },
+            merge: true,
+        });
     }
 
     return (

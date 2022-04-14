@@ -25,9 +25,9 @@ export const getTaskDetailsApi = createAsyncThunk("TEST_DRIVE_SLICE/getTaskDetai
   return json;
 })
 
-export const getTestDriveDseEmployeeListApi = createAsyncThunk("TEST_DRIVE_SLICE/getTestDriveDseEmployeeListApi", async (payload, { rejectWithValue }) => {
+export const getTestDriveDseEmployeeListApi = createAsyncThunk("TEST_DRIVE_SLICE/getTestDriveDseEmployeeListApi", async (orgId, { rejectWithValue }) => {
 
-  const response = await client.get(URL.GET_TEST_DRIVE_DSE_LIST());
+  const response = await client.get(URL.GET_TEST_DRIVE_DSE_LIST(orgId));
   const json = await response.json()
   if (!response.ok) {
     return rejectWithValue(json);
@@ -104,6 +104,7 @@ const testDriveSlice = createSlice({
     drivers_list: [],
     test_drive_vehicle_list: [],
     test_drive_vehicle_list_for_drop_down: [],
+    test_drive_varients_obj_for_drop_down: {},
     task_details_response: null,
     book_test_drive_appointment_response: null,
     test_drive_update_task_response: null,
@@ -152,6 +153,7 @@ const testDriveSlice = createSlice({
       state.task_details_response = null;
     })
     builder.addCase(getTaskDetailsApi.fulfilled, (state, action) => {
+      console.log("S getTaskDetailsApi: ", JSON.stringify(action.payload));
       if (action.payload.success === true && action.payload.dmsEntity) {
         state.task_details_response = action.payload.dmsEntity.task;
       } else {
@@ -159,9 +161,13 @@ const testDriveSlice = createSlice({
       }
     })
     builder.addCase(getTaskDetailsApi.rejected, (state, action) => {
+      console.log("F getTaskDetailsApi: ", JSON.stringify(action.payload));
       state.task_details_response = null;
     })
     // Get Test Drive Appointment Details
+    builder.addCase(getTestDriveAppointmentDetailsApi.pending, (state, action) => {
+      state.test_drive_appointment_details_response = null;
+    })
     builder.addCase(getTestDriveAppointmentDetailsApi.fulfilled, (state, action) => {
       console.log("S getTestDriveAppointmentDetailsApi: ", JSON.stringify(action.payload));
       if (action.payload != null && action.payload.statusCode === "200") {
@@ -198,31 +204,45 @@ const testDriveSlice = createSlice({
       state.test_drive_appointment_details_response = null;
     })
     // Get Test Drive Vehicle list
+    builder.addCase(getTestDriveVehicleListApi.pending, (state, action) => {
+      state.test_drive_vehicle_list = [];
+      state.test_drive_vehicle_list_for_drop_down = [];
+    })
     builder.addCase(getTestDriveVehicleListApi.fulfilled, (state, action) => {
-      // console.log("S getTestDriveVehicleListApi: ", JSON.stringify(action.payload));
+      //console.log("S getTestDriveVehicleListApi: ", JSON.stringify(action.payload));
       if (action.payload.status === "SUCCESS" && action.payload.vehicles) {
         const vehicles = action.payload.vehicles;
         state.test_drive_vehicle_list = vehicles;
 
         // For dropdown
         let new_vehicles = [];
+        let vehicleNames = [];
+        let varientObj = {};
         vehicles.forEach(element => {
           const vehicleInfo = element.vehicleInfo;
-          new_vehicles.push({
-            id: vehicleInfo.vehicleId,
-            name: vehicleInfo.model,
-            model: vehicleInfo.model,
-            varient: vehicleInfo.varientName,
-            fuelType: vehicleInfo.fuelType,
-            transmissionType: vehicleInfo.transmission_type
-          })
+          const vehicleInfoForModel = { ...vehicleInfo, name: vehicleInfo.model, id: vehicleInfo.vehicleId };
+          const vehicleInfoForVarient = { ...vehicleInfo, name: vehicleInfo.varientName, id: vehicleInfo.vehicleId };
+
+          if (vehicleNames.includes(vehicleInfo.vehicleId)) {
+            const oldData = varientObj[vehicleInfo.model];
+            varientObj[vehicleInfo.model] = [...oldData, vehicleInfoForVarient];
+          } else {
+            vehicleNames.push(vehicleInfo.vehicleId);
+            varientObj[vehicleInfo.model] = [vehicleInfoForVarient];
+            new_vehicles.push(vehicleInfoForModel)
+          }
         });
+        console.log("length: ", new_vehicles.length)
         state.test_drive_vehicle_list_for_drop_down = new_vehicles;
+        state.test_drive_varients_obj_for_drop_down = varientObj;
       }
     })
     builder.addCase(getTestDriveVehicleListApi.rejected, (state, action) => {
       state.test_drive_vehicle_list = [];
       state.test_drive_vehicle_list_for_drop_down = [];
+    })
+    builder.addCase(getTestDriveDseEmployeeListApi.pending, (state, action) => {
+      state.employees_list = [];
     })
     builder.addCase(getTestDriveDseEmployeeListApi.fulfilled, (state, action) => {
       // console.log("getTestDriveDseEmployeeListApi S: ", action.payload);
@@ -230,12 +250,15 @@ const testDriveSlice = createSlice({
         state.employees_list = action.payload.dmsEntity.employees;
       }
     })
+    builder.addCase(getTestDriveDseEmployeeListApi.rejected, (state, action) => {
+      state.employees_list = [];
+    })
     // Get Driviers List
     builder.addCase(getDriversListApi.pending, (state, action) => {
       state.drivers_list = [];
     })
     builder.addCase(getDriversListApi.fulfilled, (state, action) => {
-      console.log("getDriversListApi S: ", action.payload);
+      //console.log("getDriversListApi S: ", action.payload);
       if (action.payload.dmsEntity) {
         const driversList = action.payload.dmsEntity.employees;
         let newFormatDriversList = [];
@@ -281,6 +304,9 @@ const testDriveSlice = createSlice({
       state.isLoading = false;
     })
     // Validate Test Drive Api
+    builder.addCase(validateTestDriveApi.pending, (state, action) => {
+      state.test_drive_date_validate_response = null;
+    })
     builder.addCase(validateTestDriveApi.fulfilled, (state, action) => {
       state.test_drive_date_validate_response = action.payload;
     })
