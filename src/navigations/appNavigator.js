@@ -33,7 +33,7 @@ import HomeVisitScreen from "../scenes/mainScenes/MyTasks/homeVisitScreen";
 import TestDriveScreen from "../scenes/mainScenes/MyTasks/testDriveScreen";
 import EnquiryFollowUpScreen from "../scenes/mainScenes/MyTasks/enquiryFollowUpScreen";
 import TestEnquiryFormScreen from "../scenes/mainScenes/EMS/testEnquiryFormScreen";
-import PaidAccessoriesScreen from "../scenes/mainScenes/EMS/paidAccessoriesScreen";
+import PaidAccessoriesScreen from "../scenes/mainScenes/EMS/paidAccsories";
 import ProceedToPreBookingScreen from "../scenes/mainScenes/MyTasks/proceedToPreBookingScreen";
 import CreateEnquiryScreen from "../scenes/mainScenes/MyTasks/createEnquiryScreen";
 import FilterScreen from "../scenes/mainScenes/Home/filterScreen";
