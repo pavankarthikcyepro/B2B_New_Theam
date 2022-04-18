@@ -257,6 +257,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     })
       .then((json) => json.json())
       .then((res) => {
+        console.log("insurance : ", res);
         if (res != null && res.length > 0) {
           const companyList = res.map((item, index) => {
             return { ...item, name: item.company_name }
@@ -3163,7 +3164,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           onPress={() =>
                             showDropDownModelMethod(
                               "R_INSURENCE_TYPE",
-                              "Fuel Type"
+                              "Insurance Type"
                             )
                           }
                         />

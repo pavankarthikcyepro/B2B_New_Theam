@@ -83,7 +83,8 @@ const SideMenuScreen = ({ navigation }) => {
   const itemSelected = (item) => {
     switch (item.screen) {
       case 99:
-        navigation.navigate(AppNavigator.DrawerStackIdentifiers.home);
+        // navigation.navigate(AppNavigator.DrawerStackIdentifiers.home);
+        navigation.navigate(AppNavigator.TabStackIdentifiers.home);
         break;
       case 100:
         navigation.navigate(

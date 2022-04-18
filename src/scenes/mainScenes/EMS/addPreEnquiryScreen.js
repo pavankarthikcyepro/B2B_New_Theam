@@ -49,6 +49,7 @@ import {
   showAlertMessage,
   showToast,
   showToastRedAlert,
+  showToastSucess,
 } from "../../../utils/toast";
 import URL from "../../../networking/endpoints";
 import { isValidateAlphabetics } from "../../../utils/helperFunctions";
@@ -361,11 +362,17 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       selector.lastName.length == 0 ||
       selector.mobile.length == 0 ||
       selector.carModel.length == 0 ||
-      selector.sourceOfEnquiry.length == 0 ||
-      selector.pincode.length == 0
+      selector.sourceOfEnquiry.length == 0
     ) {
       showToastRedAlert("Please fill required fields");
       return;
+    }
+
+    if (!fromEdit) {
+      if (selector.pincode.length == 0) {
+        showToastRedAlert("Please fill pincode");
+        return;
+      }
     }
 
     const enquirySegmentName = selector.enquiryType
@@ -414,10 +421,13 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (selector.pincode.length > 0 && !isPincode(selector.pincode)) {
-      showToast("Please enter valid pincode");
-      return;
+    if (!fromEdit) {
+      if (selector.pincode.length > 0 && !isPincode(selector.pincode)) {
+        showToast("Please enter valid pincode");
+        return;
+      }
     }
+
     if (selector.sourceOfEnquiry === "Event") {
       if (selector.eventName.length === 0) {
         showToast("Please select event details");
@@ -571,8 +581,25 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       }
     }
   }, [
-    selector.status,
-    selector.errorMsg,
+    selector.createEnquiryStatus,
+    selector.create_enquiry_response_obj,
+  ]);
+
+  // Handle update Enquiry response
+  useEffect(() => {
+    if (selector.updateEnquiryStatus === "success") {
+      showToastSucess("Pre-enquiry successfully updated");
+      navigation.popToTop();
+    }
+    else if (selector.updateEnquiryStatus === "failed") {
+      if (selector.create_enquiry_response_obj && selector.create_enquiry_response_obj.accountId != null && selector.create_enquiry_response_obj.contactId != null) {
+        confirmToCreateLeadAgain(selector.create_enquiry_response_obj);
+      } else {
+        showToast(selector.create_enquiry_response_obj.message || "something went wrong");
+      }
+    }
+  }, [
+    selector.updateEnquiryStatus,
     selector.create_enquiry_response_obj,
   ]);
 
@@ -1052,16 +1079,18 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               </View>
             ) : null}
 
-            <TextinputComp
-              style={styles.textInputComp}
-              value={selector.pincode}
-              label={"Pincode*"}
-              keyboardType={"number-pad"}
-              maxLength={6}
-              onChangeText={(text) =>
-                dispatch(setPreEnquiryDetails({ key: "PINCODE", text: text }))
-              }
-            />
+            {!fromEdit && (
+              <TextinputComp
+                style={styles.textInputComp}
+                value={selector.pincode}
+                label={"Pincode*"}
+                keyboardType={"number-pad"}
+                maxLength={6}
+                onChangeText={(text) =>
+                  dispatch(setPreEnquiryDetails({ key: "PINCODE", text: text }))
+                }
+              />
+            )}
             <Text style={styles.devider}></Text>
           </View>
 

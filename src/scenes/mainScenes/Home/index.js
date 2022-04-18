@@ -98,10 +98,12 @@ const HomeScreen = ({ route, navigation }) => {
     return unsubscribe;
   }, [navigation]);
 
-  const updateBranchNameInHeader = () => {
-    AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_NAME).then((branchName) => {
+  const updateBranchNameInHeader = async () => {
+    await AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_NAME).then((branchName) => {
       // console.log("branchNameTest: ", branchName)
-      setSelectedBranchName(branchName);
+      if (branchName) {
+        setSelectedBranchName(branchName);
+      }
     });
   }
 

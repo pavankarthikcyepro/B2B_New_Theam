@@ -12,6 +12,7 @@ import { AppNavigator } from '../../../navigations';
 import * as AsyncStore from "../../../asyncStore";
 import { LoaderComponent, SelectEmployeeComponant } from '../../../components';
 import { getPreEnquiryData } from '../../../redux/preEnquiryReducer';
+import { showToastRedAlert } from '../../../utils/toast';
 
 
 const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
@@ -90,6 +91,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         }
     };
 
+    // Handle Employees List Response
     useEffect(() => {
 
         if (selector.employees_list.length === 0 && selector.employees_list_status === "success") {
@@ -109,8 +111,9 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
             setEmployeesData([...newData]);
             setEmployeeSelectModel(true);
         }
-    }, [selector.employees_list])
+    }, [selector.employees_list, selector.employees_list_status])
 
+    // Handle Get All Tasks Response
     useEffect(() => {
         if (selector.update_employee_status === "success") {
             const endUrl = `${itemData.universalId}` + '?' + 'stage=PreEnquiry';
@@ -151,7 +154,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     displayCreateEnquiryAlert = (data) => {
         Alert.alert(
             'Enquiry Created Successfully',
-            "Enquiry Number: " + itemData.universalId + ", Allocated DSE: " + data.dmsEntity.task.assignee.empName,
+            "Enquiry Number: " + itemData.universalId + ", Allocated DSE: " + data.dmsEntity.task?.assignee?.empName,
             [
                 {
                     text: 'OK', onPress: () => {
@@ -183,6 +186,10 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     const createEnquiryClicked = () => {
 
         if (selector.pre_enquiry_details) {
+            if (!selector.pre_enquiry_details.dmsLeadDto) {
+                showToastRedAlert("something went wrong")
+                return
+            }
             const sourceOfEnquiryId = selector.pre_enquiry_details.dmsLeadDto.sourceOfEnquiry;
             const data = {
                 sourceId: sourceOfEnquiryId,

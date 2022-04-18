@@ -100,6 +100,7 @@ export const slice = createSlice({
     extraReducers: (builder) => {
         builder.addCase(getPreEnquiryDetails.pending, (state, action) => {
             state.isLoading = true;
+            state.pre_enquiry_details = {};
         })
         builder.addCase(getPreEnquiryDetails.fulfilled, (state, action) => {
             state.pre_enquiry_details = action.payload.dmsEntity;
@@ -107,6 +108,7 @@ export const slice = createSlice({
         })
         builder.addCase(getPreEnquiryDetails.rejected, (state, action) => {
             state.isLoading = false;
+            state.pre_enquiry_details = {};
         })
         builder.addCase(noThanksApi.fulfilled, (state, action) => {
             console.log("noThanksApi: ", JSON.stringify(action.payload));
@@ -128,6 +130,7 @@ export const slice = createSlice({
         })
         builder.addCase(getaAllTasks.pending, (state, action) => {
             state.create_enquiry_loading = true;
+            state.all_pre_enquiry_tasks = [];
         })
         builder.addCase(getaAllTasks.fulfilled, (state, action) => {
             const dmsEntity = action.payload.dmsEntity;
@@ -136,6 +139,7 @@ export const slice = createSlice({
         })
         builder.addCase(getaAllTasks.rejected, (state, action) => {
             state.create_enquiry_loading = false;
+            state.all_pre_enquiry_tasks = [];
         })
         builder.addCase(assignTaskApi.pending, (state, action) => {
             state.assign_task_status = "pending";
@@ -151,6 +155,7 @@ export const slice = createSlice({
             state.change_enquiry_status = "Pending";
         })
         builder.addCase(changeEnquiryStatusApi.fulfilled, (state, action) => {
+            console.log("S changeEnquiryStatusApi: ", JSON.stringify(action.payload))
             state.change_enquiry_response = action.payload;
             state.change_enquiry_status = "success";
         })

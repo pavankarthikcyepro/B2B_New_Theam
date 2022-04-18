@@ -888,8 +888,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
 
     const bookingAmount = parseInt(selector.booking_amount)
-    if (bookingAmount < 50000) {
-      showToast("please enter booking amount minimum 50000");
+    if (bookingAmount < 5000) {
+      showToast("please enter booking amount minimum 5000");
       return;
     }
 

@@ -509,8 +509,8 @@ const TestDriveScreen = ({ route, navigation }) => {
   const updateSelectedVehicleDetails = (vehicleInfo, fromVarient) => {
 
     //Update Varient List
-    if (selector.test_drive_varients_obj_for_drop_down[item.model]) {
-      const varientsData = selector.test_drive_varients_obj_for_drop_down[item.model];
+    if (selector.test_drive_varients_obj_for_drop_down[vehicleInfo.model]) {
+      const varientsData = selector.test_drive_varients_obj_for_drop_down[vehicleInfo.model];
       setVarientListForDropDown(varientsData);
     }
     setSelectedVehicleDetails({

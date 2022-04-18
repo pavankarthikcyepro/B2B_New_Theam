@@ -165,9 +165,11 @@ const URL = {
         return dfGetAll + `/${orgId}/%22Active%22/bankFinancier`;
     },
     GET_INSURENCE_COMPANY_NAMES: (orgId) => {
-        return dfGetAll + `/${orgId}/incuranceCompany`
+        return dfGetAll + `/${orgId}/%22Active%22/incuranceCompany`
     }
 }
+
+// bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason
 
 // http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails?organizationId=1
 
