@@ -8,7 +8,7 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   Platform,
-  Alert
+  Alert,
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,7 +16,7 @@ import {
   TextinputComp,
   DropDownComponant,
   DatePickerComponent,
-  ImagePickerComponent
+  ImagePickerComponent,
 } from "../../../components";
 import {
   clearState,
@@ -28,19 +28,32 @@ import {
   updateTestDriveTaskApi,
   getTaskDetailsApi,
   getTestDriveAppointmentDetailsApi,
-  validateTestDriveApi
+  validateTestDriveApi,
 } from "../../../redux/testDriveReducer";
-import { DateSelectItem, RadioTextItem, ImageSelectItem, DropDownSelectionItem } from "../../../pureComponents";
+import {
+  DateSelectItem,
+  RadioTextItem,
+  ImageSelectItem,
+  DropDownSelectionItem,
+} from "../../../pureComponents";
 import { Dropdown } from "sharingan-rn-modal-dropdown";
-import { RadioButton } from "react-native-paper";
-import { Button } from "react-native-paper";
+import { Button, IconButton, RadioButton } from "react-native-paper";
 import * as AsyncStore from "../../../asyncStore";
 import { convertToDate, convertToTime } from "../../../utils/helperFunctions";
-import { showToast, showToastRedAlert, showAlertMessage } from "../../../utils/toast";
+import {
+  showToast,
+  showToastRedAlert,
+  showAlertMessage,
+} from "../../../utils/toast";
 import URL from "../../../networking/endpoints";
-import moment from 'moment';
+import moment from "moment";
 
-const LocalButtonComp = ({ title, onPress, disabled, bgColor = Colors.RED }) => {
+const LocalButtonComp = ({
+  title,
+  onPress,
+  disabled,
+  bgColor = Colors.RED,
+}) => {
   return (
     <Button
       style={{ width: 120 }}
@@ -52,11 +65,10 @@ const LocalButtonComp = ({ title, onPress, disabled, bgColor = Colors.RED }) => 
     >
       {title}
     </Button>
-  )
-}
+  );
+};
 
 const TestDriveScreen = ({ route, navigation }) => {
-
   const { taskId, identifier, universalId, taskData } = route.params;
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.testDriveReducer);
@@ -64,7 +76,11 @@ const TestDriveScreen = ({ route, navigation }) => {
   const [dataForDropDown, setDataForDropDown] = useState([]);
   const [dropDownKey, setDropDownKey] = useState("");
   const [dropDownTitle, setDropDownTitle] = useState("Select Data");
-  const [userData, setUserData] = useState({ orgId: "", employeeId: "", employeeName: "" })
+  const [userData, setUserData] = useState({
+    orgId: "",
+    employeeId: "",
+    employeeName: "",
+  });
   const [selectedBranchId, setSelectedBranchId] = useState("");
   const [showDatePickerModel, setShowDatePickerModel] = useState(false);
   const [datePickerKey, setDatePickerKey] = useState("");
@@ -73,120 +89,152 @@ const TestDriveScreen = ({ route, navigation }) => {
   const [imagePickerKey, setImagePickerKey] = useState("");
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
   const [isRecordEditable, setIsRecordEditable] = useState(true);
-  const [expectedStartAndEndTime, setExpectedStartAndEndTime] = useState({ start: "", end: "" });
-  const [taskStatusAndName, setTaskStatusAndName] = useState({ status: "", name: "" });
-  const [addressType, setAddressType] = useState(0) // 0: nothing, 1: showroom, 2: customer
-  const [customerHavingDrivingLicense, setCustomerHavingDrivingLicense] = useState(0) // 0: nothing, 1: yes, 2: no
-  const [handleActionButtons, setHandleActionButtons] = useState(0) // 0 : nothing, 1: submit, 2: cancel
-  const [selectedModel, setSelectedModel] = useState("")
-  const [selectedVehicleDetails, setSelectedVehicleDetails] = useState({ model: "", varient: "", fuelType: "", transType: "", vehicleId: 0, varientId: 0 });
+  const [expectedStartAndEndTime, setExpectedStartAndEndTime] = useState({
+    start: "",
+    end: "",
+  });
+  const [taskStatusAndName, setTaskStatusAndName] = useState({
+    status: "",
+    name: "",
+  });
+  const [addressType, setAddressType] = useState(0); // 0: nothing, 1: showroom, 2: customer
+  const [customerHavingDrivingLicense, setCustomerHavingDrivingLicense] =
+    useState(0); // 0: nothing, 1: yes, 2: no
+  const [handleActionButtons, setHandleActionButtons] = useState(0); // 0 : nothing, 1: submit, 2: cancel
+  const [selectedModel, setSelectedModel] = useState("");
+  const [selectedVehicleDetails, setSelectedVehicleDetails] = useState({
+    model: "",
+    varient: "",
+    fuelType: "",
+    transType: "",
+    vehicleId: 0,
+    varientId: 0,
+  });
   const [mobie, setMobile] = useState("");
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
-  const [selectedDseDetails, setSelectedDseDetails] = useState({ name: "", id: "" });
-  const [selectedDriverDetails, setSelectedDriverDetails] = useState({ name: "", id: "" });
+  const [selectedDseDetails, setSelectedDseDetails] = useState({
+    name: "",
+    id: "",
+  });
+  const [selectedDriverDetails, setSelectedDriverDetails] = useState({
+    name: "",
+    id: "",
+  });
   const [customerAddress, setCustomerAddress] = useState("");
   const [varientListForDropDown, setVarientListForDropDown] = useState([]);
 
   useEffect(() => {
-
     updateBasicDetails(taskData);
     getAsyncstoreData();
   }, []);
 
   const getAsyncstoreData = async () => {
-    const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    const employeeData = await AsyncStore.getData(
+      AsyncStore.Keys.LOGIN_EMPLOYEE
+    );
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       const roles = jsonObj.roles || [];
-      if (roles.includes("Testdrive_DSE") || roles.includes("Testdrive_Manager")) {
-        setUserData({ orgId: jsonObj.orgId, employeeId: jsonObj.empId, employeeName: jsonObj.empName })
+      if (
+        roles.includes("Testdrive_DSE") ||
+        roles.includes("Testdrive_Manager")
+      ) {
+        setUserData({
+          orgId: jsonObj.orgId,
+          employeeId: jsonObj.empId,
+          employeeName: jsonObj.empName,
+        });
 
         // Get Branch Id
-        AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then((branchId) => {
-          setSelectedBranchId(branchId);
-          const payload = {
-            barnchId: branchId,
-            orgId: jsonObj.orgId
-          }
+        AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then(
+          (branchId) => {
+            setSelectedBranchId(branchId);
+            const payload = {
+              barnchId: branchId,
+              orgId: jsonObj.orgId,
+            };
 
-          Promise.all([
-            dispatch(getTaskDetailsApi(taskId)),
-            dispatch(getTestDriveVehicleListApi(payload)),
-            dispatch(getTestDriveDseEmployeeListApi(jsonObj.orgId)),
-            dispatch(getDriversListApi(jsonObj.orgId))
-          ]).then(() => {
-            console.log("all done")
-          })
-        });
-      }
-      else {
+            Promise.all([
+              dispatch(getTaskDetailsApi(taskId)),
+              dispatch(getTestDriveVehicleListApi(payload)),
+              dispatch(getTestDriveDseEmployeeListApi(jsonObj.orgId)),
+              dispatch(getDriversListApi(jsonObj.orgId)),
+            ]).then(() => {
+              console.log("all done");
+            });
+          }
+        );
+      } else {
         showToast("You don't have access to view this task");
         dispatch(clearState());
         navigation.goBack();
       }
     }
-  }
+  };
 
   const updateBasicDetails = (taskData) => {
     if (taskData) {
       const leadDtoObj = taskData.leadDto;
-      setName(leadDtoObj.firstName + " " + leadDtoObj.lastName)
+      setName(leadDtoObj.firstName + " " + leadDtoObj.lastName);
       setEmail(leadDtoObj.email || "");
       setMobile(leadDtoObj.phone || "");
-      setSelectedDseDetails({ name: taskData.assignee.empName, id: taskData.assignee.empId })
+      setSelectedDseDetails({
+        name: taskData.assignee.empName,
+        id: taskData.assignee.empId,
+      });
     }
-  }
+  };
 
   // Handle Task Details Response
   useEffect(() => {
     if (selector.task_details_response) {
       if (selector.task_details_response.entityModuleId) {
         getTestDriveAppointmentDetailsFromServer();
-      }
-      else if (selector.task_details_response.taskStatus === "ASSIGNED" && selector.task_details_response.taskName === "Test Drive") {
+      } else if (
+        selector.task_details_response.taskStatus === "ASSIGNED" &&
+        selector.task_details_response.taskName === "Test Drive"
+      ) {
         setHandleActionButtons(1);
       }
     }
-  }, [selector.task_details_response])
+  }, [selector.task_details_response]);
 
   const getTestDriveAppointmentDetailsFromServer = () => {
-
     if (selector.task_details_response.entityModuleId) {
       const payload = {
         barnchId: selectedBranchId,
         orgId: userData.orgId,
-        entityModuleId: selector.task_details_response.entityModuleId
-      }
+        entityModuleId: selector.task_details_response.entityModuleId,
+      };
       dispatch(getTestDriveAppointmentDetailsApi(payload));
     }
-  }
+  };
 
   useEffect(() => {
     if (selector.test_drive_appointment_details_response) {
-
-      const taskStatus = selector.test_drive_appointment_details_response.status;
+      const taskStatus =
+        selector.test_drive_appointment_details_response.status;
       const taskName = selector.task_details_response.taskName;
 
       if (taskStatus === "SENT_FOR_APPROVAL" && taskName === "Test Drive") {
         setHandleActionButtons(2);
-      }
-      else if (taskStatus === "SENT_FOR_APPROVAL" && taskName === "Test Drive Approval") {
+      } else if (
+        taskStatus === "SENT_FOR_APPROVAL" &&
+        taskName === "Test Drive Approval"
+      ) {
         setHandleActionButtons(3);
-      }
-      else if (taskStatus === "APPROVED" && taskName === "Test Drive") {
+      } else if (taskStatus === "APPROVED" && taskName === "Test Drive") {
         setHandleActionButtons(4);
-      }
-      else if (taskStatus === "CANCELLED") {
+      } else if (taskStatus === "CANCELLED") {
         setHandleActionButtons(5);
       }
       setIsRecordEditable(false);
       updateTaskDetails(selector.test_drive_appointment_details_response);
     }
-  }, [selector.test_drive_appointment_details_response])
+  }, [selector.test_drive_appointment_details_response]);
 
   const updateTaskDetails = (taskDetailsObj) => {
-
     console.log("taskDetailsObj: ", taskDetailsObj);
     if (taskDetailsObj.vehicleInfo) {
       const vehicleInfo = taskDetailsObj.vehicleInfo;
@@ -196,44 +244,45 @@ const TestDriveScreen = ({ route, navigation }) => {
     }
 
     const locationType = taskDetailsObj.location ? taskDetailsObj.location : "";
-    setAddressType(locationType === "customer" ? 2 : 1)
-    setCustomerAddress(taskDetailsObj.address ? taskDetailsObj.address : "")
+    setAddressType(locationType === "customer" ? 2 : 1);
+    setCustomerAddress(taskDetailsObj.address ? taskDetailsObj.address : "");
 
     const driverId = taskDetailsObj.driverId || "";
-    let driverName = ""
+    let driverName = "";
 
     if (selector.drivers_list.length > 0 && taskDetailsObj.driverId) {
-      const filterAry = selector.drivers_list.filter((object) => object.id == taskDetailsObj.driverId);
+      const filterAry = selector.drivers_list.filter(
+        (object) => object.id == taskDetailsObj.driverId
+      );
       if (filterAry.length > 0) {
         driverName = filterAry[0].name;
       }
     }
     setSelectedDriverDetails({ name: driverName, id: driverId });
 
-    const customerHaveingDl = taskDetailsObj.isCustomerHaveingDl ? taskDetailsObj.isCustomerHaveingDl : false;
+    const customerHaveingDl = taskDetailsObj.isCustomerHaveingDl
+      ? taskDetailsObj.isCustomerHaveingDl
+      : false;
     if (customerHaveingDl) {
       const dataObj = { ...uploadedImagesDataObj };
       if (taskDetailsObj.dlFrontUrl) {
         dataObj.dlFrontUrl = {
           documentPath: taskDetailsObj.dlFrontUrl,
-          fileName: "driving license front"
+          fileName: "driving license front",
         };
       }
       if (taskDetailsObj.dlBackUrl) {
         dataObj.dlBackUrl = {
           documentPath: taskDetailsObj.dlBackUrl,
-          fileName: "driving license back"
-        }
+          fileName: "driving license back",
+        };
       }
       setUploadedImagesDataObj({ ...dataObj });
     }
     setCustomerHavingDrivingLicense(customerHaveingDl ? 1 : 2);
-
-
-  }
+  };
 
   const uploadSelectedImage = async (selectedPhoto, keyId) => {
-
     const photoUri = selectedPhoto.uri;
     if (!photoUri) {
       return;
@@ -241,31 +290,32 @@ const TestDriveScreen = ({ route, navigation }) => {
 
     const formData = new FormData();
     const fileType = photoUri.substring(photoUri.lastIndexOf(".") + 1);
-    const fileNameArry = photoUri.substring(photoUri.lastIndexOf('/') + 1).split('.');
+    const fileNameArry = photoUri
+      .substring(photoUri.lastIndexOf("/") + 1)
+      .split(".");
     const fileName = fileNameArry.length > 0 ? fileNameArry[0] : "None";
-    formData.append('file', {
+    formData.append("file", {
       name: `${fileName}-.${fileType}`,
       type: `image/${fileType}`,
-      uri: Platform.OS === 'ios' ? photoUri.replace('file://', '') : photoUri
+      uri: Platform.OS === "ios" ? photoUri.replace("file://", "") : photoUri,
     });
     formData.append("universalId", universalId);
     if (keyId === "DRIVING_LICENSE_FRONT") {
       formData.append("documentType", "dlFrontUrl");
-    }
-    else if (keyId === "DRIVING_LICENSE_BACK") {
+    } else if (keyId === "DRIVING_LICENSE_BACK") {
       formData.append("documentType", "dlBackUrl");
     }
 
     await fetch(URL.UPLOAD_DOCUMENT(), {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
-      body: formData
+      body: formData,
     })
       .then((response) => response.json())
       .then((response) => {
-        console.log('response', response);
+        console.log("response", response);
         if (response) {
           const dataObj = { ...uploadedImagesDataObj };
           dataObj[response.documentType] = response;
@@ -273,10 +323,12 @@ const TestDriveScreen = ({ route, navigation }) => {
         }
       })
       .catch((error) => {
-        showToastRedAlert(error.message ? error.message : "Something went wrong");
-        console.error('error', error);
+        showToastRedAlert(
+          error.message ? error.message : "Something went wrong"
+        );
+        console.error("error", error);
       });
-  }
+  };
 
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
@@ -307,29 +359,28 @@ const TestDriveScreen = ({ route, navigation }) => {
     setDropDownKey(key);
     setDropDownTitle(headerText);
     setShowDropDownModel(true);
-  }
+  };
 
   const showDatePickerModelMethod = (key, mode) => {
     Keyboard.dismiss();
 
     if (selectedVehicleDetails.vehicleId == 0) {
       showToast("Please select model");
-      return
+      return;
     }
 
-    setDatePickerMode(mode)
+    setDatePickerMode(mode);
     setDatePickerKey(key);
     setShowDatePickerModel(true);
-  }
+  };
 
   const showImagePickerMethod = (key) => {
     Keyboard.dismiss();
     setImagePickerKey(key);
     setShowImagePicker(true);
-  }
+  };
 
   const submitClicked = (status, taskName) => {
-
     if (selectedVehicleDetails.model.length === 0) {
       showToast("Please select model");
       return;
@@ -355,14 +406,21 @@ const TestDriveScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (selector.customer_preferred_time.length === 0 || selector.actual_start_time.length === 0 || selector.actual_end_time.length === 0) {
+    if (
+      selector.customer_preferred_time.length === 0 ||
+      selector.actual_start_time.length === 0 ||
+      selector.actual_end_time.length === 0
+    ) {
       showToast("Please select time");
       return;
     }
 
-    if (selectedVehicleDetails.vehicleId == 0 || selectedVehicleDetails.varientId == 0) {
+    if (
+      selectedVehicleDetails.vehicleId == 0 ||
+      selectedVehicleDetails.varientId == 0
+    ) {
       showToast("Please select model & varient");
-      return
+      return;
     }
 
     let varientId = selectedVehicleDetails.vehicleId;
@@ -378,25 +436,36 @@ const TestDriveScreen = ({ route, navigation }) => {
     const location = addressType === 1 ? "showroom" : "customer";
 
     if (customerHavingDrivingLicense === 1) {
-      if (!uploadedImagesDataObj.dlFrontUrl || !uploadedImagesDataObj.dlBackUrl) {
+      if (
+        !uploadedImagesDataObj.dlFrontUrl ||
+        !uploadedImagesDataObj.dlBackUrl
+      ) {
         showToast("Please upload driving license front & back");
         return;
       }
     }
-    const date = moment(selector.customer_preferred_date, "DD/MM/YYYY").format("DD-MM-YYYY");
+    const date = moment(selector.customer_preferred_date, "DD/MM/YYYY").format(
+      "DD-MM-YYYY"
+    );
     let prefferedTime = "";
     let actualStartTime = "";
     let actualEndTime = "";
 
     if (Platform.OS === "ios") {
-      const preffTime = moment(selector.customer_preferred_time, 'HH:mm').format('HH:mm:ss');
-      const startTime = moment(selector.actual_start_time, 'HH:mm').format('HH:mm:ss');
-      const endTime = moment(selector.actual_end_time, 'HH:mm').format('HH:mm:ss');
+      const preffTime = moment(
+        selector.customer_preferred_time,
+        "HH:mm"
+      ).format("HH:mm:ss");
+      const startTime = moment(selector.actual_start_time, "HH:mm").format(
+        "HH:mm:ss"
+      );
+      const endTime = moment(selector.actual_end_time, "HH:mm").format(
+        "HH:mm:ss"
+      );
       prefferedTime = date + " " + preffTime;
       actualStartTime = date + " " + startTime;
       actualEndTime = date + " " + endTime;
-    }
-    else {
+    } else {
       prefferedTime = date + " " + selector.customer_preferred_time;
       actualStartTime = date + " " + selector.actual_start_time;
       actualEndTime = date + " " + selector.actual_end_time;
@@ -405,25 +474,25 @@ const TestDriveScreen = ({ route, navigation }) => {
     setTaskStatusAndName({ status: status, name: taskName });
 
     let appointmentObj = {
-      "address": customerAddress,
-      "branchId": selectedBranchId,
-      "customerHaveingDl": customerHavingDrivingLicense === 1 ? true : false,
-      "customerId": universalId,
-      "dseId": selectedDseDetails.id,
-      "location": location,
-      "orgId": userData.orgId,
-      "source": "ShowroomWalkin",
-      "startTime": actualStartTime,
-      "endTime": actualEndTime,
-      "testDriveDatetime": prefferedTime,
-      "testdriveId": 0,
-      "status": status,
-      "varientId": varientId,
-      "vehicleId": vehicleId,
-      "driverId": selectedDriverDetails.id.toString(),
-      "dlBackUrl": "",
-      "dlFrontUrl": "",
-    }
+      address: customerAddress,
+      branchId: selectedBranchId,
+      customerHaveingDl: customerHavingDrivingLicense === 1 ? true : false,
+      customerId: universalId,
+      dseId: selectedDseDetails.id,
+      location: location,
+      orgId: userData.orgId,
+      source: "ShowroomWalkin",
+      startTime: actualStartTime,
+      endTime: actualEndTime,
+      testDriveDatetime: prefferedTime,
+      testdriveId: 0,
+      status: status,
+      varientId: varientId,
+      vehicleId: vehicleId,
+      driverId: selectedDriverDetails.id.toString(),
+      dlBackUrl: "",
+      dlFrontUrl: "",
+    };
 
     if (customerHavingDrivingLicense === 1) {
       appointmentObj.dlBackUrl = uploadedImagesDataObj.dlBackUrl.documentPath;
@@ -431,32 +500,38 @@ const TestDriveScreen = ({ route, navigation }) => {
     }
 
     const payload = {
-      "appointment": appointmentObj
-    }
+      appointment: appointmentObj,
+    };
     dispatch(bookTestDriveAppointmentApi(payload));
-  }
+  };
 
   // Handle Book Test drive appointment response
   useEffect(() => {
     if (selector.book_test_drive_appointment_response) {
-
       // yyyy-MM-dd'T'HH:mm:ssXXX YYYY-MM-DDThh:mm:ssTZD
-      const startTime = moment(expectedStartAndEndTime.start, "DD-MM-YYYY HH:mm:ss").toISOString()
-      const endTime = moment(expectedStartAndEndTime.end, "DD-MM-YYYY HH:mm:ss").toISOString()
+      const startTime = moment(
+        expectedStartAndEndTime.start,
+        "DD-MM-YYYY HH:mm:ss"
+      ).toISOString();
+      const endTime = moment(
+        expectedStartAndEndTime.end,
+        "DD-MM-YYYY HH:mm:ss"
+      ).toISOString();
 
       const payload = {
-        "universalId": universalId,
-        "taskId": null,
-        "remarks": "Success",
-        "universalModuleId": selector.book_test_drive_appointment_response.confirmationId,
-        "status": taskStatusAndName.status,
-        "taskName": taskStatusAndName.name,
-        "expectedStarttime": startTime,
-        "expectedEndTime": endTime
-      }
+        universalId: universalId,
+        taskId: null,
+        remarks: "Success",
+        universalModuleId:
+          selector.book_test_drive_appointment_response.confirmationId,
+        status: taskStatusAndName.status,
+        taskName: taskStatusAndName.name,
+        expectedStarttime: startTime,
+        expectedEndTime: endTime,
+      };
       dispatch(updateTestDriveTaskApi(payload));
     }
-  }, [selector.book_test_drive_appointment_response])
+  }, [selector.book_test_drive_appointment_response]);
 
   // Handle Update Test Drive Task response
   useEffect(() => {
@@ -465,10 +540,12 @@ const TestDriveScreen = ({ route, navigation }) => {
     } else if (selector.test_drive_update_task_response === "failed") {
       showAlertMsg(false);
     }
-  }, [selector.test_drive_update_task_response])
+  }, [selector.test_drive_update_task_response]);
 
   const showAlertMsg = (isSucess) => {
-    let message = isSucess ? "TestDrive Appointment has succeeded" : "TestDrive Appointment has failed"
+    let message = isSucess
+      ? "TestDrive Appointment has succeeded"
+      : "TestDrive Appointment has failed";
     Alert.alert(
       "",
       message,
@@ -478,39 +555,38 @@ const TestDriveScreen = ({ route, navigation }) => {
           onPress: () => {
             dispatch(clearState());
             navigation.goBack();
-          }
-        }
+          },
+        },
       ],
       { cancelable: false }
     );
-  }
+  };
 
   const validateSelectedDateForTestDrive = async (selectedDate) => {
-
     const date = convertToDate(selectedDate, "DD/MM/YYYY");
     const payload = {
       date: date,
-      vehicleId: selectedVehicleDetails.vehicleId
-    }
+      vehicleId: selectedVehicleDetails.vehicleId,
+    };
     dispatch(validateTestDriveApi(payload));
-  }
+  };
 
   // Handle Test drive date validation response
   useEffect(() => {
     if (selector.test_drive_date_validate_response) {
       if (selector.test_drive_date_validate_response.status === "SUCCESS") {
-        showToast(selector.test_drive_date_validate_response.statusDescription)
+        showToast(selector.test_drive_date_validate_response.statusDescription);
       } else {
         //this.setState({ mtDate: new Date() })
       }
     }
-  }, [selector.test_drive_date_validate_response])
+  }, [selector.test_drive_date_validate_response]);
 
   const updateSelectedVehicleDetails = (vehicleInfo, fromVarient) => {
-
     //Update Varient List
     if (selector.test_drive_varients_obj_for_drop_down[vehicleInfo.model]) {
-      const varientsData = selector.test_drive_varients_obj_for_drop_down[vehicleInfo.model];
+      const varientsData =
+        selector.test_drive_varients_obj_for_drop_down[vehicleInfo.model];
       setVarientListForDropDown(varientsData);
     }
     setSelectedVehicleDetails({
@@ -519,28 +595,49 @@ const TestDriveScreen = ({ route, navigation }) => {
       fuelType: fromVarient ? vehicleInfo.fuelType : "",
       transType: fromVarient ? vehicleInfo.transmission_type : "",
       vehicleId: vehicleInfo.vehicleId,
-      varientId: fromVarient ? vehicleInfo.varientId : 0
-    })
-  }
+      varientId: fromVarient ? vehicleInfo.varientId : 0,
+    });
+  };
 
-  const DisplaySelectedImage = ({ fileName }) => {
+  const deteleButtonPressed = (from) => {
+    const imagesDataObj = { ...uploadedImagesDataObj };
+    switch (from) {
+      case "DlFRONTURL":
+        delete imagesDataObj.dlFrontUrl;
+        break;
+      case "DLBACKURL":
+        delete imagesDataObj.dlBackUrl;
+        break;
+      default:
+        break;
+    }
+    setUploadedImagesDataObj({ ...imagesDataObj });
+  };
+
+  const DisplaySelectedImage = ({ fileName, from }) => {
     return (
       <View style={styles.selectedImageBckVw}>
         <Text style={styles.selectedImageTextStyle}>{fileName}</Text>
+        <IconButton
+          icon="close-circle-outline"
+          color={Colors.RED}
+          style={{ padding: 0, margin: 0 }}
+          size={15}
+          onPress={() => deteleButtonPressed(from)}
+        />
       </View>
-    )
-  }
+    );
+  };
 
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
-
       <ImagePickerComponent
         visible={showImagePicker}
         keyId={imagePickerKey}
         selectedImage={(data, keyId) => {
           console.log("imageObj: ", data, keyId);
           uploadSelectedImage(data, keyId);
-          setShowImagePicker(false)
+          setShowImagePicker(false);
         }}
         onDismiss={() => setShowImagePicker(false)}
       />
@@ -571,7 +668,7 @@ const TestDriveScreen = ({ route, navigation }) => {
         value={new Date(Date.now())}
         onChange={(event, selectedDate) => {
           console.log("date: ", selectedDate);
-          setShowDatePickerModel(false)
+          setShowDatePickerModel(false);
 
           let formatDate = "";
           if (selectedDate) {
@@ -589,10 +686,14 @@ const TestDriveScreen = ({ route, navigation }) => {
 
           if (Platform.OS === "android") {
             if (selectedDate) {
-              dispatch(updateSelectedDate({ key: datePickerKey, text: formatDate }));
+              dispatch(
+                updateSelectedDate({ key: datePickerKey, text: formatDate })
+              );
             }
           } else {
-            dispatch(updateSelectedDate({ key: datePickerKey, text: formatDate }));
+            dispatch(
+              updateSelectedDate({ key: datePickerKey, text: formatDate })
+            );
           }
         }}
         onRequestClose={() => setShowDatePickerModel(false)}
@@ -685,7 +786,9 @@ const TestDriveScreen = ({ route, navigation }) => {
               />
               <Text style={GlobalStyle.underline}></Text>
 
-              <Text style={styles.chooseAddressTextStyle}>{"Choose address:"}</Text>
+              <Text style={styles.chooseAddressTextStyle}>
+                {"Choose address:"}
+              </Text>
               <View style={styles.view2}>
                 <RadioTextItem
                   label={"Showroom address"}
@@ -703,7 +806,7 @@ const TestDriveScreen = ({ route, navigation }) => {
               <Text style={GlobalStyle.underline}></Text>
 
               {addressType === 2 && (
-                <View >
+                <View>
                   <TextinputComp
                     style={{ height: 65, maxHeight: 100, width: "100%" }}
                     value={customerAddress}
@@ -718,7 +821,9 @@ const TestDriveScreen = ({ route, navigation }) => {
                 </View>
               )}
 
-              <Text style={{ padding: 10 }}>{"Do Customer have Driving License?"}</Text>
+              <Text style={{ padding: 10 }}>
+                {"Do Customer have Driving License?"}
+              </Text>
               <View
                 style={{
                   flexDirection: "row",
@@ -744,17 +849,31 @@ const TestDriveScreen = ({ route, navigation }) => {
                   <View style={styles.select_image_bck_vw}>
                     <ImageSelectItem
                       name={"Upload Driving License (Front)"}
-                      onPress={() => showImagePickerMethod("DRIVING_LICENSE_FRONT")}
+                      onPress={() =>
+                        showImagePickerMethod("DRIVING_LICENSE_FRONT")
+                      }
                     />
                   </View>
-                  {uploadedImagesDataObj.dlFrontUrl ? <DisplaySelectedImage fileName={uploadedImagesDataObj.dlFrontUrl.fileName} /> : null}
+                  {uploadedImagesDataObj.dlFrontUrl ? (
+                    <DisplaySelectedImage
+                      fileName={uploadedImagesDataObj.dlFrontUrl.fileName}
+                      from={"DLFRONTURL"}
+                    />
+                  ) : null}
                   <View style={styles.select_image_bck_vw}>
                     <ImageSelectItem
                       name={"Upload Driving License (Back)"}
-                      onPress={() => showImagePickerMethod("DRIVING_LICENSE_BACK")}
+                      onPress={() =>
+                        showImagePickerMethod("DRIVING_LICENSE_BACK")
+                      }
                     />
                   </View>
-                  {uploadedImagesDataObj.dlBackUrl ? <DisplaySelectedImage fileName={uploadedImagesDataObj.dlBackUrl.fileName} /> : null}
+                  {uploadedImagesDataObj.dlBackUrl ? (
+                    <DisplaySelectedImage
+                      fileName={uploadedImagesDataObj.dlBackUrl.fileName}
+                      from={"DLBACKURL"}
+                    />
+                  ) : null}
                 </View>
               )}
 
@@ -764,7 +883,9 @@ const TestDriveScreen = ({ route, navigation }) => {
                 label={"Customer Preffered Date"}
                 value={selector.customer_preferred_date}
                 disabled={!isRecordEditable}
-                onPress={() => showDatePickerModelMethod("PREFERRED_DATE", "date")}
+                onPress={() =>
+                  showDatePickerModelMethod("PREFERRED_DATE", "date")
+                }
               />
               <DropDownSelectionItem
                 label={"List of Employees"}
@@ -775,33 +896,40 @@ const TestDriveScreen = ({ route, navigation }) => {
                 label={"List of Drivers"}
                 value={selectedDriverDetails.name}
                 disabled={!isRecordEditable}
-                onPress={() => showDropDownModelMethod("LIST_OF_DRIVERS", "List of Drivers")}
+                onPress={() =>
+                  showDropDownModelMethod("LIST_OF_DRIVERS", "List of Drivers")
+                }
               />
               <DateSelectItem
                 label={"Customer Preffered Time"}
                 value={selector.customer_preferred_time}
                 disabled={!isRecordEditable}
-                onPress={() => showDatePickerModelMethod("CUSTOMER_PREFERRED_TIME", "time")}
+                onPress={() =>
+                  showDatePickerModelMethod("CUSTOMER_PREFERRED_TIME", "time")
+                }
               />
-              <View style={{ flexDirection: 'row' }}>
-                <View style={{ width: '50%' }}>
+              <View style={{ flexDirection: "row" }}>
+                <View style={{ width: "50%" }}>
                   <DateSelectItem
                     label={"Actual start Time"}
                     value={selector.actual_start_time}
                     disabled={!isRecordEditable}
-                    onPress={() => showDatePickerModelMethod("ACTUAL_START_TIME", "time")}
+                    onPress={() =>
+                      showDatePickerModelMethod("ACTUAL_START_TIME", "time")
+                    }
                   />
                 </View>
-                <View style={{ width: '50%' }}>
+                <View style={{ width: "50%" }}>
                   <DateSelectItem
                     label={"Actual End Time"}
                     value={selector.actual_end_time}
                     disabled={!isRecordEditable}
-                    onPress={() => showDatePickerModelMethod("ACTUAL_END_TIME", "time")}
+                    onPress={() =>
+                      showDatePickerModelMethod("ACTUAL_END_TIME", "time")
+                    }
                   />
                 </View>
               </View>
-
 
               {/* <View style={styles.space}></View> */}
               {/* <Text style={{ padding: 10 }}>{"Allotment ID"}</Text>
@@ -820,7 +948,7 @@ const TestDriveScreen = ({ route, navigation }) => {
               <LocalButtonComp
                 title={"Submit"}
                 disabled={selector.isLoading}
-                onPress={() => submitClicked('SENT_FOR_APPROVAL', 'Test Drive')}
+                onPress={() => submitClicked("SENT_FOR_APPROVAL", "Test Drive")}
               />
             </View>
           )}
@@ -829,7 +957,7 @@ const TestDriveScreen = ({ route, navigation }) => {
               <LocalButtonComp
                 title={"Cancel"}
                 disabled={selector.isLoading}
-                onPress={() => submitClicked('CANCELLED', 'Test Drive')}
+                onPress={() => submitClicked("CANCELLED", "Test Drive")}
               />
             </View>
           )}
@@ -838,13 +966,15 @@ const TestDriveScreen = ({ route, navigation }) => {
               <LocalButtonComp
                 title={"Reject"}
                 disabled={selector.isLoading}
-                onPress={() => submitClicked('CANCELLED', 'Test Drive Approval')}
+                onPress={() =>
+                  submitClicked("CANCELLED", "Test Drive Approval")
+                }
               />
               <LocalButtonComp
                 title={"Approve"}
                 disabled={selector.isLoading}
                 bgColor={Colors.GREEN}
-                onPress={() => submitClicked('APPROVED', 'Test Drive Approval')}
+                onPress={() => submitClicked("APPROVED", "Test Drive Approval")}
               />
             </View>
           )}
@@ -853,13 +983,13 @@ const TestDriveScreen = ({ route, navigation }) => {
               <LocalButtonComp
                 title={"Reject"}
                 disabled={selector.isLoading}
-                onPress={() => submitClicked('CLOSED', 'Test Drive')}
+                onPress={() => submitClicked("CLOSED", "Test Drive")}
               />
               <LocalButtonComp
                 title={"Approve"}
                 disabled={selector.isLoading}
                 bgColor={Colors.GREEN}
-                onPress={() => submitClicked('RESCHEDULED', 'Test Drive')}
+                onPress={() => submitClicked("RESCHEDULED", "Test Drive")}
               />
             </View>
           )}
@@ -914,7 +1044,7 @@ const styles = StyleSheet.create({
   chooseAddressTextStyle: {
     padding: 10,
     justifyContent: "center",
-    color: Colors.GRAY
+    color: Colors.GRAY,
   },
   view2: {
     flexDirection: "row",
@@ -930,16 +1060,16 @@ const styles = StyleSheet.create({
     paddingLeft: 12,
     paddingRight: 15,
     paddingBottom: 5,
-    backgroundColor: Colors.WHITE
+    backgroundColor: Colors.WHITE,
   },
   selectedImageTextStyle: {
     fontSize: 12,
-    fontWeight: '400',
-    color: Colors.DARK_GRAY
+    fontWeight: "400",
+    color: Colors.DARK_GRAY,
   },
   cancelText: {
     fontSize: 14,
-    fontWeight: '400',
-    color: Colors.RED
-  }
+    fontWeight: "400",
+    color: Colors.RED,
+  },
 });

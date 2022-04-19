@@ -14,3 +14,4 @@ export const LIGHT_SKY_BLUE = "#87CEFA";
 export const CORAL = "#FF4040";
 export const MAROON = "#800000";
 export const BORDER_COLOR = "#e8e8e8";
+export const SKY_LIGHT_BLUE_COLOR = "#87CEEB";

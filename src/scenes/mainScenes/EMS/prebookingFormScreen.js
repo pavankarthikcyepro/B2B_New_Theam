@@ -57,7 +57,7 @@ import {
   getPaymentDetailsApi,
   getBookingAmountDetailsApi,
   getAssignedTasksApi,
-  updateAddressByPincode
+  updateAddressByPincode,
 } from "../../../redux/preBookingFormReducer";
 import {
   RadioTextItem,
@@ -97,6 +97,7 @@ import {
 import {
   convertDateStringToMillisecondsUsingMoment,
   isValidateAlphabetics,
+  isMobileNumber,
   emiCalculator,
   GetCarModelList,
   PincodeDetails,
@@ -155,14 +156,7 @@ const TextAndAmountComp = ({
 }) => {
   return (
     <View style={styles.textAndAmountView}>
-      <Text
-        style={[
-          styles.leftLabel,
-          titleStyle,
-        ]}
-      >
-        {title}
-      </Text>
+      <Text style={[styles.leftLabel, titleStyle]}>{title}</Text>
       <Text style={[{ fontSize: 14, fontWeight: "400" }, amoutStyle]}>
         {rupeeSymbol + " " + amount}
       </Text>
@@ -186,8 +180,8 @@ const PaidAccessoriesTextAndAmountComp = ({
             color: Colors.BLUE,
             textDecorationLine: "underline",
             textDecorationStyle: "solid",
-            textDecorationColor: Colors.BLUE
-          }
+            textDecorationColor: Colors.BLUE,
+          },
         ]}
       >
         {title}
@@ -252,7 +246,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   });
   const [isDropSelected, setIsDropSelected] = useState(false);
   const [typeOfActionDispatched, setTypeOfActionDispatched] = useState("");
-  const [selectedPaidAccessoriesList, setSelectedPaidAccessoriesList] = useState([]);
+  const [selectedPaidAccessoriesList, setSelectedPaidAccessoriesList] =
+    useState([]);
   const [selectedInsurenceAddons, setSelectedInsurenceAddons] = useState([]);
   const [showApproveRejectBtn, setShowApproveRejectBtn] = useState(false);
   const [showPrebookingPaymentSection, setShowPrebookingPaymentSection] =
@@ -267,9 +262,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [fastTagSlctd, setFastTagSlctd] = useState(false);
   const [financeBanksList, setFinanceBanksList] = useState([]);
   const [lifeTaxAmount, setLifeTaxAmount] = useState(0);
-  const [tcsAmount, setTcsAmount] = useState(0)
-  const [paidAccessoriesList, setPaidAccessoriesList] = useState([])
-
+  const [tcsAmount, setTcsAmount] = useState(0);
+  const [paidAccessoriesList, setPaidAccessoriesList] = useState([]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -304,11 +298,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   }, [navigation]);
 
   useEffect(() => {
-    console.log("accessoriesList: ", accessoriesList)
+    console.log("accessoriesList: ", accessoriesList);
     if (route.params?.accessoriesList) {
       updatePaidAccessroies(route.params?.accessoriesList);
     }
-  }, [route.params?.accessoriesList])
+  }, [route.params?.accessoriesList]);
 
   const handleBackButtonClick = () => {
     goParentScreen();
@@ -380,34 +374,44 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         dispatch(getDropDataApi(payload)),
         getCarModelListFromServer(jsonObj.orgId),
       ]).then(() => {
-        console.log("all done")
-      })
+        console.log("all done");
+      });
 
       // Get Token
       AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
         setUserToken(token);
-        getBanksListFromServer(jsonObj.orgId, token)
+        getBanksListFromServer(jsonObj.orgId, token);
       });
     }
   };
 
   const getCarModelListFromServer = (orgId) => {
     // Call Api
-    GetCarModelList(orgId).then((resolve) => {
-      let modalList = [];
-      if (resolve.length > 0) {
-        resolve.forEach((item) => {
-          modalList.push({ id: item.vehicleId, name: item.model, isChecked: false, ...item });
-        });
-      }
-      setCarModelsData([...modalList]);
-    }, (rejected) => {
-      console.log("getCarModelListFromServer Failed")
-    }).finally(() => {
-      // Get PreBooking Details
-      getPreBookingDetailsFromServer();
-    })
-  }
+    GetCarModelList(orgId)
+      .then(
+        (resolve) => {
+          let modalList = [];
+          if (resolve.length > 0) {
+            resolve.forEach((item) => {
+              modalList.push({
+                id: item.vehicleId,
+                name: item.model,
+                isChecked: false,
+                ...item,
+              });
+            });
+          }
+          setCarModelsData([...modalList]);
+        },
+        (rejected) => {
+          console.log("getCarModelListFromServer Failed");
+        }
+      )
+      .finally(() => {
+        // Get PreBooking Details
+        getPreBookingDetailsFromServer();
+      });
+  };
 
   const getPreBookingDetailsFromServer = () => {
     if (universalId) {
@@ -416,15 +420,17 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   };
 
   const getBanksListFromServer = (orgId, token) => {
-
-    GetFinanceBanksList(orgId, token).then((resp) => {
-      const bankList = resp.map((item) => {
-        return { ...item, name: item.bank_name }
-      })
-      setFinanceBanksList([...bankList]);
-    }, (error) => {
-      console.error(error)
-    })
+    GetFinanceBanksList(orgId, token).then(
+      (resp) => {
+        const bankList = resp.map((item) => {
+          return { ...item, name: item.bank_name };
+        });
+        setFinanceBanksList([...bankList]);
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
   };
 
   // Handle Pre-Booking Details Response
@@ -546,7 +552,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setFastTagSlctd(true);
         fastTagSlctdLocal = true;
       }
-      calculateOnRoadPrice(handlingChargeSlctdLocal, essentialKitSlctdLocal, fastTagSlctdLocal);
+      calculateOnRoadPrice(
+        handlingChargeSlctdLocal,
+        essentialKitSlctdLocal,
+        fastTagSlctdLocal
+      );
 
       if (
         dmsOnRoadPriceDtoObj.insuranceAddonData &&
@@ -685,22 +695,22 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         break;
       case "INSURANCE_TYPE":
         if (insurenceVarientTypes.length <= 0) {
-          showToast("No Insurence Types Data Found")
-          return
+          showToast("No Insurence Types Data Found");
+          return;
         }
         setDataForDropDown([...insurenceVarientTypes]);
         break;
       case "WARRANTY":
         if (warrentyTypes.length <= 0) {
-          showToast("No Warranty Data Found")
-          return
+          showToast("No Warranty Data Found");
+          return;
         }
         setDataForDropDown([...warrentyTypes]);
         break;
       case "INSURENCE_ADD_ONS":
         if (insurenceAddOnTypes.length <= 0) {
-          showToast("No AddOns Insurence Data Found")
-          return
+          showToast("No AddOns Insurence Data Found");
+          return;
         }
         setDataForDropDown([...insurenceAddOnTypes]);
         setShowMultipleDropDownData(true);
@@ -740,18 +750,22 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       return;
     }
 
-    console.log("coming..: ")
+    console.log("coming..: ");
     let arrTemp = carModelsData.filter(function (obj) {
       return obj.model === selectedModelName;
     });
-    console.log("arrTemp: ", arrTemp.length)
+    console.log("arrTemp: ", arrTemp.length);
 
     let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
     if (carModelObj !== undefined) {
       let newArray = [];
       let mArray = carModelObj.varients;
       setSelectedModelId(carModelObj.vehicleId);
-      GetPaidAccessoriesListFromServer(carModelObj.vehicleId, userData.orgId, userToken);
+      GetPaidAccessoriesListFromServer(
+        carModelObj.vehicleId,
+        userData.orgId,
+        userToken
+      );
       if (mArray.length) {
         mArray.forEach((item) => {
           newArray.push({
@@ -875,8 +889,38 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       showToast("Please fill the martial status");
       return;
     }
+    if (
+      selector.form_or_pan.length == 0 ||
+      selector.adhaar_number.length == 0 ||
+      selector.relationship_proof.length == 0 ||
+      selector.customer_type_category.length == 0
+    ) {
+      showToast("please enter document upload section");
+    }
 
-    if (selector.retail_finance == 'Leasing') {
+    // if (
+    //   selector.adhaar_number.length > 0 &&
+    //   !isMobileNumber(selector.adhaar_number)
+    // ) {
+    //   showToast("Please enter valid adhar number");
+    //   return;
+    // }
+
+    if (selector.form_or_pan === "PAN") {
+      if (selector.pan_number.length == 0) {
+        showToast("please enter pan card number");
+      }
+    }
+    if (
+      selector.customer_type_category === "B2B" ||
+      selector.customer_type_category == "B2C"
+    ) {
+      if (selector.gstin_number.length == 0) {
+        showToast("please enter GSTIN number");
+      }
+    }
+
+    if (selector.retail_finance == "Leasing") {
       if (selector.leashing_name.length == 0) {
         showToast("Please fill required fields in leasing name");
         return;
@@ -887,7 +931,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       }
     }
 
-    const bookingAmount = parseInt(selector.booking_amount)
+    const bookingAmount = parseInt(selector.booking_amount);
     if (bookingAmount < 5000) {
       showToast("please enter booking amount minimum 5000");
       return;
@@ -908,7 +952,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       showToast("Please enter commitment details");
       return;
     }
-
 
     if (!selector.pre_booking_details_response.dmsLeadDto) {
       return;
@@ -1029,14 +1072,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       if (typeOfActionDispatched === "DROP_ENQUIRY") {
         showToastSucess("Successfully Pre-Booking Dropped");
         getPreBookingListFromServer();
-      }
-      else if (typeOfActionDispatched === "UPDATE_PRE_BOOKING") {
+      } else if (typeOfActionDispatched === "UPDATE_PRE_BOOKING") {
         showToastSucess("Successfully Sent for Manager Approval");
-      }
-      else if (typeOfActionDispatched === "APPROVE") {
+      } else if (typeOfActionDispatched === "APPROVE") {
         showToastSucess("Pre-Booking Approved");
-      }
-      else if (typeOfActionDispatched === "REJECT") {
+      } else if (typeOfActionDispatched === "REJECT") {
         showToastSucess("Pre-Booking Rejected");
       }
       dispatch(clearState());
@@ -1380,7 +1420,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     } else if (selector.booking_amount_response_status === "failed") {
       showToastRedAlert("Something went wrong");
     }
-
   }, [selector.booking_amount_response_status]);
 
   // Handle Assigned Tasks Response
@@ -1417,7 +1456,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   }, [selector.assigned_tasks_list_status]);
 
   const updatePaidAccessroies = (tableData) => {
-    console.log("coming here")
+    console.log("coming here");
     let totalPrice = 0;
     let newFormatSelectedAccessories = [];
     tableData.forEach((item) => {
@@ -1453,7 +1492,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const getTcsAmount = () => {
     let amount = 0;
     if (priceInfomationData.ex_showroom_price > 1000000) {
-      amount = priceInfomationData.ex_showroom_price * (priceInfomationData.tcs_percentage / 100);
+      amount =
+        priceInfomationData.ex_showroom_price *
+        (priceInfomationData.tcs_percentage / 100);
     } else {
       amount = priceInfomationData.tcs_amount;
     }
@@ -1461,14 +1502,16 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   };
 
   const GetPaidAccessoriesListFromServer = (vehicleId, orgId, token) => {
-
     // Paid Accessores List
-    GetPaidAccessoriesList(vehicleId, orgId, token).then((res) => {
-      setPaidAccessoriesList([...res]);
-    }, (err) => {
-      console.error("Paid Accossories List: ", err);
-    })
-  }
+    GetPaidAccessoriesList(vehicleId, orgId, token).then(
+      (res) => {
+        setPaidAccessoriesList([...res]);
+      },
+      (err) => {
+        console.error("Paid Accossories List: ", err);
+      }
+    );
+  };
 
   const updateAccordian = (selectedIndex) => {
     if (selectedIndex != openAccordian) {
@@ -1590,18 +1633,20 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   };
 
   const updateAddressDetails = (pincode) => {
-
     if (pincode.length != 6) {
       return;
     }
 
-    PincodeDetails(pincode).then((resolve) => {
-      // dispatch an action to update address
-      dispatch(updateAddressByPincode(resolve));
-    }, rejected => {
-      console.log("rejected...: ", rejected)
-    })
-  }
+    PincodeDetails(pincode).then(
+      (resolve) => {
+        // dispatch an action to update address
+        dispatch(updateAddressByPincode(resolve));
+      },
+      (rejected) => {
+        console.log("rejected...: ", rejected);
+      }
+    );
+  };
 
   if (!componentAppear) {
     return (
@@ -1621,7 +1666,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           console.log("imageObj: ", data, keyId);
           uploadSelectedImage(data, keyId);
         }}
-      // onDismiss={() => dispatch(setImagePicker(""))}
+        // onDismiss={() => dispatch(setImagePicker(""))}
       />
 
       <DropDownComponant
@@ -1733,9 +1778,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={[{
-                  backgroundColor: openAccordian === "1" ? Colors.RED : Colors.WHITE,
-                }, styles.accordianBorder]}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "1" ? Colors.RED : Colors.WHITE,
+                  },
+                  styles.accordianBorder,
+                ]}
               >
                 <DropDownSelectionItem
                   label={"Salutation"}
@@ -1859,9 +1908,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={[{
-                  backgroundColor: openAccordian === "2" ? Colors.RED : Colors.WHITE,
-                }, styles.accordianBorder]}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "2" ? Colors.RED : Colors.WHITE,
+                  },
+                  styles.accordianBorder,
+                ]}
               >
                 <TextinputComp
                   style={styles.textInputStyle}
@@ -1872,9 +1925,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   onChangeText={(text) => {
                     // get addreess by pincode
                     if (text.length === 6) {
-                      updateAddressDetails(text)
+                      updateAddressDetails(text);
                     }
-                    dispatch(setCommunicationAddress({ key: "PINCODE", text: text }))
+                    dispatch(
+                      setCommunicationAddress({ key: "PINCODE", text: text })
+                    );
                   }}
                 />
                 <Text style={GlobalStyle.underline}></Text>
@@ -1983,10 +2038,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   }
                 />
                 <Text style={GlobalStyle.underline}></Text>
-                <View style={{ height: 20, backgroundColor: Colors.WHITE, }}></View>
+                <View
+                  style={{ height: 20, backgroundColor: Colors.WHITE }}
+                ></View>
 
                 {/* // Permanent Addresss */}
-                <View style={{ backgroundColor: Colors.WHITE, paddingLeft: 12 }}>
+                <View
+                  style={{ backgroundColor: Colors.WHITE, paddingLeft: 12 }}
+                >
                   <Text style={styles.permanentAddText}>
                     {"Permanent Address Same as Communication Address"}
                   </Text>
@@ -1995,14 +2054,34 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <RadioTextItem
                     label={"Yes"}
                     value={"yes"}
-                    status={selector.is_permanent_address_same === "YES" ? true : false}
-                    onPress={() => dispatch(setCommunicationAddress({ key: "PERMANENT_ADDRESS", text: "true", }))}
+                    status={
+                      selector.is_permanent_address_same === "YES"
+                        ? true
+                        : false
+                    }
+                    onPress={() =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "PERMANENT_ADDRESS",
+                          text: "true",
+                        })
+                      )
+                    }
                   />
                   <RadioTextItem
                     label={"No"}
                     value={"no"}
-                    status={selector.is_permanent_address_same === "NO" ? true : false}
-                    onPress={() => dispatch(setCommunicationAddress({ key: "PERMANENT_ADDRESS", text: "false", }))}
+                    status={
+                      selector.is_permanent_address_same === "NO" ? true : false
+                    }
+                    onPress={() =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "PERMANENT_ADDRESS",
+                          text: "false",
+                        })
+                      )
+                    }
                   />
                 </View>
                 <Text style={GlobalStyle.underline}></Text>
@@ -2016,9 +2095,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   onChangeText={(text) => {
                     // get addreess by pincode
                     if (text.length === 6) {
-                      updateAddressDetails(text)
+                      updateAddressDetails(text);
                     }
-                    dispatch(setCommunicationAddress({ key: "P_PINCODE", text: text, }))
+                    dispatch(
+                      setCommunicationAddress({ key: "P_PINCODE", text: text })
+                    );
                   }}
                 />
                 <Text style={GlobalStyle.underline}></Text>
@@ -2153,9 +2234,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={[{
-                  backgroundColor: openAccordian === "3" ? Colors.RED : Colors.WHITE,
-                }, styles.accordianBorder]}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "3" ? Colors.RED : Colors.WHITE,
+                  },
+                  styles.accordianBorder,
+                ]}
               >
                 <DropDownSelectionItem
                   label={"Model"}
@@ -2198,9 +2283,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={[{
-                  backgroundColor: openAccordian === "4" ? Colors.RED : Colors.WHITE,
-                }, styles.accordianBorder]}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "4" ? Colors.RED : Colors.WHITE,
+                  },
+                  styles.accordianBorder,
+                ]}
               >
                 <DropDownSelectionItem
                   label={"Form60/PAN"}
@@ -2217,9 +2306,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       value={selector.pan_number}
                       label={"PAN Number*"}
                       maxLength={10}
-                      autoCapitalize={'characters'}
+                      autoCapitalize={"characters"}
                       onChangeText={(text) => {
-                        dispatch(setDocumentUploadDetails({ key: "PAN_NUMBER", text: text }))
+                        dispatch(
+                          setDocumentUploadDetails({
+                            key: "PAN_NUMBER",
+                            text: text,
+                          })
+                        );
                       }}
                     />
                     <Text style={GlobalStyle.underline}></Text>
@@ -2334,8 +2428,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 {(selector.enquiry_segment === "Company" &&
                   selector.customer_type === "Institution") ||
-                  selector.customer_type_category == "B2B" ||
-                  selector.customer_type_category == "B2C" ? (
+                selector.customer_type_category == "B2B" ||
+                selector.customer_type_category == "B2C" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -2372,9 +2466,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={[{
-                  backgroundColor: openAccordian === "5" ? Colors.RED : Colors.WHITE,
-                }, styles.accordianBorder]}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "5" ? Colors.RED : Colors.WHITE,
+                  },
+                  styles.accordianBorder,
+                ]}
               >
                 <TextAndAmountComp
                   title={"Ex-Showroom Price:"}
@@ -2416,7 +2514,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       value={selector.registration_number}
                       label={"Reg. No"}
                       maxLength={15}
-                      autoCapitalize={'characters'}
+                      autoCapitalize={"characters"}
                       onChangeText={(text) =>
                         dispatch(
                           setPriceConformationDetails({
@@ -2534,10 +2632,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 <Pressable
                   onPress={() =>
-                    navigation.navigate(AppNavigator.EmsStackIdentifiers.paidAccessories, {
-                      accessorylist: paidAccessoriesList,
-                      selectedAccessoryList: selectedPaidAccessoriesList
-                    }
+                    navigation.navigate(
+                      AppNavigator.EmsStackIdentifiers.paidAccessories,
+                      {
+                        accessorylist: paidAccessoriesList,
+                        selectedAccessoryList: selectedPaidAccessoriesList,
+                      }
                     )
                   }
                 >
@@ -2548,13 +2648,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 </Pressable>
                 <Text style={GlobalStyle.underline}></Text>
                 {selectedPaidAccessoriesList.length > 0 ? (
-                  <View style={{ backgroundColor: Colors.WHITE, paddingLeft: 12, paddingTop: 5 }}>
+                  <View
+                    style={{
+                      backgroundColor: Colors.WHITE,
+                      paddingLeft: 12,
+                      paddingTop: 5,
+                    }}
+                  >
                     {selectedPaidAccessoriesList.map((item, index) => {
                       return (
-                        <Text style={styles.accessoriText} key={"ACC" + index}>{item.partName + " - " + item.amount}</Text>
-                      )
+                        <Text style={styles.accessoriText} key={"ACC" + index}>
+                          {item.partName + " - " + item.amount}
+                        </Text>
+                      );
                     })}
-                    <Text style={[GlobalStyle.underline, { marginTop: 5 }]}></Text>
+                    <Text
+                      style={[GlobalStyle.underline, { marginTop: 5 }]}
+                    ></Text>
                   </View>
                 ) : null}
 
@@ -2606,9 +2716,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={[{
-                  backgroundColor: openAccordian === "6" ? Colors.RED : Colors.WHITE,
-                }, styles.accordianBorder]}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "6" ? Colors.RED : Colors.WHITE,
+                  },
+                  styles.accordianBorder,
+                ]}
               >
                 <TextinputComp
                   style={styles.offerPriceTextInput}
@@ -2766,9 +2880,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={[{
-                  backgroundColor: openAccordian === "7" ? Colors.RED : Colors.WHITE,
-                }, styles.accordianBorder]}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "7" ? Colors.RED : Colors.WHITE,
+                  },
+                  styles.accordianBorder,
+                ]}
               >
                 <DropDownSelectionItem
                   label={"Retail Finance"}
@@ -2883,51 +3001,51 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 {(selector.retail_finance === "In House" ||
                   selector.retail_finance === "Out House") && (
-                    <View>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Loan Amount*"}
-                        keyboardType={"number-pad"}
-                        value={selector.loan_amount}
-                        onChangeText={(text) => {
-                          // Calculate EMI
-                          emiCal(
-                            text,
-                            selector.loan_of_tenure,
-                            selector.rate_of_interest
-                          );
-                          dispatch(
-                            setFinancialDetails({
-                              key: "LOAN_AMOUNT",
-                              text: text,
-                            })
-                          );
-                        }}
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Rate of Interest*"}
-                        keyboardType={"number-pad"}
-                        value={selector.rate_of_interest}
-                        onChangeText={(text) => {
-                          // Calculate EMI
-                          emiCal(
-                            selector.loan_amount,
-                            selector.loan_of_tenure,
-                            text
-                          );
-                          dispatch(
-                            setFinancialDetails({
-                              key: "RATE_OF_INTEREST",
-                              text: text,
-                            })
-                          );
-                        }}
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  )}
+                  <View>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Loan Amount*"}
+                      keyboardType={"number-pad"}
+                      value={selector.loan_amount}
+                      onChangeText={(text) => {
+                        // Calculate EMI
+                        emiCal(
+                          text,
+                          selector.loan_of_tenure,
+                          selector.rate_of_interest
+                        );
+                        dispatch(
+                          setFinancialDetails({
+                            key: "LOAN_AMOUNT",
+                            text: text,
+                          })
+                        );
+                      }}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Rate of Interest*"}
+                      keyboardType={"number-pad"}
+                      value={selector.rate_of_interest}
+                      onChangeText={(text) => {
+                        // Calculate EMI
+                        emiCal(
+                          selector.loan_amount,
+                          selector.loan_of_tenure,
+                          text
+                        );
+                        dispatch(
+                          setFinancialDetails({
+                            key: "RATE_OF_INTEREST",
+                            text: text,
+                          })
+                        );
+                      }}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                )}
 
                 {selector.retail_finance === "In House" && (
                   <View>
@@ -2946,7 +3064,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       keyboardType={"number-pad"}
                       onChangeText={(text) => {
                         // Calculate EMI
-                        emiCal(selector.loan_amount, text, selector.rate_of_interest);
+                        emiCal(
+                          selector.loan_amount,
+                          text,
+                          selector.rate_of_interest
+                        );
                         dispatch(
                           setFinancialDetails({
                             key: "LOAN_OF_TENURE",
@@ -2994,9 +3116,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={[{
-                  backgroundColor: openAccordian === "8" ? Colors.RED : Colors.WHITE,
-                }, styles.accordianBorder]}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "8" ? Colors.RED : Colors.WHITE,
+                  },
+                  styles.accordianBorder,
+                ]}
               >
                 <TextinputComp
                   style={{ height: 65, width: "100%" }}
@@ -3045,9 +3171,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={[{
-                  backgroundColor: openAccordian === "9" ? Colors.RED : Colors.WHITE,
-                }, styles.accordianBorder]}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "9" ? Colors.RED : Colors.WHITE,
+                  },
+                  styles.accordianBorder,
+                ]}
               >
                 <DateSelectItem
                   label={"Customer Preferred Date*"}
@@ -3103,9 +3233,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     fontSize: 16,
                     fontWeight: "600",
                   }}
-                  style={[{
-                    backgroundColor: openAccordian === "10" ? Colors.RED : Colors.WHITE,
-                  }, styles.accordianBorder]}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "10" ? Colors.RED : Colors.WHITE,
+                    },
+                    styles.accordianBorder,
+                  ]}
                 >
                   <DropDownSelectionItem
                     label={"Drop Reason"}
@@ -3116,7 +3250,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   />
                   {selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
                     "losttocompetitor" ||
-                    selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
+                  selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
                     "losttoco-dealer" ? (
                     <DropDownSelectionItem
                       label={"Drop Sub Reason"}
@@ -3131,7 +3265,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ) : null}
 
                   {selector.drop_reason === "Lost to Competitor" ||
-                    selector.drop_reason ===
+                  selector.drop_reason ===
                     "Lost to Used Cars from Co-Dealer" ? (
                     <View>
                       <TextinputComp
@@ -3153,8 +3287,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ) : null}
 
                   {selector.drop_reason === "Lost to Competitor" ||
-                    selector.drop_reason === "Lost to Used Cars from Co-Dealer" ||
-                    selector.drop_reason === "Lost to Co-Dealer" ? (
+                  selector.drop_reason === "Lost to Used Cars from Co-Dealer" ||
+                  selector.drop_reason === "Lost to Co-Dealer" ? (
                     <View>
                       <TextinputComp
                         style={styles.textInputStyle}
@@ -3190,7 +3324,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ) : null}
 
                   {selector.drop_reason === "Lost to Competitor" ||
-                    selector.drop_reason ===
+                  selector.drop_reason ===
                     "Lost to Used Cars from Co-Dealer" ? (
                     <View>
                       <TextinputComp
@@ -3239,9 +3373,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     fontSize: 16,
                     fontWeight: "600",
                   }}
-                  style={[{
-                    backgroundColor: openAccordian === "11" ? Colors.RED : Colors.WHITE,
-                  }, styles.accordianBorder]}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "11" ? Colors.RED : Colors.WHITE,
+                    },
+                    styles.accordianBorder,
+                  ]}
                 >
                   <TextinputComp
                     style={styles.textInputStyle}
@@ -3272,9 +3410,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     fontSize: 16,
                     fontWeight: "600",
                   }}
-                  style={[{
-                    backgroundColor: openAccordian === "12" ? Colors.RED : Colors.WHITE,
-                  }, styles.accordianBorder]}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "12" ? Colors.RED : Colors.WHITE,
+                    },
+                    styles.accordianBorder,
+                  ]}
                 >
                   <View>
                     <View style={styles.select_image_bck_vw}>
@@ -3342,44 +3484,44 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                   {(selector.booking_payment_mode === "InternetBanking" ||
                     selector.booking_payment_mode === "Internet Banking") && (
-                      <View>
-                        <TextinputComp
-                          style={styles.textInputStyle}
-                          value={selector.utr_no}
-                          label={"UTR No"}
-                          onChangeText={(text) =>
-                            dispatch(
-                              setPreBookingPaymentDetials({
-                                key: "UTR_NO",
-                                text: text,
-                              })
-                            )
-                          }
-                        />
-                        <Text style={GlobalStyle.underline}></Text>
-                        <DateSelectItem
-                          label={"Transaction Date"}
-                          value={selector.transaction_date}
-                          onPress={() =>
-                            dispatch(setDatePicker("TRANSACTION_DATE"))
-                          }
-                        />
-                        <TextinputComp
-                          style={styles.textInputStyle}
-                          value={selector.comapany_bank_name}
-                          label={"Company Bank Name"}
-                          onChangeText={(text) =>
-                            dispatch(
-                              setPreBookingPaymentDetials({
-                                key: "COMPANY_BANK_NAME",
-                                text: text,
-                              })
-                            )
-                          }
-                        />
-                        <Text style={GlobalStyle.underline}></Text>
-                      </View>
-                    )}
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.utr_no}
+                        label={"UTR No"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setPreBookingPaymentDetials({
+                              key: "UTR_NO",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <DateSelectItem
+                        label={"Transaction Date"}
+                        value={selector.transaction_date}
+                        onPress={() =>
+                          dispatch(setDatePicker("TRANSACTION_DATE"))
+                        }
+                      />
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.comapany_bank_name}
+                        label={"Company Bank Name"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setPreBookingPaymentDetials({
+                              key: "COMPANY_BANK_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
 
                   {selector.booking_payment_mode === "Cheque" && (
                     <View>
@@ -3534,7 +3676,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView >
+    </SafeAreaView>
   );
 };
 
@@ -3551,7 +3693,7 @@ const styles = StyleSheet.create({
   },
   baseVw: {
     paddingHorizontal: 10,
-    paddingVertical: 5
+    paddingVertical: 5,
   },
   drop_down_view_style: {
     paddingTop: 5,
@@ -3685,17 +3827,17 @@ const styles = StyleSheet.create({
   accordianBorder: {
     borderWidth: 0.5,
     borderRadius: 4,
-    borderColor: "#7a7b7d"
+    borderColor: "#7a7b7d",
   },
   accessoriText: {
     fontSize: 10,
     fontWeight: "400",
-    color: Colors.GRAY
+    color: Colors.GRAY,
   },
   leftLabel: {
     fontSize: 14,
     fontWeight: "400",
     maxWidth: "70%",
     color: Colors.GRAY,
-  }
+  },
 });
