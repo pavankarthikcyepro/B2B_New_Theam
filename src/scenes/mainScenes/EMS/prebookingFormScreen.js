@@ -394,13 +394,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const getCarModelListFromServer = (orgId) => {
     // Call Api
     GetCarModelList(orgId).then((resolve) => {
-      let modalList = [];
+      let modelList = [];
       if (resolve.length > 0) {
         resolve.forEach((item) => {
-          modalList.push({ id: item.vehicleId, name: item.model, isChecked: false, ...item });
+          modelList.push({ id: item.vehicleId, name: item.model, isChecked: false, ...item });
         });
       }
-      setCarModelsData([...modalList]);
+      setCarModelsData([...modelList]);
     }, (rejected) => {
       console.log("getCarModelListFromServer Failed")
     }).finally(() => {
@@ -2147,7 +2147,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               {/* // 3.Modal Selction */}
               <List.Accordion
                 id={"3"}
-                title={"Modal Selection"}
+                title={"Model Selection"}
                 titleStyle={{
                   color: openAccordian === "3" ? Colors.WHITE : Colors.BLACK,
                   fontSize: 16,

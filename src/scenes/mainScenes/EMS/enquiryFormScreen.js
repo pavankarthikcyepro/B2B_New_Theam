@@ -231,13 +231,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const getCarModelListFromServer = (orgId) => {
     // Call Api
     GetCarModelList(orgId).then((resolve) => {
-      let modalList = [];
+      let modelList = [];
       if (resolve.length > 0) {
         resolve.forEach((item) => {
-          modalList.push({ id: item.vehicleId, name: item.model, isChecked: false, ...item });
+          modelList.push({ id: item.vehicleId, name: item.model, isChecked: false, ...item });
         });
       }
-      setCarModelsData([...modalList]);
+      setCarModelsData([...modelList]);
     }, (rejected) => {
       console.log("getCarModelListFromServer Failed")
     }).finally(() => {
@@ -420,12 +420,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("Please fill required fields in Communication Address");
       return;
     }
-
+    if (
+      selector.loan_of_tenure == 0 ||
+      selector.emi == 0 ||
+      selector.approx_annual_income == 0
+    )
+      if (selector.retail_finance === "In House") {
+        showToast("plaese enter the proper details in finace category ");
+        return;
+      }
     if (selector.retail_finance.length == 0) {
       showToast("Please fill required fields in Financial Details");
       return;
     }
-
     // Leashing
     if (selector.retail_finance == 'Leasing') {
       if (selector.leashing_name.length == 0) {
@@ -2158,10 +2165,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
               </List.Accordion>
               <View style={styles.space}></View>
-              {/* // 4.Modal Selection */}
+              {/* // 4.Model Selection */}
               <List.Accordion
                 id={"4"}
-                title={"Modal Selection"}
+                title={"Model Selection"}
                 titleStyle={{
                   color: openAccordian === "4" ? Colors.WHITE : Colors.BLACK,
                   fontSize: 16,

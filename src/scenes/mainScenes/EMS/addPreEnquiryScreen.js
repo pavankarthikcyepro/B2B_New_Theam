@@ -363,11 +363,19 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       selector.mobile.length == 0 ||
       selector.carModel.length == 0 ||
       selector.sourceOfEnquiry.length == 0
-    ) {
+    )
+    {
       showToastRedAlert("Please fill required fields");
       return;
     }
-
+   if (selector.enquiryType === "Personal") {
+     if (selector.customerType === "Other") {
+       if (!isValidateAlphabetics(selector.other)) {
+         showToast("Please enter the alphabets only in other");
+         return;
+       }
+      }
+    }
     if (!fromEdit) {
       if (selector.pincode.length == 0) {
         showToastRedAlert("Please fill pincode");
@@ -859,6 +867,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             <TextinputComp
               style={styles.textInputComp}
               value={selector.firstName}
+              autoCapitalize="words"
               label={"First Name*"}
               editable={
                 selector.enquiryType.length > 0 &&
