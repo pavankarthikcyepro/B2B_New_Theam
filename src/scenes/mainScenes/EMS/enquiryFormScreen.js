@@ -68,7 +68,7 @@ import {
   uploadDocumentApi,
   updateDmsAttachmentDetails,
   getPendingTasksApi,
-  updateAddressByPincode
+  updateAddressByPincode,
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
@@ -117,7 +117,10 @@ import {
 import URL from "../../../networking/endpoints";
 import { getEnquiryList } from "../../../redux/enquiryReducer";
 import { AppNavigator } from "../../../navigations";
-import { isValidateAlphabetics } from "../../../utils/helperFunctions";
+import {
+  isValidateAlphabetics,
+  isValidateCapitalized,
+} from "../../../utils/helperFunctions";
 import uuid from "react-native-uuid";
 
 const theme = {
@@ -164,7 +167,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     minDate: null,
     maxDate: null,
   });
-  const [insurenceCompayList, serInsurenceCompanyList] = useState([])
+  const [insurenceCompayList, serInsurenceCompanyList] = useState([]);
   const [financeBanksList, setFinanceBanksList] = useState([]);
 
   useLayoutEffect(() => {
@@ -222,7 +225,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
         if (token.length > 0) {
           getInsurenceCompanyNamesFromServer(token, jsonObj.orgId);
-          getBanksListFromServer(jsonObj.orgId, token)
+          getBanksListFromServer(jsonObj.orgId, token);
         }
       });
     }
@@ -230,21 +233,31 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const getCarModelListFromServer = (orgId) => {
     // Call Api
-    GetCarModelList(orgId).then((resolve) => {
-      let modalList = [];
-      if (resolve.length > 0) {
-        resolve.forEach((item) => {
-          modalList.push({ id: item.vehicleId, name: item.model, isChecked: false, ...item });
-        });
-      }
-      setCarModelsData([...modalList]);
-    }, (rejected) => {
-      console.log("getCarModelListFromServer Failed")
-    }).finally(() => {
-      // Get Enquiry Details
-      getEnquiryDetailsFromServer();
-    })
-  }
+    GetCarModelList(orgId)
+      .then(
+        (resolve) => {
+          let modalList = [];
+          if (resolve.length > 0) {
+            resolve.forEach((item) => {
+              modalList.push({
+                id: item.vehicleId,
+                name: item.model,
+                isChecked: false,
+                ...item,
+              });
+            });
+          }
+          setCarModelsData([...modalList]);
+        },
+        (rejected) => {
+          console.log("getCarModelListFromServer Failed");
+        }
+      )
+      .finally(() => {
+        // Get Enquiry Details
+        getEnquiryDetailsFromServer();
+      });
+  };
 
   const getInsurenceCompanyNamesFromServer = async (token, orgId) => {
     await fetch(URL.GET_INSURENCE_COMPANY_NAMES(orgId), {
@@ -260,26 +273,28 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         console.log("insurance : ", res);
         if (res != null && res.length > 0) {
           const companyList = res.map((item, index) => {
-            return { ...item, name: item.company_name }
-          })
+            return { ...item, name: item.company_name };
+          });
           serInsurenceCompanyList([...companyList]);
         }
       })
       .catch((error) => {
         showToastRedAlert(error.message);
       });
-  }
+  };
 
   const getBanksListFromServer = (orgId, token) => {
-
-    GetFinanceBanksList(orgId, token).then((resp) => {
-      const bankList = resp.map((item) => {
-        return { ...item, name: item.bank_name }
-      })
-      setFinanceBanksList([...bankList]);
-    }, (error) => {
-      console.error(error)
-    })
+    GetFinanceBanksList(orgId, token).then(
+      (resp) => {
+        const bankList = resp.map((item) => {
+          return { ...item, name: item.bank_name };
+        });
+        setFinanceBanksList([...bankList]);
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
   };
 
   useEffect(() => {
@@ -362,7 +377,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   const submitClicked = () => {
-
     if (selector.designation.length == 0 || selector.buyer_type.length == 0) {
       showToast("Please fill required fields in Customer Profile");
       return;
@@ -421,23 +435,28 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
 
+    if (selector.color.length == 0) {
+      showToast("Please enter Proper Color ");
+      return;
+    }
+
     if (selector.retail_finance.length == 0) {
       showToast("Please fill required fields in Financial Details");
       return;
     }
 
     // Leashing
-    if (selector.retail_finance == 'Leasing') {
+    if (selector.retail_finance == "Leasing") {
       if (selector.leashing_name.length == 0) {
         showToast("Please fill required fields in leasing name");
         return;
       }
     }
 
-    if (!isValidateAlphabetics(selector.r_model_other_name)) {
-      showToast("Please enter proper model other name");
-      return;
-    }
+    // if (!isValidateAlphabetics(selector.r_model_other_name)) {
+    //   showToast("Please enter proper model other name");
+    //   return;
+    // }
 
     if (selector.buyer_type === "Additional Buyer") {
       if (
@@ -476,7 +495,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         return;
       }
     }
-
+    if (!isValidateCapitalized(selector.r_reg_no)) {
+      showToast("Please enter proper Reg No");
+      return;
+    }
     if (!isValidateAlphabetics(selector.r_model_other_name)) {
       showToast("Please enter proper model other name");
       return;
@@ -515,7 +537,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       }
     }
 
-    if (selector.leashing_name.length > 0 && !isValidateAlphabetics(selector.leashing_name)) {
+    if (
+      selector.leashing_name.length > 0 &&
+      !isValidateAlphabetics(selector.leashing_name)
+    ) {
       showToast("Please enter proper leasing name");
       return;
     }
@@ -582,6 +607,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.primeExpectationFromCar = selector.prime_expectation_from_car;
     dataObj.whoDrives = selector.who_drives;
 
+    dataObj.color = selector.color;
     dataObj.referedByFirstname = selector.rf_by_first_name;
     dataObj.referedByLastname = selector.rf_by_last_name;
     dataObj.refferedMobileNo = selector.rf_by_mobile;
@@ -906,7 +932,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           element.taskName === "Evaluation" &&
           (element.taskStatus === "" || element.taskStatus === "ASSIGNED") &&
           selector.enquiry_details_response.dmsLeadDto.buyerType ===
-          "Replacement Buyer"
+            "Replacement Buyer"
         ) {
           pendingTaskNames.push("Evaluation : Pending \n");
         }
@@ -1313,18 +1339,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   const updateAddressDetails = (pincode) => {
-
     if (pincode.length != 6) {
       return;
     }
 
-    PincodeDetails(pincode).then((resolve) => {
-      // dispatch an action to update address
-      dispatch(updateAddressByPincode(resolve));
-    }, rejected => {
-      console.log("rejected...: ", rejected)
-    })
-  }
+    PincodeDetails(pincode).then(
+      (resolve) => {
+        // dispatch an action to update address
+        dispatch(updateAddressByPincode(resolve));
+      },
+      (rejected) => {
+        console.log("rejected...: ", rejected);
+      }
+    );
+  };
 
   const emiCal = (principle, tenure, interestRate) => {
     const amount = emiCalculator(principle, tenure, interestRate);
@@ -1446,9 +1474,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "800",
                 }}
-                style={[{
-                  backgroundColor: openAccordian === "1" ? Colors.RED : Colors.WHITE,
-                }, styles.accordianBorder]}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "1" ? Colors.RED : Colors.WHITE,
+                  },
+                  styles.accordianBorder,
+                ]}
               >
                 <TextinputComp
                   style={styles.textInputStyle}
@@ -1502,11 +1534,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
 
                 {selector.customer_type.toLowerCase() === "fleet" ||
-                  selector.customer_type.toLowerCase() === "institution" ||
-                  selector.customer_type.toLowerCase() === "corporate" ||
-                  selector.customer_type.toLowerCase() === "government" ||
-                  selector.customer_type.toLowerCase() === "retired" ||
-                  selector.customer_type.toLowerCase() === "other" ? (
+                selector.customer_type.toLowerCase() === "institution" ||
+                selector.customer_type.toLowerCase() === "corporate" ||
+                selector.customer_type.toLowerCase() === "government" ||
+                selector.customer_type.toLowerCase() === "retired" ||
+                selector.customer_type.toLowerCase() === "other" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -1555,19 +1587,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     .toLowerCase()
                     .trim()
                     .replace(/ /g, "") === "socialnetwork") && (
-                    <View>
-                      <DropDownSelectionItem
-                        label={"Sub Source Of Enquiry"}
-                        value={selector.sub_source_of_enquiry}
-                        onPress={() =>
-                          showDropDownModelMethod(
-                            "SUB_SOURCE_OF_ENQUIRY",
-                            "Sub Source Of Enquiry"
-                          )
-                        }
-                      />
-                    </View>
-                  )}
+                  <View>
+                    <DropDownSelectionItem
+                      label={"Sub Source Of Enquiry"}
+                      value={selector.sub_source_of_enquiry}
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "SUB_SOURCE_OF_ENQUIRY",
+                          "Sub Source Of Enquiry"
+                        )
+                      }
+                    />
+                  </View>
+                )}
 
                 {selector.source_of_enquiry.toLowerCase() === "reference" && (
                   <View>
@@ -1721,9 +1753,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={[{
-                  backgroundColor: openAccordian === "2" ? Colors.RED : Colors.WHITE,
-                }, styles.accordianBorder]}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "2" ? Colors.RED : Colors.WHITE,
+                  },
+                  styles.accordianBorder,
+                ]}
               >
                 <DropDownSelectionItem
                   label={"Salutation*"}
@@ -1861,9 +1897,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={[{
-                  backgroundColor: openAccordian === "3" ? Colors.RED : Colors.WHITE,
-                }, styles.accordianBorder]}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "3" ? Colors.RED : Colors.WHITE,
+                  },
+                  styles.accordianBorder,
+                ]}
               >
                 <TextinputComp
                   style={styles.textInputStyle}
@@ -1874,9 +1914,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   onChangeText={(text) => {
                     // get addreess by pincode
                     if (text.length === 6) {
-                      updateAddressDetails(text)
+                      updateAddressDetails(text);
                     }
-                    dispatch(setCommunicationAddress({ key: "PINCODE", text: text }))
+                    dispatch(
+                      setCommunicationAddress({ key: "PINCODE", text: text })
+                    );
                   }}
                 />
                 <Text style={GlobalStyle.underline}></Text>
@@ -1990,10 +2032,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   }
                 />
                 <Text style={GlobalStyle.underline}></Text>
-                <View style={{ height: 20, backgroundColor: Colors.WHITE, }}></View>
+                <View
+                  style={{ height: 20, backgroundColor: Colors.WHITE }}
+                ></View>
 
                 {/* // Permanent Addresss */}
-                <View style={{ backgroundColor: Colors.WHITE, paddingLeft: 12 }}>
+                <View
+                  style={{ backgroundColor: Colors.WHITE, paddingLeft: 12 }}
+                >
                   <Text style={styles.permanentAddText}>
                     {"Permanent Address Same as Communication Address"}
                   </Text>
@@ -2002,14 +2048,34 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <RadioTextItem
                     label={"Yes"}
                     value={"yes"}
-                    status={selector.is_permanent_address_same === "YES" ? true : false}
-                    onPress={() => dispatch(setCommunicationAddress({ key: "PERMANENT_ADDRESS", text: "true", }))}
+                    status={
+                      selector.is_permanent_address_same === "YES"
+                        ? true
+                        : false
+                    }
+                    onPress={() =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "PERMANENT_ADDRESS",
+                          text: "true",
+                        })
+                      )
+                    }
                   />
                   <RadioTextItem
                     label={"No"}
                     value={"no"}
-                    status={selector.is_permanent_address_same === "NO" ? true : false}
-                    onPress={() => dispatch(setCommunicationAddress({ key: "PERMANENT_ADDRESS", text: "false", }))}
+                    status={
+                      selector.is_permanent_address_same === "NO" ? true : false
+                    }
+                    onPress={() =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "PERMANENT_ADDRESS",
+                          text: "false",
+                        })
+                      )
+                    }
                   />
                 </View>
                 <Text style={GlobalStyle.underline}></Text>
@@ -2148,14 +2214,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       keyboardType={"default"}
                       onChangeText={(text) =>
                         dispatch(
-                          setCommunicationAddress({ key: "P_STATE", text: text })
+                          setCommunicationAddress({
+                            key: "P_STATE",
+                            text: text,
+                          })
                         )
                       }
                     />
                     <Text style={GlobalStyle.underline}></Text>
                   </View>
                 ) : null}
-
               </List.Accordion>
               <View style={styles.space}></View>
               {/* // 4.Modal Selection */}
@@ -2167,9 +2235,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={[{
-                  backgroundColor: openAccordian === "4" ? Colors.RED : Colors.WHITE,
-                }, styles.accordianBorder]}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "4" ? Colors.RED : Colors.WHITE,
+                  },
+                  styles.accordianBorder,
+                ]}
               >
                 <DropDownSelectionItem
                   label={"Model"}
@@ -2221,9 +2293,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={[{
-                  backgroundColor: openAccordian === "5" ? Colors.RED : Colors.WHITE,
-                }, styles.accordianBorder]}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "5" ? Colors.RED : Colors.WHITE,
+                  },
+                  styles.accordianBorder,
+                ]}
               >
                 <DropDownSelectionItem
                   label={"Retail Finance"}
@@ -2322,43 +2398,51 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {(selector.retail_finance === "In House" ||
                   selector.retail_finance === "Out House") && (
-                    <View>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Loan Amount*"}
-                        keyboardType={"default"}
-                        maxLength={10}
-                        value={selector.loan_amount}
-                        onChangeText={(text) => {
-                          emiCal(text, selector.loan_of_tenure, selector.rate_of_interest);
-                          dispatch(
-                            setFinancialDetails({
-                              key: "LOAN_AMOUNT",
-                              text: text,
-                            })
-                          );
-                        }}
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Rate of Interest*"}
-                        keyboardType={"default"}
-                        maxLength={10}
-                        value={selector.rate_of_interest}
-                        onChangeText={(text) => {
-                          emiCal(selector.loan_amount, selector.loan_of_tenure, text);
-                          dispatch(
-                            setFinancialDetails({
-                              key: "RATE_OF_INTEREST",
-                              text: text,
-                            })
-                          );
-                        }}
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  )}
+                  <View>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Loan Amount*"}
+                      keyboardType={"default"}
+                      maxLength={10}
+                      value={selector.loan_amount}
+                      onChangeText={(text) => {
+                        emiCal(
+                          text,
+                          selector.loan_of_tenure,
+                          selector.rate_of_interest
+                        );
+                        dispatch(
+                          setFinancialDetails({
+                            key: "LOAN_AMOUNT",
+                            text: text,
+                          })
+                        );
+                      }}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Rate of Interest*"}
+                      keyboardType={"phone-pad"}
+                      maxLength={10}
+                      value={selector.rate_of_interest}
+                      onChangeText={(text) => {
+                        emiCal(
+                          selector.loan_amount,
+                          selector.loan_of_tenure,
+                          text
+                        );
+                        dispatch(
+                          setFinancialDetails({
+                            key: "RATE_OF_INTEREST",
+                            text: text,
+                          })
+                        );
+                      }}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                )}
 
                 {selector.retail_finance === "In House" && (
                   <View>
@@ -2377,8 +2461,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       maxLength={3}
                       value={selector.loan_of_tenure}
                       onChangeText={(text) => {
-                        emiCal(selector.loan_amount, text, selector.rate_of_interest);
-                        dispatch(setFinancialDetails({ key: "LOAN_OF_TENURE", text: text })
+                        emiCal(
+                          selector.loan_amount,
+                          text,
+                          selector.rate_of_interest
+                        );
+                        dispatch(
+                          setFinancialDetails({
+                            key: "LOAN_OF_TENURE",
+                            text: text,
+                          })
                         );
                       }}
                     />
@@ -2420,9 +2512,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={[{
-                  backgroundColor: openAccordian === "6" ? Colors.RED : Colors.WHITE,
-                }, styles.accordianBorder]}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "6" ? Colors.RED : Colors.WHITE,
+                  },
+                  styles.accordianBorder,
+                ]}
               >
                 <TextinputComp
                   style={styles.textInputStyle}
@@ -2430,9 +2526,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   label={"Pan Number*"}
                   keyboardType={"default"}
                   maxLength={10}
-                  autoCapitalize={'characters'}
+                  autoCapitalize={"characters"}
                   onChangeText={(text) => {
-                    dispatch(setUploadDocuments({ key: "PAN", text: text }))
+                    dispatch(setUploadDocuments({ key: "PAN", text: text }));
                   }}
                 />
                 <Text style={GlobalStyle.underline}></Text>
@@ -2482,9 +2578,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={[{
-                  backgroundColor: openAccordian === "7" ? Colors.RED : Colors.WHITE,
-                }, styles.accordianBorder]}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "7" ? Colors.RED : Colors.WHITE,
+                  },
+                  styles.accordianBorder,
+                ]}
               >
                 <View style={styles.view2}>
                   <Text style={styles.looking_any_text}>
@@ -2708,7 +2808,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
               </List.Accordion>
               {selector.buyer_type == "Additional Buyer" ||
-                selector.buyer_type == "Replacement Buyer" ? (
+              selector.buyer_type == "Replacement Buyer" ? (
                 <View style={styles.space}></View>
               ) : null}
               {/* // 8.Additional Buyer */}
@@ -2721,9 +2821,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     fontSize: 16,
                     fontWeight: "600",
                   }}
-                  style={[{
-                    backgroundColor: openAccordian === "8" ? Colors.RED : Colors.WHITE,
-                  }, styles.accordianBorder]}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "8" ? Colors.RED : Colors.WHITE,
+                    },
+                    styles.accordianBorder,
+                  ]}
                 >
                   <DropDownSelectionItem
                     label={"Make"}
@@ -2835,15 +2939,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     fontSize: 16,
                     fontWeight: "600",
                   }}
-                  style={[{
-                    backgroundColor: openAccordian === "9" ? Colors.RED : Colors.WHITE,
-                  }, styles.accordianBorder]}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "9" ? Colors.RED : Colors.WHITE,
+                    },
+                    styles.accordianBorder,
+                  ]}
                 >
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.r_reg_no}
                     label={"Reg. No."}
                     maxLength={50}
+                    autoCapitalize={"characters"}
                     keyboardType={"default"}
                     onChangeText={(text) =>
                       dispatch(
@@ -3229,9 +3338,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     fontSize: 16,
                     fontWeight: "600",
                   }}
-                  style={[{
-                    backgroundColor: openAccordian === "10" ? Colors.RED : Colors.WHITE,
-                  }, styles.accordianBorder]}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "10" ? Colors.RED : Colors.WHITE,
+                    },
+                    styles.accordianBorder,
+                  ]}
                 >
                   <DropDownSelectionItem
                     label={"Drop Reason"}
@@ -3242,7 +3355,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   />
                   {selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
                     "losttocompetitor" ||
-                    selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
+                  selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
                     "losttoco-dealer" ? (
                     <DropDownSelectionItem
                       label={"Drop Sub Reason"}
@@ -3256,7 +3369,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     />
                   ) : null}
                   {selector.drop_reason === "Lost to Competitor" ||
-                    selector.drop_reason ===
+                  selector.drop_reason ===
                     "Lost to Used Cars from Co-Dealer" ? (
                     <View>
                       <TextinputComp
@@ -3277,8 +3390,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     </View>
                   ) : null}
                   {selector.drop_reason === "Lost to Competitor" ||
-                    selector.drop_reason === "Lost to Used Cars from Co-Dealer" ||
-                    selector.drop_reason === "Lost to Co-dealer" ? (
+                  selector.drop_reason === "Lost to Used Cars from Co-Dealer" ||
+                  selector.drop_reason === "Lost to Co-dealer" ? (
                     <View>
                       <TextinputComp
                         style={styles.textInputStyle}
@@ -3314,7 +3427,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     </View>
                   ) : null}
                   {selector.drop_reason === "Lost to Competitor" ||
-                    selector.drop_reason ===
+                  selector.drop_reason ===
                     "Lost to Used Cars from Co-Dealer" ? (
                     <View>
                       <TextinputComp
@@ -3418,7 +3531,7 @@ const styles = StyleSheet.create({
   },
   baseVw: {
     paddingHorizontal: 10,
-    paddingVertical: 5
+    paddingVertical: 5,
   },
   shadow: {
     shadowColor: Colors.DARK_GRAY,
@@ -3433,6 +3546,7 @@ const styles = StyleSheet.create({
   textInputStyle: {
     height: 65,
     width: "100%",
+    textTransform: "capitalize",
   },
   space: {
     height: 10,
@@ -3516,7 +3630,6 @@ const styles = StyleSheet.create({
   accordianBorder: {
     borderWidth: 0.5,
     borderRadius: 4,
-    borderColor: "#7a7b7d"
-  }
+    borderColor: "#7a7b7d",
+  },
 });
-
