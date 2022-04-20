@@ -117,7 +117,10 @@ import {
 import URL from "../../../networking/endpoints";
 import { getEnquiryList } from "../../../redux/enquiryReducer";
 import { AppNavigator } from "../../../navigations";
-import { isValidateAlphabetics } from "../../../utils/helperFunctions";
+import {
+  isValidateAlphabetics,
+  isMobileNumber,
+} from "../../../utils/helperFunctions";
 import uuid from "react-native-uuid";
 
 const theme = {
@@ -491,27 +494,32 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         showToast("Please enter proper model other name");
         return;
       }
-    }
-    if (selector.r_hypothication_checked === true) {
-      if (selector.r_hypothication_name.length > 0) {
-        if (!isValidateAlphabetics(selector.r_hypothication_name)) {
-          showToast("Please enter the proper Hypothication name");
-          return;
+
+      if (selector.r_hypothication_checked === true) {
+        if (selector.r_hypothication_name.length > 0) {
+          if (!isValidateAlphabetics(selector.r_hypothication_name)) {
+            showToast("Please enter the proper Hypothication name");
+            return;
+          }
+        }
+        if (selector.r_hypothication_branch.length > 0) {
+          if (!isValidateAlphabetics(selector.r_hypothication_branch)) {
+            showToast("Please enter the proper Hypothication branch");
+            return;
+          }
         }
       }
-      if (selector.r_hypothication_branch.length > 0) {
-        if (!isValidateAlphabetics(selector.r_hypothication_branch)) {
-          showToast("Please enter the proper Hypothication branch");
-          return;
-        }
-      }
     }
+
     if (selector.retail_finance == "In House") {
       if (selector.bank_or_finance.length == 0) {
-        showToast("please select bank finance details");
+        showToast(
+          "please select Bank/Finance details in finance details section"
+        );
         return;
       }
     }
+
     if (selector.c_looking_for_any_other_brand_checked === true) {
       if (selector.c_dealership_name.length > 0) {
         if (!isValidateAlphabetics(selector.c_dealership_name)) {

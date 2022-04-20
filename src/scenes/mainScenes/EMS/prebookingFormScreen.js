@@ -1781,7 +1781,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "1" ? Colors.RED : Colors.WHITE,
+                      openAccordian === "1"
+                        ? Colors.RED
+                        : Colors.SKY_LIGHT_BLUE_COLOR,
                   },
                   styles.accordianBorder,
                 ]}
@@ -1911,7 +1913,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "2" ? Colors.RED : Colors.WHITE,
+                      openAccordian === "2"
+                        ? Colors.RED
+                        : Colors.SKY_LIGHT_BLUE_COLOR,
                   },
                   styles.accordianBorder,
                 ]}
@@ -2237,7 +2241,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "3" ? Colors.RED : Colors.WHITE,
+                      openAccordian === "3"
+                        ? Colors.RED
+                        : Colors.SKY_LIGHT_BLUE_COLOR,
                   },
                   styles.accordianBorder,
                 ]}
@@ -2286,7 +2292,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "4" ? Colors.RED : Colors.WHITE,
+                      openAccordian === "4"
+                        ? Colors.RED
+                        : Colors.SKY_LIGHT_BLUE_COLOR,
                   },
                   styles.accordianBorder,
                 ]}
@@ -2469,7 +2477,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "5" ? Colors.RED : Colors.WHITE,
+                      openAccordian === "5"
+                        ? Colors.RED
+                        : Colors.SKY_LIGHT_BLUE_COLOR,
                   },
                   styles.accordianBorder,
                 ]}
@@ -2719,7 +2729,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "6" ? Colors.RED : Colors.WHITE,
+                      openAccordian === "6"
+                        ? Colors.RED
+                        : Colors.SKY_LIGHT_BLUE_COLOR,
                   },
                   styles.accordianBorder,
                 ]}
@@ -2883,7 +2895,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "7" ? Colors.RED : Colors.WHITE,
+                      openAccordian === "7"
+                        ? Colors.RED
+                        : Colors.SKY_LIGHT_BLUE_COLOR,
                   },
                   styles.accordianBorder,
                 ]}
@@ -3119,7 +3133,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "8" ? Colors.RED : Colors.WHITE,
+                      openAccordian === "8"
+                        ? Colors.RED
+                        : Colors.SKY_LIGHT_BLUE_COLOR,
                   },
                   styles.accordianBorder,
                 ]}
@@ -3174,7 +3190,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "9" ? Colors.RED : Colors.WHITE,
+                      openAccordian === "9"
+                        ? Colors.RED
+                        : Colors.SKY_LIGHT_BLUE_COLOR,
                   },
                   styles.accordianBorder,
                 ]}
@@ -3376,7 +3394,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   style={[
                     {
                       backgroundColor:
-                        openAccordian === "11" ? Colors.RED : Colors.WHITE,
+                        openAccordian === "11"
+                          ? Colors.RED
+                          : Colors.SKY_LIGHT_BLUE_COLOR,
                     },
                     styles.accordianBorder,
                   ]}

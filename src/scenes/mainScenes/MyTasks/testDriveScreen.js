@@ -544,7 +544,7 @@ const TestDriveScreen = ({ route, navigation }) => {
 
   const showAlertMsg = (isSucess) => {
     let message = isSucess
-      ? "TestDrive Appointment has succeeded"
+      ? "TestDrive Appointment has sent for approval"
       : "TestDrive Appointment has failed";
     Alert.alert(
       "",
@@ -602,7 +602,7 @@ const TestDriveScreen = ({ route, navigation }) => {
   const deteleButtonPressed = (from) => {
     const imagesDataObj = { ...uploadedImagesDataObj };
     switch (from) {
-      case "DlFRONTURL":
+      case "DLFRONTURL":
         delete imagesDataObj.dlFrontUrl;
         break;
       case "DLBACKURL":
