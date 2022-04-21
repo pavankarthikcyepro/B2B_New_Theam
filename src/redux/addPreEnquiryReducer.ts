@@ -28,8 +28,10 @@ interface Item {
 
 export const createPreEnquiry = createAsyncThunk("ADD_PRE_ENQUIRY_SLICE/createPreEnquiry", async (data, { rejectWithValue }) => {
   const response = await client.post(data["url"], data["body"]);
+  console.log("resp: ", JSON.stringify(response));
   try {
     const json = await response.json();
+    console.log("json: ", json)
     if (response.status != 200) {
       return rejectWithValue(json);
     }

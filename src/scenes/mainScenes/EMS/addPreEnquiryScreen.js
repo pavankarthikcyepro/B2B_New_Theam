@@ -190,7 +190,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   }
 
   const setExistingData = () => {
-    22
     if (route.params?.fromEdit != null && route.params.fromEdit === true) {
       const preEnquiryDetails = route.params.preEnquiryDetails;
       const fromEdit = route.params.fromEdit;
