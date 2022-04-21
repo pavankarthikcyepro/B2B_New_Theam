@@ -53,7 +53,7 @@ import {
 } from "../../../utils/toast";
 import URL from "../../../networking/endpoints";
 import { isValidateAlphabetics } from "../../../utils/helperFunctions";
-import moment from 'moment';
+import moment from "moment";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -128,7 +128,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       });
       setOrganizationId(jsonObj.orgId);
       setEmployeeName(jsonObj.empName);
-      getCarModelListFromServer(jsonObj.orgId)
+      getCarModelListFromServer(jsonObj.orgId);
 
       if (jsonObj.hrmsRole === "Reception") {
         const resultAry = homeSelector.source_of_enquiry_list.filter(
@@ -174,20 +174,29 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
 
   const getCarModelListFromServer = (orgId) => {
     // Call Api
-    GetCarModelList(orgId).then((resolve) => {
-      let modalList = [];
-      if (resolve.length > 0) {
-        resolve.forEach((item) => {
-          modalList.push({ id: item.vehicleId, name: item.model, isChecked: false });
-        });
-      }
-      setDataForCarModels([...modalList]);
-    }, (rejected) => {
-      console.log("getCarModelListFromServer Failed")
-    }).finally(() => {
-      // Get Enquiry Details
-    })
-  }
+    GetCarModelList(orgId)
+      .then(
+        (resolve) => {
+          let modalList = [];
+          if (resolve.length > 0) {
+            resolve.forEach((item) => {
+              modalList.push({
+                id: item.vehicleId,
+                name: item.model,
+                isChecked: false,
+              });
+            });
+          }
+          setDataForCarModels([...modalList]);
+        },
+        (rejected) => {
+          console.log("getCarModelListFromServer Failed");
+        }
+      )
+      .finally(() => {
+        // Get Enquiry Details
+      });
+  };
 
   const setExistingData = () => {
     if (route.params?.fromEdit != null && route.params.fromEdit === true) {
@@ -203,7 +212,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     const data = realm.objects("CUSTOMER_TYPE_TABLE");
     dispatch(setCustomerTypeList(JSON.stringify(data)));
   };
-
 
   const gotoConfirmPreEnquiryScreen = (response) => {
     if (response.hasOwnProperty("dmsEntity")) {
@@ -366,6 +374,14 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       showToastRedAlert("Please fill required fields");
       return;
     }
+    if (selector.enquiryType === "Personal") {
+      if (selector.customerType === "Government") {
+        if (!isValidateAlphabetics(selector.companyName)) {
+          showToast("Please enter alphabetics only Company Name");
+          return;
+        }
+      }
+    }
 
     if (!fromEdit) {
       if (selector.pincode.length == 0) {
@@ -398,11 +414,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         return;
       }
     }
-
-    // if (selector.mobile.length != 10 && !isMobileNumber(selector.mobile))  {
-    //   showToast("Please enter valid mobile number");
-    //   return;
-    // }
     if (selector.mobile.length > 0 && !isMobileNumber(selector.mobile)) {
       showToast("Please enter valid number");
       return;
@@ -465,7 +476,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       .then((response) => response.json())
       .then((jsonObj) => {
         if (jsonObj.success == true) {
-
           const dmsEntiry = jsonObj.dmsEntity;
           const refNumber = dmsEntiry.leadCustomerReference.referencenumber;
           makeCreatePreEnquiry(refNumber);
@@ -571,36 +581,40 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   useEffect(() => {
     if (selector.createEnquiryStatus === "success") {
       gotoConfirmPreEnquiryScreen(selector.create_enquiry_response_obj);
-    }
-    else if (selector.createEnquiryStatus === "failed") {
-      if (selector.create_enquiry_response_obj && selector.create_enquiry_response_obj.accountId != null && selector.create_enquiry_response_obj.contactId != null) {
+    } else if (selector.createEnquiryStatus === "failed") {
+      if (
+        selector.create_enquiry_response_obj &&
+        selector.create_enquiry_response_obj.accountId != null &&
+        selector.create_enquiry_response_obj.contactId != null
+      ) {
         confirmToCreateLeadAgain(selector.create_enquiry_response_obj);
       } else {
-        showToast(selector.create_enquiry_response_obj.message || "something went wrong");
+        showToast(
+          selector.create_enquiry_response_obj.message || "something went wrong"
+        );
       }
     }
-  }, [
-    selector.createEnquiryStatus,
-    selector.create_enquiry_response_obj,
-  ]);
+  }, [selector.createEnquiryStatus, selector.create_enquiry_response_obj]);
 
   // Handle update Enquiry response
   useEffect(() => {
     if (selector.updateEnquiryStatus === "success") {
       showToastSucess("Pre-enquiry successfully updated");
       navigation.popToTop();
-    }
-    else if (selector.updateEnquiryStatus === "failed") {
-      if (selector.create_enquiry_response_obj && selector.create_enquiry_response_obj.accountId != null && selector.create_enquiry_response_obj.contactId != null) {
+    } else if (selector.updateEnquiryStatus === "failed") {
+      if (
+        selector.create_enquiry_response_obj &&
+        selector.create_enquiry_response_obj.accountId != null &&
+        selector.create_enquiry_response_obj.contactId != null
+      ) {
         confirmToCreateLeadAgain(selector.create_enquiry_response_obj);
       } else {
-        showToast(selector.create_enquiry_response_obj.message || "something went wrong");
+        showToast(
+          selector.create_enquiry_response_obj.message || "something went wrong"
+        );
       }
     }
-  }, [
-    selector.updateEnquiryStatus,
-    selector.create_enquiry_response_obj,
-  ]);
+  }, [selector.updateEnquiryStatus, selector.create_enquiry_response_obj]);
 
   const updatePreEneuquiryDetails = () => {
     let url = sales_url;
@@ -743,7 +757,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         newItem.name = subItem.subSource;
         if (newItem.status === "Active") {
           updatedData.push(newItem);
-        };
+        }
       });
       setSubSourceData(updatedData);
     } else {
