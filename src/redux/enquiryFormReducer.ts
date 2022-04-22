@@ -204,6 +204,17 @@ const enquiryDetailsOverViewSlice = createSlice({
     pan_image: null,
     adhaar_number: "",
     adhaar_image: null,
+    employee_id: "",
+    employee_image: null,
+    upload_document: "",
+    document_image: null,
+    patta_number: "",
+    patta_image: null,
+    pension_letter: "",
+    pension_image: null,
+    ima_certificate: "",
+    ima_image: null,
+
     // Additional Buyer
     a_make: "",
     a_model: "",
@@ -290,7 +301,6 @@ const enquiryDetailsOverViewSlice = createSlice({
           break;
         case "SALUTATION":
           if (state.salutation !== value) {
-
             const genderData = Gender_Data_Obj[value.toLowerCase()];
             state.gender = genderData.length > 0 ? genderData[0].name : "";
             state.relation = "";
@@ -746,9 +756,20 @@ const enquiryDetailsOverViewSlice = createSlice({
         case "ADHAR":
           state.adhaar_number = text;
           break;
-        case "UPLOAD_PAN":
+        case "EMPLOYEE_ID":
+          state.employee_id = text;
           break;
-        case "UPLOAD_ADHAR":
+        case "UPLOAD_DOCUMENT":
+          state.upload_document = text;
+          break;
+        case "PATTA_NUMBER":
+          state.patta_number = text;
+          break;
+        case "PENSION_LETTER":
+          state.pension_letter = text;
+          break;
+        case "IMA":
+          state.ima_certificate = text;
           break;
       }
     },
@@ -1184,6 +1205,11 @@ const enquiryDetailsOverViewSlice = createSlice({
       const dmsAttachments = action.payload;
       state.pan_number = "";
       state.adhaar_number = "";
+      state.employee_id = "";
+      state.upload_document = "";
+      state.patta_number = "";
+      state.pension_letter = "";
+      state.ima_certificate = "";
       if (dmsAttachments.length > 0) {
         dmsAttachments.forEach((item, index) => {
           switch (item.documentType) {
@@ -1192,6 +1218,21 @@ const enquiryDetailsOverViewSlice = createSlice({
               break;
             case "aadhar":
               state.adhaar_number = item.documentNumber;
+              break;
+            case "employee":
+              state.employee_id = item.documentNumber;
+              break;
+            case "uploaddocument":
+              state.upload_document = item.documentNumber;
+              break;
+            case "pattanumber":
+              state.patta_number = item.documentNumber;
+              break;
+            case "pensionletter":
+              state.pension_letter = item.documentNumber;
+              break;
+            case "imacertificate":
+              state.ima_certificate = item.documentNumber;
               break;
           }
         });
@@ -1202,12 +1243,11 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.transmission_type = action.payload.transmissionType;
     },
     updateAddressByPincode: (state, action) => {
-
-      state.village = action.payload.Block || ""
-      state.city = action.payload.Region || ""
-      state.district = action.payload.District || ""
-      state.state = action.payload.State || ""
-    }
+      state.village = action.payload.Block || "";
+      state.city = action.payload.Region || "";
+      state.district = action.payload.District || "";
+      state.state = action.payload.State || "";
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getEnquiryDetailsApi.pending, (state) => {
@@ -1346,6 +1386,6 @@ export const {
   updateCustomerNeedAnalysisData,
   updateAdditionalOrReplacementBuyerData,
   updateDmsAttachmentDetails,
-  updateAddressByPincode
+  updateAddressByPincode,
 } = enquiryDetailsOverViewSlice.actions;
 export default enquiryDetailsOverViewSlice.reducer;

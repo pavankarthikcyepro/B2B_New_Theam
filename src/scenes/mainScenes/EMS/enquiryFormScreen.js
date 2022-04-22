@@ -843,6 +843,22 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       case "aadhar":
         object.documentNumber = selector.adhaar_number;
         break;
+      case "employee":
+        object.documentNumber = selector.employee_id;
+        break;
+      case "uploaddocument":
+        object.documentNumber = selector.upload_document;
+        break;
+      case "pattanumber":
+        object.documentNumber = selector.patta_number;
+        break;
+      case "pensionletter":
+        object.documentNumber = selector.pension_letter;
+        break;
+      case "imacertificate":
+        object.documentNumber = selector.ima_certificate;
+        break;
+
       case "REGDOC":
         object.documentNumber = selector.r_reg_no;
         break;
@@ -1256,6 +1272,21 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       case "UPLOAD_ADHAR":
         formData.append("documentType", "aadhar");
         break;
+      case "EMPLOYEE_ID":
+        formData.append("documentType", "employee");
+        break;
+      case "UPLOAD_DOCUMENT":
+        formData.append("documentType", "uploaddocument");
+        break;
+      case "UPLOAD_PATTA":
+        formData.append("documentType", "pattanumber");
+        break;
+      case "UPLOAD_PENSION":
+        formData.append("documentType", "pensionletter");
+        break;
+      case "UPLOAD_IMA":
+        formData.append("documentType", "imacertificate");
+        break;
       case "UPLOAD_REG_DOC":
         formData.append("documentType", "REGDOC");
         break;
@@ -1300,6 +1331,22 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       case "AADHAR":
         delete imagesDataObj.aadhar;
         break;
+      case "EMPLOYEE":
+        delete imagesDataObj.employee;
+        break;
+      case "DOCUMENT":
+        delete imagesDataObj.uploaddocument;
+        break;
+      case "PATTA":
+        delete imagesDataObj.pattanumber;
+        break;
+      case "PENSION":
+        delete imagesDataObj.pensionletter;
+        break;
+      case "IMACERTIFICATE":
+        delete imagesDataObj.imacertificate;
+        break;
+
       case "REGDOC":
         delete imagesDataObj.REGDOC;
         break;
@@ -2526,55 +2573,243 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   styles.accordianBorder,
                 ]}
               >
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.pan_number}
-                  label={"Pan Number*"}
-                  keyboardType={"default"}
-                  maxLength={10}
-                  autoCapitalize={"characters"}
-                  onChangeText={(text) => {
-                    dispatch(setUploadDocuments({ key: "PAN", text: text }));
-                  }}
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <View style={styles.select_image_bck_vw}>
-                  <ImageSelectItem
-                    name={"Upload Pan"}
-                    onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
-                  />
-                </View>
-                {uploadedImagesDataObj.pan ? (
-                  <DisplaySelectedImage
-                    fileName={uploadedImagesDataObj.pan.fileName}
-                    from={"PAN"}
-                  />
+                {selector.customer_type.toLowerCase() === "self employed" ||
+                selector.customer_type.toLowerCase() === "corporate" ||
+                selector.customer_type.toLowerCase() === "business" ||
+                selector.customer_type.toLowerCase() === "government" ||
+                selector.customer_type.toLowerCase() === "farmer" ||
+                selector.customer_type.toLowerCase() === "retired" ||
+                selector.customer_type.toLowerCase() === "doctor" ||
+                selector.customer_type.toLowerCase() === "other other" ? (
+                  <View>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.pan_number}
+                      label={"Pan Number*"}
+                      keyboardType={"default"}
+                      maxLength={10}
+                      autoCapitalize={"characters"}
+                      onChangeText={(text) => {
+                        dispatch(
+                          setUploadDocuments({ key: "PAN", text: text })
+                        );
+                      }}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Upload Pan"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.pan ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.pan.fileName}
+                        from={"PAN"}
+                      />
+                    ) : null}
+                  </View>
                 ) : null}
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.adhaar_number}
-                  label={"Aadhaar Number*"}
-                  keyboardType={"phone-pad"}
-                  maxLength={12}
-                  onChangeText={(text) =>
-                    dispatch(setUploadDocuments({ key: "ADHAR", text: text }))
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <View style={styles.select_image_bck_vw}>
-                  <ImageSelectItem
-                    name={"Upload Adhar"}
-                    onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
-                  />
-                </View>
-                {uploadedImagesDataObj.aadhar ? (
-                  <DisplaySelectedImage
-                    fileName={uploadedImagesDataObj.aadhar.fileName}
-                    from={"AADHAR"}
-                  />
+
+                {selector.customer_type.toLowerCase() === "self employed" ||
+                selector.customer_type.toLowerCase() === "corporate" ||
+                selector.customer_type.toLowerCase() === "business" ||
+                selector.customer_type.toLowerCase() === "government" ||
+                selector.customer_type.toLowerCase() === "farmer" ||
+                selector.customer_type.toLowerCase() === "retired" ||
+                selector.customer_type.toLowerCase() === "doctor" ||
+                selector.customer_type.toLowerCase() === "other other" ? (
+                  <View>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.adhaar_number}
+                      label={"Aadhaar Number*"}
+                      keyboardType={"phone-pad"}
+                      maxLength={12}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setUploadDocuments({ key: "ADHAR", text: text })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Upload Adhar"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.aadhar ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.aadhar.fileName}
+                        from={"AADHAR"}
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+
+                {selector.customer_type.toLowerCase() === "corporate" ||
+                selector.customer_type.toLowerCase() === "government" ? (
+                  <View>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.employee_id}
+                      label={"Employee ID*"}
+                      keyboardType={"phone-pad"}
+                      maxLength={20}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setUploadDocuments({ key: "EMPLOYEE_ID", text: text })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Upload Employee ID"}
+                        onPress={() => dispatch(setImagePicker("EMPLOYEE_ID"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.employee ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.employee.fileName}
+                        from={"EMPLOYEE"}
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+
+                {selector.customer_type === "Corporate" ||
+                selector.customer_type === "Government" ? (
+                  <View>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.upload_document}
+                      label={"Last 3 Months Payslips*"}
+                      keyboardType={"phone-pad"}
+                      maxLength={20}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setUploadDocuments({
+                            key: "UPLOAD_DOCUMENT",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Upload Document"}
+                        onPress={() =>
+                          dispatch(setImagePicker("UPLOAD_DOCUMENT"))
+                        }
+                      />
+                    </View>
+                    {uploadedImagesDataObj.uploaddocument ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.uploaddocument.fileName}
+                        from={"DOCUMENT"}
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+                {selector.customer_type === "Farmer" ? (
+                  <View>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.patta_number}
+                      label={"Patta passbook*"}
+                      keyboardType={"phone-pad"}
+                      maxLength={20}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setUploadDocuments({
+                            key: "PATTA_NUMBER",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Upload patta passbook"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_PATTA"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.pattanumber ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.pattanumber.fileName}
+                        from={"PATTA"}
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+                {selector.customer_type === "Retired" ? (
+                  <View>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.pension_letter}
+                      label={"Pension book*"}
+                      keyboardType={"phone-pad"}
+                      maxLength={20}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setUploadDocuments({
+                            key: "PENSION_LETTER",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Upload Pensionbook"}
+                        onPress={() =>
+                          dispatch(setImagePicker("UPLOAD_PENSION"))
+                        }
+                      />
+                    </View>
+                    {uploadedImagesDataObj.pensionletter ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.pensionletter.fileName}
+                        from={"PENSION"}
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+                {selector.customer_type === "Doctor" ? (
+                  <View>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.ima_certificate}
+                      label={"IMA Certificate*"}
+                      keyboardType={"phone-pad"}
+                      maxLength={20}
+                      onChangeText={(text) =>
+                        dispatch(setUploadDocuments({ key: "IMA", text: text }))
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Upload IMA Certificate"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_IMA"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.imacertificate ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.imacertificate.fileName}
+                        from={"IMACERTIFICATE"}
+                      />
+                    ) : null}
+                  </View>
                 ) : null}
               </List.Accordion>
               <View style={styles.space}></View>
+
               {/* // 7.Customer Need Analysis */}
               <List.Accordion
                 id={"7"}
