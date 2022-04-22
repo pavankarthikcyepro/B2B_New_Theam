@@ -1822,7 +1822,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   autoCapitalize="words"
                   keyboardType={"default"}
                   maxLength={50}
-                  autoCapitalize={"words"}
                   onChangeText={(text) =>
                     dispatch(
                       setPersonalIntro({ key: "RELATION_NAME", text: text })
