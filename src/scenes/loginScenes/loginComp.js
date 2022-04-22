@@ -241,7 +241,7 @@ const LoginScreen = ({ navigation }) => {
               <Text style={styles.text1}>{"User’s Profile"}</Text>
               <Text style={styles.text2}>
                 {
-                  "Thanks to user’s profile your vehicles, service books and massages will be stored safely in a cloud, so you do not have to worry about that anymore."
+                  "Thanks to user’s profile your vehicles, service books and messages will be stored safely in a cloud, so you do not have to worry about that anymore."
                 }
               </Text>
             </View>

@@ -164,13 +164,12 @@ export const rgbaColor = () => {
 
 export const emiCalculator = (principle, tenureInMonths, interestRate) => {
   if (principle !== "" && tenureInMonths !== "" && interestRate !== "") {
-
     const amount = Number(principle);
     const months = Number(tenureInMonths);
     const interest = Number(interestRate) / 1200;
 
-    const step1 = (Math.pow(1 / (1 + interest), months))
-    const emi = Math.round(amount * interest / (1 - step1) * 100) / 100;
+    const step1 = Math.pow(1 / (1 + interest), months);
+    const emi = Math.round(((amount * interest) / (1 - step1)) * 100) / 100;
     const finalEmi = Math.round(emi).toString();
     console.log("finalEmi: ", finalEmi);
     return finalEmi;
@@ -181,24 +180,23 @@ export const emiCalculator = (principle, tenureInMonths, interestRate) => {
 export const PincodeDetails = async (pincode) => {
   return await new Promise((resolve, reject) => {
     fetch(`https://api.postalpincode.in/pincode/${pincode}`, {
-      method: "GET"
+      method: "GET",
     })
-      .then(json => json.json())
-      .then(res => {
+      .then((json) => json.json())
+      .then((res) => {
         if (res != undefined && res.length > 0) {
           if (res[0].PostOffice != null && res[0].PostOffice.length > 0) {
-            resolve({ ...res[0].PostOffice[0] })
+            resolve({ ...res[0].PostOffice[0] });
           } else {
             reject({});
           }
-        }
-        else {
+        } else {
           reject({});
         }
       })
-      .catch((err) => reject(err))
-  })
-}
+      .catch((err) => reject(err));
+  });
+};
 
 export const GetCarModelList = async (orgId, token = "") => {
   return await new Promise((resolve, reject) => {
@@ -212,19 +210,18 @@ export const GetCarModelList = async (orgId, token = "") => {
         "auth-token": token,
       },
     })
-      .then(json => json.json())
-      .then(res => {
+      .then((json) => json.json())
+      .then((res) => {
         // console.log("res: ", JSON.stringify(res))
         if (res != undefined && res.length > 0) {
           resolve(res);
-        }
-        else {
+        } else {
           reject([]);
         }
       })
-      .catch((err) => reject([]))
-  })
-}
+      .catch((err) => reject([]));
+  });
+};
 
 export const GetFinanceBanksList = async (orgId, token) => {
   return await new Promise((resolve, reject) => {
@@ -238,19 +235,18 @@ export const GetFinanceBanksList = async (orgId, token) => {
         "auth-token": token,
       },
     })
-      .then(json => json.json())
-      .then(res => {
+      .then((json) => json.json())
+      .then((res) => {
         // console.log("res: ", JSON.stringify(res))
         if (res != undefined && res.length > 0) {
           resolve(res);
-        }
-        else {
+        } else {
           reject([]);
         }
       })
-      .catch((err) => reject(err))
-  })
-}
+      .catch((err) => reject(err));
+  });
+};
 
 export const GetPaidAccessoriesList = async (vehicleId, orgId, token) => {
   return await new Promise((resolve, reject) => {
@@ -262,24 +258,22 @@ export const GetPaidAccessoriesList = async (vehicleId, orgId, token) => {
         Accept: "application/json",
         "Content-Type": "application/json",
         "auth-token": token,
-        "orgId": orgId,
+        orgId: orgId,
       },
     })
-      .then(json => json.json())
-      .then(res => {
+      .then((json) => json.json())
+      .then((res) => {
         //console.log("res: ", JSON.stringify(res))
         if (res.success == true) {
           if (res.accessorylist != undefined && res.accessorylist.length > 0) {
             resolve(res.accessorylist);
           } else {
-            resolve([])
+            resolve([]);
           }
-        }
-        else {
+        } else {
           reject("Get Paid Acceossories List failed");
         }
       })
-      .catch((err) => reject(err))
-  })
-}
-
+      .catch((err) => reject(err));
+  });
+};

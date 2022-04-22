@@ -119,7 +119,10 @@ import {
 import URL from "../../../networking/endpoints";
 import { getEnquiryList } from "../../../redux/enquiryReducer";
 import { AppNavigator } from "../../../navigations";
-import { isValidateAlphabetics } from "../../../utils/helperFunctions";
+import {
+  isValidateAlphabetics,
+  isMobileNumber,
+} from "../../../utils/helperFunctions";
 import uuid from "react-native-uuid";
 
 const theme = {
@@ -235,10 +238,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     GetCarModelList(orgId)
       .then(
         (resolve) => {
-          let modelList = [];
+          let modalList = [];
           if (resolve.length > 0) {
             resolve.forEach((item) => {
-              modelList.push({
+              modalList.push({
                 id: item.vehicleId,
                 name: item.model,
                 isChecked: false,
@@ -246,7 +249,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               });
             });
           }
-          setCarModelsData([...modelList]);
+          setCarModelsData([...modalList]);
         },
         (rejected) => {
           console.log("getCarModelListFromServer Failed");
@@ -444,7 +447,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         selector.finance_category.length == 0 ||
         selector.loan_of_tenure.length == 0 ||
         selector.emi.length == 0 ||
-        selector.approx_annual_income.length == 0
+        selector.approx_annual_income.length == 0 ||
+        selector.bank_or_finance.length == 0 
       ) {
         showToast("plaese enter the proper details in finace category ");
         return;
@@ -478,10 +482,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         showToast("Please enter alphabetics only in color ");
         return;
       }
-      if (!isValidateAlphabetics(selector.a_reg_no)) {
-        showToast("Please enter alphabetics only in reg no ");
-        return;
-      }
+      // if (!isValidateAlphabetics(selector.a_reg_no)) {
+      //   showToast("Please enter alphabetics only in reg no ");
+      //   return;
+      // }
     }
 
     if (selector.buyer_type === "Replacement Buyer") {
@@ -492,7 +496,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         }
       }
       if (selector.r_insurence_company_name.length == 0) {
-        showToast("Please enter the proper insurance company name");
+        showToast("Please select the insurance company name");
         return;
       }
       if (!isValidateAlphabetics(selector.r_model_other_name)) {
@@ -1469,7 +1473,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "1" ? Colors.RED : Colors.WHITE,
+                      openAccordian === "1"
+                        ? Colors.RED
+                        : Colors.SKY_LIGHT_BLUE_COLOR,
                   },
                   styles.accordianBorder,
                 ]}
@@ -1751,7 +1757,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "2" ? Colors.RED : Colors.WHITE,
+                      openAccordian === "2"
+                        ? Colors.RED
+                        : Colors.SKY_LIGHT_BLUE_COLOR,
                   },
                   styles.accordianBorder,
                 ]}
@@ -1778,6 +1786,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   label={"First Name*"}
                   autoCapitalize="words"
                   keyboardType={"default"}
+                  autoCapitalize={"words"}
                   editable={false}
                   onChangeText={(text) =>
                     dispatch(
@@ -1791,6 +1800,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   value={selector.lastName}
                   label={"Last Name*"}
                   editable={false}
+                  autoCapitalize={"words"}
                   keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(setPersonalIntro({ key: "LAST_NAME", text: text }))
@@ -1812,6 +1822,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   autoCapitalize="words"
                   keyboardType={"default"}
                   maxLength={50}
+                  autoCapitalize={"words"}
                   onChangeText={(text) =>
                     dispatch(
                       setPersonalIntro({ key: "RELATION_NAME", text: text })
@@ -1897,7 +1908,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "3" ? Colors.RED : Colors.WHITE,
+                      openAccordian === "3"
+                        ? Colors.RED
+                        : Colors.SKY_LIGHT_BLUE_COLOR,
                   },
                   styles.accordianBorder,
                 ]}
@@ -2245,7 +2258,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "4" ? Colors.RED : Colors.WHITE,
+                      openAccordian === "4"
+                        ? Colors.RED
+                        : Colors.SKY_LIGHT_BLUE_COLOR,
                   },
                   styles.accordianBorder,
                 ]}
@@ -2303,7 +2318,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "5" ? Colors.RED : Colors.WHITE,
+                      openAccordian === "5"
+                        ? Colors.RED
+                        : Colors.SKY_LIGHT_BLUE_COLOR,
                   },
                   styles.accordianBorder,
                 ]}
@@ -2522,7 +2539,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "6" ? Colors.RED : Colors.WHITE,
+                      openAccordian === "6"
+                        ? Colors.RED
+                        : Colors.SKY_LIGHT_BLUE_COLOR,
                   },
                   styles.accordianBorder,
                 ]}
@@ -2588,7 +2607,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "7" ? Colors.RED : Colors.WHITE,
+                      openAccordian === "7"
+                        ? Colors.RED
+                        : Colors.SKY_LIGHT_BLUE_COLOR,
                   },
                   styles.accordianBorder,
                 ]}
@@ -2836,7 +2857,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={[
                     {
                       backgroundColor:
-                        openAccordian === "8" ? Colors.RED : Colors.WHITE,
+                        openAccordian === "8"
+                          ? Colors.RED
+                          : Colors.SKY_LIGHT_BLUE_COLOR,
                     },
                     styles.accordianBorder,
                   ]}
@@ -2954,7 +2977,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={[
                     {
                       backgroundColor:
-                        openAccordian === "9" ? Colors.RED : Colors.WHITE,
+                        openAccordian === "9"
+                          ? Colors.RED
+                          : Colors.SKY_LIGHT_BLUE_COLOR,
                     },
                     styles.accordianBorder,
                   ]}
@@ -2965,6 +2990,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     label={"Reg. No."}
                     maxLength={50}
                     keyboardType={"default"}
+                    autoCapitalize={"characters"}
                     onChangeText={(text) =>
                       dispatch(
                         setReplacementBuyerDetails({
@@ -3352,7 +3378,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={[
                     {
                       backgroundColor:
-                        openAccordian === "10" ? Colors.RED : Colors.WHITE,
+                        openAccordian === "10"
+                          ? Colors.RED
+                          : Colors.SKY_LIGHT_BLUE_COLOR,
                     },
                     styles.accordianBorder,
                   ]}
