@@ -368,14 +368,14 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       showToastRedAlert("Please fill required fields");
       return;
     }
-   if (selector.enquiryType === "Personal") {
-     if (selector.customerType === "Other") {
-       if (!isValidateAlphabetics(selector.other)) {
+
+   if (selector.enquiryType === "Personal" && selector.customerType === "Other") {
+       if (selector.other.length > 0 && !isValidateAlphabetics(selector.other)) {
          showToast("Please enter the alphabets only in other");
          return;
        }
-      }
     }
+
     if (!fromEdit) {
       if (selector.pincode.length == 0) {
         showToastRedAlert("Please fill pincode");
@@ -899,6 +899,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             <TextinputComp
               style={styles.textInputComp}
               value={selector.lastName}
+              autoCapitalize="words"
               label={"Last Name*"}
               editable={
                 selector.enquiryType.length > 0 &&
@@ -982,6 +983,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                 <TextinputComp
                   style={styles.textInputComp}
                   value={selector.companyName}
+                  autoCapitalize="words"
                   label={"Company Name"}
                   maxLength={50}
                   keyboardType={"default"}

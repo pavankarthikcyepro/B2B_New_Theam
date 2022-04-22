@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, ScrollView, View, Text, StyleSheet, Alert, Dimensions, KeyboardAvoidingView, BackHandler } from 'react-native';
+import { SafeAreaView, ScrollView, View, Text, StyleSheet, Keyboard, Alert, Dimensions, KeyboardAvoidingView, BackHandler } from 'react-native';
 import { ButtonComp } from "../../../components/buttonComp";
-import { Checkbox, Button, IconButton, Divider } from 'react-native-paper';
+import { Checkbox, Button, IconButton, Divider, List } from 'react-native-paper';
 import { Colors, GlobalStyle } from '../../../styles';
 import { TextinputComp } from '../../../components/textinputComp';
 import { DropDownComponant } from '../../../components/dropDownComp';
@@ -12,9 +12,14 @@ import { AppNavigator } from '../../../navigations';
 import * as AsyncStore from "../../../asyncStore";
 import { LoaderComponent, SelectEmployeeComponant } from '../../../components';
 import { getPreEnquiryData } from '../../../redux/preEnquiryReducer';
-import { showToastRedAlert } from '../../../utils/toast';
-
-
+import { showToastRedAlert,showToast } from '../../../utils/toast';
+import {
+    DropDownSelectionItem,
+    setDropDownData
+} from "../../../pureComponents";
+import { setBookingDropDetails } from '../../../redux/preBookingFormReducer';
+import { resolvePath } from 'react-native-reanimated/src/reanimated2/animation/styleAnimation';
+import { isRejected } from '@reduxjs/toolkit';
 const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
     const selector = useSelector(state => state.confirmedPreEnquiryReducer);
@@ -25,6 +30,12 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     const [showEmployeeSelectModel, setEmployeeSelectModel] = useState(false);
     const [employeesData, setEmployeesData] = useState([]);
     const [branchId, setBranchId] = useState("");
+    const [isDropSelected, setIsDropSelected] = useState(false);
+  const [openAccordian, setOpenAccordian] = useState(0);
+    const [dataForDropDown, setDataForDropDown] = useState([]);
+    const [dropDownKey, setDropDownKey] = useState("");
+  const [dropDownTitle, setDropDownTitle] = useState("Select Data");
+    
 
     React.useLayoutEffect(() => {
         navigation.setOptions({
@@ -48,6 +59,79 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         dispatch(clearState());
     }
 
+ const updateAccordian = (selectedIndex) => {
+    if (selectedIndex != openAccordian) {
+      setOpenAccordian(selectedIndex);
+    } else {
+      setOpenAccordian(0);
+    }
+  };
+    
+    const showDropDownModelMethod = (key, headerText) => {
+    Keyboard.dismiss();
+
+    switch (key) {
+      
+      case "DROP_REASON":
+        if (selector.drop_reasons_list.length === 0) {
+          showToast("No Drop Reasons found");
+          return;
+        }
+        setDataForDropDown([...selector.drop_reasons_list]);
+        break;
+    }
+    setDropDownKey(key);
+    setDropDownTitle(headerText);
+    setShowDropDownModel(true);
+  };
+
+    const proceedToCancelPreEnquiry = () => {
+    if (
+      selector.drop_remarks.length === 0 ||
+      selector.drop_reason.length === 0
+    ) {
+      showToastRedAlert("Please enter details for drop");
+      return;
+    }
+
+    if (!selector.pre_enquiry_details_response) {
+      return;
+    }
+
+    let enquiryDetailsObj = { ...selector.pre_enquiry_details_response };
+    let dmsLeadDto = { ...enquiryDetailsObj.dmsLeadDto };
+    dmsLeadDto.leadStage = "DROPPED";
+    enquiryDetailsObj.dmsLeadDto = dmsLeadDto;
+
+    let leadId = selector.pre_enquiry_details_response.dmsLeadDto.id;
+    if (!leadId) {
+      showToast("lead id not found");
+      return;
+    }
+
+    const payload = {
+      dmsLeadDropInfo: {
+        additionalRemarks: selector.drop_remarks,
+        branchId: userData.branchId,
+        brandName: selector.d_brand_name,
+        dealerName: selector.d_dealer_name,
+        leadId: leadId,
+        crmUniversalId: universalId,
+        lostReason: selector.drop_reason,
+        organizationId: userData.orgId,
+        otherReason: "",
+        droppedBy: userData.employeeId,
+        location: selector.d_location,
+        model: selector.d_model,
+        stage: "PREENQUIRY",
+        status: "PREENQUIRY",
+      },
+    };
+    setTypeOfActionDispatched("DROP_PREENQUIRY");
+    dispatch(dropPreBooingApi(payload));
+    dispatch(updatePrebookingDetailsApi(enquiryDetailsObj));
+  };
+
     const getPreEnquiryListFromServer = async () => {
         if (employeeId) {
             let endUrl = "?limit=10&offset=" + "0" + "&status=PREENQUIRY&empId=" + employeeId;
@@ -58,7 +142,8 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     useEffect(() => {
 
         getAsyncStorageData();
-        getBranchId();
+      getBranchId();
+      getDropDownApi();
 
         // api calls
         dispatch(getPreEnquiryDetails(itemData.universalId));
@@ -136,7 +221,6 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     }, [selector.all_pre_enquiry_tasks])
 
     useEffect(() => {
-
         if (selector.assign_task_status === "success") {
             const endUrl = `${itemData.universalId}` + '?' + 'stage=ENQUIRY';
             dispatch(changeEnquiryStatusApi(endUrl));
@@ -168,6 +252,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         );
     }
 
+   
     const handleBackButtonClick = () => {
         console.log("back pressed")
         navigation.popToTop();
@@ -181,8 +266,19 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                 fromEdit: true
             })
         }
-    }
-
+  }
+  
+  const getDropDownApi = () => {
+  return fetch('http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails?organizationId=1&stageName=Pre%20Enquiry')
+    .then((response) => response.json())
+    .then((json) => {
+      return json.Drop;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  }
+  
     const createEnquiryClicked = () => {
 
         if (selector.pre_enquiry_details) {
@@ -298,11 +394,160 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                             label={'Status'}
                             editable={false}
                         />
-                        <Text style={styles.devider}></Text>
-
-                        <View style={styles.view2}>
+              <Text style={styles.devider}></Text>
+              
+            <View style={styles.view2}>
                             <Text style={[styles.text2, { color: Colors.GRAY }]}>{'Allocated DSE'}</Text>
-                            <View style={styles.view3}>
+              {isDropSelected ? <View style={styles.space}></View> : null}
+              {isDropSelected ? (
+                <List.Accordion
+                  id={"10"}
+                  title={"Pre Enquiry Drop Section"}
+                  titleStyle={{
+                    color: openAccordian === "10" ? Colors.WHITE : Colors.BLACK,
+                    fontSize: 16,
+                    marginRight:20,
+                    fontWeight: "600",
+                  }}
+                  style={[{
+                    backgroundColor: openAccordian === "10" ? Colors.RED : Colors.WHITE,
+                  }, styles.accordianBorder]}
+                >
+                  <DropDownSelectionItem
+                    label={"Drop Reasons"}
+                    value={selector.drop_reason}
+                    onPress={() =>
+                      showDropDownModelMethod("DROP_REASON", "Drop Reason")
+                    }
+                  />
+                   {selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
+                    "losttocompetitor" ||
+                    selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
+                    "losttoco-dealer" ? (
+                    <DropDownSelectionItem
+                      label={"Drop Sub Reason"}
+                      value={selector.drop_sub_reason}
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "DROP_SUB_REASON",
+                          "Drop Sub Reason"
+                        )
+                      }
+                    />
+                  ) : null} 
+
+                  {selector.drop_reason === "Lost to Competitor" ||
+                    selector.drop_reason ===
+                    "Lost to Used Cars from Co-Dealer" ? (
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.d_brand_name}
+                        label={"Brand Name"}
+                        maxLength={50}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setBookingDropDetails({
+                              key: "DROP_BRAND_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  ) : null}
+
+                  {selector.drop_reason === "Lost to Competitor" ||
+                    selector.drop_reason === "Lost to Used Cars from Co-Dealer" ||
+                    selector.drop_reason === "Lost to Co-Dealer" ? (
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.d_dealer_name}
+                        label={"Dealer Name"}
+                        maxLength={50}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setBookingDropDetails({
+                              key: "DROP_DEALER_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.d_location}
+                        label={"Location"}
+                        maxLength={50}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setBookingDropDetails({
+                              key: "DROP_LOCATION",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  ) : null}
+
+                  {selector.drop_reason === "Lost to Competitor" ||
+                    selector.drop_reason ===
+                    "Lost to Used Cars from Co-Dealer" ? (
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.d_model}
+                        label={"Model"}
+                        maxLength={50}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setBookingDropDetails({
+                              key: "DROP_MODEL",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  ) : null}
+
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.drop_remarks}
+                    label={"Remarks"}
+                    maxLength={50}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setBookingDropDetails({
+                          key: "DROP_REMARKS",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                </List.Accordion>
+                ) : null}
+                {isDropSelected && (
+              <View style={styles.preenquiryBtnView}>
+                <Button
+                  mode="contained"
+                  color={Colors.RED}
+                  disabled={selector.isLoading}
+                  labelStyle={{ textTransform: "none" }}
+                  onPress={proceedToCancelPreEnquiry}
+                >
+                  Proceed To Cancellation
+                </Button>
+              </View>
+            )}
+                         <View style={styles.view3}>
                                 <Button
                                     mode="contained"
                                     color={Colors.RED}
@@ -311,19 +556,20 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                                 >
                                     Create Enuqiry
                                 </Button>
-                                {/* <Button
-                                    mode="contained"
-                                    color={Colors.BLACK}
-                                    labelStyle={{ textTransform: 'none', color: Colors.WHITE }}
-                                    onPress={noThanksClicked}
+
+                                <Button
+                                  mode="contained"
+                                  style={{ width: 120 }}
+                                  color={Colors.RED}
+                                  disabled={selector.isLoading}
+                                  labelStyle={{ textTransform: "none" }}
+                                  onPress={() => setIsDropSelected(true)}
                                 >
-                                    No Thanks
-                                </Button> */}
+                                    Drop
+                              </Button>
                             </View>
-                        </View>
-
-                    </View>
-
+                   </View>
+            </View>
                 </ScrollView>
             </KeyboardAvoidingView>
 
@@ -352,8 +598,25 @@ const styles = StyleSheet.create({
     },
     text2: {
         fontSize: 14,
-        fontWeight: '600'
-    },
+      fontWeight: '600',
+      marginBottom:20,
+
+  },
+     accordianBorder: {
+    borderWidth: 0.5,
+    borderRadius: 4,
+    borderColor: "#7a7b7d"
+  },
+    preenquiryBtnView: {
+    marginTop: 20,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+    textInputStyle: {
+    height: 65,
+    width: "100%",
+  },
     devider: {
         width: '100%', height: 0.5, backgroundColor: Colors.GRAY
     },
