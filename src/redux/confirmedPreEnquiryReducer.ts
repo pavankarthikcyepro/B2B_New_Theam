@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk,PayloadAction } from "@reduxjs/toolkit";
 import URL from "../networking/endpoints";
 import { client } from '../networking/client';
 import { showToastRedAlert } from "../utils/toast";
@@ -67,6 +67,19 @@ export const updateEmployeeApi = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/updateE
     return response;
 })
 
+
+
+
+interface DropDownModelNew {
+  key: string;
+  value: string;
+  id?: string;
+}
+interface DropDownModel {
+    id: string;
+    name: string;
+    keyId: string;
+}
 export const slice = createSlice({
     name: "CONFIRMED_PRE_ENQUIRY",
     initialState: {
@@ -80,7 +93,17 @@ export const slice = createSlice({
         change_enquiry_status: "",
         isLoading: true,
         create_enquiry_loading: false,
-        status: ""
+        status: "",
+         drop_reasons_list: [],
+    // Booking Drop
+    drop_reason: "",
+    drop_remarks: "",
+    reject_remarks: "",
+    d_brand_name: "",
+    d_dealer_name: "",
+    d_location: "",
+    d_model: "",
+         
     },
     reducers: {
         clearState: (state, action) => {
@@ -95,8 +118,48 @@ export const slice = createSlice({
             state.isLoading = false;
             state.create_enquiry_loading = false;
             state.status = "";
-        }
+              state.drop_reasons_list = [];
+             // Booking Drop
+      state.drop_reason = "";
+      state.drop_remarks = "";
+      state.reject_remarks = "";
+      state.d_brand_name = "";
+      state.d_dealer_name = "";
+      state.d_location = "";
+      state.d_model = "";
+        },
+ setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
+      const { key, value, id } = action.payload;
+      switch (key) {
+       
+        case "DROP_REASON":
+          state.drop_reason = value;
+          break;
+      }
+        },
+ setPreEnquiryDropDetails: (state, action) => {
+      const { key, text } = action.payload;
+      switch (key) {
+        case "DROP_REMARKS":
+          state.drop_remarks = text;
+          break;
+        case "DROP_BRAND_NAME":
+          state.d_brand_name = text;
+          break;
+        case "DROP_DEALER_NAME":
+          state.d_dealer_name = text;
+          break;
+        case "DROP_LOCATION":
+          state.d_location = text;
+          break;
+        case "DROP_MODEL":
+          state.d_model = text;
+          break;
+      }
     },
+
+    },
+
     extraReducers: (builder) => {
         builder.addCase(getPreEnquiryDetails.pending, (state, action) => {
             state.isLoading = true;
@@ -173,7 +236,8 @@ export const slice = createSlice({
             state.update_employee_status = "failed";
         })
     }
+    
 });
 
-export const { clearState } = slice.actions;
+export const { clearState,setDropDownData,setPreEnquiryDropDetails } = slice.actions;
 export default slice.reducer;

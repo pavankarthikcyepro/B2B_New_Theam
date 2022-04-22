@@ -387,31 +387,21 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
   const getCarModelListFromServer = (orgId) => {
     // Call Api
-    GetCarModelList(orgId)
-      .then(
-        (resolve) => {
-          let modalList = [];
-          if (resolve.length > 0) {
-            resolve.forEach((item) => {
-              modalList.push({
-                id: item.vehicleId,
-                name: item.model,
-                isChecked: false,
-                ...item,
-              });
-            });
-          }
-          setCarModelsData([...modalList]);
-        },
-        (rejected) => {
-          console.log("getCarModelListFromServer Failed");
-        }
-      )
-      .finally(() => {
-        // Get PreBooking Details
-        getPreBookingDetailsFromServer();
-      });
-  };
+    GetCarModelList(orgId).then((resolve) => {
+      let modelList = [];
+      if (resolve.length > 0) {
+        resolve.forEach((item) => {
+          modelList.push({ id: item.vehicleId, name: item.model, isChecked: false, ...item });
+        });
+      }
+      setCarModelsData([...modelList]);
+    }, (rejected) => {
+      console.log("getCarModelListFromServer Failed")
+    }).finally(() => {
+      // Get PreBooking Details
+      getPreBookingDetailsFromServer();
+    })
+  }
 
   const getPreBookingDetailsFromServer = () => {
     if (universalId) {
@@ -2232,7 +2222,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               {/* // 3.Modal Selction */}
               <List.Accordion
                 id={"3"}
-                title={"Modal Selection"}
+                title={"Model Selection"}
                 titleStyle={{
                   color: openAccordian === "3" ? Colors.WHITE : Colors.BLACK,
                   fontSize: 16,

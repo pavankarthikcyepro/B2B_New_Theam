@@ -370,7 +370,8 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       selector.mobile.length == 0 ||
       selector.carModel.length == 0 ||
       selector.sourceOfEnquiry.length == 0
-    ) {
+    )
+    {
       showToastRedAlert("Please fill required fields");
       return;
     }
@@ -381,6 +382,13 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           return;
         }
       }
+    }
+
+   if (selector.enquiryType === "Personal" && selector.customerType === "Other") {
+       if (selector.other.length > 0 && !isValidateAlphabetics(selector.other)) {
+         showToast("Please enter the alphabets only in other");
+         return;
+       }
     }
 
     if (!fromEdit) {
@@ -872,6 +880,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             <TextinputComp
               style={styles.textInputComp}
               value={selector.firstName}
+              autoCapitalize="words"
               label={"First Name*"}
               editable={
                 selector.enquiryType.length > 0 &&
@@ -903,6 +912,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             <TextinputComp
               style={styles.textInputComp}
               value={selector.lastName}
+              autoCapitalize="words"
               label={"Last Name*"}
               editable={
                 selector.enquiryType.length > 0 &&
@@ -986,6 +996,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                 <TextinputComp
                   style={styles.textInputComp}
                   value={selector.companyName}
+                  autoCapitalize="words"
                   label={"Company Name"}
                   maxLength={50}
                   keyboardType={"default"}

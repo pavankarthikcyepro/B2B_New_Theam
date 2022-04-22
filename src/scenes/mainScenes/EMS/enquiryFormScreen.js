@@ -1,3 +1,5 @@
+/** @format */
+
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import {
   SafeAreaView,
@@ -440,17 +442,25 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
 
+    if (selector.retail_finance === "In House") {
+      if (
+        selector.finance_category.length == 0 ||
+        selector.loan_of_tenure.length == 0 ||
+        selector.emi.length == 0 ||
+        selector.approx_annual_income.length == 0 ||
+        selector.bank_or_finance.length == 0 
+      ) {
+        showToast("plaese enter the proper details in finace category ");
+        return;
+      }
+    }
+
     // Leashing
     if (selector.retail_finance == "Leasing") {
       if (selector.leashing_name.length == 0) {
         showToast("Please fill required fields in leasing name");
         return;
       }
-    }
-
-    if (!isValidateAlphabetics(selector.r_model_other_name)) {
-      showToast("Please enter proper model other name");
-      return;
     }
 
     if (selector.buyer_type === "Additional Buyer") {
@@ -489,12 +499,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         showToast("Please select the insurance company name");
         return;
       }
-
       if (!isValidateAlphabetics(selector.r_model_other_name)) {
         showToast("Please enter proper model other name");
         return;
       }
-
+      if (selector.r_insurence_company_name.length > 0) {
+        if (!isValidateAlphabetics(selector.r_insurence_company_name)) {
+          showToast("Please fill the insurance company name");
+          return;
+        }
+      }
       if (selector.r_hypothication_checked === true) {
         if (selector.r_hypothication_name.length > 0) {
           if (!isValidateAlphabetics(selector.r_hypothication_name)) {
@@ -508,15 +522,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             return;
           }
         }
-      }
-    }
-
-    if (selector.retail_finance == "In House") {
-      if (selector.bank_or_finance.length == 0) {
-        showToast(
-          "please select Bank/Finance details in finance details section"
-        );
-        return;
       }
     }
 
@@ -1478,6 +1483,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.occupation}
+                  autoCapitalize="words"
                   label={"Occupation*"}
                   keyboardType={"default"}
                   maxLength={40}
@@ -1491,6 +1497,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.designation}
+                  autoCapitalize="words"
                   label={"Designation*"}
                   keyboardType={"default"}
                   maxLength={40}
@@ -1537,6 +1544,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       style={styles.textInputStyle}
                       value={selector.company_name}
                       label={"Company Name"}
+                      autoCapitalize="words"
                       keyboardType={"default"}
                       maxLength={50}
                       onChangeText={(text) =>
@@ -1776,6 +1784,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.firstName}
                   label={"First Name*"}
+                  autoCapitalize="words"
                   keyboardType={"default"}
                   autoCapitalize={"words"}
                   editable={false}
@@ -1810,6 +1819,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.relationName}
                   label={"Relation Name*"}
+                  autoCapitalize="words"
                   keyboardType={"default"}
                   maxLength={50}
                   autoCapitalize={"words"}
@@ -1968,6 +1978,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.streetName}
                   label={"Street Name*"}
+                  autoCapitalize="words"
                   maxLength={120}
                   keyboardType={"default"}
                   onChangeText={(text) =>
@@ -1984,6 +1995,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.village}
                   label={"Village/Town*"}
+                  autoCapitalize="words"
                   maxLength={50}
                   keyboardType={"default"}
                   onChangeText={(text) =>
@@ -1997,6 +2009,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.city}
                   label={"City*"}
+                  autoCapitalize="words"
                   maxLength={50}
                   keyboardType={"default"}
                   onChangeText={(text) =>
@@ -2010,6 +2023,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.district}
                   label={"District*"}
+                  autoCapitalize="words"
                   maxLength={50}
                   keyboardType={"default"}
                   onChangeText={(text) =>
@@ -2023,6 +2037,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.state}
                   label={"State*"}
+                  autoCapitalize="words"
                   maxLength={50}
                   keyboardType={"default"}
                   onChangeText={(text) =>
@@ -2148,6 +2163,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <TextinputComp
                       style={styles.textInputStyle}
                       label={"Street Name*"}
+                      autoCapitalize="words"
                       keyboardType={"default"}
                       maxLength={50}
                       value={selector.p_streetName}
@@ -2165,6 +2181,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       style={styles.textInputStyle}
                       value={selector.p_village}
                       label={"Village/Town*"}
+                      autoCapitalize="words"
                       maxLength={50}
                       keyboardType={"default"}
                       onChangeText={(text) =>
@@ -2181,6 +2198,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       style={styles.textInputStyle}
                       value={selector.p_city}
                       label={"City*"}
+                      autoCapitalize="words"
                       maxLength={50}
                       keyboardType={"default"}
                       onChangeText={(text) =>
@@ -2194,6 +2212,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       style={styles.textInputStyle}
                       value={selector.p_district}
                       label={"District*"}
+                      autoCapitalize="words"
                       maxLength={50}
                       keyboardType={"default"}
                       onChangeText={(text) =>
@@ -2210,6 +2229,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       style={styles.textInputStyle}
                       value={selector.p_state}
                       label={"State*"}
+                      autoCapitalize="words"
                       maxLength={50}
                       keyboardType={"default"}
                       onChangeText={(text) =>
@@ -2226,10 +2246,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 ) : null}
               </List.Accordion>
               <View style={styles.space}></View>
-              {/* // 4.Modal Selection */}
+              {/* // 4.Model Selection */}
               <List.Accordion
                 id={"4"}
-                title={"Modal Selection"}
+                title={"Model Selection"}
                 titleStyle={{
                   color: openAccordian === "4" ? Colors.WHITE : Colors.BLACK,
                   fontSize: 16,
@@ -2368,7 +2388,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {selector.retail_finance === "In House" && (
                   <DropDownSelectionItem
-                    label={"Finance Category"}
+                    label={"Finance Category*"}
                     value={selector.finance_category}
                     onPress={() =>
                       showDropDownModelMethod(
@@ -2688,6 +2708,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
                       label={"Color"}
+                      autoCapitalize="words"
                       editable={true}
                       maxLength={40}
                       value={selector.c_color}
@@ -2751,6 +2772,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       style={styles.textInputStyle}
                       value={selector.c_dealership_name}
                       label={"DealerShip Name"}
+                      autoCapitalize="words"
                       keyboardType={"default"}
                       maxLength={50}
                       onChangeText={(text) =>
@@ -2767,6 +2789,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       style={styles.textInputStyle}
                       value={selector.c_dealership_location}
                       label={"DealerShip Location"}
+                      autoCapitalize="words"
                       keyboardType={"default"}
                       maxLength={50}
                       onChangeText={(text) =>
@@ -2783,6 +2806,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       style={styles.textInputStyle}
                       value={selector.c_dealership_pending_reason}
                       label={"Dealership Pending Reason"}
+                      autoCapitalize="words"
                       keyboardType={"default"}
                       maxLength={50}
                       onChangeText={(text) =>
@@ -2802,6 +2826,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.c_voice_of_customer_remarks}
                   label={"Voice of Customer Remarks "}
+                  autoCapitalize="words"
                   keyboardType={"default"}
                   maxLength={50}
                   onChangeText={(text) =>
