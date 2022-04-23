@@ -200,7 +200,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [openAccordian, setOpenAccordian] = useState(0);
   const [componentAppear, setComponentAppear] = useState(false);
   const [userData, setUserData] = useState({
-    branchId: "",
     orgId: "",
     employeeId: "",
     employeeName: "",
@@ -264,6 +263,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [lifeTaxAmount, setLifeTaxAmount] = useState(0);
   const [tcsAmount, setTcsAmount] = useState(0);
   const [paidAccessoriesList, setPaidAccessoriesList] = useState([]);
+  const [selectedBranchId, setSelectedBranchId] = useState("");
+
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -286,6 +287,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   useEffect(() => {
     setComponentAppear(true);
     getAsyncstoreData();
+    getBranchId();
     dispatch(getCustomerTypesApi());
 
     BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
@@ -333,6 +335,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     selector.additional_offer_2,
   ]);
 
+  const getBranchId = () => {
+
+    AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then((branchId) => {
+      console.log("branch id:", branchId)
+      setSelectedBranchId(branchId);
+    });
+  }
+
   const getAsyncstoreData = async () => {
     const employeeData = await AsyncStore.getData(
       AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -354,7 +364,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         isPreBookingApprover = true;
       }
       setUserData({
-        branchId: jsonObj.branchId,
         orgId: jsonObj.orgId,
         employeeId: jsonObj.empId,
         employeeName: jsonObj.empName,
@@ -1238,7 +1247,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
   const formatAttachment = (data, photoObj, index, typeOfDocument) => {
     let object = { ...data };
-    object.branchId = userData.branchId;
+    object.branchId = selectedBranchId;
     object.ownerName = userData.employeeName;
     object.orgId = userData.orgId;
     object.documentType = photoObj.documentType;
@@ -1290,7 +1299,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const payload = {
       dmsLeadDropInfo: {
         additionalRemarks: selector.drop_remarks,
-        branchId: userData.branchId,
+        branchId: selectedBranchId,
         brandName: selector.d_brand_name,
         dealerName: selector.d_dealer_name,
         leadId: leadId,

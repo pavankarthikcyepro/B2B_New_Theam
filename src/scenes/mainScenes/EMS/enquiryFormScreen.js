@@ -113,6 +113,7 @@ import {
   convertDateStringToMillisecondsUsingMoment,
   emiCalculator,
   GetCarModelList,
+  GetDropList,
   GetFinanceBanksList,
   PincodeDetails,
 } from "../../../utils/helperFunctions";
@@ -124,6 +125,7 @@ import {
   isMobileNumber,
 } from "../../../utils/helperFunctions";
 import uuid from "react-native-uuid";
+import { DropComponent } from "./components/dropComp";
 
 const theme = {
   ...DefaultTheme,
@@ -158,7 +160,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [showPreBookingBtn, setShowPreBookingBtn] = useState(false);
   const [isDropSelected, setIsDropSelected] = useState(false);
   const [userData, setUserData] = useState({
-    branchId: "",
     orgId: "",
     employeeId: "",
     employeeName: "",
@@ -171,6 +172,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   });
   const [insurenceCompayList, serInsurenceCompanyList] = useState([]);
   const [financeBanksList, setFinanceBanksList] = useState([]);
+  const [selectedBranchId, setSelectedBranchId] = useState("");
+
+  // drop section
+  const [dropData, setDropData] = useState([]);
+  const [dropReason, setDropReason] = useState("");
+  const [dropSubReason, setDropSubReason] = useState("");
+  const [dropBrandName, setDropBrandName] = useState("");
+  const [dropDealerName, setDropDealerName] = useState("");
+  const [dropLocation, setDropLocation] = useState("");
+  const [dropModel, setDropModel] = useState("");
+  const [dropPriceDifference, setDropPriceDifference] = useState("");
+  const [dropRemarks, setDropRemarks] = useState("");
+
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -192,6 +206,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     getAsyncstoreData();
+    getBranchId();
     setComponentAppear(true);
     dispatch(getCustomerTypesApi());
 
@@ -203,6 +218,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       );
     };
   }, []);
+
+  const getBranchId = () => {
+
+    AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then((branchId) => {
+      console.log("branch id:", branchId)
+      setSelectedBranchId(branchId);
+    });
+  }
 
   const handleBackButtonClick = () => {
     goParentScreen();
@@ -216,7 +239,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       setUserData({
-        branchId: jsonObj.branchId,
         orgId: jsonObj.orgId,
         employeeId: jsonObj.empId,
         employeeName: jsonObj.empName,
@@ -228,10 +250,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         if (token.length > 0) {
           getInsurenceCompanyNamesFromServer(token, jsonObj.orgId);
           getBanksListFromServer(jsonObj.orgId, token);
+          GetEnquiryDropReasons(jsonObj.orgId, token);
         }
       });
     }
   };
+
+  const GetEnquiryDropReasons = (orgId, token) => {
+
+    GetDropList(orgId, token, "Enquiry").then(resolve => {
+      setDropData(resolve);
+    }, reject => {
+      console.error("Getting drop list faild")
+    })
+  }
 
   const getCarModelListFromServer = (orgId) => {
     // Call Api
@@ -379,6 +411,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   const submitClicked = () => {
+
     if (selector.designation.length == 0 || selector.buyer_type.length == 0) {
       showToast("Please fill required fields in Customer Profile");
       return;
@@ -422,6 +455,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
     if (!isValidateAlphabetics(selector.streetName)) {
       showToast("Please enter alphabetics only in street name");
+      return;
+    }
+
+    // Model Selection
+    if (selector.model.length == 0 || selector.varient.length == 0 || selector.color.length == 0 ) {
+      showToast("Please fill required fields in Model Selection");
       return;
     }
 
@@ -830,7 +869,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const formatAttachment = (data, photoObj, index, typeOfDocument) => {
     let object = { ...data };
-    object.branchId = userData.branchId;
+    object.branchId = selectedBranchId;
     object.ownerName = userData.employeeName;
     object.orgId = userData.orgId;
     object.documentType = photoObj.documentType;
@@ -988,8 +1027,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const proceedToCancelEnquiry = () => {
     if (
-      selector.drop_remarks.length === 0 ||
-      selector.drop_reason.length === 0
+      dropRemarks.length === 0 ||
+      dropReason.length === 0
     ) {
       showToastRedAlert("Please enter details for drop");
       return;
@@ -1013,15 +1052,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
     const payload = {
       dmsLeadDropInfo: {
-        additionalRemarks: selector.drop_remarks,
-        branchId: userData.branchId,
-        brandName: selector.d_brand_name,
-        dealerName: selector.d_dealer_name,
-        location: selector.d_location,
-        model: selector.d_model,
+        additionalRemarks: dropRemarks,
+        branchId: selectedBranchId,
+        brandName: dropBrandName,
+        dealerName: dropDealerName,
+        location: dropLocation,
+        model: dropModel,
         leadId: leadId,
         crmUniversalId: universalId,
-        lostReason: selector.drop_reason,
+        lostReason: dropReason,
         organizationId: userData.orgId,
         otherReason: "",
         droppedBy: userData.employeeId,
@@ -1127,13 +1166,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         break;
       case "A_MODEL":
         setDataForDropDown([...a_model_types]);
-        break;
-      case "DROP_REASON":
-        if (Enquiry_Drop_Reasons.length === 0) {
-          showToast("No Drop Reasons found");
-          return;
-        }
-        setDataForDropDown([...Enquiry_Drop_Reasons]);
         break;
       case "RF_SOURCE":
         setDataForDropDown([...Referred_By_Source]);
@@ -1786,7 +1818,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   label={"First Name*"}
                   autoCapitalize="words"
                   keyboardType={"default"}
-                  autoCapitalize={"words"}
                   editable={false}
                   onChangeText={(text) =>
                     dispatch(
@@ -2265,7 +2296,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 ]}
               >
                 <DropDownSelectionItem
-                  label={"Model"}
+                  label={"Model*"}
                   value={selector.model}
                   onPress={() =>
                     showDropDownModelMethod("MODEL", "Select Model")
@@ -2273,7 +2304,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
 
                 <DropDownSelectionItem
-                  label={"Varient"}
+                  label={"Varient*"}
                   value={selector.varient}
                   onPress={() =>
                     showDropDownModelMethod("VARIENT", "Select Varient")
@@ -2281,7 +2312,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
 
                 <DropDownSelectionItem
-                  label={"Color"}
+                  label={"Color*"}
                   value={selector.color}
                   onPress={() =>
                     showDropDownModelMethod("COLOR", "Select Color")
@@ -2404,7 +2435,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       style={{ height: 65, width: "100%" }}
                       label={"Down Payment*"}
                       maxLength={10}
-                      keyboardType={"default"}
+                      keyboardType={"numeric"}
                       value={selector.down_payment}
                       onChangeText={(text) =>
                         dispatch(
@@ -2425,7 +2456,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
                       label={"Loan Amount*"}
-                      keyboardType={"default"}
+                      keyboardType={"numeric"}
                       maxLength={10}
                       value={selector.loan_amount}
                       onChangeText={(text) => {
@@ -2446,7 +2477,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
                       label={"Rate of Interest*"}
-                      keyboardType={"default"}
+                      keyboardType={"numeric"}
                       maxLength={10}
                       value={selector.rate_of_interest}
                       onChangeText={(text) => {
@@ -2480,7 +2511,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
                       label={"Loan of Tenure(Months)"}
-                      keyboardType={"default"}
+                      keyboardType={"numeric"}
                       maxLength={3}
                       value={selector.loan_of_tenure}
                       onChangeText={(text) => {
@@ -3384,122 +3415,28 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     styles.accordianBorder,
                   ]}
                 >
-                  <DropDownSelectionItem
-                    label={"Drop Reason"}
-                    value={selector.drop_reason}
-                    onPress={() =>
-                      showDropDownModelMethod("DROP_REASON", "Drop Reason")
-                    }
-                  />
-                  {selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
-                    "losttocompetitor" ||
-                  selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
-                    "losttoco-dealer" ? (
-                    <DropDownSelectionItem
-                      label={"Drop Sub Reason"}
-                      value={selector.drop_sub_reason}
-                      onPress={() =>
-                        showDropDownModelMethod(
-                          "DROP_SUB_REASON",
-                          "Drop Sub Reason"
-                        )
-                      }
-                    />
-                  ) : null}
-                  {selector.drop_reason === "Lost to Competitor" ||
-                  selector.drop_reason ===
-                    "Lost to Used Cars from Co-Dealer" ? (
-                    <View>
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.d_brand_name}
-                        label={"Brand Name"}
-                        maxLength={50}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setEnquiryDropDetails({
-                              key: "DROP_BRAND_NAME",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  ) : null}
-                  {selector.drop_reason === "Lost to Competitor" ||
-                  selector.drop_reason === "Lost to Used Cars from Co-Dealer" ||
-                  selector.drop_reason === "Lost to Co-dealer" ? (
-                    <View>
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.d_dealer_name}
-                        label={"Dealer Name"}
-                        maxLength={50}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setEnquiryDropDetails({
-                              key: "DROP_DEALER_NAME",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
 
-                      <Text style={GlobalStyle.underline}></Text>
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.d_location}
-                        label={"Location"}
-                        maxLength={50}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setEnquiryDropDetails({
-                              key: "DROP_LOCATION",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  ) : null}
-                  {selector.drop_reason === "Lost to Competitor" ||
-                  selector.drop_reason ===
-                    "Lost to Used Cars from Co-Dealer" ? (
-                    <View>
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.d_model}
-                        label={"Model"}
-                        maxLength={50}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setEnquiryDropDetails({
-                              key: "DROP_MODEL",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  ) : null}
-                  <TextinputComp
-                    style={styles.textInputStyle}
-                    value={selector.drop_remarks}
-                    label={"Remarks"}
-                    maxLength={50}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setEnquiryDropDetails({
-                          key: "DROP_REMARKS",
-                          text: text,
-                        })
-                      )
-                    }
+                  <DropComponent
+                    from="ENQUIRY"
+                    data={dropData}
+                    reason={dropReason}
+                    setReason={(text => setDropReason(text))}
+                    subReason={dropSubReason}
+                    setSubReason={(text => setDropSubReason(text))}
+                    brandName={dropBrandName}
+                    setBrandName={text => setDropBrandName(text)}
+                    dealerName={dropDealerName}
+                    setDealerName={text => setDropDealerName(text)}
+                    location={dropLocation}
+                    setLocation={text => setDropLocation(text)}
+                    model={dropModel}
+                    setModel={text => setDropModel(text)}
+                    priceDiff={dropPriceDifference}
+                    setPriceDiff={text => setDropPriceDifference(text)}
+                    remarks={dropRemarks}
+                    setRemarks={(text) => setDropRemarks(text)}
                   />
-                  <Text style={GlobalStyle.underline}></Text>
+                 
                 </List.Accordion>
               ) : null}
             </List.AccordionGroup>

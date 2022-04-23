@@ -52,7 +52,7 @@ import {
   showToastSucess,
 } from "../../../utils/toast";
 import URL from "../../../networking/endpoints";
-import { isValidateAlphabetics } from "../../../utils/helperFunctions";
+import { isValidateAlphabetics, PincodeDetails } from "../../../utils/helperFunctions";
 import moment from "moment";
 
 const screenWidth = Dimensions.get("window").width;
@@ -92,6 +92,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     msg: "",
   });
   const [subSourceData, setSubSourceData] = useState([]);
+  const [address, setAddress] = useState({block: "", district: "", region: "", state: ""})
 
   useEffect(() => {
     getAsyncstoreData();
@@ -111,13 +112,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   }, []);
 
   const getAsyncstoreData = async () => {
-    const employeeData = await AsyncStore.getData(
-      AsyncStore.Keys.LOGIN_EMPLOYEE
-    );
-
-    // http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails?organizationId=1
-
-    // http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails?organizationId=1
+    const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
 
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
@@ -446,6 +441,9 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       }
     }
 
+    // Get Pincode details from server
+    GetPincodeDetails(selector.pincode);
+
     if (selector.sourceOfEnquiry === "Event") {
       if (selector.eventName.length === 0) {
         showToast("Please select event details");
@@ -462,15 +460,25 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     getReferenceNumber();
   };
 
+  const GetPincodeDetails = (pincode) => {
+    
+    PincodeDetails(pincode).then(
+      (resolve) => {
+        // update address
+        setAddress({ block: resolve.Block || "", district: resolve.District || "", region: resolve.Region || "", state: resolve.State || ""})
+      },
+      (rejected) => {
+        console.log("rejected...: ", rejected);
+      }
+    );
+  }
+
   const getReferenceNumber = async () => {
     const bodyObj = {
       branchid: Number(branchId),
       leadstage: "PREENQUIRY",
       orgid: userData.orgId,
     };
-
-    // console.log("URL: ", URL.CUSTOMER_LEAD_REFERENCE())
-    // console.log("bodyObj: ", bodyObj)
 
     await fetch(URL.CUSTOMER_LEAD_REFERENCE(), {
       method: "POST",
@@ -533,11 +541,11 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           addressType: "Communication",
           houseNo: "",
           street: "",
-          city: "",
-          district: "",
+          city: address.region,
+          district: address.district,
           pincode: selector.pincode,
-          state: "",
-          village: "",
+          state: address.state,
+          village: address.block,
           county: "India",
           rural: false,
           urban: true,
@@ -547,11 +555,11 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           addressType: "Permanent",
           houseNo: "",
           street: "",
-          city: "",
-          district: "",
+          city: address.region,
+          district: address.district,
           pincode: selector.pincode,
-          state: "",
-          village: "",
+          state: address.state,
+          village: address.block,
           county: "India",
           rural: false,
           urban: true,
@@ -609,6 +617,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     if (selector.updateEnquiryStatus === "success") {
       showToastSucess("Pre-enquiry successfully updated");
       navigation.popToTop();
+      dispatch(clearState())
     } else if (selector.updateEnquiryStatus === "failed") {
       if (
         selector.create_enquiry_response_obj &&
@@ -617,9 +626,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       ) {
         confirmToCreateLeadAgain(selector.create_enquiry_response_obj);
       } else {
-        showToast(
-          selector.create_enquiry_response_obj.message || "something went wrong"
-        );
+        showToast(selector.create_enquiry_response_obj.message || "something went wrong");
       }
     }
   }, [selector.updateEnquiryStatus, selector.create_enquiry_response_obj]);
@@ -1030,7 +1037,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               label={"Source of Create Lead*"}
               value={selector.sourceOfEnquiry}
               disabled={fromEdit}
-              onPress={() =>
+              onPress={() => 
                 showDropDownModelMethod(
                   "SOURCE_OF_ENQUIRY",
                   "Select Source of Pre-Enquiry"

@@ -167,6 +167,7 @@ export const addPreEnquirySlice = createSlice({
       state.status = "";
       state.errorMsg = "";
       state.createEnquiryStatus = "";
+      state.updateEnquiryStatus = "";
       state.create_enquiry_response_obj = {};
       state.event_list = [];
       state.event_list_response_status = "";

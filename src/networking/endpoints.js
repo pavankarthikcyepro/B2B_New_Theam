@@ -17,6 +17,7 @@
 // export const dashboard = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8092/dashboard";
 // export const dfGetAll = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/df-get-all"
 // export const subSourceAllDetails = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails"
+// export const lostSubLost = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails"
 
 // Dev End Points
 
@@ -36,6 +37,7 @@ export const orgnaizationHirarchy = "http://automatestaging-724985329.ap-south-1
 export const dashboard = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard";
 export const dfGetAll = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/df-get-all"
 export const subSourceAllDetails = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails"
+export const lostSubLost = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails"
 
 
 const URL = {
@@ -166,6 +168,9 @@ const URL = {
     },
     GET_INSURENCE_COMPANY_NAMES: (orgId) => {
         return dfGetAll + `/${orgId}/%22Active%22/incuranceCompany`
+    },
+    GET_DROP_LIST: (ordId, type) => {
+        return lostSubLost + `?organizationId=${ordId}&stageName=${type}`
     }
 }
 

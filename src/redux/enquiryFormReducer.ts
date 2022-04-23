@@ -237,14 +237,6 @@ const enquiryDetailsOverViewSlice = createSlice({
     r_insurence_from_date: "",
     r_insurence_to_date: "",
     r_insurence_document_checked: false,
-    // DROP SECTION
-    drop_reason: "",
-    drop_sub_reason: "",
-    drop_remarks: "",
-    d_brand_name: "",
-    d_dealer_name: "",
-    d_location: "",
-    d_model: "",
     // data variables
     enquiry_details_response: null,
     update_enquiry_details_response: null,
@@ -406,12 +398,6 @@ const enquiryDetailsOverViewSlice = createSlice({
           break;
         case "R_INSURENCE_TYPE":
           state.r_insurence_type = value;
-          break;
-        case "DROP_REASON":
-          state.drop_reason = value;
-          break;
-        case "DROP_SUB_REASON":
-          state.drop_sub_reason = value;
           break;
         case "R_INSURENCE_COMPANY_NAME":
           state.r_insurence_company_name = value;
@@ -820,21 +806,6 @@ const enquiryDetailsOverViewSlice = createSlice({
     setEnquiryDropDetails: (state, action) => {
       const { key, text } = action.payload;
       switch (key) {
-        case "DROP_REMARKS":
-          state.drop_remarks = text;
-          break;
-        case "DROP_BRAND_NAME":
-          state.d_brand_name = text;
-          break;
-        case "DROP_DEALER_NAME":
-          state.d_dealer_name = text;
-          break;
-        case "DROP_LOCATION":
-          state.d_location = text;
-          break;
-        case "DROP_MODEL":
-          state.d_model = text;
-          break;
       }
     },
     updateDmsContactOrAccountDtoData: (state, action) => {
