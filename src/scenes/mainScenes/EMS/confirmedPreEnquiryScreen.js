@@ -108,6 +108,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         leadId: leadId,
         crmUniversalId: itemData.universalId,
         lostReason: dropReason,
+        lostSubReason: dropSubReason,
         organizationId: userData.orgId,
         otherReason: "",
         droppedBy: userData.employeeId,

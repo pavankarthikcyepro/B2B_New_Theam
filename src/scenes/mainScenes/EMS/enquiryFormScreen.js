@@ -459,7 +459,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
 
     // Model Selection
-    if (selector.model.length == 0 || selector.varient.length == 0 || selector.color.length == 0 ) {
+    if (selector.model.length == 0 || selector.varient.length == 0 || selector.color.length == 0) {
       showToast("Please fill required fields in Model Selection");
       return;
     }
@@ -487,7 +487,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         selector.loan_of_tenure.length == 0 ||
         selector.emi.length == 0 ||
         selector.approx_annual_income.length == 0 ||
-        selector.bank_or_finance.length == 0 
+        selector.bank_or_finance.length == 0
       ) {
         showToast("plaese enter the proper details in finace category ");
         return;
@@ -967,7 +967,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           element.taskName === "Evaluation" &&
           (element.taskStatus === "" || element.taskStatus === "ASSIGNED") &&
           selector.enquiry_details_response.dmsLeadDto.buyerType ===
-            "Replacement Buyer"
+          "Replacement Buyer"
         ) {
           pendingTaskNames.push("Evaluation : Pending \n");
         }
@@ -1061,6 +1061,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         leadId: leadId,
         crmUniversalId: universalId,
         lostReason: dropReason,
+        lostSubReason: dropSubReason,
         organizationId: userData.orgId,
         otherReason: "",
         droppedBy: userData.employeeId,
@@ -1299,6 +1300,27 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       case "UPLOAD_INSURENCE":
         formData.append("documentType", "insurance");
         break;
+      case "UPLOAD_EMPLOYEE_ID":
+        formData.append("documentType", "empId");
+        break;
+      case "UPLOAD_3_MONTHS_PAYSLIP":
+        formData.append("documentType", "payslip");
+        break;
+      case "UPLOAD_PATTA_PASS_BOOK":
+        formData.append("documentType", "passbook");
+        break;
+      case "UPLOAD_PENSION_LETTER":
+        formData.append("documentType", "pension");
+        break;
+      case "UPLOAD_IMA_CERTIFICATE":
+        formData.append("documentType", "imaCertificate");
+        break;
+      case "UPLOAD_LEASING_CONFIRMATION":
+        formData.append("documentType", "leasingConfirm");
+        break;
+      case "UPLOAD_ADDRESS_PROOF":
+        formData.append("documentType", "address");
+        break;
       default:
         formData.append("documentType", "default");
         break;
@@ -1342,6 +1364,27 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         break;
       case "INSURENCE":
         delete imagesDataObj.insurance;
+        break;
+      case "EMPLOYEE_ID":
+        delete imagesDataObj.empId;
+        break;
+      case "3_MONTHS_PAYSLIP":
+        delete imagesDataObj.payslip;
+        break;
+      case "PATTA_PASS_BOOK":
+        delete imagesDataObj.passbook;
+        break;
+      case "PENSION_LETTER":
+        delete imagesDataObj.pension;
+        break;
+      case "IMA_CERTIFICATE":
+        delete imagesDataObj.imaCertificate;
+        break;
+      case "LEASING_CONFIRMATION":
+        delete imagesDataObj.leasingConfirm;
+        break;
+      case "ADDRESS_PROOF":
+        delete imagesDataObj.address;
         break;
       default:
         break;
@@ -1566,11 +1609,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
 
                 {selector.customer_type.toLowerCase() === "fleet" ||
-                selector.customer_type.toLowerCase() === "institution" ||
-                selector.customer_type.toLowerCase() === "corporate" ||
-                selector.customer_type.toLowerCase() === "government" ||
-                selector.customer_type.toLowerCase() === "retired" ||
-                selector.customer_type.toLowerCase() === "other" ? (
+                  selector.customer_type.toLowerCase() === "institution" ||
+                  selector.customer_type.toLowerCase() === "corporate" ||
+                  selector.customer_type.toLowerCase() === "government" ||
+                  selector.customer_type.toLowerCase() === "retired" ||
+                  selector.customer_type.toLowerCase() === "other" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -1620,19 +1663,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     .toLowerCase()
                     .trim()
                     .replace(/ /g, "") === "socialnetwork") && (
-                  <View>
-                    <DropDownSelectionItem
-                      label={"Sub Source Of Enquiry"}
-                      value={selector.sub_source_of_enquiry}
-                      onPress={() =>
-                        showDropDownModelMethod(
-                          "SUB_SOURCE_OF_ENQUIRY",
-                          "Sub Source Of Enquiry"
-                        )
-                      }
-                    />
-                  </View>
-                )}
+                    <View>
+                      <DropDownSelectionItem
+                        label={"Sub Source Of Enquiry"}
+                        value={selector.sub_source_of_enquiry}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "SUB_SOURCE_OF_ENQUIRY",
+                            "Sub Source Of Enquiry"
+                          )
+                        }
+                      />
+                    </View>
+                  )}
 
                 {selector.source_of_enquiry.toLowerCase() === "reference" && (
                   <View>
@@ -2452,51 +2495,51 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {(selector.retail_finance === "In House" ||
                   selector.retail_finance === "Out House") && (
-                  <View>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Loan Amount*"}
-                      keyboardType={"numeric"}
-                      maxLength={10}
-                      value={selector.loan_amount}
-                      onChangeText={(text) => {
-                        emiCal(
-                          text,
-                          selector.loan_of_tenure,
-                          selector.rate_of_interest
-                        );
-                        dispatch(
-                          setFinancialDetails({
-                            key: "LOAN_AMOUNT",
-                            text: text,
-                          })
-                        );
-                      }}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Rate of Interest*"}
-                      keyboardType={"numeric"}
-                      maxLength={10}
-                      value={selector.rate_of_interest}
-                      onChangeText={(text) => {
-                        emiCal(
-                          selector.loan_amount,
-                          selector.loan_of_tenure,
-                          text
-                        );
-                        dispatch(
-                          setFinancialDetails({
-                            key: "RATE_OF_INTEREST",
-                            text: text,
-                          })
-                        );
-                      }}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>
-                )}
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Loan Amount*"}
+                        keyboardType={"numeric"}
+                        maxLength={10}
+                        value={selector.loan_amount}
+                        onChangeText={(text) => {
+                          emiCal(
+                            text,
+                            selector.loan_of_tenure,
+                            selector.rate_of_interest
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "LOAN_AMOUNT",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Rate of Interest*"}
+                        keyboardType={"numeric"}
+                        maxLength={10}
+                        value={selector.rate_of_interest}
+                        onChangeText={(text) => {
+                          emiCal(
+                            selector.loan_amount,
+                            selector.loan_of_tenure,
+                            text
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "RATE_OF_INTEREST",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
 
                 {selector.retail_finance === "In House" && (
                   <View>
@@ -2600,29 +2643,188 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     from={"PAN"}
                   />
                 ) : null}
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.adhaar_number}
-                  label={"Aadhaar Number*"}
-                  keyboardType={"phone-pad"}
-                  maxLength={12}
-                  onChangeText={(text) =>
-                    dispatch(setUploadDocuments({ key: "ADHAR", text: text }))
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <View style={styles.select_image_bck_vw}>
-                  <ImageSelectItem
-                    name={"Upload Adhar"}
-                    onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
-                  />
-                </View>
-                {uploadedImagesDataObj.aadhar ? (
-                  <DisplaySelectedImage
-                    fileName={uploadedImagesDataObj.aadhar.fileName}
-                    from={"AADHAR"}
-                  />
+
+                {/* // Adhal Number */}
+                {(selector.enquiry_segment.toLowerCase() === "personal") ? (
+                  <View>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.adhaar_number}
+                      label={"Aadhaar Number*"}
+                      keyboardType={"phone-pad"}
+                      maxLength={12}
+                      onChangeText={(text) =>
+                        dispatch(setUploadDocuments({ key: "ADHAR", text: text }))
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Upload Adhar"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.aadhar ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.aadhar.fileName}
+                        from={"AADHAR"}
+                      />
+                    ) : null}
+                  </View>
                 ) : null}
+
+                {/* // Employeed ID */}
+                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "corporate" || selector.customer_type.toLowerCase() === "government" || selector.customer_type.toLowerCase() === "retired")) ? (
+                  <View >
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.employee_id}
+                      label={"Employee ID*"}
+                      maxLength={15}
+                      onChangeText={(text) =>
+                        dispatch(setUploadDocuments({ key: "EMPLOYEE_ID", text: text }))
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Employee ID"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_EMPLOYEE_ID"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.empId ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.empId.fileName}
+                        from={"EMPLOYEE_ID"}
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+
+                {/* Last 3 month payslip */}
+                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "corporate" || selector.customer_type.toLowerCase() === "government")) ? (
+                  <View >
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Last 3 months payslip"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_3_MONTHS_PAYSLIP"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.payslip ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.payslip.fileName}
+                        from={"3_MONTHS_PAYSLIP"}
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+
+                {/* Patta Pass book */}
+                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "farmer")) ? (
+                  <View >
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Patta Pass Book"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_PATTA_PASS_BOOK"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.passbook ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.passbook.fileName}
+                        from={"PATTA_PASS_BOOK"}
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+
+                {/* Pension Letter */}
+                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "retired")) ? (
+                  <View >
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Pension Letter"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_PENSION_LETTER"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.pension ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.pension.fileName}
+                        from={"PENSION_LETTER"}
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+
+                {/* IMA Certificate */}
+                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "doctor")) ? (
+                  <View >
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"IMA Certificate"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_IMA_CERTIFICATE"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.imaCertificate ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.imaCertificate.fileName}
+                        from={"IMA_CERTIFICATE"}
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+
+                {/* Leasing Confirmation */}
+                {(selector.enquiry_segment.toLowerCase() === "commercial" && (selector.customer_type.toLowerCase() === "fleet")) ? (
+                  <View >
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Leasing Confirmation"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_LEASING_CONFIRMATION"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.leasingConfirm ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.leasingConfirm.fileName}
+                        from={"LEASING_CONFIRMATION"}
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+
+                {/* Address Proof */}
+                {(selector.enquiry_segment.toLowerCase() === "company" && (selector.customer_type.toLowerCase() === "institution")) ? (
+                  <View >
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Address Proof"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_ADDRESS_PROOF"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.address ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.address.fileName}
+                        from={"ADDRESS_PROOF"}
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+
+                {/* GSTIN Number */}
+                {(selector.enquiry_segment.toLowerCase() === "company" && (selector.customer_type.toLowerCase() === "institution")) ? (
+                  <View >
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.gstin_number}
+                      label={"GSTIN Number"}
+                      maxLength={30}
+                      onChangeText={(text) =>
+                        dispatch(setUploadDocuments({ key: "GSTIN_NUMBER", text: text }))
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                ) : null}
+
               </List.Accordion>
               <View style={styles.space}></View>
               {/* // 7.Customer Need Analysis */}
@@ -2871,7 +3073,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
               </List.Accordion>
               {selector.buyer_type == "Additional Buyer" ||
-              selector.buyer_type == "Replacement Buyer" ? (
+                selector.buyer_type == "Replacement Buyer" ? (
                 <View style={styles.space}></View>
               ) : null}
               {/* // 8.Additional Buyer */}
@@ -3436,7 +3638,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     remarks={dropRemarks}
                     setRemarks={(text) => setDropRemarks(text)}
                   />
-                 
+
                 </List.Accordion>
               ) : null}
             </List.AccordionGroup>

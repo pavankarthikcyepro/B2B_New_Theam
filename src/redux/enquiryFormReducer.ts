@@ -204,6 +204,8 @@ const enquiryDetailsOverViewSlice = createSlice({
     pan_image: null,
     adhaar_number: "",
     adhaar_image: null,
+    employee_id: "",
+    gstin_number: "",
     // Additional Buyer
     a_make: "",
     a_model: "",
@@ -257,6 +259,8 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.enquiry_details_response = null;
       state.update_enquiry_details_response = null;
       state.customer_types_response = null;
+      state.employee_id = "";
+      state.gstin_number = "";
     },
     setEditable: (state, action) => {
       console.log("pressed");
@@ -416,8 +420,12 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.maxDate = new Date();
           break;
         case "ANNIVERSARY_DATE":
-          state.minDate = null;
-          state.maxDate = new Date();
+          if (!!state.dateOfBirth) {
+            state.minDate = new Date(state.dateOfBirth);
+          }else {
+            state.minDate = new Date();
+          }
+          state.maxDate = null;
           break;
         case "R_MFG_YEAR":
           state.minDate = null;
@@ -731,6 +739,12 @@ const enquiryDetailsOverViewSlice = createSlice({
           break;
         case "ADHAR":
           state.adhaar_number = text;
+          break;
+        case "EMPLOYEE_ID":
+          state.employee_id = text;
+          break;
+        case "GSTIN_NUMBER":
+          state.gstin_number = text;
           break;
         case "UPLOAD_PAN":
           break;

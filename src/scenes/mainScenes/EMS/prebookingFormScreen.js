@@ -106,6 +106,7 @@ import {
 } from "../../../utils/helperFunctions";
 import URL from "../../../networking/endpoints";
 import uuid from "react-native-uuid";
+import { DropComponent } from "./components/dropComp";
 
 const rupeeSymbol = "\u20B9";
 
@@ -265,6 +266,17 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [paidAccessoriesList, setPaidAccessoriesList] = useState([]);
   const [selectedBranchId, setSelectedBranchId] = useState("");
 
+  // drop section
+  const [dropData, setDropData] = useState([]);
+  const [dropReason, setDropReason] = useState("");
+  const [dropSubReason, setDropSubReason] = useState("");
+  const [dropBrandName, setDropBrandName] = useState("");
+  const [dropDealerName, setDropDealerName] = useState("");
+  const [dropLocation, setDropLocation] = useState("");
+  const [dropModel, setDropModel] = useState("");
+  const [dropPriceDifference, setDropPriceDifference] = useState("");
+  const [dropRemarks, setDropRemarks] = useState("");
+
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -390,9 +402,19 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
         setUserToken(token);
         getBanksListFromServer(jsonObj.orgId, token);
+        GetPreBookingDropReasons(jsonObj.orgId, token)
       });
     }
   };
+
+  const GetPreBookingDropReasons = (orgId, token) => {
+
+    GetDropList(orgId, token, "Pre%20Booking").then(resolve => {
+      setDropData(resolve);
+    }, reject => {
+      console.error("Getting drop list faild")
+    })
+  }
 
   const getCarModelListFromServer = (orgId) => {
     // Call Api
@@ -716,20 +738,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         break;
       case "VEHICLE_TYPE":
         setDataForDropDown([...Vehicle_Types]);
-        break;
-      case "DROP_REASON":
-        if (selector.drop_reasons_list.length === 0) {
-          showToast("No Drop Reasons found");
-          return;
-        }
-        setDataForDropDown([...selector.drop_reasons_list]);
-        break;
-      case "DROP_SUB_REASON":
-        if (selector.drop_sub_reasons_list.length === 0) {
-          showToast("No Drop Sub Reasons found");
-          return;
-        }
-        setDataForDropDown([...selector.drop_sub_reasons_list]);
         break;
       case "CUSTOMER_TYPE_CATEGORY":
         setDataForDropDown([...Customer_Category_Types]);
@@ -1273,10 +1281,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   };
 
   const proceedToCancelPreBooking = () => {
-    if (
-      selector.drop_remarks.length === 0 ||
-      selector.drop_reason.length === 0
-    ) {
+
+    if (dropRemarks.length === 0 || dropReason.length === 0) {
       showToastRedAlert("Please enter details for drop");
       return;
     }
@@ -1298,19 +1304,19 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     const payload = {
       dmsLeadDropInfo: {
-        additionalRemarks: selector.drop_remarks,
+        additionalRemarks: dropRemarks,
         branchId: selectedBranchId,
-        brandName: selector.d_brand_name,
-        dealerName: selector.d_dealer_name,
+        brandName: dropBrandName,
+        dealerName: dropDealerName,
+        location: dropLocation,
+        model: dropModel,
         leadId: leadId,
         crmUniversalId: universalId,
-        lostReason: selector.drop_reason,
-        lostSubReason: selector.drop_sub_reason,
+        lostReason: dropReason,
         organizationId: userData.orgId,
         otherReason: "",
         droppedBy: userData.employeeId,
-        location: selector.d_location,
-        model: selector.d_model,
+        lostSubReason: dropSubReason,
         stage: "PREBOOKING",
         status: "PREBOOKING",
       },
@@ -1556,6 +1562,27 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       case "RECEIPT_DOC":
         formData.append("documentType", "receipt");
         break;
+      case "UPLOAD_EMPLOYEE_ID":
+        formData.append("documentType", "empId");
+        break;
+      case "UPLOAD_3_MONTHS_PAYSLIP":
+        formData.append("documentType", "payslip");
+        break;
+      case "UPLOAD_PATTA_PASS_BOOK":
+        formData.append("documentType", "passbook");
+        break;
+      case "UPLOAD_PENSION_LETTER":
+        formData.append("documentType", "pension");
+        break;
+      case "UPLOAD_IMA_CERTIFICATE":
+        formData.append("documentType", "imaCertificate");
+        break;
+      case "UPLOAD_LEASING_CONFIRMATION":
+        formData.append("documentType", "leasingConfirm");
+        break;
+      case "UPLOAD_ADDRESS_PROOF":
+        formData.append("documentType", "address");
+        break;
       default:
         formData.append("documentType", "default");
         break;
@@ -1602,6 +1629,27 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         break;
       case "RECEIPT":
         delete imagesDataObj.receipt;
+        break;
+      case "EMPLOYEE_ID":
+        delete imagesDataObj.empId;
+        break;
+      case "3_MONTHS_PAYSLIP":
+        delete imagesDataObj.payslip;
+        break;
+      case "PATTA_PASS_BOOK":
+        delete imagesDataObj.passbook;
+        break;
+      case "PENSION_LETTER":
+        delete imagesDataObj.pension;
+        break;
+      case "IMA_CERTIFICATE":
+        delete imagesDataObj.imaCertificate;
+        break;
+      case "LEASING_CONFIRMATION":
+        delete imagesDataObj.leasingConfirm;
+        break;
+      case "ADDRESS_PROOF":
+        delete imagesDataObj.address;
         break;
       default:
         break;
@@ -1665,7 +1713,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           console.log("imageObj: ", data, keyId);
           uploadSelectedImage(data, keyId);
         }}
-        // onDismiss={() => dispatch(setImagePicker(""))}
+      // onDismiss={() => dispatch(setImagePicker(""))}
       />
 
       <DropDownComponant
@@ -2360,63 +2408,174 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   </View>
                 )}
 
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.adhaar_number}
-                  label={"Aadhaar Number*"}
-                  keyboardType="number-pad"
-                  maxLength={12}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setDocumentUploadDetails({ key: "ADHAR", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <View style={styles.select_image_bck_vw}>
-                  <ImageSelectItem
-                    name={"Upload Adhar"}
-                    onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
-                  />
-                  {uploadedImagesDataObj.aadhar ? (
-                    <DisplaySelectedImage
-                      fileName={uploadedImagesDataObj.aadhar.fileName}
-                      from={"AADHAR"}
+                {/* // Aadhar Number */}
+                {(selector.enquiry_segment.toLowerCase() === "personal") ? (
+                  <View>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.adhaar_number}
+                      label={"Aadhaar Number*"}
+                      keyboardType="number-pad"
+                      maxLength={12}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setDocumentUploadDetails({ key: "ADHAR", text: text })
+                        )
+                      }
                     />
-                  ) : null}
-                </View>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.relationship_proof}
-                  label={"Relationship Number*"}
-                  keyboardType="number-pad"
-                  maxLength={10}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setDocumentUploadDetails({
-                        key: "RELATIONSHIP_PROOF",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <View style={styles.select_image_bck_vw}>
-                  <ImageSelectItem
-                    name={"Relationship Proof"}
-                    onPress={() =>
-                      dispatch(setImagePicker("UPLOAD_RELATION_PROOF"))
-                    }
-                  />
-                </View>
-                {uploadedImagesDataObj.relationshipProof ? (
-                  <DisplaySelectedImage
-                    fileName={uploadedImagesDataObj.relationshipProof.fileName}
-                    from={"RELATION_PROOF"}
-                  />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Upload Adhar"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
+                      />
+                      {uploadedImagesDataObj.aadhar ? (
+                        <DisplaySelectedImage
+                          fileName={uploadedImagesDataObj.aadhar.fileName}
+                          from={"AADHAR"}
+                        />
+                      ) : null}
+                    </View>
+                  </View>
                 ) : null}
-                <Text style={GlobalStyle.underline}></Text>
 
+                {/* // Employeed ID */}
+                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "corporate" || selector.customer_type.toLowerCase() === "government" || selector.customer_type.toLowerCase() === "retired")) ? (
+                  <View >
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.employee_id}
+                      label={"Employee ID*"}
+                      maxLength={15}
+                      onChangeText={(text) =>
+                        dispatch(setDocumentUploadDetails({ key: "EMPLOYEE_ID", text: text }))
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Employee ID"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_EMPLOYEE_ID"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.empId ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.empId.fileName}
+                        from={"EMPLOYEE_ID"}
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+
+                {/* Last 3 month payslip */}
+                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "corporate" || selector.customer_type.toLowerCase() === "government")) ? (
+                  <View >
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Last 3 months payslip"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_3_MONTHS_PAYSLIP"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.payslip ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.payslip.fileName}
+                        from={"3_MONTHS_PAYSLIP"}
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+
+                {/* Patta Pass book */}
+                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "farmer")) ? (
+                  <View >
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Patta Pass Book"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_PATTA_PASS_BOOK"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.passbook ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.passbook.fileName}
+                        from={"PATTA_PASS_BOOK"}
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+
+                {/* Pension Letter */}
+                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "retired")) ? (
+                  <View >
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Pension Letter"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_PENSION_LETTER"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.pension ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.pension.fileName}
+                        from={"PENSION_LETTER"}
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+
+                {/* IMA Certificate */}
+                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "doctor")) ? (
+                  <View >
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"IMA Certificate"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_IMA_CERTIFICATE"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.imaCertificate ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.imaCertificate.fileName}
+                        from={"IMA_CERTIFICATE"}
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+
+                {/* Leasing Confirmation */}
+                {(selector.enquiry_segment.toLowerCase() === "commercial" && (selector.customer_type.toLowerCase() === "fleet")) ? (
+                  <View >
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Leasing Confirmation"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_LEASING_CONFIRMATION"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.leasingConfirm ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.leasingConfirm.fileName}
+                        from={"LEASING_CONFIRMATION"}
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+
+                {/* Address Proof */}
+                {(selector.enquiry_segment.toLowerCase() === "company" && (selector.customer_type.toLowerCase() === "institution")) ? (
+                  <View >
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Address Proof"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_ADDRESS_PROOF"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.address ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.address.fileName}
+                        from={"ADDRESS_PROOF"}
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+
+                {/* // Customer Type Category */}
                 {selector.customer_type === "Individual" && (
                   <View>
                     <DropDownSelectionItem
@@ -2433,10 +2592,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   </View>
                 )}
 
-                {(selector.enquiry_segment === "Company" &&
-                  selector.customer_type === "Institution") ||
-                selector.customer_type_category == "B2B" ||
-                selector.customer_type_category == "B2C" ? (
+                {/* GSTIN Number */}
+                {(selector.enquiry_segment.toLowerCase() === "company" && selector.customer_type.toLowerCase() === "institution") && (selector.customer_type_category == "B2B" ||
+                  selector.customer_type_category == "B2C") ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -2454,6 +2612,43 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <Text style={GlobalStyle.underline}></Text>
                   </View>
                 ) : null}
+
+
+                {/* // Relationship Number */}
+                <View>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.relationship_proof}
+                    label={"Relationship Number*"}
+                    keyboardType="number-pad"
+                    maxLength={10}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setDocumentUploadDetails({
+                          key: "RELATIONSHIP_PROOF",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <View style={styles.select_image_bck_vw}>
+                    <ImageSelectItem
+                      name={"Relationship Proof"}
+                      onPress={() =>
+                        dispatch(setImagePicker("UPLOAD_RELATION_PROOF"))
+                      }
+                    />
+                  </View>
+                  {uploadedImagesDataObj.relationshipProof ? (
+                    <DisplaySelectedImage
+                      fileName={uploadedImagesDataObj.relationshipProof.fileName}
+                      from={"RELATION_PROOF"}
+                    />
+                  ) : null}
+                  <Text style={GlobalStyle.underline}></Text>
+                </View>
+
               </List.Accordion>
               <View style={styles.space}></View>
 
@@ -3014,51 +3209,51 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 {(selector.retail_finance === "In House" ||
                   selector.retail_finance === "Out House") && (
-                  <View>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Loan Amount*"}
-                      keyboardType={"number-pad"}
-                      value={selector.loan_amount}
-                      onChangeText={(text) => {
-                        // Calculate EMI
-                        emiCal(
-                          text,
-                          selector.loan_of_tenure,
-                          selector.rate_of_interest
-                        );
-                        dispatch(
-                          setFinancialDetails({
-                            key: "LOAN_AMOUNT",
-                            text: text,
-                          })
-                        );
-                      }}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Rate of Interest*"}
-                      keyboardType={"number-pad"}
-                      value={selector.rate_of_interest}
-                      onChangeText={(text) => {
-                        // Calculate EMI
-                        emiCal(
-                          selector.loan_amount,
-                          selector.loan_of_tenure,
-                          text
-                        );
-                        dispatch(
-                          setFinancialDetails({
-                            key: "RATE_OF_INTEREST",
-                            text: text,
-                          })
-                        );
-                      }}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>
-                )}
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Loan Amount*"}
+                        keyboardType={"number-pad"}
+                        value={selector.loan_amount}
+                        onChangeText={(text) => {
+                          // Calculate EMI
+                          emiCal(
+                            text,
+                            selector.loan_of_tenure,
+                            selector.rate_of_interest
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "LOAN_AMOUNT",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Rate of Interest*"}
+                        keyboardType={"number-pad"}
+                        value={selector.rate_of_interest}
+                        onChangeText={(text) => {
+                          // Calculate EMI
+                          emiCal(
+                            selector.loan_amount,
+                            selector.loan_of_tenure,
+                            text
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "RATE_OF_INTEREST",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
 
                 {selector.retail_finance === "In House" && (
                   <View>
@@ -3258,125 +3453,27 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     styles.accordianBorder,
                   ]}
                 >
-                  <DropDownSelectionItem
-                    label={"Drop Reason"}
-                    value={selector.drop_reason}
-                    onPress={() =>
-                      showDropDownModelMethod("DROP_REASON", "Drop Reason")
-                    }
+
+                  <DropComponent
+                    from="PRE_BOOKING"
+                    data={dropData}
+                    reason={dropReason}
+                    setReason={(text => setDropReason(text))}
+                    subReason={dropSubReason}
+                    setSubReason={(text => setDropSubReason(text))}
+                    brandName={dropBrandName}
+                    setBrandName={text => setDropBrandName(text)}
+                    dealerName={dropDealerName}
+                    setDealerName={text => setDropDealerName(text)}
+                    location={dropLocation}
+                    setLocation={text => setDropLocation(text)}
+                    model={dropModel}
+                    setModel={text => setDropModel(text)}
+                    priceDiff={dropPriceDifference}
+                    setPriceDiff={text => setDropPriceDifference(text)}
+                    remarks={dropRemarks}
+                    setRemarks={(text) => setDropRemarks(text)}
                   />
-                  {selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
-                    "losttocompetitor" ||
-                  selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
-                    "losttoco-dealer" ? (
-                    <DropDownSelectionItem
-                      label={"Drop Sub Reason"}
-                      value={selector.drop_sub_reason}
-                      onPress={() =>
-                        showDropDownModelMethod(
-                          "DROP_SUB_REASON",
-                          "Drop Sub Reason"
-                        )
-                      }
-                    />
-                  ) : null}
-
-                  {selector.drop_reason === "Lost to Competitor" ||
-                  selector.drop_reason ===
-                    "Lost to Used Cars from Co-Dealer" ? (
-                    <View>
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.d_brand_name}
-                        label={"Brand Name"}
-                        maxLength={50}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setBookingDropDetails({
-                              key: "DROP_BRAND_NAME",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  ) : null}
-
-                  {selector.drop_reason === "Lost to Competitor" ||
-                  selector.drop_reason === "Lost to Used Cars from Co-Dealer" ||
-                  selector.drop_reason === "Lost to Co-Dealer" ? (
-                    <View>
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.d_dealer_name}
-                        label={"Dealer Name"}
-                        maxLength={50}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setBookingDropDetails({
-                              key: "DROP_DEALER_NAME",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.d_location}
-                        label={"Location"}
-                        maxLength={50}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setBookingDropDetails({
-                              key: "DROP_LOCATION",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  ) : null}
-
-                  {selector.drop_reason === "Lost to Competitor" ||
-                  selector.drop_reason ===
-                    "Lost to Used Cars from Co-Dealer" ? (
-                    <View>
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.d_model}
-                        label={"Model"}
-                        maxLength={50}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setBookingDropDetails({
-                              key: "DROP_MODEL",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  ) : null}
-
-                  <TextinputComp
-                    style={styles.textInputStyle}
-                    value={selector.drop_remarks}
-                    label={"Remarks"}
-                    maxLength={50}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setBookingDropDetails({
-                          key: "DROP_REMARKS",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={GlobalStyle.underline}></Text>
                 </List.Accordion>
               ) : null}
               {/* // 11.Reject */}
@@ -3503,44 +3600,44 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                   {(selector.booking_payment_mode === "InternetBanking" ||
                     selector.booking_payment_mode === "Internet Banking") && (
-                    <View>
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.utr_no}
-                        label={"UTR No"}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setPreBookingPaymentDetials({
-                              key: "UTR_NO",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                      <DateSelectItem
-                        label={"Transaction Date"}
-                        value={selector.transaction_date}
-                        onPress={() =>
-                          dispatch(setDatePicker("TRANSACTION_DATE"))
-                        }
-                      />
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.comapany_bank_name}
-                        label={"Company Bank Name"}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setPreBookingPaymentDetials({
-                              key: "COMPANY_BANK_NAME",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  )}
+                      <View>
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.utr_no}
+                          label={"UTR No"}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setPreBookingPaymentDetials({
+                                key: "UTR_NO",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                        <DateSelectItem
+                          label={"Transaction Date"}
+                          value={selector.transaction_date}
+                          onPress={() =>
+                            dispatch(setDatePicker("TRANSACTION_DATE"))
+                          }
+                        />
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.comapany_bank_name}
+                          label={"Company Bank Name"}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setPreBookingPaymentDetials({
+                                key: "COMPANY_BANK_NAME",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
+                    )}
 
                   {selector.booking_payment_mode === "Cheque" && (
                     <View>

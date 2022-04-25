@@ -385,15 +385,9 @@ const prebookingFormSlice = createSlice({
     pan_number: "",
     relationship_proof: "",
     gstin_number: "",
+    employee_id: "",
     // Booking Drop
-    drop_reason: "",
-    drop_sub_reason: "",
-    drop_remarks: "",
     reject_remarks: "",
-    d_brand_name: "",
-    d_dealer_name: "",
-    d_location: "",
-    d_model: "",
     // PreBooking Payment Details
     type_of_upi: "",
     transfer_from_mobile: "",
@@ -511,15 +505,9 @@ const prebookingFormSlice = createSlice({
       state.pan_number = "";
       state.relationship_proof = "";
       state.gstin_number = "";
+      state.employee_id = "";
       // Booking Drop
-      state.drop_reason = "";
-      state.drop_sub_reason = "";
-      state.drop_remarks = "";
       state.reject_remarks = "";
-      state.d_brand_name = "";
-      state.d_dealer_name = "";
-      state.d_location = "";
-      state.d_model = "";
       // PreBooking Payment Details
       state.type_of_upi = "";
       state.transfer_from_mobile = "";
@@ -611,12 +599,6 @@ const prebookingFormSlice = createSlice({
           break;
         case "VEHICLE_TYPE":
           state.vehicle_type = value;
-          break;
-        case "DROP_REASON":
-          state.drop_reason = value;
-          break;
-        case "DROP_SUB_REASON":
-          state.drop_sub_reason = value;
           break;
       }
     },
@@ -896,26 +878,14 @@ const prebookingFormSlice = createSlice({
         case "GSTIN_NUMBER":
           state.gstin_number = text;
           break;
+        case "EMPLOYEE_ID":
+          state.employee_id = text;
+          break;
       }
     },
     setBookingDropDetails: (state, action) => {
       const { key, text } = action.payload;
       switch (key) {
-        case "DROP_REMARKS":
-          state.drop_remarks = text;
-          break;
-        case "DROP_BRAND_NAME":
-          state.d_brand_name = text;
-          break;
-        case "DROP_DEALER_NAME":
-          state.d_dealer_name = text;
-          break;
-        case "DROP_LOCATION":
-          state.d_location = text;
-          break;
-        case "DROP_MODEL":
-          state.d_model = text;
-          break;
         case "REJECT_REMARKS":
           state.reject_remarks = text;
           break;

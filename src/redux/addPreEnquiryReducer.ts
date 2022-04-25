@@ -301,11 +301,12 @@ export const addPreEnquirySlice = createSlice({
       .addCase(createPreEnquiry.rejected, (state, action) => {
         console.log('res3: ', action.payload);
         state.isLoading = false;
-        state.create_enquiry_response_obj = action.payload;
+        state.create_enquiry_response_obj = {};
         state.createEnquiryStatus = "failed";
       })
       .addCase(updatePreEnquiry.pending, (state, action) => {
         state.isLoading = true;
+        state.create_enquiry_response_obj = {};
         state.updateEnquiryStatus = "pending";
       })
       .addCase(updatePreEnquiry.fulfilled, (state, action) => {
@@ -320,6 +321,7 @@ export const addPreEnquirySlice = createSlice({
       })
       .addCase(updatePreEnquiry.rejected, (state, action) => {
         state.isLoading = false;
+        state.create_enquiry_response_obj = {};
         state.updateEnquiryStatus = "failed";
       })
       .addCase(continueToCreatePreEnquiry.pending, (state, action) => {
