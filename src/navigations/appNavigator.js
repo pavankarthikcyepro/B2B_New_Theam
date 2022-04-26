@@ -38,6 +38,7 @@ import ProceedToPreBookingScreen from "../scenes/mainScenes/MyTasks/proceedToPre
 import CreateEnquiryScreen from "../scenes/mainScenes/MyTasks/createEnquiryScreen";
 import FilterScreen from "../scenes/mainScenes/Home/filterScreen";
 import SelectBranchComp from "../scenes/loginScenes/selectBranchComp";
+import TestScreen from "../scenes/mainScenes/Home/testScreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -116,7 +117,8 @@ export const TabStackIdentifiers = {
 
 export const HomeStackIdentifiers = {
   filter: "FILTER",
-  select_branch: "SELECT_BRANCH"
+  select_branch: "SELECT_BRANCH",
+  test: "TEST"
 };
 
 export const EmsStackIdentifiers = {
@@ -188,6 +190,11 @@ const HomeStackNavigator = ({ navigation }) => {
         name={HomeStackIdentifiers.select_branch}
         component={SelectBranchComp}
         options={{ title: "Select Branch" }}
+      />
+      <HomeStack.Screen
+        name={HomeStackIdentifiers.test}
+        component={TestScreen}
+        options={{ title: "Test Screen" }}
       />
     </HomeStack.Navigator>
   );

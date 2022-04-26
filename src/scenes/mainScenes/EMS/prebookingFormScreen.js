@@ -103,6 +103,7 @@ import {
   PincodeDetails,
   GetFinanceBanksList,
   GetPaidAccessoriesList,
+  GetDropList,
 } from "../../../utils/helperFunctions";
 import URL from "../../../networking/endpoints";
 import uuid from "react-native-uuid";
@@ -3448,7 +3449,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   style={[
                     {
                       backgroundColor:
-                        openAccordian === "10" ? Colors.RED : Colors.WHITE,
+                        openAccordian === "10" ? Colors.RED : Colors.SKY_LIGHT_BLUE_COLOR,
                     },
                     styles.accordianBorder,
                   ]}
@@ -3529,7 +3530,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   style={[
                     {
                       backgroundColor:
-                        openAccordian === "12" ? Colors.RED : Colors.WHITE,
+                        openAccordian === "12" ? Colors.RED : Colors.SKY_LIGHT_BLUE_COLOR,
                     },
                     styles.accordianBorder,
                   ]}

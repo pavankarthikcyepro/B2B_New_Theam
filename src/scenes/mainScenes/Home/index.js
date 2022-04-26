@@ -205,6 +205,7 @@ const HomeScreen = ({ route, navigation }) => {
         title={"Dashboard"}
         branchName={selectedBranchName}
         menuClicked={() => navigation.openDrawer()}
+        // branchClicked={() => navigation.navigate(HomeStackIdentifiers.test)}
         branchClicked={() => moveToSelectBranch()}
       />
       <View style={{ flex: 1, padding: 10 }}>
