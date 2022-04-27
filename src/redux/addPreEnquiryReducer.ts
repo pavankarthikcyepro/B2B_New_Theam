@@ -301,7 +301,7 @@ export const addPreEnquirySlice = createSlice({
       .addCase(createPreEnquiry.rejected, (state, action) => {
         console.log('res3: ', action.payload);
         state.isLoading = false;
-        state.create_enquiry_response_obj = {};
+        state.create_enquiry_response_obj = action.payload;
         state.createEnquiryStatus = "failed";
       })
       .addCase(updatePreEnquiry.pending, (state, action) => {
