@@ -1149,6 +1149,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           dataObj.houseNo = selector.house_number;
           dataObj.street = selector.street_name;
           dataObj.village = selector.village;
+          dataObj.mandal = selector.mandal;
           dataObj.city = selector.city;
           dataObj.district = selector.district;
           dataObj.state = selector.state;
@@ -1159,6 +1160,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           dataObj.houseNo = selector.p_houseNum;
           dataObj.street = selector.p_streetName;
           dataObj.village = selector.p_village;
+          dataObj.mandal = selector.p_mandal;
           dataObj.city = selector.p_city;
           dataObj.district = selector.p_district;
           dataObj.state = selector.p_state;
@@ -2054,6 +2056,18 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   }
                 />
                 <Text style={GlobalStyle.underline}></Text>
+                 <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.mandal}
+                  label={"Mandal*"}
+                  maxLength={40}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setCommunicationAddress({ key: "MANDAL", text: text })
+                    )
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.city}
@@ -2226,6 +2240,21 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     dispatch(
                       setCommunicationAddress({
                         key: "P_VILLAGE",
+                        text: text,
+                      })
+                    )
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                    <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.p_mandal}
+                  maxLength={50}
+                  label={"Mandal*"}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setCommunicationAddress({
+                        key: "P_MANDAL",
                         text: text,
                       })
                     )

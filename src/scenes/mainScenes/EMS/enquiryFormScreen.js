@@ -684,6 +684,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           dataObj.houseNo = selector.houseNum;
           dataObj.street = selector.streetName;
           dataObj.village = selector.village;
+          dataObj.mandal = selector.mandal;
           dataObj.city = selector.city;
           dataObj.district = selector.district;
           dataObj.state = selector.state;
@@ -694,6 +695,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           dataObj.houseNo = selector.p_houseNum;
           dataObj.street = selector.p_streetName;
           dataObj.village = selector.p_village;
+          dataObj.mandal = selector.p_mandal;
           dataObj.city = selector.p_city;
           dataObj.district = selector.p_district;
           dataObj.state = selector.p_state;
@@ -2078,6 +2080,22 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   }
                 />
                 <Text style={GlobalStyle.underline}></Text>
+
+ <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.mandal}
+                  label={"Mandal*"}
+                  autoCapitalize="words"
+                  maxLength={50}
+                  keyboardType={"default"}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setCommunicationAddress({ key: "MANDAL", text: text })
+                    )
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
+
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.city}
@@ -2261,6 +2279,23 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         dispatch(
                           setCommunicationAddress({
                             key: "P_VILLAGE",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                     <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.p_mandal}
+                      label={"Mandal*"}
+                      autoCapitalize="words"
+                      maxLength={50}
+                      keyboardType={"default"}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "P_MANDAL",
                             text: text,
                           })
                         )
@@ -2622,7 +2657,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.pan_number}
-                  label={"Pan Number*"}
+                  label={"Pan Number"}
                   keyboardType={"default"}
                   maxLength={10}
                   autoCapitalize={"characters"}
@@ -2650,7 +2685,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <TextinputComp
                       style={styles.textInputStyle}
                       value={selector.adhaar_number}
-                      label={"Aadhaar Number*"}
+                      label={"Aadhaar Number"}
                       keyboardType={"phone-pad"}
                       maxLength={12}
                       onChangeText={(text) =>

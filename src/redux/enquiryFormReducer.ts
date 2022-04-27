@@ -149,6 +149,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     houseNum: "",
     streetName: "",
     village: "",
+    mandal:"",
     city: "",
     state: "",
     district: "",
@@ -159,6 +160,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     p_houseNum: "",
     p_streetName: "",
     p_village: "",
+    p_mandal:"",
     p_city: "",
     p_state: "",
     p_district: "",
@@ -576,6 +578,9 @@ const enquiryDetailsOverViewSlice = createSlice({
         case "VILLAGE":
           state.village = text;
           break;
+        case "MANDAL":
+          state.mandal = text;
+          break;
         case "CITY":
           state.city = text;
           break;
@@ -597,6 +602,7 @@ const enquiryDetailsOverViewSlice = createSlice({
             state.p_houseNum = state.houseNum;
             state.p_streetName = state.streetName;
             state.p_village = state.village;
+            state.p_mandal = state.mandal;
             state.p_city = state.city;
             state.p_district = state.district;
             state.p_state = state.state;
@@ -616,6 +622,9 @@ const enquiryDetailsOverViewSlice = createSlice({
           break;
         case "P_VILLAGE":
           state.p_village = text;
+          break;
+        case "P_MANDAL":
+          state.p_mandal = text;
           break;
         case "P_CITY":
           state.p_city = text;
@@ -948,6 +957,7 @@ const enquiryDetailsOverViewSlice = createSlice({
             state.houseNum = address.houseNo ? address.houseNo : "";
             state.streetName = address.street ? address.street : "";
             state.village = address.village ? address.village : "";
+            state.mandal = address.mandal? address.mandal:"";
             state.city = address.city ? address.city : "";
             state.district = address.district ? address.district : "";
             state.state = address.state ? address.state : "";
@@ -964,6 +974,7 @@ const enquiryDetailsOverViewSlice = createSlice({
             state.p_houseNum = address.houseNo ? address.houseNo : "";
             state.p_streetName = address.street ? address.street : "";
             state.p_village = address.village ? address.village : "";
+            state.p_mandal = address.mandal ? address.mandal:"";
             state.p_city = address.city ? address.city : "";
             state.p_district = address.district ? address.district : "";
             state.p_state = address.state ? address.state : "";
@@ -1189,6 +1200,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     updateAddressByPincode: (state, action) => {
 
       state.village = action.payload.Block || ""
+      state.mandal = action.payload.Mandal || ""
       state.city = action.payload.Region || ""
       state.district = action.payload.District || ""
       state.state = action.payload.State || ""
