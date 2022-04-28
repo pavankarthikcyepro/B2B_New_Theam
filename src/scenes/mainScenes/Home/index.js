@@ -5,7 +5,6 @@ import { Colors, GlobalStyle } from '../../../styles';
 import { IconButton, Card, Button } from 'react-native-paper';
 import VectorImage from 'react-native-vector-image';
 import { useDispatch, useSelector } from 'react-redux';
-import { FILTER } from '../../../assets/svg';
 import { DateItem } from '../../../pureComponents/dateItem';
 import { AppNavigator } from '../../../navigations';
 import {

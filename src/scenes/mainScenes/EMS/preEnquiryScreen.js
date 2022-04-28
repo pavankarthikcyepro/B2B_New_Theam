@@ -5,7 +5,9 @@ import { Colors, GlobalStyle } from '../../../styles';
 import { useSelector, useDispatch } from 'react-redux';
 import { IconButton } from 'react-native-paper';
 import VectorImage from 'react-native-vector-image';
-import { CREATE_NEW } from '../../../assets/svg';
+// import { CREATE_NEW } from '../../../assets/svg';
+import CREATE_NEW from '../../../assets/images/create_new.svg';
+
 import { AppNavigator } from '../../../navigations';
 import { CallUserComponent, SortAndFilterComp, DateRangeComp, DatePickerComponent } from '../../../components';
 import { callPressed, getPreEnquiryData, setPreEnquiryList, getMorePreEnquiryData } from '../../../redux/preEnquiryReducer';
@@ -267,7 +269,8 @@ const PreEnquiryScreen = ({ navigation }) => {
                 <View style={[styles.addView, GlobalStyle.shadow]}>
                     <Pressable onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.addPreEnq, { fromEdit: false })}>
                         {/* <View style={[GlobalStyle.shadow, { height: 60, width: 60, borderRadius: 30, shadowRadius: 5 }]}> */}
-                        <VectorImage source={CREATE_NEW} width={60} height={60} color={"rgba(76,24,197,0.8)"} />
+                        {/* <VectorImage source={CREATE_NEW} width={60} height={60} color={"rgba(76,24,197,0.8)"} /> */}
+                        <CREATE_NEW width={60} height={60} color={"rgba(76,24,197,0.8)"} />
                         {/* </View> */}
                     </Pressable>
                 </View>
