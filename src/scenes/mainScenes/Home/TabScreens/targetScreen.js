@@ -10,6 +10,11 @@ import { random_color } from "../../../../utils/helperFunctions";
 import { LineGraphComp } from "../../../../components";
 import { rgbaColor } from "../../../../utils/helperFunctions";
 
+import Slider from "react-native-slider";
+import { UPARROW } from '../../../../assets/svg';
+import VectorImage from 'react-native-vector-image';
+import { IconButton } from 'react-native-paper';
+
 // const paramtersTitlesData = ["Parameter", "E", "TD", "HV", "VC", "B", "Ex", "R", "F", "I", "Ex-W", "Acc.", "Ev"]
 const paramtersTitlesData = ["Parameter", "Target", "Achivement", "Achivement %", "ShortFall", "ShortFall %"]
 const chartTitles = ["Target", "Achivement", "ShortFall"];
@@ -291,7 +296,141 @@ const TargetScreen = () => {
 
     return (
         <View style={styles.container}>
+            <View style={{ flexDirection: 'row' }}>
+                <View style={{ width: '65%', justifyContent: 'center', height: 30 }}>
+                    {/* <Text>Enq</Text> */}
+                </View>
+                <View style={{ width: '35%', flexDirection: 'row', }}>
+                    <Text>Balance</Text>
+                    <View style={{marginRight: 10}}></View>
+                    <Text>AR/Day</Text>
+                </View>
+            </View>
+            <View style={{flexDirection: 'row'}}>
+                <View style={{width: '10%', justifyContent: 'center'}}>
+                    <Text>Enq</Text>
+                </View>
+                <View style={{ width: '40%' }}>
+                    <Slider
+                        trackStyle={{
+                            height: 22,
+                            borderRadius: 4,
+                            backgroundColor: '#eeeeee',
+                            borderColor: '#eeeeee',
+                            borderWidth: 1,
+                        }}
+                        thumbStyle={{
+                            width: 0,
+                            height: 0,
+                        }}
+                        minimumTrackTintColor='#9f31bf'
+                        value={0.7}
+                        disabled={true}
+                    />
+                </View>
+                <View style={{ width: '10%', justifyContent: 'center', flexDirection: 'row', height: 25, marginTop: 8, alignItems: 'center', marginLeft: 8 }}>
+                    <IconButton
+                        icon="menu-up"
+                        color={Colors.GREEN}
+                        size={30}
+                    />
+                    <View style={{ justifyContent: 'center', flexDirection: 'row', height: 25, marginTop: 0, alignItems: 'center', marginLeft: -20 }}>
+                        <Text>77%</Text>
+                    </View>
+                </View>
+                <View style={{ width: '25%', justifyContent: 'center', flexDirection: 'row', height: 25, alignItems: 'center', marginTop: 8, marginLeft: 20 }}>
+                    <View style={{ width: 30, height: 25, borderColor: '#9f31bf', borderWidth: 1, justifyContent: 'center', alignItems: 'center'}}>
+                        <Text>18</Text>
+                    </View>
+                    <View style={{ width: 35, height: 25, borderColor: '#9f31bf', borderWidth: 1, justifyContent: 'center', alignItems: 'center', marginLeft: 20 }}>
+                        <Text>1.05</Text>
+                    </View>
+                </View>
+            </View>
 
+            <View style={{ flexDirection: 'row' }}>
+                <View style={{ width: '10%', justifyContent: 'center' }}>
+                    <Text>TD</Text>
+                </View>
+                <View style={{ width: '40%' }}>
+                    <Slider
+                        trackStyle={{
+                            height: 22,
+                            borderRadius: 4,
+                            backgroundColor: '#eeeeee',
+                            borderColor: '#eeeeee',
+                            borderWidth: 1,
+                        }}
+                        thumbStyle={{
+                            width: 0,
+                            height: 0,
+                        }}
+                        minimumTrackTintColor='#00b1ff'
+                        value={0.2}
+                        disabled={true}
+                    />
+                </View>
+                <View style={{ width: '10%', justifyContent: 'center', flexDirection: 'row', height: 25, marginTop: 8, alignItems: 'center', marginLeft: 8 }}>
+                    <IconButton
+                        icon="menu-down"
+                        color={Colors.RED}
+                        size={30}
+                    />
+                    <View style={{ justifyContent: 'center', flexDirection: 'row', height: 25, marginTop: 0, alignItems: 'center', marginLeft: -20 }}>
+                        <Text>23%</Text>
+                    </View>
+                </View>
+                <View style={{ width: '25%', justifyContent: 'center', flexDirection: 'row', height: 25, alignItems: 'center', marginTop: 8, marginLeft: 20 }}>
+                    <View style={{ width: 35, height: 25, borderColor: '#00b1ff', borderWidth: 1, justifyContent: 'center', alignItems: 'center' }}>
+                        <Text>43</Text>
+                    </View>
+                    <View style={{ width: 35, height: 25, borderColor: '#00b1ff', borderWidth: 1, justifyContent: 'center', alignItems: 'center', marginLeft: 20 }}>
+                        <Text>2.05</Text>
+                    </View>
+                </View>
+            </View>
+            
+            <View style={{ flexDirection: 'row' }}>
+                <View style={{ width: '10%', justifyContent: 'center' }}>
+                    <Text>HV</Text>
+                </View>
+                <View style={{ width: '40%' }}>
+                    <Slider
+                        trackStyle={{
+                            height: 22,
+                            borderRadius: 4,
+                            backgroundColor: '#eeeeee',
+                            borderColor: '#eeeeee',
+                            borderWidth: 1,
+                        }}
+                        thumbStyle={{
+                            width: 0,
+                            height: 0,
+                        }}
+                        minimumTrackTintColor='#fb03b9'
+                        value={0.8}
+                        disabled={true}
+                    />
+                </View>
+                <View style={{ width: '10%', justifyContent: 'center', flexDirection: 'row', height: 25, marginTop: 8, alignItems: 'center', marginLeft: 8 }}>
+                    <IconButton
+                        icon="menu-up"
+                        color={Colors.GREEN}
+                        size={30}
+                    />
+                    <View style={{ justifyContent: 'center', flexDirection: 'row', height: 25, marginTop: 0, alignItems: 'center', marginLeft: -20 }}>
+                        <Text>48%</Text>
+                    </View>
+                </View>
+                <View style={{ width: '25%', justifyContent: 'center', flexDirection: 'row', height: 25, alignItems: 'center', marginTop: 8, marginLeft: 20 }}>
+                    <View style={{ width: 35, height: 25, borderColor: '#fb03b9', borderWidth: 1, justifyContent: 'center', alignItems: 'center' }}>
+                        <Text>26</Text>
+                    </View>
+                    <View style={{ width: 35, height: 25, borderColor: '#fb03b9', borderWidth: 1, justifyContent: 'center', alignItems: 'center', marginLeft: 20 }}>
+                        <Text>1.05</Text>
+                    </View>
+                </View>
+            </View>
         </View>
     )
 }
