@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, FlatList, Dimensions, Text } from "react-native";
+import { View, StyleSheet, FlatList, Dimensions, Text, TouchableOpacity } from "react-native";
 import { Colors } from "../../../../styles";
 import { TargetListComp } from "../../../../components";
 import { DropDownSelectionItem, DateSelectItem, ChartNameList, EmptyListView } from "../../../../pureComponents";
 import { targetStyle } from "../../../../components/targetListComp";
 import { useDispatch, useSelector } from 'react-redux';
-import { LineChart } from "react-native-chart-kit";
+import { LineChart, BarChart, StackedBarChart } from "react-native-chart-kit";
 import { random_color } from "../../../../utils/helperFunctions";
 import { LineGraphComp } from "../../../../components";
 import { rgbaColor } from "../../../../utils/helperFunctions";
+import { PATH1705 } from '../../../../assets/svg';
 
 import Slider from "react-native-slider";
 import { UPARROW } from '../../../../assets/svg';
 import VectorImage from 'react-native-vector-image';
 import { IconButton } from 'react-native-paper';
+import { ProgressBar } from 'react-native-paper';
 
 // const paramtersTitlesData = ["Parameter", "E", "TD", "HV", "VC", "B", "Ex", "R", "F", "I", "Ex-W", "Acc.", "Ev"]
 const paramtersTitlesData = ["Parameter", "Target", "Achivement", "Achivement %", "ShortFall", "ShortFall %"]
@@ -291,6 +293,107 @@ export const EventScreen = () => {
         </View>
     )
 }
+const data = {
+    labels: ["Test1", "Test2"],
+    legend: ["L1", "L2", "L3"],
+    data: [
+        [60, 60, 60],
+        [30, 30, 60]
+    ],
+    barColors: ["#dfe4ea", "#ced6e0", "#a4b0be"]
+};
+
+const targetData = [
+    {
+        title: 'Enq',
+        total: 80,
+        complete: 62,
+        isUp: true,
+        percent: 77,
+        balance: 18,
+        ar: 1.05,
+        progress: 0.5,
+        color: '#9f31bf'
+    },
+    {
+        title: 'TD',
+        total: 60,
+        complete: 17,
+        isUp: false,
+        percent: 23,
+        balance: 43,
+        ar: 2.05,
+        progress: 0.2,
+        color: '#00b1ff'
+    },
+    {
+        title: 'HV',
+        total: 50,
+        complete: 24,
+        isUp: true,
+        percent: 48,
+        balance: 26,
+        ar: 1.05,
+        progress: 0.7,
+        color: '#fb03b9'
+    },
+
+    {
+        title: 'Bkg',
+        total: 80,
+        complete: 68,
+        isUp: true,
+        percent: 85,
+        balance: 36,
+        ar: 1.05,
+        progress: 0.8,
+        color: '#ffa239'
+    },
+    {
+        title: 'Fin(%)',
+        total: 55,
+        complete: 37,
+        isUp: true,
+        percent: 67,
+        balance: 18,
+        ar: 1.05,
+        progress: 0.3,
+        color: '#d12a78'
+    },
+    {
+        title: 'Insu(%)',
+        total: 50,
+        complete: 46,
+        isUp: true,
+        percent: 92,
+        balance: 16,
+        ar: 1.05,
+        progress: 0.7,
+        color: '#0800ff'
+    },
+    {
+        title: 'Retail',
+        total: 20,
+        complete: 4,
+        isUp: false,
+        percent: 20,
+        balance: 16,
+        ar: 1.05,
+        progress: 0.1,
+        color: '#1f93ab'
+    },
+    {
+        title: 'Del',
+        total: 50,
+        complete: 25,
+        isUp: true,
+        percent: 50,
+        balance: 25,
+        ar: 1.05,
+        progress: 0.3,
+        color: '#ec3466'
+    }
+]
 
 const TargetScreen = () => {
 
@@ -302,140 +405,252 @@ const TargetScreen = () => {
                 </View>
                 <View style={{ width: '35%', flexDirection: 'row', }}>
                     <Text>Balance</Text>
-                    <View style={{marginRight: 10}}></View>
+                    <View style={{ marginRight: 10 }}></View>
                     <Text>AR/Day</Text>
                 </View>
             </View>
-            <View style={{flexDirection: 'row'}}>
-                <View style={{width: '10%', justifyContent: 'center'}}>
-                    <Text>Enq</Text>
-                </View>
-                <View style={{ width: '40%' }}>
-                    <Slider
-                        trackStyle={{
-                            height: 22,
-                            borderRadius: 4,
-                            backgroundColor: '#eeeeee',
-                            borderColor: '#eeeeee',
-                            borderWidth: 1,
-                        }}
-                        thumbStyle={{
-                            width: 0,
-                            height: 0,
-                        }}
-                        minimumTrackTintColor='#9f31bf'
-                        value={0.7}
-                        disabled={true}
-                    />
-                </View>
-                <View style={{ width: '10%', justifyContent: 'center', flexDirection: 'row', height: 25, marginTop: 8, alignItems: 'center', marginLeft: 8 }}>
+            {
+                targetData.map((item) => {
+                    return (
+                        <View style={{ flexDirection: 'row', marginLeft: 8 }}>
+                            <View style={{ width: '10%', justifyContent: 'center', marginTop: 5 }}>
+                                <Text>{item.title}</Text>
+                            </View>
+                            <View style={{ width: '40%', marginTop: 10, position: 'relative' }}>
+                                <ProgressBar progress={item.progress} color={item.color} style={{ height: 20, borderRadius: 3, backgroundColor: '#eeeeee', }} />
+                                <View style={{ position: 'absolute', top: 1, left: 2 }}>
+                                    <Text style={{ color: Colors.WHITE }}>{item.complete}</Text>
+                                </View>
+                                <View style={{ position: 'absolute', top: 1, right: 3 }}>
+                                    <Text>{item.total}</Text>
+                                </View>
+                            </View>
+                            <View style={{ width: '10%', justifyContent: 'center', flexDirection: 'row', height: 25, marginTop: 8, alignItems: 'center', marginLeft: 8 }}>
+                                <IconButton
+                                    icon={item.isUp ? "menu-up" : "menu-down"}
+                                    color={item.isUp ? Colors.DARK_GREEN : Colors.RED} 
+                                    size={30}
+                                />
+                                <View style={{ justifyContent: 'center', flexDirection: 'row', height: 25, marginTop: 0, alignItems: 'center', marginLeft: -20 }}>
+                                    <Text>{item.percent}%</Text>
+                                </View>
+                            </View>
+                            <View style={{ width: '25%', justifyContent: 'center', flexDirection: 'row', height: 25, alignItems: 'center', marginTop: 8, marginLeft: 20 }}>
+                                <View style={{ width: 30, height: 25, borderColor: item.color, borderWidth: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                    <Text>{item.balance}</Text>
+                                </View>
+                                <View style={{ width: 35, height: 25, borderColor: item.color, borderWidth: 1, justifyContent: 'center', alignItems: 'center', marginLeft: 20 }}>
+                                    <Text>{item.ar}</Text>
+                                </View>
+                            </View>
+                        </View>
+                    )
+                })
+            }
+            <View style={{flexDirection: 'row', marginTop: 20, marginLeft: 10}}>
+                <View style={{ flexDirection: 'row',  justifyContent: 'center', alignItems: 'center'}}>
+                    <Text style={{ marginRight: -15, fontSize: 10, fontWeight: "600" }}>Enquiry to Booking (%)</Text>
                     <IconButton
-                        icon="menu-up"
-                        color={Colors.GREEN}
+                        icon={"menu-up"}
+                        color={'#14ce40'}
                         size={30}
                     />
-                    <View style={{ justifyContent: 'center', flexDirection: 'row', height: 25, marginTop: 0, alignItems: 'center', marginLeft: -20 }}>
-                        <Text>77%</Text>
-                    </View>
+                    <Text style={{ color: '#14ce40', marginLeft: -20, fontSize: 12,}}>45%</Text>
                 </View>
-                <View style={{ width: '25%', justifyContent: 'center', flexDirection: 'row', height: 25, alignItems: 'center', marginTop: 8, marginLeft: 20 }}>
-                    <View style={{ width: 30, height: 25, borderColor: '#9f31bf', borderWidth: 1, justifyContent: 'center', alignItems: 'center'}}>
-                        <Text>18</Text>
-                    </View>
-                    <View style={{ width: 35, height: 25, borderColor: '#9f31bf', borderWidth: 1, justifyContent: 'center', alignItems: 'center', marginLeft: 20 }}>
-                        <Text>1.05</Text>
-                    </View>
+
+                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginLeft: 10 }}>
+                    <Text style={{ marginRight: -15, fontSize: 10, fontWeight: "600" }}>Booking to Retail (%)</Text>
+                    <IconButton
+                        icon={"menu-down"}
+                        color={'#ff0000'}
+                        size={30}
+                    />
+                    <Text style={{ color: '#ff0000', marginLeft: -20, fontSize: 12, }}>15%</Text>
                 </View>
             </View>
 
-            <View style={{ flexDirection: 'row' }}>
-                <View style={{ width: '10%', justifyContent: 'center' }}>
-                    <Text>TD</Text>
-                </View>
-                <View style={{ width: '40%' }}>
-                    <Slider
-                        trackStyle={{
-                            height: 22,
-                            borderRadius: 4,
-                            backgroundColor: '#eeeeee',
-                            borderColor: '#eeeeee',
-                            borderWidth: 1,
-                        }}
-                        thumbStyle={{
-                            width: 0,
-                            height: 0,
-                        }}
-                        minimumTrackTintColor='#00b1ff'
-                        value={0.2}
-                        disabled={true}
-                    />
-                </View>
-                <View style={{ width: '10%', justifyContent: 'center', flexDirection: 'row', height: 25, marginTop: 8, alignItems: 'center', marginLeft: 8 }}>
-                    <IconButton
-                        icon="menu-down"
-                        color={Colors.RED}
-                        size={30}
-                    />
-                    <View style={{ justifyContent: 'center', flexDirection: 'row', height: 25, marginTop: 0, alignItems: 'center', marginLeft: -20 }}>
-                        <Text>23%</Text>
-                    </View>
-                </View>
-                <View style={{ width: '25%', justifyContent: 'center', flexDirection: 'row', height: 25, alignItems: 'center', marginTop: 8, marginLeft: 20 }}>
-                    <View style={{ width: 35, height: 25, borderColor: '#00b1ff', borderWidth: 1, justifyContent: 'center', alignItems: 'center' }}>
-                        <Text>43</Text>
-                    </View>
-                    <View style={{ width: 35, height: 25, borderColor: '#00b1ff', borderWidth: 1, justifyContent: 'center', alignItems: 'center', marginLeft: 20 }}>
-                        <Text>2.05</Text>
-                    </View>
-                </View>
+            <View style={{ flexDirection: 'row', marginLeft: 10, alignItems: 'center', marginTop: -20 }}>
+                <Text style={{ marginRight: -15, fontSize: 10, fontWeight: "600" }}>Enquiry to Retail (%)</Text>
+                <IconButton
+                    icon={"menu-up"}
+                    color={'#14ce40'}
+                    size={30}
+                />
+                <Text style={{ color: '#14ce40', marginLeft: -20, fontSize: 12, }}>69%</Text>
             </View>
-            
-            <View style={{ flexDirection: 'row' }}>
-                <View style={{ width: '10%', justifyContent: 'center' }}>
-                    <Text>HV</Text>
-                </View>
-                <View style={{ width: '40%' }}>
-                    <Slider
-                        trackStyle={{
-                            height: 22,
-                            borderRadius: 4,
-                            backgroundColor: '#eeeeee',
-                            borderColor: '#eeeeee',
-                            borderWidth: 1,
-                        }}
-                        thumbStyle={{
-                            width: 0,
-                            height: 0,
-                        }}
-                        minimumTrackTintColor='#fb03b9'
-                        value={0.8}
-                        disabled={true}
-                    />
-                </View>
-                <View style={{ width: '10%', justifyContent: 'center', flexDirection: 'row', height: 25, marginTop: 8, alignItems: 'center', marginLeft: 8 }}>
-                    <IconButton
-                        icon="menu-up"
-                        color={Colors.GREEN}
-                        size={30}
-                    />
-                    <View style={{ justifyContent: 'center', flexDirection: 'row', height: 25, marginTop: 0, alignItems: 'center', marginLeft: -20 }}>
-                        <Text>48%</Text>
-                    </View>
-                </View>
-                <View style={{ width: '25%', justifyContent: 'center', flexDirection: 'row', height: 25, alignItems: 'center', marginTop: 8, marginLeft: 20 }}>
-                    <View style={{ width: 35, height: 25, borderColor: '#fb03b9', borderWidth: 1, justifyContent: 'center', alignItems: 'center' }}>
-                        <Text>26</Text>
-                    </View>
-                    <View style={{ width: 35, height: 25, borderColor: '#fb03b9', borderWidth: 1, justifyContent: 'center', alignItems: 'center', marginLeft: 20 }}>
-                        <Text>1.05</Text>
-                    </View>
-                </View>
-            </View>
+
+            <TouchableOpacity style={{ flexDirection: 'row', marginLeft: 10, alignItems: 'center', marginTop: -15, justifyContent: 'center', marginBottom: 10 }}>
+                <Text style={{ fontSize: 10, fontWeight: "600", color: '#ff0000' }}>View all</Text>
+                <VectorImage
+                    width={6}
+                    height={11}
+                    source={PATH1705}
+                // style={{ tintColor: Colors.DARK_GRAY }}
+                />
+            </TouchableOpacity>
         </View>
     )
 }
 
 export default TargetScreen;
+
+const supportData = [
+    {
+        title: 'Exg (%)',
+        total: 60,
+        complete: 24,
+        isUp: false,
+        percent: 35,
+        balance: 12,
+        ar: 1.05,
+        progress: 0.3,
+        color: '#ecbd51'
+    },
+    {
+        title: 'Acc (in rupees)',
+        total: '50k',
+        complete: '46k',
+        isUp: false,
+        percent: 92,
+        balance: '4k',
+        ar: '1.5k',
+        progress: 0.3,
+        color: '#24c2bd'
+    },
+    {
+        title: 'EXW (%)',
+        total: 110,
+        complete: 50,
+        isUp: true,
+        percent: 45,
+        balance: 60,
+        ar: 1.05,
+        progress: 0.5,
+        color: '#4639ff'
+    },
+
+    {
+        title: 'Eve',
+        total: 75,
+        complete: 29,
+        isUp: false,
+        percent: 38,
+        balance: 46,
+        ar: 1.05,
+        progress: 0.4,
+        color: '#ffcd04'
+    },
+    {
+        title: 'VAS (in rupees)',
+        total: '50k',
+        complete: '8k',
+        isUp: false,
+        percent: 16,
+        balance: 32,
+        ar: '1.5k',
+        progress: 0.1,
+        color: '#8f39ff'
+    }
+]
+
+const SupportingScreen = () => {
+
+    return (
+        <View style={styles.container}>
+            <View style={{ flexDirection: 'row' }}>
+                <View style={{ width: '65%', justifyContent: 'center', height: 30 }}>
+                    {/* <Text>Enq</Text> */}
+                </View>
+                <View style={{ width: '35%', flexDirection: 'row', }}>
+                    <Text>Balance</Text>
+                    <View style={{ marginRight: 10 }}></View>
+                    <Text>AR/Day</Text>
+                </View>
+            </View>
+            {
+                supportData.map((item) => {
+                    return (
+                        <View style={{ flexDirection: 'row', marginLeft: 8 }}>
+                            <View style={{ width: '10%', justifyContent: 'center', marginTop: 5 }}>
+                                <Text>{item.title}</Text>
+                            </View>
+                            <View style={{ width: '40%', marginTop: 10, position: 'relative' }}>
+                                <ProgressBar progress={item.progress} color={item.color} style={{ height: 20, borderRadius: 3, backgroundColor: '#eeeeee', }} />
+                                <View style={{ position: 'absolute', top: 1, left: 2 }}>
+                                    <Text style={{ color: Colors.WHITE }}>{item.complete}</Text>
+                                </View>
+                                <View style={{ position: 'absolute', top: 1, right: 3 }}>
+                                    <Text>{item.total}</Text>
+                                </View>
+                            </View>
+                            <View style={{ width: '10%', justifyContent: 'center', flexDirection: 'row', height: 25, marginTop: 8, alignItems: 'center', marginLeft: 8 }}>
+                                <IconButton
+                                    icon={item.isUp ? "menu-up" : "menu-down"}
+                                    color={item.isUp ? Colors.DARK_GREEN : Colors.RED}
+                                    size={30}
+                                />
+                                <View style={{ justifyContent: 'center', flexDirection: 'row', height: 25, marginTop: 0, alignItems: 'center', marginLeft: -20 }}>
+                                    <Text>{item.percent}%</Text>
+                                </View>
+                            </View>
+                            <View style={{ width: '25%', justifyContent: 'center', flexDirection: 'row', height: 25, alignItems: 'center', marginTop: 8, marginLeft: 20 }}>
+                                <View style={{ width: 30, height: 25, borderColor: item.color, borderWidth: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                    <Text>{item.balance}</Text>
+                                </View>
+                                <View style={{ width: 35, height: 25, borderColor: item.color, borderWidth: 1, justifyContent: 'center', alignItems: 'center', marginLeft: 20 }}>
+                                    <Text>{item.ar}</Text>
+                                </View>
+                            </View>
+                        </View>
+                    )
+                })
+            }
+            <View style={{ flexDirection: 'row', marginTop: 20, marginLeft: 10 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style={{ marginRight: -15, fontSize: 10, fontWeight: "600" }}>Enquiry to Booking (%)</Text>
+                    <IconButton
+                        icon={"menu-up"}
+                        color={'#14ce40'}
+                        size={30}
+                    />
+                    <Text style={{ color: '#14ce40', marginLeft: -20, fontSize: 12, }}>45%</Text>
+                </View>
+
+                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginLeft: 10 }}>
+                    <Text style={{ marginRight: -15, fontSize: 10, fontWeight: "600" }}>Booking to Retail (%)</Text>
+                    <IconButton
+                        icon={"menu-down"}
+                        color={'#ff0000'}
+                        size={30}
+                    />
+                    <Text style={{ color: '#ff0000', marginLeft: -20, fontSize: 12, }}>15%</Text>
+                </View>
+            </View>
+
+            <View style={{ flexDirection: 'row', marginLeft: 10, alignItems: 'center', marginTop: -20 }}>
+                <Text style={{ marginRight: -15, fontSize: 10, fontWeight: "600" }}>Enquiry to Retail (%)</Text>
+                <IconButton
+                    icon={"menu-up"}
+                    color={'#14ce40'}
+                    size={30}
+                />
+                <Text style={{ color: '#14ce40', marginLeft: -20, fontSize: 12, }}>69%</Text>
+            </View>
+
+            <TouchableOpacity style={{ flexDirection: 'row', marginLeft: 10, alignItems: 'center', marginTop: -15, justifyContent: 'center', marginBottom: 10 }}>
+                <Text style={{ fontSize: 10, fontWeight: "600", color: '#ff0000' }}>View all</Text>
+                <VectorImage
+                    width={6}
+                    height={11}
+                    source={PATH1705}
+                // style={{ tintColor: Colors.DARK_GRAY }}
+                />
+            </TouchableOpacity>
+        </View>
+    )
+}
+
+export  {SupportingScreen};
 
 const styles = StyleSheet.create({
     container: {

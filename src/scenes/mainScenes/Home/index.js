@@ -387,7 +387,7 @@ const HomeScreen = ({ route, navigation }) => {
                                 <View style={{justifyContent: 'center', alignItems: 'center'}}>
                                     <View style={{
                                         width: '95%',
-                                        height: 400,
+                                        minHeight: 400,
                                         // borderWidth: 1,
                                         shadowColor: Colors.DARK_GRAY,
                                         shadowOffset: {

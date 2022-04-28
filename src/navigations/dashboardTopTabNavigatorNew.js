@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import DataScreen, { LostScreen, DropScreen } from "../scenes/mainScenes/Home/TabScreens/dataScreen";
-import TargetScreen, { ParameterScreen, LiveScreen, EventScreen, LeadSourceScreen, VehicleModelScreen } from "../scenes/mainScenes/Home/TabScreens/targetScreen";
+import TargetScreen, { ParameterScreen, LiveScreen, EventScreen, LeadSourceScreen, VehicleModelScreen, SupportingScreen } from "../scenes/mainScenes/Home/TabScreens/targetScreen";
 import TasksScreen, { TodayScreen, UpcomingScreen, PendingScreen } from "../scenes/mainScenes/Home/TabScreens/tasksScreen";
 import { SalesComparisonScreen } from "../scenes/mainScenes/Home/TabScreens/salesComparisonScreen";
 
@@ -45,7 +45,7 @@ const DashboardTopTabNavigatorNew = () => {
             />
             <DashboardTopTab.Screen
                 name={DashboardTopTabNavigatorIdentifiers.Supporting}
-                component={TargetScreen}
+                component={SupportingScreen}
                 options={{ title: "Supporting parameters" }}
             />
         </DashboardTopTab.Navigator>
