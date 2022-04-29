@@ -133,9 +133,8 @@ export const getLostDropChartData = createAsyncThunk("HOME/getLostDropChartData"
 })
 
 export const getTargetParametersData = createAsyncThunk("HOME/getTargetParametersData", async (payload: any, { rejectWithValue }) => {
-
   const response = await client.post(URL.GET_TARGET_PARAMS(), payload)
-  const json = await response.json()
+  const json = await response.json()  
   if (!response.ok) {
     return rejectWithValue(json);
   }
@@ -363,7 +362,6 @@ export const homeSlice = createSlice({
         state.target_parameters_data = [];
       })
       .addCase(getTargetParametersData.fulfilled, (state, action) => {
-        //console.log("S getTargetParametersData: ", JSON.stringify(action.payload));
         if (action.payload) {
           state.target_parameters_data = action.payload;
         }
@@ -376,7 +374,7 @@ export const homeSlice = createSlice({
         state.employees_drop_down_data = {};
       })
       .addCase(getEmployeesDropDownData.fulfilled, (state, action) => {
-        //console.log("S getEmployeesDropDownData: ", JSON.stringify(action.payload));
+        // console.log("S getEmployeesDropDownData: ", JSON.stringify(action.payload));
         if (action.payload) {
           state.employees_drop_down_data = action.payload;
         }
@@ -389,7 +387,7 @@ export const homeSlice = createSlice({
         state.sales_data = {};
       })
       .addCase(getSalesData.fulfilled, (state, action) => {
-        console.log("S getSalesData: ", JSON.stringify(action.payload));
+        // console.log("S getSalesData: ", JSON.stringify(action.payload));
         if (action.payload) {
           state.sales_data = action.payload;
         }

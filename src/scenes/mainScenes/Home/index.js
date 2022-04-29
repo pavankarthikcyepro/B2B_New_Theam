@@ -92,6 +92,13 @@ const HomeScreen = ({ route, navigation }) => {
         // }
     }, [navigation]);
 
+    // useEffect(() => {
+    //     if (selector.target_parameters_data.length > 0) {
+    //         console.log("$$$$$$$$$$$$$$$", selector.target_parameters_data);
+    //     } else {
+    //     }
+    // }, [selector.target_parameters_data])
+
     useEffect(() => {
 
         updateBranchNameInHeader()
@@ -272,7 +279,7 @@ const HomeScreen = ({ route, navigation }) => {
                                         }}>
                                             <View style={styles.rankIconBox}>
                                                 <VectorImage
-                                                    width={30}
+                                                    width={25}
                                                     height={16}
                                                     source={SPEED}
                                                 // style={{ tintColor: Colors.DARK_GRAY }}
@@ -299,7 +306,7 @@ const HomeScreen = ({ route, navigation }) => {
                                         }}>
                                             <View style={styles.rankIconBox}>
                                                 <VectorImage
-                                                    width={30}
+                                                    width={25}
                                                     height={16}
                                                     source={SPEED}
                                                 // style={{ tintColor: Colors.DARK_GRAY }}
@@ -399,7 +406,9 @@ const HomeScreen = ({ route, navigation }) => {
                                         elevation: 3,
                                         marginHorizontal:20
                                     }}>
-                                        <DashboardTopTabNavigatorNew />
+                                        {selector.target_parameters_data.length > 0 &&
+                                            <DashboardTopTabNavigatorNew />
+                                        }                                        
                                     </View>
                                 </View>
                             )

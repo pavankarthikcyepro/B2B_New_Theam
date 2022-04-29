@@ -25,12 +25,12 @@ export const client = async (authToken, url, methodType, body, customConfig) => 
     // console.log('config: ', config);
 
     try {
-        console.log('API: ' + url);
-        console.log("body: " + JSON.stringify(body));
+        // console.log('API: ' + url);
+        // console.log("body: " + JSON.stringify(body));
         const response = await window.fetch(url, config)
         return response;
     } catch (err) {
-        console.error('err: ', err);
+        console.error('err: ', err, url);
         return Promise.reject(err.message ? err.message : "something wrong")
     }
 }

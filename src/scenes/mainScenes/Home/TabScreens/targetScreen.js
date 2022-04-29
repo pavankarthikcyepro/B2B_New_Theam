@@ -9,7 +9,7 @@ import { LineChart, BarChart, StackedBarChart } from "react-native-chart-kit";
 import { random_color } from "../../../../utils/helperFunctions";
 import { LineGraphComp } from "../../../../components";
 import { rgbaColor } from "../../../../utils/helperFunctions";
-import { PATH1705 } from '../../../../assets/svg';
+import { PATH1705, MONTH } from '../../../../assets/svg';
 
 import Slider from "react-native-slider";
 import { UPARROW } from '../../../../assets/svg';
@@ -394,8 +394,18 @@ const targetData = [
         color: '#ec3466'
     }
 ]
+const color = [
+    '#9f31bf', '#00b1ff', '#fb03b9', '#ffa239', '#d12a78', '#0800ff', '#1f93ab', '#ec3466'
+]
 
 const TargetScreen = () => {
+    const selector = useSelector((state) => state.homeReducer);
+    useEffect(() => {
+        if (selector.target_parameters_data.length > 0) {
+            console.log("$$$$$$$$$$$$$$$ S getTargetParametersData:", selector.target_parameters_data);
+        } else {
+        }
+    }, [selector.target_parameters_data])
 
     return (
         <View style={styles.container}>
@@ -410,37 +420,39 @@ const TargetScreen = () => {
                 </View>
             </View>
             {
-                targetData.map((item) => {
+                selector.target_parameters_data.map((item, index) => {
                     return (
                         <View style={{ flexDirection: 'row', marginLeft: 8 }}>
                             <View style={{ width: '10%', justifyContent: 'center', marginTop: 5 }}>
-                                <Text>{item.title}</Text>
+                                <Text>{item.paramShortName}</Text>
                             </View>
                             <View style={{ width: '40%', marginTop: 10, position: 'relative' }}>
-                                <ProgressBar progress={item.progress} color={item.color} style={{ height: 20, borderRadius: 3, backgroundColor: '#eeeeee', }} />
+                                <ProgressBar progress={parseInt(item.achivementPerc.substring(0, item.achivementPerc.indexOf('%'))) === 0 ? 0 : (parseInt(item.achivementPerc.substring(0, item.achivementPerc.indexOf('%'))) / 100) } color={color[index % color.length]} style={{ height: 20, borderRadius: 3, backgroundColor: '#eeeeee', }} />
                                 <View style={{ position: 'absolute', top: 1, left: 2 }}>
-                                    <Text style={{ color: Colors.WHITE }}>{item.complete}</Text>
+                                    <Text style={{ color: Colors.WHITE }}>{item.achievment}</Text>
                                 </View>
                                 <View style={{ position: 'absolute', top: 1, right: 3 }}>
-                                    <Text>{item.total}</Text>
+                                    <Text>{item.target}</Text>
                                 </View>
                             </View>
                             <View style={{ width: '10%', justifyContent: 'center', flexDirection: 'row', height: 25, marginTop: 8, alignItems: 'center', marginLeft: 8 }}>
                                 <IconButton
-                                    icon={item.isUp ? "menu-up" : "menu-down"}
-                                    color={item.isUp ? Colors.DARK_GREEN : Colors.RED} 
+                                    // icon={item.isUp ? "menu-up" : "menu-down"}
+                                    // color={item.isUp ? Colors.DARK_GREEN : Colors.RED} 
+                                    icon={"menu-up"}
+                                    color={Colors.DARK_GREEN}
                                     size={30}
                                 />
                                 <View style={{ justifyContent: 'center', flexDirection: 'row', height: 25, marginTop: 0, alignItems: 'center', marginLeft: -20 }}>
-                                    <Text>{item.percent}%</Text>
+                                    <Text>{item.achivementPerc}</Text>
                                 </View>
                             </View>
                             <View style={{ width: '25%', justifyContent: 'center', flexDirection: 'row', height: 25, alignItems: 'center', marginTop: 8, marginLeft: 20 }}>
-                                <View style={{ width: 30, height: 25, borderColor: item.color, borderWidth: 1, justifyContent: 'center', alignItems: 'center' }}>
-                                    <Text>{item.balance}</Text>
+                                <View style={{ width: 30, height: 25, borderColor: color[index % color.length], borderWidth: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                    <Text>{item.shortfall}</Text>
                                 </View>
-                                <View style={{ width: 35, height: 25, borderColor: item.color, borderWidth: 1, justifyContent: 'center', alignItems: 'center', marginLeft: 20 }}>
-                                    <Text>{item.ar}</Text>
+                                <View style={{ width: 35, height: 25, borderColor: color[index % color.length], borderWidth: 1, justifyContent: 'center', alignItems: 'center', marginLeft: 20 }}>
+                                    <Text>{1.05}</Text>
                                 </View>
                             </View>
                         </View>
@@ -487,6 +499,7 @@ const TargetScreen = () => {
                     source={PATH1705}
                 // style={{ tintColor: Colors.DARK_GRAY }}
                 />
+                
             </TouchableOpacity>
         </View>
     )

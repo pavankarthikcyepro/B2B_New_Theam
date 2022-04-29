@@ -255,7 +255,7 @@ PODS:
     - React-jsi (= 0.64.2)
     - React-perflogger (= 0.64.2)
   - React-jsinspector (0.64.2)
-  - react-native-image-picker (4.7.3):
+  - react-native-image-picker (4.8.1):
     - React-Core
   - react-native-safe-area-context (3.4.1):
     - React-Core
@@ -571,7 +571,7 @@ SPEC CHECKSUMS:
   React-jsi: 67747b9722f6dab2ffe15b011bcf6b3f2c3f1427
   React-jsiexecutor: 80c46bd381fd06e418e0d4f53672dc1d1945c4c3
   React-jsinspector: cc614ec18a9ca96fd275100c16d74d62ee11f0ae
-  react-native-image-picker: 4e6008ad8c2321622affa2c85432a5ebd02d480c
+  react-native-image-picker: 5640333245b448b0e64172576ea27760f4134099
   react-native-safe-area-context: 9e40fb181dac02619414ba1294d6c2a807056ab9
   react-native-simple-toast: bf002828cf816775a6809f7a9ec3907509bce11f
   React-perflogger: 25373e382fed75ce768a443822f07098a15ab737
