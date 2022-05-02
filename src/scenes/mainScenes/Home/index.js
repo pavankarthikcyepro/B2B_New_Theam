@@ -21,7 +21,9 @@ import {
     getLostDropChartData,
     getTargetParametersData,
     getSalesData,
-    getSalesComparisonData
+    getSalesComparisonData,
+    getDealerRanking,
+    getGroupDealerRanking
 } from '../../../redux/homeReducer';
 import { DateRangeComp, DatePickerComponent, SortAndFilterComp } from '../../../components';
 import { DateModalComp } from "../../../components/dateModalComp";
@@ -70,6 +72,11 @@ const HomeScreen = ({ route, navigation }) => {
     const [showDropDownModel, setShowDropDownModel] = useState(false);
     const [dataForDropDown, setDataForDropDown] = useState([]);
     const [dropDownData, setDropDownData] = useState(null);
+    const [retailData, setRetailData] = useState(null);
+    const [dealerRank, setDealerRank] = useState(null);
+    const [dealerCount, setDealerCount] = useState(null);
+    const [groupDealerRank, setGroupDealerRank] = useState(null);
+    const [groupDealerCount, setGroupDealerCount] = useState(null);
 
     useLayoutEffect(() => {
 
@@ -92,12 +99,71 @@ const HomeScreen = ({ route, navigation }) => {
         // }
     }, [navigation]);
 
-    // useEffect(() => {
-    //     if (selector.target_parameters_data.length > 0) {
-    //         console.log("$$$$$$$$$$$$$$$", selector.target_parameters_data);
-    //     } else {
-    //     }
-    // }, [selector.target_parameters_data])
+    useEffect(() => {
+        if (selector.target_parameters_data.length > 0) {
+            let tempRetail = [];
+            tempRetail = selector.target_parameters_data.filter((item) => {
+                return item.paramName.toLowerCase() === 'invoice'
+            })
+            if (tempRetail.length > 0) {
+                setRetailData(tempRetail[0])
+            }
+        } else {
+        }
+    }, [selector.target_parameters_data])
+
+    useEffect(async () => {
+        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            if (selector.allDealerData.length > 0) {
+                let tempArr = [], allArray = selector.allDealerData;
+                setDealerCount(selector.allDealerData.length)
+                tempArr = allArray.filter((item) => {
+                    return item.empId === jsonObj.empId
+                })
+                if (tempArr.length > 0) {
+                    console.log("RANK", tempArr[0].rank);
+                    setDealerRank(tempArr[0].rank)
+                }
+                else {
+
+                }
+            }
+        }
+
+    }, [selector.allDealerData])
+
+    useEffect(async () => {
+        // if (selector.groupDealerRank > 0) {
+        //     console.log("DDDDDDD", selector.groupDealerRank);
+        //     setGroupDealerRank(selector.groupDealerRank)
+        //     setGroupDealerCount(selector.groupDealerCount)
+        // }
+        // if (selector.dealerRank > 0) {
+        //     setDealerRank(selector.dealerRank)
+        //     setDealerCount(selector.dealerCount)
+        // }
+        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            if (selector.allGroupDealerData.length > 0){
+                let tempArr = [], allArray = selector.allGroupDealerData;
+                setGroupDealerCount(selector.allGroupDealerData.length)
+                tempArr = allArray.filter((item) => {
+                    return item.empId === jsonObj.empId
+                })
+                if (tempArr.length > 0) {
+                    console.log("RANK", tempArr[0].rank);
+                    setGroupDealerRank(tempArr[0].rank)
+                }
+                else {
+
+                }
+            }
+        }
+       
+    }, [selector.allGroupDealerData])
 
     useEffect(() => {
 
@@ -142,9 +208,38 @@ const HomeScreen = ({ route, navigation }) => {
                 branchId: jsonObj.branchId
             }
             // console.log("jsonObj: ", jsonObj);
+
+            const dateFormat = "YYYY-MM-DD";
+            const currentDate = moment().format(dateFormat)
+            const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+            const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+
             Promise.all([
                 dispatch(getOrganaizationHirarchyList(payload)),
-                dispatch(getSourceOfEnquiryList(jsonObj.orgId))
+                dispatch(getSourceOfEnquiryList(jsonObj.orgId)),
+                dispatch(getDealerRanking({
+                    payload: {
+                        "endDate": monthLastDate,
+                        "loggedInEmpId": jsonObj.empId,
+                        "startDate": monthFirstDate,
+                        "levelSelected": null,
+                        "pageNo": 0,
+                        "size": 0
+                    },
+                    orgId: jsonObj.orgId,
+                    branchId: jsonObj.branchId
+                })),
+                dispatch(getGroupDealerRanking({
+                    payload: {
+                        "endDate": monthLastDate,
+                        "loggedInEmpId": jsonObj.empId,
+                        "startDate": monthFirstDate,
+                        "levelSelected": null,
+                        "pageNo": 0,
+                        "size": 0
+                    },
+                    orgId: jsonObj.orgId
+                }))
             ]).then(() => {
                 console.log('I did everything!');
             });
@@ -168,7 +263,7 @@ const HomeScreen = ({ route, navigation }) => {
             dispatch(getLeadSourceTableList(payload)),
             dispatch(getVehicleModelTableList(payload)),
             dispatch(getEventTableList(payload)),
-            dispatch(getLostDropChartData(payload))
+            // dispatch(getLostDropChartData(payload))
         ]).then(() => {
             console.log('I did everything!');
         });
@@ -250,13 +345,14 @@ const HomeScreen = ({ route, navigation }) => {
                 data={dataForDropDown}
                 onRequestClose={() => setShowDropDownModel(false)}
                 selectedItems={(item) => {
-                   
+
                     setShowDropDownModel(false);
                     setDropDownData({ key: dropDownKey, value: item.name, id: item.id })
                 }}
             />
             <HeaderComp
-                title={"Dashboard"}
+                // title={"Dashboard"}
+                title={"Dealer Sales Exec"}
                 branchName={selectedBranchName}
                 menuClicked={() => navigation.openDrawer()}
                 branchClicked={() => moveToSelectBranch()}
@@ -287,11 +383,13 @@ const HomeScreen = ({ route, navigation }) => {
                                             </View>
                                             <View style={{
                                                 marginTop: 5,
-                                                marginLeft: 5
+                                                marginLeft: 3
                                             }}>
-                                                <Text style={styles.rankText}>30/50</Text>
+                                                {groupDealerRank !== null &&
+                                                    <Text style={styles.rankText}>{groupDealerRank}/{groupDealerCount}</Text>
+                                                }
                                                 <View style={{
-                                                   marginTop: 5
+                                                    marginTop: 5
                                                 }}>
                                                     <Text style={styles.baseText}>Based on city</Text>
                                                 </View>
@@ -314,9 +412,15 @@ const HomeScreen = ({ route, navigation }) => {
                                             </View>
                                             <View style={{
                                                 marginTop: 5,
-                                                marginLeft: 5
+                                                marginLeft: 3
                                             }}>
-                                                <Text style={styles.rankText}>14/50</Text>
+                                                {/* <Text style={styles.rankText}>14/50</Text> */}
+                                                {dealerRank !== null &&
+                                                    <View style={{ flexDirection: 'row' }}>
+                                                        <Text style={[styles.rankText]}>{dealerRank}</Text>
+                                                        <Text style={[styles.rankText, { color: Colors.GRAY }]}>/{dealerCount}</Text>
+                                                    </View>
+                                                }
                                                 <View style={{
                                                     marginTop: 5
                                                 }}>
@@ -326,25 +430,66 @@ const HomeScreen = ({ route, navigation }) => {
                                         </View>
                                     </View>
 
-                                    <View style={styles.retailBox}>
+                                    {/* <View style={styles.retailBox}>
                                         <View style={{
                                             flexDirection: 'row',
                                             marginBottom: 5
-                                        }}> 
-                                            <Text style={{color: 'red'}}>5/ </Text>
-                                            <Text>10</Text>
+                                        }}>
+                                            {retailData !== null &&
+                                                <>
+                                                    <Text style={{ color: 'red' }}>{retailData?.achievment}/ </Text>
+                                                    <Text>{retailData?.target}</Text>
+                                                </>
+                                            }
                                         </View>
                                         <Text style={{ color: 'red', fontSize: 14 }}>Retails</Text>
-                                        <View style={{marginTop: 5}}>
+                                        <View style={{ marginTop: 5 }}>
                                             <Text style={{ fontSize: 12, color: '#aaa3a3' }}>Ach v/s Tar</Text>
                                         </View>
+                                    </View> */}
+
+                                    <View style={styles.rankBox}>
+                                        <Text style={styles.rankHeadingText}>Retails</Text>
+                                        <View style={{
+                                            flexDirection: 'row'
+                                        }}>
+                                            <View style={styles.rankIconBox}>
+                                                <VectorImage
+                                                    width={25}
+                                                    height={16}
+                                                    source={SPEED}
+                                                // style={{ tintColor: Colors.DARK_GRAY }}
+                                                />
+                                            </View>
+                                            <View style={{
+                                                marginTop: 5,
+                                                marginLeft: 5,
+                                            }}>
+                                                <View style={{ flexDirection: 'row' }}>
+                                                    <Text style={[styles.rankText, { color: 'red' }]}>{retailData?.achievment} </Text>
+                                                    <Text style={styles.rankText}>/{retailData?.target}</Text>
+                                                </View>
+                                                <View style={{
+                                                    marginTop: 5
+                                                }}>
+                                                    <Text style={styles.baseText}>Ach v/s Tar</Text>
+                                                </View>
+                                            </View>
+                                        </View>
                                     </View>
+
+                                    <TouchableOpacity style={{position: 'absolute', top: -10, right: -10}} onPress={() => navigation.navigate(HomeStackIdentifiers.filter)}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                            {/* <Text style={[styles.text1, { color: Colors.RED }]}>{'Filters'}</Text> */}
+                                            <IconButton icon={'filter-outline'} size={25} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
+                                        </View>
+                                    </TouchableOpacity>
                                 </View>
                             )
                         }
                         else if (index === 1) {
                             return (
-                                <View style={{ marginBottom: 5 }}>
+                                <View style={{ marginBottom: 5, justifyContent: 'center', alignItems: 'center', marginBottom: 10 }}>
                                     {/* <FlatList
                     data={titleNames}
                     listKey={"BOX_COMP"}
@@ -361,26 +506,25 @@ const HomeScreen = ({ route, navigation }) => {
                   /> */}
 
                                     <View style={styles.performView}>
-                                        <View style={{ flexDirection: 'column', width: '50%' }}>
+                                        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                                             <View style={{ marginBottom: 5 }}>
                                                 <Text style={styles.text3}>{"My Performance"}</Text>
                                             </View>
-                                            <Text style={{ fontSize: 8, color: '#aaa3a3' }}>Last updated March 29 2020 11:40 am</Text>
-                                            <View>
-                                                <TargetDropdown
-                                                    label={"Select Target"}
-                                                    value={dropDownData ? dropDownData.value : ''}
-                                                    onPress={() =>
-                                                        showDropDownModelMethod("TARGET_MODEL", "Select Target")
-                                                    }
-                                                />
-                                            </View>
+                                            <Text style={{ fontSize: 12, color: '#aaa3a3' }}>Last updated March 29 2020 11:40 am</Text>
                                         </View>
-                                        <View style={{ width: '50%' }}>
-                                            
-                                        </View>
-                                    </View>
+                                        {/* <View style={{ width: '50%' }}>
 
+                                        </View> */}
+                                    </View>
+                                    <View >
+                                        <TargetDropdown
+                                            label={"Select Target"}
+                                            value={dropDownData ? dropDownData.value : ''}
+                                            onPress={() =>
+                                                showDropDownModelMethod("TARGET_MODEL", "Select Target")
+                                            }
+                                        />
+                                    </View>
                                 </View>
                             )
                         }
@@ -391,7 +535,7 @@ const HomeScreen = ({ route, navigation }) => {
                                 //     <TargetAchivementComp />
                                 //   </View>
                                 // </View>
-                                <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                                <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                                     <View style={{
                                         width: '95%',
                                         minHeight: 400,
@@ -404,11 +548,11 @@ const HomeScreen = ({ route, navigation }) => {
                                         shadowRadius: 4,
                                         shadowOpacity: 0.5,
                                         elevation: 3,
-                                        marginHorizontal:20
+                                        marginHorizontal: 20
                                     }}>
                                         {selector.target_parameters_data.length > 0 &&
                                             <DashboardTopTabNavigatorNew />
-                                        }                                        
+                                        }
                                     </View>
                                 </View>
                             )
@@ -506,14 +650,14 @@ const styles = StyleSheet.create({
 
     performView: {
         flexDirection: "row",
-        justifyContent: "space-between",
+        justifyContent: "center",
         alignItems: "flex-start",
         // borderWidth: 1,
         // borderColor: Colors.BORDER_COLOR,
         backgroundColor: Colors.WHITE,
         marginBottom: 5,
-        paddingLeft: 5,
-        height: 100,
+        // paddingLeft: 5,
+        // height: 100,
         // backgroundColor: 'red'
     },
 
@@ -525,7 +669,7 @@ const styles = StyleSheet.create({
         // borderColor: Colors.BORDER_COLOR,
         // backgroundColor: Colors.WHITE,
         marginBottom: 5,
-        paddingLeft: 5,
+        paddingLeft: 3,
         height: 80,
         width: '100%',
     },
@@ -549,24 +693,35 @@ const styles = StyleSheet.create({
         marginTop: 5
     },
     rankHeadingText: {
-        fontSize: 12,
+        fontSize: 10,
         fontWeight: "500"
     },
     rankText: {
         fontSize: 16,
         fontWeight: "700"
     },
+    rankText2: {
+        fontSize: 20,
+        fontWeight: "700"
+    },
     baseText: {
-        fontSize: 12,
+        fontSize: 10,
         fontWeight: "800"
     },
     rankBox: {
         paddingTop: 5,
         height: 80,
-        width: '35%',
+        width: '32%',
         // backgroundColor: 'red',
         marginRight: 10
-    },  
+    },
+    rankBox2: {
+        paddingTop: 5,
+        height: 80,
+        width: '30%',
+        // backgroundColor: 'red',
+        marginRight: 10
+    },
 
     retailBox: {
         paddingTop: 5,

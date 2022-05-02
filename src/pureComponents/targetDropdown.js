@@ -25,7 +25,7 @@ export const TargetDropdown = ({ label, value, onPress, disabled = false, takeMi
                     <View style={{ width: '20%', justifyContent: 'center', alignItems: 'center', }}>
                         <IconButton
                             icon="menu-down"
-                            color={disabled ? Colors.GRAY : Colors.RED}
+                            color={disabled ? Colors.GRAY : Colors.BLACK}
                             size={25}
                         />
                     </View>
@@ -39,11 +39,12 @@ export const TargetDropdown = ({ label, value, onPress, disabled = false, takeMi
 const styles = StyleSheet.create({
     container: {
         height: 40,
+        width: 200,
         backgroundColor: Colors.WHITE,
         justifyContent: 'center',
         borderWidth: 1,
         borderColor: Colors.GRAY,
-        borderRadius: 25,
+        borderRadius: 5,
         marginTop: 10
     },
     label: {
