@@ -30,6 +30,14 @@ export const isPincode = (pincode) => {
   return false;
 };
 
+export const isValidate = (text) => {
+  // const regex = /^[a-zA-Z]+$/;
+  const regex = /^[a-zA-Z ]|([\w-]+(?:\.[\w-]+)*)*$/;
+  if (regex.test(text)) {
+    return true;
+  }
+  return false;
+};
 export const isValidateAlphabetics = (text) => {
   // const regex = /^[a-zA-Z]+$/;
   const regex = /^[a-zA-Z ]*$/;
