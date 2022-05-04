@@ -77,7 +77,11 @@ const SideMenuScreen = ({ navigation }) => {
         else {
             newFilterData = selector.tableData;
         }
-        setNewTableData([...newFilterData])
+        setNewTableData([...newFilterData, {
+            "icon": 52,
+            "screen": 999,
+            "title": "Monthly Target"
+        }])
     }
 
     const itemSelected = (item) => {
@@ -104,6 +108,9 @@ const SideMenuScreen = ({ navigation }) => {
                 break;
             case 104:
                 navigation.navigate(AppNavigator.DrawerStackIdentifiers.preBooking);
+                break;
+            case 999:
+                navigation.navigate("Target Settings");
                 break;
         }
     };

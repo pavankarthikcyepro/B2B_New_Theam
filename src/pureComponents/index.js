@@ -3,6 +3,7 @@ import { RadioTextItem } from "./radioTextItem";
 import { CustomerAccordianHeaderItem } from "./customerAccordianHeaderItem";
 import { ImageSelectItem } from "./imageSelectItem";
 import { DateSelectItem } from "./dateSelectItem";
+import { DateSelectItemForTargetSettings } from "./dateSelectItemTarget";
 import { EmptyListView } from "./emptyListView";
 import { PreEnquiryItem } from "./preEnquiryItem";
 import { PageControlItem } from "./pageControlItem";
@@ -24,5 +25,6 @@ export {
     ComplaintsItem,
     EventManagementItem,
     ChartNameList,
-    TargetDropdown
+    TargetDropdown,
+    DateSelectItemForTargetSettings
 };
