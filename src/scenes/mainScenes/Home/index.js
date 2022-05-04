@@ -159,7 +159,7 @@ const HomeScreen = ({ route, navigation }) => {
             // if (selector.login_employee_details?.roles.length > 0) {
             //     let rolesArr = [];
             //     rolesArr = selector.login_employee_details?.roles.filter((item) => {
-            //         return item === "Admin Prod" || item === "App Admin"
+            //         return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL"
             //     })
             //     if (rolesArr.length > 0) {
             //         console.log("%%%%% TEAM:", rolesArr);
@@ -288,8 +288,9 @@ const HomeScreen = ({ route, navigation }) => {
 
             if (jsonObj.roles.length > 0) {
                 let rolesArr = [];
+                console.log("ROLLS:", jsonObj.roles);
                 rolesArr = jsonObj.roles.filter((item) => {
-                    return item === "Admin Prod" || item === "App Admin"
+                    return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL"
                 })
                 if (rolesArr.length > 0) {
                     setIsTeamPresent(true)
@@ -627,17 +628,17 @@ const HomeScreen = ({ route, navigation }) => {
                                                 </View>
                                             </View>
                                             <View style={{ width: '40%', flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, marginTop: 10, justifyContent: 'center' }}>
-                                            <TouchableOpacity onPress={() => {
-                                                // setIsTeam(true)
-                                                dispatch(updateIsTeam(true))
-                                            }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: isTeam ? Colors.RED : Colors.WHITE, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
-                                                    <Text style={{ fontSize: 14, color: isTeam ? Colors.WHITE : Colors.BLACK }}>Self</Text>
+                                                <TouchableOpacity onPress={() => {
+                                                    // setIsTeam(true)
+                                                    dispatch(updateIsTeam(false))
+                                            }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: selector.isTeam ? Colors.WHITE : Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
+                                                <Text style={{ fontSize: 14, color: selector.isTeam ? Colors.BLACK : Colors.WHITE }}>Self</Text>
                                                 </TouchableOpacity>
-                                            <TouchableOpacity onPress={() => {
-                                                // setIsTeam(false)
-                                                dispatch(updateIsTeam(false))
-                                            }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: !isTeam ? Colors.RED : Colors.WHITE, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
-                                                    <Text style={{ fontSize: 14, color: !isTeam ? Colors.WHITE : Colors.BLACK }}>Teams</Text>
+                                                <TouchableOpacity onPress={() => {
+                                                    // setIsTeam(false)
+                                                    dispatch(updateIsTeam(true))
+                                            }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: selector.isTeam ? Colors.RED : Colors.WHITE, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
+                                                <Text style={{ fontSize: 14, color: selector.isTeam ? Colors.WHITE : Colors.BLACK }}>Teams</Text>
                                                 </TouchableOpacity>
                                             </View>
                                         </View>
