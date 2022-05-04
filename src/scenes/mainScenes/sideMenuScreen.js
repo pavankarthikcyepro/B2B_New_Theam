@@ -19,6 +19,14 @@ import realm from "../../database/realm";
 import * as AsyncStore from '../../asyncStore';
 // import { useNavigation } from '@react-navigation/native';
 import { useIsFocused } from "@react-navigation/native";
+// import { EVENT_MANAGEMENT, CUSTOMER_RELATIONSHIP, DOCUMENT_WALLET, HOME_LINE, BOOKING_TRACKER } from "../assets/svg";
+
+import EVENT_MANAGEMENT from "../../assets/images/event_management.svg";
+import CUSTOMER_RELATIONSHIP from "../../assets/images/customer_relationship.svg";
+import DOCUMENT_WALLET from "../../assets/images/document_wallet.svg";
+import HOME_LINE from "../../assets/images/home_line.svg";
+import BOOKING_TRACKER from "../../assets/images/booking_tracker.svg";
+import { BOOKING_TRACKER_STR, CUSTOMER_RELATIONSHIP_STR, DOCUMENT_WALLET_STR, EVENT_MANAGEMENT_STR, HOME_LINE_STR } from "../../redux/sideMenuReducer";
 
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 4;
@@ -181,7 +189,12 @@ const SideMenuScreen = ({ navigation }) => {
                   left={(props) => <List.Icon {...props} icon="folder" style={{ margin: 0 }} />}
                 /> */}
                 <View style={{ flexDirection: "row", height: 25, alignItems: "center", paddingLeft: 10, marginBottom: 10 }}>
-                  <VectorImage source={item.icon} width={20} height={20} />
+                  {/* <VectorImage source={item.icon} width={20} height={20} /> */}
+                  {item.icon === EVENT_MANAGEMENT_STR && <EVENT_MANAGEMENT width={20} height={20} color={'black'} />}
+                  {item.icon === CUSTOMER_RELATIONSHIP_STR && <CUSTOMER_RELATIONSHIP width={20} height={20} color={'black'} />}
+                  {item.icon === DOCUMENT_WALLET_STR && <DOCUMENT_WALLET width={20} height={20} color={'black'} />}
+                  {item.icon === HOME_LINE_STR && <HOME_LINE width={20} height={20} color={'black'} />}
+                  {item.icon === BOOKING_TRACKER_STR && <BOOKING_TRACKER width={20} height={20} color={'black'} />}
                   <Text style={{ fontSize: 16, fontWeight: "600", marginLeft: 15 }}>{item.title}</Text>
                 </View>
                 <Divider />
