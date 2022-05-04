@@ -6,8 +6,10 @@ import {
   StyleSheet,
   Dimensions,
   Image,
-  FlatList,
+  FlatList, 
   Pressable,
+  Alert,
+  TouchableOpacity
 } from "react-native";
 import { IconButton, Divider, List, Button } from "react-native-paper";
 import { Colors, GlobalStyle } from "../../styles";
@@ -19,13 +21,32 @@ import realm from "../../database/realm";
 import * as AsyncStore from '../../asyncStore';
 // import { useNavigation } from '@react-navigation/native';
 import { useIsFocused } from "@react-navigation/native";
+import { launchCamera, launchImageLibrary } from "react-native-image-picker";
+
 
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 4;
 const profileBgWidth = profileWidth + 5;
 
-const receptionMenu = ["Home", "Upcoming Deliveries", "Settings"];
-const teleCollerMenu = ["Home", "Settings"];
+const receptionMenu = [
+  "Home",
+  "Upcoming Deliveries",
+  "Settings",
+  "Digital Payment",
+  "Monthly Target Planning",
+  "Helpdesk",
+  "Task Management",
+  "Task Transfer",
+];
+const teleCollerMenu = [
+  "Home",
+  "Settings",
+  "Digital Payment",
+  "Monthly Target Planning",
+  "Helpdesk",
+  "Task Management",
+  "Task Transfer",
+];
 
 const SideMenuScreen = ({ navigation }) => {
 
@@ -39,9 +60,12 @@ const SideMenuScreen = ({ navigation }) => {
   const [location, setLocation] = useState("");
   const [role, setRole] = useState("");
   const [newTableData, setNewTableData] = useState([]);
+const [imageUri, setImageUri] = useState(null);
+const [dataList, setDataList] = useState([]);
 
   useEffect(() => {
     getLoginEmployeeData();
+    getProfilePic();
   }, [])
 
   useEffect(() => {
@@ -59,6 +83,15 @@ const SideMenuScreen = ({ navigation }) => {
       const jsonObj = JSON.parse(jsonString);
       updateUserData(jsonObj);
     }
+  }
+
+  const getProfilePic = ()=>{
+    fetch(
+      "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/146/1/242"
+    )
+      .then((response) => response.json())
+      .then((json) => setDataList(json))
+      .catch((error) => console.error(error));
   }
 
   updateUserData = (jsonObj) => {
@@ -105,6 +138,21 @@ const SideMenuScreen = ({ navigation }) => {
       case 104:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.preBooking);
         break;
+      case 105:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.digitalPayment);
+        break;
+      case 106:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.monthlyTarget);
+        break;
+      case 107:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.helpdesk);
+        break;
+      case 108:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.taskManagement);
+        break;
+      case 109:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.taskTransfer);
+        break;
     }
   };
 
@@ -121,6 +169,34 @@ const SideMenuScreen = ({ navigation }) => {
     signOut();
   }
 
+
+   const selectImage = () => {
+     let options = {
+       title: "you can choose anyimage",
+       maxWidth: 256,
+       maxHeight: 256,
+       storageOptions: {
+         skipBack: true,
+       },
+     };
+
+     launchImageLibrary(options, (Response) => {
+       if (Response.didCancel) {
+         Alert.alert("user cancelled");
+       } else if (Response.errorMessage) {
+         Alert.alert(Response.errorMessage);
+       } else if (Response.assets) {
+         let Object = Response.assets[0];
+         const uriLink = Object.uri;
+         // console.log('assets: ', uri);
+         const uriObject = {
+           uri: uriLink,
+         };
+         setImageUri(uriObject);
+       }
+     });
+   };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topView}>
@@ -132,18 +208,29 @@ const SideMenuScreen = ({ navigation }) => {
             navigation.closeDrawer();
           }}
         />
-        <Text style={styles.nameStyle}>{"Welcome "}<Text style={[styles.nameStyle, { fontSize: 12 }]}>{empName + ","}</Text></Text>
+        <Text style={styles.nameStyle}>
+          {"Welcome "}
+          <Text style={[styles.nameStyle, { fontSize: 12 }]}>
+            {empName + ","}
+          </Text>
+        </Text>
       </View>
       <View style={styles.profileContainerView}>
         <View style={[styles.profileBgVw, GlobalStyle.shadow]}>
-          <Image
-            style={{
-              width: profileWidth,
-              height: profileWidth,
-              borderRadius: profileWidth / 2,
-            }}
-            source={require("../../assets/images/bently.png")}
-          />
+          <TouchableOpacity onPress={selectImage}>
+            <Image
+              style={{
+                width: profileWidth,
+                height: profileWidth,
+                borderRadius: profileWidth / 2,
+              }}
+              source={{
+                uri: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/146-1-242-a94edf7c-77b7-40ef-bd12-b66d9303c631/car.jpg",
+              }}
+              // source={imageUri}
+              //  source={require("../../assets/images/bently.png")}
+            />
+          </TouchableOpacity>
         </View>
         <View style={{ marginTop: 15 }}>
           <Text style={[styles.nameStyle, { textAlign: "center" }]}>
@@ -159,9 +246,7 @@ const SideMenuScreen = ({ navigation }) => {
               {email}
             </Text>
           </Text>
-          <Text style={styles.text2}>
-            {"Office Location: " + location}
-          </Text>
+          <Text style={styles.text2}>{"Office Location: " + location}</Text>
         </View>
       </View>
       <Divider />
@@ -171,15 +256,33 @@ const SideMenuScreen = ({ navigation }) => {
         renderItem={({ item, index }) => {
           return (
             <Pressable onPress={() => itemSelected(item)}>
-              <View style={{ paddingLeft: 10, height: 55, justifyContent: "center", }}>
+              <View
+                style={{
+                  paddingLeft: 10,
+                  height: 55,
+                  justifyContent: "center",
+                }}
+              >
                 {/* <List.Item
                   title={item.title}
                   titleStyle={{ fontSize: 16, fontWeight: "600" }}
                   left={(props) => <List.Icon {...props} icon="folder" style={{ margin: 0 }} />}
                 /> */}
-                <View style={{ flexDirection: "row", height: 25, alignItems: "center", paddingLeft: 10, marginBottom: 10 }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    height: 25,
+                    alignItems: "center",
+                    paddingLeft: 10,
+                    marginBottom: 10,
+                  }}
+                >
                   <VectorImage source={item.icon} width={20} height={20} />
-                  <Text style={{ fontSize: 16, fontWeight: "600", marginLeft: 15 }}>{item.title}</Text>
+                  <Text
+                    style={{ fontSize: 16, fontWeight: "600", marginLeft: 15 }}
+                  >
+                    {item.title}
+                  </Text>
                 </View>
                 <Divider />
               </View>

@@ -164,20 +164,19 @@ const URL = {
     GET_SALES_DATA: () => dashboard + "/v2/get_sales_data",
     GET_SALES_COMPARISON_DATA: () => dashboard + "/v2/get_sales_comparsion_data",
     GET_BANK_DETAILS: (orgId) => {
-        return dfGetAll + `/${orgId}/%22Active%22/bankFinancier`;
+        return dfGetAll + `/${orgId}/%22Active%22/${orgId}/bankFinancier`;
     },
     GET_INSURENCE_COMPANY_NAMES: (orgId) => {
-        return dfGetAll + `/${orgId}/%22Active%22/incuranceCompany`
+        return dfGetAll + `/${orgId}/%22Active%22/${orgId}/incuranceCompany`
     },
+    
     GET_DROP_LIST: (ordId, type) => {
         return lostSubLost + `?organizationId=${ordId}&stageName=${type}`
     }
 }
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason
-
-// http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails?organizationId=1
-
+// http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/df-get-all/1/%22Active%22/1/enqueryCategory
 
 // http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/oh/active-dropdowns/13/412
 

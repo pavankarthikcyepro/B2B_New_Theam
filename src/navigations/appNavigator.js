@@ -1,9 +1,9 @@
-import * as React from "react";
-import { View } from "react-native";
+import React, {useState} from "react";
+import { View, Linking } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import { IconButton } from "react-native-paper";
+import { IconButton, Searchbar } from "react-native-paper";
 import VectorImage from "react-native-vector-image";
 import { Colors } from "../styles";
 import {
@@ -17,6 +17,13 @@ import {
 import HomeScreen from "../scenes/mainScenes/Home";
 import EMSScreen from "../scenes/mainScenes/EMS";
 import MyTasksScreen from "../scenes/mainScenes/MyTasks";
+
+import DigitalPaymentScreen from "../scenes/mainScenes/digitalPaymentScreen";
+import MonthlyTargetScreen from "../scenes/mainScenes/monthlyTargetScreen";
+import HelpDeskScreen from "../scenes/mainScenes/helpDeskScreen";
+import taskManagementScreen from "../scenes/mainScenes/taskManagementScreen";
+import TaskTranferScreen from "../scenes/mainScenes/taskTransferScreen";
+
 
 import EventManagementScreen from "../scenes/mainScenes/eventManagementScreen";
 import SettingsScreen from "../scenes/mainScenes/settingsScreen";
@@ -54,6 +61,7 @@ const screeOptionStyle = {
 };
 
 const MenuIcon = ({ navigation }) => {
+
   return (
     <IconButton
       icon="menu"
@@ -65,7 +73,11 @@ const MenuIcon = ({ navigation }) => {
 };
 
 const SearchIcon = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const onChangeSearch = (query) => setSearchQuery(query);
   return (
+    
     <IconButton
       icon="magnify"
       color={Colors.WHITE}
@@ -74,19 +86,26 @@ const SearchIcon = () => {
     />
   );
 };
-const RefreshIcon = ({ navigation }) => {
+const MapIcon = ({ navigation }) => {
   return (
     <IconButton
-      icon="refresh"
+      icon="google-maps"
       color={Colors.WHITE}
-      size={30}
-      onPress={() => console.log('refresh icon pressed')}
+      size={25}
+      //onPress={() => console.log('Mpas icon pressed')}
+      onPress={() => {
+        Linking.openURL(
+          `https://www.google.com/maps/search/?api=1&query=india`
+        );
+      }}
     />
   );
 };
 
 
 const NotficationIcon = ({ navigation, identifier }) => {
+
+
   return (
     <IconButton
       icon="bell"
@@ -107,6 +126,11 @@ export const DrawerStackIdentifiers = {
   notification: "NOTIFICATION",
   eventManagement: "EVENT_MANAGEMENT",
   preBooking: "PRE_BOOKING",
+  digitalPayment: "DIGITAL_PAYMENT",
+  monthlyTarget :"MONTHLY_TARGET",
+  helpdesk:"HELP_DESK",
+  taskManagement:"TASK_MANAGEMENT",
+  taskTransfer:"TASK_TRANSFER"
 };
 
 export const TabStackIdentifiers = {
@@ -217,8 +241,9 @@ const EmsStackNavigator = ({ navigation }) => {
           headerRight: () => {
             return (
               <View style={{ flexDirection: "row" }}>
-                {/* <SearchIcon /> */}
-                <RefreshIcon />
+                <SearchIcon />
+                {/* <RefreshIcon /> */}
+                <MapIcon />
                 <NotficationIcon
                   navigation={navigation}
                   identifier={"NOTIF_2"}
@@ -448,6 +473,93 @@ const SettingsStackNavigator = ({ navigation }) => {
   );
 };
 
+const DigitalPaymentStack = createStackNavigator();
+
+const DigitalPaymentStackNavigator = ({ navigation }) => {
+  return (
+    <DigitalPaymentStack.Navigator
+      screenOptions={screeOptionStyle}
+    >
+      <DigitalPaymentStack.Screen
+        name={"DIGITAL_PAYMENT_SCREEN"}
+        component={DigitalPaymentScreen}
+        options={{
+          title: "Digital Payment",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+    </DigitalPaymentStack.Navigator>
+  );
+};
+
+const MonthlyTargetStack = createStackNavigator();
+
+const MonthlyTargetStackNavigator = ({ navigation }) => {
+  return (
+    <MonthlyTargetStack.Navigator screenOptions={screeOptionStyle}>
+      <MonthlyTargetStack.Screen
+        name={"MONTHLY_TARGET_SCREEN"}
+        component={MonthlyTargetScreen}
+        options={{
+          title: "Monthly Target planning",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+    </MonthlyTargetStack.Navigator>
+  );
+};
+
+const HelpDeskStack = createStackNavigator();
+
+const HelpDeskStackNavigator = ({ navigation }) => {
+  return (
+    <HelpDeskStack.Navigator screenOptions={screeOptionStyle}>
+      <HelpDeskStack.Screen
+        name={"HELP_DESK_SCREEN"}
+        component={HelpDeskScreen}
+        options={{
+          title: "Help Desk",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+    </HelpDeskStack.Navigator>
+  );
+};
+
+const TaskManagementStack = createStackNavigator();
+
+const TaskManagementStackNavigator = ({ navigation }) => {
+  return (
+    <TaskManagementStack.Navigator screenOptions={screeOptionStyle}>
+      <TaskManagementStack.Screen
+        name={"TASK_MANAGEMENT"}
+        component={taskManagementScreen}
+        options={{
+          title: "Task Management",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+    </TaskManagementStack.Navigator>
+  );
+};
+
+const TaskTransferStack = createStackNavigator();
+
+const TaskTransferStackNavigator = ({ navigation }) => {
+  return (
+    <TaskTransferStack.Navigator screenOptions={screeOptionStyle}>
+      <TaskTransferStack.Screen
+        name={"TASK_TRANSFER"}
+        component={TaskTranferScreen}
+        options={{
+          title: "Task Transfer",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+    </TaskTransferStack.Navigator>
+  );
+};
+
 const EventManagementStack = createStackNavigator();
 
 const EventManagementStackNavigator = ({ navigation }) => {
@@ -523,6 +635,27 @@ const MainStackDrawerNavigator = () => {
         name={DrawerStackIdentifiers.settings}
         component={SettingsStackNavigator}
       />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.digitalPayment}
+        component={DigitalPaymentStackNavigator}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.helpdesk}
+        component={HelpDeskStackNavigator}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.monthlyTarget}
+        component={MonthlyTargetStackNavigator}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.taskManagement}
+        component={TaskManagementStackNavigator}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.taskTransfer}
+        component={TaskTransferStackNavigator}
+      />
+
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.eventManagement}
         component={EventManagementStackNavigator}

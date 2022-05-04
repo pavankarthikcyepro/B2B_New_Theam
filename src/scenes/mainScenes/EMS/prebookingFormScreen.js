@@ -2623,7 +2623,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 )}
 
                 {/* GSTIN Number */}
-                {(selector.enquiry_segment.toLowerCase() === "company" && selector.customer_type.toLowerCase() === "institution") && (selector.customer_type_category == "B2B" ||
+                {(selector.enquiry_segment.toLowerCase() === "company" && selector.customer_type.toLowerCase() === "institution") || (selector.customer_type_category == "B2B" ||
                   selector.customer_type_category == "B2C") ? (
                   <View>
                     <TextinputComp

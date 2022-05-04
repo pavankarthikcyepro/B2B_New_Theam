@@ -542,12 +542,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         showToast("Please enter proper model other name");
         return;
       }
-      if (selector.r_insurence_company_name.length > 0) {
-        if (!isValidateAlphabetics(selector.r_insurence_company_name)) {
-          showToast("Please fill the insurance company name");
-          return;
-        }
-      }
+      
       if (selector.r_hypothication_checked === true) {
         if (selector.r_hypothication_name.length > 0) {
           if (!isValidateAlphabetics(selector.r_hypothication_name)) {

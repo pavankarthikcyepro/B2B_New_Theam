@@ -1,5 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { SETTINGS, SCHEDULE_FILL, EVENT_MANAGEMENT, CUSTOMER_RELATIONSHIP, DOCUMENT_WALLET, HOME_LINE, BOOKING_TRACKER } from "../assets/svg";
+import {
+  SETTINGS,
+  SCHEDULE_FILL,
+  EVENT_MANAGEMENT,
+  CUSTOMER_RELATIONSHIP,
+  DOCUMENT_WALLET,
+  HOME_LINE,
+  BOOKING_TRACKER,
+  DIGITAL_PAYMENT,
+
+} from "../assets/svg";
 
 const data = [
   {
@@ -19,13 +29,38 @@ const data = [
   },
   {
     title: "Settings",
-    icon: CUSTOMER_RELATIONSHIP,
+    icon: SETTINGS,
     screen: 102,
   },
   {
     title: "Event Management",
     icon: EVENT_MANAGEMENT,
     screen: 103,
+  },
+  {
+    title: "Digital Payment",
+    icon: DIGITAL_PAYMENT,
+    screen: 105,
+  },
+  {
+    title: "Monthly Target Planning",
+    icon: CUSTOMER_RELATIONSHIP,
+    screen: 106,
+  },
+  {
+    title: "Helpdesk",
+    icon: CUSTOMER_RELATIONSHIP,
+    screen: 107,
+  },
+  {
+    title: "Task Management",
+    icon: CUSTOMER_RELATIONSHIP,
+    screen: 108,
+  },
+  {
+    title: "Task Transfer",
+    icon: CUSTOMER_RELATIONSHIP,
+    screen: 109,
   },
 ];
 
