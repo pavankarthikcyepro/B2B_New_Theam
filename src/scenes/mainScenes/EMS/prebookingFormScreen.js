@@ -97,7 +97,7 @@ import {
 import {
   convertDateStringToMillisecondsUsingMoment,
   isValidateAlphabetics,
-  isMobileNumber,
+  isMobileNumber,isValidate,
   emiCalculator,
   GetCarModelList,
   PincodeDetails,
@@ -885,7 +885,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const submitClicked = () => {
     Keyboard.dismiss();
 
-    if (!isValidateAlphabetics(selector.first_name)) {
+    if (!isValidate(selector.first_name)) {
       showToast("please enter alphabetics only in firstname");
       return;
     }

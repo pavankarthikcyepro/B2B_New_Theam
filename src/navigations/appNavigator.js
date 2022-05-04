@@ -1,5 +1,12 @@
-import * as React from "react";
-import { View } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  SafeAreaView,
+  Text,
+  StyleSheet,
+  View,
+  FlatList,
+  TextInput,
+} from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
@@ -39,6 +46,12 @@ import CreateEnquiryScreen from "../scenes/mainScenes/MyTasks/createEnquiryScree
 import FilterScreen from "../scenes/mainScenes/Home/filterScreen";
 import SelectBranchComp from "../scenes/loginScenes/selectBranchComp";
 import TestScreen from "../scenes/mainScenes/Home/testScreen";
+import BookingScreen from "../scenes/mainScenes/EMS/bookingScreen";
+import BookingFormScreen from "../scenes/mainScenes/EMS/bookingFormScreen";
+import ProceedToBookingScreen from "../scenes/mainScenes/MyTasks/proceedToBookingScreen";
+import MonthlyTargetScreen from "../scenes/mainScenes/monthlyTargetScreen";
+import MainParameterScreen from "../scenes/mainScenes/MonthlyTarget/mainParameter";
+import SupportingParameterScreen from "../scenes/mainScenes/MonthlyTarget/supportingParameter";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -52,6 +65,8 @@ const screeOptionStyle = {
   headerTintColor: Colors.WHITE,
   headerBackTitleVisible: false,
 };
+
+
 
 const MenuIcon = ({ navigation }) => {
   return (
@@ -69,22 +84,22 @@ const SearchIcon = () => {
     <IconButton
       icon="magnify"
       color={Colors.WHITE}
-      size={25}
+      size={30}
       onPress={() => console.log("Pressed")}
     />
   );
 };
+
 const RefreshIcon = ({ navigation }) => {
   return (
     <IconButton
       icon="refresh"
       color={Colors.WHITE}
       size={30}
-      onPress={() => console.log('refresh icon pressed')}
+      onPress={() => console.log("refresh icon pressed")}
     />
   );
 };
-
 
 const NotficationIcon = ({ navigation, identifier }) => {
   return (
@@ -99,6 +114,8 @@ const NotficationIcon = ({ navigation, identifier }) => {
   );
 };
 
+ 
+
 export const DrawerStackIdentifiers = {
   home: "HOME_SCREEN",
   upcomingDeliveries: "UPCOMING_DELIVERIES",
@@ -107,6 +124,8 @@ export const DrawerStackIdentifiers = {
   notification: "NOTIFICATION",
   eventManagement: "EVENT_MANAGEMENT",
   preBooking: "PRE_BOOKING",
+  booking:"BOOKING",
+  monthlyTarget:"MONTHLY_TARGET",
 };
 
 export const TabStackIdentifiers = {
@@ -118,7 +137,7 @@ export const TabStackIdentifiers = {
 export const HomeStackIdentifiers = {
   filter: "FILTER",
   select_branch: "SELECT_BRANCH",
-  test: "TEST"
+  test: "TEST",
 };
 
 export const EmsStackIdentifiers = {
@@ -129,12 +148,27 @@ export const EmsStackIdentifiers = {
   paidAccessories: "PAID_ACCESSORIES",
   proceedToPreBooking: "PROCEED_TO_PRE_BOOKING",
   proceedToBooking: "PROCEED_TO_BOOKING",
+  bookingForm: "BOOKING_FORM",
+  
+};
+
+export const TargetSettingStackIdentifiers = {
+  mainParameter: "MAIN_PARAMETER",
+  supportingParameter: "SUPPORTING_PARAMETER",
 };
 
 export const PreBookingStackIdentifiers = {
   preBooking: "PRE_BOOKING",
   preBookingForm: "PRE_BOOKING_FORM",
+  bookingForm: "BOOKING_FORM",
 };
+
+export const BookingStackIdentifiers = {
+  booking: "BOOKING",
+  bookingForm: "BOOKING_FORM",
+};
+
+
 
 export const MyTasksStackIdentifiers = {
   mytasks: "MY_TASKS",
@@ -146,6 +180,9 @@ export const MyTasksStackIdentifiers = {
   proceedToBooking: "PROCEED_TO_BOOKING",
   createEnquiry: "CREATE_ENQUIRY",
 };
+
+
+
 
 const HomeStack = createStackNavigator();
 
@@ -200,9 +237,81 @@ const HomeStackNavigator = ({ navigation }) => {
   );
 };
 
+
+
+
+
 const EmsStack = createStackNavigator();
 
 const EmsStackNavigator = ({ navigation }) => {
+  const [filteredData, setFilteredData] = useState([]);
+  const [masterData, setMasterData] = useState([]);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    // fetchposts();
+    return () => {};
+  }, []);
+
+  const fetchposts = () => {
+    const apiURL =
+      "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/enquiry/lead/id/1-244-2ef77719-768c-4973-8c35-a9a9a76cc23f";
+    fetch(apiURL)
+      .then((response) => response.json())
+      .then((responseJson) => {
+        setFilteredData(responseJson);
+        setMasterData(responseJson);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const searchFilter = (text) => {
+    if (text) {
+      const newData = masterData.filter((item) => {
+        const itemData = item.title
+          ? item.title.toUpperCase()
+          : "".toUpperCase();
+        const textData = text.toUpperCase();
+        return itemData.indexOf(textData) > -1;
+      });
+      setFilteredData(newData);
+      setSearch(text);
+    } else {
+      setFilteredData(masterData);
+      setSearch(text);
+    }
+  };
+
+  const ItemView = ({ item }) => {
+    return (
+      // Flat List Item
+      <Text style={styles.itemStyle} onPress={() => getItem(item)}>
+        {item.id}
+        {"."}
+        {item.title.toUpperCase()}
+      </Text>
+    );
+  };
+
+  const ItemSeparatorView = () => {
+    return (
+      // Flat List Item Separator
+      <View
+        style={{
+          height: 0.5,
+          width: "100%",
+          backgroundColor: "#C8C8C8",
+        }}
+      />
+    );
+  };
+
+  const getItem = (item) => {
+    // Function for click on an item
+    alert("Id : " + item.id + " Title : " + item.title);
+  };
   return (
     <EmsStack.Navigator
       initialRouteName={"EMS"}
@@ -218,6 +327,21 @@ const EmsStackNavigator = ({ navigation }) => {
             return (
               <View style={{ flexDirection: "row" }}>
                 {/* <SearchIcon /> */}
+                <View style={styles.container}>
+                  <TextInput
+                    style={styles.textInputStyle}
+                    value={search}
+                    underlineColorAndroid="transparent"
+                    onChangeText={(text) => searchFilter(text)}
+                    placeholder="Search Here"
+                  />
+                  <FlatList
+                    data={filteredData}
+                    keyExtractor={(item, index) => index.toString()}
+                    ItemSeparatorComponent={ItemSeparatorView}
+                    renderItem={ItemView}
+                  />
+                </View>
                 <RefreshIcon />
                 <NotficationIcon
                   navigation={navigation}
@@ -256,6 +380,12 @@ const EmsStackNavigator = ({ navigation }) => {
         options={{ title: "Pre-Booking Form" }}
       />
       <EmsStack.Screen
+        name={EmsStackIdentifiers.bookingForm}
+        component={BookingFormScreen}
+        initialParams={{ accessoriesList: [] }}
+        options={{ title: "Booking Form" }}
+      />
+      <EmsStack.Screen
         name={EmsStackIdentifiers.paidAccessories}
         component={PaidAccessoriesScreen}
         options={{ title: "Paid Accessories" }}
@@ -264,6 +394,11 @@ const EmsStackNavigator = ({ navigation }) => {
         name={EmsStackIdentifiers.proceedToPreBooking}
         component={ProceedToPreBookingScreen}
         options={{ title: "Proceed To PreBooking" }}
+      />
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.proceedToBooking}
+        component={ProceedToBookingScreen}
+        options={{ title: "Proceed To Booking" }}
       />
     </EmsStack.Navigator>
   );
@@ -325,6 +460,11 @@ const MyTaskStackNavigator = ({ navigation }) => {
         name={MyTasksStackIdentifiers.proceedToPreBooking}
         component={ProceedToPreBookingScreen}
         options={{ title: "Proceed To PreBooking" }}
+      />
+      <MyTaskStack.Screen
+        name={MyTasksStackIdentifiers.proceedToBooking}
+        component={ProceedToBookingScreen}
+        options={{ title: "Proceed To Booking" }}
       />
 
       <MyTaskStack.Screen
@@ -448,6 +588,36 @@ const SettingsStackNavigator = ({ navigation }) => {
   );
 };
 
+const MonthlyTargetStack = createStackNavigator();
+
+const MonthlyTargetStackNavigator = ({ navigation }) => {
+  return (
+    <MonthlyTargetStack.Navigator
+      initialRouteName={"MONTHLY_TARGET"}
+      screenOptions={screeOptionStyle}
+    >
+      <MonthlyTargetStack.Screen
+        name={"MONTHLY_TARGET"}
+        component={MonthlyTargetScreen}
+        options={{
+          title: "Monthly Target",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <MonthlyTargetStack.Screen
+        name={TargetSettingStackIdentifiers.mainParameter}
+        component={MainParameterScreen}
+        options={{ title: "Main Supporting" }}
+      />
+      <MonthlyTargetStack.Screen
+        name={TargetSettingStackIdentifiers.supportingParameter}
+        component={SupportingParameterScreen}
+        options={{ title: "Supporting Parameter" }}
+      />
+    </MonthlyTargetStack.Navigator>
+  );
+};
+
 const EventManagementStack = createStackNavigator();
 
 const EventManagementStackNavigator = ({ navigation }) => {
@@ -484,7 +654,6 @@ const PreBookingStackNavigator = ({ navigation }) => {
           headerLeft: () => <MenuIcon navigation={navigation} />,
         }}
       />
-
       <PreBookingStack.Screen
         name={PreBookingStackIdentifiers.preBookingForm}
         component={PreBookingFormScreen}
@@ -492,9 +661,38 @@ const PreBookingStackNavigator = ({ navigation }) => {
           title: "Pre Booking Form",
         }}
       />
+    
     </PreBookingStack.Navigator>
   );
 };
+
+const BookingStack = createStackNavigator();
+
+const BookingStackNavigator = ({ navigation }) => {
+  return (
+    <BookingStack.Navigator
+      initialRouteName={BookingStackIdentifiers.booking}
+      screenOptions={screeOptionStyle}
+    >
+      <BookingStack.Screen
+        name={BookingStackIdentifiers.booking}
+        component={BookingScreen}
+        options={{
+          title: "Booking",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <BookingStack.Screen
+        name={BookingStackIdentifiers.bookingForm}
+        component={BookingFormScreen}
+        options={{
+          title: " Booking Form",
+        }}
+      />
+    </BookingStack.Navigator>
+  );
+};
+ 
 
 const MainDrawerNavigator = createDrawerNavigator();
 
@@ -524,6 +722,10 @@ const MainStackDrawerNavigator = () => {
         component={SettingsStackNavigator}
       />
       <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.monthlyTarget}
+        component={MonthlyTargetStackNavigator}
+      />
+      <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.eventManagement}
         component={EventManagementStackNavigator}
       />
@@ -535,5 +737,22 @@ const MainStackDrawerNavigator = () => {
     </MainDrawerNavigator.Navigator>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "black",
+  },
+  itemStyle: {
+    padding: 10,
+  },
+  textInputStyle: {
+    height: 40,
+    borderWidth: 1,
+    paddingLeft: 20,
+    margin: 5,
+    borderColor: "#009688",
+    backgroundColor: "#FFFFFF",
+  },
+});
 
 export { MainStackDrawerNavigator };

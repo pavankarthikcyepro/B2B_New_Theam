@@ -24,8 +24,8 @@ const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 4;
 const profileBgWidth = profileWidth + 5;
 
-const receptionMenu = ["Home", "Upcoming Deliveries", "Settings"];
-const teleCollerMenu = ["Home", "Settings"];
+const receptionMenu = ["Home", "Upcoming Deliveries", "Settings","Monthly Target"];
+const teleCollerMenu = ["Home", "Settings", "Monthly Target"];
 
 const SideMenuScreen = ({ navigation }) => {
 
@@ -104,6 +104,9 @@ const SideMenuScreen = ({ navigation }) => {
         break;
       case 104:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.preBooking);
+        break;
+      case 105:
+        navigation.navigate(AppNavigator.DrawerStackIdentifiers.monthlyTarget);
         break;
     }
   };

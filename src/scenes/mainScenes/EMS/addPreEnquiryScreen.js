@@ -52,7 +52,7 @@ import {
   showToastSucess,
 } from "../../../utils/toast";
 import URL from "../../../networking/endpoints";
-import { isValidateAlphabetics, PincodeDetails } from "../../../utils/helperFunctions";
+import { isValidateAlphabetics,isValidate, PincodeDetails } from "../../../utils/helperFunctions";
 import moment from "moment";
 
 const screenWidth = Dimensions.get("window").width;
@@ -400,7 +400,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       enquirySegmentName !== "commercial" &&
       enquirySegmentName !== "company"
     ) {
-      if (!isValidateAlphabetics(selector.firstName)) {
+      if (!isValidate(selector.firstName)) {
         // showToast("please enter alphabetics only in firstname ");
         setFirstNameErrorHandler({
           showError: true,

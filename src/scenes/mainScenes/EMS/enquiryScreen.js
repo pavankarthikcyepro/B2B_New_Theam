@@ -230,6 +230,7 @@ const EnquiryScreen = ({ navigation }) => {
 
               return (
                 <>
+                  
                   <PreEnquiryItem
                     bgColor={color}
                     name={item.firstName + " " + item.lastName}
@@ -238,9 +239,14 @@ const EnquiryScreen = ({ navigation }) => {
                     date={item.createdDate}
                     modelName={item.model}
                     createdBy={item.createdBy}
-                    onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.detailsOverview, { universalId: item.universalId })}
+                    onPress={() =>
+                      navigation.navigate(
+                        AppNavigator.EmsStackIdentifiers.detailsOverview,
+                        { universalId: item.universalId }
+                      )
+                    }
                     onCallPress={() => callNumber(item.phone)}
-                  />
+                  /> 
                   <View style={GlobalStyle.underline}></View>
                 </>
               );

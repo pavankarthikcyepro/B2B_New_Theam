@@ -27,6 +27,11 @@ const data = [
     icon: EVENT_MANAGEMENT,
     screen: 103,
   },
+    {
+    title: "Monthly Target",
+    icon: EVENT_MANAGEMENT,
+    screen: 105,
+  },
 ];
 
 // {

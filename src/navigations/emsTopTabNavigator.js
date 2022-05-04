@@ -3,13 +3,16 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import PreEnquiryScreen from "../scenes/mainScenes/EMS/preEnquiryScreen";
 import EnquiryScreen from "../scenes/mainScenes/EMS/enquiryScreen";
 import PreBookingScreen from "../scenes/mainScenes/EMS/prebookingScreen";
+import BookingScreen from "../scenes/mainScenes/EMS/bookingScreen";
+
 import { Colors } from "../styles";
 import * as AsyncStore from "../asyncStore";
 
 const EmsTopTabNavigatorIdentifiers = {
   preEnquiry: "PRE_ENQUIRY",
   enquiry: "ENQUIRY",
-  preBooking: "PRE_BOOKING"
+  preBooking: "PRE_BOOKING",
+  booking: "BOOKING"
 };
 
 const EMSTopTab = createMaterialTopTabNavigator();
@@ -63,6 +66,11 @@ const EMSTopTabNavigatorTwo = () => {
         name={EmsTopTabNavigatorIdentifiers.preBooking}
         component={PreBookingScreen}
         options={{ title: "Pre-Booking" }}
+      />
+      <EMSTopTab.Screen
+        name={EmsTopTabNavigatorIdentifiers.booking}
+        component={BookingScreen}
+        options={{ title: "Booking" }}
       />
     </EMSTopTab.Navigator>
   );
