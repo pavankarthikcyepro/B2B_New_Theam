@@ -18,6 +18,9 @@ import { IconButton } from 'react-native-paper';
 import { ProgressBar } from 'react-native-paper';
 import moment from 'moment';
 
+import * as AsyncStore from '../../../../asyncStore';
+import { ScrollView } from "react-native-gesture-handler";
+
 // const paramtersTitlesData = ["Parameter", "E", "TD", "HV", "VC", "B", "Ex", "R", "F", "I", "Ex-W", "Acc.", "Ev"]
 const paramtersTitlesData = ["Parameter", "Target", "Achivement", "Achivement %", "ShortFall", "ShortFall %"]
 const chartTitles = ["Target", "Achivement", "ShortFall"];
@@ -408,6 +411,8 @@ const TargetScreen = ({ route, navigation }) => {
     const [visitData, setVisitData] = useState(null);
     const [TDData, setTDData] = useState(null);
     const [dateDiff, setDateDiff] = useState(null);
+    const [isTeamPresent, setIsTeamPresent] = useState(false);
+    const [isTeam, setIsTeam] = useState(false);
 
     useEffect(() => {
 
@@ -424,6 +429,7 @@ const TargetScreen = ({ route, navigation }) => {
             tempBooking = selector.target_parameters_data.filter((item) => {
                 return item.paramName.toLowerCase() === 'booking'
             })
+            // console.log("%%%TEMP BOOK", tempBooking);
             if (tempBooking.length > 0) {
                 setBookingData(tempBooking[0])
             }
@@ -465,125 +471,277 @@ const TargetScreen = ({ route, navigation }) => {
 
     }, [selector.target_parameters_data])
 
+    useEffect(async () => {
+        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            if (selector.login_employee_details?.roles.length > 0) {
+                let rolesArr = [];
+                rolesArr = selector.login_employee_details?.roles.filter((item) => {
+                    return item === "Admin Prod" || item === "App Admin"
+                })
+                if (rolesArr.length > 0) {
+                    console.log("%%%%% TEAM:", rolesArr);
+                    setIsTeamPresent(true)
+                }
+            }
+        }
+
+    }, [selector.login_employee_details])
+
+    useEffect(() => {
+        setIsTeam(selector.isTeam)
+    }, [selector.isTeam])
+
     return (
         <View style={styles.container}>
-            <View style={{ flexDirection: 'row' }}>
-                <View style={{ width: '65%', justifyContent: 'center', height: 30 }}>
-                    {/* <Text>Enq</Text> */}
-                </View>
-                <View style={{ width: '35%', flexDirection: 'row', }}>
-                    <Text>Balance</Text>
-                    <View style={{ marginRight: 10 }}></View>
-                    <Text>AR/Day</Text>
-                </View>
-            </View>
-            {
-                selector.target_parameters_data.map((item, index) => {
-                    return (
-                        <View style={{ flexDirection: 'row', marginLeft: 8 }}>
-                            <View style={{ width: '10%', justifyContent: 'center', marginTop: 5 }}>
-                                <Text>{item.paramShortName}</Text>
+            {isTeam &&
+                <>
+                    <View style={{ flexDirection: 'row' }}>
+                        <View style={{ width: '65%', justifyContent: 'center', height: 30 }}>
+                        </View>
+                        <View style={{ width: '35%', flexDirection: 'row', }}>
+                            <Text>Balance</Text>
+                            <View style={{ marginRight: 10 }}></View>
+                            <Text>AR/Day</Text>
+                        </View>
+                    </View>
+                    {
+                        selector.target_parameters_data.map((item, index) => {
+                            return (
+                                <View style={{ flexDirection: 'row', marginLeft: 8 }}>
+                                    <View style={{ width: '10%', justifyContent: 'center', marginTop: 5 }}>
+                                        <Text>{item.paramShortName}</Text>
+                                    </View>
+                                    <View style={{ width: '40%', marginTop: 10, position: 'relative' }}>
+                                        <ProgressBar progress={item.achivementPerc.includes('%') ? parseInt(item.achivementPerc.substring(0, item.achivementPerc.indexOf('%'))) === 0 ? 0 : (parseInt(item.achivementPerc.substring(0, item.achivementPerc.indexOf('%'))) / 100) : (parseFloat(item.achivementPerc) / 100)} color={color[index % color.length]} style={{ height: 20, borderRadius: 3, backgroundColor: '#eeeeee', }} />
+                                        <View style={{ position: 'absolute', top: 1, left: 2 }}>
+                                            <Text style={{ color: Colors.WHITE }}>{item.achievment}</Text>
+                                        </View>
+                                        <View style={{ position: 'absolute', top: 1, right: 3 }}>
+                                            <Text>{item.target}</Text>
+                                        </View>
+                                    </View>
+                                    <View style={{ width: '10%', justifyContent: 'center', flexDirection: 'row', height: 25, marginTop: 8, alignItems: 'center', marginLeft: 8 }}>
+                                        <IconButton
+                                            icon={parseInt(item.achivementPerc.substring(0, item.achivementPerc.indexOf('%'))) > 40 ? "menu-up" : "menu-down"}
+                                            color={parseInt(item.achivementPerc.substring(0, item.achivementPerc.indexOf('%'))) > 40 ? Colors.DARK_GREEN : Colors.RED}
+                                            // icon={"menu-up"}
+                                            // color={Colors.DARK_GREEN}
+                                            size={30}
+                                        />
+                                        <View style={{ justifyContent: 'center', flexDirection: 'row', height: 25, marginTop: 0, alignItems: 'center', marginLeft: -20 }}>
+                                            <Text>{item.achivementPerc}</Text>
+                                        </View>
+                                    </View>
+                                    <View style={{ width: '25%', justifyContent: 'center', flexDirection: 'row', height: 25, alignItems: 'center', marginTop: 8, marginLeft: 20 }}>
+                                        <View style={{ width: 30, height: 25, borderColor: color[index % color.length], borderWidth: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                            <Text>{item.shortfall}</Text>
+                                        </View>
+                                        <View style={{ width: 35, height: 25, borderColor: color[index % color.length], borderWidth: 1, justifyContent: 'center', alignItems: 'center', marginLeft: 20 }}>
+                                            <Text>{dateDiff > 0 || parseInt(item.shortfall) > 0 ? (parseInt(item.shortfall) / dateDiff).toFixed(2) : 0}</Text>
+                                        </View>
+                                    </View>
+                                </View>
+                            )
+                        })
+                    }
+                    <View style={{ width: '100%', flexDirection: 'row', marginTop: 10 }}>
+                        <View style={{ width: '49%', }}>
+                            <View style={styles.statWrap}>
+                                <Text style={{ marginRight: 5, fontSize: 10, fontWeight: "600" }}>Enquiry to Booking (%)</Text>
+                                {bookingData !== null && enqData !== null &&
+                                    <Text style={{ color: (Math.floor(parseInt(bookingData?.achievment) / parseInt(enqData?.achievment) * 100)) > 40 ? '#14ce40' : '#ff0000', fontSize: 12, }}>{(parseInt(bookingData?.achievment) === 0 || parseInt(enqData?.achievment) === 0) ? 0 : (Math.floor(parseInt(bookingData?.achievment) / parseInt(enqData?.achievment) * 100))}%</Text>
+                                }
                             </View>
-                            <View style={{ width: '40%', marginTop: 10, position: 'relative' }}>
-                                <ProgressBar progress={item.achivementPerc.includes('%') ? parseInt(item.achivementPerc.substring(0, item.achivementPerc.indexOf('%'))) === 0 ? 0 : (parseInt(item.achivementPerc.substring(0, item.achivementPerc.indexOf('%'))) / 100) : (parseFloat(item.achivementPerc) / 100)} color={color[index % color.length]} style={{ height: 20, borderRadius: 3, backgroundColor: '#eeeeee', }} />
-                                <View style={{ position: 'absolute', top: 1, left: 2 }}>
-                                    <Text style={{ color: Colors.WHITE }}>{item.achievment}</Text>
-                                </View>
-                                <View style={{ position: 'absolute', top: 1, right: 3 }}>
-                                    <Text>{item.target}</Text>
-                                </View>
+
+                            <View style={styles.statWrap}>
+                                <Text style={{ marginRight: 5, fontSize: 10, fontWeight: "600" }}>Enquiry to Retail (%)</Text>
+                                {retailData !== null && enqData !== null &&
+                                    <Text style={{ color: (Math.floor(parseInt(retailData?.achievment) / parseInt(enqData?.achievment) * 100)) > 40 ? '#14ce40' : '#ff0000', fontSize: 12, }}>{(parseInt(retailData?.achievment) === 0 || parseInt(enqData?.achievment) === 0) ? 0 : (Math.floor(parseInt(retailData?.achievment) / parseInt(enqData?.achievment) * 100))}%</Text>
+                                }
                             </View>
-                            <View style={{ width: '10%', justifyContent: 'center', flexDirection: 'row', height: 25, marginTop: 8, alignItems: 'center', marginLeft: 8 }}>
-                                <IconButton
-                                    icon={parseInt(item.achivementPerc.substring(0, item.achivementPerc.indexOf('%'))) > 40 ? "menu-up" : "menu-down"}
-                                    color={parseInt(item.achivementPerc.substring(0, item.achivementPerc.indexOf('%'))) > 40 ? Colors.DARK_GREEN : Colors.RED}
-                                    // icon={"menu-up"}
-                                    // color={Colors.DARK_GREEN}
-                                    size={30}
-                                />
-                                <View style={{ justifyContent: 'center', flexDirection: 'row', height: 25, marginTop: 0, alignItems: 'center', marginLeft: -20 }}>
-                                    <Text>{item.achivementPerc}</Text>
-                                </View>
+
+                            <View style={styles.statWrap}>
+                                <Text style={{ marginRight: 5, fontSize: 10, fontWeight: "600" }}>Enquiry to Test drive (%)</Text>
+                                {TDData !== null && enqData !== null &&
+                                    <Text style={{ color: (Math.floor(parseInt(TDData?.achievment) / parseInt(enqData?.achievment) * 100)) > 40 ? '#14ce40' : '#ff0000', fontSize: 12, }}>{(parseInt(TDData?.achievment) === 0 || parseInt(enqData?.achievment) === 0) ? 0 : (Math.floor(parseInt(TDData?.achievment) / parseInt(enqData?.achievment) * 100))}%</Text>
+                                }
                             </View>
-                            <View style={{ width: '25%', justifyContent: 'center', flexDirection: 'row', height: 25, alignItems: 'center', marginTop: 8, marginLeft: 20 }}>
-                                <View style={{ width: 30, height: 25, borderColor: color[index % color.length], borderWidth: 1, justifyContent: 'center', alignItems: 'center' }}>
-                                    <Text>{item.shortfall}</Text>
+                        </View>
+
+                        <View style={{ width: '1%', borderRightColor: Colors.GRAY, height: 60, borderRightWidth: 1 }}></View>
+
+                        <View style={{ width: '49%', }}>
+                            <View style={styles.statWrap}>
+                                <Text style={{ marginRight: 5, fontSize: 10, fontWeight: "600" }}>Booking to Retail (%)</Text>
+                                {bookingData !== null && retailData !== null &&
+                                    <Text style={{ color: (Math.floor(parseInt(retailData?.achievment) / parseInt(bookingData?.achievment) * 100)) > 40 ? '#14ce40' : '#ff0000', fontSize: 12, }}>{(parseInt(bookingData?.achievment) === 0 || parseInt(retailData?.achievment) === 0) ? 0 : (Math.floor(parseInt(retailData?.achievment) / parseInt(bookingData?.achievment) * 100))}%</Text>
+                                }
+                            </View>
+
+                            <View style={styles.statWrap}>
+                                <Text style={{ marginRight: 5, fontSize: 10, fontWeight: "600" }}>Booking to Visit (%)</Text>
+                                {bookingData !== null && visitData !== null &&
+                                    <Text style={{ color: (Math.floor(parseInt(visitData?.achievment) / parseInt(bookingData?.achievment) * 100)) > 40 ? '#14ce40' : '#ff0000', fontSize: 12, }}>{(parseInt(bookingData?.achievment) === 0 || parseInt(visitData?.achievment) === 0) ? 0 : (Math.floor(parseInt(visitData?.achievment) / parseInt(bookingData?.achievment) * 100))}%</Text>
+                                }
+                            </View>
+                        </View>
+                    </View>
+                </>
+            }
+
+            {!isTeam &&
+                <View>
+                    <View style={{ flexDirection: 'row', marginLeft: 8 }}>
+                        <View style={{ width: '10%', justifyContent: 'center', marginTop: 5, }}>
+
+                        </View>
+                        <View style={{ width: '2%', borderRightWidth: 2, borderRightColor: '#d1d1d1', height: 53 }}>
+
+                        </View>
+                        <View style={{ width: '40%', justifyContent: 'center', marginTop: 5, alignItems: 'center', }}>
+                            <Text style={{ fontSize: 14, color: '#0600FF', fontWeight: '600' }}>Team Total</Text>
+                            <View style={{ flexDirection: 'row', marginTop: 10 }}>
+                                <View style={{ width: '30%', justifyContent: 'center', alignItems: 'center' }}>
+                                    <Text>Ach</Text>
                                 </View>
-                                <View style={{ width: 35, height: 25, borderColor: color[index % color.length], borderWidth: 1, justifyContent: 'center', alignItems: 'center', marginLeft: 20 }}>
-                                    <Text>{dateDiff > 0 || parseInt(item.shortfall) > 0 ? (parseInt(item.shortfall) / dateDiff).toFixed(2) : 0}</Text>
+                                <View style={{ width: '30%', justifyContent: 'center', alignItems: 'center' }}>
+                                    <Text>Baln</Text>
+                                </View>
+                                <View style={{ width: '30%', justifyContent: 'center', alignItems: 'center' }}>
+                                    <Text>A/D</Text>
                                 </View>
                             </View>
                         </View>
-                    )
-                })
+                        <View style={{ width: '2%', borderRightWidth: 2, borderRightColor: '#d1d1d1', height: 53 }}>
+
+                        </View>
+                        {/* <View style={{ width: '40%', justifyContent: 'center', marginTop: 5, flexDirection: 'column', alignItems: 'center' }}>
+                            <View style={{ flexDirection: 'row' }}>
+                                <View style={{ width: 30, height: 30, borderRadius: 50, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FF8600' }}>
+                                    <Text style={{ color: '#fff' }}>G</Text>
+                                </View>
+                                <View style={{ height: 30, justifyContent: 'center', alignItems: 'center', marginLeft: 10 }}>
+                                    <Text style={{ fontSize: 14, color: '#FF8600', fontWeight: '600' }}>Ganesh</Text>
+                                </View>
+                            </View>
+                            <View style={{ flexDirection: 'row' }}>
+                                <View style={{ width: '30%', justifyContent: 'center', alignItems: 'center' }}>
+                                    <Text>Ach</Text>
+                                </View>
+                                <View style={{ width: '30%', justifyContent: 'center', alignItems: 'center' }}>
+                                    <Text>Baln</Text>
+                                </View>
+                                <View style={{ width: '30%', justifyContent: 'center', alignItems: 'center' }}>
+                                    <Text>A/D</Text>
+                                </View>
+                            </View>
+
+                        
+                        </View> */}
+                    </View>
+                    {selector.all_target_parameters_data.length > 0 &&
+                        <View style={{ flexDirection: 'row', marginLeft: 8 }}>
+                            <View style={{ width: '10%', marginTop: 5, }}>
+                                {
+                                    selector.all_target_parameters_data.map((item, index) => {
+                                        return (
+                                            <View style={{ marginBottom: 10 }}>
+                                                <Text style={{ color: color[index % color.length], fontSize: 14, fontWeight: '600' }}>{item.paramShortName}</Text>
+                                            </View>
+                                        )
+                                    })
+                                }
+
+                                {/* <View style={{ marginBottom: 5 }}>
+                                <Text>Eng</Text>
+                            </View>
+                            <View>
+                                <Text>TD</Text>
+                            </View> */}
+                            </View>
+                            <View style={{ width: '2%', borderRightWidth: 2, borderRightColor: '#d1d1d1', minHeight: 300 }}></View>
+
+                            <View style={{ width: '40%', marginTop: 5, }}>
+                                {
+                                    selector.all_target_parameters_data.map((item, index) => {
+                                        return (
+                                            <View style={{ flexDirection: 'row', marginLeft: 5, marginBottom: 10 }}>
+                                                <View style={{ width: '33%', justifyContent: 'center', alignItems: 'center' }}>
+                                                    <Text style={{ fontSize: 14, fontWeight: '600' }}>{item.achievment}/{item.target}</Text>
+                                                </View>
+                                                <View style={{ width: '33%', justifyContent: 'center', alignItems: 'center' }}>
+                                                    <Text style={{ fontSize: 14, fontWeight: '600' }}>{item.shortfall}</Text>
+                                                </View>
+                                                <View style={{ width: '33%', justifyContent: 'center', alignItems: 'center' }}>
+                                                    <Text style={{ fontSize: 14, fontWeight: '600' }}>{dateDiff > 0 || parseInt(item.shortfall) > 0 ? (parseInt(item.shortfall) / dateDiff).toFixed(2) : 0}</Text>
+                                                </View>
+                                            </View>
+                                        )
+                                    })
+                                }
+                            </View>
+
+                            <View style={{ width: '2%', borderRightWidth: 2, borderRightColor: '#d1d1d1', minHeight: 300 }}></View>
+                            <ScrollView style={{ width: '40%', marginTop: 5, marginTop: -50 }} contentContainerStyle={{ alignItems: 'center', }}>
+                                {
+                                    selector.all_emp_parameters_data.map((item, index) => {
+                                        return (
+                                            <>
+                                                <View style={{ flexDirection: 'row' }}>
+                                                    <View style={{ width: 30, height: 30, borderRadius: 50, justifyContent: 'center', alignItems: 'center', backgroundColor: color[index % color.length] }}>
+                                                        <Text style={{ color: '#fff' }}>G</Text>
+                                                    </View>
+                                                    <View style={{ height: 30, justifyContent: 'center', alignItems: 'center', marginLeft: 10 }}>
+                                                        <Text style={{ fontSize: 14, color: color[index % color.length], fontWeight: '600' }}>{item.empName}</Text>
+                                                    </View>
+                                                </View>
+                                                <View style={{ flexDirection: 'row', marginBottom: 10 }}>
+                                                    <View style={{ width: '30%', justifyContent: 'center', alignItems: 'center' }}>
+                                                        <Text>Ach</Text>
+                                                    </View>
+                                                    <View style={{ width: '30%', justifyContent: 'center', alignItems: 'center' }}>
+                                                        <Text>Baln</Text>
+                                                    </View>
+                                                    <View style={{ width: '30%', justifyContent: 'center', alignItems: 'center' }}>
+                                                        <Text>A/D</Text>
+                                                    </View>
+                                                </View>
+                                                {
+                                                    item.targetAchievements.map((innerItem, innerIndex) => {
+                                                        return (
+                                                            <>
+                                                                <View style={{ flexDirection: 'row', marginLeft: 5, marginBottom: 10 }}>
+                                                                    <View style={{ width: '33%', justifyContent: 'center', alignItems: 'center' }}>
+                                                                        <Text style={{ fontSize: 14, fontWeight: '600' }}>{innerItem.achievment}/{innerItem.target}</Text>
+                                                                    </View>
+                                                                    <View style={{ width: '33%', justifyContent: 'center', alignItems: 'center' }}>
+                                                                        <Text style={{ fontSize: 14, fontWeight: '600' }}>{innerItem.shortfall}</Text>
+                                                                    </View>
+                                                                    <View style={{ width: '33%', justifyContent: 'center', alignItems: 'center' }}>
+                                                                        <Text style={{ fontSize: 14, fontWeight: '600' }}>{dateDiff > 0 || parseInt(innerItem.shortfall) > 0 ? (parseInt(innerItem.shortfall) / dateDiff).toFixed(2) : 0}</Text>
+                                                                    </View>
+                                                                </View>
+                                                                {
+
+                                                                }
+                                                            </>
+
+                                                        )
+                                                    })
+                                                }
+                                            </>
+
+                                        )
+                                    })
+                                }
+                            </ScrollView>
+
+                        </View>
+                    }
+                </View>
             }
-            <View style={{width: '100%', flexDirection: 'row', marginTop: 10}}>
-                <View style={{ width: '49%', }}>
-                    <View style={styles.statWrap}>
-                        <Text style={{ marginRight: 5, fontSize: 10, fontWeight: "600" }}>Enquiry to Booking (%)</Text>
-                        {/* <IconButton
-                            icon={"menu-up"}
-                            color={'#14ce40'}
-                            size={30}
-                        /> */}
-                        {bookingData !== null && enqData !== null && 
-                            <Text style={{ color: (Math.floor(parseInt(bookingData?.achievment) / parseInt(enqData?.achievment) * 100)) > 40 ? '#14ce40' : '#ff0000', fontSize: 12, }}>{(parseInt(bookingData?.achievment) === 0 || parseInt(enqData?.achievment) === 0) ? 0 : (Math.floor(parseInt(bookingData?.achievment) / parseInt(enqData?.achievment) * 100))}%</Text>
-                        }
-                    </View>
-
-                    <View style={styles.statWrap}>
-                        <Text style={{ marginRight: 5, fontSize: 10, fontWeight: "600" }}>Enquiry to Retail (%)</Text>
-                        {/* <IconButton
-                            icon={"menu-up"}
-                            color={'#14ce40'}
-                            size={30}
-                        /> */}
-                        {retailData !== null && enqData !== null &&
-                            <Text style={{ color: (Math.floor(parseInt(bookingData?.achievment) / parseInt(enqData?.achievment) * 100)) > 40 ? '#14ce40' : '#ff0000', fontSize: 12, }}>{(parseInt(retailData?.achievment) === 0 || parseInt(enqData?.achievment) === 0) ? 0 : (Math.floor(parseInt(retailData?.achievment) / parseInt(enqData?.achievment) * 100))}%</Text>
-                        }
-                    </View>
-
-                    <View style={styles.statWrap}>
-                        <Text style={{ marginRight: 5, fontSize: 10, fontWeight: "600" }}>Enquiry to Test drive (%)</Text>
-                        {/* <IconButton
-                            icon={"menu-up"}
-                            color={'#14ce40'}
-                            size={30}
-                        /> */}
-                        {TDData !== null && enqData !== null &&
-                            <Text style={{ color: (Math.floor(parseInt(bookingData?.achievment) / parseInt(enqData?.achievment) * 100)) > 40 ? '#14ce40' : '#ff0000', fontSize: 12, }}>{(parseInt(TDData?.achievment) === 0 || parseInt(enqData?.achievment) === 0) ? 0 : (Math.floor(parseInt(TDData?.achievment) / parseInt(enqData?.achievment) * 100))}%</Text>
-                        }
-                    </View>
-                </View>
-
-                <View style={{ width: '1%', borderRightColor: Colors.GRAY, height: 60, borderRightWidth: 1 }}></View>
-
-                <View style={{ width: '49%', }}>
-                    <View style={styles.statWrap}>
-                        <Text style={{ marginRight: 5, fontSize: 10, fontWeight: "600" }}>Booking to Retail (%)</Text>
-                        {/* <IconButton
-                            icon={"menu-up"}
-                            color={'#14ce40'}
-                            size={30}
-                        /> */}
-                        {bookingData !== null && retailData !== null &&
-                            <Text style={{ color: (Math.floor(parseInt(bookingData?.achievment) / parseInt(enqData?.achievment) * 100)) > 40 ? '#14ce40' : '#ff0000', fontSize: 12, }}>{(parseInt(bookingData?.achievment) === 0 || parseInt(retailData?.achievment) === 0) ? 0 : (Math.floor(parseInt(retailData?.achievment) / parseInt(bookingData?.achievment) * 100))}%</Text>
-                        }
-                    </View>
-
-                    <View style={styles.statWrap}>
-                        <Text style={{ marginRight: 5, fontSize: 10, fontWeight: "600" }}>Booking to Visit (%)</Text>
-                        {/* <IconButton
-                            icon={"menu-up"}
-                            color={'#14ce40'}
-                            size={30}
-                        /> */}
-                        {bookingData !== null && visitData !== null &&
-                            <Text style={{ color: (Math.floor(parseInt(bookingData?.achievment) / parseInt(enqData?.achievment) * 100)) > 40 ? '#14ce40' : '#ff0000', fontSize: 12, }}>{(parseInt(bookingData?.achievment) === 0 || parseInt(visitData?.achievment) === 0) ? 0 : (Math.floor(parseInt(visitData?.achievment) / parseInt(bookingData?.achievment) * 100))}%</Text>
-                        }
-                    </View>
-                </View>
-            </View>
 
             <TouchableOpacity style={{ flexDirection: 'row', marginLeft: 10, alignItems: 'center', marginTop: 0, marginRight: 10, justifyContent: 'flex-end', marginBottom: 10 }}>
                 <Text style={{ fontSize: 10, fontWeight: "600", color: '#ff0000' }}>View all</Text>
@@ -593,7 +751,7 @@ const TargetScreen = ({ route, navigation }) => {
                     source={PATH1705}
                 // style={{ tintColor: Colors.DARK_GRAY }}
                 />
-            </TouchableOpacity> 
+            </TouchableOpacity>
         </View>
     )
 }
@@ -756,7 +914,7 @@ const SupportingScreen = () => {
     )
 }
 
-export  {SupportingScreen};
+export { SupportingScreen };
 
 const styles = StyleSheet.create({
     container: {

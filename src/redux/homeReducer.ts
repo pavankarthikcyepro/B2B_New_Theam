@@ -56,6 +56,8 @@ export const getOrganaizationHirarchyList = createAsyncThunk("HOME/getOrganaizat
 
     const response = await client.get(URL.ORG_HIRARCHY(payload.orgId, payload.branchId))
     const json = await response.json()
+    // console.log("$$$$ DATA $$$$$:", JSON.stringify(json));
+    
     if (!response.ok) {
         return rejectWithValue(json);
     }
@@ -133,11 +135,37 @@ export const getLostDropChartData = createAsyncThunk("HOME/getLostDropChartData"
 })
 
 export const getTargetParametersData = createAsyncThunk("HOME/getTargetParametersData", async (payload: any, { rejectWithValue }) => {
-    console.log("PAYLOAD:", payload);
+    // console.log("PAYLOAD:", payload);
     
     const response = await client.post(URL.GET_TARGET_PARAMS(), payload)
     const json = await response.json()
-    console.log("&&&&&& DATA:", JSON.stringify(json));
+    // console.log("&&&&&& DATA:", JSON.stringify(json));
+
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const getTargetParametersAllData = createAsyncThunk("HOME/getTargetParametersAllData", async (payload: any, { rejectWithValue }) => {
+    // console.log("PAYLOAD:", payload);
+
+    const response = await client.post(URL.GET_TARGET_PARAMS_ALL(), payload)
+    const json = await response.json()
+    console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
+
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const getTargetParametersEmpData = createAsyncThunk("HOME/getTargetParametersEmpData", async (payload: any, { rejectWithValue }) => {
+    // console.log("PAYLOAD:", payload);
+
+    const response = await client.post(URL.GET_TARGET_PARAMS_EMP(), payload)
+    const json = await response.json()
+    // console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
 
     if (!response.ok) {
         return rejectWithValue(json);
@@ -201,6 +229,12 @@ export const getSalesComparisonData = createAsyncThunk("HOME/getSalesComparisonD
     return json;
 })
 
+export const updateIsTeam = createAsyncThunk("HOME/updateIsTeam", async (payload: any) => {
+    console.log("PPP", payload);
+    
+    return payload;
+})
+
 const AVAILABLE_SCREENS = [
     {
         "menuId": 81,
@@ -233,13 +267,16 @@ export const homeSlice = createSlice({
         lost_drop_chart_data: {},
         employees_drop_down_data: {},
         target_parameters_data: [],
+        all_target_parameters_data: [],
+        all_emp_parameters_data: [],
         org_is_loading: false,
         emp_is_loading: false,
         sales_data: {},
         sales_comparison_data: [],
         branchesList: [],
         allGroupDealerData: [],
-        allDealerData: []
+        allDealerData: [],
+        isTeam: false
     },
     reducers: {
         dateSelected: (state, action) => {
@@ -256,7 +293,7 @@ export const homeSlice = createSlice({
                 state.branchesList = [];
             })
             .addCase(getMenuList.fulfilled, (state, action) => {
-                //console.log('menu_list: ', action.payload);
+                // console.log('menu_list: ', JSON.stringify(action.payload));
                 const dmsEntityObj = action.payload.dmsEntity;
                 const menuList = dmsEntityObj.menuList;
 
@@ -281,6 +318,11 @@ export const homeSlice = createSlice({
             })
             .addCase(getMenuList.rejected, (state, action) => {
                 state.branchesList = [];
+            })
+            .addCase(updateIsTeam.fulfilled, (state, action) => {
+                console.log("TEAM: ", action.payload);
+                
+                state.isTeam = action.payload;
             })
             .addCase(getCustomerTypeList.fulfilled, (state, action) => {
                 //console.log('customer_type_list: ', action.payload);
@@ -401,6 +443,24 @@ export const homeSlice = createSlice({
             })
             .addCase(getTargetParametersData.rejected, (state, action) => {
                 state.target_parameters_data = [];
+            })
+            .addCase(getTargetParametersAllData.pending, (state, action) => {
+                state.all_target_parameters_data = [];
+                state.all_emp_parameters_data = [];
+            })
+            .addCase(getTargetParametersAllData.fulfilled, (state, action) => {
+                if (action.payload) {
+                    console.log("^%$%&*^&*^&*&*& SET %&&&*%^$%&*&^%");
+                    
+                    state.all_target_parameters_data = [];
+                    state.all_emp_parameters_data = [];
+                    state.all_target_parameters_data = action.payload.overallTargetAchivements;
+                    state.all_emp_parameters_data = action.payload.employeeTargetAchievements;
+                }
+            })
+            .addCase(getTargetParametersAllData.rejected, (state, action) => {
+                state.all_target_parameters_data = [];
+                state.all_emp_parameters_data = [];
             })
             .addCase(getGroupDealerRanking.pending, (state, action) => {
                 state.allGroupDealerData = [];

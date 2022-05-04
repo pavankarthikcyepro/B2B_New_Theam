@@ -103,6 +103,7 @@ const LoginScreen = ({ navigation }) => {
   useEffect(() => {
 
     if (selector.status == "sucess") {
+      console.log("$$$$$$$$ USER DATA:", JSON.stringify(selector.userData));
       //signIn(selector.authToken);
       AsyncStore.storeData(AsyncStore.Keys.USER_NAME, selector.userData.userName);
       AsyncStore.storeData(AsyncStore.Keys.ORG_ID, selector.userData.orgId);

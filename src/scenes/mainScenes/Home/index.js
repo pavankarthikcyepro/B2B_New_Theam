@@ -20,10 +20,13 @@ import {
     getTaskTableList,
     getLostDropChartData,
     getTargetParametersData,
+    getTargetParametersAllData,
+    getTargetParametersEmpData,
     getSalesData,
     getSalesComparisonData,
     getDealerRanking,
-    getGroupDealerRanking
+    getGroupDealerRanking,
+    updateIsTeam
 } from '../../../redux/homeReducer';
 import { DateRangeComp, DatePickerComponent, SortAndFilterComp } from '../../../components';
 import { DateModalComp } from "../../../components/dateModalComp";
@@ -77,6 +80,8 @@ const HomeScreen = ({ route, navigation }) => {
     const [dealerCount, setDealerCount] = useState(null);
     const [groupDealerRank, setGroupDealerRank] = useState(null);
     const [groupDealerCount, setGroupDealerCount] = useState(null);
+    const [isTeamPresent, setIsTeamPresent] = useState(false);
+    const [isTeam, setIsTeam] = useState(false);
 
     useLayoutEffect(() => {
 
@@ -135,6 +140,42 @@ const HomeScreen = ({ route, navigation }) => {
     }, [selector.allDealerData])
 
     useEffect(async () => {
+        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            // const dateFormat = "YYYY-MM-DD";
+            // const currentDate = moment().format(dateFormat)
+            // const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+            // const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+            // const payload = {
+            //     "endDate": monthLastDate,
+            //     "loggedInEmpId": jsonObj.empId,
+            //     "startDate": monthFirstDate,
+            //     "levelSelected": null,
+            //     "pageNo": 0,
+            //     "size": 5
+            // }
+            // console.log("jsonObj: ", jsonObj);
+            // if (selector.login_employee_details?.roles.length > 0) {
+            //     let rolesArr = [];
+            //     rolesArr = selector.login_employee_details?.roles.filter((item) => {
+            //         return item === "Admin Prod" || item === "App Admin"
+            //     })
+            //     if (rolesArr.length > 0) {
+            //         console.log("%%%%% TEAM:", rolesArr);
+            //         setIsTeamPresent(true)
+            //         // Promise.all([
+            //         //     dispatch(getTargetParametersAllData(payload))
+            //         // ]).then(() => {
+            //         //     console.log('I did everything!');
+            //         // });
+            //     }
+            // }
+        }
+
+    }, [selector.login_employee_details])
+
+    useEffect(async () => {
         // if (selector.groupDealerRank > 0) {
         //     console.log("DDDDDDD", selector.groupDealerRank);
         //     setGroupDealerRank(selector.groupDealerRank)
@@ -147,7 +188,7 @@ const HomeScreen = ({ route, navigation }) => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
-            if (selector.allGroupDealerData.length > 0){
+            if (selector.allGroupDealerData.length > 0) {
                 let tempArr = [], allArray = selector.allGroupDealerData;
                 setGroupDealerCount(selector.allGroupDealerData.length)
                 tempArr = allArray.filter((item) => {
@@ -162,7 +203,7 @@ const HomeScreen = ({ route, navigation }) => {
                 }
             }
         }
-       
+
     }, [selector.allGroupDealerData])
 
     useEffect(() => {
@@ -201,6 +242,7 @@ const HomeScreen = ({ route, navigation }) => {
 
     const getLoginEmployeeDetailsFromAsyn = async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        // console.log("$$$$$ LOGIN EMP:", employeeData);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             const payload = {
@@ -243,6 +285,28 @@ const HomeScreen = ({ route, navigation }) => {
             ]).then(() => {
                 console.log('I did everything!');
             });
+
+            if (jsonObj.roles.length > 0) {
+                let rolesArr = [];
+                rolesArr = jsonObj.roles.filter((item) => {
+                    return item === "Admin Prod" || item === "App Admin"
+                })
+                if (rolesArr.length > 0) {
+                    setIsTeamPresent(true)
+                    console.log("%%%%% TEAM:", rolesArr);
+                    const dateFormat = "YYYY-MM-DD";
+                    const currentDate = moment().format(dateFormat)
+                    const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                    const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                    const payload = {
+                        "endDate": monthLastDate,
+                        "loggedInEmpId": jsonObj.empId,
+                        "startDate": monthFirstDate,
+                        "levelSelected": null
+                    }
+                    getAllTargetParametersDataFromServer(payload)
+                }
+            }
             getDashboadTableDataFromServer(jsonObj.empId);
         }
     }
@@ -301,6 +365,20 @@ const HomeScreen = ({ route, navigation }) => {
         });
     }
 
+    const getAllTargetParametersDataFromServer = (payload) => {
+        const payload1 = {
+            ...payload,
+            "pageNo": 0,
+            "size": 5
+        }
+        Promise.all([
+            dispatch(getTargetParametersAllData(payload1)),
+            dispatch(getTargetParametersEmpData(payload1))
+        ]).then(() => {
+            console.log('I did everything!');
+        });
+    }
+
     useEffect(() => {
         if (Object.keys(selector.sales_data).length > 0) {
             const dataObj = selector.sales_data;
@@ -308,6 +386,11 @@ const HomeScreen = ({ route, navigation }) => {
             setSalesDataAry(data);
         }
     }, [selector.sales_data])
+
+    useEffect(() => {
+        setIsTeam(selector.isTeam)
+    }, [selector.isTeam])
+
 
     const showDropDownModelMethod = (key, headerText) => {
         Keyboard.dismiss();
@@ -478,7 +561,7 @@ const HomeScreen = ({ route, navigation }) => {
                                         </View>
                                     </View>
 
-                                    <TouchableOpacity style={{position: 'absolute', top: -10, right: -10}} onPress={() => navigation.navigate(HomeStackIdentifiers.filter)}>
+                                    <TouchableOpacity style={{ position: 'absolute', top: -10, right: -10 }} onPress={() => navigation.navigate(HomeStackIdentifiers.filter)}>
                                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                             {/* <Text style={[styles.text1, { color: Colors.RED }]}>{'Filters'}</Text> */}
                                             <IconButton icon={'filter-outline'} size={25} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
@@ -489,8 +572,9 @@ const HomeScreen = ({ route, navigation }) => {
                         }
                         else if (index === 1) {
                             return (
-                                <View style={{ marginBottom: 5, justifyContent: 'center', alignItems: 'center', marginBottom: 10 }}>
-                                    {/* <FlatList
+                                <>
+                                    <View style={{ marginBottom: 5, justifyContent: 'center', alignItems: 'center', marginBottom: 10 }}>
+                                        {/* <FlatList
                     data={titleNames}
                     listKey={"BOX_COMP"}
                     keyExtractor={(item, index) => "BOX" + index.toString()}
@@ -505,27 +589,60 @@ const HomeScreen = ({ route, navigation }) => {
                     }}
                   /> */}
 
-                                    <View style={styles.performView}>
-                                        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                                            <View style={{ marginBottom: 5 }}>
-                                                <Text style={styles.text3}>{"My Performance"}</Text>
+                                        <View style={styles.performView}>
+                                            <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                                                <View style={{ marginBottom: 5 }}>
+                                                    <Text style={styles.text3}>{"My Performance"}</Text>
+                                                </View>
+                                                <Text style={{ fontSize: 12, color: '#aaa3a3' }}>Last updated March 29 2020 11:40 am</Text>
                                             </View>
-                                            <Text style={{ fontSize: 12, color: '#aaa3a3' }}>Last updated March 29 2020 11:40 am</Text>
-                                        </View>
-                                        {/* <View style={{ width: '50%' }}>
+                                            {/* <View style={{ width: '50%' }}>
 
                                         </View> */}
+                                        </View>
+                                        {!isTeamPresent &&
+                                            <View >
+                                                <TargetDropdown
+                                                    label={"Select Target"}
+                                                    value={dropDownData ? dropDownData.value : ''}
+                                                    onPress={() =>
+                                                        showDropDownModelMethod("TARGET_MODEL", "Select Target")
+                                                    }
+                                                />
+                                            </View>
+                                        }
                                     </View>
-                                    <View >
-                                        <TargetDropdown
-                                            label={"Select Target"}
-                                            value={dropDownData ? dropDownData.value : ''}
-                                            onPress={() =>
-                                                showDropDownModelMethod("TARGET_MODEL", "Select Target")
-                                            }
-                                        />
-                                    </View>
-                                </View>
+
+                                    {isTeamPresent &&
+                                        <View style={{ flexDirection: 'row', marginBottom: 20 }}>
+                                            <View style={{ width: '40%', marginRight: 60 }}>
+                                                <View >
+                                                    <TargetDropdown
+                                                        label={"Select Target"}
+                                                        value={dropDownData ? dropDownData.value : ''}
+                                                        onPress={() =>
+                                                            showDropDownModelMethod("TARGET_MODEL", "Select Target")
+                                                        }
+                                                    />
+                                                </View>
+                                            </View>
+                                            <View style={{ width: '40%', flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, marginTop: 10, justifyContent: 'center' }}>
+                                            <TouchableOpacity onPress={() => {
+                                                // setIsTeam(true)
+                                                dispatch(updateIsTeam(true))
+                                            }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: isTeam ? Colors.RED : Colors.WHITE, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
+                                                    <Text style={{ fontSize: 14, color: isTeam ? Colors.WHITE : Colors.BLACK }}>Self</Text>
+                                                </TouchableOpacity>
+                                            <TouchableOpacity onPress={() => {
+                                                // setIsTeam(false)
+                                                dispatch(updateIsTeam(false))
+                                            }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: !isTeam ? Colors.RED : Colors.WHITE, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
+                                                    <Text style={{ fontSize: 14, color: !isTeam ? Colors.WHITE : Colors.BLACK }}>Teams</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
+                                    }
+                                </>
                             )
                         }
                         else if (index === 2) {
@@ -550,7 +667,7 @@ const HomeScreen = ({ route, navigation }) => {
                                         elevation: 3,
                                         marginHorizontal: 20
                                     }}>
-                                        {selector.target_parameters_data.length > 0 &&
+                                        {(selector.target_parameters_data.length > 0 || (isTeamPresent && selector.all_target_parameters_data.length > 0)) &&
                                             <DashboardTopTabNavigatorNew />
                                         }
                                     </View>

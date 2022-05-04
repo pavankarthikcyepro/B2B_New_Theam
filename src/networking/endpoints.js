@@ -159,6 +159,8 @@ const URL = {
         return orgnaizationHirarchy + `/active-dropdowns/${orgId}/${employeeId}`
     },
     GET_TARGET_PARAMS: () => dashboard + "/v2/get_target_params",
+    GET_TARGET_PARAMS_ALL: () => dashboard + "/v2/get_target_params_for_all_emps",
+    GET_TARGET_PARAMS_EMP: () => dashboard + "/v2/get_target_params_for_emp",
     GET_SALES_DATA: () => dashboard + "/v2/get_sales_data",
     GET_SALES_COMPARISON_DATA: () => dashboard + "/v2/get_sales_comparsion_data",
     GET_TARGET_GROUP_RANKING: (orgId) => {
