@@ -684,16 +684,16 @@ const TargetScreen = ({ route, navigation }) => {
                             </View>
 
                             <View style={{ width: '2%', borderRightWidth: 2, borderRightColor: '#d1d1d1', minHeight: 300 }}></View>
-                            <ScrollView style={{ width: '40%', marginTop: 5, marginTop: -50 }} contentContainerStyle={{ alignItems: 'center', }}>
+                            <ScrollView style={{ width: '40%', marginTop: 5, marginTop: -50, height: 400 }} contentContainerStyle={{ alignItems: 'center', }}>
                                 {
                                     selector.all_emp_parameters_data.map((item, index) => {
                                         return (
                                             <>
                                                 <View style={{ flexDirection: 'row' }}>
                                                     <View style={{ width: 30, height: 30, borderRadius: 50, justifyContent: 'center', alignItems: 'center', backgroundColor: color[index % color.length] }}>
-                                                        <Text style={{ color: '#fff' }}>G</Text>
+                                                        <Text style={{ color: '#fff' }}>{item.empName.charAt(0)}</Text>
                                                     </View>
-                                                    <View style={{ height: 30, justifyContent: 'center', alignItems: 'center', marginLeft: 10 }}>
+                                                    <View style={{ height: 30, justifyContent: 'center', alignItems: 'center', marginLeft: 10, width: 80 }}>
                                                         <Text style={{ fontSize: 14, color: color[index % color.length], fontWeight: '600' }}>{item.empName}</Text>
                                                     </View>
                                                 </View>
