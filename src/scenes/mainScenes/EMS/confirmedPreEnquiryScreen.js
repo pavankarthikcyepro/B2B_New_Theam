@@ -118,10 +118,10 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         status: "PREENQUIRY",
       },
     };
-    DropPreEnquiryLead( payload, enquiryDetailsObj)
+    DropPreEnquiryLead(payload, enquiryDetailsObj)
   };
 
-  const DropPreEnquiryLead = async ( payload, enquiryDetailsObj) => {
+  const DropPreEnquiryLead = async (payload, enquiryDetailsObj) => {
 
     setIsLoading(true);
     await fetch(URL.DROP_ENQUIRY(), {
@@ -138,11 +138,11 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         if (response.status === "SUCCESS") {
           // Update Record
           UpdateRecord(enquiryDetailsObj);
-        }else {
+        } else {
           showToast("Drop Lead Failed")
         }
         setIsLoading(false);
-      })  
+      })
       .catch(err => {
         console.error(err);
         showToastRedAlert(err);
@@ -305,9 +305,11 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
   }, [selector.change_enquiry_status, selector.change_enquiry_response])
 
   displayCreateEnquiryAlert = (data) => {
+
+    // "Enquiry Number: " + itemData.universalId
     Alert.alert(
       'Enquiry Created Successfully',
-      "Enquiry Number: " + itemData.universalId + ", Allocated DSE: " + data.dmsEntity.task?.assignee?.empName,
+      "Allocated DSE: " + data.dmsEntity.task?.assignee?.empName,
       [
         {
           text: 'OK', onPress: () => {

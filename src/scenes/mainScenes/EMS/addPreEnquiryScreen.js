@@ -280,18 +280,19 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   };
 
   const confirmToCreateLeadAgain = (response) => {
+    // "Continue To Create a Lead"
     Alert.alert(
       response.message,
-      "Continue To Create a Lead",
+      "",
       [
         {
-          text: "Cancel",
+          text: "Ok",
           style: "cancel",
         },
-        {
-          text: "Create Lead",
-          onPress: () => proceedToCreateLeadMethod(response),
-        },
+        // {
+        //   text: "Create Lead",
+        //   onPress: () => proceedToCreateLeadMethod(response),
+        // },
       ],
       { cancelable: false }
     );
@@ -600,8 +601,8 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     } else if (selector.createEnquiryStatus === "failed") {
       if (
         selector.create_enquiry_response_obj &&
-        selector.create_enquiry_response_obj.accountId != null &&
-        selector.create_enquiry_response_obj.contactId != null
+        selector.create_enquiry_response_obj.accountId != null && selector.create_enquiry_response_obj.accountId != 0 ||
+        selector.create_enquiry_response_obj.contactId != null && selector.create_enquiry_response_obj.contactId != 0
       ) {
         confirmToCreateLeadAgain(selector.create_enquiry_response_obj);
       } else {

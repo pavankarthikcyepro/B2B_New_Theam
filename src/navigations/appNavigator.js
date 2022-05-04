@@ -6,13 +6,20 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import { IconButton, Searchbar } from "react-native-paper";
 import VectorImage from "react-native-vector-image";
 import { Colors } from "../styles";
-import {
-  EMS_LINE,
-  HOME_LINE,
-  HOME_FILL,
-  SCHEDULE_FILL,
-  SCHEDULE_LINE,
-} from "../assets/svg";
+// import {
+//   EMS_LINE,
+//   HOME_LINE,
+//   HOME_FILL,
+//   SCHEDULE_FILL,
+//   SCHEDULE_LINE,
+// } from "../assets/svg";
+
+import EMS_LINE from '../assets/images/ems_line.svg'; // import SVG
+import HOME_LINE from '../assets/images/home_line.svg'; // import SVG
+import HOME_FILL from '../assets/images/home_fill.svg'; // import SVG
+import SCHEDULE_FILL from '../assets/images/schedule_fill.svg'; // import SVG
+import SCHEDULE_LINE from '../assets/images/my_schedule.svg'; // import SVG
+
 
 import HomeScreen from "../scenes/mainScenes/Home";
 import EMSScreen from "../scenes/mainScenes/EMS";
@@ -368,24 +375,23 @@ const TabNavigator = () => {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
 
           if (route.name === TabStackIdentifiers.home) {
-            iconName = focused ? HOME_FILL : HOME_LINE;
+            return focused ? <HOME_FILL width={size} height={size} color={color} /> : <HOME_LINE width={size} height={size} color={color} />;
           } else if (route.name === TabStackIdentifiers.ems) {
-            iconName = focused ? EMS_LINE : EMS_LINE;
+            return focused ? <EMS_LINE width={size} height={size} color={color} /> : <EMS_LINE width={size} height={size} color={color} />;
           } else if (route.name === TabStackIdentifiers.myTask) {
-            iconName = focused ? SCHEDULE_FILL : SCHEDULE_LINE;
+            return focused ? <SCHEDULE_FILL width={size} height={size} color={color} /> : <SCHEDULE_LINE width={size} height={size} color={color} />;
           }
 
-          return (
-            <VectorImage
-              width={size}
-              height={size}
-              source={iconName}
-              style={{ tintColor: color }}
-            />
-          );
+          // return (
+          //   <VectorImage
+          //     width={size}
+          //     height={size}
+          //     source={iconName}
+          //     style={{ tintColor: color }}
+          //   />
+          // );
         },
       })}
       tabBarOptions={{

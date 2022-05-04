@@ -23,15 +23,6 @@ import {
 } from "react-native-paper";
 import { Colors, GlobalStyle } from "../../../styles";
 import VectorImage from "react-native-vector-image";
-import {
-  MODEL_SELECTION,
-  COMMUNICATION_DETAILS,
-  CUSTOMER_PROFILE,
-  FINANCE_DETAILS,
-  DOCUMENT_UPLOAD,
-  CUSTOMER_NEED_ANALYSIS,
-  PERSONAL_DETAILS,
-} from "../../../assets/svg";
 import { useDispatch, useSelector } from "react-redux";
 import {
   TextinputComp,

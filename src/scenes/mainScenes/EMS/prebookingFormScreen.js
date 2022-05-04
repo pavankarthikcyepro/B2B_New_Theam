@@ -919,10 +919,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         showToast("please enter pan card number");
       }
     }
-    if (
-      selector.customer_type_category === "B2B" ||
-      selector.customer_type_category == "B2C"
-    ) {
+    
+    if ((selector.enquiry_segment.toLowerCase() === "company" && selector.customer_type.toLowerCase() === "institution") && (selector.customer_type_category == "B2B" ||
+        selector.customer_type_category == "B2C")) {
       if (selector.gstin_number.length == 0) {
         showToast("please enter GSTIN number");
       }
