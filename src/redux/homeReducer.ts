@@ -152,7 +152,7 @@ export const getTargetParametersAllData = createAsyncThunk("HOME/getTargetParame
 
     const response = await client.post(URL.GET_TARGET_PARAMS_ALL(), payload)
     const json = await response.json()
-    console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
+    // console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
 
     if (!response.ok) {
         return rejectWithValue(json);
@@ -276,7 +276,8 @@ export const homeSlice = createSlice({
         branchesList: [],
         allGroupDealerData: [],
         allDealerData: [],
-        isTeam: false
+        isTeam: false,
+        isTeamPresent: false
     },
     reducers: {
         dateSelected: (state, action) => {
@@ -284,6 +285,9 @@ export const homeSlice = createSlice({
         },
         updateFilterDropDownData: (state, action) => {
             state.filter_drop_down_data = action.payload;
+        },
+        updateIsTeamPresent: (state, action) => {
+            state.isTeamPresent = action.payload;
         },
     },
     extraReducers: (builder) => {
@@ -528,7 +532,7 @@ export const homeSlice = createSlice({
     }
 });
 
-export const { dateSelected, updateFilterDropDownData } = homeSlice.actions;
+export const { dateSelected, updateFilterDropDownData, updateIsTeamPresent } = homeSlice.actions;
 export default homeSlice.reducer;
 
 

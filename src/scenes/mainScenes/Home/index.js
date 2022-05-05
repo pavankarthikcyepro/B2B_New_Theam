@@ -26,7 +26,8 @@ import {
     getSalesComparisonData,
     getDealerRanking,
     getGroupDealerRanking,
-    updateIsTeam
+    updateIsTeam,
+    updateIsTeamPresent
 } from '../../../redux/homeReducer';
 import { DateRangeComp, DatePickerComponent, SortAndFilterComp } from '../../../components';
 import { DateModalComp } from "../../../components/dateModalComp";
@@ -293,6 +294,7 @@ const HomeScreen = ({ route, navigation }) => {
                     return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL"
                 })
                 if (rolesArr.length > 0) {
+                    dispatch(updateIsTeamPresent(true))
                     setIsTeamPresent(true)
                     console.log("%%%%% TEAM:", rolesArr);
                     const dateFormat = "YYYY-MM-DD";

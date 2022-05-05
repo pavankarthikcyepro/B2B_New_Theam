@@ -8,26 +8,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FILTER, SPEED } from '../../../assets/svg';
 import { DateItem } from '../../../pureComponents/dateItem';
 import { AppNavigator } from '../../../navigations';
-import {
-    dateSelected,
-    showDateModal,
-    getCustomerTypeList,
-    getSourceOfEnquiryList,
-    getOrganaizationHirarchyList,
-    getLeadSourceTableList,
-    getVehicleModelTableList,
-    getEventTableList,
-    getTaskTableList,
-    getLostDropChartData,
-    getTargetParametersData,
-    getTargetParametersAllData,
-    getTargetParametersEmpData,
-    getSalesData,
-    getSalesComparisonData,
-    getDealerRanking,
-    getGroupDealerRanking,
-    updateIsTeam
-} from '../../../redux/homeReducer';
 import { DateModalComp } from "../../../components/dateModalComp";
 import { getMenuList } from '../../../redux/homeReducer';
 import { DashboardTopTabNavigator } from '../../../navigations/dashboardTopTabNavigator';
@@ -38,6 +18,16 @@ import moment from 'moment';
 import { TargetAchivementComp } from './targetAchivementComp';
 import { HeaderComp, DropDownComponant, DatePickerComponent } from '../../../components';
 import { DateSelectItem, TargetDropdown, DateSelectItemForTargetSettings } from '../../../pureComponents';
+
+import {
+    getEmployeesActiveBranch,
+    getEmployeesRolls,
+    updateStartDate,
+    updateEndDate,
+    addTargetMapping,
+    updateIsTeam,
+    getAllTargetMapping
+} from '../../../redux/targetSettingsReducer';
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 30) / 2;
@@ -65,7 +55,8 @@ const colorNames = ["#85b1f4", "#f1ab48", "#79e069", "#e36e7a", "#5acce8"]
 
 
 const TargetSettingsScreen = ({ route, navigation }) => {
-    const selector = useSelector((state) => state.homeReducer);
+    const homeSelector = useSelector((state) => state.homeReducer);
+    const selector = useSelector((state) => state.targetSettingsReducer);
     const dispatch = useDispatch();
     const [salesDataAry, setSalesDataAry] = useState([]);
     const [selectedBranchName, setSelectedBranchName] = useState("");
@@ -88,6 +79,54 @@ const TargetSettingsScreen = ({ route, navigation }) => {
     const [toDate, setToDate] = useState("");
     const [datePickerId, setDatePickerId] = useState("");
 
+    useEffect(() => {
+
+        
+
+        const unsubscribe = navigation.addListener('focus', () => {
+            initialTask()
+        });
+
+        return unsubscribe;
+    }, [navigation]);
+
+    const initialTask = async () => {
+        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        // console.log("$$$$$ LOGIN EMP:", employeeData);
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            const payload = {
+                orgId: jsonObj.orgId,
+                empId: jsonObj.empId
+            }
+            console.log("jsonObj: ", jsonObj);
+
+            const payload2 = {
+                "empId": jsonObj.empId,
+                "pageNo": 1, 
+                "size": 10
+            }
+            const dateFormat = "YYYY-MM-DD";
+            const currentDate = moment().format(dateFormat)
+            const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+            const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+            dispatch(updateStartDate(monthFirstDate))
+            setFromDate(monthFirstDate);
+
+            dispatch(updateEndDate(monthLastDate))
+            setToDate(monthLastDate);
+
+            Promise.all([
+                dispatch(getEmployeesActiveBranch(payload)),
+                dispatch(getEmployeesRolls(payload)),
+                dispatch(getAllTargetMapping(payload2)),
+            ]).then(() => {
+                console.log('I did everything!');
+            });
+
+            
+        }
+    }
 
     const showDropDownModelMethod = (key, headerText) => {
         Keyboard.dismiss();
@@ -122,9 +161,11 @@ const TargetSettingsScreen = ({ route, navigation }) => {
         const formatDate = moment(date).format(dateFormat);
         switch (key) {
             case "START_DATE":
+                dispatch(updateStartDate(formatDate))
                 setFromDate(formatDate);
                 break;
             case "END_DATE":
+                dispatch(updateEndDate(formatDate))
                 setToDate(formatDate);
                 break;
         }
@@ -144,7 +185,6 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                 data={dataForDropDown}
                 onRequestClose={() => setShowDropDownModel(false)}
                 selectedItems={(item) => {
-
                     setShowDropDownModel(false);
                     setDropDownData({ key: dropDownKey, value: item.name, id: item.id })
                 }}
@@ -154,7 +194,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                 mode={"date"}
                 value={new Date(Date.now())}
                 onChange={(event, selectedDate) => {
-                    console.log("date: ", selectedDate);
+                    console.log("date: ", selectedDate, moment(selectedDate).format(dateFormat));
                     if (Platform.OS === "android") {
                         if (selectedDate) {
                             updateSelectedDate(selectedDate, datePickerId);

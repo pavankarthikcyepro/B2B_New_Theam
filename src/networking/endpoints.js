@@ -36,6 +36,7 @@ export const orgnaizationHirarchy = "http://automatestaging-724985329.ap-south-1
 export const dashboard = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard";
 export const dfGetAll = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/df-get-all"
 export const subSourceAllDetails = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails"
+export const salesGap = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/sales-gap"
 
 
 const URL = {
@@ -158,6 +159,16 @@ const URL = {
 
         return orgnaizationHirarchy + `/active-dropdowns/${orgId}/${employeeId}`
     },
+    GET_EMPLOYEES_ACTIVE_BRANCHES: (orgId, employeeId) => {
+
+        return orgnaizationHirarchy + `/active-branches/${orgId}/${employeeId}`
+    },
+    GET_EMPLOYEES_ROLES: (employeeId) => {
+
+        return salesGap + `/get_employee_role/${employeeId}`
+    },
+    ADD_TARGET_MAPPING: () => salesGap + `/add_targetmapping_role`,
+    GET_ALL_TARGET_MAPPING: () => salesGap + `/get_all_targetmapping_role`,
     GET_TARGET_PARAMS: () => dashboard + "/v2/get_target_params",
     GET_TARGET_PARAMS_ALL: () => dashboard + "/v2/get_target_params_for_all_emps",
     GET_TARGET_PARAMS_EMP: () => dashboard + "/v2/get_target_params_for_emp",
