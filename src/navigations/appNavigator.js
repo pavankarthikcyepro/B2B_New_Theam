@@ -53,6 +53,7 @@ import CreateEnquiryScreen from "../scenes/mainScenes/MyTasks/createEnquiryScree
 import FilterScreen from "../scenes/mainScenes/Home/filterScreen";
 import SelectBranchComp from "../scenes/loginScenes/selectBranchComp";
 import TestScreen from "../scenes/mainScenes/Home/testScreen";
+import TaskListScreen from "../scenes/mainScenes/MyTasks/taskListScreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -176,6 +177,7 @@ export const MyTasksStackIdentifiers = {
   proceedToPreBooking: "PROCEED_TO_PRE_BOOKING",
   proceedToBooking: "PROCEED_TO_BOOKING",
   createEnquiry: "CREATE_ENQUIRY",
+  tasksListScreen: "TASKS_LIST_SCREEN"
 };
 
 const HomeStack = createStackNavigator();
@@ -363,6 +365,12 @@ const MyTaskStackNavigator = ({ navigation }) => {
         name={MyTasksStackIdentifiers.createEnquiry}
         component={CreateEnquiryScreen}
         options={{ title: "Create Enquiry" }}
+      />
+
+      <MyTaskStack.Screen
+        name={MyTasksStackIdentifiers.tasksListScreen}
+        component={TaskListScreen}
+        options={{ title: "My Tasks" }}
       />
     </MyTaskStack.Navigator>
   );

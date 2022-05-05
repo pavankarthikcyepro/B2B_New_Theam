@@ -48,6 +48,23 @@ export const getMorePendingTasksListApi = createAsyncThunk("MY_TASKS/getMorePend
   return json;
 })
 
+export const getMyTasksListApi = createAsyncThunk("MY_TASKS/getMyTasksListApi", async (userId, { rejectWithValue }) => {
+
+  const payload = {
+    "loggedInEmpId": userId,
+    "onlyForEmp": true
+  }
+
+  const url = URL.GET_MY_TASKS_NEW_DATA();
+  const response = await client.post(url, payload);
+  const json = await response.json()
+  console.log(json)
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 export const mytaskSlice = createSlice({
   name: "MY_TASKS",
   initialState: {
@@ -63,6 +80,8 @@ export const mytaskSlice = createSlice({
     pendingTotalPages: 1,
     isLoadingForPendingTask: false,
     isLoadingExtraDataForPendingTask: false,
+    mytasksLisResponse: {},
+    myTasksListResponseStatus: ""
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -127,6 +146,19 @@ export const mytaskSlice = createSlice({
     })
     builder.addCase(getMorePendingTasksListApi.rejected, (state, action) => {
       state.isLoadingExtraDataForPendingTask = false;
+    })
+    // Get My Tasks List
+    builder.addCase(getMyTasksListApi.pending, (state) => {
+      state.mytasksLisResponse = {};
+      state.myTasksListResponseStatus = "pending";
+    })
+    builder.addCase(getMyTasksListApi.fulfilled, (state, action) => {
+      state.mytasksLisResponse = action.payload;
+      state.myTasksListResponseStatus = "success";
+    })
+    builder.addCase(getMyTasksListApi.rejected, (state, action) => {
+      state.mytasksLisResponse = action.payload;
+      state.myTasksListResponseStatus = "failed";
     })
   }
 });
