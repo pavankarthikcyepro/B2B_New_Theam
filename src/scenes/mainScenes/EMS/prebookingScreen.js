@@ -11,6 +11,7 @@ import { getPreBookingData, getMorePreBookingData } from "../../../redux/preBook
 import { callNumber } from "../../../utils/helperFunctions";
 import moment from "moment";
 import { Category_Type_List_For_Filter } from '../../../jsonData/enquiryFormScreenJsonData';
+import { MyTaskNewItem } from '../MyTasks/components/MyTasksNewItem';
 
 const dateFormat = "YYYY-MM-DD";
 
@@ -205,7 +206,7 @@ const PreBookingScreen = ({ navigation }) => {
             </View>
 
             {selector.pre_booking_list.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
-                <View style={[GlobalStyle.shadow, { backgroundColor: 'white', flex: 1, marginBottom: 10 }]}>
+                <View style={[ { backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 }]}>
                     <FlatList
                         data={selector.pre_booking_list}
                         extraData={selector.pre_booking_list}
@@ -230,18 +231,20 @@ const PreBookingScreen = ({ navigation }) => {
 
                             return (
                                 <>
-                                    <PreEnquiryItem
-                                        bgColor={color}
-                                        name={item.firstName + " " + item.lastName}
-                                        subName={item.enquirySource}
-                                        date={item.createdDate}
-                                        enquiryCategory={item.enquiryCategory}
-                                        modelName={item.model}
-                                        createdBy={item.createdBy}
-                                        onPress={() => navigation.navigate(AppNavigator.PreBookingStackIdentifiers.preBookingForm, { universalId: item.universalId })}
-                                        onCallPress={() => callNumber(item.phone)}
-                                    />
-                                    <View style={GlobalStyle.underline}></View>
+                                    <View style={{ paddingVertical: 5 }}>
+                                        <MyTaskNewItem
+                                            from='PRE_BOOKING'
+                                            name={item.firstName + " " + item.lastName}
+                                            status={""}
+                                            created={item.createdDate}
+                                            dmsLead={item.createdBy}
+                                            phone={item.phone}
+                                            source={item.enquirySource}
+                                            model={item.model}
+                                            onItemPress={() => { }}
+                                            onDocPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.preBookingForm, { universalId: item.universalId })}
+                                        />
+                                    </View>
                                 </>
 
                             );

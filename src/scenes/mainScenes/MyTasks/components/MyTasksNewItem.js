@@ -39,9 +39,15 @@ const IconComp = ({ iconName, onPress }) => {
     )
 }
 
-export const MyTaskNewItem = ({ name, status, created, dmsLead, phone, source, model, onItemPress, onDocPress }) => {
+export const MyTaskNewItem = ({ from = "MY_TASKS", name, status, created, dmsLead, phone, source, model, onItemPress, onDocPress }) => {
 
-    const date = moment(created, "YYYY-MM-DD hh-mm-s").format("DD/MM/YYYY h:mm a");
+    let date = "";
+    if (from =="MY_TASKS") {
+        date = moment(created, "YYYY-MM-DD hh-mm-s").format("DD/MM/YYYY h:mm a");
+    }else {
+        date = convertTimeStampToDateString(created);
+    }
+
     let bgColor = Colors.BLUE;
     let statusName = status;
     if (status === "CANCELLED" || status === "ASSIGNED" || status === "SENT_FOR_APPROVAL" || status === "RESCHEDULED") {
@@ -51,7 +57,7 @@ export const MyTaskNewItem = ({ name, status, created, dmsLead, phone, source, m
 
     return (
         <TouchableOpacity onPress={onItemPress}>
-            <View style={{ flex: 1, paddingHorizontal: 5, justifyContent: "space-between", flexDirection: "row" }}>
+            <View style={{ flex: 1, padding: 5, justifyContent: "space-between", flexDirection: "row", backgroundColor: Colors.WHITE }}>
                 <View style={{ width: "70%" }}>
                     <Text style={styles.text1}>{name}</Text>
                     <Text style={styles.text2}>{source + " - " + dmsLead}</Text>
