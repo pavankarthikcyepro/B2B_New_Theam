@@ -270,7 +270,7 @@ const PreEnquiryScreen = ({ navigation }) => {
                     <Pressable onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.addPreEnq, { fromEdit: false })}>
                         {/* <View style={[GlobalStyle.shadow, { height: 60, width: 60, borderRadius: 30, shadowRadius: 5 }]}> */}
                         {/* <VectorImage source={CREATE_NEW} width={60} height={60} color={"rgba(76,24,197,0.8)"} /> */}
-                        <CREATE_NEW width={60} height={60} color={"rgba(76,24,197,0.8)"} />
+                        <CREATE_NEW width={60} height={60} fill={"rgba(76,24,197,0.8)"} />
                         {/* </View> */}
                     </Pressable>
                 </View>

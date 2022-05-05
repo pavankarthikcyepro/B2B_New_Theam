@@ -53,6 +53,7 @@ import CreateEnquiryScreen from "../scenes/mainScenes/MyTasks/createEnquiryScree
 import FilterScreen from "../scenes/mainScenes/Home/filterScreen";
 import SelectBranchComp from "../scenes/loginScenes/selectBranchComp";
 import TestScreen from "../scenes/mainScenes/Home/testScreen";
+import TaskListScreen from "../scenes/mainScenes/MyTasks/taskListScreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -176,6 +177,7 @@ export const MyTasksStackIdentifiers = {
   proceedToPreBooking: "PROCEED_TO_PRE_BOOKING",
   proceedToBooking: "PROCEED_TO_BOOKING",
   createEnquiry: "CREATE_ENQUIRY",
+  tasksListScreen: "TASKS_LIST_SCREEN"
 };
 
 const HomeStack = createStackNavigator();
@@ -364,6 +366,12 @@ const MyTaskStackNavigator = ({ navigation }) => {
         component={CreateEnquiryScreen}
         options={{ title: "Create Enquiry" }}
       />
+
+      <MyTaskStack.Screen
+        name={MyTasksStackIdentifiers.tasksListScreen}
+        component={TaskListScreen}
+        options={{ title: "My Tasks" }}
+      />
     </MyTaskStack.Navigator>
   );
 };
@@ -377,11 +385,11 @@ const TabNavigator = () => {
         tabBarIcon: ({ focused, color, size }) => {
 
           if (route.name === TabStackIdentifiers.home) {
-            return focused ? <HOME_FILL width={size} height={size} color={color} /> : <HOME_LINE width={size} height={size} color={color} />;
+            return focused ? <HOME_FILL width={size} height={size} fill={color} /> : <HOME_LINE width={size} height={size} fill={color} />;
           } else if (route.name === TabStackIdentifiers.ems) {
-            return focused ? <EMS_LINE width={size} height={size} color={color} /> : <EMS_LINE width={size} height={size} color={color} />;
+            return focused ? <EMS_LINE width={size} height={size} fill={color} /> : <EMS_LINE width={size} height={size} fill={color} />;
           } else if (route.name === TabStackIdentifiers.myTask) {
-            return focused ? <SCHEDULE_FILL width={size} height={size} color={color} /> : <SCHEDULE_LINE width={size} height={size} color={color} />;
+            return focused ? <SCHEDULE_FILL width={size} height={size} fill={color} /> : <SCHEDULE_LINE width={size} height={size} fill={color} />;
           }
 
           // return (

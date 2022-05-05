@@ -125,8 +125,9 @@ const TestDriveScreen = ({ route, navigation }) => {
   const [varientListForDropDown, setVarientListForDropDown] = useState([]);
 
   useEffect(() => {
-    updateBasicDetails(taskData);
+    //updateBasicDetails(taskData);
     getAsyncstoreData();
+    getUserToken();
   }, []);
 
   const getAsyncstoreData = async () => {
@@ -173,6 +174,14 @@ const TestDriveScreen = ({ route, navigation }) => {
     }
   };
 
+  const getUserToken = () => {
+    AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
+      if (token.length > 0) {
+        getRecordDetailsFromServer(token);
+      }
+    });
+  }
+
   const updateBasicDetails = (taskData) => {
     if (taskData) {
       const leadDtoObj = taskData.leadDto;
@@ -185,6 +194,37 @@ const TestDriveScreen = ({ route, navigation }) => {
       });
     }
   };
+
+  const getRecordDetailsFromServer = async (token) => {
+
+    const url = URL.ENQUIRY_DETAILS(universalId);
+    console.log("url: ", url);
+    await fetch(url, {
+      method: "GET",
+      headers: {
+        'Content-Type': 'application/json',
+        'auth-token': token
+      }
+    })
+      .then(json => json.json())
+      .then(resp => {
+        console.log("resp: ", resp)
+        if (resp.dmsEntity?.dmsLeadDto) {
+
+          const leadDtoObj = resp.dmsEntity?.dmsLeadDto;
+          setName(leadDtoObj.firstName + " " + leadDtoObj.lastName);
+          setEmail(leadDtoObj.email || "");
+          setMobile(mobile);
+          // setSelectedDseDetails({
+          //   name: taskData.assignee.empName,
+          //   id: taskData.assignee.empId,
+          // });
+        }
+      })
+      .catch(err => {
+        console.error("while fetching record details: ", err);
+      })
+  }
 
   // Handle Task Details Response
   useEffect(() => {
