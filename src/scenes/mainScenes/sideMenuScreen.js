@@ -6,7 +6,7 @@ import {
   StyleSheet,
   Dimensions,
   Image,
-  FlatList, 
+  FlatList,
   Pressable,
   Alert,
   TouchableOpacity
@@ -30,7 +30,7 @@ import CUSTOMER_RELATIONSHIP from "../../assets/images/customer_relationship.svg
 import DOCUMENT_WALLET from "../../assets/images/document_wallet.svg";
 import HOME_LINE from "../../assets/images/home_line.svg";
 import BOOKING_TRACKER from "../../assets/images/booking_tracker.svg";
-import { BOOKING_TRACKER_STR, CUSTOMER_RELATIONSHIP_STR, DOCUMENT_WALLET_STR, EVENT_MANAGEMENT_STR, HOME_LINE_STR } from "../../redux/sideMenuReducer";
+import { BOOKING_TRACKER_STR, CUSTOMER_RELATIONSHIP_STR, DOCUMENT_WALLET_STR, EVENT_MANAGEMENT_STR, HOME_LINE_STR, DIGITAL_PAYMENT_STR } from "../../redux/sideMenuReducer";
 
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 4;
@@ -68,8 +68,8 @@ const SideMenuScreen = ({ navigation }) => {
   const [location, setLocation] = useState("");
   const [role, setRole] = useState("");
   const [newTableData, setNewTableData] = useState([]);
-const [imageUri, setImageUri] = useState(null);
-const [dataList, setDataList] = useState([]);
+  const [imageUri, setImageUri] = useState(null);
+  const [dataList, setDataList] = useState([]);
 
   useEffect(() => {
     getLoginEmployeeData();
@@ -93,7 +93,7 @@ const [dataList, setDataList] = useState([]);
     }
   }
 
-  const getProfilePic = ()=>{
+  const getProfilePic = () => {
     fetch(
       "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/146/1/242"
     )
@@ -150,7 +150,8 @@ const [dataList, setDataList] = useState([]);
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.digitalPayment);
         break;
       case 106:
-        navigation.navigate(AppNavigator.DrawerStackIdentifiers.monthlyTarget);
+        navigation.navigate("Target Settings");
+        // navigation.navigate(AppNavigator.DrawerStackIdentifiers.monthlyTarget);
         break;
       case 107:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.helpdesk);
@@ -160,6 +161,9 @@ const [dataList, setDataList] = useState([]);
         break;
       case 109:
         navigation.navigate(AppNavigator.DrawerStackIdentifiers.taskTransfer);
+        break;
+      case 999:
+        navigation.navigate("Target Settings");
         break;
     }
   };
@@ -177,33 +181,32 @@ const [dataList, setDataList] = useState([]);
     signOut();
   }
 
+  const selectImage = () => {
+    let options = {
+      title: "you can choose anyimage",
+      maxWidth: 256,
+      maxHeight: 256,
+      storageOptions: {
+        skipBack: true,
+      },
+    };
 
-   const selectImage = () => {
-     let options = {
-       title: "you can choose anyimage",
-       maxWidth: 256,
-       maxHeight: 256,
-       storageOptions: {
-         skipBack: true,
-       },
-     };
-
-     launchImageLibrary(options, (Response) => {
-       if (Response.didCancel) {
-         Alert.alert("user cancelled");
-       } else if (Response.errorMessage) {
-         Alert.alert(Response.errorMessage);
-       } else if (Response.assets) {
-         let Object = Response.assets[0];
-         const uriLink = Object.uri;
-         // console.log('assets: ', uri);
-         const uriObject = {
-           uri: uriLink,
-         };
-         setImageUri(uriObject);
-       }
-     });
-   };
+    launchImageLibrary(options, (Response) => {
+      if (Response.didCancel) {
+        Alert.alert("user cancelled");
+      } else if (Response.errorMessage) {
+        Alert.alert(Response.errorMessage);
+      } else if (Response.assets) {
+        let Object = Response.assets[0];
+        const uriLink = Object.uri;
+        // console.log('assets: ', uri);
+        const uriObject = {
+          uri: uriLink,
+        };
+        setImageUri(uriObject);
+      }
+    });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -235,8 +238,8 @@ const [dataList, setDataList] = useState([]);
               source={{
                 uri: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/146-1-242-a94edf7c-77b7-40ef-bd12-b66d9303c631/car.jpg",
               }}
-              // source={imageUri}
-              //  source={require("../../assets/images/bently.png")}
+            // source={imageUri}
+            //  source={require("../../assets/images/bently.png")}
             />
           </TouchableOpacity>
         </View>
@@ -283,6 +286,8 @@ const [dataList, setDataList] = useState([]);
                   {item.icon === DOCUMENT_WALLET_STR && <DOCUMENT_WALLET width={20} height={20} color={'black'} />}
                   {item.icon === HOME_LINE_STR && <HOME_LINE width={20} height={20} color={'black'} />}
                   {item.icon === BOOKING_TRACKER_STR && <BOOKING_TRACKER width={20} height={20} color={'black'} />}
+                  {item.icon === DIGITAL_PAYMENT_STR && <BOOKING_TRACKER width={20} height={20} color={'black'} />}
+                  
                   <Text style={{ fontSize: 16, fontWeight: "600", marginLeft: 15 }}>{item.title}</Text>
                 </View>
                 <Divider />

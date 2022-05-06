@@ -286,5 +286,5 @@ export {
   VEHICLE_ALLOTMENT_DETAILS,
   VEHICLES,
   WEEK,
-  YEAR,
+  YEAR
 };

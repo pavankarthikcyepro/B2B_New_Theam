@@ -15,3 +15,6 @@ export const CORAL = "#FF4040";
 export const MAROON = "#800000";
 export const BORDER_COLOR = "#e8e8e8";
 export const SKY_LIGHT_BLUE_COLOR = "#87CEEB";
+export const RETAIL_BORDER_COLOR = "#ebe1e1";
+export const TARGET_GRAY = "#aaa3a3";
+export const DARK_GREEN = "#14ce40";

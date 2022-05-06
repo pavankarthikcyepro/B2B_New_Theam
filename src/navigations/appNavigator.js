@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { View, Linking } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -52,6 +52,7 @@ import ProceedToPreBookingScreen from "../scenes/mainScenes/MyTasks/proceedToPre
 import CreateEnquiryScreen from "../scenes/mainScenes/MyTasks/createEnquiryScreen";
 import FilterScreen from "../scenes/mainScenes/Home/filterScreen";
 import SelectBranchComp from "../scenes/loginScenes/selectBranchComp";
+import TargetSettingsScreen from "../scenes/mainScenes/TargetSettingsScreen";
 import TestScreen from "../scenes/mainScenes/Home/testScreen";
 import TaskListScreen from "../scenes/mainScenes/MyTasks/taskListScreen";
 
@@ -69,7 +70,6 @@ const screeOptionStyle = {
 };
 
 const MenuIcon = ({ navigation }) => {
-
   return (
     <IconButton
       icon="menu"
@@ -81,11 +81,7 @@ const MenuIcon = ({ navigation }) => {
 };
 
 const SearchIcon = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const onChangeSearch = (query) => setSearchQuery(query);
   return (
-    
     <IconButton
       icon="magnify"
       color={Colors.WHITE}
@@ -94,6 +90,27 @@ const SearchIcon = () => {
     />
   );
 };
+
+const RefreshIcon = ({ navigation }) => {
+  return (
+    <IconButton
+      icon="refresh"
+      color={Colors.WHITE}
+      size={30}
+      onPress={() => console.log('refresh icon pressed')}
+    />
+  );
+
+  return (
+    <IconButton
+      icon="menu"
+      color={Colors.WHITE}
+      size={30}
+      onPress={() => navigation.openDrawer()}
+    />
+  );
+};
+
 const MapIcon = ({ navigation }) => {
   return (
     <IconButton
@@ -112,8 +129,6 @@ const MapIcon = ({ navigation }) => {
 
 
 const NotficationIcon = ({ navigation, identifier }) => {
-
-
   return (
     <IconButton
       icon="bell"
@@ -135,10 +150,10 @@ export const DrawerStackIdentifiers = {
   eventManagement: "EVENT_MANAGEMENT",
   preBooking: "PRE_BOOKING",
   digitalPayment: "DIGITAL_PAYMENT",
-  monthlyTarget :"MONTHLY_TARGET",
-  helpdesk:"HELP_DESK",
-  taskManagement:"TASK_MANAGEMENT",
-  taskTransfer:"TASK_TRANSFER"
+  monthlyTarget: "MONTHLY_TARGET",
+  helpdesk: "HELP_DESK",
+  taskManagement: "TASK_MANAGEMENT",
+  taskTransfer: "TASK_TRANSFER"
 };
 
 export const TabStackIdentifiers = {
@@ -650,6 +665,11 @@ const MainStackDrawerNavigator = () => {
         component={SettingsStackNavigator}
       />
       <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.eventManagement}
+        component={EventManagementStackNavigator}
+      />
+
+      <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.digitalPayment}
         component={DigitalPaymentStackNavigator}
       />
@@ -671,8 +691,8 @@ const MainStackDrawerNavigator = () => {
       />
 
       <MainDrawerNavigator.Screen
-        name={DrawerStackIdentifiers.eventManagement}
-        component={EventManagementStackNavigator}
+        name={"Target Settings"}
+        component={TargetSettingsScreen}
       />
 
       {/* <MainDrawerNavigator.Screen

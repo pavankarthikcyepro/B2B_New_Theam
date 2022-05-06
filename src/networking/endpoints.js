@@ -17,6 +17,7 @@
 // export const dashboard = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8092/dashboard";
 // export const dfGetAll = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/df-get-all"
 // export const subSourceAllDetails = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails"
+// export const salesGap = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8092/sales-gap"
 // export const lostSubLost = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails"
 
 // Dev End Points
@@ -37,6 +38,7 @@ export const orgnaizationHirarchy = "http://automatestaging-724985329.ap-south-1
 export const dashboard = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard";
 export const dfGetAll = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/df-get-all"
 export const subSourceAllDetails = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails"
+export const salesGap = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/sales-gap"
 export const lostSubLost = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails"
 
 
@@ -160,16 +162,33 @@ const URL = {
 
         return orgnaizationHirarchy + `/active-dropdowns/${orgId}/${employeeId}`
     },
+    GET_EMPLOYEES_ACTIVE_BRANCHES: (orgId, employeeId) => {
+
+        return orgnaizationHirarchy + `/active-branches/${orgId}/${employeeId}`
+    },
+    GET_EMPLOYEES_ROLES: (employeeId) => {
+
+        return salesGap + `/get_employee_role/${employeeId}`
+    },
+    ADD_TARGET_MAPPING: () => salesGap + `/add_targetmapping_role`,
+    GET_ALL_TARGET_MAPPING: () => salesGap + `/get_all_targetmapping_role`,
     GET_TARGET_PARAMS: () => dashboard + "/v2/get_target_params",
+    GET_TARGET_PARAMS_ALL: () => dashboard + "/v2/get_target_params_for_all_emps",
+    GET_TARGET_PARAMS_EMP: () => dashboard + "/v2/get_target_params_for_emp",
     GET_SALES_DATA: () => dashboard + "/v2/get_sales_data",
     GET_SALES_COMPARISON_DATA: () => dashboard + "/v2/get_sales_comparsion_data",
+    GET_TARGET_GROUP_RANKING: (orgId) => {
+        return `${dashboard}/v2/get_emp_target_ranking/org/${orgId}`
+    },
+    GET_TARGET_RANKING: (orgId, branchId) => {
+        return `${dashboard}/v2/get_emp_target_ranking/org/${orgId}/branch/${branchId}`
+    },
     GET_BANK_DETAILS: (orgId) => {
         return dfGetAll + `/${orgId}/%22Active%22/${orgId}/bankFinancier`;
     },
     GET_INSURENCE_COMPANY_NAMES: (orgId) => {
         return dfGetAll + `/${orgId}/%22Active%22/${orgId}/incuranceCompany`
     },
-    
     GET_DROP_LIST: (ordId, type) => {
         return lostSubLost + `?organizationId=${ordId}&stageName=${type}`
     },

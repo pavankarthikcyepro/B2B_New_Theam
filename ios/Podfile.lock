@@ -255,9 +255,9 @@ PODS:
     - React-jsi (= 0.64.2)
     - React-perflogger (= 0.64.2)
   - React-jsinspector (0.64.2)
-  - react-native-image-picker (4.8.2):
+  - react-native-image-picker (4.8.1):
     - React-Core
-  - react-native-safe-area-context (3.3.2):
+  - react-native-safe-area-context (3.4.1):
     - React-Core
   - react-native-segmented-control (2.4.0):
     - React-Core
@@ -330,20 +330,18 @@ PODS:
     - React-cxxreact (= 0.64.2)
     - React-jsi (= 0.64.2)
     - React-perflogger (= 0.64.2)
-  - ReactNativeART (1.2.0):
-    - React
-  - RealmJS (10.13.0):
+  - RealmJS (10.16.0):
     - GCDWebServer
     - React
-  - RNCAsyncStorage (1.16.1):
+  - RNCAsyncStorage (1.17.3):
     - React-Core
   - RNCMaskedView (0.1.11):
     - React
   - RNDateTimePicker (3.5.2):
     - React-Core
-  - RNGestureHandler (2.2.0):
+  - RNGestureHandler (2.4.1):
     - React-Core
-  - RNReanimated (2.4.1):
+  - RNReanimated (2.8.0):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -351,7 +349,6 @@ PODS:
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
-    - React
     - React-callinvoker
     - React-Core
     - React-Core/DevSupport
@@ -371,13 +368,13 @@ PODS:
     - React-RCTText
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (3.11.1):
+  - RNScreens (3.13.1):
     - React-Core
     - React-RCTImage
   - RNSnackbar (2.4.0):
     - React-Core
-  - RNSVG (12.1.1):
-    - React
+  - RNSVG (12.3.0):
+    - React-Core
   - RNVectorIcons (8.1.0):
     - React-Core
   - Toast (4.0.0)
@@ -564,7 +561,7 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   FBLazyVector: e686045572151edef46010a6f819ade377dfeb4b
-  FBReactNativeSpec: beb99ed0148a6c2c9af36191ced8ffc3c8c7117a
+  FBReactNativeSpec: 215ca3bf1834dfad757a355e3c0c0fcb5877f1a9
   Flipper: d3da1aa199aad94455ae725e9f3aa43f3ec17021
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
   Flipper-Folly: 755929a4f851b2fb2c347d533a23f191b008554c
@@ -621,4 +618,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: b0f418d4fb35b00879a534312d8949f55e648472
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.10.2

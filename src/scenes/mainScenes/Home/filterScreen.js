@@ -261,7 +261,7 @@ const FilterScreen = ({ navigation }) => {
                 })
             }
         }
-        // console.log("selectedIds: ", selectedIds);
+        console.log("selectedIds: ", selectedIds);
         if (selectedIds.length > 0) {
             setIsLoading(true);
             getDashboadTableDataFromServer(selectedIds, "LEVEL");
@@ -298,22 +298,31 @@ const FilterScreen = ({ navigation }) => {
         Promise.all([
             dispatch(getEmployeesDropDownData(payload1))
         ]).then(() => {
-
+            console.log("CALLED");
             Promise.all([
                 dispatch(getLeadSourceTableList(payload)),
                 dispatch(getVehicleModelTableList(payload)),
                 dispatch(getEventTableList(payload)),
                 dispatch(getLostDropChartData(payload)),
                 dispatch(updateFilterDropDownData(totalDataObj)),
-                // Table Data
+                // // Table Data
                 dispatch(getTaskTableList(payload2)),
                 dispatch(getSalesData(payload2)),
                 dispatch(getSalesComparisonData(payload2)),
-                // Target Params Data
+                // // Target Params Data
                 dispatch(getTargetParametersData(payload2))
-            ])
+            ]).then(() => {
+                console.log("SUCCESS");
+            }).catch(() => {
+
+            })
+        }).catch(() => {
+            
         })
         if (from == "EMPLOYEE") {
+            navigation.goBack();
+        }
+        else{
             navigation.goBack();
         }
     }
