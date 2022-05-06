@@ -13,6 +13,7 @@ import {
 import { convertTimeStampToDateString } from "../utils/helperFunctions";
 import { showToastRedAlert } from "../utils/toast";
 import moment from "moment";
+import { add } from "react-native-reanimated";
 
 const dropDownData = [
   {
@@ -319,6 +320,7 @@ const prebookingFormSlice = createSlice({
     house_number: "",
     street_name: "",
     village: "",
+    mandal:"",
     city: "",
     state: "",
     district: "",
@@ -329,6 +331,7 @@ const prebookingFormSlice = createSlice({
     p_houseNum: "",
     p_streetName: "",
     p_village: "",
+    p_mandal:"",
     p_city: "",
     p_state: "",
     p_district: "",
@@ -385,15 +388,9 @@ const prebookingFormSlice = createSlice({
     pan_number: "",
     relationship_proof: "",
     gstin_number: "",
+    employee_id: "",
     // Booking Drop
-    drop_reason: "",
-    drop_sub_reason: "",
-    drop_remarks: "",
     reject_remarks: "",
-    d_brand_name: "",
-    d_dealer_name: "",
-    d_location: "",
-    d_model: "",
     // PreBooking Payment Details
     type_of_upi: "",
     transfer_from_mobile: "",
@@ -445,6 +442,7 @@ const prebookingFormSlice = createSlice({
       state.house_number = "";
       state.street_name = "";
       state.village = "";
+      state.mandal = "";
       state.city = "";
       state.state = "";
       state.district = "";
@@ -455,6 +453,7 @@ const prebookingFormSlice = createSlice({
       state.p_houseNum = "";
       state.p_streetName = "";
       state.p_village = "";
+      state.p_mandal = "";
       state.p_city = "";
       state.p_state = "";
       state.p_district = "";
@@ -511,15 +510,9 @@ const prebookingFormSlice = createSlice({
       state.pan_number = "";
       state.relationship_proof = "";
       state.gstin_number = "";
+      state.employee_id = "";
       // Booking Drop
-      state.drop_reason = "";
-      state.drop_sub_reason = "";
-      state.drop_remarks = "";
       state.reject_remarks = "";
-      state.d_brand_name = "";
-      state.d_dealer_name = "";
-      state.d_location = "";
-      state.d_model = "";
       // PreBooking Payment Details
       state.type_of_upi = "";
       state.transfer_from_mobile = "";
@@ -611,12 +604,6 @@ const prebookingFormSlice = createSlice({
           break;
         case "VEHICLE_TYPE":
           state.vehicle_type = value;
-          break;
-        case "DROP_REASON":
-          state.drop_reason = value;
-          break;
-        case "DROP_SUB_REASON":
-          state.drop_sub_reason = value;
           break;
       }
     },
@@ -724,6 +711,9 @@ const prebookingFormSlice = createSlice({
         case "VILLAGE":
           state.village = text;
           break;
+        case "MANDAL":
+          state.mandal = text;
+          break;
         case "CITY":
           state.city = text;
           break;
@@ -745,6 +735,7 @@ const prebookingFormSlice = createSlice({
             state.p_houseNum = state.house_number;
             state.p_streetName = state.street_name;
             state.p_village = state.village;
+            state.p_mandal = state.mandal;
             state.p_city = state.city;
             state.p_district = state.district;
             state.p_state = state.state;
@@ -764,6 +755,9 @@ const prebookingFormSlice = createSlice({
           break;
         case "P_VILLAGE":
           state.p_village = text;
+          break;
+        case "P_MANDAL":
+          state.p_mandal = text;
           break;
         case "P_CITY":
           state.p_city = text;
@@ -896,26 +890,14 @@ const prebookingFormSlice = createSlice({
         case "GSTIN_NUMBER":
           state.gstin_number = text;
           break;
+        case "EMPLOYEE_ID":
+          state.employee_id = text;
+          break;
       }
     },
     setBookingDropDetails: (state, action) => {
       const { key, text } = action.payload;
       switch (key) {
-        case "DROP_REMARKS":
-          state.drop_remarks = text;
-          break;
-        case "DROP_BRAND_NAME":
-          state.d_brand_name = text;
-          break;
-        case "DROP_DEALER_NAME":
-          state.d_dealer_name = text;
-          break;
-        case "DROP_LOCATION":
-          state.d_location = text;
-          break;
-        case "DROP_MODEL":
-          state.d_model = text;
-          break;
         case "REJECT_REMARKS":
           state.reject_remarks = text;
           break;
@@ -1006,6 +988,7 @@ const prebookingFormSlice = createSlice({
             state.house_number = address.houseNo ? address.houseNo : "";
             state.street_name = address.street ? address.street : "";
             state.village = address.village ? address.village : "";
+            state.mandal = address.mandal ? address.mandal:"";
             state.city = address.city ? address.city : "";
             state.district = address.district ? address.district : "";
             state.state = address.state ? address.state : "";
@@ -1024,6 +1007,7 @@ const prebookingFormSlice = createSlice({
             state.p_houseNum = address.houseNo ? address.houseNo : "";
             state.p_streetName = address.street ? address.street : "";
             state.p_village = address.village ? address.village : "";
+            state.p_mandal = address.mandal ? address.mandal :"";
             state.p_city = address.city ? address.city : "";
             state.p_district = address.district ? address.district : "";
             state.p_state = address.state ? address.state : "";
@@ -1105,6 +1089,7 @@ const prebookingFormSlice = createSlice({
     updateAddressByPincode: (state, action) => {
 
       state.village = action.payload.Block || ""
+      
       state.city = action.payload.Region || ""
       state.district = action.payload.District || ""
       state.state = action.payload.State || ""

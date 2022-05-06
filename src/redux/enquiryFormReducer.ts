@@ -149,6 +149,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     houseNum: "",
     streetName: "",
     village: "",
+    mandal:"",
     city: "",
     state: "",
     district: "",
@@ -159,6 +160,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     p_houseNum: "",
     p_streetName: "",
     p_village: "",
+    p_mandal:"",
     p_city: "",
     p_state: "",
     p_district: "",
@@ -204,6 +206,8 @@ const enquiryDetailsOverViewSlice = createSlice({
     pan_image: null,
     adhaar_number: "",
     adhaar_image: null,
+    employee_id: "",
+    gstin_number: "",
     // Additional Buyer
     a_make: "",
     a_model: "",
@@ -237,14 +241,6 @@ const enquiryDetailsOverViewSlice = createSlice({
     r_insurence_from_date: "",
     r_insurence_to_date: "",
     r_insurence_document_checked: false,
-    // DROP SECTION
-    drop_reason: "",
-    drop_sub_reason: "",
-    drop_remarks: "",
-    d_brand_name: "",
-    d_dealer_name: "",
-    d_location: "",
-    d_model: "",
     // data variables
     enquiry_details_response: null,
     update_enquiry_details_response: null,
@@ -265,6 +261,8 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.enquiry_details_response = null;
       state.update_enquiry_details_response = null;
       state.customer_types_response = null;
+      state.employee_id = "";
+      state.gstin_number = "";
     },
     setEditable: (state, action) => {
       console.log("pressed");
@@ -407,12 +405,6 @@ const enquiryDetailsOverViewSlice = createSlice({
         case "R_INSURENCE_TYPE":
           state.r_insurence_type = value;
           break;
-        case "DROP_REASON":
-          state.drop_reason = value;
-          break;
-        case "DROP_SUB_REASON":
-          state.drop_sub_reason = value;
-          break;
         case "R_INSURENCE_COMPANY_NAME":
           state.r_insurence_company_name = value;
           break;
@@ -430,8 +422,12 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.maxDate = new Date();
           break;
         case "ANNIVERSARY_DATE":
-          state.minDate = null;
-          state.maxDate = new Date();
+          if (!!state.dateOfBirth) {
+            state.minDate = new Date(state.dateOfBirth);
+          }else {
+            state.minDate = new Date();
+          }
+          state.maxDate = null;
           break;
         case "R_MFG_YEAR":
           state.minDate = null;
@@ -582,6 +578,9 @@ const enquiryDetailsOverViewSlice = createSlice({
         case "VILLAGE":
           state.village = text;
           break;
+        case "MANDAL":
+          state.mandal = text;
+          break;
         case "CITY":
           state.city = text;
           break;
@@ -603,6 +602,7 @@ const enquiryDetailsOverViewSlice = createSlice({
             state.p_houseNum = state.houseNum;
             state.p_streetName = state.streetName;
             state.p_village = state.village;
+            state.p_mandal = state.mandal;
             state.p_city = state.city;
             state.p_district = state.district;
             state.p_state = state.state;
@@ -622,6 +622,9 @@ const enquiryDetailsOverViewSlice = createSlice({
           break;
         case "P_VILLAGE":
           state.p_village = text;
+          break;
+        case "P_MANDAL":
+          state.p_mandal = text;
           break;
         case "P_CITY":
           state.p_city = text;
@@ -746,6 +749,12 @@ const enquiryDetailsOverViewSlice = createSlice({
         case "ADHAR":
           state.adhaar_number = text;
           break;
+        case "EMPLOYEE_ID":
+          state.employee_id = text;
+          break;
+        case "GSTIN_NUMBER":
+          state.gstin_number = text;
+          break;
         case "UPLOAD_PAN":
           break;
         case "UPLOAD_ADHAR":
@@ -820,21 +829,6 @@ const enquiryDetailsOverViewSlice = createSlice({
     setEnquiryDropDetails: (state, action) => {
       const { key, text } = action.payload;
       switch (key) {
-        case "DROP_REMARKS":
-          state.drop_remarks = text;
-          break;
-        case "DROP_BRAND_NAME":
-          state.d_brand_name = text;
-          break;
-        case "DROP_DEALER_NAME":
-          state.d_dealer_name = text;
-          break;
-        case "DROP_LOCATION":
-          state.d_location = text;
-          break;
-        case "DROP_MODEL":
-          state.d_model = text;
-          break;
       }
     },
     updateDmsContactOrAccountDtoData: (state, action) => {
@@ -963,6 +957,7 @@ const enquiryDetailsOverViewSlice = createSlice({
             state.houseNum = address.houseNo ? address.houseNo : "";
             state.streetName = address.street ? address.street : "";
             state.village = address.village ? address.village : "";
+            state.mandal = address.mandal? address.mandal:"";
             state.city = address.city ? address.city : "";
             state.district = address.district ? address.district : "";
             state.state = address.state ? address.state : "";
@@ -979,6 +974,7 @@ const enquiryDetailsOverViewSlice = createSlice({
             state.p_houseNum = address.houseNo ? address.houseNo : "";
             state.p_streetName = address.street ? address.street : "";
             state.p_village = address.village ? address.village : "";
+            state.p_mandal = address.mandal ? address.mandal:"";
             state.p_city = address.city ? address.city : "";
             state.p_district = address.district ? address.district : "";
             state.p_state = address.state ? address.state : "";
@@ -1204,6 +1200,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     updateAddressByPincode: (state, action) => {
 
       state.village = action.payload.Block || ""
+      state.mandal = action.payload.Mandal || ""
       state.city = action.payload.Region || ""
       state.district = action.payload.District || ""
       state.state = action.payload.State || ""

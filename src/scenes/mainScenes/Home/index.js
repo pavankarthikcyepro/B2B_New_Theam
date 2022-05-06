@@ -5,7 +5,7 @@ import { Colors, GlobalStyle } from '../../../styles';
 import { IconButton, Card, Button } from 'react-native-paper';
 import VectorImage from 'react-native-vector-image';
 import { useDispatch, useSelector } from 'react-redux';
-import { FILTER, SPEED } from '../../../assets/svg';
+import { FILTER } from '../../../assets/svg';
 import { DateItem } from '../../../pureComponents/dateItem';
 import { AppNavigator } from '../../../navigations';
 import {
@@ -40,6 +40,7 @@ import moment from 'moment';
 import { TargetAchivementComp } from './targetAchivementComp';
 import { HeaderComp, DropDownComponant } from '../../../components';
 import { TargetDropdown } from "../../../pureComponents";
+import SPEED from "../../../assets/images/speed.svg";
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 30) / 2;
@@ -460,12 +461,7 @@ const HomeScreen = ({ route, navigation }) => {
                                             flexDirection: 'row'
                                         }}>
                                             <View style={styles.rankIconBox}>
-                                                <VectorImage
-                                                    width={25}
-                                                    height={16}
-                                                    source={SPEED}
-                                                // style={{ tintColor: Colors.DARK_GRAY }}
-                                                />
+                                                <SPEED width={25} height={16} />
                                             </View>
                                             <View style={{
                                                 marginTop: 5,
@@ -489,12 +485,7 @@ const HomeScreen = ({ route, navigation }) => {
                                             flexDirection: 'row'
                                         }}>
                                             <View style={styles.rankIconBox}>
-                                                <VectorImage
-                                                    width={25}
-                                                    height={16}
-                                                    source={SPEED}
-                                                // style={{ tintColor: Colors.DARK_GRAY }}
-                                                />
+                                                <SPEED width={25} height={16} />
                                             </View>
                                             <View style={{
                                                 marginTop: 5,
@@ -540,12 +531,7 @@ const HomeScreen = ({ route, navigation }) => {
                                             flexDirection: 'row'
                                         }}>
                                             <View style={styles.rankIconBox}>
-                                                <VectorImage
-                                                    width={25}
-                                                    height={16}
-                                                    source={SPEED}
-                                                // style={{ tintColor: Colors.DARK_GRAY }}
-                                                />
+                                                <SPEED width={25} height={16} />
                                             </View>
                                             <View style={{
                                                 marginTop: 5,

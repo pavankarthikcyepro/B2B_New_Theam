@@ -17,6 +17,8 @@
 // export const dashboard = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8092/dashboard";
 // export const dfGetAll = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/df-get-all"
 // export const subSourceAllDetails = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails"
+// export const salesGap = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8092/sales-gap"
+// export const lostSubLost = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails"
 
 // Dev End Points
 
@@ -37,6 +39,7 @@ export const dashboard = "http://automatestaging-724985329.ap-south-1.elb.amazon
 export const dfGetAll = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/df-get-all"
 export const subSourceAllDetails = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails"
 export const salesGap = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/sales-gap"
+export const lostSubLost = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails"
 
 
 const URL = {
@@ -181,17 +184,21 @@ const URL = {
         return `${dashboard}/v2/get_emp_target_ranking/org/${orgId}/branch/${branchId}`
     },
     GET_BANK_DETAILS: (orgId) => {
-        return dfGetAll + `/${orgId}/%22Active%22/bankFinancier`;
+        return dfGetAll + `/${orgId}/%22Active%22/${orgId}/bankFinancier`;
     },
     GET_INSURENCE_COMPANY_NAMES: (orgId) => {
-        return dfGetAll + `/${orgId}/%22Active%22/incuranceCompany`
+        return dfGetAll + `/${orgId}/%22Active%22/${orgId}/incuranceCompany`
+    },
+    GET_DROP_LIST: (ordId, type) => {
+        return lostSubLost + `?organizationId=${ordId}&stageName=${type}`
+    },
+    GET_MY_TASKS_NEW_DATA: () => {
+        return dashboard + "/v2/get_todays_datav2";
     }
 }
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason
-
-// http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails?organizationId=1
-
+// http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/df-get-all/1/%22Active%22/1/enqueryCategory
 
 // http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/oh/active-dropdowns/13/412
 

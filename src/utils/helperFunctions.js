@@ -277,3 +277,36 @@ export const GetPaidAccessoriesList = async (vehicleId, orgId, token) => {
       .catch((err) => reject(err));
   });
 };
+
+export const GetDropList = async ( orgId, token, type) => {
+  return await new Promise((resolve, reject) => {
+    const url = URL.GET_DROP_LIST(orgId, type);
+    //console.log("url: ", url);
+    fetch(url, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "auth-token": token
+      },
+    })
+      .then((json) => json.json())
+      .then((res) => {
+        //console.log("res: ", JSON.stringify(res))
+        if (res != undefined && res.length > 0) {
+          const updatedData = [];
+          res.forEach(obj => {
+            const newObj = {...obj};
+            if (newObj.status === "Active") {
+              newObj.name = newObj.lostReason;
+              updatedData.push(newObj)
+            } 
+          })
+          resolve(updatedData);
+        } else {
+          resolve([]);
+        }
+      })
+      .catch((err) => reject(err));
+  });
+};
