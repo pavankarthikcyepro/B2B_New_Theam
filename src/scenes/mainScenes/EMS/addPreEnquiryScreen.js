@@ -52,7 +52,7 @@ import {
     showToastSucess,
 } from "../../../utils/toast";
 import URL from "../../../networking/endpoints";
-import { isValidateAlphabetics } from "../../../utils/helperFunctions";
+import { isValidateAlphabetics, PincodeDetails } from "../../../utils/helperFunctions";
 import moment from "moment";
 
 const screenWidth = Dimensions.get("window").width;
@@ -92,6 +92,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         msg: "",
     });
     const [subSourceData, setSubSourceData] = useState([]);
+    const [address, setAddress] = useState({ block: "", district: "", region: "", state: "" })
 
     useEffect(() => {
         getAsyncstoreData();
@@ -158,44 +159,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                 }
             }
         }
-    };
-
-    const getBranchId = () => {
-        AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then((branchId) => {
-            setBranchId(branchId);
-        });
-    };
-
-    const getAuthToken = () => {
-        AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
-            setUserToken(token);
-        });
-    };
-
-    const getCarModelListFromServer = (orgId) => {
-        // Call Api
-        GetCarModelList(orgId)
-            .then(
-                (resolve) => {
-                    let modalList = [];
-                    if (resolve.length > 0) {
-                        resolve.forEach((item) => {
-                            modalList.push({
-                                id: item.vehicleId,
-                                name: item.model,
-                                isChecked: false,
-                            });
-                        });
-                    }
-                    setDataForCarModels([...modalList]);
-                },
-                (rejected) => {
-                    console.log("getCarModelListFromServer Failed");
-                }
-            )
-            .finally(() => {
-                // Get Enquiry Details
-            });
     };
 
     const setExistingData = () => {
@@ -285,18 +248,19 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     };
 
     const confirmToCreateLeadAgain = (response) => {
+        // "Continue To Create a Lead"
         Alert.alert(
             response.message,
-            "Continue To Create a Lead",
+            "",
             [
                 {
-                    text: "Cancel",
+                    text: "Ok",
                     style: "cancel",
                 },
-                {
-                    text: "Create Lead",
-                    onPress: () => proceedToCreateLeadMethod(response),
-                },
+                // {
+                //   text: "Create Lead",
+                //   onPress: () => proceedToCreateLeadMethod(response),
+                // },
             ],
             { cancelable: false }
         );
@@ -351,238 +315,71 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             ],
         };
 
-        const url = URL.CREATE_CONTACT() + "/lead?allocateDse=false";
-        let dataObj = {
-            url: url,
-            body: formData,
-        };
-        dispatch(createPreEnquiry(dataObj));
-    };
-
-    const submitClicked = () => {
-        Keyboard.dismiss();
-
-        if (
-            selector.enquiryType.length == 0 ||
-            selector.customerType.length == 0 ||
-            selector.firstName.length == 0 ||
-            selector.lastName.length == 0 ||
-            selector.mobile.length == 0 ||
-            selector.carModel.length == 0 ||
-            selector.sourceOfEnquiry.length == 0
-        ) {
-            showToastRedAlert("Please fill required fields");
-            return;
-        }
-        if (selector.enquiryType === "Personal") {
-            if (selector.customerType === "Government") {
-                if (!isValidateAlphabetics(selector.companyName)) {
-                    showToast("Please enter alphabetics only Company Name");
-                    return;
-                }
-            }
-        }
-
-        if (selector.enquiryType === "Personal" && selector.customerType === "Other") {
-            if (selector.other.length > 0 && !isValidateAlphabetics(selector.other)) {
-                showToast("Please enter the alphabets only in other");
-                return;
-            }
-        }
-
-        if (!fromEdit) {
-            if (selector.pincode.length == 0) {
-                showToastRedAlert("Please fill pincode");
-                return;
-            }
-        }
-
-        const enquirySegmentName = selector.enquiryType
-            .replace(/\s/g, "")
-            .toLowerCase();
-        if (
-            enquirySegmentName !== "commercial" &&
-            enquirySegmentName !== "company"
-        ) {
-            if (!isValidateAlphabetics(selector.firstName)) {
-                // showToast("please enter alphabetics only in firstname ");
-                setFirstNameErrorHandler({
-                    showError: true,
-                    msg: "please enter alphabetics only",
-                });
-                return;
-            }
-            if (!isValidateAlphabetics(selector.lastName)) {
-                // showToast("please enter alphabetics only in lastname ");
-                setLastNameErrorHandler({
-                    showError: true,
-                    msg: "please enter alphabetics only",
-                });
-                return;
-            }
-        }
-        if (selector.mobile.length > 0 && !isMobileNumber(selector.mobile)) {
-            showToast("Please enter valid number");
-            return;
-        }
-        if (
-            selector.alterMobile.length > 0 &&
-            !isMobileNumber(selector.alterMobile)
-        ) {
-            showToast("Please enter valid alternate mobile number");
-            return;
-        }
-
-        if (selector.email.length > 0 && !isEmail(selector.email)) {
-            showToast("Please enter valid email");
-            return;
-        }
-
-        if (!fromEdit) {
-            if (selector.pincode.length > 0 && !isPincode(selector.pincode)) {
-                showToast("Please enter valid pincode");
-                return;
-            }
-        }
-
-        if (selector.sourceOfEnquiry === "Event") {
-            if (selector.eventName.length === 0) {
-                showToast("Please select event details");
-                return;
-            }
-        }
-
-        if (fromEdit) {
-            updatePreEneuquiryDetails();
-            return;
-        }
-
-        // Genereate new ref number
-        getReferenceNumber();
-    };
-
-    const getReferenceNumber = async () => {
-        const bodyObj = {
-            branchid: Number(branchId),
-            leadstage: "PREENQUIRY",
-            orgid: userData.orgId,
-        };
-
-        // console.log("URL: ", URL.CUSTOMER_LEAD_REFERENCE())
-        // console.log("bodyObj: ", bodyObj)
-
-        await fetch(URL.CUSTOMER_LEAD_REFERENCE(), {
-            method: "POST",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                "auth-token": userToken,
-            },
-            body: JSON.stringify(bodyObj),
-        })
-            .then((response) => response.json())
-            .then((jsonObj) => {
-                if (jsonObj.success == true) {
-                    const dmsEntiry = jsonObj.dmsEntity;
-                    const refNumber = dmsEntiry.leadCustomerReference.referencenumber;
-                    makeCreatePreEnquiry(refNumber);
-                } else {
-                    showToast("Refrence number failed");
-                }
-            })
-            .catch((error) => {
-                showToastRedAlert(error.message);
+        const getBranchId = () => {
+            AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then((branchId) => {
+                setBranchId(branchId);
             });
-    };
-
-    const makeCreatePreEnquiry = (refNumber) => {
-        const dmsContactDtoObj = {
-            branchId: Number(branchId),
-            createdBy: employeeName,
-            customerType: selector.customerType,
-            firstName: selector.firstName,
-            lastName: selector.lastName,
-            modifiedBy: employeeName,
-            orgId: organizationId,
-            phone: selector.mobile,
-            company: selector.companyName,
-            email: selector.email,
-            enquirySource: selector.sourceOfEnquiryId,
-            ownerName: employeeName,
-            secondaryPhone: selector.alterMobile,
-            status: "PREENQUIRY",
         };
 
-        const dmsLeadDtoObj = {
-            branchId: Number(branchId),
-            createdBy: employeeName,
-            enquirySegment: selector.enquiryType,
-            firstName: selector.firstName,
-            lastName: selector.lastName,
-            email: selector.email,
-            leadStage: "PREENQUIRY",
-            organizationId: organizationId,
-            phone: selector.mobile,
-            model: selector.carModel,
-            sourceOfEnquiry: selector.sourceOfEnquiryId,
-            eventCode: selector.eventName,
-            referencenumber: refNumber,
-            dmsAddresses: [
-                {
-                    addressType: "Communication",
-                    houseNo: "",
-                    street: "",
-                    city: "",
-                    district: "",
-                    pincode: selector.pincode,
-                    state: "",
-                    village: "",
-                    county: "India",
-                    rural: false,
-                    urban: true,
-                    id: 0,
-                },
-                {
-                    addressType: "Permanent",
-                    houseNo: "",
-                    street: "",
-                    city: "",
-                    district: "",
-                    pincode: selector.pincode,
-                    state: "",
-                    village: "",
-                    county: "India",
-                    rural: false,
-                    urban: true,
-                    id: 0,
-                },
-            ],
-        };
-
-        // http://ec2-3-7-117-218.ap-south-1.compute.amazonaws.com:8081
-
-        let url = sales_url;
-        let formData = {};
-        if (selector.customerType === "Individual") {
-            url = url + "/contact?allocateDse=" + selector.create_enquiry_checked;
-            formData = {
-                dmsContactDto: dmsContactDtoObj,
-                dmsLeadDto: dmsLeadDtoObj,
-            };
-        } else {
-            url = url + "/account?allocateDse=" + selector.create_enquiry_checked;
-            formData = {
-                dmsAccountDto: dmsContactDtoObj,
-                dmsLeadDto: dmsLeadDtoObj,
-            };
+        const getAuthToken = () => {
+            AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
+                setUserToken(token);
+            });
+            return;
         }
+    }
+    if (selector.mobile.length > 0 && !isMobileNumber(selector.mobile)) {
+        showToast("Please enter valid number");
+        return;
+    }
+    if (
+        selector.alterMobile.length > 0 &&
+        !isMobileNumber(selector.alterMobile)
+    ) {
+        showToast("Please enter valid alternate mobile number");
+        return;
+    }
 
-        let dataObj = {
-            url: url,
-            body: formData,
-        };
-        dispatch(createPreEnquiry(dataObj));
-    };
+    if (selector.email.length > 0 && !isEmail(selector.email)) {
+        showToast("Please enter valid email");
+        return;
+    }
+
+    if (!fromEdit) {
+        if (selector.pincode.length > 0 && !isPincode(selector.pincode)) {
+            showToast("Please enter valid pincode");
+            return;
+        }
+    }
+
+    // Get Pincode details from server
+    GetPincodeDetails(selector.pincode);
+
+    if (selector.sourceOfEnquiry === "Event") {
+        if (selector.eventName.length === 0) {
+            showToast("Please select event details");
+            return;
+        }
+    }
+
+    if (fromEdit) {
+        updatePreEneuquiryDetails();
+        return;
+    }
+
+    const GetPincodeDetails = (pincode) => {
+
+        PincodeDetails(pincode).then(
+            (resolve) => {
+                // update address
+                setAddress({ block: resolve.Block || "", district: resolve.District || "", region: resolve.Region || "", state: resolve.State || "" })
+            },
+            (rejected) => {
+                console.log("rejected...: ", rejected);
+            }
+        );
+    }
+
 
     // Handle Create Enquiry response
     useEffect(() => {
@@ -591,8 +388,8 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         } else if (selector.createEnquiryStatus === "failed") {
             if (
                 selector.create_enquiry_response_obj &&
-                selector.create_enquiry_response_obj.accountId != null &&
-                selector.create_enquiry_response_obj.contactId != null
+                selector.create_enquiry_response_obj.accountId != null && selector.create_enquiry_response_obj.accountId != 0 ||
+                selector.create_enquiry_response_obj.contactId != null && selector.create_enquiry_response_obj.contactId != 0
             ) {
                 confirmToCreateLeadAgain(selector.create_enquiry_response_obj);
             } else {
@@ -608,6 +405,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         if (selector.updateEnquiryStatus === "success") {
             showToastSucess("Pre-enquiry successfully updated");
             navigation.popToTop();
+            dispatch(clearState())
         } else if (selector.updateEnquiryStatus === "failed") {
             if (
                 selector.create_enquiry_response_obj &&
@@ -616,9 +414,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             ) {
                 confirmToCreateLeadAgain(selector.create_enquiry_response_obj);
             } else {
-                showToast(
-                    selector.create_enquiry_response_obj.message || "something went wrong"
-                );
+                showToast(selector.create_enquiry_response_obj.message || "something went wrong");
             }
         }
     }, [selector.updateEnquiryStatus, selector.create_enquiry_response_obj]);
@@ -676,164 +472,539 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             url: url,
             body: formData,
         };
-        dispatch(updatePreEnquiry(dataObj));
-    };
 
-    const showDropDownModelMethod = (key, headerText) => {
-        Keyboard.dismiss();
+        proceedToCreateLeadMethod = (data) => {
+            let formData = {
+                branchId: branchId,
+                createdBy: employeeName,
+                dmsaccountid: data.accountId,
+                dmscontactid: data.contactId,
+                enquirySegment: selector.enquiryType,
+                firstName: selector.firstName,
+                lastName: selector.lastName,
+                leadStage: "PREENQUIRY",
+                model: selector.carModel,
+                organizationId: organizationId,
+                phone: selector.mobile,
+                sourceOfEnquiry: selector.sourceOfEnquiryId,
+                eventCode: "",
+                email: selector.email,
+                referencenumber: "",
+                dmsAddresses: [
+                    {
+                        addressType: "Communication",
+                        houseNo: "",
+                        street: "",
+                        city: "",
+                        district: "",
+                        pincode: selector.pincode,
+                        state: "",
+                        village: "",
+                        county: "India",
+                        rural: false,
+                        urban: true,
+                        id: 0,
+                    },
+                    {
+                        addressType: "Permanent",
+                        houseNo: "",
+                        street: "",
+                        city: "",
+                        district: "",
+                        pincode: selector.pincode,
+                        state: "",
+                        village: "",
+                        county: "India",
+                        rural: false,
+                        urban: true,
+                        id: 0,
+                    },
+                ],
+            };
 
-        switch (key) {
-            case "CAR_MODEL":
-                setDataForDropDown([...dataForCarModels]);
-                break;
-            case "ENQUIRY_SEGMENT":
-                if (selector.enquiry_type_list.length === 0) {
-                    showToast("No Enquiry Types found");
-                    return;
-                }
-                setDataForDropDown([...selector.enquiry_type_list]);
-                break;
-            case "CUSTOMER_TYPE":
-                if (selector.customer_type_list.length === 0) {
-                    showToast("No Customer Types found");
-                    return;
-                }
-                setDataForDropDown([...selector.customer_type_list]);
-                break;
-            case "SOURCE_OF_ENQUIRY":
-                if (homeSelector.source_of_enquiry_list.length === 0) {
-                    showToast("No data found");
-                    return;
-                }
-                setDataForDropDown([...homeSelector.source_of_enquiry_list]);
-                break;
-            case "SUB_SOURCE_OF_ENQUIRY":
-                setDataForDropDown([...subSourceData]);
-                break;
-            case "EVENT_NAME":
-                if (homeSelector.event_list.length === 0) {
-                    showToast("No events found");
-                    return;
-                }
-                setDataForDropDown([...selector.event_list]);
-                break;
-        }
-        setDropDownKey(key);
-        setDropDownTitle(headerText);
-        setShowDropDownModel(true);
-    };
-
-    const showDatePickerMethod = (key) => {
-        setShowDatePicker(true);
-        setDatePickerId(key);
-    };
-
-    const getEventListFromServer = (startDate, endDate) => {
-        if (
-            startDate === undefined ||
-            startDate === null ||
-            endDate === undefined ||
-            endDate === null
-        ) {
-            return;
-        }
-
-        const payload = {
-            startDate: startDate,
-            endDate: endDate,
-            empId: userData.employeeId,
-            branchId: branchId,
-            orgId: userData.orgId,
+            const url = URL.CREATE_CONTACT() + "/lead?allocateDse=false";
+            let dataObj = {
+                url: url,
+                body: formData,
+            };
+            dispatch(createPreEnquiry(dataObj));
         };
-        dispatch(getEventListApi(payload));
-    };
 
-    // Handle When Event dates selected
-    useEffect(() => {
-        if (selector.eventStartDate && selector.eventEndDate) {
-            getEventListFromServer(selector.eventStartDate, selector.eventEndDate);
-        }
-    }, [selector.eventStartDate, selector.eventEndDate]);
+        const submitClicked = () => {
+            Keyboard.dismiss();
 
-    updateSubSourceData = (item) => {
-        console.log("item: ", item);
-        if (item.subsource && item.subsource.length > 0) {
-            const updatedData = [];
-            item.subsource.forEach((subItem, index) => {
-                const newItem = { ...subItem };
-                newItem.name = subItem.subSource;
-                if (newItem.status === "Active") {
-                    updatedData.push(newItem);
-                }
-            });
-            setSubSourceData(updatedData);
-        } else {
-            setSubSourceData([]);
-        }
-    };
-
-    return (
-        <SafeAreaView style={styles.container}>
-            {/* // select modal */}
-            <DropDownComponant
-                visible={showDropDownModel}
-                headerTitle={dropDownTitle}
-                data={dataForDropDown}
-                onRequestClose={() => setShowDropDownModel(false)}
-                selectedItems={(item) => {
-                    console.log("selected: ", item);
-
-                    if (dropDownKey === "SOURCE_OF_ENQUIRY") {
-                        if (item.name === "Event") {
-                            getEventListFromServer();
-                        }
-                        updateSubSourceData(item);
+            if (
+                selector.enquiryType.length == 0 ||
+                selector.customerType.length == 0 ||
+                selector.firstName.length == 0 ||
+                selector.lastName.length == 0 ||
+                selector.mobile.length == 0 ||
+                selector.carModel.length == 0 ||
+                selector.sourceOfEnquiry.length == 0
+            ) {
+                showToastRedAlert("Please fill required fields");
+                return;
+            }
+            if (selector.enquiryType === "Personal") {
+                if (selector.customerType === "Government") {
+                    if (!isValidateAlphabetics(selector.companyName)) {
+                        showToast("Please enter alphabetics only Company Name");
+                        return;
                     }
-                    setShowDropDownModel(false);
-                    dispatch(
-                        setDropDownData({ key: dropDownKey, value: item.name, id: item.id })
-                    );
-                }}
-            />
+                }
+            }
 
-            <DatePickerComponent
-                visible={showDatePicker}
-                mode={"date"}
-                value={new Date(Date.now())}
-                onChange={(event, selectedDate) => {
-                    console.log("date: ", selectedDate);
-                    if (Platform.OS === "android") {
-                        if (selectedDate) {
+            if (selector.enquiryType === "Personal" && selector.customerType === "Other") {
+                if (selector.other.length > 0 && !isValidateAlphabetics(selector.other)) {
+                    showToast("Please enter the alphabets only in other");
+                    return;
+                }
+            }
+
+            if (!fromEdit) {
+                if (selector.pincode.length == 0) {
+                    showToastRedAlert("Please fill pincode");
+                    return;
+                }
+            }
+
+            const enquirySegmentName = selector.enquiryType
+                .replace(/\s/g, "")
+                .toLowerCase();
+            if (
+                enquirySegmentName !== "commercial" &&
+                enquirySegmentName !== "company"
+            ) {
+                if (!isValidateAlphabetics(selector.firstName)) {
+                    // showToast("please enter alphabetics only in firstname ");
+                    setFirstNameErrorHandler({
+                        showError: true,
+                        msg: "please enter alphabetics only",
+                    });
+                    return;
+                }
+                if (!isValidateAlphabetics(selector.lastName)) {
+                    // showToast("please enter alphabetics only in lastname ");
+                    setLastNameErrorHandler({
+                        showError: true,
+                        msg: "please enter alphabetics only",
+                    });
+                    return;
+                }
+            }
+            if (selector.mobile.length > 0 && !isMobileNumber(selector.mobile)) {
+                showToast("Please enter valid number");
+                return;
+            }
+            if (
+                selector.alterMobile.length > 0 &&
+                !isMobileNumber(selector.alterMobile)
+            ) {
+                showToast("Please enter valid alternate mobile number");
+                return;
+            }
+
+            if (selector.email.length > 0 && !isEmail(selector.email)) {
+                showToast("Please enter valid email");
+                return;
+            }
+
+            if (!fromEdit) {
+                if (selector.pincode.length > 0 && !isPincode(selector.pincode)) {
+                    showToast("Please enter valid pincode");
+                    return;
+                }
+            }
+
+            if (selector.sourceOfEnquiry === "Event") {
+                if (selector.eventName.length === 0) {
+                    showToast("Please select event details");
+                    return;
+                }
+            }
+
+            if (fromEdit) {
+                updatePreEneuquiryDetails();
+                return;
+            }
+
+            // Genereate new ref number
+            getReferenceNumber();
+        };
+
+        const getReferenceNumber = async () => {
+            const bodyObj = {
+                branchid: Number(branchId),
+                leadstage: "PREENQUIRY",
+                orgid: userData.orgId,
+            };
+
+            // console.log("URL: ", URL.CUSTOMER_LEAD_REFERENCE())
+            // console.log("bodyObj: ", bodyObj)
+
+            await fetch(URL.CUSTOMER_LEAD_REFERENCE(), {
+                method: "POST",
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                    "auth-token": userToken,
+                },
+                body: JSON.stringify(bodyObj),
+            })
+                .then((response) => response.json())
+                .then((jsonObj) => {
+                    if (jsonObj.success == true) {
+                        const dmsEntiry = jsonObj.dmsEntity;
+                        const refNumber = dmsEntiry.leadCustomerReference.referencenumber;
+                        makeCreatePreEnquiry(refNumber);
+                    } else {
+                        showToast("Refrence number failed");
+                    }
+                })
+                .catch((error) => {
+                    showToastRedAlert(error.message);
+                });
+        };
+
+        const makeCreatePreEnquiry = (refNumber) => {
+            const dmsContactDtoObj = {
+                branchId: Number(branchId),
+                createdBy: employeeName,
+                customerType: selector.customerType,
+                firstName: selector.firstName,
+                lastName: selector.lastName,
+                modifiedBy: employeeName,
+                orgId: organizationId,
+                phone: selector.mobile,
+                company: selector.companyName,
+                email: selector.email,
+                enquirySource: selector.sourceOfEnquiryId,
+                ownerName: employeeName,
+                secondaryPhone: selector.alterMobile,
+                status: "PREENQUIRY",
+            };
+
+            const dmsLeadDtoObj = {
+                branchId: Number(branchId),
+                createdBy: employeeName,
+                enquirySegment: selector.enquiryType,
+                firstName: selector.firstName,
+                lastName: selector.lastName,
+                email: selector.email,
+                leadStage: "PREENQUIRY",
+                organizationId: organizationId,
+                phone: selector.mobile,
+                model: selector.carModel,
+                sourceOfEnquiry: selector.sourceOfEnquiryId,
+                eventCode: selector.eventName,
+                referencenumber: refNumber,
+                dmsAddresses: [
+                    {
+                        addressType: "Communication",
+                        houseNo: "",
+                        street: "",
+                        city: "",
+                        district: "",
+                        pincode: selector.pincode,
+                        state: "",
+                        village: "",
+                        county: "India",
+                        rural: false,
+                        urban: true,
+                        id: 0,
+                    },
+                    {
+                        addressType: "Permanent",
+                        houseNo: "",
+                        street: "",
+                        city: "",
+                        district: "",
+                        pincode: selector.pincode,
+                        state: "",
+                        village: "",
+                        county: "India",
+                        rural: false,
+                        urban: true,
+                        id: 0,
+                    },
+                ],
+            };
+
+            // http://ec2-3-7-117-218.ap-south-1.compute.amazonaws.com:8081
+
+            let url = sales_url;
+            let formData = {};
+            if (selector.customerType === "Individual") {
+                url = url + "/contact?allocateDse=" + selector.create_enquiry_checked;
+                formData = {
+                    dmsContactDto: dmsContactDtoObj,
+                    dmsLeadDto: dmsLeadDtoObj,
+                };
+            } else {
+                url = url + "/account?allocateDse=" + selector.create_enquiry_checked;
+                formData = {
+                    dmsAccountDto: dmsContactDtoObj,
+                    dmsLeadDto: dmsLeadDtoObj,
+                };
+            }
+
+            let dataObj = {
+                url: url,
+                body: formData,
+            };
+            dispatch(createPreEnquiry(dataObj));
+        };
+
+        // Handle Create Enquiry response
+        useEffect(() => {
+            if (selector.createEnquiryStatus === "success") {
+                gotoConfirmPreEnquiryScreen(selector.create_enquiry_response_obj);
+            } else if (selector.createEnquiryStatus === "failed") {
+                if (
+                    selector.create_enquiry_response_obj &&
+                    selector.create_enquiry_response_obj.accountId != null &&
+                    selector.create_enquiry_response_obj.contactId != null
+                ) {
+                    confirmToCreateLeadAgain(selector.create_enquiry_response_obj);
+                } else {
+                    showToast(
+                        selector.create_enquiry_response_obj.message || "something went wrong"
+                    );
+                }
+            }
+        }, [selector.createEnquiryStatus, selector.create_enquiry_response_obj]);
+
+        // Handle update Enquiry response
+        useEffect(() => {
+            if (selector.updateEnquiryStatus === "success") {
+                showToastSucess("Pre-enquiry successfully updated");
+                navigation.popToTop();
+            } else if (selector.updateEnquiryStatus === "failed") {
+                if (
+                    selector.create_enquiry_response_obj &&
+                    selector.create_enquiry_response_obj.accountId != null &&
+                    selector.create_enquiry_response_obj.contactId != null
+                ) {
+                    confirmToCreateLeadAgain(selector.create_enquiry_response_obj);
+                } else {
+                    showToast(
+                        selector.create_enquiry_response_obj.message || "something went wrong"
+                    );
+                }
+            }
+        }, [selector.updateEnquiryStatus, selector.create_enquiry_response_obj]);
+
+        const updatePreEneuquiryDetails = () => {
+            let url = sales_url;
+            let dmsAccountOrContactDto = {};
+            let dmsLeadDto = {};
+
+            if (existingPreEnquiryDetails.hasOwnProperty("dmsContactDto")) {
+                url = url + "/contact?allocateDse=" + selector.create_enquiry_checked;
+                dmsAccountOrContactDto = { ...existingPreEnquiryDetails.dmsContactDto };
+            } else if (existingPreEnquiryDetails.hasOwnProperty("dmsAccountDto")) {
+                url = url + "/account?allocateDse=" + selector.create_enquiry_checked;
+                dmsAccountOrContactDto = { ...existingPreEnquiryDetails.dmsAccountDto };
+            }
+
+            dmsAccountOrContactDto.firstName = selector.firstName;
+            dmsAccountOrContactDto.lastName = selector.lastName;
+            dmsAccountOrContactDto.email = selector.email;
+            dmsAccountOrContactDto.phone = selector.mobile;
+            dmsAccountOrContactDto.secondaryPhone = selector.alterMobile;
+            dmsAccountOrContactDto.model = selector.carModel;
+
+            if (existingPreEnquiryDetails.hasOwnProperty("dmsLeadDto")) {
+                dmsLeadDto = { ...existingPreEnquiryDetails.dmsLeadDto };
+                dmsLeadDto.firstName = selector.firstName;
+                dmsLeadDto.lastName = selector.lastName;
+                dmsLeadDto.email = selector.email;
+                dmsLeadDto.phone = selector.mobile;
+                dmsLeadDto.secondaryPhone = selector.alterMobile;
+                dmsLeadDto.model = selector.carModel;
+            }
+
+            let formData = {};
+            if (existingPreEnquiryDetails.hasOwnProperty("dmsContactDto")) {
+                formData = {
+                    dmsContactDto: dmsAccountOrContactDto,
+                    dmsLeadDto: dmsLeadDto,
+                    dmsEmployeeAllocationDtos:
+                        existingPreEnquiryDetails.dmsEmployeeAllocationDtos,
+                };
+            } else {
+                formData = {
+                    dmsAccountDto: dmsAccountOrContactDto,
+                    dmsLeadDto: dmsLeadDto,
+                    dmsEmployeeAllocationDtos:
+                        existingPreEnquiryDetails.dmsEmployeeAllocationDtos,
+                };
+            }
+
+            console.log("formData: ", formData);
+
+            let dataObj = {
+                url: url,
+                body: formData,
+            };
+            dispatch(updatePreEnquiry(dataObj));
+        };
+
+        const showDropDownModelMethod = (key, headerText) => {
+            Keyboard.dismiss();
+
+            switch (key) {
+                case "CAR_MODEL":
+                    setDataForDropDown([...dataForCarModels]);
+                    break;
+                case "ENQUIRY_SEGMENT":
+                    if (selector.enquiry_type_list.length === 0) {
+                        showToast("No Enquiry Types found");
+                        return;
+                    }
+                    setDataForDropDown([...selector.enquiry_type_list]);
+                    break;
+                case "CUSTOMER_TYPE":
+                    if (selector.customer_type_list.length === 0) {
+                        showToast("No Customer Types found");
+                        return;
+                    }
+                    setDataForDropDown([...selector.customer_type_list]);
+                    break;
+                case "SOURCE_OF_ENQUIRY":
+                    if (homeSelector.source_of_enquiry_list.length === 0) {
+                        showToast("No data found");
+                        return;
+                    }
+                    setDataForDropDown([...homeSelector.source_of_enquiry_list]);
+                    break;
+                case "SUB_SOURCE_OF_ENQUIRY":
+                    setDataForDropDown([...subSourceData]);
+                    break;
+                case "EVENT_NAME":
+                    if (homeSelector.event_list.length === 0) {
+                        showToast("No events found");
+                        return;
+                    }
+                    setDataForDropDown([...selector.event_list]);
+                    break;
+            }
+            setDropDownKey(key);
+            setDropDownTitle(headerText);
+            setShowDropDownModel(true);
+        };
+
+        const showDatePickerMethod = (key) => {
+            setShowDatePicker(true);
+            setDatePickerId(key);
+        };
+
+        const getEventListFromServer = (startDate, endDate) => {
+            if (
+                startDate === undefined ||
+                startDate === null ||
+                endDate === undefined ||
+                endDate === null
+            ) {
+                return;
+            }
+
+            const payload = {
+                startDate: startDate,
+                endDate: endDate,
+                empId: userData.employeeId,
+                branchId: branchId,
+                orgId: userData.orgId,
+            };
+            dispatch(getEventListApi(payload));
+        };
+
+        // Handle When Event dates selected
+        useEffect(() => {
+            if (selector.eventStartDate && selector.eventEndDate) {
+                getEventListFromServer(selector.eventStartDate, selector.eventEndDate);
+            }
+        }, [selector.eventStartDate, selector.eventEndDate]);
+
+        updateSubSourceData = (item) => {
+            console.log("item: ", item);
+            if (item.subsource && item.subsource.length > 0) {
+                const updatedData = [];
+                item.subsource.forEach((subItem, index) => {
+                    const newItem = { ...subItem };
+                    newItem.name = subItem.subSource;
+                    if (newItem.status === "Active") {
+                        updatedData.push(newItem);
+                    }
+                });
+                setSubSourceData(updatedData);
+            } else {
+                setSubSourceData([]);
+            }
+        };
+
+        return (
+            <SafeAreaView style={styles.container}>
+                {/* // select modal */}
+                <DropDownComponant
+                    visible={showDropDownModel}
+                    headerTitle={dropDownTitle}
+                    data={dataForDropDown}
+                    onRequestClose={() => setShowDropDownModel(false)}
+                    selectedItems={(item) => {
+                        console.log("selected: ", item);
+
+                        if (dropDownKey === "SOURCE_OF_ENQUIRY") {
+                            if (item.name === "Event") {
+                                getEventListFromServer();
+                            }
+                            updateSubSourceData(item);
+                        }
+                        setShowDropDownModel(false);
+                        dispatch(
+                            setDropDownData({ key: dropDownKey, value: item.name, id: item.id })
+                        );
+                    }}
+                />
+
+                <DatePickerComponent
+                    visible={showDatePicker}
+                    mode={"date"}
+                    value={new Date(Date.now())}
+                    onChange={(event, selectedDate) => {
+                        console.log("date: ", selectedDate);
+                        if (Platform.OS === "android") {
+                            if (selectedDate) {
+                                dispatch(
+                                    updateSelectedDate({ key: datePickerId, text: selectedDate })
+                                );
+                            }
+                        } else {
                             dispatch(
                                 updateSelectedDate({ key: datePickerId, text: selectedDate })
                             );
                         }
-                    } else {
-                        dispatch(
-                            updateSelectedDate({ key: datePickerId, text: selectedDate })
-                        );
-                    }
-                    setShowDatePicker(false);
-                }}
-                onRequestClose={() => setShowDatePicker(false)}
-            />
+                        setShowDatePicker(false);
+                    }}
+                    onRequestClose={() => setShowDatePicker(false)}
+                />
 
-            <KeyboardAvoidingView
-                style={{ flex: 1 }}
-                behavior={Platform.OS == "ios" ? "padding" : "height"}
-                enabled
-                keyboardVerticalOffset={100}
-            >
-                <ScrollView
-                    automaticallyAdjustContentInsets={true}
-                    bounces={true}
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={{ padding: 10 }}
+                <KeyboardAvoidingView
                     style={{ flex: 1 }}
+                    behavior={Platform.OS == "ios" ? "padding" : "height"}
+                    enabled
+                    keyboardVerticalOffset={100}
                 >
-                    <Text style={styles.text1}>{"Create New Pre-Enquiry"}</Text>
-                    <View style={styles.view1}>
-                        {/* <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <ScrollView
+                        automaticallyAdjustContentInsets={true}
+                        bounces={true}
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={{ padding: 10 }}
+                        style={{ flex: 1 }}
+                    >
+                        <Text style={styles.text1}>{"Create New Pre-Enquiry"}</Text>
+                        <View style={styles.view1}>
+                            {/* <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Checkbox.Android
                 status={
                   selector.create_enquiry_checked ? "checked" : "unchecked"
@@ -844,291 +1015,293 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               />
               <Text style={styles.text2}>{"Create enquiry"}</Text>
             </View> */}
-                        <Button
-                            labelStyle={{
-                                fontSize: 12,
-                                fontWeight: "400",
-                                color: Colors.BLUE,
-                                textTransform: "none",
-                            }}
-                            onPress={() => dispatch(clearState())}
-                        >
-                            Reset
+                            <Button
+                                labelStyle={{
+                                    fontSize: 12,
+                                    fontWeight: "400",
+                                    color: Colors.BLUE,
+                                    textTransform: "none",
+                                }}
+                                onPress={() => dispatch(clearState())}
+                            >
+                                Reset
             </Button>
-                    </View>
+                        </View>
 
-                    <View style={[{ borderRadius: 6, backgroundColor: Colors.WHITE }]}>
-                        <DropDownSelectionItem
-                            label={"Enquiry Segment*"}
-                            value={selector.enquiryType}
-                            onPress={() =>
-                                showDropDownModelMethod(
-                                    "ENQUIRY_SEGMENT",
-                                    "Select Enquiry Segment"
-                                )
-                            }
-                        />
-                        <DropDownSelectionItem
-                            label={"Customer Type*"}
-                            value={selector.customerType}
-                            onPress={() =>
-                                showDropDownModelMethod("CUSTOMER_TYPE", "Select Customer Type")
-                            }
-                        />
-
-                        <TextinputComp
-                            style={styles.textInputComp}
-                            value={selector.firstName}
-                            autoCapitalize="words"
-                            label={"First Name*"}
-                            editable={
-                                selector.enquiryType.length > 0 &&
-                                    selector.customerType.length > 0
-                                    ? true
-                                    : false
-                            }
-                            maxLength={30}
-                            disabled={
-                                selector.enquiryType.length > 0 &&
-                                    selector.customerType.length > 0
-                                    ? false
-                                    : true
-                            }
-                            keyboardType={"default"}
-                            error={firstNameErrorHandler.showError}
-                            errorMsg={firstNameErrorHandler.msg}
-                            onChangeText={(text) => {
-                                if (firstNameErrorHandler.showError) {
-                                    setFirstNameErrorHandler({ showError: false, msg: "" });
-                                }
-                                dispatch(
-                                    setPreEnquiryDetails({ key: "FIRST_NAME", text: text })
-                                );
-                            }}
-                        />
-                        <Text style={styles.devider}></Text>
-
-                        <TextinputComp
-                            style={styles.textInputComp}
-                            value={selector.lastName}
-                            autoCapitalize="words"
-                            label={"Last Name*"}
-                            editable={
-                                selector.enquiryType.length > 0 &&
-                                    selector.customerType.length > 0
-                                    ? true
-                                    : false
-                            }
-                            maxLength={30}
-                            disabled={
-                                selector.enquiryType.length > 0 &&
-                                    selector.customerType.length > 0
-                                    ? false
-                                    : true
-                            }
-                            keyboardType={"default"}
-                            error={lastNameErrorHandler.showError}
-                            errorMsg={lastNameErrorHandler.msg}
-                            onChangeText={(text) => {
-                                if (lastNameErrorHandler.showError) {
-                                    setFirstNameErrorHandler({ showError: false, msg: "" });
-                                }
-                                dispatch(
-                                    setPreEnquiryDetails({ key: "LAST_NAME", text: text })
-                                );
-                            }}
-                        />
-                        <Text style={styles.devider}></Text>
-
-                        <TextinputComp
-                            style={styles.textInputComp}
-                            value={selector.mobile}
-                            label={"Mobile Number*"}
-                            keyboardType={"phone-pad"}
-                            maxLength={10}
-                            onChangeText={(text) => {
-                                dispatch(setPreEnquiryDetails({ key: "MOBILE", text: text }));
-                            }}
-                        />
-                        <Text style={styles.devider}></Text>
-
-                        <TextinputComp
-                            style={styles.textInputComp}
-                            value={selector.alterMobile}
-                            label={"Alternate Mobile Number"}
-                            keyboardType={"phone-pad"}
-                            maxLength={10}
-                            onChangeText={(text) =>
-                                dispatch(
-                                    setPreEnquiryDetails({ key: "ALTER_MOBILE", text: text })
-                                )
-                            }
-                        />
-                        <Text style={styles.devider}></Text>
-
-                        <TextinputComp
-                            style={styles.textInputComp}
-                            value={selector.email}
-                            label={"Email-Id"}
-                            maxLength={40}
-                            keyboardType={"email-address"}
-                            onChangeText={(text) =>
-                                dispatch(setPreEnquiryDetails({ key: "EMAIL", text: text }))
-                            }
-                        />
-                        <Text style={styles.devider}></Text>
-                        <DropDownSelectionItem
-                            label={"Model*"}
-                            value={selector.carModel}
-                            onPress={() =>
-                                showDropDownModelMethod("CAR_MODEL", "Select Model")
-                            }
-                        />
-
-                        {selector.customerType === "Corporate" ||
-                            selector.customerType === "Government" ||
-                            selector.customerType === "Retired" ||
-                            selector.customerType === "Fleet" ||
-                            selector.customerType === "Institution" ? (
-                            <View>
-                                <TextinputComp
-                                    style={styles.textInputComp}
-                                    value={selector.companyName}
-                                    autoCapitalize="words"
-                                    label={"Company Name"}
-                                    maxLength={50}
-                                    keyboardType={"default"}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setPreEnquiryDetails({ key: "COMPANY_NAME", text: text })
-                                        )
-                                    }
-                                />
-                                <Text style={styles.devider}></Text>
-                            </View>
-                        ) : null}
-
-                        {selector.customerType === "Other" ? (
-                            <View>
-                                <TextinputComp
-                                    style={styles.textInputComp}
-                                    value={selector.other}
-                                    label={"Other"}
-                                    maxLength={50}
-                                    keyboardType={"default"}
-                                    onChangeText={(text) =>
-                                        dispatch(setPreEnquiryDetails({ key: "OTHER", text: text }))
-                                    }
-                                />
-                                <Text style={styles.devider}></Text>
-                            </View>
-                        ) : null}
-
-                        <DropDownSelectionItem
-                            label={"Source of Create Lead*"}
-                            value={selector.sourceOfEnquiry}
-                            disabled={fromEdit}
-                            onPress={() =>
-                                showDropDownModelMethod(
-                                    "SOURCE_OF_ENQUIRY",
-                                    "Select Source of Pre-Enquiry"
-                                )
-                            }
-                        />
-
-                        {subSourceData.length > 0 && (
+                        <View style={[{ borderRadius: 6, backgroundColor: Colors.WHITE }]}>
                             <DropDownSelectionItem
-                                label={"Sub Source of Create Lead*"}
-                                value={selector.subSourceOfEnquiry}
-                                disabled={fromEdit}
+                                label={"Enquiry Segment*"}
+                                value={selector.enquiryType}
                                 onPress={() =>
                                     showDropDownModelMethod(
-                                        "SUB_SOURCE_OF_ENQUIRY",
-                                        "Select Sub Source of Pre-Enquiry"
+                                        "ENQUIRY_SEGMENT",
+                                        "Select Enquiry Segment"
                                     )
                                 }
                             />
-                        )}
+                            <DropDownSelectionItem
+                                label={"Customer Type*"}
+                                value={selector.customerType}
+                                onPress={() =>
+                                    showDropDownModelMethod("CUSTOMER_TYPE", "Select Customer Type")
+                                }
+                            />
 
-                        {selector.sourceOfEnquiry === "Other" ? (
-                            <View>
-                                <TextinputComp
-                                    style={styles.textInputComp}
-                                    value={selector.other_company_name}
-                                    label={"Other"}
-                                    keyboardType={"default"}
-                                    maxLength={50}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setPreEnquiryDetails({
-                                                key: "OTHER_COMPANY_NAME",
-                                                text: text,
-                                            })
+                            <TextinputComp
+                                style={styles.textInputComp}
+                                value={selector.firstName}
+                                autoCapitalize="words"
+                                label={"First Name*"}
+                                editable={
+                                    selector.enquiryType.length > 0 &&
+                                        selector.customerType.length > 0
+                                        ? true
+                                        : false
+                                }
+                                maxLength={30}
+                                disabled={
+                                    selector.enquiryType.length > 0 &&
+                                        selector.customerType.length > 0
+                                        ? false
+                                        : true
+                                }
+                                keyboardType={"default"}
+                                error={firstNameErrorHandler.showError}
+                                errorMsg={firstNameErrorHandler.msg}
+                                onChangeText={(text) => {
+                                    if (firstNameErrorHandler.showError) {
+                                        setFirstNameErrorHandler({ showError: false, msg: "" });
+                                    }
+                                    dispatch(
+                                        setPreEnquiryDetails({ key: "FIRST_NAME", text: text })
+                                    );
+                                }}
+                            />
+                            <Text style={styles.devider}></Text>
+
+                            <TextinputComp
+                                style={styles.textInputComp}
+                                value={selector.lastName}
+                                autoCapitalize="words"
+                                label={"Last Name*"}
+                                editable={
+                                    selector.enquiryType.length > 0 &&
+                                        selector.customerType.length > 0
+                                        ? true
+                                        : false
+                                }
+                                maxLength={30}
+                                disabled={
+                                    selector.enquiryType.length > 0 &&
+                                        selector.customerType.length > 0
+                                        ? false
+                                        : true
+                                }
+                                keyboardType={"default"}
+                                error={lastNameErrorHandler.showError}
+                                errorMsg={lastNameErrorHandler.msg}
+                                onChangeText={(text) => {
+                                    if (lastNameErrorHandler.showError) {
+                                        setFirstNameErrorHandler({ showError: false, msg: "" });
+                                    }
+                                    dispatch(
+                                        setPreEnquiryDetails({ key: "LAST_NAME", text: text })
+                                    );
+                                }}
+                            />
+                            <Text style={styles.devider}></Text>
+
+                            <TextinputComp
+                                style={styles.textInputComp}
+                                value={selector.mobile}
+                                label={"Mobile Number*"}
+                                keyboardType={"phone-pad"}
+                                maxLength={10}
+                                onChangeText={(text) => {
+                                    dispatch(setPreEnquiryDetails({ key: "MOBILE", text: text }));
+                                }}
+                            />
+                            <Text style={styles.devider}></Text>
+
+                            <TextinputComp
+                                style={styles.textInputComp}
+                                value={selector.alterMobile}
+                                label={"Alternate Mobile Number"}
+                                keyboardType={"phone-pad"}
+                                maxLength={10}
+                                onChangeText={(text) =>
+                                    dispatch(
+                                        setPreEnquiryDetails({ key: "ALTER_MOBILE", text: text })
+                                    )
+                                }
+                            />
+                            <Text style={styles.devider}></Text>
+
+                            <TextinputComp
+                                style={styles.textInputComp}
+                                value={selector.email}
+                                label={"Email-Id"}
+                                maxLength={40}
+                                keyboardType={"email-address"}
+                                onChangeText={(text) =>
+                                    dispatch(setPreEnquiryDetails({ key: "EMAIL", text: text }))
+                                }
+                            />
+                            <Text style={styles.devider}></Text>
+
+                            <DropDownSelectionItem
+                                label={"Model*"}
+                                value={selector.carModel}
+                                onPress={() =>
+                                    showDropDownModelMethod("CAR_MODEL", "Select Model")
+                                }
+                            />
+
+                            {selector.customerType === "Corporate" ||
+                                selector.customerType === "Government" ||
+                                selector.customerType === "Retired" ||
+                                selector.customerType === "Fleet" ||
+                                selector.customerType === "Institution" ? (
+                                <View>
+                                    <TextinputComp
+                                        style={styles.textInputComp}
+                                        value={selector.companyName}
+                                        autoCapitalize="words"
+                                        label={"Company Name"}
+                                        maxLength={50}
+                                        keyboardType={"default"}
+                                        onChangeText={(text) =>
+                                            dispatch(
+                                                setPreEnquiryDetails({ key: "COMPANY_NAME", text: text })
+                                            )
+                                        }
+                                    />
+                                    <Text style={styles.devider}></Text>
+                                </View>
+                            ) : null}
+
+                            {selector.customerType === "Other" ? (
+                                <View>
+                                    <TextinputComp
+                                        style={styles.textInputComp}
+                                        value={selector.other}
+                                        label={"Other"}
+                                        maxLength={50}
+                                        keyboardType={"default"}
+                                        onChangeText={(text) =>
+                                            dispatch(setPreEnquiryDetails({ key: "OTHER", text: text }))
+                                        }
+                                    />
+                                    <Text style={styles.devider}></Text>
+                                </View>
+                            ) : null}
+
+                            <DropDownSelectionItem
+                                label={"Source of Create Lead*"}
+                                value={selector.sourceOfEnquiry}
+                                disabled={fromEdit}
+                                onPress={() =>
+                                    showDropDownModelMethod(
+                                        "SOURCE_OF_ENQUIRY",
+                                        "Select Source of Pre-Enquiry"
+                                    )
+                                }
+                            />
+
+                            {subSourceData.length > 0 && (
+                                <DropDownSelectionItem
+                                    label={"Sub Source of Create Lead*"}
+                                    value={selector.subSourceOfEnquiry}
+                                    disabled={fromEdit}
+                                    onPress={() =>
+                                        showDropDownModelMethod(
+                                            "SUB_SOURCE_OF_ENQUIRY",
+                                            "Select Sub Source of Pre-Enquiry"
                                         )
                                     }
                                 />
-                                <Text style={styles.devider}></Text>
-                            </View>
-                        ) : null}
+                            )}
 
-                        {selector.sourceOfEnquiry === "Event" ? (
-                            <View>
-                                <DateSelectItem
-                                    label={"Event Start Date"}
-                                    value={selector.eventStartDate}
-                                    onPress={() => showDatePickerMethod("START_DATE")}
-                                />
-                                <DateSelectItem
-                                    label={"Event End Date"}
-                                    value={selector.eventEndDate}
-                                    onPress={() => showDatePickerMethod("END_DATE")}
-                                />
-                                <DropDownSelectionItem
-                                    label={"Event Name"}
-                                    value={selector.eventName}
-                                    disabled={fromEdit}
-                                    onPress={() =>
-                                        showDropDownModelMethod("EVENT_NAME", "Select Event Name")
+                            {selector.sourceOfEnquiry === "Other" ? (
+                                <View>
+                                    <TextinputComp
+                                        style={styles.textInputComp}
+                                        value={selector.other_company_name}
+                                        label={"Other"}
+                                        keyboardType={"default"}
+                                        maxLength={50}
+                                        onChangeText={(text) =>
+                                            dispatch(
+                                                setPreEnquiryDetails({
+                                                    key: "OTHER_COMPANY_NAME",
+                                                    text: text,
+                                                })
+                                            )
+                                        }
+                                    />
+                                    <Text style={styles.devider}></Text>
+                                </View>
+                            ) : null}
+
+                            {selector.sourceOfEnquiry === "Event" ? (
+                                <View>
+                                    <DateSelectItem
+                                        label={"Event Start Date"}
+                                        value={selector.eventStartDate}
+                                        onPress={() => showDatePickerMethod("START_DATE")}
+                                    />
+                                    <DateSelectItem
+                                        label={"Event End Date"}
+                                        value={selector.eventEndDate}
+                                        onPress={() => showDatePickerMethod("END_DATE")}
+                                    />
+                                    <DropDownSelectionItem
+                                        label={"Event Name"}
+                                        value={selector.eventName}
+                                        disabled={fromEdit}
+                                        onPress={() =>
+                                            showDropDownModelMethod("EVENT_NAME", "Select Event Name")
+                                        }
+                                    />
+                                    {selector.event_list.length === 0 ? (
+                                        <View
+                                            style={{ backgroundColor: Colors.WHITE, paddingLeft: 12 }}
+                                        >
+                                            <Text style={styles.noEventsText}>{"No Events Found"}</Text>
+                                        </View>
+                                    ) : null}
+                                </View>
+                            ) : null}
+
+                            {!fromEdit && (
+                                <TextinputComp
+                                    style={styles.textInputComp}
+                                    value={selector.pincode}
+                                    label={"Pincode*"}
+                                    keyboardType={"number-pad"}
+                                    maxLength={6}
+                                    onChangeText={(text) =>
+                                        dispatch(setPreEnquiryDetails({ key: "PINCODE", text: text }))
                                     }
                                 />
-                                {selector.event_list.length === 0 ? (
-                                    <View
-                                        style={{ backgroundColor: Colors.WHITE, paddingLeft: 12 }}
-                                    >
-                                        <Text style={styles.noEventsText}>{"No Events Found"}</Text>
-                                    </View>
-                                ) : null}
-                            </View>
-                        ) : null}
+                            )}
+                            <Text style={styles.devider}></Text>
+                        </View>
 
-                        {!fromEdit && (
-                            <TextinputComp
-                                style={styles.textInputComp}
-                                value={selector.pincode}
-                                label={"Pincode*"}
-                                keyboardType={"number-pad"}
-                                maxLength={6}
-                                onChangeText={(text) =>
-                                    dispatch(setPreEnquiryDetails({ key: "PINCODE", text: text }))
-                                }
+                        <View style={styles.view2}>
+                            <ButtonComp
+                                disabled={selector.isLoading}
+                                title={fromEdit ? "UPDATE" : "SUBMIT"}
+                                width={screenWidth - 40}
+                                onPress={submitClicked}
                             />
-                        )}
-                        <Text style={styles.devider}></Text>
-                    </View>
-
-                    <View style={styles.view2}>
-                        <ButtonComp
-                            disabled={selector.isLoading}
-                            title={fromEdit ? "UPDATE" : "SUBMIT"}
-                            width={screenWidth - 40}
-                            onPress={submitClicked}
-                        />
-                    </View>
-                </ScrollView>
-            </KeyboardAvoidingView>
-        </SafeAreaView>
-    );
-};
+                        </View>
+                    </ScrollView>
+                </KeyboardAvoidingView>
+            </SafeAreaView>
+        );
+    };
+}
 
 export default AddPreEnquiryScreen;
 

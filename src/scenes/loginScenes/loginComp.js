@@ -233,7 +233,7 @@ const LoginScreen = ({ navigation }) => {
             disabled={selector.isLoading ? true : false}
           />
           <View style={{ width: "100%", height: 50, justifyContent: "center", alignItems: 'center' }}>
-            <Text style={{ fontSize: 12, fontWeight: "400", color: Colors.GRAY }}>{"Version: 0.3"}</Text>
+            <Text style={{ fontSize: 12, fontWeight: "400", color: Colors.GRAY }}>{"Version: 0.4"}</Text>
           </View>
 
           {/* Bottom Popup */}

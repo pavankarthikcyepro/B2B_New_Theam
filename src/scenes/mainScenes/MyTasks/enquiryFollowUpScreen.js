@@ -343,6 +343,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
               style={styles.textInputStyle}
               label={"Reason*"}
               value={selector.reason}
+              autoCapitalize={"words"}
               maxLength={50}
               onChangeText={(text) => {
                 dispatch(
@@ -357,6 +358,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
               label={"Customer Remarks*"}
               maxLength={50}
               value={selector.customer_remarks}
+              autoCapitalize={"words"}
               onChangeText={(text) =>
                 dispatch(
                   setEnquiryFollowUpDetails({
@@ -373,6 +375,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
               label={"Employee Remarks*"}
               value={selector.employee_remarks}
               maxLength={50}
+              autoCapitalize={"words"}
               onChangeText={(text) =>
                 dispatch(
                   setEnquiryFollowUpDetails({

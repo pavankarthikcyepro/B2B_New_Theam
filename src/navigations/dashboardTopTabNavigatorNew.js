@@ -43,11 +43,11 @@ const DashboardTopTabNavigatorNew = () => {
                 component={TargetScreen}
                 options={{ title: "Target V/s Actual" }}
             />
-            <DashboardTopTab.Screen
+            {/* <DashboardTopTab.Screen
                 name={DashboardTopTabNavigatorIdentifiers.Supporting}
                 component={SupportingScreen}
                 options={{ title: "Supporting parameters" }}
-            />
+            /> */}
         </DashboardTopTab.Navigator>
     );
 };

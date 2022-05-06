@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { SafeAreaView, View, Text, StyleSheet, FlatList, Dimensions, Pressable, Alert, TouchableOpacity, ScrollView, Keyboard } from 'react-native';
+import { SafeAreaView, View, Text, StyleSheet, FlatList, Dimensions, Pressable, Alert, TouchableOpacity, ScrollView, Keyboard, Image } from 'react-native';
 import { Colors, GlobalStyle } from '../../../styles';
 import { IconButton, Card, Button } from 'react-native-paper';
 import VectorImage from 'react-native-vector-image';
@@ -83,6 +83,7 @@ const HomeScreen = ({ route, navigation }) => {
     const [groupDealerCount, setGroupDealerCount] = useState(null);
     const [isTeamPresent, setIsTeamPresent] = useState(false);
     const [isTeam, setIsTeam] = useState(false);
+    const [roles, setRoles] = useState([]);
 
     useLayoutEffect(() => {
 
@@ -294,6 +295,7 @@ const HomeScreen = ({ route, navigation }) => {
                     return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL"
                 })
                 if (rolesArr.length > 0) {
+                    setRoles(rolesArr)
                     dispatch(updateIsTeamPresent(true))
                     setIsTeamPresent(true)
                     console.log("%%%%% TEAM:", rolesArr);
@@ -307,6 +309,7 @@ const HomeScreen = ({ route, navigation }) => {
                         "startDate": monthFirstDate,
                         "levelSelected": null
                     }
+                    console.log("PAYLOAD:", payload);
                     getAllTargetParametersDataFromServer(payload)
                 }
             }
@@ -438,7 +441,7 @@ const HomeScreen = ({ route, navigation }) => {
             />
             <HeaderComp
                 // title={"Dashboard"}
-                title={"Dealer Sales Exec"}
+                title={roles.length > 0 ? roles[0] : ''}
                 branchName={selectedBranchName}
                 menuClicked={() => navigation.openDrawer()}
                 branchClicked={() => moveToSelectBranch()}
@@ -460,12 +463,13 @@ const HomeScreen = ({ route, navigation }) => {
                                             flexDirection: 'row'
                                         }}>
                                             <View style={styles.rankIconBox}>
-                                                <VectorImage
+                                                {/* <VectorImage
                                                     width={25}
                                                     height={16}
                                                     source={SPEED}
                                                 // style={{ tintColor: Colors.DARK_GRAY }}
-                                                />
+                                                /> */}
+                                                <Image style={{width: 25, height: 16}} source={require("../../../assets/images/speed_new.png")}/>
                                             </View>
                                             <View style={{
                                                 marginTop: 5,
@@ -489,12 +493,13 @@ const HomeScreen = ({ route, navigation }) => {
                                             flexDirection: 'row'
                                         }}>
                                             <View style={styles.rankIconBox}>
-                                                <VectorImage
+                                                {/* <VectorImage
                                                     width={25}
                                                     height={16}
                                                     source={SPEED}
                                                 // style={{ tintColor: Colors.DARK_GRAY }}
-                                                />
+                                                /> */}
+                                                <Image style={{ width: 25, height: 16 }} source={require("../../../assets/images/speed_new.png")} />
                                             </View>
                                             <View style={{
                                                 marginTop: 5,
@@ -540,12 +545,13 @@ const HomeScreen = ({ route, navigation }) => {
                                             flexDirection: 'row'
                                         }}>
                                             <View style={styles.rankIconBox}>
-                                                <VectorImage
+                                                {/* <VectorImage
                                                     width={25}
                                                     height={16}
                                                     source={SPEED}
                                                 // style={{ tintColor: Colors.DARK_GRAY }}
-                                                />
+                                                /> */}
+                                                <Image style={{ width: 25, height: 16 }} source={require("../../../assets/images/speed_new.png")} />
                                             </View>
                                             <View style={{
                                                 marginTop: 5,
@@ -576,21 +582,7 @@ const HomeScreen = ({ route, navigation }) => {
                         else if (index === 1) {
                             return (
                                 <>
-                                    <View style={{ marginBottom: 5, justifyContent: 'center', alignItems: 'center', marginBottom: 10 }}>
-                                        {/* <FlatList
-                    data={titleNames}
-                    listKey={"BOX_COMP"}
-                    keyExtractor={(item, index) => "BOX" + index.toString()}
-                    numColumns={3}
-                    horizontal={false}
-                    renderItem={({ item, index }) => {
-                      return (
-                        <View>
-                          <BoxComp width={widthForBoxItem} name={item} value={salesDataAry[index]} iconName={iconNames[index]} bgColor={colorNames[index]} />
-                        </View>
-                      )
-                    }}
-                  /> */}
+                                    {/* <View style={{ marginBottom: 5, justifyContent: 'center', alignItems: 'center', marginBottom: 10 }}>
 
                                         <View style={styles.performView}>
                                             <View style={{ justifyContent: 'center', alignItems: 'center' }}>
@@ -599,9 +591,7 @@ const HomeScreen = ({ route, navigation }) => {
                                                 </View>
                                                 <Text style={{ fontSize: 12, color: '#aaa3a3' }}>Last updated March 29 2020 11:40 am</Text>
                                             </View>
-                                            {/* <View style={{ width: '50%' }}>
-
-                                        </View> */}
+                                         
                                         </View>
                                         {!isTeamPresent &&
                                             <View >
@@ -614,11 +604,11 @@ const HomeScreen = ({ route, navigation }) => {
                                                 />
                                             </View>
                                         }
-                                    </View>
+                                    </View> */}
 
                                     {isTeamPresent &&
-                                        <View style={{ flexDirection: 'row', marginBottom: 20 }}>
-                                            <View style={{ width: '40%', marginRight: 60 }}>
+                                        <View style={{ flexDirection: 'row', marginBottom: 20, justifyContent: 'center', alignItems: 'center' }}>
+                                            {/* <View style={{ width: '40%', marginRight: 60 }}>
                                                 <View >
                                                     <TargetDropdown
                                                         label={"Select Target"}
@@ -628,8 +618,8 @@ const HomeScreen = ({ route, navigation }) => {
                                                         }
                                                     />
                                                 </View>
-                                            </View>
-                                            <View style={{ width: '40%', flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, marginTop: 10, justifyContent: 'center' }}>
+                                            </View> */}
+                                            <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, marginTop: 10, justifyContent: 'center', width: '80%' }}>
                                                 <TouchableOpacity onPress={() => {
                                                     // setIsTeam(true)
                                                     dispatch(updateIsTeam(false))
@@ -667,7 +657,7 @@ const HomeScreen = ({ route, navigation }) => {
                                         },
                                         shadowRadius: 4,
                                         shadowOpacity: 0.5,
-                                        elevation: 3,
+                                        // elevation: 3,
                                         marginHorizontal: 20
                                     }}>
                                         {(selector.target_parameters_data.length > 0 || (isTeamPresent && selector.all_target_parameters_data.length > 0)) &&
@@ -725,7 +715,7 @@ const styles = StyleSheet.create({
         },
         shadowRadius: 2,
         shadowOpacity: 0.5,
-        elevation: 3,
+        // elevation: 3,
         position: "relative",
     },
     text1: {
@@ -803,7 +793,7 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.3,
         shadowRadius: 1,
-        elevation: 1,
+        // elevation: 0.4,
         borderStyle: "solid",
         borderWidth: 1,
         borderColor: "#d2d2d2",

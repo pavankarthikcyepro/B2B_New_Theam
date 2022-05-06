@@ -26,8 +26,13 @@ import {
     updateEndDate,
     addTargetMapping,
     updateIsTeam,
-    getAllTargetMapping
+    getAllTargetMapping,
+    getEmployeesDropDownData
 } from '../../../redux/targetSettingsReducer';
+
+import {
+    updateIsTeamPresent,
+} from '../../../redux/homeReducer';
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 30) / 2;
@@ -97,9 +102,14 @@ const TargetSettingsScreen = ({ route, navigation }) => {
             const jsonObj = JSON.parse(employeeData);
             const payload = {
                 orgId: jsonObj.orgId,
-                empId: jsonObj.empId
+                empId: jsonObj.empId,
             }
-            console.log("jsonObj: ", jsonObj);
+
+            const payload3 = {
+                orgId: jsonObj.orgId,
+                empId: jsonObj.empId,
+                selectedIds: []
+            }
 
             const payload2 = {
                 "empId": jsonObj.empId,
@@ -116,12 +126,24 @@ const TargetSettingsScreen = ({ route, navigation }) => {
             dispatch(updateEndDate(monthLastDate))
             setToDate(monthLastDate);
 
+            if (jsonObj.roles.length > 0) {
+                let rolesArr = [];
+                console.log("ROLLS2:", jsonObj.roles);
+                rolesArr = jsonObj.roles.filter((item) => {
+                    return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL"
+                })
+                if (rolesArr.length > 0) {
+                    console.log("FOUND");
+                    dispatch(updateIsTeamPresent(true))
+                }
+            }
+
             Promise.all([
                 dispatch(getEmployeesActiveBranch(payload)),
                 dispatch(getEmployeesRolls(payload)),
                 dispatch(getAllTargetMapping(payload2)),
             ]).then(() => {
-                console.log('I did everything!');
+                console.log('SUCCESS');
             });
 
             
@@ -223,22 +245,26 @@ const TargetSettingsScreen = ({ route, navigation }) => {
 
                         if (index === 0) {
                             return (
-                                <View style={{  justifyContent: 'center', alignItems: 'center' }}>
-                                    <View style={{ width: '50%', justifyContent: 'center', flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, marginTop: 10,}}>
-                                        <TouchableOpacity onPress={() => {
-                                            // setIsTeam(true)
-                                            dispatch(updateIsTeam(false))
-                                        }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: selector.isTeam ? Colors.WHITE : Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
-                                            <Text style={{ fontSize: 14, color: selector.isTeam ? Colors.BLACK : Colors.WHITE }}>Self</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity onPress={() => {
-                                            // setIsTeam(false)
-                                            dispatch(updateIsTeam(true))
-                                        }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: selector.isTeam ? Colors.RED : Colors.WHITE, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
-                                            <Text style={{ fontSize: 14, color: selector.isTeam ? Colors.WHITE : Colors.BLACK }}>Teams</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
+                                <>
+                                    {homeSelector.isTeamPresent &&
+                                        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                                            <View style={{ width: '50%', justifyContent: 'center', flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, marginTop: 10, }}>
+                                                <TouchableOpacity onPress={() => {
+                                                    // setIsTeam(true)
+                                                    dispatch(updateIsTeam(false))
+                                                }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: selector.isTeam ? Colors.WHITE : Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
+                                                    <Text style={{ fontSize: 14, color: selector.isTeam ? Colors.BLACK : Colors.WHITE }}>Self</Text>
+                                                </TouchableOpacity>
+                                                <TouchableOpacity onPress={() => {
+                                                    // setIsTeam(false)
+                                                    dispatch(updateIsTeam(true))
+                                                }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: selector.isTeam ? Colors.RED : Colors.WHITE, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
+                                                    <Text style={{ fontSize: 14, color: selector.isTeam ? Colors.WHITE : Colors.BLACK }}>Teams</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
+                                    }
+                                </>
                             )
                         }
                         else if (index === 1) {

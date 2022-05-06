@@ -167,6 +167,7 @@ export const addPreEnquirySlice = createSlice({
       state.status = "";
       state.errorMsg = "";
       state.createEnquiryStatus = "";
+      state.updateEnquiryStatus = "";
       state.create_enquiry_response_obj = {};
       state.event_list = [];
       state.event_list_response_status = "";
@@ -305,6 +306,7 @@ export const addPreEnquirySlice = createSlice({
       })
       .addCase(updatePreEnquiry.pending, (state, action) => {
         state.isLoading = true;
+        state.create_enquiry_response_obj = {};
         state.updateEnquiryStatus = "pending";
       })
       .addCase(updatePreEnquiry.fulfilled, (state, action) => {
@@ -319,6 +321,7 @@ export const addPreEnquirySlice = createSlice({
       })
       .addCase(updatePreEnquiry.rejected, (state, action) => {
         state.isLoading = false;
+        state.create_enquiry_response_obj = {};
         state.updateEnquiryStatus = "failed";
       })
       .addCase(continueToCreatePreEnquiry.pending, (state, action) => {
