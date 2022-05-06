@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { View, Linking } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -58,15 +58,15 @@ import TaskListScreen from "../scenes/mainScenes/MyTasks/taskListScreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
-    headerTitleStyle: {
-        fontSize: 20,
-        fontWeight: "600",
-    },
-    headerStyle: {
-        backgroundColor: Colors.DARK_GRAY,
-    },
-    headerTintColor: Colors.WHITE,
-    headerBackTitleVisible: false,
+  headerTitleStyle: {
+    fontSize: 20,
+    fontWeight: "600",
+  },
+  headerStyle: {
+    backgroundColor: Colors.DARK_GRAY,
+  },
+  headerTintColor: Colors.WHITE,
+  headerBackTitleVisible: false,
 };
 
 const MenuIcon = ({ navigation }) => {
@@ -86,7 +86,7 @@ const SearchIcon = () => {
 
   const onChangeSearch = (query) => setSearchQuery(query);
   return (
-    
+
     <IconButton
       icon="magnify"
       color={Colors.WHITE}
@@ -136,16 +136,16 @@ export const DrawerStackIdentifiers = {
   eventManagement: "EVENT_MANAGEMENT",
   preBooking: "PRE_BOOKING",
   digitalPayment: "DIGITAL_PAYMENT",
-  monthlyTarget :"MONTHLY_TARGET",
-  helpdesk:"HELP_DESK",
-  taskManagement:"TASK_MANAGEMENT",
-  taskTransfer:"TASK_TRANSFER"
+  monthlyTarget: "MONTHLY_TARGET",
+  helpdesk: "HELP_DESK",
+  taskManagement: "TASK_MANAGEMENT",
+  taskTransfer: "TASK_TRANSFER"
 };
 
 export const TabStackIdentifiers = {
-    home: "HOME_TAB",
-    ems: "EMS_TAB",
-    myTask: "MY_TASK_TAB",
+  home: "HOME_TAB",
+  ems: "EMS_TAB",
+  myTask: "MY_TASK_TAB",
 };
 
 export const HomeStackIdentifiers = {
@@ -155,18 +155,18 @@ export const HomeStackIdentifiers = {
 };
 
 export const EmsStackIdentifiers = {
-    addPreEnq: "ADD_PRE_ENQUIRY",
-    confirmedPreEnq: "CONFIRMED_PRE_ENQUIRY",
-    detailsOverview: "DETAILS_OVERVIEW",
-    preBookingForm: "PRE_BOOKING_FORM",
-    paidAccessories: "PAID_ACCESSORIES",
-    proceedToPreBooking: "PROCEED_TO_PRE_BOOKING",
-    proceedToBooking: "PROCEED_TO_BOOKING",
+  addPreEnq: "ADD_PRE_ENQUIRY",
+  confirmedPreEnq: "CONFIRMED_PRE_ENQUIRY",
+  detailsOverview: "DETAILS_OVERVIEW",
+  preBookingForm: "PRE_BOOKING_FORM",
+  paidAccessories: "PAID_ACCESSORIES",
+  proceedToPreBooking: "PROCEED_TO_PRE_BOOKING",
+  proceedToBooking: "PROCEED_TO_BOOKING",
 };
 
 export const PreBookingStackIdentifiers = {
-    preBooking: "PRE_BOOKING",
-    preBookingForm: "PRE_BOOKING_FORM",
+  preBooking: "PRE_BOOKING",
+  preBookingForm: "PRE_BOOKING_FORM",
 };
 
 export const MyTasksStackIdentifiers = {
@@ -184,23 +184,23 @@ export const MyTasksStackIdentifiers = {
 const HomeStack = createStackNavigator();
 
 const HomeStackNavigator = ({ navigation }) => {
-    return (
-        <HomeStack.Navigator
-            initialRouteName={"Home"}
-            screenOptions={screeOptionStyle}
-        >
-            <HomeStack.Screen
-                name="Home"
-                component={HomeScreen}
-                initialParams={{ branchName: "" }}
-                options={{
-                    title: "Dashboard",
-                    headerShown: false,
-                    headerLeft: () => <MenuIcon navigation={navigation} />,
-                    headerRight: () => {
-                        return (
-                            <View style={{ flexDirection: "row" }}>
-                                {/* <NotficationIcon
+  return (
+    <HomeStack.Navigator
+      initialRouteName={"Home"}
+      screenOptions={screeOptionStyle}
+    >
+      <HomeStack.Screen
+        name="Home"
+        component={HomeScreen}
+        initialParams={{ branchName: "" }}
+        options={{
+          title: "Dashboard",
+          headerShown: false,
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+          headerRight: () => {
+            return (
+              <View style={{ flexDirection: "row" }}>
+                {/* <NotficationIcon
                   navigation={navigation}
                   identifier={"NOTIF_1"}
                 /> */}
@@ -431,61 +431,61 @@ const TabNavigator = () => {
 const ComplaintStack = createStackNavigator();
 
 const ComplaintStackNavigator = ({ navigation }) => {
-    return (
-        <ComplaintStack.Navigator
-            initialRouteName={"COMPLAINT_SCREEN"}
-            screenOptions={screeOptionStyle}
-        >
-            <ComplaintStack.Screen
-                name={"COMPLAINT_SCREEN"}
-                component={ComplaintsScreen}
-                options={{
-                    title: "Complaints",
-                    headerLeft: () => <MenuIcon navigation={navigation} />,
-                }}
-            />
-        </ComplaintStack.Navigator>
-    );
+  return (
+    <ComplaintStack.Navigator
+      initialRouteName={"COMPLAINT_SCREEN"}
+      screenOptions={screeOptionStyle}
+    >
+      <ComplaintStack.Screen
+        name={"COMPLAINT_SCREEN"}
+        component={ComplaintsScreen}
+        options={{
+          title: "Complaints",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+    </ComplaintStack.Navigator>
+  );
 };
 
 const UpcomingDeliveriestStack = createStackNavigator();
 
 const UpcomingDeliveriestStackNavigator = ({ navigation }) => {
-    return (
-        <UpcomingDeliveriestStack.Navigator
-            initialRouteName={"UPCOMING_DELIVERIES_SCREEN"}
-            screenOptions={screeOptionStyle}
-        >
-            <UpcomingDeliveriestStack.Screen
-                name={"UPCOMING_DELIVERIES_SCREEN"}
-                component={UpcomingDeliveriesScreen}
-                options={{
-                    title: "Upcoming Deliveries",
-                    headerLeft: () => <MenuIcon navigation={navigation} />,
-                }}
-            />
-        </UpcomingDeliveriestStack.Navigator>
-    );
+  return (
+    <UpcomingDeliveriestStack.Navigator
+      initialRouteName={"UPCOMING_DELIVERIES_SCREEN"}
+      screenOptions={screeOptionStyle}
+    >
+      <UpcomingDeliveriestStack.Screen
+        name={"UPCOMING_DELIVERIES_SCREEN"}
+        component={UpcomingDeliveriesScreen}
+        options={{
+          title: "Upcoming Deliveries",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+    </UpcomingDeliveriestStack.Navigator>
+  );
 };
 
 const SettingsStack = createStackNavigator();
 
 const SettingsStackNavigator = ({ navigation }) => {
-    return (
-        <SettingsStack.Navigator
-            initialRouteName={"SETTINGS_SCREEN"}
-            screenOptions={screeOptionStyle}
-        >
-            <SettingsStack.Screen
-                name={"SETTINGS_SCREEN"}
-                component={SettingsScreen}
-                options={{
-                    title: "Settings",
-                    headerLeft: () => <MenuIcon navigation={navigation} />,
-                }}
-            />
-        </SettingsStack.Navigator>
-    );
+  return (
+    <SettingsStack.Navigator
+      initialRouteName={"SETTINGS_SCREEN"}
+      screenOptions={screeOptionStyle}
+    >
+      <SettingsStack.Screen
+        name={"SETTINGS_SCREEN"}
+        component={SettingsScreen}
+        options={{
+          title: "Settings",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+    </SettingsStack.Navigator>
+  );
 };
 
 const DigitalPaymentStack = createStackNavigator();
@@ -579,49 +579,49 @@ const TaskTransferStackNavigator = ({ navigation }) => {
 const EventManagementStack = createStackNavigator();
 
 const EventManagementStackNavigator = ({ navigation }) => {
-    return (
-        <EventManagementStack.Navigator
-            initialRouteName={"EVENT_MANAGEMENT"}
-            screenOptions={screeOptionStyle}
-        >
-            <ComplaintStack.Screen
-                name={"EVENT_MANAGEMENT"}
-                component={EventManagementScreen}
-                options={{
-                    title: "Event Management",
-                    headerLeft: () => <MenuIcon navigation={navigation} />,
-                }}
-            />
-        </EventManagementStack.Navigator>
-    );
+  return (
+    <EventManagementStack.Navigator
+      initialRouteName={"EVENT_MANAGEMENT"}
+      screenOptions={screeOptionStyle}
+    >
+      <ComplaintStack.Screen
+        name={"EVENT_MANAGEMENT"}
+        component={EventManagementScreen}
+        options={{
+          title: "Event Management",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+    </EventManagementStack.Navigator>
+  );
 };
 
 const PreBookingStack = createStackNavigator();
 
 const PreBookingStackNavigator = ({ navigation }) => {
-    return (
-        <PreBookingStack.Navigator
-            initialRouteName={PreBookingStackIdentifiers.preBooking}
-            screenOptions={screeOptionStyle}
-        >
-            <PreBookingStack.Screen
-                name={PreBookingStackIdentifiers.preBooking}
-                component={PreBookingScreen}
-                options={{
-                    title: "Pre Booking",
-                    headerLeft: () => <MenuIcon navigation={navigation} />,
-                }}
-            />
+  return (
+    <PreBookingStack.Navigator
+      initialRouteName={PreBookingStackIdentifiers.preBooking}
+      screenOptions={screeOptionStyle}
+    >
+      <PreBookingStack.Screen
+        name={PreBookingStackIdentifiers.preBooking}
+        component={PreBookingScreen}
+        options={{
+          title: "Pre Booking",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
 
-            <PreBookingStack.Screen
-                name={PreBookingStackIdentifiers.preBookingForm}
-                component={PreBookingFormScreen}
-                options={{
-                    title: "Pre Booking Form",
-                }}
-            />
-        </PreBookingStack.Navigator>
-    );
+      <PreBookingStack.Screen
+        name={PreBookingStackIdentifiers.preBookingForm}
+        component={PreBookingFormScreen}
+        options={{
+          title: "Pre Booking Form",
+        }}
+      />
+    </PreBookingStack.Navigator>
+  );
 };
 
 const MainDrawerNavigator = createDrawerNavigator();
@@ -685,8 +685,8 @@ const MainStackDrawerNavigator = () => {
         name={"Target Settings"}
         component={TargetSettingsScreen}
       />
-        </MainDrawerNavigator.Navigator>
-    );
+    </MainDrawerNavigator.Navigator>
+  );
 };
 
 export { MainStackDrawerNavigator };

@@ -469,7 +469,7 @@ const HomeScreen = ({ route, navigation }) => {
                                                     source={SPEED}
                                                 // style={{ tintColor: Colors.DARK_GRAY }}
                                                 /> */}
-                                                <Image style={{width: 25, height: 16}} source={require("../../../assets/images/speed_new.png")}/>
+                                                <Image style={{ width: 25, height: 16 }} source={require("../../../assets/images/speed_new.png")} />
                                             </View>
                                             <View style={{
                                                 marginTop: 5,
@@ -623,14 +623,14 @@ const HomeScreen = ({ route, navigation }) => {
                                                 <TouchableOpacity onPress={() => {
                                                     // setIsTeam(true)
                                                     dispatch(updateIsTeam(false))
-                                            }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: selector.isTeam ? Colors.WHITE : Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
-                                                <Text style={{ fontSize: 14, color: selector.isTeam ? Colors.BLACK : Colors.WHITE }}>Self</Text>
+                                                }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: selector.isTeam ? Colors.WHITE : Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
+                                                    <Text style={{ fontSize: 14, color: selector.isTeam ? Colors.BLACK : Colors.WHITE }}>Self</Text>
                                                 </TouchableOpacity>
                                                 <TouchableOpacity onPress={() => {
                                                     // setIsTeam(false)
                                                     dispatch(updateIsTeam(true))
-                                            }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: selector.isTeam ? Colors.RED : Colors.WHITE, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
-                                                <Text style={{ fontSize: 14, color: selector.isTeam ? Colors.WHITE : Colors.BLACK }}>Teams</Text>
+                                                }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: selector.isTeam ? Colors.RED : Colors.WHITE, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
+                                                    <Text style={{ fontSize: 14, color: selector.isTeam ? Colors.WHITE : Colors.BLACK }}>Teams</Text>
                                                 </TouchableOpacity>
                                             </View>
                                         </View>

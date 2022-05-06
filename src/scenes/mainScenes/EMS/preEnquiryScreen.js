@@ -16,6 +16,7 @@ import realm from '../../../database/realm';
 import { callNumber } from '../../../utils/helperFunctions';
 import moment from "moment";
 import { Category_Type_List_For_Filter } from '../../../jsonData/enquiryFormScreenJsonData';
+import { MyTaskNewItem } from '../MyTasks/components/MyTasksNewItem';
 
 const dateFormat = "YYYY-MM-DD";
 
@@ -223,7 +224,7 @@ const PreEnquiryScreen = ({ navigation }) => {
                 {/* // filter */}
 
                 {selector.pre_enquiry_list.length === 0 ? <EmptyListView title={'No Data Found'} isLoading={selector.isLoading} /> :
-                    <View style={[GlobalStyle.shadow, { backgroundColor: 'white', flex: 1, marginBottom: 10 }]}>
+                    <View style={[ { backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 }]}>
                         <FlatList
                             data={selector.pre_enquiry_list}
                             extraData={selector.pre_enquiry_list}
@@ -248,7 +249,7 @@ const PreEnquiryScreen = ({ navigation }) => {
 
                                 return (
                                     <>
-                                        < PreEnquiryItem
+                                        {/* < PreEnquiryItem
                                             bgColor={color}
                                             name={item.firstName + " " + item.lastName}
                                             subName={item.enquirySource}
@@ -258,8 +259,21 @@ const PreEnquiryScreen = ({ navigation }) => {
                                             createdBy={item.createdBy}
                                             onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq, { itemData: item, fromCreatePreEnquiry: false })}
                                             onCallPress={() => callNumber(item.phone)}
-                                        />
-                                        <View style={GlobalStyle.underline}></View>
+                                        /> */}
+                                        <View style={{paddingVertical: 5}}>
+                                            <MyTaskNewItem
+                                                from='PRE_ENQUIRY'
+                                                name={item.firstName + " " + item.lastName}
+                                                status={""}
+                                                created={item.createdDate}
+                                                dmsLead={item.createdBy}
+                                                phone={item.phone}
+                                                source={item.enquirySource}
+                                                model={item.model}
+                                                onItemPress={() => {}}
+                                                onDocPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq, { itemData: item, fromCreatePreEnquiry: false })}
+                                            />
+                                        </View>
                                     </>
                                 )
                             }}
