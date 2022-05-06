@@ -55,6 +55,7 @@ import SelectBranchComp from "../scenes/loginScenes/selectBranchComp";
 import TargetSettingsScreen from "../scenes/mainScenes/TargetSettingsScreen";
 import TestScreen from "../scenes/mainScenes/Home/testScreen";
 import TaskListScreen from "../scenes/mainScenes/MyTasks/taskListScreen";
+import TaskThreeSixtyScreen from "../scenes/mainScenes/EMS/taskThreeSixty";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -176,6 +177,7 @@ export const EmsStackIdentifiers = {
   paidAccessories: "PAID_ACCESSORIES",
   proceedToPreBooking: "PROCEED_TO_PRE_BOOKING",
   proceedToBooking: "PROCEED_TO_BOOKING",
+  task360: "TASK_360"
 };
 
 export const PreBookingStackIdentifiers = {
@@ -313,6 +315,11 @@ const EmsStackNavigator = ({ navigation }) => {
         name={EmsStackIdentifiers.proceedToPreBooking}
         component={ProceedToPreBookingScreen}
         options={{ title: "Proceed To PreBooking" }}
+      />
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.task360}
+        component={TaskThreeSixtyScreen}
+        options={{ title: "Task 360" }}
       />
     </EmsStack.Navigator>
   );
