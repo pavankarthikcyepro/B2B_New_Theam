@@ -111,7 +111,7 @@ export const targetSettingsSlice = createSlice({
                 state.targetMapping = [];
             })
             .addCase(getAllTargetMapping.fulfilled, (state, action) => {
-                // console.log('menu_list: ', JSON.stringify(action.payload));
+                console.log('menu_list: ', JSON.stringify(action.payload));
                 state.targetMapping = action.payload.data ? action.payload.data : [];
             })
             .addCase(getAllTargetMapping.rejected, (state, action) => {

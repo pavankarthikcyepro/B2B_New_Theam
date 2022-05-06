@@ -172,7 +172,21 @@ const MainParamScreen = ({ route, navigation }) => {
                             <Text style={[styles.text, { color: '#d12a78' }]}>Visit</Text>
                         </View>
 
+                        <View style={styles.paramBox}>
+                            <Text style={[styles.text, { color: '#0800ff' }]}>Finance</Text>
+                        </View>
 
+                        <View style={styles.paramBox}>
+                            <Text style={[styles.text, { color: '#1f93ab' }]}>Insurance</Text>
+                        </View>
+
+                        <View style={styles.paramBox}>
+                            <Text style={[styles.text, { color: '#ec3466' }]}>Accessories</Text>
+                        </View>
+
+                        <View style={styles.paramBox}>
+                            <Text style={[styles.text, { color: 'blue' }]}>Exchange</Text>
+                        </View>
                     </View>
                     <ScrollView style={{ width: '100%' }} contentContainerStyle={{ flexDirection: 'column' }} showsVerticalScrollIndicator={false}
                         showsHorizontalScrollIndicator={false} horizontal={true}>
@@ -251,6 +265,8 @@ const MainParamScreen = ({ route, navigation }) => {
                             }
                         </View>
 
+                    
+
                         <View style={styles.textBoxWrap}>
                             <View style={styles.textBox2}>
                                 <Text style={styles.textInput}>{getTotal('homeVisit')}</Text>
@@ -265,6 +281,66 @@ const MainParamScreen = ({ route, navigation }) => {
                                 })
                             }
                         </View>
+
+                    <View style={styles.textBoxWrap}>
+                        <View style={styles.textBox2}>
+                            <Text style={styles.textInput}>{getTotal('finance')}</Text>
+                        </View>
+                        {
+                            selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
+                                return (
+                                    <View style={styles.textBox2}>
+                                        <Text style={styles.textInput}>{item.finance !== null ? item.finance : 0}</Text>
+                                    </View>
+                                )
+                            })
+                        }
+                    </View>
+
+                    <View style={styles.textBoxWrap}>
+                        <View style={styles.textBox2}>
+                            <Text style={styles.textInput}>{getTotal('insurance')}</Text>
+                        </View>
+                        {
+                            selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
+                                return (
+                                    <View style={styles.textBox2}>
+                                        <Text style={styles.textInput}>{item.insurance !== null ? item.insurance : 0}</Text>
+                                    </View>
+                                )
+                            })
+                        }
+                    </View>
+
+                    <View style={styles.textBoxWrap}>
+                        <View style={styles.textBox2}>
+                            <Text style={styles.textInput}>{getTotal('accessories')}</Text>
+                        </View>
+                        {
+                            selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
+                                return (
+                                    <View style={styles.textBox2}>
+                                        <Text style={styles.textInput}>{item.accessories !== null ? item.accessories : 0}</Text>
+                                    </View>
+                                )
+                            })
+                        }
+                    </View>
+
+                    <View style={styles.textBoxWrap}>
+                        <View style={styles.textBox2}>
+                            <Text style={styles.textInput}>{getTotal('exchange')}</Text>
+                        </View>
+                        {
+                            selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
+                                return (
+                                    <View style={styles.textBox2}>
+                                        <Text style={styles.textInput}>{item.exchange !== null ? item.exchange : 0}</Text>
+                                    </View>
+                                )
+                            })
+                        }
+                    </View>
                     </ScrollView>
                 </View>}
 
@@ -287,7 +363,21 @@ const MainParamScreen = ({ route, navigation }) => {
                         <Text style={[styles.text, { color: '#d12a78' }]}>Visit</Text>
                     </View>
 
+                    <View style={styles.paramBox}>
+                        <Text style={[styles.text, { color: '#0800ff' }]}>Finance</Text>
+                    </View>
 
+                    <View style={styles.paramBox}>
+                        <Text style={[styles.text, { color: '#1f93ab' }]}>Insurance</Text>
+                    </View>
+
+                    <View style={styles.paramBox}>
+                        <Text style={[styles.text, { color: '#ec3466' }]}>Accessories</Text>
+                    </View>
+
+                    <View style={styles.paramBox}>
+                        <Text style={[styles.text, { color: 'blue' }]}>Exchange</Text>
+                    </View>
                 </View>
                 <ScrollView style={{ width: '100%' }} contentContainerStyle={{ flexDirection: 'column' }} showsVerticalScrollIndicator={false}
                     showsHorizontalScrollIndicator={false} horizontal={true}>
@@ -327,6 +417,29 @@ const MainParamScreen = ({ route, navigation }) => {
                         </View>
                     </View>
 
+                    <View style={styles.textBoxWrap}>
+                        <View style={styles.textBox2}>
+                            <Text style={styles.textInput}>{getTotal('finance')}</Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.textBoxWrap}>
+                        <View style={styles.textBox2}>
+                            <Text style={styles.textInput}>{getTotal('insurance')}</Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.textBoxWrap}>
+                        <View style={styles.textBox2}>
+                            <Text style={styles.textInput}>{getTotal('accessories')}</Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.textBoxWrap}>
+                        <View style={styles.textBox2}>
+                            <Text style={styles.textInput}>{getTotal('exchange')}</Text>
+                        </View>
+                    </View>
                 </ScrollView>
             </View>
             }
@@ -350,7 +463,21 @@ const MainParamScreen = ({ route, navigation }) => {
                             <Text style={[styles.text, { color: '#d12a78' }]}>Visit</Text>
                         </View>
 
+                        <View style={styles.paramBox}>
+                            <Text style={[styles.text, { color: '#0800ff' }]}>Finance</Text>
+                        </View>
 
+                        <View style={styles.paramBox}>
+                            <Text style={[styles.text, { color: '#1f93ab' }]}>Insurance</Text>
+                        </View>
+
+                        <View style={styles.paramBox}>
+                            <Text style={[styles.text, { color: '#ec3466' }]}>Accessories</Text>
+                        </View>
+
+                        <View style={styles.paramBox}>
+                            <Text style={[styles.text, { color: 'blue' }]}>Exchange</Text>
+                        </View>
                     </View>
                     <ScrollView style={{ width: '100%' }} contentContainerStyle={{ flexDirection: 'column' }} showsVerticalScrollIndicator={false}
                         showsHorizontalScrollIndicator={false} horizontal={true}>
@@ -389,6 +516,30 @@ const MainParamScreen = ({ route, navigation }) => {
                                 <Text style={styles.textInput}>{getTotal('homeVisit')}</Text>
                             </View>
                         </View>
+
+                    <View style={styles.textBoxWrap}>
+                        <View style={styles.textBox2}>
+                            <Text style={styles.textInput}>{getTotal('finance')}</Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.textBoxWrap}>
+                        <View style={styles.textBox2}>
+                            <Text style={styles.textInput}>{getTotal('insurance')}</Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.textBoxWrap}>
+                        <View style={styles.textBox2}>
+                            <Text style={styles.textInput}>{getTotal('accessories')}</Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.textBoxWrap}>
+                        <View style={styles.textBox2}>
+                            <Text style={styles.textInput}>{getTotal('exchange')}</Text>
+                        </View>
+                    </View>
                     </ScrollView>
                 </View>
             }
@@ -426,23 +577,23 @@ const MainParamScreen = ({ route, navigation }) => {
                                 onChange={async (item) => {
                                     console.log("£££", item);
                                     setSelectedBranch(item)
-                                    // if (selector.isTeamPresent) {
-                                    console.log("£££££££");
-                                    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-                                    if (employeeData) {
-                                        const jsonObj = JSON.parse(employeeData);
-                                        const payload = {
-                                            orgId: jsonObj.orgId,
-                                            empId: jsonObj.empId,
-                                            selectedIds: [item.value]
+                                    if (selector.isTeam) {
+                                        console.log("£££££££");
+                                        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+                                        if (employeeData) {
+                                            const jsonObj = JSON.parse(employeeData);
+                                            const payload = {
+                                                orgId: jsonObj.orgId,
+                                                empId: jsonObj.empId,
+                                                selectedIds: [item.value]
+                                            }
+                                            Promise.all([
+                                                dispatch(getEmployeesDropDownData(payload))
+                                            ]).then(() => {
+                                                console.log('DROP', selector.employees_drop_down_data);
+                                            })
                                         }
-                                        Promise.all([
-                                            dispatch(getEmployeesDropDownData(payload))
-                                        ]).then(() => {
-                                            console.log('DROP', selector.employees_drop_down_data);
-                                        })
                                     }
-                                    // }
                                 }}
                             />
                         </View>

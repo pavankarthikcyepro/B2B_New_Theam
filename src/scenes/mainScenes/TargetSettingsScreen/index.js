@@ -134,7 +134,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                 })
                 if (rolesArr.length > 0) {
                     console.log("FOUND");
-                    dispatch(updateIsTeamPresent(true))
+                    // dispatch(updateIsTeamPresent(true))
                 }
             }
 

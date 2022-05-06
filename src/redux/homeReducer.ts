@@ -455,7 +455,7 @@ export const homeSlice = createSlice({
             })
             .addCase(getTargetParametersAllData.fulfilled, (state, action) => {
                 if (action.payload) {
-                    console.log("^%$%&*^&*^&*&*& SET %&&&*%^$%&*&^%");
+                    // console.log("^%$%&*^&*^&*&*& SET %&&&*%^$%&*&^%", JSON.stringify(action.payload.overallTargetAchivements));
                     
                     state.all_target_parameters_data = [];
                     state.all_emp_parameters_data = [];

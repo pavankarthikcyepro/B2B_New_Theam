@@ -296,7 +296,7 @@ const HomeScreen = ({ route, navigation }) => {
                 })
                 if (rolesArr.length > 0) {
                     setRoles(rolesArr)
-                    dispatch(updateIsTeamPresent(true))
+                    // dispatch(updateIsTeamPresent(true))
                     setIsTeamPresent(true)
                     console.log("%%%%% TEAM:", rolesArr);
                     const dateFormat = "YYYY-MM-DD";
@@ -469,7 +469,7 @@ const HomeScreen = ({ route, navigation }) => {
                                                     source={SPEED}
                                                 // style={{ tintColor: Colors.DARK_GRAY }}
                                                 /> */}
-                                                <Image style={{ width: 25, height: 16 }} source={require("../../../assets/images/speed_new.png")} />
+                                                <Image style={{ width: 35, height: 35 }} source={require("../../../assets/images/rank.png")} />
                                             </View>
                                             <View style={{
                                                 marginTop: 5,
@@ -499,7 +499,7 @@ const HomeScreen = ({ route, navigation }) => {
                                                     source={SPEED}
                                                 // style={{ tintColor: Colors.DARK_GRAY }}
                                                 /> */}
-                                                <Image style={{ width: 25, height: 16 }} source={require("../../../assets/images/speed_new.png")} />
+                                                <Image style={{ width: 35, height: 35 }} source={require("../../../assets/images/rank.png")} />
                                             </View>
                                             <View style={{
                                                 marginTop: 5,
@@ -509,7 +509,7 @@ const HomeScreen = ({ route, navigation }) => {
                                                 {dealerRank !== null &&
                                                     <View style={{ flexDirection: 'row' }}>
                                                         <Text style={[styles.rankText]}>{dealerRank}</Text>
-                                                        <Text style={[styles.rankText, { color: Colors.GRAY }]}>/{dealerCount}</Text>
+                                                        <Text style={[styles.rankText]}>/{dealerCount}</Text>
                                                     </View>
                                                 }
                                                 <View style={{
@@ -551,7 +551,7 @@ const HomeScreen = ({ route, navigation }) => {
                                                     source={SPEED}
                                                 // style={{ tintColor: Colors.DARK_GRAY }}
                                                 /> */}
-                                                <Image style={{ width: 25, height: 16 }} source={require("../../../assets/images/speed_new.png")} />
+                                                <Image style={{ width: 35, height: 35 }} source={require("../../../assets/images/retail.png")} />
                                             </View>
                                             <View style={{
                                                 marginTop: 5,
