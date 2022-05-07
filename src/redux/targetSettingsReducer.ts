@@ -55,7 +55,7 @@ export const getAllTargetMapping = createAsyncThunk("TARGET_SETTINGS/getAllTarge
 
     const response = await client.post(URL.GET_ALL_TARGET_MAPPING(), payload)
     const json = await response.json()
-    console.log("$$$$$$$$$ TARGET:", JSON.stringify(json));
+    // console.log("$$$$$$$$$ TARGET:", JSON.stringify(json));
     if (!response.ok) {
         return rejectWithValue(json);
     }
@@ -111,7 +111,7 @@ export const targetSettingsSlice = createSlice({
                 state.targetMapping = [];
             })
             .addCase(getAllTargetMapping.fulfilled, (state, action) => {
-                console.log('menu_list: ', JSON.stringify(action.payload));
+                // console.log('menu_list: ', JSON.stringify(action.payload));
                 state.targetMapping = action.payload.data ? action.payload.data : [];
             })
             .addCase(getAllTargetMapping.rejected, (state, action) => {

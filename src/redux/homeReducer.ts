@@ -152,7 +152,7 @@ export const getTargetParametersAllData = createAsyncThunk("HOME/getTargetParame
 
     const response = await client.post(URL.GET_TARGET_PARAMS_ALL(), payload)
     const json = await response.json()
-    // console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
+    console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
 
     if (!response.ok) {
         return rejectWithValue(json);
@@ -459,7 +459,7 @@ export const homeSlice = createSlice({
                     
                     state.all_target_parameters_data = [];
                     state.all_emp_parameters_data = [];
-                    state.isTeamPresent = action.payload.overallTargetAchivements.length > 1;
+                    state.isTeamPresent = action.payload.employeeTargetAchievements.length > 1;
                     state.all_target_parameters_data = action.payload.overallTargetAchivements;
                     state.all_emp_parameters_data = action.payload.employeeTargetAchievements;
                 }

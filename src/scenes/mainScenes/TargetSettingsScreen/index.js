@@ -130,14 +130,14 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                 let rolesArr = [];
                 console.log("ROLLS2:", jsonObj.roles);
                 rolesArr = jsonObj.roles.filter((item) => {
-                    return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL"
+                    return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL" || item === "General Manager" || item === "branch manager" || item === "Testdrive_Manager"
                 })
                 if (rolesArr.length > 0) {
                     console.log("FOUND");
-                    // dispatch(updateIsTeamPresent(true))
+                    dispatch(updateIsTeamPresent(true))
                 }
             }
-
+            // console.log("$$$$$$$ PAYLOAD: ", payload2)
             Promise.all([
                 dispatch(getEmployeesActiveBranch(payload)),
                 dispatch(getEmployeesRolls(payload)),

@@ -478,7 +478,7 @@ const TargetScreen = ({ route, navigation }) => {
             if (selector.login_employee_details?.roles.length > 0) {
                 let rolesArr = [];
                 rolesArr = selector.login_employee_details?.roles.filter((item) => {
-                    return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL"
+                    return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL" || item === "General Manager" || item === "branch manager" || item === "Testdrive_Manager"
                 })
                 if (rolesArr.length > 0) {
                     console.log("%%%%% TEAM:", rolesArr);
@@ -654,7 +654,7 @@ const TargetScreen = ({ route, navigation }) => {
                                             <Text style={{ color: Colors.WHITE }}>{item.achievment}</Text>
                                         </View> */}
                                         <View style={{ position: 'absolute', top: 1, right: 3 }}>
-                                            <Text>{item.target}</Text>
+                                            <Text style={{ color: parseInt(item.achivementPerc.substring(0, item.achivementPerc.indexOf('%'))) >= 90 ? Colors.WHITE : Colors.BLACK}}>{item.target}</Text>
                                         </View>
                                     </View>
                                     <View style={{ width: '10%', justifyContent: 'center', flexDirection: 'row', height: 25, marginTop: 8, alignItems: 'center', marginLeft: 8 }}>
