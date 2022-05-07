@@ -96,7 +96,7 @@ import {
 } from "../../../utils/toast";
 import {
   convertDateStringToMillisecondsUsingMoment,
-  isValidateAlphabetics,
+  isValidateAlphabetics,isValidate,
   isMobileNumber,
   emiCalculator,
   GetCarModelList,
@@ -885,11 +885,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const submitClicked = () => {
     Keyboard.dismiss();
 
-    if (!isValidateAlphabetics(selector.first_name)) {
+    if (!isValidate(selector.first_name)) {
       showToast("please enter alphabetics only in firstname");
       return;
     }
-    if (!isValidateAlphabetics(selector.last_name)) {
+    if (!isValidate(selector.last_name)) {
       showToast("please enter alphabetics only in lastname");
       return;
     }

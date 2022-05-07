@@ -112,7 +112,7 @@ import URL from "../../../networking/endpoints";
 import { getEnquiryList } from "../../../redux/enquiryReducer";
 import { AppNavigator } from "../../../navigations";
 import {
-  isValidateAlphabetics,
+  isValidateAlphabetics,isValidate,
   isMobileNumber,
 } from "../../../utils/helperFunctions";
 import uuid from "react-native-uuid";
@@ -432,11 +432,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       }
     }
 
-    if (!isValidateAlphabetics(selector.firstName)) {
+    if (!isValidate(selector.firstName)) {
       showToast("please enter alphabetics only in firstname");
       return;
     }
-    if (!isValidateAlphabetics(selector.lastName)) {
+    if (!isValidate(selector.lastName)) {
       showToast("please enter alphabetics only in lastname");
       return;
     }

@@ -797,14 +797,16 @@ const TestDriveScreen = ({ route, navigation }) => {
               <DropDownSelectionItem
                 label={"Model"}
                 value={selectedVehicleDetails.model}
-                disabled={!isRecordEditable}
+                // disabled={!isRecordEditable}
+                disabled={false}
                 onPress={() => showDropDownModelMethod("MODEL", "Model")}
               />
 
               <DropDownSelectionItem
                 label={"Varient"}
                 value={selectedVehicleDetails.varient}
-                disabled={!isRecordEditable}
+                // disabled={!isRecordEditable}
+                disabled={false}
                 onPress={() => showDropDownModelMethod("VARIENT", "Model")}
               />
 
@@ -922,7 +924,8 @@ const TestDriveScreen = ({ route, navigation }) => {
               <DateSelectItem
                 label={"Customer Preffered Date"}
                 value={selector.customer_preferred_date}
-                disabled={!isRecordEditable}
+                // disabled={!isRecordEditable}
+                disabled={false}
                 onPress={() =>
                   showDatePickerModelMethod("PREFERRED_DATE", "date")
                 }
@@ -935,7 +938,8 @@ const TestDriveScreen = ({ route, navigation }) => {
               <DropDownSelectionItem
                 label={"List of Drivers"}
                 value={selectedDriverDetails.name}
-                disabled={!isRecordEditable}
+                // disabled={!isRecordEditable}
+                disabled={false}
                 onPress={() =>
                   showDropDownModelMethod("LIST_OF_DRIVERS", "List of Drivers")
                 }
@@ -943,7 +947,8 @@ const TestDriveScreen = ({ route, navigation }) => {
               <DateSelectItem
                 label={"Customer Preffered Time"}
                 value={selector.customer_preferred_time}
-                disabled={!isRecordEditable}
+                // disabled={!isRecordEditable}
+                disabled={false}
                 onPress={() =>
                   showDatePickerModelMethod("CUSTOMER_PREFERRED_TIME", "time")
                 }
@@ -953,7 +958,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                   <DateSelectItem
                     label={"Actual start Time"}
                     value={selector.actual_start_time}
-                    disabled={!isRecordEditable}
+                    // disabled={!isRecordEditable}
+                    disabled={false}
                     onPress={() =>
                       showDatePickerModelMethod("ACTUAL_START_TIME", "time")
                     }
@@ -963,7 +969,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                   <DateSelectItem
                     label={"Actual End Time"}
                     value={selector.actual_end_time}
-                    disabled={!isRecordEditable}
+                    disabled={false}
+                    // disabled={!isRecordEditable}
                     onPress={() =>
                       showDatePickerModelMethod("ACTUAL_END_TIME", "time")
                     }
