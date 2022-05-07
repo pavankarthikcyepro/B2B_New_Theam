@@ -478,7 +478,7 @@ const TargetScreen = ({ route, navigation }) => {
             if (selector.login_employee_details?.roles.length > 0) {
                 let rolesArr = [];
                 rolesArr = selector.login_employee_details?.roles.filter((item) => {
-                    return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL"
+                    return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL" || item === "General Manager" || item === "branch manager" || item === "Testdrive_Manager"
                 })
                 if (rolesArr.length > 0) {
                     console.log("%%%%% TEAM:", rolesArr);
@@ -505,49 +505,29 @@ const TargetScreen = ({ route, navigation }) => {
                         <View style={{ width: '10%', justifyContent: 'center', marginTop: 5, }}>
 
                         </View>
-                        <View style={{ width: '2%', borderRightWidth: 2, borderRightColor: '#d1d1d1', height: 53 }}>
+                        {/* <View style={{ width: '2%', borderRightWidth: 2, borderRightColor: '#d1d1d1', height: 53 }}>
 
-                        </View>
-                        <View style={{ width: '40%', justifyContent: 'center', marginTop: 5, alignItems: 'center', }}>
-                            <Text style={{ fontSize: 14, color: '#0600FF', fontWeight: '600' }}>Team Total</Text>
-                            <View style={{ flexDirection: 'row', marginTop: 10 }}>
-                                <View style={{ width: '30%', justifyContent: 'center', alignItems: 'center' }}>
-                                    <Text>Ach</Text>
-                                </View>
-                                <View style={{ width: '30%', justifyContent: 'center', alignItems: 'center' }}>
-                                    <Text>Baln</Text>
-                                </View>
-                                <View style={{ width: '30%', justifyContent: 'center', alignItems: 'center' }}>
-                                    <Text>A/D</Text>
-                                </View>
-                            </View>
-                        </View>
-                        <View style={{ width: '2%', borderRightWidth: 2, borderRightColor: '#d1d1d1', height: 53 }}>
-
-                        </View>
-                        {/* <View style={{ width: '40%', justifyContent: 'center', marginTop: 5, flexDirection: 'column', alignItems: 'center' }}>
-                            <View style={{ flexDirection: 'row' }}>
-                                <View style={{ width: 30, height: 30, borderRadius: 50, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FF8600' }}>
-                                    <Text style={{ color: '#fff' }}>G</Text>
-                                </View>
-                                <View style={{ height: 30, justifyContent: 'center', alignItems: 'center', marginLeft: 10 }}>
-                                    <Text style={{ fontSize: 14, color: '#FF8600', fontWeight: '600' }}>Ganesh</Text>
-                                </View>
-                            </View>
-                            <View style={{ flexDirection: 'row' }}>
-                                <View style={{ width: '30%', justifyContent: 'center', alignItems: 'center' }}>
-                                    <Text>Ach</Text>
-                                </View>
-                                <View style={{ width: '30%', justifyContent: 'center', alignItems: 'center' }}>
-                                    <Text>Baln</Text>
-                                </View>
-                                <View style={{ width: '30%', justifyContent: 'center', alignItems: 'center' }}>
-                                    <Text>A/D</Text>
-                                </View>
-                            </View>
-
-                        
                         </View> */}
+                        <View style={{ width: '40%', justifyContent: 'center', marginTop: 5, alignItems: 'center', }}>
+                            <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center', height: 40, borderWidth: 1, borderColor: '#d1d1d1' }}>
+                                <Text style={{ fontSize: 14, color: '#0600FF', fontWeight: '600', }}>Team Total</Text>
+                           </View>
+                            <View style={{ flexDirection: 'row',  height: 30 }}>
+                                <View style={{ width: '33%', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#d1d1d1' }}>
+                                    <Text>Ach</Text>
+                                </View>
+                                <View style={{ width: '33%', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#d1d1d1' }}>
+                                    <Text>Baln</Text>
+                                </View>
+                                <View style={{ width: '33%', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#d1d1d1' }}>
+                                    <Text>A/D</Text>
+                                </View>
+                            </View>
+                        </View>
+                        {/* <View style={{ width: '2%', borderRightWidth: 2, borderRightColor: '#d1d1d1', height: 53 }}>
+
+                        </View> */}
+                        
                     </View>
                     {selector.all_target_parameters_data.length > 0 &&
                         <View style={{ flexDirection: 'row', marginLeft: 8 }}>
@@ -555,7 +535,7 @@ const TargetScreen = ({ route, navigation }) => {
                                 {
                                     selector.all_target_parameters_data.map((item, index) => {
                                         return (
-                                            <View style={{ marginBottom: 10 }}>
+                                            <View style={{ height: 30 }}>
                                                 <Text style={{ color: color[index % color.length], fontSize: 14, fontWeight: '600' }}>{item.paramShortName}</Text>
                                             </View>
                                         )
@@ -569,21 +549,21 @@ const TargetScreen = ({ route, navigation }) => {
                                 <Text>TD</Text>
                             </View> */}
                             </View>
-                            <View style={{ width: '2%', borderRightWidth: 2, borderRightColor: '#d1d1d1', minHeight: 300 }}></View>
+                            {/* <View style={{ width: '2%', borderRightWidth: 2, borderRightColor: '#d1d1d1', minHeight: 300 }}></View> */}
 
-                            <View style={{ width: '40%', marginTop: 5, }}>
+                            <View style={{ width: '40%', }}>
                                 {
                                     selector.all_target_parameters_data.map((item, index) => {
                                         return (
-                                            <View style={{ flexDirection: 'row', marginLeft: 5, marginBottom: 10 }}>
-                                                <View style={{ width: '33%', justifyContent: 'center', alignItems: 'center' }}>
+                                            <View style={{ flexDirection: 'row', height: 30}}>
+                                                <View style={{ width: '33%', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#d1d1d1' }}>
                                                     <Text style={{ fontSize: 14, fontWeight: '600' }}>{item.achievment}/{item.target}</Text>
                                                 </View>
-                                                <View style={{ width: '33%', justifyContent: 'center', alignItems: 'center' }}>
+                                                <View style={{ width: '33%', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#d1d1d1' }}>
                                                     <Text style={{ fontSize: 14, fontWeight: '600' }}>{item.shortfall}</Text>
                                                 </View>
-                                                <View style={{ width: '33%', justifyContent: 'center', alignItems: 'center' }}>
-                                                    <Text style={{ fontSize: 14, fontWeight: '600' }}>{dateDiff > 0 || parseInt(item.shortfall) > 0 ? (parseInt(item.shortfall) / dateDiff).toFixed(2) : 0}</Text>
+                                                <View style={{ width: '33%', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#d1d1d1' }}>
+                                                    <Text style={{ fontSize: 14, fontWeight: '600' }}>{dateDiff > 0 && parseInt(item.shortfall) !== 0 ? (parseInt(item.shortfall) / dateDiff).toFixed(2) : 0}</Text>
                                                 </View>
                                             </View>
                                         )
@@ -591,13 +571,13 @@ const TargetScreen = ({ route, navigation }) => {
                                 }
                             </View>
 
-                            <View style={{ width: '2%', borderRightWidth: 2, borderRightColor: '#d1d1d1', minHeight: 300 }}></View>
-                            <ScrollView style={{ width: '40%', marginBottom: 0, marginTop: -50, height: 400 }} contentContainerStyle={{ alignItems: 'center', }}>
+                            {/* <View style={{ width: '2%', borderRightWidth: 2, borderRightColor: '#d1d1d1', minHeight: 300 }}></View> */}
+                            <ScrollView style={{ marginBottom: 0, marginTop: -80, }} contentContainerStyle={{ alignItems: 'center', }} horizontal={true}>
                                 {
                                     selector.all_emp_parameters_data.map((item, index) => {
                                         return (
-                                            <>
-                                                <View style={{ flexDirection: 'row' }}>
+                                            <View style={{ flexDirection: 'column', marginTop: 5 }}>
+                                                <View style={{ flexDirection: 'row', height: 40, borderWidth: 1, borderColor: '#d1d1d1', width: 150, justifyContent: 'center', alignItems: 'center' }}>
                                                     <View style={{ width: 30, height: 30, borderRadius: 50, justifyContent: 'center', alignItems: 'center', backgroundColor: color[index % color.length] }}>
                                                         <Text style={{ color: '#fff' }}>{item.empName.charAt(0)}</Text>
                                                     </View>
@@ -605,14 +585,14 @@ const TargetScreen = ({ route, navigation }) => {
                                                         <Text style={{ fontSize: 14, color: color[index % color.length], fontWeight: '600' }}>{item.empName}</Text>
                                                     </View>
                                                 </View>
-                                                <View style={{ flexDirection: 'row', marginBottom: 10 }}>
-                                                    <View style={{ width: '30%', justifyContent: 'center', alignItems: 'center' }}>
+                                                <View style={{ flexDirection: 'row', height: 30, }}>
+                                                    <View style={{ width: 50, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#d1d1d1' }}>
                                                         <Text>Ach</Text>
                                                     </View>
-                                                    <View style={{ width: '30%', justifyContent: 'center', alignItems: 'center' }}>
+                                                    <View style={{ width: 50, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#d1d1d1' }}>
                                                         <Text>Baln</Text>
                                                     </View>
-                                                    <View style={{ width: '30%', justifyContent: 'center', alignItems: 'center' }}>
+                                                    <View style={{ width: 50, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#d1d1d1' }}>
                                                         <Text>A/D</Text>
                                                     </View>
                                                 </View>
@@ -620,15 +600,15 @@ const TargetScreen = ({ route, navigation }) => {
                                                     item.targetAchievements.map((innerItem, innerIndex) => {
                                                         return (
                                                             <>
-                                                                <View style={{ flexDirection: 'row', marginLeft: 5, marginBottom: 10 }}>
-                                                                    <View style={{ width: '33%', justifyContent: 'center', alignItems: 'center' }}>
+                                                                <View style={{ flexDirection: 'row',height: 30 }}>
+                                                                    <View style={{ width: 50, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#d1d1d1' }}>
                                                                         <Text style={{ fontSize: 14, fontWeight: '600' }}>{innerItem.achievment}/{innerItem.target}</Text>
                                                                     </View>
-                                                                    <View style={{ width: '33%', justifyContent: 'center', alignItems: 'center' }}>
+                                                                    <View style={{ width: 50, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#d1d1d1' }}>
                                                                         <Text style={{ fontSize: 14, fontWeight: '600' }}>{innerItem.shortfall}</Text>
                                                                     </View>
-                                                                    <View style={{ width: '33%', justifyContent: 'center', alignItems: 'center' }}>
-                                                                        <Text style={{ fontSize: 14, fontWeight: '600' }}>{dateDiff > 0 || parseInt(innerItem.shortfall) > 0 ? (parseInt(innerItem.shortfall) / dateDiff).toFixed(2) : 0}</Text>
+                                                                    <View style={{ width: 50, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#d1d1d1' }}>
+                                                                        <Text style={{ fontSize: 14, fontWeight: '600' }}>{dateDiff > 0 && parseInt(innerItem.shortfall) !== 0 ? (parseInt(innerItem.shortfall) / dateDiff).toFixed(2) : 0}</Text>
                                                                     </View>
                                                                 </View>
                                                                 {
@@ -639,8 +619,7 @@ const TargetScreen = ({ route, navigation }) => {
                                                         )
                                                     })
                                                 }
-                                            </>
-
+                                            </View>
                                         )
                                     })
                                 }
@@ -648,7 +627,7 @@ const TargetScreen = ({ route, navigation }) => {
 
                         </View>
                     }
-                </View> : 
+                </View> :
                 <>
                     <View style={{ flexDirection: 'row' }}>
                         <View style={{ width: '65%', justifyContent: 'center', height: 30 }}>
@@ -666,13 +645,16 @@ const TargetScreen = ({ route, navigation }) => {
                                     <View style={{ width: '10%', justifyContent: 'center', marginTop: 5 }}>
                                         <Text>{item.paramShortName}</Text>
                                     </View>
-                                    <View style={{ width: '40%', marginTop: 10, position: 'relative' }}>
-                                        <ProgressBar progress={item.achivementPerc.includes('%') ? parseInt(item.achivementPerc.substring(0, item.achivementPerc.indexOf('%'))) === 0 ? 0 : (parseInt(item.achivementPerc.substring(0, item.achivementPerc.indexOf('%'))) / 100) : (parseFloat(item.achivementPerc) / 100)} color={color[index % color.length]} style={{ height: 20, borderRadius: 3, backgroundColor: '#eeeeee', }} />
-                                        <View style={{ position: 'absolute', top: 1, left: 2 }}>
+                                    <View style={{ width: '10%', marginTop: 10, position: 'relative', backgroundColor: color[index % color.length], height: 20, justifyContent: 'center', alignItems: 'center', borderTopLeftRadius: 3, borderBottomLeftRadius: 3 }}>
+                                        <Text style={{ color: '#fff' }}>{item.achievment}</Text>
+                                    </View>
+                                    <View style={{ width: '30%', marginTop: 10, position: 'relative' }}>
+                                        <ProgressBar progress={item.achivementPerc.includes('%') ? parseInt(item.achivementPerc.substring(0, item.achivementPerc.indexOf('%'))) === 0 ? 0 : (parseInt(item.achivementPerc.substring(0, item.achivementPerc.indexOf('%'))) / 100) : (parseFloat(item.achivementPerc) / 100)} color={color[index % color.length]} style={{ height: 20, borderTopRightRadius: 3, borderBottomRightRadius: 3, backgroundColor: '#eeeeee', }} />
+                                        {/* <View style={{ position: 'absolute', top: 1, left: 2 }}>
                                             <Text style={{ color: Colors.WHITE }}>{item.achievment}</Text>
-                                        </View>
+                                        </View> */}
                                         <View style={{ position: 'absolute', top: 1, right: 3 }}>
-                                            <Text>{item.target}</Text>
+                                            <Text style={{ color: parseInt(item.achivementPerc.substring(0, item.achivementPerc.indexOf('%'))) >= 90 ? Colors.WHITE : Colors.BLACK}}>{item.target}</Text>
                                         </View>
                                     </View>
                                     <View style={{ width: '10%', justifyContent: 'center', flexDirection: 'row', height: 25, marginTop: 8, alignItems: 'center', marginLeft: 8 }}>
@@ -691,8 +673,8 @@ const TargetScreen = ({ route, navigation }) => {
                                         <View style={{ width: 30, height: 25, borderColor: color[index % color.length], borderWidth: 1, justifyContent: 'center', alignItems: 'center' }}>
                                             <Text>{item.shortfall}</Text>
                                         </View>
-                                        <View style={{ width: 35, height: 25, borderColor: color[index % color.length], borderWidth: 1, justifyContent: 'center', alignItems: 'center', marginLeft: 20 }}>
-                                            <Text>{dateDiff > 0 || parseInt(item.shortfall) > 0 ? (parseInt(item.shortfall) / dateDiff).toFixed(2) : 0}</Text>
+                                        <View style={{ width: 40, height: 25, borderColor: color[index % color.length], borderWidth: 1, justifyContent: 'center', alignItems: 'center', marginLeft: 20 }}>
+                                            <Text>{dateDiff > 0 && parseInt(item.shortfall) !== 0 ? (parseInt(item.shortfall) / dateDiff).toFixed(2) : 0}</Text>
                                         </View>
                                     </View>
                                 </View>
@@ -744,7 +726,7 @@ const TargetScreen = ({ route, navigation }) => {
                 </>
             }
 
-            <TouchableOpacity style={{ flexDirection: 'row', marginLeft: 10, alignItems: 'center', marginTop: 0, marginRight: 10, justifyContent: 'flex-end', marginBottom: 10 }}>
+            {/* <TouchableOpacity style={{ flexDirection: 'row', marginLeft: 10, alignItems: 'center', marginTop: 0, marginRight: 10, justifyContent: 'flex-end', marginBottom: 10 }}>
                 <Text style={{ fontSize: 10, fontWeight: "600", color: '#ff0000' }}>View all</Text>
                 <VectorImage
                     width={6}
@@ -752,7 +734,7 @@ const TargetScreen = ({ route, navigation }) => {
                     source={PATH1705}
                 // style={{ tintColor: Colors.DARK_GRAY }}
                 />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
         </View>
     )
 }
