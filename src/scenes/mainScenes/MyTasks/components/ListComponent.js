@@ -13,8 +13,8 @@ const item2Width = (item1Width - 10);
 const baseItemWidth = item2Width / 3;
 const itemWidth = baseItemWidth - 10;
 
-const series = [50, 50]
-const sliceColor = ['#FF0000', '#5BBD66']
+const series = [60, 40]
+const sliceColor = ['#5BBD66', Colors.RED]
 
 const NoDataFound = () => {
     return (
@@ -23,6 +23,9 @@ const NoDataFound = () => {
         </View>
     )
 }
+
+const taskNames = ["testdrive", "testdriveapproval", "proceedtoprebooking", "proceedtobooking", "homevisit", "enquiryfollowup", "preenquiryfollowup", "prebookingfollowup", "createenquiry"]
+
 
 const ListComponent = ({ route, navigation }) => {
     const [index, setIndex] = useState(0);
@@ -34,15 +37,31 @@ const ListComponent = ({ route, navigation }) => {
         if (selector.myTasksListResponseStatus === "success") {
             if (route.params.from === "TODAY") {
                 const todaysData = selector.mytasksLisResponse.todaysData[0];
-                setMyTasksData(todaysData.tasksList || []);
+                const filteredData = todaysData.tasksList.filter(element => {
+                    const trimName = element.taskName.toLowerCase().trim();
+                    const finalTaskName = trimName.replace(/ /g, "");
+                    return taskNames.includes(finalTaskName);
+                });
+                
+                setMyTasksData(filteredData);
             }
             else if (route.params.from === "UPCOMING") {
                 const todaysData = selector.mytasksLisResponse.upcomingData[0];
-                setMyTasksData(todaysData.tasksList || []);
+                const filteredData = todaysData.tasksList.filter(element => {
+                    const trimName = element.taskName.toLowerCase().trim();
+                    const finalTaskName = trimName.replace(/ /g, "");
+                    return taskNames.includes(finalTaskName);
+                });
+                setMyTasksData(filteredData);
             }
             else if (route.params.from === "PENDING") {
                 const todaysData = selector.mytasksLisResponse.pendingData[0];
-                setMyTasksData(todaysData.tasksList || []);
+                const filteredData = todaysData.tasksList.filter(element => {
+                    const trimName = element.taskName.toLowerCase().trim();
+                    const finalTaskName = trimName.replace(/ /g, "");
+                    return taskNames.includes(finalTaskName);
+                });
+                setMyTasksData(filteredData);
             }
         }
     }, [selector.myTasksListResponseStatus, selector.mytasksLisResponse])

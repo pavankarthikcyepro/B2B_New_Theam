@@ -69,7 +69,7 @@ const LocalButtonComp = ({
 };
 
 const TestDriveScreen = ({ route, navigation }) => {
-  const { taskId, identifier, universalId, taskData } = route.params;
+  const { taskId, identifier, universalId, taskData, mobile } = route.params;
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.testDriveReducer);
   const [showDropDownModel, setShowDropDownModel] = useState(false);
@@ -110,7 +110,7 @@ const TestDriveScreen = ({ route, navigation }) => {
     vehicleId: 0,
     varientId: 0,
   });
-  const [mobie, setMobile] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("");
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [selectedDseDetails, setSelectedDseDetails] = useState({
@@ -187,7 +187,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       const leadDtoObj = taskData.leadDto;
       setName(leadDtoObj.firstName + " " + leadDtoObj.lastName);
       setEmail(leadDtoObj.email || "");
-      setMobile(leadDtoObj.phone || "");
+      setMobileNumber(leadDtoObj.phone || "");
       setSelectedDseDetails({
         name: taskData.assignee.empName,
         id: taskData.assignee.empId,
@@ -214,7 +214,7 @@ const TestDriveScreen = ({ route, navigation }) => {
           const leadDtoObj = resp.dmsEntity?.dmsLeadDto;
           setName(leadDtoObj.firstName + " " + leadDtoObj.lastName);
           setEmail(leadDtoObj.email || "");
-          setMobile(mobile);
+          setMobileNumber(mobile);
           // setSelectedDseDetails({
           //   name: taskData.assignee.empName,
           //   id: taskData.assignee.empId,
@@ -784,27 +784,29 @@ const TestDriveScreen = ({ route, navigation }) => {
               <Text style={GlobalStyle.underline}></Text>
               <TextinputComp
                 style={{ height: 65, width: "100%" }}
-                value={mobie}
+                value={mobileNumber}
                 label={"Mobile Number*"}
                 maxLength={10}
                 keyboardType={"phone-pad"}
                 editable={true}
                 disabled={false}
-                onChangeText={(text) => setMobile(text)}
+                onChangeText={(text) => setMobileNumber(text)}
               />
               <Text style={GlobalStyle.underline}></Text>
 
               <DropDownSelectionItem
                 label={"Model"}
                 value={selectedVehicleDetails.model}
-                disabled={!isRecordEditable}
+                // disabled={!isRecordEditable}
+                disabled={false}
                 onPress={() => showDropDownModelMethod("MODEL", "Model")}
               />
 
               <DropDownSelectionItem
                 label={"Varient"}
                 value={selectedVehicleDetails.varient}
-                disabled={!isRecordEditable}
+                // disabled={!isRecordEditable}
+                disabled={false}
                 onPress={() => showDropDownModelMethod("VARIENT", "Model")}
               />
 
@@ -922,7 +924,8 @@ const TestDriveScreen = ({ route, navigation }) => {
               <DateSelectItem
                 label={"Customer Preffered Date"}
                 value={selector.customer_preferred_date}
-                disabled={!isRecordEditable}
+                // disabled={!isRecordEditable}
+                disabled={false}
                 onPress={() =>
                   showDatePickerModelMethod("PREFERRED_DATE", "date")
                 }
@@ -935,7 +938,8 @@ const TestDriveScreen = ({ route, navigation }) => {
               <DropDownSelectionItem
                 label={"List of Drivers"}
                 value={selectedDriverDetails.name}
-                disabled={!isRecordEditable}
+                // disabled={!isRecordEditable}
+                disabled={false}
                 onPress={() =>
                   showDropDownModelMethod("LIST_OF_DRIVERS", "List of Drivers")
                 }
@@ -943,7 +947,8 @@ const TestDriveScreen = ({ route, navigation }) => {
               <DateSelectItem
                 label={"Customer Preffered Time"}
                 value={selector.customer_preferred_time}
-                disabled={!isRecordEditable}
+                // disabled={!isRecordEditable}
+                disabled={false}
                 onPress={() =>
                   showDatePickerModelMethod("CUSTOMER_PREFERRED_TIME", "time")
                 }
@@ -953,7 +958,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                   <DateSelectItem
                     label={"Actual start Time"}
                     value={selector.actual_start_time}
-                    disabled={!isRecordEditable}
+                    // disabled={!isRecordEditable}
+                    disabled={false}
                     onPress={() =>
                       showDatePickerModelMethod("ACTUAL_START_TIME", "time")
                     }
@@ -963,7 +969,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                   <DateSelectItem
                     label={"Actual End Time"}
                     value={selector.actual_end_time}
-                    disabled={!isRecordEditable}
+                    disabled={false}
+                    // disabled={!isRecordEditable}
                     onPress={() =>
                       showDatePickerModelMethod("ACTUAL_END_TIME", "time")
                     }

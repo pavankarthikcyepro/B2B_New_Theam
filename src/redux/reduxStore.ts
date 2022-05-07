@@ -23,6 +23,7 @@ import proceedToPreBookingReducer from "./proceedToPreBookingReducer";
 import createEnquiryReducer from "./createEnquiryReducer";
 import upcomingDeliveriesReducer from "./upcomingDeliveriesReducer";
 import targetSettingsReducer from "./targetSettingsReducer";
+import taskThreeSixtyReducer from "./taskThreeSixtyReducer";
 
 const reducer = combineReducers({
   routeReducer,
@@ -46,7 +47,8 @@ const reducer = combineReducers({
   proceedToPreBookingReducer,
   createEnquiryReducer,
   upcomingDeliveriesReducer,
-  targetSettingsReducer
+  targetSettingsReducer,
+  taskThreeSixtyReducer
 });
 
 const store = configureStore({
