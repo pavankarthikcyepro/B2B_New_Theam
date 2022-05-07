@@ -161,7 +161,7 @@ const HomeScreen = ({ route, navigation }) => {
             // if (selector.login_employee_details?.roles.length > 0) {
             //     let rolesArr = [];
             //     rolesArr = selector.login_employee_details?.roles.filter((item) => {
-            //         return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL"
+            //         return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL" || item === "General Manager" || item === "branch manager" || item === "Testdrive_Manager"
             //     })
             //     if (rolesArr.length > 0) {
             //         console.log("%%%%% TEAM:", rolesArr);
@@ -292,11 +292,11 @@ const HomeScreen = ({ route, navigation }) => {
                 let rolesArr = [];
                 console.log("ROLLS:", jsonObj.roles);
                 rolesArr = jsonObj.roles.filter((item) => {
-                    return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL"
+                    return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL" || item === "General Manager" || item === "branch manager" || item === "Testdrive_Manager"
                 })
                 if (rolesArr.length > 0) {
                     setRoles(rolesArr)
-                    // dispatch(updateIsTeamPresent(true))
+                    dispatch(updateIsTeamPresent(true))
                     setIsTeamPresent(true)
                     console.log("%%%%% TEAM:", rolesArr);
                     const dateFormat = "YYYY-MM-DD";
@@ -377,6 +377,7 @@ const HomeScreen = ({ route, navigation }) => {
             "pageNo": 0,
             "size": 5
         }
+        console.log("PAYLOAD:", payload1);
         Promise.all([
             dispatch(getTargetParametersAllData(payload1)),
             dispatch(getTargetParametersEmpData(payload1))
