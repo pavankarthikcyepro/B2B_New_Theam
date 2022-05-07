@@ -203,6 +203,7 @@ export const getEmployeesDropDownData = createAsyncThunk("HOME/getEmployeesDropD
 
     const response = await client.post(URL.GET_EMPLOYEES_DROP_DOWN_DATA(payload.orgId, payload.empId), payload.selectedIds)
     const json = await response.json()
+    
     if (!response.ok) {
         return rejectWithValue(json);
     }
@@ -454,10 +455,11 @@ export const homeSlice = createSlice({
             })
             .addCase(getTargetParametersAllData.fulfilled, (state, action) => {
                 if (action.payload) {
-                    console.log("^%$%&*^&*^&*&*& SET %&&&*%^$%&*&^%");
+                    // console.log("^%$%&*^&*^&*&*& SET %&&&*%^$%&*&^%", JSON.stringify(action.payload.overallTargetAchivements));
                     
                     state.all_target_parameters_data = [];
                     state.all_emp_parameters_data = [];
+                    state.isTeamPresent = action.payload.overallTargetAchivements.length > 1;
                     state.all_target_parameters_data = action.payload.overallTargetAchivements;
                     state.all_emp_parameters_data = action.payload.employeeTargetAchievements;
                 }
@@ -495,7 +497,6 @@ export const homeSlice = createSlice({
                 state.employees_drop_down_data = {};
             })
             .addCase(getEmployeesDropDownData.fulfilled, (state, action) => {
-                // console.log("S getEmployeesDropDownData: ", JSON.stringify(action.payload));
                 if (action.payload) {
                     state.employees_drop_down_data = action.payload;
                 }
