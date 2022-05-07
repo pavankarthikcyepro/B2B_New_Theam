@@ -55,6 +55,7 @@ import SelectBranchComp from "../scenes/loginScenes/selectBranchComp";
 import TargetSettingsScreen from "../scenes/mainScenes/TargetSettingsScreen";
 import TestScreen from "../scenes/mainScenes/Home/testScreen";
 import TaskListScreen from "../scenes/mainScenes/MyTasks/taskListScreen";
+import TaskThreeSixtyScreen from "../scenes/mainScenes/EMS/taskThreeSixty";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -70,6 +71,7 @@ const screeOptionStyle = {
 };
 
 const MenuIcon = ({ navigation }) => {
+
   return (
     <IconButton
       icon="menu"
@@ -81,7 +83,11 @@ const MenuIcon = ({ navigation }) => {
 };
 
 const SearchIcon = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const onChangeSearch = (query) => setSearchQuery(query);
   return (
+
     <IconButton
       icon="magnify"
       color={Colors.WHITE}
@@ -90,27 +96,6 @@ const SearchIcon = () => {
     />
   );
 };
-
-const RefreshIcon = ({ navigation }) => {
-  return (
-    <IconButton
-      icon="refresh"
-      color={Colors.WHITE}
-      size={30}
-      onPress={() => console.log('refresh icon pressed')}
-    />
-  );
-
-  return (
-    <IconButton
-      icon="menu"
-      color={Colors.WHITE}
-      size={30}
-      onPress={() => navigation.openDrawer()}
-    />
-  );
-};
-
 const MapIcon = ({ navigation }) => {
   return (
     <IconButton
@@ -129,6 +114,8 @@ const MapIcon = ({ navigation }) => {
 
 
 const NotficationIcon = ({ navigation, identifier }) => {
+
+
   return (
     <IconButton
       icon="bell"
@@ -175,7 +162,14 @@ export const EmsStackIdentifiers = {
   preBookingForm: "PRE_BOOKING_FORM",
   paidAccessories: "PAID_ACCESSORIES",
   proceedToPreBooking: "PROCEED_TO_PRE_BOOKING",
-  proceedToBooking: "PROCEED_TO_BOOKING",
+  task360: "TASK_360",
+  homeVisit: "HOME_VISIT_1",
+  preBookingFollowUp: "PREBOOKING_FOLLOWUP_1",
+  testDrive: "TEST_DRIVE_1",
+  enquiryFollowUp: "ENQUIRY_FOLLOW_UP_1",
+  proceedToPreBooking: "PROCEED_TO_PRE_BOOKING_1",
+  proceedToBooking: "PROCEED_TO_BOOKING_1",
+  createEnquiry: "CREATE_ENQUIRY_1",
 };
 
 export const PreBookingStackIdentifiers = {
@@ -313,6 +307,35 @@ const EmsStackNavigator = ({ navigation }) => {
         name={EmsStackIdentifiers.proceedToPreBooking}
         component={ProceedToPreBookingScreen}
         options={{ title: "Proceed To PreBooking" }}
+      />
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.task360}
+        component={TaskThreeSixtyScreen}
+        options={{ title: "Task 360" }}
+      />
+
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.homeVisit}
+        component={HomeVisitScreen}
+        options={{ title: "Home Visit" }}
+      />
+
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.testDrive}
+        component={TestDriveScreen}
+        options={{ title: "Test Drive" }}
+      />
+
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.enquiryFollowUp}
+        component={EnquiryFollowUpScreen}
+        options={{ title: "Enquiry Follow Up" }}
+      />
+
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.createEnquiry}
+        component={CreateEnquiryScreen}
+        options={{ title: "Create Enquiry" }}
       />
     </EmsStack.Navigator>
   );
@@ -528,9 +551,10 @@ const MonthlyTargetStackNavigator = ({ navigation }) => {
     <MonthlyTargetStack.Navigator screenOptions={screeOptionStyle}>
       <MonthlyTargetStack.Screen
         name={"MONTHLY_TARGET_SCREEN"}
-        component={MonthlyTargetScreen}
+        component={TargetSettingsScreen}
         options={{
           title: "Monthly Target planning",
+          headerShown: false,
           headerLeft: () => <MenuIcon navigation={navigation} />,
         }}
       />
@@ -665,11 +689,6 @@ const MainStackDrawerNavigator = () => {
         component={SettingsStackNavigator}
       />
       <MainDrawerNavigator.Screen
-        name={DrawerStackIdentifiers.eventManagement}
-        component={EventManagementStackNavigator}
-      />
-
-      <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.digitalPayment}
         component={DigitalPaymentStackNavigator}
       />
@@ -691,14 +710,18 @@ const MainStackDrawerNavigator = () => {
       />
 
       <MainDrawerNavigator.Screen
-        name={"Target Settings"}
-        component={TargetSettingsScreen}
+        name={DrawerStackIdentifiers.eventManagement}
+        component={EventManagementStackNavigator}
       />
 
       {/* <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.preBooking}
         component={PreBookingStackNavigator}
       /> */}
+      <MainDrawerNavigator.Screen
+        name={"Target Settings"}
+        component={TargetSettingsScreen}
+      />
     </MainDrawerNavigator.Navigator>
   );
 };

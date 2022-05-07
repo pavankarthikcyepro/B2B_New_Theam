@@ -43,11 +43,11 @@ const TargetSettingsTab = () => {
                 component={MainParamScreen}
                 options={{ title: "Main Parameter" }}
             />
-            <TargetSettingsTopTab.Screen
+            {/* <TargetSettingsTopTab.Screen
                 name={TargetScreenTabIdentifiers.Supporting}
                 component={MainParamScreen}
                 options={{ title: "Supporting parameters" }}
-            />
+            /> */}
         </TargetSettingsTopTab.Navigator>
     );
 };

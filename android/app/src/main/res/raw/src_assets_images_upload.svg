@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" id="prefix__upload" width="24" height="24" viewBox="0 0 24 24">
-    <path id="prefix__Path_1228" fill="#aaa3a3" d="M12 0A12 12 0 1 1 0 12 12 12 0 0 1 12 0z" data-name="Path 1228"/>
-    <path id="prefix__Path_1226" fill="#fff" d="M87.648 104.288c0-.057.019-.133.019-.21a2.539 2.539 0 0 0-2.523-2.554 2.442 2.442 0 0 0-1.582.572 3.8 3.8 0 0 0-7.194 1.753 3.415 3.415 0 0 0 .019.438 3.126 3.126 0 0 0 .3 6.233H87.5a3.119 3.119 0 0 0 .151-6.233z" data-name="Path 1226" transform="translate(-70.093 -95.307)"/>
-    <g id="prefix__Group_419" data-name="Group 419" transform="translate(8.305 9.886)">
-        <path id="prefix__Path_1227" d="M183.433 214.383h-2.039v3.374h-2.954v-3.374h-2.04l3.526-3.983z" data-name="Path 1227" transform="translate(-176.4 -210.4)"/>
-        <path id="prefix__Rectangle_80" d="M0 0H2.954V0.438H0z" data-name="Rectangle 80" transform="translate(2.039 7.91)"/>
-        <path id="prefix__Rectangle_81" d="M0 0H2.954V0.438H0z" data-name="Rectangle 81" transform="translate(2.039 8.977)"/>
-    </g>
-</svg>

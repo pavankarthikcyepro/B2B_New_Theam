@@ -295,6 +295,7 @@ const FilterScreen = ({ navigation }) => {
             selectedIds: selectedIds
         }
 
+        console.log("PAYLOAD 1:", payload1);
         Promise.all([
             dispatch(getEmployeesDropDownData(payload1))
         ]).then(() => {

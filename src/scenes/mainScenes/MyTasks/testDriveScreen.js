@@ -69,7 +69,7 @@ const LocalButtonComp = ({
 };
 
 const TestDriveScreen = ({ route, navigation }) => {
-  const { taskId, identifier, universalId, taskData } = route.params;
+  const { taskId, identifier, universalId, taskData, mobile } = route.params;
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.testDriveReducer);
   const [showDropDownModel, setShowDropDownModel] = useState(false);
@@ -110,7 +110,7 @@ const TestDriveScreen = ({ route, navigation }) => {
     vehicleId: 0,
     varientId: 0,
   });
-  const [mobie, setMobile] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("");
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [selectedDseDetails, setSelectedDseDetails] = useState({
@@ -187,7 +187,7 @@ const TestDriveScreen = ({ route, navigation }) => {
       const leadDtoObj = taskData.leadDto;
       setName(leadDtoObj.firstName + " " + leadDtoObj.lastName);
       setEmail(leadDtoObj.email || "");
-      setMobile(leadDtoObj.phone || "");
+      setMobileNumber(leadDtoObj.phone || "");
       setSelectedDseDetails({
         name: taskData.assignee.empName,
         id: taskData.assignee.empId,
@@ -214,7 +214,7 @@ const TestDriveScreen = ({ route, navigation }) => {
           const leadDtoObj = resp.dmsEntity?.dmsLeadDto;
           setName(leadDtoObj.firstName + " " + leadDtoObj.lastName);
           setEmail(leadDtoObj.email || "");
-          setMobile(mobile);
+          setMobileNumber(mobile);
           // setSelectedDseDetails({
           //   name: taskData.assignee.empName,
           //   id: taskData.assignee.empId,
@@ -784,13 +784,13 @@ const TestDriveScreen = ({ route, navigation }) => {
               <Text style={GlobalStyle.underline}></Text>
               <TextinputComp
                 style={{ height: 65, width: "100%" }}
-                value={mobie}
+                value={mobileNumber}
                 label={"Mobile Number*"}
                 maxLength={10}
                 keyboardType={"phone-pad"}
                 editable={true}
                 disabled={false}
-                onChangeText={(text) => setMobile(text)}
+                onChangeText={(text) => setMobileNumber(text)}
               />
               <Text style={GlobalStyle.underline}></Text>
 
