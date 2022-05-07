@@ -253,13 +253,13 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                                                     // setIsTeam(true)
                                                     dispatch(updateIsTeam(false))
                                                 }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: selector.isTeam ? Colors.WHITE : Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
-                                                    <Text style={{ fontSize: 14, color: selector.isTeam ? Colors.BLACK : Colors.WHITE }}>Self</Text>
+                                                <Text style={{ fontSize: 16, color: selector.isTeam ? Colors.BLACK : Colors.WHITE, fontWeight: '600' }}>Self</Text>
                                                 </TouchableOpacity>
                                                 <TouchableOpacity onPress={() => {
                                                     // setIsTeam(false)
                                                     dispatch(updateIsTeam(true))
                                                 }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: selector.isTeam ? Colors.RED : Colors.WHITE, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
-                                                    <Text style={{ fontSize: 14, color: selector.isTeam ? Colors.WHITE : Colors.BLACK }}>Teams</Text>
+                                                <Text style={{ fontSize: 16, color: selector.isTeam ? Colors.WHITE : Colors.BLACK, fontWeight: '600' }}>Teams</Text>
                                                 </TouchableOpacity>
                                             </View>
                                         </View>

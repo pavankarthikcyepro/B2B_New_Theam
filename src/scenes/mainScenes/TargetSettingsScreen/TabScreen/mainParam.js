@@ -678,7 +678,7 @@ const styles = StyleSheet.create({
     nameWrap: { width: '100%', flexDirection: 'row', marginBottom: 10, marginLeft: 10, marginTop: 10 },
     nameBox: { width: 100, justifyContent: 'center', alignItems: 'center', marginRight: 5 },
     textBox: { width: 100, height: 40, borderWidth: 1, borderRadius: 5, borderColor: 'blue', marginRight: 5, justifyContent: 'center', alignItems: 'center' },
-    textBox2: { width: 100, height: 40, borderWidth: 1, borderRadius: 5, marginRight: 5, justifyContent: 'center', alignItems: 'center' },
+    textBox2: { width: 100, height: 40, borderWidth: 1, borderRadius: 5, marginRight: 5, justifyContent: 'center', alignItems: 'center', borderColor: '#d1d1d1' },
     textInput: {
         fontSize: 14,
         // color: 'red'

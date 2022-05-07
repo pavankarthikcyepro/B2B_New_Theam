@@ -19,6 +19,7 @@ import HOME_LINE from '../assets/images/home_line.svg'; // import SVG
 import HOME_FILL from '../assets/images/home_fill.svg'; // import SVG
 import SCHEDULE_FILL from '../assets/images/schedule_fill.svg'; // import SVG
 import SCHEDULE_LINE from '../assets/images/my_schedule.svg'; // import SVG
+import PRICE from '../assets/images/price.svg'; // import SVG
 
 
 import HomeScreen from "../scenes/mainScenes/Home";
@@ -55,6 +56,7 @@ import SelectBranchComp from "../scenes/loginScenes/selectBranchComp";
 import TargetSettingsScreen from "../scenes/mainScenes/TargetSettingsScreen";
 import TestScreen from "../scenes/mainScenes/Home/testScreen";
 import TaskListScreen from "../scenes/mainScenes/MyTasks/taskListScreen";
+import PriceScreen from "../scenes/mainScenes/price";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -146,6 +148,7 @@ export const TabStackIdentifiers = {
   home: "HOME_TAB",
   ems: "EMS_TAB",
   myTask: "MY_TASK_TAB",
+  price: "PRICE"
 };
 
 export const HomeStackIdentifiers = {
@@ -179,6 +182,10 @@ export const MyTasksStackIdentifiers = {
   proceedToBooking: "PROCEED_TO_BOOKING",
   createEnquiry: "CREATE_ENQUIRY",
   tasksListScreen: "TASKS_LIST_SCREEN"
+};
+
+export const PriceStackIdentifiers = {
+  price: "PRICE"
 };
 
 const HomeStack = createStackNavigator();
@@ -377,6 +384,38 @@ const MyTaskStackNavigator = ({ navigation }) => {
   );
 };
 
+const PriceStack = createStackNavigator();
+
+const PriceStackNavigator = ({ navigation }) => {
+  return (
+    <PriceStack.Navigator
+      initialRouteName={PriceStackIdentifiers.price}
+      screenOptions={screeOptionStyle}
+    >
+      <PriceStack.Screen
+        name={PriceStackIdentifiers.price}
+        component={PriceScreen}
+        options={{
+          title: "Price",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+          // headerRight: () => {
+          //   return (
+          //     <View style={{ flexDirection: "row" }}>
+          //       {/* <SearchIcon /> */}
+          //       <NotficationIcon
+          //         navigation={navigation}
+          //         identifier={"NOTIF_3"}
+          //       />
+          //     </View>
+          //   );
+          // },
+        }}
+      />
+
+    </PriceStack.Navigator>
+  );
+};
+
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {
@@ -392,6 +431,9 @@ const TabNavigator = () => {
           } else if (route.name === TabStackIdentifiers.myTask) {
             return focused ? <SCHEDULE_FILL width={size} height={size} fill={color} /> : <SCHEDULE_LINE width={size} height={size} fill={color} />;
           }
+          // else if (route.name === TabStackIdentifiers.price) {
+          //   return focused ? <PRICE width={size} height={size} fill={color} /> : <PRICE width={size} height={size} fill={color} />;
+          // }
 
           // return (
           //   <VectorImage
@@ -424,6 +466,11 @@ const TabNavigator = () => {
         component={MyTaskStackNavigator}
         options={{ title: "My Tasks" }}
       />
+      {/* <Tab.Screen
+        name={TabStackIdentifiers.price}
+        component={PriceStackNavigator}
+        options={{ title: "Price" }}
+      /> */}
     </Tab.Navigator>
   );
 };
