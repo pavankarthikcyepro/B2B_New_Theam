@@ -3,21 +3,30 @@ import {
   SafeAreaView,
   View,
   Text,
+  Pressable,
   StyleSheet,
   FlatList,
   Dimensions,
 } from "react-native";
 import { Colors } from "../../styles";
 import { SettingsScreenItem } from "../../pureComponents/settingScreenItem";
+import { AuthNavigator } from "../../navigations";
+
 const screenWidth = Dimensions.get("window").width;
 
 const datalist = [
   {
-    name: "Change Password (NI)",
+    name: "Click here to change password",
   },
 ];
 
-const SettingsScreen = () => {
+const SettingsScreen = ({navigation}) => {
+
+  const forgotClicked = () => {
+    console.log("password");
+    
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.view2}>
@@ -31,7 +40,9 @@ const SettingsScreen = () => {
           }}
           renderItem={({ item, index }) => {
             return (
-              <SettingsScreenItem name={item.name} />
+              <Pressable onPress={forgotClicked}>
+                <SettingsScreenItem name={item.name} />
+              </Pressable>
             );
           }}
         />

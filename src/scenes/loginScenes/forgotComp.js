@@ -1,22 +1,89 @@
 import React, { useEffect, useRef, useState } from "react";
-import { SafeAreaView, View, Text, StyleSheet, Animated } from "react-native";
+import { SafeAreaView, View, Text, StyleSheet, Animated, Dimensions } from "react-native";
 import { TextinputComp } from "../../components/textinputComp";
+import { ButtonComp } from "../../components/buttonComp";
 import { useSelector, useDispatch } from "react-redux";
 import { Colors } from "../../styles";
+import { AuthNavigator } from "../../navigations";
 import {
   clearState,
   updateEmployeeId,
   updatePassword,
+  updateNewPassword,
+  updateConfirmPassword,
   updateSecurePassword,
+updateSecureNewPassword,
+updateSecureConfirmPassword,
   showErrorMessage,
+  showNewPasswordErr,
   postUserData,
   getPreEnquiryData,
   getMenuList,
   getCustomerTypeList,
   getCarModalList,
-} from "../../redux/loginReducer";
+} from "../../redux/forgotReducer";
 
-const ForgotScreen = () => {
+
+const ScreenWidth = Dimensions.get("window").width;
+
+
+const ForgotScreen = ({navigation}) => {
+
+  const loginButtonClicked = () => {
+    navigation.navigate(AuthNavigator.AuthStackIdentifiers.LOGIN);
+
+    const employeeId = selector.employeeId;
+    const password = selector.password;
+    const newPassword = selector.newPassword;
+    const confirmPassword = selector.confirmPassword;
+    
+
+    if (employeeId.length === 0) {
+      let object = {
+        key: "EMPLOYEEID",
+        message: "Please enter employee id",
+      };
+      dispatch(showErrorMessage(object));
+      return;
+    }
+
+    if (password.length === 0) {
+      let object = {
+        key: "PASSWORD",
+        message: "Please enter password",
+      };
+      dispatch(showErrorMessage(object));
+      return;
+    }
+
+    if(newPassword.length === 0) {
+      let object = {
+        key:"NEWPASSWORD",
+        message:"please enter new password",
+      };
+         dispatch(showErrorMessage(object));
+         return;
+    }
+    if (confirmPassword.length === 0) {
+      let object = {
+        key: "CONFIRMPASSWORD",
+        message: "please enter new password",
+      };
+      dispatch(showErrorMessage(object));
+      return;
+    }
+
+    let object = {
+      "empname": employeeId,
+      "password": password,
+      "newpassword":newPassword,
+      "confirmpassword":confirmPassword,
+    }
+
+    dispatch(postUserData(object));
+
+  };
+
   const selector = useSelector((state) => state.loginReducer);
   const dispatch = useDispatch();
   const fadeAnima = useRef(new Animated.Value(0)).current;
@@ -47,36 +114,42 @@ const ForgotScreen = () => {
         onChangeText={(text) => dispatch(updatePassword(text))}
         onRightIconPressed={() => dispatch(updateSecurePassword())}
       />
+      <View style={{ height: 20 }}></View>
       <TextinputComp
-        value={selector.password}
-        error={selector.showPasswordErr}
-        errorMsg={selector.passwordErrMessage}
+        value={selector.newPassword}
+        error={selector.showNewPasswordErr}
+        errorMsg={selector.newPasswordErrMessage}
         label={"New Password"}
         mode={"outlined"}
-        isSecure={selector.securePassword}
+        isSecure={selector.secureNewPassword}
         showRightIcon={true}
         rightIconObj={{
-          name: selector.securePassword ? "eye-off-outline" : "eye-outline",
+          name: selector.secureNewPassword ? "eye-off-outline" : "eye-outline",
           color: Colors.GRAY,
         }}
-        onChangeText={(text) => dispatch(updatePassword(text))}
-        onRightIconPressed={() => dispatch(updateSecurePassword())}
+        onChangeText={(text) => dispatch(updateNewPassword(text))}
+        onRightIconPressed={() => dispatch(updateSecureNewPassword())}
       />
+      <View style={{ height: 20 }}></View>
       <TextinputComp
-        value={selector.password}
-        error={selector.showPasswordErr}
-        errorMsg={selector.passwordErrMessage}
+        value={selector.confirmPassword}
+        error={selector.showConfirmPasswordErr}
+        errorMsg={selector.confirmPasswordErrMessage}
         label={"Confirm Password"}
         mode={"outlined"}
-        isSecure={selector.securePassword}
+        isSecure={selector.secureConfirmPassword}
         showRightIcon={true}
         rightIconObj={{
-          name: selector.securePassword ? "eye-off-outline" : "eye-outline",
+          name: selector.secureConfirmPassword ? "eye-off-outline" : "eye-outline",
           color: Colors.GRAY,
         }}
-        onChangeText={(text) => dispatch(updatePassword(text))}
-        onRightIconPressed={() => dispatch(updateSecurePassword())}
+        onChangeText={(text) => dispatch(updateConfirmPassword(text))}
+        onRightIconPressed={() => dispatch(updateSecureConfirmPassword())}
       />
+      <View style={{ height: 20 }}></View>
+      <View>
+        <ButtonComp title={"LOG IN"} onPress={loginButtonClicked} />
+      </View>
     </SafeAreaView>
   );
 };
@@ -88,48 +161,10 @@ export default ForgotScreen;
     flex: 1,
     flexDirection: "column",
     backgroundColor: Colors.WHITE,
+    padding:20
   },
-  welcomeStyle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: Colors.RED,
-    textAlign: "center",
-    marginBottom: 40,
-  },
-  forgotView: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-  },
-  forgotText: {
-    paddingTop: 5,
-    fontSize: 12,
-    fontWeight: "400",
-    color: Colors.DARK_GRAY,
-    textAlign: "right",
-  },
-  bottomView: {
-    // position: "absolute",
-    bottom: 0,
-    backgroundColor: Colors.LIGHT_GRAY,
-    // paddingVertical: 20,
-  },
-  bottomVwSubVw: {
-    paddingHorizontal: 30,
-  },
-  text1: {
-    fontSize: 14,
-    fontWeight: "800",
-    marginBottom: 15,
-  },
-  text2: {
-    fontSize: 12,
-    fontWeight: "400",
-    color: Colors.DARK_GRAY,
-  },
-  closeStyle: {
-    position: "absolute",
-    marginTop: 10,
-    right: 20,
-  },
+  
+ 
+
 });
 

@@ -444,12 +444,12 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     // Get Pincode details from server
     GetPincodeDetails(selector.pincode);
 
-    if (selector.sourceOfEnquiry === "Event") {
-      if (selector.eventName.length === 0) {
-        showToast("Please select event details");
-        return;
-      }
-    }
+    // if (selector.sourceOfEnquiry === "Event") {
+    //   if (selector.eventName.length === 0) {
+    //     showToast("Please select event details");
+    //     return;
+    //   }
+    // }
 
     if (fromEdit) {
       updatePreEneuquiryDetails();
@@ -1084,7 +1084,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               </View>
             ) : null}
 
-            {selector.sourceOfEnquiry === "Event" ? (
+            {/* {selector.sourceOfEnquiry === "Event" ? (
               <View>
                 <DateSelectItem
                   label={"Event Start Date"}
@@ -1112,7 +1112,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                   </View>
                 ) : null}
               </View>
-            ) : null}
+            ) : null} */}
 
             {!fromEdit && (
               <TextinputComp
