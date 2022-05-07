@@ -194,6 +194,9 @@ const URL = {
     },
     GET_MY_TASKS_NEW_DATA: () => {
         return dashboard + "/v2/get_todays_datav2";
+    },
+    GET_WORK_FLOW_TASKS: (universalId) => {
+        return sales_url + `/workflow/lead/universalId/${universalId}`;
     }
 }
 
