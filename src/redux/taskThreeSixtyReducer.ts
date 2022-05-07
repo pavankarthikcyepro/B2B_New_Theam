@@ -42,6 +42,7 @@ const taskThreeSixtySlice = createSlice({
         // Get Workflow Details Api
         builder.addCase(getWorkFlow.pending, (state, action) => {
             state.wrokflow_response = [];
+            state.isLoading = true;
             state.wrokflow_response_status = "pending";
         })
         builder.addCase(getWorkFlow.fulfilled, (state, action) => {
@@ -52,16 +53,19 @@ const taskThreeSixtySlice = createSlice({
                 }
             }
             state.wrokflow_response_status = "success";
+            state.isLoading = false;
         })
         builder.addCase(getWorkFlow.rejected, (state, action) => {
             console.log("F getWorkFlow: ", JSON.stringify(action.payload));
             state.wrokflow_response = [];
             state.wrokflow_response_status = "failed";
+            state.isLoading = false;
         })
         // Get Enquiry Details Api
         builder.addCase(getEnquiryDetails.pending, (state, action) => {
             state.enquiry_leadDto_response = {};
             state.enquiry_leadDto_response_status = "pending";
+            state.isLoading = true;
         })
         builder.addCase(getEnquiryDetails.fulfilled, (state, action) => {
             console.log("S getEnquiryDetails: ", JSON.stringify(action.payload));
@@ -71,11 +75,13 @@ const taskThreeSixtySlice = createSlice({
                 }
             }
             state.enquiry_leadDto_response_status = "success";
+            state.isLoading = false;
         })
         builder.addCase(getEnquiryDetails.rejected, (state, action) => {
             console.log("F getEnquiryDetails: ", JSON.stringify(action.payload));
             state.enquiry_leadDto_response = {};
             state.enquiry_leadDto_response_status = "failed";
+            state.isLoading = false;
         })
     }
 });

@@ -176,8 +176,14 @@ export const EmsStackIdentifiers = {
   preBookingForm: "PRE_BOOKING_FORM",
   paidAccessories: "PAID_ACCESSORIES",
   proceedToPreBooking: "PROCEED_TO_PRE_BOOKING",
-  proceedToBooking: "PROCEED_TO_BOOKING",
-  task360: "TASK_360"
+  task360: "TASK_360",
+  homeVisit: "HOME_VISIT_1",
+  preBookingFollowUp: "PREBOOKING_FOLLOWUP_1",
+  testDrive: "TEST_DRIVE_1",
+  enquiryFollowUp: "ENQUIRY_FOLLOW_UP_1",
+  proceedToPreBooking: "PROCEED_TO_PRE_BOOKING_1",
+  proceedToBooking: "PROCEED_TO_BOOKING_1",
+  createEnquiry: "CREATE_ENQUIRY_1",
 };
 
 export const PreBookingStackIdentifiers = {
@@ -320,6 +326,30 @@ const EmsStackNavigator = ({ navigation }) => {
         name={EmsStackIdentifiers.task360}
         component={TaskThreeSixtyScreen}
         options={{ title: "Task 360" }}
+      />
+
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.homeVisit}
+        component={HomeVisitScreen}
+        options={{ title: "Home Visit" }}
+      />
+
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.testDrive}
+        component={TestDriveScreen}
+        options={{ title: "Test Drive" }}
+      />
+
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.enquiryFollowUp}
+        component={EnquiryFollowUpScreen}
+        options={{ title: "Enquiry Follow Up" }}
+      />
+
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.createEnquiry}
+        component={CreateEnquiryScreen}
+        options={{ title: "Create Enquiry" }}
       />
     </EmsStack.Navigator>
   );

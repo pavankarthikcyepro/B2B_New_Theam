@@ -241,7 +241,7 @@ const PreBookingScreen = ({ navigation }) => {
                                             phone={item.phone}
                                             source={item.enquirySource}
                                             model={item.model}
-                                            onItemPress={() => { }}
+                                            onItemPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId }) }
                                             onDocPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.preBookingForm, { universalId: item.universalId })}
                                         />
                                     </View>
