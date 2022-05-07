@@ -22,7 +22,7 @@ const tabBarOptions = {
         // width: 140,
     },
     labelStyle: {
-        fontSize: 12,
+        fontSize: 16,
         fontWeight: "600",
     },
     style: {

@@ -22,7 +22,7 @@ const tabBarOptions = {
         // width: 140,
     },
     labelStyle: {
-        fontSize: 12,
+        fontSize: 16,
         fontWeight: "600",
     },
     style: {
@@ -41,7 +41,7 @@ const DashboardTopTabNavigatorNew = () => {
             <DashboardTopTab.Screen
                 name={DashboardTopTabNavigatorIdentifiers.target}
                 component={TargetScreen}
-                options={{ title: "Target V/s Actual" }}
+                options={{ title: "Target vs Actual" }}
             />
             {/* <DashboardTopTab.Screen
                 name={DashboardTopTabNavigatorIdentifiers.Supporting}

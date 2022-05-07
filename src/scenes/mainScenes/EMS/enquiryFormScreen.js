@@ -1539,6 +1539,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       openAccordian === "1"
                         ? Colors.RED
                         : Colors.SKY_LIGHT_BLUE_COLOR,
+                        height: 50,
+                        // justifyContent: 'center'
                   },
                   styles.accordianBorder,
                 ]}
@@ -1823,6 +1825,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       openAccordian === "2"
                         ? Colors.RED
                         : Colors.SKY_LIGHT_BLUE_COLOR,
+                    height: 50,
                   },
                   styles.accordianBorder,
                 ]}
@@ -1972,6 +1975,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       openAccordian === "3"
                         ? Colors.RED
                         : Colors.SKY_LIGHT_BLUE_COLOR,
+                    height: 50,
                   },
                   styles.accordianBorder,
                 ]}
@@ -2355,6 +2359,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       openAccordian === "4"
                         ? Colors.RED
                         : Colors.SKY_LIGHT_BLUE_COLOR,
+                    height: 50,
                   },
                   styles.accordianBorder,
                 ]}
@@ -2414,8 +2419,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     backgroundColor:
                       openAccordian === "5"
                         ? Colors.RED
-                        : Colors.SKY_LIGHT_BLUE_COLOR,
-                  },
+                        : Colors.SKY_LIGHT_BLUE_COLOR, height: 50,                  },
                   styles.accordianBorder,
                 ]}
               >
@@ -2636,6 +2640,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       openAccordian === "6"
                         ? Colors.RED
                         : Colors.SKY_LIGHT_BLUE_COLOR,
+                    height: 50,
                   },
                   styles.accordianBorder,
                 ]}
@@ -2863,6 +2868,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       openAccordian === "7"
                         ? Colors.RED
                         : Colors.SKY_LIGHT_BLUE_COLOR,
+                    height: 50,
                   },
                   styles.accordianBorder,
                 ]}
@@ -3113,6 +3119,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         openAccordian === "8"
                           ? Colors.RED
                           : Colors.SKY_LIGHT_BLUE_COLOR,
+                      height: 50,
                     },
                     styles.accordianBorder,
                   ]}
@@ -3233,6 +3240,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         openAccordian === "9"
                           ? Colors.RED
                           : Colors.SKY_LIGHT_BLUE_COLOR,
+                      height: 50,
                     },
                     styles.accordianBorder,
                   ]}
@@ -3634,6 +3642,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         openAccordian === "10"
                           ? Colors.RED
                           : Colors.SKY_LIGHT_BLUE_COLOR,
+                      height: 50,
                     },
                     styles.accordianBorder,
                   ]}
@@ -3746,7 +3755,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   space: {
-    height: 10,
+    height: 5,
   },
   drop_down_view_style: {
     paddingTop: 5,
@@ -3798,7 +3807,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.WHITE,
   },
   actionBtnView: {
-    marginTop: 30,
+    marginTop: 80,
     flexDirection: "row",
     justifyContent: "space-evenly",
     alignItems: "center",

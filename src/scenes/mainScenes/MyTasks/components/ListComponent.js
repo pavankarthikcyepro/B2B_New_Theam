@@ -102,9 +102,9 @@ const ListComponent = ({ route, navigation }) => {
                         const chartHeight = (itemWidth - 20);
                         const overlayViewHeight = chartHeight - 10;
                         return (
-                            <View style={[{ height: 185, width: baseItemWidth, paddingBottom: 5, backgroundColor: Colors.LIGHT_GRAY, justifyContent: "center", alignItems: "center" }, GlobalStyle.shadow]}>
+                            <View style={[{ height: 185, width: baseItemWidth, paddingBottom: 5, backgroundColor: Colors.LIGHT_GRAY, justifyContent: "center", alignItems: "center", borderRadius: 10 }, GlobalStyle.shadow]}>
                                 <TouchableOpacity onPress={() => itemClicked(item)}>
-                                    <View style={[{ height: 180, width: itemWidth, backgroundColor: Colors.WHITE, flexDirection: "column", alignItems: "center", paddingBottom: 10 },]}>
+                                    <View style={[{ height: 180, width: itemWidth, backgroundColor: Colors.WHITE, flexDirection: "column", alignItems: "center", paddingBottom: 10, borderRadius: 5 },]}>
                                         {/* // pie chart */}
                                         <View style={{ width: itemWidth - 10, height: 120, justifyContent: "center", alignItems: "center" }}>
 
