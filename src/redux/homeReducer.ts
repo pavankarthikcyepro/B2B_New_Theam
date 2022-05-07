@@ -152,7 +152,7 @@ export const getTargetParametersAllData = createAsyncThunk("HOME/getTargetParame
 
     const response = await client.post(URL.GET_TARGET_PARAMS_ALL(), payload)
     const json = await response.json()
-    console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
+    // console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
 
     if (!response.ok) {
         return rejectWithValue(json);

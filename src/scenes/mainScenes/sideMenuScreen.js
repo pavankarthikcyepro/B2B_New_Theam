@@ -157,7 +157,7 @@ const SideMenuScreen = ({ navigation }) => {
                 navigation.navigate(AppNavigator.DrawerStackIdentifiers.helpdesk);
                 break;
             case 108:
-                navigation.navigate(AppNavigator.DrawerStackIdentifiers.taskManagement);
+                navigation.navigate(AppNavigator.MyTaskStackNavigator.mytasks);
                 break;
             case 109:
                 navigation.navigate(AppNavigator.DrawerStackIdentifiers.taskTransfer);
@@ -267,32 +267,60 @@ const SideMenuScreen = ({ navigation }) => {
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item, index }) => {
                     return (
-                        <Pressable onPress={() => itemSelected(item)}>
-                            <View
-                                style={{
-                                    paddingLeft: 10,
-                                    height: 40,
-                                    justifyContent: "center",
-                                }}
-                            >
-                                {/* <List.Item
+                        <>
+                            {/* {item.title !== 'Task Transfer' && item.title !== 'Team Shuffle' &&
+                                <Pressable onPress={() => itemSelected(item)}>
+                                    <View
+                                        style={{
+                                            paddingLeft: 10,
+                                            height: 40,
+                                            justifyContent: "center",
+                                        }}
+                                    >
+                                       
+                                        <View style={{ flexDirection: "row", height: 25, alignItems: "center", paddingLeft: 10, marginBottom: 5 }}>
+                                            {item.icon === EVENT_MANAGEMENT_STR && <EVENT_MANAGEMENT width={20} height={20} color={'black'} />}
+                                            {item.icon === CUSTOMER_RELATIONSHIP_STR && <CUSTOMER_RELATIONSHIP width={20} height={20} color={'black'} />}
+                                            {item.icon === DOCUMENT_WALLET_STR && <DOCUMENT_WALLET width={20} height={20} color={'black'} />}
+                                            {item.icon === HOME_LINE_STR && <HOME_LINE width={20} height={20} color={'black'} />}
+                                            {item.icon === BOOKING_TRACKER_STR && <BOOKING_TRACKER width={20} height={20} color={'black'} />}
+                                            {item.icon === QR_CODE_STR && <Image style={{ height: 20, width: 20 }} source={require('../../assets/images/qr-code-3x.png')} />}
+                                            <Text style={{ fontSize: 16, fontWeight: "600", marginLeft: 15 }}>{item.title}</Text>
+                                        </View>
+                                        <Divider />
+                                    </View>
+                                </Pressable>
+                            } */}
+
+                            {/* {(item.title === 'Task Transfer' || item.title === 'Team Shuffle') && selector.isManager && */}
+                                <Pressable onPress={() => itemSelected(item)}>
+                                    <View
+                                        style={{
+                                            paddingLeft: 10,
+                                            height: 40,
+                                            justifyContent: "center",
+                                        }}
+                                    >
+                                        {/* <List.Item
                   title={item.title}
                   titleStyle={{ fontSize: 16, fontWeight: "600" }}
                   left={(props) => <List.Icon {...props} icon="folder" style={{ margin: 0 }} />}
                 /> */}
-                                <View style={{ flexDirection: "row", height: 25, alignItems: "center", paddingLeft: 10, marginBottom: 5 }}>
-                                    {/* <VectorImage source={item.icon} width={20} height={20} /> */}
-                                    {item.icon === EVENT_MANAGEMENT_STR && <EVENT_MANAGEMENT width={20} height={20} color={'black'} />}
-                                    {item.icon === CUSTOMER_RELATIONSHIP_STR && <CUSTOMER_RELATIONSHIP width={20} height={20} color={'black'} />}
-                                    {item.icon === DOCUMENT_WALLET_STR && <DOCUMENT_WALLET width={20} height={20} color={'black'} />}
-                                    {item.icon === HOME_LINE_STR && <HOME_LINE width={20} height={20} color={'black'} />}
-                                    {item.icon === BOOKING_TRACKER_STR && <BOOKING_TRACKER width={20} height={20} color={'black'} />}
-                                    {item.icon === QR_CODE_STR && <QR_CODE width={20} height={20} color={'black'} />}
-                                    <Text style={{ fontSize: 16, fontWeight: "600", marginLeft: 15 }}>{item.title}</Text>
-                                </View>
-                                <Divider />
-                            </View>
-                        </Pressable>
+                                        <View style={{ flexDirection: "row", height: 25, alignItems: "center", paddingLeft: 10, marginBottom: 5 }}>
+                                            {/* <VectorImage source={item.icon} width={20} height={20} /> */}
+                                            {item.icon === EVENT_MANAGEMENT_STR && <EVENT_MANAGEMENT width={20} height={20} color={'black'} />}
+                                            {item.icon === CUSTOMER_RELATIONSHIP_STR && <CUSTOMER_RELATIONSHIP width={20} height={20} color={'black'} />}
+                                            {item.icon === DOCUMENT_WALLET_STR && <DOCUMENT_WALLET width={20} height={20} color={'black'} />}
+                                            {item.icon === HOME_LINE_STR && <HOME_LINE width={20} height={20} color={'black'} />}
+                                            {item.icon === BOOKING_TRACKER_STR && <BOOKING_TRACKER width={20} height={20} color={'black'} />}
+                                            {item.icon === QR_CODE_STR && <Image style={{ height: 20, width: 20 }} source={require('../../assets/images/qr-code-3x.png')} />}
+                                            <Text style={{ fontSize: 16, fontWeight: "600", marginLeft: 15 }}>{item.title}</Text>
+                                        </View>
+                                        <Divider />
+                                    </View>
+                                </Pressable>
+                            {/* } */}
+                        </>
                     );
                 }}
             />
