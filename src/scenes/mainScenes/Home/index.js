@@ -476,7 +476,8 @@ const HomeScreen = ({ route, navigation }) => {
                             return (
                                 <View style={styles.rankView}>
                                     <View style={styles.rankBox}>
-                                        <Text style={styles.rankHeadingText}>Group Dealer Ranking</Text>
+                                        {/* <Text style={styles.rankHeadingText}>Group Dealer Ranking</Text> */}
+                                        <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
                                         <View style={{
                                             flexDirection: 'row'
                                         }}>
@@ -496,17 +497,18 @@ const HomeScreen = ({ route, navigation }) => {
                                                 {groupDealerRank !== null &&
                                                     <Text style={styles.rankText}>{groupDealerRank}/{groupDealerCount}</Text>
                                                 }
-                                                <View style={{
+                                                {/* <View style={{
                                                     marginTop: 5
                                                 }}>
                                                     <Text style={styles.baseText}>Based on city</Text>
-                                                </View>
+                                                </View> */}
                                             </View>
                                         </View>
                                     </View>
 
                                     <View style={styles.rankBox}>
-                                        <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
+                                        {/* <Text style={styles.rankHeadingText}>Dealer Ranking</Text> */}
+                                        <Text style={styles.rankHeadingText}>Branch Ranking</Text>
                                         <View style={{
                                             flexDirection: 'row'
                                         }}>
@@ -521,20 +523,21 @@ const HomeScreen = ({ route, navigation }) => {
                                             </View>
                                             <View style={{
                                                 marginTop: 5,
-                                                marginLeft: 3
+                                                marginLeft: 3,
+                                                // justifyContent: 'center'
                                             }}>
                                                 {/* <Text style={styles.rankText}>14/50</Text> */}
                                                 {dealerRank !== null &&
-                                                    <View style={{ flexDirection: 'row' }}>
+                                                    <View style={{  flexDirection: 'row' }}>
                                                         <Text style={[styles.rankText]}>{dealerRank}</Text>
                                                         <Text style={[styles.rankText]}>/{dealerCount}</Text>
                                                     </View>
                                                 }
-                                                <View style={{
+                                                {/* <View style={{
                                                     marginTop: 5
                                                 }}>
                                                     <Text style={styles.baseText}>Based on city</Text>
-                                                </View>
+                                                </View> */}
                                             </View>
                                         </View>
                                     </View>

@@ -15,12 +15,18 @@ const WelcomeScreen = ({ navigation }) => {
 
     return (
         <SafeAreaView style={styles.container}>
-
-            <Image
+            <View style={{ width: '100%', height: 300, justifyContent: 'flex-start', alignItems: 'center', }}>
+                <Image
+                    style={{ width: '80%', height: 80 }}
+                    resizeMode={'center'}
+                    source={require('../../assets/images/logo.png')}
+                />
+            </View>
+            {/* <Image
                 style={{ width: '100%', height: 300 }}
                 resizeMode={'center'}
                 source={require('../../assets/images/welcome.png')}
-            />
+            /> */}
             <ButtonComp title={'LOG IN'} width={ScreenWidth - 40} onPress={loginButtonClicked} />
 
             <View style={styles.bottomViewStyle}>

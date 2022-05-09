@@ -229,8 +229,8 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                 onRequestClose={() => setShowDatePicker(false)}
             />
             <HeaderComp
-                // title={"Dashboard"}
-                title={"Monthly Target Planning"}
+                // title={"Monthly Target Planning"}
+                title={"Target Planning"}
                 // branchName={selectedBranchName}
                 menuClicked={() => navigation.openDrawer()}
                 // branchClicked={() => moveToSelectBranch()}
