@@ -22,6 +22,11 @@ import confirmedPreEnquiryReducer from "./confirmedPreEnquiryReducer";
 import proceedToPreBookingReducer from "./proceedToPreBookingReducer";
 import createEnquiryReducer from "./createEnquiryReducer";
 import upcomingDeliveriesReducer from "./upcomingDeliveriesReducer";
+import targetSettingsReducer from "./targetSettingsReducer";
+import taskThreeSixtyReducer from "./taskThreeSixtyReducer";
+import bookingReducer from "./bookingReducer";
+import bookingFormReducer from "./bookingFormReducer";
+import proceedToBookingReducer from "./proceedToBookingReducer";
 
 const reducer = combineReducers({
   routeReducer,
@@ -45,6 +50,9 @@ const reducer = combineReducers({
   proceedToPreBookingReducer,
   createEnquiryReducer,
   upcomingDeliveriesReducer,
+  targetSettingsReducer,
+  taskThreeSixtyReducer,
+  bookingReducer,bookingFormReducer,proceedToBookingReducer,
 });
 
 const store = configureStore({

@@ -26,27 +26,37 @@ interface Item {
   id: string;
 }
 
-export const createPreEnquiry = createAsyncThunk(
-  "ADD_PRE_ENQUIRY_SLICE/createPreEnquiry",
-  async (data, { rejectWithValue }) => {
-    const response = await client.post(data["url"], data["body"]);
+export const createPreEnquiry = createAsyncThunk("ADD_PRE_ENQUIRY_SLICE/createPreEnquiry", async (data, { rejectWithValue }) => {
+  const response = await client.post(data["url"], data["body"]);
+  console.log("resp: ", JSON.stringify(response));
+  try {
     const json = await response.json();
-    if (!response.ok) {
+    console.log("json: ", json)
+    if (response.status != 200) {
       return rejectWithValue(json);
     }
     return json;
+  } catch (error) {
+    console.log("JSON parse error: ", error + " : " + JSON.stringify(response));
+    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-);
+});
 
 export const continueToCreatePreEnquiry = createAsyncThunk(
   "ADD_PRE_ENQUIRY_SLICE/continueToCreatePreEnquiry",
   async (data, { rejectWithValue }) => {
     const response = await client.post(data["url"], data["body"]);
-    const json = await response.json();
-    if (!response.ok) {
-      return rejectWithValue(json);
+
+    try {
+      const json = await response.json();
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.log("JSON parse error: ", error + " : " + response);
+      return rejectWithValue({ message: "Json parse error: " + response });
     }
-    return json;
   }
 );
 
@@ -54,11 +64,16 @@ export const updatePreEnquiry = createAsyncThunk(
   "ADD_PRE_ENQUIRY_SLICE/updatePreEnquiry",
   async (data, { rejectWithValue }) => {
     const response = await client.put(data["url"], data["body"]);
-    const json = await response.json();
-    if (!response.ok) {
-      return rejectWithValue(json);
+    try {
+      const json = await response.json();
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.log("JSON parse error: ", error + " : " + response);
+      return rejectWithValue({ message: "Json parse error: " + response });
     }
-    return json;
   }
 );
 
@@ -73,11 +88,16 @@ export const getEventListApi = createAsyncThunk(
       URL.GET_EVENT_LIST(payload.startDate, payload.endDate, payload.empId),
       customConfig
     );
-    const json = await response.json();
-    if (!response.ok) {
-      return rejectWithValue(json);
+    try {
+      const json = await response.json();
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.log("JSON parse error: ", error + " : " + response);
+      return rejectWithValue({ message: "Json parse error: " + response });
     }
-    return json;
   }
 );
 
@@ -116,8 +136,9 @@ export const addPreEnquirySlice = createSlice({
     isLoading: false,
     status: "",
     errorMsg: "",
-    vehicle_modal_list: [],
     customer_type_list: [],
+    createEnquiryStatus: "",
+    updateEnquiryStatus: "",
     create_enquiry_response_obj: {},
     event_list: [],
     event_list_response_status: "",
@@ -145,6 +166,8 @@ export const addPreEnquirySlice = createSlice({
       state.isLoading = false;
       state.status = "";
       state.errorMsg = "";
+      state.createEnquiryStatus = "";
+      state.updateEnquiryStatus = "";
       state.create_enquiry_response_obj = {};
       state.event_list = [];
       state.event_list_response_status = "";
@@ -236,9 +259,6 @@ export const addPreEnquirySlice = createSlice({
     setCustomerTypeList: (state, action) => {
       state.customer_type_list = JSON.parse(action.payload);
     },
-    setCarModalList: (state, action) => {
-      state.vehicle_modal_list = JSON.parse(action.payload);
-    },
     setExistingDetails: (state, action) => {
       const preEnquiryDetails = action.payload.dmsLeadDto;
       let dmsAccountOrContactObj = {};
@@ -269,43 +289,40 @@ export const addPreEnquirySlice = createSlice({
     builder
       .addCase(createPreEnquiry.pending, (state, action) => {
         state.isLoading = true;
-        state.status = "pending";
+        state.createEnquiryStatus = "pending";
         state.create_enquiry_response_obj = {};
       })
       .addCase(createPreEnquiry.fulfilled, (state, action) => {
-        //console.log('res2: ', action.payload);
-        if (action.payload.errorMessage) {
-          showToast(action.payload.errorMessage);
-        } else {
-          state.create_enquiry_response_obj = action.payload;
-        }
+        console.log('res2: ', action.payload);
         state.isLoading = false;
+        state.create_enquiry_response_obj = action.payload;
+        state.createEnquiryStatus = "success";
       })
       .addCase(createPreEnquiry.rejected, (state, action) => {
-        const message = action.payload["message"] || "";
-        if (message) {
-          showToast(message);
-        }
+        console.log('res3: ', action.payload);
         state.isLoading = false;
-        state.status = "failed";
-        state.create_enquiry_response_obj = {};
+        state.create_enquiry_response_obj = action.payload;
+        state.createEnquiryStatus = "failed";
       })
       .addCase(updatePreEnquiry.pending, (state, action) => {
         state.isLoading = true;
-        state.status = "pending";
+        state.create_enquiry_response_obj = {};
+        state.updateEnquiryStatus = "pending";
       })
       .addCase(updatePreEnquiry.fulfilled, (state, action) => {
-        console.log("res2: ", action.payload);
+        // console.log("res2: ", action.payload);
         if (action.payload.errorMessage) {
           showToast(action.payload.errorMessage);
         } else {
           state.create_enquiry_response_obj = action.payload;
         }
         state.isLoading = false;
+        state.updateEnquiryStatus = "success";
       })
       .addCase(updatePreEnquiry.rejected, (state, action) => {
         state.isLoading = false;
-        state.status = "failed";
+        state.create_enquiry_response_obj = {};
+        state.updateEnquiryStatus = "failed";
       })
       .addCase(continueToCreatePreEnquiry.pending, (state, action) => {
         state.isLoading = true;
@@ -344,7 +361,6 @@ export const {
   setPreEnquiryDetails,
   setDropDownData,
   setCustomerTypeList,
-  setCarModalList,
   setExistingDetails,
   updateSelectedDate,
 } = addPreEnquirySlice.actions;

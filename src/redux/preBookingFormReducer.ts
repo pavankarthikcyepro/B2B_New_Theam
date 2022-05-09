@@ -13,6 +13,7 @@ import {
 import { convertTimeStampToDateString } from "../utils/helperFunctions";
 import { showToastRedAlert } from "../utils/toast";
 import moment from "moment";
+import { add } from "react-native-reanimated";
 
 const dropDownData = [
   {
@@ -36,153 +37,212 @@ const dropDownData = [
 export const getPrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getPrebookingDetailsApi", async (universalId, { rejectWithValue }) => {
 
   const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+  try {
+    const json = await response.json();
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  } catch (error) {
+    console.error("getPrebookingDetailsApi JSON parse error: ", error + " : " + JSON.stringify(response));
+    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-  return json;
 })
 
 export const updatePrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/updatePrebookingDetailsApi", async (payload, { rejectWithValue }) => {
 
   const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+  try {
+    const json = await response.json();
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  } catch (error) {
+    console.error("updatePrebookingDetailsApi JSON parse error: ", error + " : " + JSON.stringify(response));
+    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-  return json;
 })
 
 export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getOnRoadPriceAndInsurenceDetailsApi", async (payload, { rejectWithValue }) => {
 
   const response = await client.get(URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(payload["varientId"], payload["orgId"]));
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+  try {
+    const json = await response.json();
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  } catch (error) {
+    console.error("getOnRoadPriceAndInsurenceDetailsApi JSON parse error: ", error + " : " + JSON.stringify(response));
+    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-  return json;
-})
-
-export const getPaidAccessoriesListApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getPaidAccessoriesListApi", async (orgId, { rejectWithValue }) => {
-
-  const customConfig = { orgId: orgId };
-  const response = await client.get(URL.GET_PAID_ACCESSORIES_LIST(orgId), customConfig);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
-  }
-  return json;
 })
 
 export const dropPreBooingApi = createAsyncThunk("PREBOONING_FORMS_SLICE/dropPreBooingApi", async (payload, { rejectWithValue }) => {
 
   const response = await client.post(URL.DROP_ENQUIRY(), payload);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+  try {
+    const json = await response.json();
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  } catch (error) {
+    console.error("dropPreBooingApi JSON parse error: ", error + " : " + JSON.stringify(response));
+    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-  return json;
 })
 
 export const sendOnRoadPriceDetails = createAsyncThunk("PREBOONING_FORMS_SLICE/sendOnRoadPriceDetails", async (payload, { rejectWithValue }) => {
 
   const response = await client.post(URL.SEND_ON_ROAD_PRICE_DETAILS(), payload);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+  try {
+    const json = await response.json();
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  } catch (error) {
+    console.error("sendOnRoadPriceDetails JSON parse error: ", error + " : " + JSON.stringify(response));
+    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-  return json;
 })
 
 export const getCustomerTypesApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getCustomerTypesApi", async (universalId, { rejectWithValue }) => {
 
   const response = await client.get(URL.GET_CUSTOMER_TYPES());
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+  try {
+    const json = await response.json();
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  } catch (error) {
+    console.error("getCustomerTypesApi JSON parse error: ", error + " : " + JSON.stringify(response));
+    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-  return json;
 })
 
 export const getDropDataApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getDropDataApi", async (payload, { rejectWithValue }) => {
 
   const response = await client.post(URL.GET_DROP_DATA(), payload);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+  try {
+    const json = await response.json();
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  } catch (error) {
+    console.error("getDropDataApi JSON parse error: ", error + " : " + JSON.stringify(response));
+    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-  return json;
 })
 
 export const getDropSubReasonDataApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getDropSubReasonDataApi", async (payload, { rejectWithValue }) => {
 
   const response = await client.post(URL.GET_DROP_DATA(), payload);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+  try {
+    const json = await response.json();
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  } catch (error) {
+    console.error("getDropSubReasonDataApi JSON parse error: ", error + " : " + JSON.stringify(response));
+    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-  return json;
 })
 
 export const getOnRoadPriceDtoListApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getOnRoadPriceDtoListApi", async (leadId, { rejectWithValue }) => {
 
   const response = await client.get(URL.GET_ON_ROAD_PRICE_DTO_LIST(leadId));
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+  try {
+    const json = await response.json();
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  } catch (error) {
+    console.error("getOnRoadPriceDtoListApi JSON parse error: ", error + " : " + JSON.stringify(response));
+    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-  return json;
 })
 
 export const preBookingPaymentApi = createAsyncThunk("PREBOONING_FORMS_SLICE/preBookingPaymentApi", async (payload, { rejectWithValue }) => {
 
   const response = await client.post(URL.PRE_BOOKING_PAYMENT(), payload);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+  try {
+    const json = await response.json();
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  } catch (error) {
+    console.error("preBookingPaymentApi JSON parse error: ", error + " : " + JSON.stringify(response));
+    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-  return json;
 })
 
 export const postBookingAmountApi = createAsyncThunk("PREBOONING_FORMS_SLICE/postBookingAmountApi", async (payload, { rejectWithValue }) => {
 
   const response = await client.post(URL.BOOKING_AMOUNT(), payload);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+  try {
+    const json = await response.json();
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  } catch (error) {
+    console.error("postBookingAmountApi JSON parse error: ", error + " : " + JSON.stringify(response));
+    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-  return json;
 })
 
 export const getPaymentDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getPaymentDetailsApi", async (leadId, { rejectWithValue }) => {
 
   const response = await client.get(URL.GET_PRE_BOOKING_PAYMENT_DETAILS(leadId));
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+  try {
+    const json = await response.json();
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  } catch (error) {
+    console.error("getPaymentDetailsApi JSON parse error: ", error + " : " + JSON.stringify(response));
+    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-  return json;
 })
 
 export const getBookingAmountDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getBookingAmountDetailsApi", async (leadId, { rejectWithValue }) => {
 
   const response = await client.get(URL.GET_BOOKING_AMOUNT_DETAILS(leadId));
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+  try {
+    const json = await response.json();
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  } catch (error) {
+    console.error("getBookingAmountDetailsApi JSON parse error: ", error + " : " + JSON.stringify(response));
+    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-  return json;
 })
 
 export const getAssignedTasksApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getAssignedTasksApi", async (universalId, { rejectWithValue }) => {
 
   const url = URL.TASKS_PRE_ENQUIRY() + universalId;
   const response = await client.get(url);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+  try {
+    const json = await response.json();
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  } catch (error) {
+    console.error("getAssignedTasksApi JSON parse error: ", error + " : " + JSON.stringify(response));
+    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-  return json;
 })
 
 interface CustomerDetailModel {
@@ -213,7 +273,6 @@ const prebookingFormSlice = createSlice({
     pre_booking_details_response: null,
     customer_types_response: null,
     vehicle_on_road_price_insurence_details_response: null,
-    paid_accessories_list: [],
     pre_booking_drop_response_status: null,
     update_pre_booking_details_response: "",
     on_road_price_dto_list_response: [],
@@ -261,16 +320,18 @@ const prebookingFormSlice = createSlice({
     house_number: "",
     street_name: "",
     village: "",
+    mandal:"",
     city: "",
     state: "",
     district: "",
 
-    permanent_address: false,
+    is_permanent_address_same: "",
     p_pincode: "",
     p_urban_or_rural: 0, // 1: urban, 2:
     p_houseNum: "",
     p_streetName: "",
     p_village: "",
+    p_mandal:"",
     p_city: "",
     p_state: "",
     p_district: "",
@@ -327,15 +388,9 @@ const prebookingFormSlice = createSlice({
     pan_number: "",
     relationship_proof: "",
     gstin_number: "",
+    employee_id: "",
     // Booking Drop
-    drop_reason: "",
-    drop_sub_reason: "",
-    drop_remarks: "",
     reject_remarks: "",
-    d_brand_name: "",
-    d_dealer_name: "",
-    d_location: "",
-    d_model: "",
     // PreBooking Payment Details
     type_of_upi: "",
     transfer_from_mobile: "",
@@ -387,16 +442,18 @@ const prebookingFormSlice = createSlice({
       state.house_number = "";
       state.street_name = "";
       state.village = "";
+      state.mandal = "";
       state.city = "";
       state.state = "";
       state.district = "";
 
-      state.permanent_address = false;
+      state.is_permanent_address_same = "";
       state.p_pincode = "";
       state.p_urban_or_rural = 0; // 1: urban, 2:
       state.p_houseNum = "";
       state.p_streetName = "";
       state.p_village = "";
+      state.p_mandal = "";
       state.p_city = "";
       state.p_state = "";
       state.p_district = "";
@@ -453,15 +510,9 @@ const prebookingFormSlice = createSlice({
       state.pan_number = "";
       state.relationship_proof = "";
       state.gstin_number = "";
+      state.employee_id = "";
       // Booking Drop
-      state.drop_reason = "";
-      state.drop_sub_reason = "";
-      state.drop_remarks = "";
       state.reject_remarks = "";
-      state.d_brand_name = "";
-      state.d_dealer_name = "";
-      state.d_location = "";
-      state.d_model = "";
       // PreBooking Payment Details
       state.type_of_upi = "";
       state.transfer_from_mobile = "";
@@ -553,12 +604,6 @@ const prebookingFormSlice = createSlice({
           break;
         case "VEHICLE_TYPE":
           state.vehicle_type = value;
-          break;
-        case "DROP_REASON":
-          state.drop_reason = value;
-          break;
-        case "DROP_SUB_REASON":
-          state.drop_sub_reason = value;
           break;
       }
     },
@@ -666,6 +711,9 @@ const prebookingFormSlice = createSlice({
         case "VILLAGE":
           state.village = text;
           break;
+        case "MANDAL":
+          state.mandal = text;
+          break;
         case "CITY":
           state.city = text;
           break;
@@ -676,13 +724,18 @@ const prebookingFormSlice = createSlice({
           state.state = text;
           break;
         case "PERMANENT_ADDRESS":
-          state.permanent_address = !state.permanent_address;
-          if (state.permanent_address) {
+          if (text === "true") {
+            state.is_permanent_address_same = "YES";
+          } else if (text === "false") {
+            state.is_permanent_address_same = "NO";
+          }
+          if (state.is_permanent_address_same === "YES") {
             state.p_pincode = state.pincode;
             state.p_urban_or_rural = state.urban_or_rural;
             state.p_houseNum = state.house_number;
             state.p_streetName = state.street_name;
             state.p_village = state.village;
+            state.p_mandal = state.mandal;
             state.p_city = state.city;
             state.p_district = state.district;
             state.p_state = state.state;
@@ -702,6 +755,9 @@ const prebookingFormSlice = createSlice({
           break;
         case "P_VILLAGE":
           state.p_village = text;
+          break;
+        case "P_MANDAL":
+          state.p_mandal = text;
           break;
         case "P_CITY":
           state.p_city = text;
@@ -834,26 +890,14 @@ const prebookingFormSlice = createSlice({
         case "GSTIN_NUMBER":
           state.gstin_number = text;
           break;
+        case "EMPLOYEE_ID":
+          state.employee_id = text;
+          break;
       }
     },
     setBookingDropDetails: (state, action) => {
       const { key, text } = action.payload;
       switch (key) {
-        case "DROP_REMARKS":
-          state.drop_remarks = text;
-          break;
-        case "DROP_BRAND_NAME":
-          state.d_brand_name = text;
-          break;
-        case "DROP_DEALER_NAME":
-          state.d_dealer_name = text;
-          break;
-        case "DROP_LOCATION":
-          state.d_location = text;
-          break;
-        case "DROP_MODEL":
-          state.d_model = text;
-          break;
         case "REJECT_REMARKS":
           state.reject_remarks = text;
           break;
@@ -944,6 +988,7 @@ const prebookingFormSlice = createSlice({
             state.house_number = address.houseNo ? address.houseNo : "";
             state.street_name = address.street ? address.street : "";
             state.village = address.village ? address.village : "";
+            state.mandal = address.mandal ? address.mandal:"";
             state.city = address.city ? address.city : "";
             state.district = address.district ? address.district : "";
             state.state = address.state ? address.state : "";
@@ -962,6 +1007,7 @@ const prebookingFormSlice = createSlice({
             state.p_houseNum = address.houseNo ? address.houseNo : "";
             state.p_streetName = address.street ? address.street : "";
             state.p_village = address.village ? address.village : "";
+            state.p_mandal = address.mandal ? address.mandal :"";
             state.p_city = address.city ? address.city : "";
             state.p_district = address.district ? address.district : "";
             state.p_state = address.state ? address.state : "";
@@ -1039,6 +1085,14 @@ const prebookingFormSlice = createSlice({
           }
         })
       }
+    },
+    updateAddressByPincode: (state, action) => {
+
+      state.village = action.payload.Block || ""
+      
+      state.city = action.payload.Region || ""
+      state.district = action.payload.District || ""
+      state.state = action.payload.State || ""
     }
   },
   extraReducers: (builder) => {
@@ -1088,23 +1142,6 @@ const prebookingFormSlice = createSlice({
       state.vehicle_on_road_price_insurence_details_response = null;
       state.isLoading = false;
     })
-    // Get Paid Asossaries List
-    builder.addCase(getPaidAccessoriesListApi.pending, (state, action) => {
-      state.paid_accessories_list = [];
-      state.isLoading = true;
-    })
-    builder.addCase(getPaidAccessoriesListApi.fulfilled, (state, action) => {
-      //console.log("S getPaidAccessoriesListApi: ", JSON.stringify(action.payload));
-      if (action.payload.success == true) {
-        state.paid_accessories_list = action.payload.accessorylist;
-      }
-      state.isLoading = false;
-    })
-    builder.addCase(getPaidAccessoriesListApi.rejected, (state, action) => {
-      console.log("F getPaidAccessoriesListApi: ", JSON.stringify(action.payload));
-      state.paid_accessories_list = [];
-      state.isLoading = false;
-    })
     // Drop Pre-Booking
     builder.addCase(dropPreBooingApi.pending, (state, action) => {
       state.pre_booking_drop_response_status = "pending"
@@ -1144,7 +1181,7 @@ const prebookingFormSlice = createSlice({
       state.isLoading = true;
     })
     builder.addCase(getOnRoadPriceDtoListApi.fulfilled, (state, action) => {
-      console.log("S getOnRoadPriceDtoListApi: ", JSON.stringify(action.payload));
+      // console.log("S getOnRoadPriceDtoListApi: ", JSON.stringify(action.payload));
       if (action.payload.dmsEntity) {
         const dmsOnRoadPriceDtoList = action.payload.dmsEntity.dmsOnRoadPriceDtoList;
         state.on_road_price_dto_list_response = dmsOnRoadPriceDtoList;
@@ -1399,6 +1436,7 @@ export const {
   updateModelSelectionData,
   updateFinancialData,
   updateBookingPaymentData,
-  updateDmsAttachments
+  updateDmsAttachments,
+  updateAddressByPincode
 } = prebookingFormSlice.actions;
 export default prebookingFormSlice.reducer;

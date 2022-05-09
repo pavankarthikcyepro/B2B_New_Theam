@@ -87,7 +87,31 @@ const FilterScreen = ({ navigation }) => {
 
     const dropDownItemClicked = (index) => {
 
-        const data = totalDataObj[nameKeyList[index]].sublevels;
+        const topRowSelectedIds = [];
+        if (index > 0) {
+            const topRowData = totalDataObj[nameKeyList[index - 1]].sublevels;
+            topRowData.forEach((item) => {
+                if (item.selected != undefined && item.selected === true) {
+                    topRowSelectedIds.push(Number(item.id));
+                }
+            })
+        }
+
+        let data = [];
+        if (topRowSelectedIds.length > 0) {
+            const subLevels = totalDataObj[nameKeyList[index]].sublevels;
+            subLevels.forEach((subItem) => {
+                const obj = { ...subItem };
+                obj.selected = false;
+                if (topRowSelectedIds.includes(Number(subItem.parentId))) {
+                    data.push(obj);
+                }
+            })
+        }
+        else {
+            data = totalDataObj[nameKeyList[index]].sublevels
+        }
+
         setDropDownData([...data])
         setSelectedItemIndex(index);
         setShowDropDownModel(true);
@@ -95,6 +119,16 @@ const FilterScreen = ({ navigation }) => {
     }
 
     const dropDownItemClicked2 = (index) => {
+
+        // const topRowSelectedIds = [];
+        // if (index > 0) {
+        //     const topRowData = employeeDropDownDataLocal[employeeTitleNameList[index]];
+        //     topRowData.forEach((item) => {
+        //         if (item.selected != undefined && item.selected === true) {
+        //             topRowSelectedIds.push(Number(item.id));
+        //         }
+        //     })
+        // }
 
         const data = employeeDropDownDataLocal[employeeTitleNameList[index]];
         setDropDownData([...data])
@@ -108,6 +142,7 @@ const FilterScreen = ({ navigation }) => {
         console.log("index: ", index)
 
         const totalDataObjLocal = { ...totalDataObj };
+
         if (index > 0) {
             let selectedParendIds = [];
             let unselectedParentIds = [];
@@ -226,7 +261,7 @@ const FilterScreen = ({ navigation }) => {
                 })
             }
         }
-        // console.log("selectedIds: ", selectedIds);
+        console.log("selectedIds: ", selectedIds);
         if (selectedIds.length > 0) {
             setIsLoading(true);
             getDashboadTableDataFromServer(selectedIds, "LEVEL");
@@ -247,44 +282,50 @@ const FilterScreen = ({ navigation }) => {
         } else {
             payload["empSelected"] = selectedIds;
         }
-        dispatch(getLeadSourceTableList(payload));
-        dispatch(getVehicleModelTableList(payload));
-        dispatch(getEventTableList(payload));
-        dispatch(getLostDropChartData(payload));
-        dispatch(updateFilterDropDownData(totalDataObj));
-        getTaskTableDataFromServer(payload);
-        getTargetParametersDataFromServer(payload);
+
+        const payload2 = {
+            ...payload,
+            "pageNo": 0,
+            "size": 5
+        }
 
         const payload1 = {
             orgId: userData.orgId,
             empId: userData.employeeId,
             selectedIds: selectedIds
         }
-        dispatch(getEmployeesDropDownData(payload1));
+
+        console.log("PAYLOAD 1:", payload1);
+        Promise.all([
+            dispatch(getEmployeesDropDownData(payload1))
+        ]).then(() => {
+            console.log("CALLED");
+            Promise.all([
+                dispatch(getLeadSourceTableList(payload)),
+                dispatch(getVehicleModelTableList(payload)),
+                dispatch(getEventTableList(payload)),
+                dispatch(getLostDropChartData(payload)),
+                dispatch(updateFilterDropDownData(totalDataObj)),
+                // // Table Data
+                dispatch(getTaskTableList(payload2)),
+                dispatch(getSalesData(payload2)),
+                dispatch(getSalesComparisonData(payload2)),
+                // // Target Params Data
+                dispatch(getTargetParametersData(payload2))
+            ]).then(() => {
+                console.log("SUCCESS");
+            }).catch(() => {
+
+            })
+        }).catch(() => {
+            
+        })
         if (from == "EMPLOYEE") {
             navigation.goBack();
         }
-    }
-
-    const getTaskTableDataFromServer = (oldPayload) => {
-
-        const payload = {
-            ...oldPayload,
-            "pageNo": 0,
-            "size": 10
+        else{
+            navigation.goBack();
         }
-        dispatch(getTaskTableList(payload));
-        dispatch(getSalesData(payload));
-        dispatch(getSalesComparisonData(payload));
-    }
-
-    const getTargetParametersDataFromServer = (payload) => {
-        const payload1 = {
-            ...payload,
-            "pageNo": 0,
-            "size": 10
-        }
-        dispatch(getTargetParametersData(payload1));
     }
 
     useEffect(() => {
@@ -405,9 +446,6 @@ const FilterScreen = ({ navigation }) => {
             />
 
             <View style={{ flex: 1, paddingVertical: 10, paddingHorizontal: 10, backgroundColor: Colors.WHITE }}>
-
-
-
 
                 <FlatList
                     data={[1, 2]}

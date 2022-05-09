@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { SafeAreaView, View, Text, StyleSheet } from "react-native";
 import { Colors } from "../../../styles";
-import { PreEnquiryItem } from "../../../pureComponents/preEnquiryItem";
 import { EnquiryItem } from "../../../pureComponents/enquiryItem";
 import { EMSTopTabNavigatorOne, EMSTopTabNavigatorTwo } from "../../../navigations/emsTopTabNavigator";
 import * as AsyncStore from "../../../asyncStore";

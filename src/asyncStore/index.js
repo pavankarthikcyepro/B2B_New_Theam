@@ -1,5 +1,5 @@
 
 import * as Keys from './keys';
-import { storeData, storeJsonData, getData, getJsonData } from './asyncStorage';
+import { storeData, storeJsonData, getData, getJsonData, multiGetData, multiRemove } from './asyncStorage';
 
-export { Keys, storeData, storeJsonData, getData, getJsonData };
+export { Keys, storeData, storeJsonData, getData, getJsonData, multiGetData, multiRemove };

@@ -19,21 +19,21 @@ export const Enquiry_Segment_Data = [
 
 export const Category_Type_List_For_Filter = [
   {
-    id: '1',
-    name: 'Hot',
-    isChecked: false
+    id: "1",
+    name: "Hot",
+    isChecked: false,
   },
   {
-    id: '2',
-    name: 'Warm',
-    isChecked: false
+    id: "2",
+    name: "Warm",
+    isChecked: false,
   },
   {
-    id: '3',
-    name: 'Cold',
-    isChecked: false
-  }
-]
+    id: "3",
+    name: "Cold",
+    isChecked: false,
+  },
+];
 
 export const Referred_By_Source = [
   {
@@ -76,28 +76,28 @@ export const Referred_By_Source = [
     id: "10",
     name: "Other",
   },
-]
+];
 
 export const Gender_Data_Obj = {
-  "mr": [
+  mr: [
     {
       id: "1",
       name: "Male",
     },
   ],
-  "mrs": [
+  mrs: [
     {
       id: "1",
       name: "Female",
-    }
+    },
   ],
-  "ms": [
+  ms: [
     {
       id: "1",
       name: "Female",
-    }
+    },
   ],
-  "dr": [
+  dr: [
     {
       id: "1",
       name: "Male",
@@ -109,18 +109,19 @@ export const Gender_Data_Obj = {
     {
       id: "3",
       name: "Transgender",
-    }
-  ]
-}
+    },
+  ],
+  "M/S": []
+};
 
 export const Relation_Data_Obj = {
-  "mr": [
+  mr: [
     {
       id: "1",
       name: "S/O",
     },
   ],
-  "mrs": [
+  mrs: [
     {
       id: "1",
       name: "W/O",
@@ -128,15 +129,15 @@ export const Relation_Data_Obj = {
     {
       id: "2",
       name: "D/O",
-    }
+    },
   ],
-  "ms": [
+  ms: [
     {
       id: "1",
       name: "D/O",
-    }
+    },
   ],
-  "dr": [
+  dr: [
     {
       id: "1",
       name: "S/O",
@@ -148,9 +149,9 @@ export const Relation_Data_Obj = {
     {
       id: "3",
       name: "D/O",
-    }
-  ]
-}
+    },
+  ],
+};
 
 export const Marital_Status_Types = [
   {
@@ -561,8 +562,8 @@ export const Finance_Types = [
     name: "Cash",
   },
   {
-    id: "leashing",
-    name: "Leashing",
+    id: "leasing",
+    name: "Leasing",
   },
 ];
 
@@ -587,7 +588,7 @@ export const Insurence_Types = [
     id: "5",
     name: "Third Party",
   },
-]
+];
 
 export const Enquiry_Drop_Reasons = [
   {
@@ -657,838 +658,832 @@ export const Enquiry_Drop_Reasons = [
   {
     id: "17",
     name: "Relogin",
-  }
-]
-
-
-
-
-
-
+  },
+];
 
 export const All_Car_Brands = [
   {
-    id: '1',
-    name: 'Hyundai',
+    id: "1",
+    name: "Hyundai",
     models: [
       {
-        id: '1',
-        name: 'Accent'
+        id: "1",
+        name: "Accent",
       },
       {
-        id: '2',
-        name: 'Creta'
+        id: "2",
+        name: "Creta",
       },
       {
-        id: '3',
-        name: 'Elantra'
+        id: "3",
+        name: "Elantra",
       },
       {
-        id: '4',
-        name: 'Elite i20'
+        id: "4",
+        name: "Elite i20",
       },
       {
-        id: '5',
-        name: 'Eon'
+        id: "5",
+        name: "Eon",
       },
       {
-        id: '6',
-        name: 'Grand i10'
+        id: "6",
+        name: "Grand i10",
       },
       {
-        id: '7',
-        name: 'i10'
+        id: "7",
+        name: "i10",
       },
       {
-        id: '8',
-        name: 'i20'
+        id: "8",
+        name: "i20",
       },
       {
-        id: '9',
-        name: 'i20 Active'
+        id: "9",
+        name: "i20 Active",
       },
       {
-        id: '10',
-        name: 'Neo Fluidic Elantra'
+        id: "10",
+        name: "Neo Fluidic Elantra",
       },
       {
-        id: '11',
-        name: 'New Santro 1.1'
+        id: "11",
+        name: "New Santro 1.1",
       },
       {
-        id: '12',
-        name: 'Santa Fe'
+        id: "12",
+        name: "Santa Fe",
       },
       {
-        id: '13',
-        name: 'Santro Xing'
+        id: "13",
+        name: "Santro Xing",
       },
       {
-        id: '14',
-        name: 'Sonata'
+        id: "14",
+        name: "Sonata",
       },
       {
-        id: '15',
-        name: 'Sonata Transform'
+        id: "15",
+        name: "Sonata Transform",
       },
       {
-        id: '16',
-        name: 'Verna'
+        id: "16",
+        name: "Verna",
       },
       {
-        id: '17',
-        name: 'Verna Transform'
+        id: "17",
+        name: "Verna Transform",
       },
       {
-        id: '18',
-        name: 'Xcent'
+        id: "18",
+        name: "Xcent",
       },
       {
-        id: '19',
-        name: 'Other'
-      }
-    ]
+        id: "19",
+        name: "Other",
+      },
+    ],
   },
   {
-    id: '2',
-    name: 'Maruti Suzuki',
+    id: "2",
+    name: "Maruti Suzuki",
     models: [
       {
-        id: '1',
-        name: 'POPULAR'
+        id: "1",
+        name: "POPULAR",
       },
       {
-        id: '2',
-        name: 'Baleno'
+        id: "2",
+        name: "Baleno",
       },
       {
-        id: '3',
-        name: 'Ciaz'
+        id: "3",
+        name: "Ciaz",
       },
       {
-        id: '4',
-        name: 'Swift'
+        id: "4",
+        name: "Swift",
       },
       {
-        id: '5',
-        name: 'Alto K10'
+        id: "5",
+        name: "Alto K10",
       },
       {
-        id: '6',
-        name: 'Alto 800'
+        id: "6",
+        name: "Alto 800",
       },
       {
-        id: '7',
-        name: 'Celerio'
+        id: "7",
+        name: "Celerio",
       },
       {
-        id: '8',
-        name: '800'
+        id: "8",
+        name: "800",
       },
       {
-        id: '9',
-        name: 'A-Star'
+        id: "9",
+        name: "A-Star",
       },
       {
-        id: '10',
-        name: 'Alto'
+        id: "10",
+        name: "Alto",
       },
       {
-        id: '11',
-        name: 'Celerio X'
+        id: "11",
+        name: "Celerio X",
       },
       {
-        id: '12',
-        name: 'Eeco'
+        id: "12",
+        name: "Eeco",
       },
       {
-        id: '13',
-        name: 'Estilo'
+        id: "13",
+        name: "Estilo",
       },
       {
-        id: '14',
-        name: 'Grand Vitara'
+        id: "14",
+        name: "Grand Vitara",
       },
       {
-        id: '15',
-        name: 'Gypsy'
+        id: "15",
+        name: "Gypsy",
       },
       {
-        id: '16',
-        name: 'Ignis'
+        id: "16",
+        name: "Ignis",
       },
       {
-        id: '17',
-        name: 'Kizashi'
+        id: "17",
+        name: "Kizashi",
       },
       {
-        id: '18',
-        name: 'New Swift DZire'
+        id: "18",
+        name: "New Swift DZire",
       },
       {
-        id: '19',
-        name: 'Omni'
+        id: "19",
+        name: "Omni",
       },
       {
-        id: '20',
-        name: 'Ritz'
+        id: "20",
+        name: "Ritz",
       },
       {
-        id: '21',
-        name: 'S-Cross'
+        id: "21",
+        name: "S-Cross",
       },
       {
-        id: '22',
-        name: 'Swift Dzire'
+        id: "22",
+        name: "Swift Dzire",
       },
       {
-        id: '23',
-        name: 'SX4'
+        id: "23",
+        name: "SX4",
       },
       {
-        id: '24',
-        name: 'Versa'
+        id: "24",
+        name: "Versa",
       },
       {
-        id: '25',
-        name: 'Vitara Brezza'
+        id: "25",
+        name: "Vitara Brezza",
       },
       {
-        id: '26',
-        name: 'Wagon R'
+        id: "26",
+        name: "Wagon R",
       },
       {
-        id: '27',
-        name: 'Wagon R 1.0'
+        id: "27",
+        name: "Wagon R 1.0",
       },
       {
-        id: '28',
-        name: 'Other'
-      }
-    ]
+        id: "28",
+        name: "Other",
+      },
+    ],
   },
   {
-    id: '3',
-    name: 'Tata',
+    id: "3",
+    name: "Tata",
     models: [
       {
-        id: '1',
-        name: 'Tiago'
+        id: "1",
+        name: "Tiago",
       },
       {
-        id: '2',
-        name: 'Hexa'
+        id: "2",
+        name: "Hexa",
       },
       {
-        id: '3',
-        name: 'Tigor'
+        id: "3",
+        name: "Tigor",
       },
       {
-        id: '4',
-        name: 'Nano'
+        id: "4",
+        name: "Nano",
       },
       {
-        id: '5',
-        name: 'Zest'
+        id: "5",
+        name: "Zest",
       },
       {
-        id: '6',
-        name: 'Sumo Gold'
+        id: "6",
+        name: "Sumo Gold",
       },
       {
-        id: '7',
-        name: 'Aria'
+        id: "7",
+        name: "Aria",
       },
       {
-        id: '8',
-        name: 'Bolt'
+        id: "8",
+        name: "Bolt",
       },
       {
-        id: '9',
-        name: 'Harrier'
+        id: "9",
+        name: "Harrier",
       },
       {
-        id: '10',
-        name: 'Indica eV2'
+        id: "10",
+        name: "Indica eV2",
       },
       {
-        id: '11',
-        name: 'Indica V2'
+        id: "11",
+        name: "Indica V2",
       },
       {
-        id: '12',
-        name: 'Indigo eCS'
+        id: "12",
+        name: "Indigo eCS",
       },
       {
-        id: '13',
-        name: 'Nano GenX'
+        id: "13",
+        name: "Nano GenX",
       },
       {
-        id: '14',
-        name: 'Nexon'
+        id: "14",
+        name: "Nexon",
       },
       {
-        id: '15',
-        name: 'Safari'
+        id: "15",
+        name: "Safari",
       },
       {
-        id: '16',
-        name: 'Safari Storme'
+        id: "16",
+        name: "Safari Storme",
       },
       {
-        id: '17',
-        name: 'Vista Tech'
+        id: "17",
+        name: "Vista Tech",
       },
       {
-        id: '18',
-        name: 'Other'
-      }
-    ]
+        id: "18",
+        name: "Other",
+      },
+    ],
   },
   {
-    id: '4',
-    name: 'Honda',
+    id: "4",
+    name: "Honda",
     models: [
       {
-        id: '1',
-        name: 'Amaze'
+        id: "1",
+        name: "Amaze",
       },
       {
-        id: '2',
-        name: 'City'
+        id: "2",
+        name: "City",
       },
       {
-        id: '3',
-        name: 'Brio'
+        id: "3",
+        name: "Brio",
       },
       {
-        id: '4',
-        name: 'Jazz'
+        id: "4",
+        name: "Jazz",
       },
       {
-        id: '5',
-        name: 'Civic'
+        id: "5",
+        name: "Civic",
       },
       {
-        id: '6',
-        name: 'Mobilio'
+        id: "6",
+        name: "Mobilio",
       },
       {
-        id: '7',
-        name: 'Accord'
+        id: "7",
+        name: "Accord",
       },
       {
-        id: '8',
-        name: 'BR-V'
+        id: "8",
+        name: "BR-V",
       },
       {
-        id: '9',
-        name: 'CR-V'
+        id: "9",
+        name: "CR-V",
       },
       {
-        id: '10',
-        name: 'WR-V'
+        id: "10",
+        name: "WR-V",
       },
       {
-        id: '11',
-        name: 'Other'
-      }
-    ]
+        id: "11",
+        name: "Other",
+      },
+    ],
   },
   {
-    id: '5',
-    name: 'Ford',
+    id: "5",
+    name: "Ford",
     models: [
       {
-        id: '1',
-        name: 'EcoSport'
+        id: "1",
+        name: "EcoSport",
       },
       {
-        id: '2',
-        name: 'Endeavour'
+        id: "2",
+        name: "Endeavour",
       },
       {
-        id: '3',
-        name: 'Fiesta'
+        id: "3",
+        name: "Fiesta",
       },
       {
-        id: '4',
-        name: 'Fiesta Classic'
+        id: "4",
+        name: "Fiesta Classic",
       },
       {
-        id: '5',
-        name: 'Figo'
+        id: "5",
+        name: "Figo",
       },
       {
-        id: '6',
-        name: 'Figo Aspire'
+        id: "6",
+        name: "Figo Aspire",
       },
       {
-        id: '7',
-        name: 'Freestyle'
+        id: "7",
+        name: "Freestyle",
       },
       {
-        id: '8',
-        name: 'Ikon'
+        id: "8",
+        name: "Ikon",
       },
       {
-        id: '9',
-        name: 'Mondeo'
+        id: "9",
+        name: "Mondeo",
       },
       {
-        id: '10',
-        name: 'Other'
-      }
-    ]
+        id: "10",
+        name: "Other",
+      },
+    ],
   },
   {
-    id: '6',
-    name: 'Renault',
+    id: "6",
+    name: "Renault",
     models: [
       {
-        id: '1',
-        name: 'Captur'
+        id: "1",
+        name: "Captur",
       },
       {
-        id: '2',
-        name: 'Duster'
+        id: "2",
+        name: "Duster",
       },
       {
-        id: '3',
-        name: 'Fluence'
+        id: "3",
+        name: "Fluence",
       },
       {
-        id: '4',
-        name: 'Koleos'
+        id: "4",
+        name: "Koleos",
       },
       {
-        id: '5',
-        name: 'Kwid'
+        id: "5",
+        name: "Kwid",
       },
       {
-        id: '6',
-        name: 'Lodgy'
+        id: "6",
+        name: "Lodgy",
       },
       {
-        id: '7',
-        name: 'Scala'
+        id: "7",
+        name: "Scala",
       },
       {
-        id: '8',
-        name: 'Other'
-      }
-    ]
+        id: "8",
+        name: "Other",
+      },
+    ],
   },
   {
-    id: '7',
-    name: 'Mahindra',
+    id: "7",
+    name: "Mahindra",
     models: [
       {
-        id: '1',
-        name: 'XUV500'
+        id: "1",
+        name: "XUV500",
       },
       {
-        id: '2',
-        name: 'KUV100'
+        id: "2",
+        name: "KUV100",
       },
       {
-        id: '3',
-        name: 'TUV300'
+        id: "3",
+        name: "TUV300",
       },
       {
-        id: '4',
-        name: 'Scorpio'
+        id: "4",
+        name: "Scorpio",
       },
       {
-        id: '5',
-        name: 'Bolero'
+        id: "5",
+        name: "Bolero",
       },
       {
-        id: '6',
-        name: 'Xylo'
+        id: "6",
+        name: "Xylo",
       },
       {
-        id: '7',
-        name: 'e2o'
+        id: "7",
+        name: "e2o",
       },
       {
-        id: '8',
-        name: 'Marazzo'
+        id: "8",
+        name: "Marazzo",
       },
       {
-        id: '9',
-        name: 'Marshal'
+        id: "9",
+        name: "Marshal",
       },
       {
-        id: '10',
-        name: 'NuvoSport'
+        id: "10",
+        name: "NuvoSport",
       },
       {
-        id: '11',
-        name: 'REVAi'
+        id: "11",
+        name: "REVAi",
       },
       {
-        id: '12',
-        name: 'Scorpio Getaway'
+        id: "12",
+        name: "Scorpio Getaway",
       },
       {
-        id: '13',
-        name: 'Thar'
+        id: "13",
+        name: "Thar",
       },
       {
-        id: '14',
-        name: 'Verito'
+        id: "14",
+        name: "Verito",
       },
       {
-        id: '15',
-        name: 'Verito Vibe CS'
+        id: "15",
+        name: "Verito Vibe CS",
       },
       {
-        id: '16',
-        name: 'Other'
-      }
-    ]
+        id: "16",
+        name: "Other",
+      },
+    ],
   },
   {
-    id: '8',
-    name: 'Toyota',
+    id: "8",
+    name: "Toyota",
     models: [
       {
-        id: '1',
-        name: 'Etios Liva'
+        id: "1",
+        name: "Etios Liva",
       },
       {
-        id: '2',
-        name: 'Corolla Altis'
+        id: "2",
+        name: "Corolla Altis",
       },
       {
-        id: '3',
-        name: 'Etios'
+        id: "3",
+        name: "Etios",
       },
       {
-        id: '4',
-        name: 'Yaris'
+        id: "4",
+        name: "Yaris",
       },
       {
-        id: '5',
-        name: 'Camry'
+        id: "5",
+        name: "Camry",
       },
       {
-        id: '6',
-        name: 'Corolla'
+        id: "6",
+        name: "Corolla",
       },
       {
-        id: '7',
-        name: 'Fortuner'
+        id: "7",
+        name: "Fortuner",
       },
       {
-        id: '8',
-        name: 'Innova'
+        id: "8",
+        name: "Innova",
       },
       {
-        id: '9',
-        name: 'Innova Crysta'
+        id: "9",
+        name: "Innova Crysta",
       },
       {
-        id: '10',
-        name: 'Land Cruiser'
+        id: "10",
+        name: "Land Cruiser",
       },
       {
-        id: '11',
-        name: 'Land Cruiser Prado'
+        id: "11",
+        name: "Land Cruiser Prado",
       },
       {
-        id: '12',
-        name: 'Other'
-      }
-    ]
+        id: "12",
+        name: "Other",
+      },
+    ],
   },
   {
-    id: '9',
-    name: 'Chevrolet',
+    id: "9",
+    name: "Chevrolet",
     models: [
       {
-        id: '1',
-        name: 'Sail'
+        id: "1",
+        name: "Sail",
       },
       {
-        id: '2',
-        name: 'Spark'
+        id: "2",
+        name: "Spark",
       },
       {
-        id: '3',
-        name: 'Tavera'
+        id: "3",
+        name: "Tavera",
       },
       {
-        id: '4',
-        name: 'Sail Hatchback'
+        id: "4",
+        name: "Sail Hatchback",
       },
       {
-        id: '5',
-        name: 'Trailblazer'
+        id: "5",
+        name: "Trailblazer",
       },
       {
-        id: '6',
-        name: 'Aveo'
+        id: "6",
+        name: "Aveo",
       },
       {
-        id: '7',
-        name: 'ALL'
+        id: "7",
+        name: "ALL",
       },
       {
-        id: '8',
-        name: 'Beat'
+        id: "8",
+        name: "Beat",
       },
       {
-        id: '9',
-        name: 'Captiva'
+        id: "9",
+        name: "Captiva",
       },
       {
-        id: '10',
-        name: 'Cruze'
+        id: "10",
+        name: "Cruze",
       },
       {
-        id: '11',
-        name: 'Enjoy'
+        id: "11",
+        name: "Enjoy",
       },
       {
-        id: '12',
-        name: 'Optra Magnum'
+        id: "12",
+        name: "Optra Magnum",
       },
       {
-        id: '13',
-        name: 'Other'
-      }
-    ]
+        id: "13",
+        name: "Other",
+      },
+    ],
   },
   {
-    id: '10',
-    name: 'Datsun',
+    id: "10",
+    name: "Datsun",
     models: [
       {
-        id: '1',
-        name: 'GO'
+        id: "1",
+        name: "GO",
       },
       {
-        id: '2',
-        name: 'Go Plus'
+        id: "2",
+        name: "Go Plus",
       },
       {
-        id: '3',
-        name: 'Redi-GO'
+        id: "3",
+        name: "Redi-GO",
       },
       {
-        id: '4',
-        name: 'Other'
-      }
-    ]
+        id: "4",
+        name: "Other",
+      },
+    ],
   },
   {
-    id: '11',
-    name: 'Fiat',
+    id: "11",
+    name: "Fiat",
     models: [
       {
-        id: '1',
-        name: 'Abarth 595'
+        id: "1",
+        name: "Abarth 595",
       },
       {
-        id: '2',
-        name: 'Abarth Punto'
+        id: "2",
+        name: "Abarth Punto",
       },
       {
-        id: '3',
-        name: 'Avventura'
+        id: "3",
+        name: "Avventura",
       },
       {
-        id: '4',
-        name: 'Linea'
+        id: "4",
+        name: "Linea",
       },
       {
-        id: '5',
-        name: 'Linea Classic'
+        id: "5",
+        name: "Linea Classic",
       },
       {
-        id: '6',
-        name: 'Punto Evo'
+        id: "6",
+        name: "Punto Evo",
       },
       {
-        id: '7',
-        name: 'Punto Pure'
+        id: "7",
+        name: "Punto Pure",
       },
       {
-        id: '8',
-        name: 'Siena'
+        id: "8",
+        name: "Siena",
       },
       {
-        id: '9',
-        name: 'Uno'
+        id: "9",
+        name: "Uno",
       },
       {
-        id: '10',
-        name: 'Other'
-      }
-    ]
+        id: "10",
+        name: "Other",
+      },
+    ],
   },
   {
-    id: '12',
-    name: 'Skoda',
+    id: "12",
+    name: "Skoda",
     models: [
       {
-        id: '1',
-        name: 'Fabia'
+        id: "1",
+        name: "Fabia",
       },
       {
-        id: '2',
-        name: 'Octavia'
+        id: "2",
+        name: "Octavia",
       },
       {
-        id: '3',
-        name: 'Rapid'
+        id: "3",
+        name: "Rapid",
       },
       {
-        id: '4',
-        name: 'Rapid new'
+        id: "4",
+        name: "Rapid new",
       },
       {
-        id: '5',
-        name: 'Superb'
+        id: "5",
+        name: "Superb",
       },
       {
-        id: '6',
-        name: 'Yeti'
+        id: "6",
+        name: "Yeti",
       },
       {
-        id: '7',
-        name: 'Other'
-      }
-    ]
+        id: "7",
+        name: "Other",
+      },
+    ],
   },
   {
-    id: '13',
-    name: 'Jeep',
+    id: "13",
+    name: "Jeep",
     models: [
       {
-        id: '1',
-        name: 'Compass'
+        id: "1",
+        name: "Compass",
       },
       {
-        id: '2',
-        name: 'Jeep'
+        id: "2",
+        name: "Jeep",
       },
       {
-        id: '3',
-        name: 'Other'
-      }
-    ]
+        id: "3",
+        name: "Other",
+      },
+    ],
   },
   {
-    id: '14',
-    name: 'Kia',
+    id: "14",
+    name: "Kia",
     models: [
       {
-        id: '1',
-        name: 'Kia Seltos'
+        id: "1",
+        name: "Kia Seltos",
       },
       {
-        id: '2',
-        name: 'Kia Carnival'
+        id: "2",
+        name: "Kia Carnival",
       },
       {
-        id: '3',
-        name: 'Other'
-      }
-    ]
+        id: "3",
+        name: "Other",
+      },
+    ],
   },
   {
-    id: '15',
-    name: 'Nissan',
+    id: "15",
+    name: "Nissan",
     models: [
       {
-        id: '1',
-        name: 'Micra'
+        id: "1",
+        name: "Micra",
       },
       {
-        id: '2',
-        name: 'Micra Active'
+        id: "2",
+        name: "Micra Active",
       },
       {
-        id: '3',
-        name: 'Sunny'
+        id: "3",
+        name: "Sunny",
       },
       {
-        id: '4',
-        name: 'Terrano'
+        id: "4",
+        name: "Terrano",
       },
       {
-        id: '5',
-        name: 'Other'
-      }
-    ]
+        id: "5",
+        name: "Other",
+      },
+    ],
   },
   {
-    id: '16',
-    name: 'Volkswagen',
+    id: "16",
+    name: "Volkswagen",
     models: [
       {
-        id: '1',
-        name: '1600'
+        id: "1",
+        name: "1600",
       },
       {
-        id: '2',
-        name: 'Ameo'
+        id: "2",
+        name: "Ameo",
       },
       {
-        id: '3',
-        name: 'Beetle'
+        id: "3",
+        name: "Beetle",
       },
       {
-        id: '4',
-        name: 'Cross Polo'
+        id: "4",
+        name: "Cross Polo",
       },
       {
-        id: '5',
-        name: 'Jetta'
+        id: "5",
+        name: "Jetta",
       },
       {
-        id: '6',
-        name: 'Passat'
+        id: "6",
+        name: "Passat",
       },
       {
-        id: '7',
-        name: 'Polo'
+        id: "7",
+        name: "Polo",
       },
       {
-        id: '8',
-        name: 'Vento'
+        id: "8",
+        name: "Vento",
       },
       {
-        id: '9',
-        name: 'Other'
-      }
-    ]
+        id: "9",
+        name: "Other",
+      },
+    ],
   },
   {
-    id: '17',
-    name: 'MG Motors',
+    id: "17",
+    name: "MG Motors",
     models: [
       {
-        id: '1',
-        name: 'Hector'
+        id: "1",
+        name: "Hector",
       },
       {
-        id: '2',
-        name: 'Other'
-      }
-    ]
+        id: "2",
+        name: "Other",
+      },
+    ],
   },
   {
-    id: '18',
-    name: 'Other',
+    id: "18",
+    name: "Other",
     models: [
       {
-        id: '1',
-        name: 'Other'
-      }
-    ]
-  }
+        id: "1",
+        name: "Other",
+      },
+    ],
+  },
 ];

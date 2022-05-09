@@ -5,7 +5,9 @@ import { Colors, GlobalStyle } from '../../../styles';
 import { useSelector, useDispatch } from 'react-redux';
 import { IconButton } from 'react-native-paper';
 import VectorImage from 'react-native-vector-image';
-import { CREATE_NEW } from '../../../assets/svg';
+// import { CREATE_NEW } from '../../../assets/svg';
+import CREATE_NEW from '../../../assets/images/create_new.svg';
+
 import { AppNavigator } from '../../../navigations';
 import { CallUserComponent, SortAndFilterComp, DateRangeComp, DatePickerComponent } from '../../../components';
 import { callPressed, getPreEnquiryData, setPreEnquiryList, getMorePreEnquiryData } from '../../../redux/preEnquiryReducer';
@@ -14,6 +16,7 @@ import realm from '../../../database/realm';
 import { callNumber } from '../../../utils/helperFunctions';
 import moment from "moment";
 import { Category_Type_List_For_Filter } from '../../../jsonData/enquiryFormScreenJsonData';
+import { MyTaskNewItem } from '../MyTasks/components/MyTasksNewItem';
 
 const dateFormat = "YYYY-MM-DD";
 
@@ -39,7 +42,7 @@ const PreEnquiryScreen = ({ navigation }) => {
         const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
         setSelectedFromDate(lastMonthFirstDate);
         const tomorrowDate = moment().add(1, "day").format(dateFormat)
-        setSelectedToDate(tomorrowDate);
+        setSelectedToDate(currentDate);
         getAsyncData(lastMonthFirstDate, currentDate);
 
     }, [])
@@ -168,6 +171,7 @@ const PreEnquiryScreen = ({ navigation }) => {
                 value={new Date(Date.now())}
                 onChange={(event, selectedDate) => {
                     console.log("date: ", selectedDate);
+                    setShowDatePicker(false)
                     if (Platform.OS === "android") {
                         if (selectedDate) {
                             updateSelectedDate(selectedDate, datePickerId);
@@ -175,7 +179,6 @@ const PreEnquiryScreen = ({ navigation }) => {
                     } else {
                         updateSelectedDate(selectedDate, datePickerId);
                     }
-                    setShowDatePicker(false)
                 }}
                 onRequestClose={() => setShowDatePicker(false)}
             />
@@ -221,7 +224,7 @@ const PreEnquiryScreen = ({ navigation }) => {
                 {/* // filter */}
 
                 {selector.pre_enquiry_list.length === 0 ? <EmptyListView title={'No Data Found'} isLoading={selector.isLoading} /> :
-                    <View style={[GlobalStyle.shadow, { backgroundColor: 'white', flex: 1, marginBottom: 10 }]}>
+                    <View style={[ { backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 }]}>
                         <FlatList
                             data={selector.pre_enquiry_list}
                             extraData={selector.pre_enquiry_list}
@@ -246,17 +249,31 @@ const PreEnquiryScreen = ({ navigation }) => {
 
                                 return (
                                     <>
-                                        < PreEnquiryItem
+                                        {/* < PreEnquiryItem
                                             bgColor={color}
                                             name={item.firstName + " " + item.lastName}
                                             subName={item.enquirySource}
                                             date={item.createdDate}
                                             enquiryCategory={item.enquiryCategory}
                                             modelName={item.model}
+                                            createdBy={item.createdBy}
                                             onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq, { itemData: item, fromCreatePreEnquiry: false })}
                                             onCallPress={() => callNumber(item.phone)}
-                                        />
-                                        <View style={GlobalStyle.underline}></View>
+                                        /> */}
+                                        <View style={{paddingVertical: 5}}>
+                                            <MyTaskNewItem
+                                                from='PRE_ENQUIRY'
+                                                name={item.firstName + " " + item.lastName}
+                                                status={""}
+                                                created={item.createdDate}
+                                                dmsLead={item.createdBy}
+                                                phone={item.phone}
+                                                source={item.enquirySource}
+                                                model={item.model}
+                                                onItemPress={() => {}}
+                                                onDocPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq, { itemData: item, fromCreatePreEnquiry: false })}
+                                            />
+                                        </View>
                                     </>
                                 )
                             }}
@@ -264,9 +281,10 @@ const PreEnquiryScreen = ({ navigation }) => {
                     </View>}
 
                 <View style={[styles.addView, GlobalStyle.shadow]}>
-                    <Pressable onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.addPreEnq)}>
+                    <Pressable onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.addPreEnq, { fromEdit: false })}>
                         {/* <View style={[GlobalStyle.shadow, { height: 60, width: 60, borderRadius: 30, shadowRadius: 5 }]}> */}
-                        <VectorImage source={CREATE_NEW} width={60} height={60} color={"rgba(76,24,197,0.8)"} />
+                        {/* <VectorImage source={CREATE_NEW} width={60} height={60} color={"rgba(76,24,197,0.8)"} /> */}
+                        <CREATE_NEW width={60} height={60} fill={"rgba(76,24,197,0.8)"} />
                         {/* </View> */}
                     </Pressable>
                 </View>

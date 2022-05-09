@@ -15,6 +15,7 @@ import { TasksListComp } from "./tasksListComp";
 import { TargetListComp } from "./targetListComp";
 import { DashboadFilterModalComp } from "./dashboardFilterModalComp";
 import { LineGraphComp } from "./lineGraphComp";
+import { HeaderComp } from "./headerComp";
 export {
     ButtonComp,
     CallUserComponent,
@@ -31,5 +32,6 @@ export {
     TasksListComp,
     TargetListComp,
     DashboadFilterModalComp,
-    LineGraphComp
+    LineGraphComp,
+    HeaderComp
 };

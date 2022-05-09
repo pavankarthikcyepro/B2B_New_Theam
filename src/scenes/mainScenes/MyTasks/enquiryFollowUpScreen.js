@@ -22,9 +22,10 @@ import {
   updateSelectedDate,
   getTaskDetailsApi,
   updateTaskApi,
+  getEnquiryDetailsApi
 } from "../../../redux/enquiryFollowUpReducer";
 import { DateSelectItem } from "../../../pureComponents";
-import { convertDateStringToMillisecondsUsingMoment } from "../../../utils/helperFunctions";
+import { convertDateStringToMillisecondsUsingMoment, GetCarModelList } from "../../../utils/helperFunctions";
 import moment from "moment";
 import {
   showToast,
@@ -56,15 +57,13 @@ const LocalButtonComp = ({ title, onPress, disabled }) => {
 };
 
 const EnquiryFollowUpScreen = ({ route, navigation }) => {
-  const { taskId, identifier } = route.params;
+  const { taskId, identifier, universalId } = route.params;
   const selector = useSelector((state) => state.enquiryFollowUpReducer);
-  const { vehicle_modal_list } = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [dropDownTitle, setDropDownTitle] = useState("");
   const [dataForDropDown, setDataForDropDown] = useState([]);
   const [dropDownKey, setDropDownKey] = useState("");
-  const [showDatePickerModel, setShowDatePickerModel] = useState(false);
   const [carModelsData, setCarModelsData] = useState([]);
   const [modelVarientsData, setModelVarientsData] = useState([]);
   const [actionType, setActionType] = useState("");
@@ -88,33 +87,49 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     getAsyncStorageData();
-    setCarModelsDataFromBase();
     dispatch(getTaskDetailsApi(taskId));
+    getEnquiryDetailsFromServer();
   }, []);
 
   const getAsyncStorageData = async () => {
-    const employeeId = await AsyncStorage.getData(AsyncStorage.Keys.EMP_ID);
-    if (employeeId) {
-      setEmpId(employeeId);
+    const employeeData = await AsyncStorage.getData(AsyncStorage.Keys.LOGIN_EMPLOYEE);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      setEmpId(jsonObj.empId);
+      getCarModelListFromServer(jsonObj.orgId);
     }
   };
 
-  const setCarModelsDataFromBase = () => {
-    let modalList = [];
-    if (vehicle_modal_list.length > 0) {
-      vehicle_modal_list.forEach((item) => {
-        modalList.push({ id: item.vehicleId, name: item.model });
-      });
+  const getCarModelListFromServer = (orgId) => {
+    // Call Api
+    GetCarModelList(orgId).then((resolve) => {
+      let modalList = [];
+      if (resolve.length > 0) {
+        resolve.forEach((item) => {
+          modalList.push({ id: item.vehicleId, name: item.model, isChecked: false, ...item });
+        });
+      }
+      setCarModelsData([...modalList]);
+    }, (rejected) => {
+      console.log("getCarModelListFromServer Failed")
+    }).finally(() => {
+      // Get Enquiry Details
+      getEnquiryDetailsFromServer();
+    })
+  }
+
+  const getEnquiryDetailsFromServer = () => {
+    if (universalId) {
+      dispatch(getEnquiryDetailsApi(universalId));
     }
-    setCarModelsData([...modalList]);
-  };
+  }
 
   const updateModelVarientsData = (selectedModelName) => {
     if (!selectedModelName || selectedModelName.length === 0) {
       return;
     }
 
-    let arrTemp = vehicle_modal_list.filter(function (obj) {
+    let arrTemp = carModelsData.filter(function (obj) {
       return obj.model === selectedModelName;
     });
 
@@ -241,7 +256,6 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     setActionType(type);
     dispatch(updateTaskApi(newTaskObj));
   };
-
   const setDropDownDataForModel = (key, title) => {
     switch (key) {
       case "MODEL":
@@ -265,7 +279,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
           if (dropDownKey === "MODEL") {
-            updateModelVarientsData(item.name);
+            updateModelVarientsData(item.name, false);
           }
           dispatch(
             setEnquiryFollowUpDetails({ key: dropDownKey, text: item.name })
@@ -279,7 +293,6 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
         mode={"date"}
         minimumDate={selector.minDate}
         value={new Date(Date.now())}
-        minimumDate={selector.minDate}
         onChange={(event, selectedDate) => {
           console.log("date: ", selectedDate);
           if (Platform.OS === "android") {
@@ -307,29 +320,30 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
           <View style={[GlobalStyle.shadow]}>
             {(identifier === "ENQUIRY_FOLLOW_UP" ||
               identifier === "PRE_ENQUIRY_FOLLOW_UP") && (
-              <View>
-                <DropDownSelectionItem
-                  label={"Model"}
-                  value={selector.model}
-                  onPress={() =>
-                    setDropDownDataForModel("MODEL", "Select Model")
-                  }
-                />
+                <View>
+                  <DropDownSelectionItem
+                    label={"Model"}
+                    value={selector.model}
+                    onPress={() =>
+                      setDropDownDataForModel("MODEL", "Select Model")
+                    }
+                  />
 
-                <DropDownSelectionItem
-                  label={"Varient"}
-                  value={selector.varient}
-                  onPress={() =>
-                    setDropDownDataForModel("VARIENT", "Select Varient")
-                  }
-                />
-              </View>
-            )}
+                  <DropDownSelectionItem
+                    label={"Varient"}
+                    value={selector.varient}
+                    onPress={() =>
+                      setDropDownDataForModel("VARIENT", "Select Varient")
+                    }
+                  />
+                </View>
+              )}
 
             <TextinputComp
               style={styles.textInputStyle}
               label={"Reason*"}
               value={selector.reason}
+              autoCapitalize={"words"}
               maxLength={50}
               onChangeText={(text) => {
                 dispatch(
@@ -344,6 +358,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
               label={"Customer Remarks*"}
               maxLength={50}
               value={selector.customer_remarks}
+              autoCapitalize={"words"}
               onChangeText={(text) =>
                 dispatch(
                   setEnquiryFollowUpDetails({
@@ -360,6 +375,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
               label={"Employee Remarks*"}
               value={selector.employee_remarks}
               maxLength={50}
+              autoCapitalize={"words"}
               onChangeText={(text) =>
                 dispatch(
                   setEnquiryFollowUpDetails({
@@ -374,9 +390,9 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
               label={"Actual Start Date"}
               value={selector.actual_start_time}
               onPress={() => dispatch(setDatePicker("ACTUAL_START_TIME"))}
-              //  value={selector.expected_delivery_date}
-                  // onPress={() =>
-                    // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
+            //  value={selector.expected_delivery_date}
+            // onPress={() =>
+            // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
             />
             <Text style={GlobalStyle.underline}></Text>
             <DateSelectItem

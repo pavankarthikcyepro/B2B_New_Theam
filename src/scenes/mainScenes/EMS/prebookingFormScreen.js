@@ -45,7 +45,6 @@ import {
   updateBookingPaymentData,
   updateDmsAttachments,
   getOnRoadPriceAndInsurenceDetailsApi,
-  getPaidAccessoriesListApi,
   dropPreBooingApi,
   updatePrebookingDetailsApi,
   getOnRoadPriceDtoListApi,
@@ -58,6 +57,7 @@ import {
   getPaymentDetailsApi,
   getBookingAmountDetailsApi,
   getAssignedTasksApi,
+  updateAddressByPincode,
 } from "../../../redux/preBookingFormReducer";
 import {
   RadioTextItem,
@@ -78,7 +78,6 @@ import {
   Marital_Status_Types,
   Finance_Types,
   Finance_Category_Types,
-  Bank_Financer_Types,
   Approx_Auual_Income_Types,
 } from "../../../jsonData/enquiryFormScreenJsonData";
 import {
@@ -97,10 +96,18 @@ import {
 } from "../../../utils/toast";
 import {
   convertDateStringToMillisecondsUsingMoment,
+  isValidateAlphabetics,isValidate,
+  isMobileNumber,
   emiCalculator,
+  GetCarModelList,
+  PincodeDetails,
+  GetFinanceBanksList,
+  GetPaidAccessoriesList,
+  GetDropList,
 } from "../../../utils/helperFunctions";
 import URL from "../../../networking/endpoints";
 import uuid from "react-native-uuid";
+import { DropComponent } from "./components/dropComp";
 
 const rupeeSymbol = "\u20B9";
 
@@ -151,15 +158,32 @@ const TextAndAmountComp = ({
 }) => {
   return (
     <View style={styles.textAndAmountView}>
+      <Text style={[styles.leftLabel, titleStyle]}>{title}</Text>
+      <Text style={[{ fontSize: 14, fontWeight: "400" }, amoutStyle]}>
+        {rupeeSymbol + " " + amount}
+      </Text>
+    </View>
+  );
+};
+
+const PaidAccessoriesTextAndAmountComp = ({
+  title,
+  amount,
+  titleStyle = {},
+  amoutStyle = {},
+}) => {
+  return (
+    <View style={styles.textAndAmountView}>
       <Text
         style={[
-          {
-            fontSize: 14,
-            fontWeight: "400",
-            maxWidth: "70%",
-            color: Colors.GRAY,
-          },
+          styles.leftLabel,
           titleStyle,
+          {
+            color: Colors.BLUE,
+            textDecorationLine: "underline",
+            textDecorationStyle: "solid",
+            textDecorationColor: Colors.BLUE,
+          },
         ]}
       >
         {title}
@@ -174,11 +198,10 @@ const TextAndAmountComp = ({
 const PrebookingFormScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const selector = useSelector((state) => state.preBookingFormReducer);
-  const { universalId } = route.params;
+  const { universalId, accessoriesList } = route.params;
   const [openAccordian, setOpenAccordian] = useState(0);
   const [componentAppear, setComponentAppear] = useState(false);
   const [userData, setUserData] = useState({
-    branchId: "",
     orgId: "",
     employeeId: "",
     employeeName: "",
@@ -192,7 +215,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [dataForDropDown, setDataForDropDown] = useState([]);
   const [dropDownKey, setDropDownKey] = useState("");
   const [dropDownTitle, setDropDownTitle] = useState("Select Data");
-  const { vehicle_modal_list } = useSelector((state) => state.homeReducer);
   const [carModelsData, setCarModelsData] = useState([]);
   const [selectedCarVarientsData, setSelectedCarVarientsData] = useState({
     varientList: [],
@@ -225,7 +247,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   });
   const [isDropSelected, setIsDropSelected] = useState(false);
   const [typeOfActionDispatched, setTypeOfActionDispatched] = useState("");
-  const [selectedPaidAccessories, setSelectedPaidAccessories] = useState([]);
+  const [selectedPaidAccessoriesList, setSelectedPaidAccessoriesList] =
+    useState([]);
   const [selectedInsurenceAddons, setSelectedInsurenceAddons] = useState([]);
   const [showApproveRejectBtn, setShowApproveRejectBtn] = useState(false);
   const [showPrebookingPaymentSection, setShowPrebookingPaymentSection] =
@@ -238,6 +261,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [handlingChargSlctd, setHandlingChargSlctd] = useState(false);
   const [essentialKitSlctd, setEssentialKitSlctd] = useState(false);
   const [fastTagSlctd, setFastTagSlctd] = useState(false);
+  const [financeBanksList, setFinanceBanksList] = useState([]);
+  const [lifeTaxAmount, setLifeTaxAmount] = useState(0);
+  const [tcsAmount, setTcsAmount] = useState(0);
+  const [paidAccessoriesList, setPaidAccessoriesList] = useState([]);
+  const [selectedBranchId, setSelectedBranchId] = useState("");
+
+  // drop section
+  const [dropData, setDropData] = useState([]);
+  const [dropReason, setDropReason] = useState("");
+  const [dropSubReason, setDropSubReason] = useState("");
+  const [dropBrandName, setDropBrandName] = useState("");
+  const [dropDealerName, setDropDealerName] = useState("");
+  const [dropLocation, setDropLocation] = useState("");
+  const [dropModel, setDropModel] = useState("");
+  const [dropPriceDifference, setDropPriceDifference] = useState("");
+  const [dropRemarks, setDropRemarks] = useState("");
+
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -260,11 +300,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   useEffect(() => {
     setComponentAppear(true);
     getAsyncstoreData();
-    getAuthToken();
+    getBranchId();
     dispatch(getCustomerTypesApi());
-    setCarModelsDataFromBase();
-    getPreBookingDetailsFromServer();
-    getBanksListFromServer();
 
     BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
     return () => {
@@ -275,13 +312,20 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     };
   }, [navigation]);
 
+  useEffect(() => {
+    console.log("accessoriesList: ", accessoriesList);
+    if (route.params?.accessoriesList) {
+      updatePaidAccessroies(route.params?.accessoriesList);
+    }
+  }, [route.params?.accessoriesList]);
+
   const handleBackButtonClick = () => {
     goParentScreen();
     return true;
   };
 
   useEffect(() => {
-    calculateOnRoadPrice();
+    calculateOnRoadPrice(handlingChargSlctd, essentialKitSlctd, fastTagSlctd);
   }, [
     priceInfomationData,
     selectedInsurencePrice,
@@ -304,6 +348,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     selector.additional_offer_2,
   ]);
 
+  const getBranchId = () => {
+
+    AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then((branchId) => {
+      console.log("branch id:", branchId)
+      setSelectedBranchId(branchId);
+    });
+  }
+
   const getAsyncstoreData = async () => {
     const employeeData = await AsyncStore.getData(
       AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -325,7 +377,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         isPreBookingApprover = true;
       }
       setUserData({
-        branchId: jsonObj.branchId,
         orgId: jsonObj.orgId,
         employeeId: jsonObj.empId,
         employeeName: jsonObj.empName,
@@ -333,22 +384,56 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         editEnable: editEnable,
         isPreBookingApprover: isPreBookingApprover,
       });
-      dispatch(getPaidAccessoriesListApi(jsonObj.orgId));
 
       const payload = {
         bu: jsonObj.orgId,
         dropdownType: "PreBookDropReas",
         parentId: 0,
       };
-      dispatch(getDropDataApi(payload));
+
+      // Make Api calls in parallel
+      Promise.all([
+        dispatch(getDropDataApi(payload)),
+        getCarModelListFromServer(jsonObj.orgId),
+      ]).then(() => {
+        console.log("all done");
+      });
+
+      // Get Token
+      AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
+        setUserToken(token);
+        getBanksListFromServer(jsonObj.orgId, token);
+        GetPreBookingDropReasons(jsonObj.orgId, token)
+      });
     }
   };
 
-  const getAuthToken = () => {
-    AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
-      setUserToken(token);
-    });
-  };
+  const GetPreBookingDropReasons = (orgId, token) => {
+
+    GetDropList(orgId, token, "Pre%20Booking").then(resolve => {
+      setDropData(resolve);
+    }, reject => {
+      console.error("Getting drop list faild")
+    })
+  }
+
+  const getCarModelListFromServer = (orgId) => {
+    // Call Api
+    GetCarModelList(orgId).then((resolve) => {
+      let modelList = [];
+      if (resolve.length > 0) {
+        resolve.forEach((item) => {
+          modelList.push({ id: item.vehicleId, name: item.model, isChecked: false, ...item });
+        });
+      }
+      setCarModelsData([...modelList]);
+    }, (rejected) => {
+      console.log("getCarModelListFromServer Failed")
+    }).finally(() => {
+      // Get PreBooking Details
+      getPreBookingDetailsFromServer();
+    })
+  }
 
   const getPreBookingDetailsFromServer = () => {
     if (universalId) {
@@ -356,30 +441,18 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
   };
 
-  const getBanksListFromServer = async () => {
-    await fetch(URL.GET_BANK_DETAILS(), {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "auth-token": userToken,
+  const getBanksListFromServer = (orgId, token) => {
+    GetFinanceBanksList(orgId, token).then(
+      (resp) => {
+        const bankList = resp.map((item) => {
+          return { ...item, name: item.bank_name };
+        });
+        setFinanceBanksList([...bankList]);
       },
-    })
-      .then((response) => response.json())
-      .then((json) => {
-        console.log(json);
-      })
-      .catch((error) => {});
-  };
-
-  const setCarModelsDataFromBase = () => {
-    let modalList = [];
-    if (vehicle_modal_list.length > 0) {
-      vehicle_modal_list.forEach((item) => {
-        modalList.push({ id: item.vehicleId, name: item.model });
-      });
-    }
-    setCarModelsData([...modalList]);
+      (error) => {
+        console.error(error);
+      }
+    );
   };
 
   // Handle Pre-Booking Details Response
@@ -405,7 +478,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       if (dmsLeadDto.leadStatus === "SENTFORAPPROVAL") {
         setShowApproveRejectBtn(true);
       }
-      if (dmsLeadDto.leadStatus === "PREBOOKINGCOMPLETED") {
+      if (dmsLeadDto.leadStatus === "BOOKINGCOMPLETED") {
         setShowPrebookingPaymentSection(true);
         // Get Payment Details
         dispatch(getPaymentDetailsApi(dmsLeadDto.id));
@@ -437,7 +510,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         );
         setSelectedPaidAccessoriesPrice(totalPrice);
       }
-      setSelectedPaidAccessories([...dmsLeadDto.dmsAccessories]);
+      setSelectedPaidAccessoriesList([...dmsLeadDto.dmsAccessories]);
     }
   }, [selector.pre_booking_details_response]);
 
@@ -479,24 +552,34 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       const dmsOnRoadPriceDtoObj = selector.on_road_price_dto_list_response[0];
       // setSelectedInsurencePrice(dmsOnRoadPriceDtoObj.)
       setSelectedWarrentyPrice(dmsOnRoadPriceDtoObj.warrantyAmount);
+      let handlingChargeSlctdLocal = handlingChargSlctd;
+      let essentialKitSlctdLocal = essentialKitSlctd;
+      let fastTagSlctdLocal = fastTagSlctd;
+
       if (
         dmsOnRoadPriceDtoObj.handlingCharges &&
         dmsOnRoadPriceDtoObj.handlingCharges > 0
       ) {
         setHandlingChargSlctd(true);
-        calculateOnRoadPrice(true, essentialKitSlctd, fastTagSlctd);
+        handlingChargeSlctdLocal = true;
       }
       if (
         dmsOnRoadPriceDtoObj.essentialKit &&
         dmsOnRoadPriceDtoObj.essentialKit > 0
       ) {
         setEssentialKitSlctd(true);
-        calculateOnRoadPrice(handlingChargSlctd, true, fastTagSlctd);
+        essentialKitSlctdLocal = true;
       }
       if (dmsOnRoadPriceDtoObj.fast_tag && dmsOnRoadPriceDtoObj.fast_tag > 0) {
         setFastTagSlctd(true);
-        calculateOnRoadPrice(handlingChargSlctd, essentialKitSlctd, true);
+        fastTagSlctdLocal = true;
       }
+      calculateOnRoadPrice(
+        handlingChargeSlctdLocal,
+        essentialKitSlctdLocal,
+        fastTagSlctdLocal
+      );
+
       if (
         dmsOnRoadPriceDtoObj.insuranceAddonData &&
         dmsOnRoadPriceDtoObj.insuranceAddonData.length > 0
@@ -615,7 +698,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setDataForDropDown([...Finance_Category_Types]);
         break;
       case "BANK_FINANCE":
-        setDataForDropDown([...Bank_Financer_Types]);
+        setDataForDropDown([...financeBanksList]);
         break;
       case "APPROX_ANNUAL_INCOME":
         setDataForDropDown([...Approx_Auual_Income_Types]);
@@ -633,31 +716,29 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setDataForDropDown([...Booking_Payment_Types]);
         break;
       case "INSURANCE_TYPE":
+        if (insurenceVarientTypes.length <= 0) {
+          showToast("No Insurence Types Data Found");
+          return;
+        }
         setDataForDropDown([...insurenceVarientTypes]);
         break;
       case "WARRANTY":
+        if (warrentyTypes.length <= 0) {
+          showToast("No Warranty Data Found");
+          return;
+        }
         setDataForDropDown([...warrentyTypes]);
         break;
       case "INSURENCE_ADD_ONS":
+        if (insurenceAddOnTypes.length <= 0) {
+          showToast("No AddOns Insurence Data Found");
+          return;
+        }
         setDataForDropDown([...insurenceAddOnTypes]);
         setShowMultipleDropDownData(true);
         break;
       case "VEHICLE_TYPE":
         setDataForDropDown([...Vehicle_Types]);
-        break;
-      case "DROP_REASON":
-        if (selector.drop_reasons_list.length === 0) {
-          showToast("No Drop Reasons found");
-          return;
-        }
-        setDataForDropDown([...selector.drop_reasons_list]);
-        break;
-      case "DROP_SUB_REASON":
-        if (selector.drop_sub_reasons_list.length === 0) {
-          showToast("No Drop Sub Reasons found");
-          return;
-        }
-        setDataForDropDown([...selector.drop_sub_reasons_list]);
         break;
       case "CUSTOMER_TYPE_CATEGORY":
         setDataForDropDown([...Customer_Category_Types]);
@@ -677,15 +758,22 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       return;
     }
 
-    let arrTemp = vehicle_modal_list.filter(function (obj) {
+    console.log("coming..: ");
+    let arrTemp = carModelsData.filter(function (obj) {
       return obj.model === selectedModelName;
     });
+    console.log("arrTemp: ", arrTemp.length);
 
     let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
     if (carModelObj !== undefined) {
       let newArray = [];
       let mArray = carModelObj.varients;
       setSelectedModelId(carModelObj.vehicleId);
+      GetPaidAccessoriesListFromServer(
+        carModelObj.vehicleId,
+        userData.orgId,
+        userToken
+      );
       if (mArray.length) {
         mArray.forEach((item) => {
           newArray.push({
@@ -757,7 +845,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   ) => {
     let totalPrice = 0;
     totalPrice += priceInfomationData.ex_showroom_price;
-    totalPrice += getLifeTax();
+    const lifeTax = getLifeTax();
+    setLifeTaxAmount(lifeTax);
+    totalPrice += lifeTax;
     totalPrice += priceInfomationData.registration_charges;
     totalPrice += selectedInsurencePrice;
     totalPrice += selectedAddOnsPrice;
@@ -768,12 +858,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     if (essentialSelected) {
       totalPrice += priceInfomationData.essential_kit;
     }
-    totalPrice += getTcsAmount();
+    const tcsPrice = getTcsAmount();
+    setTcsAmount(tcsPrice);
+    totalPrice += tcsPrice;
     totalPrice += selectedPaidAccessoriesPrice;
     if (fastTagSelected) {
       totalPrice += priceInfomationData.fast_tag;
     }
-    // totalPrice += priceInfomationData.fast_tag
     setTotalOnRoadPrice(totalPrice);
     setTotalOnRoadPriceAfterDiscount(totalPrice);
   };
@@ -794,8 +885,66 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const submitClicked = () => {
     Keyboard.dismiss();
 
+    if (!isValidate(selector.first_name)) {
+      showToast("please enter alphabetics only in firstname");
+      return;
+    }
+    if (!isValidate(selector.last_name)) {
+      showToast("please enter alphabetics only in lastname");
+      return;
+    }
+    if (selector.marital_status.length == 0) {
+      showToast("Please fill the martial status");
+      return;
+    }
     if (
-      selector.booking_amount.length === 0 ||
+      selector.form_or_pan.length == 0 ||
+      selector.adhaar_number.length == 0 ||
+      selector.relationship_proof.length == 0 ||
+      selector.customer_type_category.length == 0
+    ) {
+      showToast("please enter document upload section");
+    }
+
+    // if (
+    //   selector.adhaar_number.length > 0 &&
+    //   !isMobileNumber(selector.adhaar_number)
+    // ) {
+    //   showToast("Please enter valid adhar number");
+    //   return;
+    // }
+
+    if (selector.form_or_pan === "PAN") {
+      if (selector.pan_number.length == 0) {
+        showToast("please enter pan card number");
+      }
+    }
+    
+    if ((selector.enquiry_segment.toLowerCase() === "company" && selector.customer_type.toLowerCase() === "institution") && (selector.customer_type_category == "B2B" ||
+        selector.customer_type_category == "B2C")) {
+      if (selector.gstin_number.length == 0) {
+        showToast("please enter GSTIN number");
+      }
+    }
+
+    if (selector.retail_finance == "Leasing") {
+      if (selector.leashing_name.length == 0) {
+        showToast("Please fill required fields in leasing name");
+        return;
+      }
+      if (!isValidateAlphabetics(selector.leashing_name)) {
+        showToast("Please enter proper leasing name");
+        return;
+      }
+    }
+
+    const bookingAmount = parseInt(selector.booking_amount);
+    if (bookingAmount < 5000) {
+      showToast("please enter booking amount minimum 5000");
+      return;
+    }
+
+    if (
       selector.payment_at.length === 0 ||
       selector.booking_payment_mode.length === 0
     ) {
@@ -843,7 +992,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     postOnRoadPriceTable.insuranceType = selector.insurance_type;
     postOnRoadPriceTable.lead_id =
       selector.pre_booking_details_response.dmsLeadDto.id;
-    postOnRoadPriceTable.lifeTax = getLifeTax();
+    postOnRoadPriceTable.lifeTax = lifeTaxAmount;
     postOnRoadPriceTable.onRoadPrice = totalOnRoadPrice;
     postOnRoadPriceTable.finalPrice = totalOnRoadPriceAfterDiscount;
     postOnRoadPriceTable.promotionalOffers = selector.promotional_offer;
@@ -851,7 +1000,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       priceInfomationData.registration_charges;
     postOnRoadPriceTable.specialScheme = selector.consumer_offer;
     postOnRoadPriceTable.exchangeOffers = selector.exchange_offer;
-    postOnRoadPriceTable.tcs = getTcsAmount();
+    postOnRoadPriceTable.tcs = tcsAmount;
     postOnRoadPriceTable.warrantyAmount = selectedWarrentyPrice;
     postOnRoadPriceTable.warrantyName = selector.warranty;
 
@@ -896,8 +1045,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         };
       }
 
-      console.log("Data: ", JSON.stringify(formData));
-
       setTypeOfActionDispatched("UPDATE_PRE_BOOKING");
       dispatch(updatePrebookingDetailsApi(formData));
     }
@@ -922,7 +1069,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       dmsLeadDto.remarks = selector.reject_remarks;
     }
     dmsEntity.dmsLeadDto = dmsLeadDto;
-    setTypeOfActionDispatched("UPDATE_PRE_BOOKING");
+    setTypeOfActionDispatched(type);
     dispatch(updatePrebookingDetailsApi(dmsEntity));
   };
 
@@ -933,7 +1080,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         showToastSucess("Successfully Pre-Booking Dropped");
         getPreBookingListFromServer();
       } else if (typeOfActionDispatched === "UPDATE_PRE_BOOKING") {
-        showToastSucess("Successfully Pre-Booking Updated");
+        showToastSucess("Successfully Sent for Manager Approval");
+      } else if (typeOfActionDispatched === "APPROVE") {
+        showToastSucess("Pre-Booking Approved");
+      } else if (typeOfActionDispatched === "REJECT") {
+        showToastSucess("Pre-Booking Rejected");
       }
       dispatch(clearState());
       navigation.goBack();
@@ -983,7 +1134,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     dataObj.dmsfinancedetails = mapDmsFinanceDetails(dataObj.dmsfinancedetails);
     dataObj.dmsBooking = mapDmsBookingDetails(dataObj.dmsBooking, dataObj.id);
     dataObj.dmsAttachments = mapDmsAttachments(dataObj.dmsAttachments);
-    dataObj.dmsAccessories = selectedPaidAccessories;
+    dataObj.dmsAccessories = selectedPaidAccessoriesList;
     return dataObj;
   };
 
@@ -997,6 +1148,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           dataObj.houseNo = selector.house_number;
           dataObj.street = selector.street_name;
           dataObj.village = selector.village;
+          dataObj.mandal = selector.mandal;
           dataObj.city = selector.city;
           dataObj.district = selector.district;
           dataObj.state = selector.state;
@@ -1007,6 +1159,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           dataObj.houseNo = selector.p_houseNum;
           dataObj.street = selector.p_streetName;
           dataObj.village = selector.p_village;
+          dataObj.mandal = selector.p_mandal;
           dataObj.city = selector.p_city;
           dataObj.district = selector.p_district;
           dataObj.state = selector.p_state;
@@ -1073,7 +1226,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     dmsBooking.modeOfPayment = trimStr2;
     dmsBooking.otherVehicle = selector.vechicle_registration;
     dmsBooking.deliveryLocation = selector.delivery_location;
-    console.log("dmsBooking: ", dmsBooking);
+    // console.log("dmsBooking: ", dmsBooking);
     return dmsBooking;
   };
 
@@ -1082,7 +1235,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     if (dmsAttachments.length > 0) {
       dmsAttachments.forEach((obj, index) => {
         const item = uploadedImagesDataObj[obj.documentType];
-        console.log("uploadedImagesDataObj2: ", uploadedImagesDataObj);
+        // console.log("uploadedImagesDataObj2: ", uploadedImagesDataObj);
         const object = formatAttachment(
           { ...obj },
           item,
@@ -1092,7 +1245,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         dmsAttachments[index] = object;
       });
     } else {
-      console.log("uploadedImagesDataObj1: ", uploadedImagesDataObj);
+      // console.log("uploadedImagesDataObj1: ", uploadedImagesDataObj);
       Object.keys(uploadedImagesDataObj).forEach((key, index) => {
         const item = uploadedImagesDataObj[key];
         const object = formatAttachment({}, item, index, item.documentType);
@@ -1104,7 +1257,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
   const formatAttachment = (data, photoObj, index, typeOfDocument) => {
     let object = { ...data };
-    object.branchId = userData.branchId;
+    object.branchId = selectedBranchId;
     object.ownerName = userData.employeeName;
     object.orgId = userData.orgId;
     object.documentType = photoObj.documentType;
@@ -1130,10 +1283,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   };
 
   const proceedToCancelPreBooking = () => {
-    if (
-      selector.drop_remarks.length === 0 ||
-      selector.drop_reason.length === 0
-    ) {
+
+    if (dropRemarks.length === 0 || dropReason.length === 0) {
       showToastRedAlert("Please enter details for drop");
       return;
     }
@@ -1155,19 +1306,19 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     const payload = {
       dmsLeadDropInfo: {
-        additionalRemarks: selector.drop_remarks,
-        branchId: userData.branchId,
-        brandName: selector.d_brand_name,
-        dealerName: selector.d_dealer_name,
+        additionalRemarks: dropRemarks,
+        branchId: selectedBranchId,
+        brandName: dropBrandName,
+        dealerName: dropDealerName,
+        location: dropLocation,
+        model: dropModel,
         leadId: leadId,
         crmUniversalId: universalId,
-        lostReason: selector.drop_reason,
-        lostSubReason: selector.drop_sub_reason,
+        lostReason: dropReason,
         organizationId: userData.orgId,
         otherReason: "",
         droppedBy: userData.employeeId,
-        location: selector.d_location,
-        model: selector.d_model,
+        lostSubReason: dropSubReason,
         stage: "PREBOOKING",
         status: "PREBOOKING",
       },
@@ -1312,13 +1463,16 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   }, [selector.assigned_tasks_list_status]);
 
   const updatePaidAccessroies = (tableData) => {
+    console.log("coming here");
     let totalPrice = 0;
     let newFormatSelectedAccessories = [];
     tableData.forEach((item) => {
       if (item.selected) {
         totalPrice += item.cost;
         newFormatSelectedAccessories.push({
+          id: item.id,
           amount: item.cost,
+          partName: item.partName,
           accessoriesName: item.partNo,
           leadId: selector.pre_booking_details_response.dmsLeadDto.id,
           allotmentStatus: null,
@@ -1326,7 +1480,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       }
     });
     setSelectedPaidAccessoriesPrice(totalPrice);
-    setSelectedPaidAccessories([...newFormatSelectedAccessories]);
+    setSelectedPaidAccessoriesList([...newFormatSelectedAccessories]);
   };
 
   const getLifeTax = () => {
@@ -1352,6 +1506,18 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       amount = priceInfomationData.tcs_amount;
     }
     return amount;
+  };
+
+  const GetPaidAccessoriesListFromServer = (vehicleId, orgId, token) => {
+    // Paid Accessores List
+    GetPaidAccessoriesList(vehicleId, orgId, token).then(
+      (res) => {
+        setPaidAccessoriesList([...res]);
+      },
+      (err) => {
+        console.error("Paid Accossories List: ", err);
+      }
+    );
   };
 
   const updateAccordian = (selectedIndex) => {
@@ -1398,6 +1564,27 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       case "RECEIPT_DOC":
         formData.append("documentType", "receipt");
         break;
+      case "UPLOAD_EMPLOYEE_ID":
+        formData.append("documentType", "empId");
+        break;
+      case "UPLOAD_3_MONTHS_PAYSLIP":
+        formData.append("documentType", "payslip");
+        break;
+      case "UPLOAD_PATTA_PASS_BOOK":
+        formData.append("documentType", "passbook");
+        break;
+      case "UPLOAD_PENSION_LETTER":
+        formData.append("documentType", "pension");
+        break;
+      case "UPLOAD_IMA_CERTIFICATE":
+        formData.append("documentType", "imaCertificate");
+        break;
+      case "UPLOAD_LEASING_CONFIRMATION":
+        formData.append("documentType", "leasingConfirm");
+        break;
+      case "UPLOAD_ADDRESS_PROOF":
+        formData.append("documentType", "address");
+        break;
       default:
         formData.append("documentType", "default");
         break;
@@ -1427,10 +1614,64 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       });
   };
 
-  const DisplaySelectedImage = ({ fileName }) => {
+  const deteleButtonPressed = (from) => {
+    const imagesDataObj = { ...uploadedImagesDataObj };
+    switch (from) {
+      case "PAN":
+        delete imagesDataObj.pan;
+        break;
+      case "FORM60":
+        delete imagesDataObj.form60;
+        break;
+      case "AADHAR":
+        delete imagesDataObj.aadhar;
+        break;
+      case "RELATION_PROOF":
+        delete imagesDataObj.relationshipProof;
+        break;
+      case "RECEIPT":
+        delete imagesDataObj.receipt;
+        break;
+      case "EMPLOYEE_ID":
+        delete imagesDataObj.empId;
+        break;
+      case "3_MONTHS_PAYSLIP":
+        delete imagesDataObj.payslip;
+        break;
+      case "PATTA_PASS_BOOK":
+        delete imagesDataObj.passbook;
+        break;
+      case "PENSION_LETTER":
+        delete imagesDataObj.pension;
+        break;
+      case "IMA_CERTIFICATE":
+        delete imagesDataObj.imaCertificate;
+        break;
+      case "LEASING_CONFIRMATION":
+        delete imagesDataObj.leasingConfirm;
+        break;
+      case "ADDRESS_PROOF":
+        delete imagesDataObj.address;
+        break;
+      default:
+        break;
+    }
+    setUploadedImagesDataObj({ ...imagesDataObj });
+  };
+
+  const DisplaySelectedImage = ({ fileName, from }) => {
     return (
       <View style={styles.selectedImageBckVw}>
-        <Text style={styles.selectedImageTextStyle}>{fileName}</Text>
+        <Text style={styles.selectedImageTextStyle} numberOfLines={1}>
+          {fileName}
+        </Text>
+        <IconButton
+          icon="close-circle-outline"
+          color={Colors.RED}
+          style={{ padding: 0, margin: 0 }}
+          size={15}
+          onPress={() => deteleButtonPressed(from)}
+        />
       </View>
     );
   };
@@ -1438,6 +1679,22 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const emiCal = (principle, tenure, interestRate) => {
     const amount = emiCalculator(principle, tenure, interestRate);
     dispatch(setFinancialDetails({ key: "EMI", text: amount }));
+  };
+
+  const updateAddressDetails = (pincode) => {
+    if (pincode.length != 6) {
+      return;
+    }
+
+    PincodeDetails(pincode).then(
+      (resolve) => {
+        // dispatch an action to update address
+        dispatch(updateAddressByPincode(resolve));
+      },
+      (rejected) => {
+        console.log("rejected...: ", rejected);
+      }
+    );
   };
 
   if (!componentAppear) {
@@ -1458,7 +1715,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           console.log("imageObj: ", data, keyId);
           uploadSelectedImage(data, keyId);
         }}
-        // onDismiss={() => dispatch(setImagePicker(""))}
+      // onDismiss={() => dispatch(setImagePicker(""))}
       />
 
       <DropDownComponant
@@ -1552,7 +1809,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           automaticallyAdjustContentInsets={true}
           bounces={true}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ padding: 10 }}
+          contentContainerStyle={{ paddingVertical: 10, paddingHorizontal: 5 }}
           keyboardShouldPersistTaps={"handled"}
           style={{ flex: 1 }}
         >
@@ -1570,10 +1827,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={{
-                  backgroundColor:
-                    openAccordian === "1" ? Colors.RED : Colors.WHITE,
-                }}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "1"
+                        ? Colors.RED
+                        : Colors.SKY_LIGHT_BLUE_COLOR,
+                  },
+                  styles.accordianBorder,
+                ]}
               >
                 <DropDownSelectionItem
                   label={"Salutation"}
@@ -1587,6 +1849,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   style={{ height: 65, width: "100%" }}
                   value={selector.first_name}
                   label={"First Name*"}
+                  maxLength={50}
+                  editable={false}
                   keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
@@ -1600,6 +1864,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   value={selector.last_name}
                   label={"Last Name*"}
                   keyboardType={"default"}
+                  maxLength={50}
+                  editable={false}
                   onChangeText={(text) =>
                     dispatch(
                       setCustomerDetails({ key: "LAST_NAME", text: text })
@@ -1693,21 +1959,31 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={{
-                  backgroundColor:
-                    openAccordian === "2" ? Colors.RED : Colors.WHITE,
-                }}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "2"
+                        ? Colors.RED
+                        : Colors.SKY_LIGHT_BLUE_COLOR,
+                  },
+                  styles.accordianBorder,
+                ]}
               >
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.pincode}
                   label={"Pincode*"}
+                  maxLength={6}
                   keyboardType={"number-pad"}
-                  onChangeText={(text) =>
+                  onChangeText={(text) => {
+                    // get addreess by pincode
+                    if (text.length === 6) {
+                      updateAddressDetails(text);
+                    }
                     dispatch(
                       setCommunicationAddress({ key: "PINCODE", text: text })
-                    )
-                  }
+                    );
+                  }}
                 />
                 <Text style={GlobalStyle.underline}></Text>
                 <View style={styles.radioGroupBcVw}>
@@ -1744,6 +2020,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   value={selector.house_number}
                   keyboardType={"number-pad"}
                   label={"H.No*"}
+                  maxLength={120}
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({ key: "HOUSE_NO", text: text })
@@ -1755,7 +2032,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.street_name}
                   label={"Street Name*"}
-                  maxLength={40}
+                  maxLength={120}
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({
@@ -1774,6 +2051,18 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({ key: "VILLAGE", text: text })
+                    )
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                 <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.mandal}
+                  label={"Mandal*"}
+                  maxLength={40}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setCommunicationAddress({ key: "MANDAL", text: text })
                     )
                   }
                 />
@@ -1813,40 +2102,70 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     )
                   }
                 />
+                <Text style={GlobalStyle.underline}></Text>
+                <View
+                  style={{ height: 20, backgroundColor: Colors.WHITE }}
+                ></View>
+
                 {/* // Permanent Addresss */}
-                <View style={styles.radioGroupBcVw}>
+                <View
+                  style={{ backgroundColor: Colors.WHITE, paddingLeft: 12 }}
+                >
                   <Text style={styles.permanentAddText}>
-                    {"Permanent Address"}
+                    {"Permanent Address Same as Communication Address"}
                   </Text>
-                  <Checkbox.Android
-                    uncheckedColor={Colors.GRAY}
-                    color={Colors.RED}
+                </View>
+                <View style={styles.radioGroupBcVw}>
+                  <RadioTextItem
+                    label={"Yes"}
+                    value={"yes"}
                     status={
-                      selector.permanent_address ? "checked" : "unchecked"
+                      selector.is_permanent_address_same === "YES"
+                        ? true
+                        : false
                     }
                     onPress={() =>
                       dispatch(
                         setCommunicationAddress({
                           key: "PERMANENT_ADDRESS",
-                          text: "",
+                          text: "true",
+                        })
+                      )
+                    }
+                  />
+                  <RadioTextItem
+                    label={"No"}
+                    value={"no"}
+                    status={
+                      selector.is_permanent_address_same === "NO" ? true : false
+                    }
+                    onPress={() =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "PERMANENT_ADDRESS",
+                          text: "false",
                         })
                       )
                     }
                   />
                 </View>
+                <Text style={GlobalStyle.underline}></Text>
+
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.p_pincode}
                   label={"Pincode*"}
+                  maxLength={6}
                   keyboardType={"number-pad"}
-                  onChangeText={(text) =>
+                  onChangeText={(text) => {
+                    // get addreess by pincode
+                    if (text.length === 6) {
+                      updateAddressDetails(text);
+                    }
                     dispatch(
-                      setCommunicationAddress({
-                        key: "P_PINCODE",
-                        text: text,
-                      })
-                    )
-                  }
+                      setCommunicationAddress({ key: "P_PINCODE", text: text })
+                    );
+                  }}
                 />
                 <Text style={GlobalStyle.underline}></Text>
 
@@ -1884,6 +2203,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   label={"H.No*"}
                   keyboardType={"number-pad"}
+                  maxLength={120}
                   value={selector.p_houseNum}
                   onChangeText={(text) =>
                     dispatch(
@@ -1898,6 +2218,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 <TextinputComp
                   style={styles.textInputStyle}
                   label={"Street Name*"}
+                  maxLength={120}
                   value={selector.p_streetName}
                   onChangeText={(text) =>
                     dispatch(
@@ -1912,6 +2233,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.p_village}
+                  maxLength={50}
                   label={"Village*"}
                   onChangeText={(text) =>
                     dispatch(
@@ -1923,9 +2245,25 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   }
                 />
                 <Text style={GlobalStyle.underline}></Text>
+                    <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.p_mandal}
+                  maxLength={50}
+                  label={"Mandal*"}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setCommunicationAddress({
+                        key: "P_MANDAL",
+                        text: text,
+                      })
+                    )
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.p_city}
+                  maxLength={50}
                   label={"City*"}
                   onChangeText={(text) =>
                     dispatch(
@@ -1938,6 +2276,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.p_district}
                   label={"District*"}
+                  maxLength={50}
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({
@@ -1952,6 +2291,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.p_state}
                   label={"State*"}
+                  maxLength={50}
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({
@@ -1968,16 +2308,21 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               {/* // 3.Modal Selction */}
               <List.Accordion
                 id={"3"}
-                title={"Modal Selection"}
+                title={"Model Selection"}
                 titleStyle={{
                   color: openAccordian === "3" ? Colors.WHITE : Colors.BLACK,
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={{
-                  backgroundColor:
-                    openAccordian === "3" ? Colors.RED : Colors.WHITE,
-                }}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "3"
+                        ? Colors.RED
+                        : Colors.SKY_LIGHT_BLUE_COLOR,
+                  },
+                  styles.accordianBorder,
+                ]}
               >
                 <DropDownSelectionItem
                   label={"Model"}
@@ -2020,10 +2365,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={{
-                  backgroundColor:
-                    openAccordian === "4" ? Colors.RED : Colors.WHITE,
-                }}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "4"
+                        ? Colors.RED
+                        : Colors.SKY_LIGHT_BLUE_COLOR,
+                  },
+                  styles.accordianBorder,
+                ]}
               >
                 <DropDownSelectionItem
                   label={"Form60/PAN"}
@@ -2040,14 +2390,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       value={selector.pan_number}
                       label={"PAN Number*"}
                       maxLength={10}
-                      onChangeText={(text) =>
+                      autoCapitalize={"characters"}
+                      onChangeText={(text) => {
                         dispatch(
                           setDocumentUploadDetails({
                             key: "PAN_NUMBER",
                             text: text,
                           })
-                        )
-                      }
+                        );
+                      }}
                     />
                     <Text style={GlobalStyle.underline}></Text>
                     <View style={styles.select_image_bck_vw}>
@@ -2059,6 +2410,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.pan ? (
                       <DisplaySelectedImage
                         fileName={uploadedImagesDataObj.pan.fileName}
+                        from={"PAN"}
                       />
                     ) : null}
                     <Text style={GlobalStyle.underline}></Text>
@@ -2078,66 +2430,181 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.form60 ? (
                       <DisplaySelectedImage
                         fileName={uploadedImagesDataObj.form60.fileName}
+                        from={"FORM60"}
                       />
                     ) : null}
                     <Text style={GlobalStyle.underline}></Text>
                   </View>
                 )}
 
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.adhaar_number}
-                  label={"Aadhaar Number*"}
-                  keyboardType="number-pad"
-                  maxLength={12}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setDocumentUploadDetails({ key: "ADHAR", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <View style={styles.select_image_bck_vw}>
-                  <ImageSelectItem
-                    name={"Upload Adhar"}
-                    onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
-                  />
-                  {uploadedImagesDataObj.aadhar ? (
-                    <DisplaySelectedImage
-                      fileName={uploadedImagesDataObj.aadhar.fileName}
+                {/* // Aadhar Number */}
+                {(selector.enquiry_segment.toLowerCase() === "personal") ? (
+                  <View>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.adhaar_number}
+                      label={"Aadhaar Number*"}
+                      keyboardType="number-pad"
+                      maxLength={12}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setDocumentUploadDetails({ key: "ADHAR", text: text })
+                        )
+                      }
                     />
-                  ) : null}
-                </View>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.relationship_proof}
-                  label={"Relationship Number*"}
-                  keyboardType="number-pad"
-                  onChangeText={(text) =>
-                    dispatch(
-                      setDocumentUploadDetails({
-                        key: "RELATIONSHIP_PROOF",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <View style={styles.select_image_bck_vw}>
-                  <ImageSelectItem
-                    name={"Relationship Proof"}
-                    onPress={() =>
-                      dispatch(setImagePicker("UPLOAD_RELATION_PROOF"))
-                    }
-                  />
-                </View>
-                {uploadedImagesDataObj.relationshipProof ? (
-                  <DisplaySelectedImage
-                    fileName={uploadedImagesDataObj.relationshipProof.fileName}
-                  />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Upload Adhar"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
+                      />
+                      {uploadedImagesDataObj.aadhar ? (
+                        <DisplaySelectedImage
+                          fileName={uploadedImagesDataObj.aadhar.fileName}
+                          from={"AADHAR"}
+                        />
+                      ) : null}
+                    </View>
+                  </View>
                 ) : null}
-                <Text style={GlobalStyle.underline}></Text>
 
+                {/* // Employeed ID */}
+                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "corporate" || selector.customer_type.toLowerCase() === "government" || selector.customer_type.toLowerCase() === "retired")) ? (
+                  <View >
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.employee_id}
+                      label={"Employee ID*"}
+                      maxLength={15}
+                      onChangeText={(text) =>
+                        dispatch(setDocumentUploadDetails({ key: "EMPLOYEE_ID", text: text }))
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Employee ID"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_EMPLOYEE_ID"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.empId ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.empId.fileName}
+                        from={"EMPLOYEE_ID"}
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+
+                {/* Last 3 month payslip */}
+                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "corporate" || selector.customer_type.toLowerCase() === "government")) ? (
+                  <View >
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Last 3 months payslip"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_3_MONTHS_PAYSLIP"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.payslip ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.payslip.fileName}
+                        from={"3_MONTHS_PAYSLIP"}
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+
+                {/* Patta Pass book */}
+                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "farmer")) ? (
+                  <View >
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Patta Pass Book"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_PATTA_PASS_BOOK"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.passbook ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.passbook.fileName}
+                        from={"PATTA_PASS_BOOK"}
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+
+                {/* Pension Letter */}
+                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "retired")) ? (
+                  <View >
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Pension Letter"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_PENSION_LETTER"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.pension ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.pension.fileName}
+                        from={"PENSION_LETTER"}
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+
+                {/* IMA Certificate */}
+                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "doctor")) ? (
+                  <View >
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"IMA Certificate"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_IMA_CERTIFICATE"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.imaCertificate ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.imaCertificate.fileName}
+                        from={"IMA_CERTIFICATE"}
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+
+                {/* Leasing Confirmation */}
+                {(selector.enquiry_segment.toLowerCase() === "commercial" && (selector.customer_type.toLowerCase() === "fleet")) ? (
+                  <View >
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Leasing Confirmation"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_LEASING_CONFIRMATION"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.leasingConfirm ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.leasingConfirm.fileName}
+                        from={"LEASING_CONFIRMATION"}
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+
+                {/* Address Proof */}
+                {(selector.enquiry_segment.toLowerCase() === "company" && (selector.customer_type.toLowerCase() === "institution")) ? (
+                  <View >
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Address Proof"}
+                        onPress={() => dispatch(setImagePicker("UPLOAD_ADDRESS_PROOF"))}
+                      />
+                    </View>
+                    {uploadedImagesDataObj.address ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.address.fileName}
+                        from={"ADDRESS_PROOF"}
+                      />
+                    ) : null}
+                  </View>
+                ) : null}
+
+                {/* // Customer Type Category */}
                 {selector.customer_type === "Individual" && (
                   <View>
                     <DropDownSelectionItem
@@ -2154,10 +2621,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   </View>
                 )}
 
-                {(selector.enquiry_segment === "Company" &&
-                  selector.customer_type === "Institution") ||
-                selector.customer_type_category == "B2B" ||
-                selector.customer_type_category == "B2C" ? (
+                {/* GSTIN Number */}
+                {(selector.enquiry_segment.toLowerCase() === "company" && selector.customer_type.toLowerCase() === "institution") || (selector.customer_type_category == "B2B" ||
+                  selector.customer_type_category == "B2C") ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -2175,6 +2641,43 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <Text style={GlobalStyle.underline}></Text>
                   </View>
                 ) : null}
+
+
+                {/* // Relationship Number */}
+                <View>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.relationship_proof}
+                    label={"Relationship Number*"}
+                    keyboardType="number-pad"
+                    maxLength={10}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setDocumentUploadDetails({
+                          key: "RELATIONSHIP_PROOF",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <View style={styles.select_image_bck_vw}>
+                    <ImageSelectItem
+                      name={"Relationship Proof"}
+                      onPress={() =>
+                        dispatch(setImagePicker("UPLOAD_RELATION_PROOF"))
+                      }
+                    />
+                  </View>
+                  {uploadedImagesDataObj.relationshipProof ? (
+                    <DisplaySelectedImage
+                      fileName={uploadedImagesDataObj.relationshipProof.fileName}
+                      from={"RELATION_PROOF"}
+                    />
+                  ) : null}
+                  <Text style={GlobalStyle.underline}></Text>
+                </View>
+
               </List.Accordion>
               <View style={styles.space}></View>
 
@@ -2194,10 +2697,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={{
-                  backgroundColor:
-                    openAccordian === "5" ? Colors.RED : Colors.WHITE,
-                }}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "5"
+                        ? Colors.RED
+                        : Colors.SKY_LIGHT_BLUE_COLOR,
+                  },
+                  styles.accordianBorder,
+                ]}
               >
                 <TextAndAmountComp
                   title={"Ex-Showroom Price:"}
@@ -2238,6 +2746,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       style={styles.textInputStyle}
                       value={selector.registration_number}
                       label={"Reg. No"}
+                      maxLength={15}
+                      autoCapitalize={"characters"}
                       onChangeText={(text) =>
                         dispatch(
                           setPriceConformationDetails({
@@ -2253,7 +2763,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 <TextAndAmountComp
                   title={"Life Tax:"}
-                  amount={getLifeTax().toFixed(2)}
+                  amount={lifeTaxAmount.toFixed(2)}
                 />
                 <Text style={GlobalStyle.underline}></Text>
 
@@ -2317,11 +2827,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 <CheckboxTextAndAmountComp
                   title={"Handling Charges:"}
-                  amount={
-                    handlingChargSlctd
-                      ? priceInfomationData.handling_charges.toFixed(2)
-                      : "0.00"
-                  }
+                  amount={priceInfomationData.handling_charges.toFixed(2)}
+                  // amount={handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : "0.00"}
                   isChecked={handlingChargSlctd}
                   onPress={() => {
                     setHandlingChargSlctd(!handlingChargSlctd);
@@ -2336,11 +2843,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 <CheckboxTextAndAmountComp
                   title={"Essential Kit:"}
-                  amount={
-                    essentialKitSlctd
-                      ? priceInfomationData.essential_kit.toFixed(2)
-                      : "0.00"
-                  }
+                  amount={priceInfomationData.essential_kit.toFixed(2)}
+                  // amount={essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : "0.00"}
                   isChecked={essentialKitSlctd}
                   onPress={() => {
                     setEssentialKitSlctd(!essentialKitSlctd);
@@ -2355,7 +2859,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 <TextAndAmountComp
                   title={"TCS(>10Lakhs -> %):"}
-                  amount={getTcsAmount().toFixed(2)}
+                  amount={tcsAmount.toFixed(2)}
                 />
                 <Text style={GlobalStyle.underline}></Text>
 
@@ -2364,26 +2868,43 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     navigation.navigate(
                       AppNavigator.EmsStackIdentifiers.paidAccessories,
                       {
-                        accessorylist: selector.paid_accessories_list,
-                        callback: updatePaidAccessroies,
+                        accessorylist: paidAccessoriesList,
+                        selectedAccessoryList: selectedPaidAccessoriesList,
                       }
                     )
                   }
                 >
-                  <TextAndAmountComp
+                  <PaidAccessoriesTextAndAmountComp
                     title={"Paid Accessories:"}
                     amount={selectedPaidAccessoriesPrice.toFixed(2)}
                   />
                 </Pressable>
                 <Text style={GlobalStyle.underline}></Text>
+                {selectedPaidAccessoriesList.length > 0 ? (
+                  <View
+                    style={{
+                      backgroundColor: Colors.WHITE,
+                      paddingLeft: 12,
+                      paddingTop: 5,
+                    }}
+                  >
+                    {selectedPaidAccessoriesList.map((item, index) => {
+                      return (
+                        <Text style={styles.accessoriText} key={"ACC" + index}>
+                          {item.partName + " - " + item.amount}
+                        </Text>
+                      );
+                    })}
+                    <Text
+                      style={[GlobalStyle.underline, { marginTop: 5 }]}
+                    ></Text>
+                  </View>
+                ) : null}
 
                 <CheckboxTextAndAmountComp
                   title={"Fast Tag:"}
-                  amount={
-                    fastTagSlctd
-                      ? priceInfomationData.fast_tag.toFixed(2)
-                      : "0.00"
-                  }
+                  amount={priceInfomationData.fast_tag.toFixed(2)}
+                  // amount={fastTagSlctd ? priceInfomationData.fast_tag.toFixed(2) : "0.00"}
                   isChecked={fastTagSlctd}
                   onPress={() => {
                     setFastTagSlctd(!fastTagSlctd);
@@ -2428,10 +2949,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={{
-                  backgroundColor:
-                    openAccordian === "6" ? Colors.RED : Colors.WHITE,
-                }}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "6"
+                        ? Colors.RED
+                        : Colors.SKY_LIGHT_BLUE_COLOR,
+                  },
+                  styles.accordianBorder,
+                ]}
               >
                 <TextinputComp
                   style={styles.offerPriceTextInput}
@@ -2589,10 +3115,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={{
-                  backgroundColor:
-                    openAccordian === "7" ? Colors.RED : Colors.WHITE,
-                }}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "7"
+                        ? Colors.RED
+                        : Colors.SKY_LIGHT_BLUE_COLOR,
+                  },
+                  styles.accordianBorder,
+                ]}
               >
                 <DropDownSelectionItem
                   label={"Retail Finance"}
@@ -2633,11 +3164,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   </View>
                 ) : null}
 
-                {selector.retail_finance === "Leashing" && (
+                {selector.retail_finance === "Leasing" && (
                   <View>
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
-                      label={"Leashing Name"}
+                      label={"Leasing Name"}
+                      maxLength={50}
                       value={selector.leashing_name}
                       onChangeText={(text) =>
                         dispatch(
@@ -2706,51 +3238,51 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 {(selector.retail_finance === "In House" ||
                   selector.retail_finance === "Out House") && (
-                  <View>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Loan Amount*"}
-                      keyboardType={"number-pad"}
-                      value={selector.loan_amount}
-                      onChangeText={(text) => {
-                        // Calculate EMI
-                        emiCal(
-                          text,
-                          selector.rate_of_interest,
-                          selector.loan_of_tenure
-                        );
-                        dispatch(
-                          setFinancialDetails({
-                            key: "LOAN_AMOUNT",
-                            text: text,
-                          })
-                        );
-                      }}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Rate of Interest*"}
-                      keyboardType={"number-pad"}
-                      value={selector.rate_of_interest}
-                      onChangeText={(text) => {
-                        // Calculate EMI
-                        emiCal(
-                          selector.loan_amount,
-                          text,
-                          selector.loan_of_tenure
-                        );
-                        dispatch(
-                          setFinancialDetails({
-                            key: "RATE_OF_INTEREST",
-                            text: text,
-                          })
-                        );
-                      }}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>
-                )}
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Loan Amount*"}
+                        keyboardType={"number-pad"}
+                        value={selector.loan_amount}
+                        onChangeText={(text) => {
+                          // Calculate EMI
+                          emiCal(
+                            text,
+                            selector.loan_of_tenure,
+                            selector.rate_of_interest
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "LOAN_AMOUNT",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Rate of Interest*"}
+                        keyboardType={"number-pad"}
+                        value={selector.rate_of_interest}
+                        onChangeText={(text) => {
+                          // Calculate EMI
+                          emiCal(
+                            selector.loan_amount,
+                            selector.loan_of_tenure,
+                            text
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "RATE_OF_INTEREST",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
 
                 {selector.retail_finance === "In House" && (
                   <View>
@@ -2769,7 +3301,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       keyboardType={"number-pad"}
                       onChangeText={(text) => {
                         // Calculate EMI
-                        emiCal(selector.loan_amount, text, text);
+                        emiCal(
+                          selector.loan_amount,
+                          text,
+                          selector.rate_of_interest
+                        );
                         dispatch(
                           setFinancialDetails({
                             key: "LOAN_OF_TENURE",
@@ -2817,10 +3353,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={{
-                  backgroundColor:
-                    openAccordian === "8" ? Colors.RED : Colors.WHITE,
-                }}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "8"
+                        ? Colors.RED
+                        : Colors.SKY_LIGHT_BLUE_COLOR,
+                  },
+                  styles.accordianBorder,
+                ]}
               >
                 <TextinputComp
                   style={{ height: 65, width: "100%" }}
@@ -2869,10 +3410,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   fontSize: 16,
                   fontWeight: "600",
                 }}
-                style={{
-                  backgroundColor:
-                    openAccordian === "9" ? Colors.RED : Colors.WHITE,
-                }}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "9"
+                        ? Colors.RED
+                        : Colors.SKY_LIGHT_BLUE_COLOR,
+                  },
+                  styles.accordianBorder,
+                ]}
               >
                 <DateSelectItem
                   label={"Customer Preferred Date*"}
@@ -2885,6 +3431,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   style={{ height: 65, width: "100%" }}
                   label={"Occasion*"}
                   value={selector.occasion}
+                  maxLength={50}
                   onChangeText={(text) =>
                     dispatch(
                       setCommitmentDetails({ key: "OCCASION", text: text })
@@ -2902,6 +3449,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 <TextinputComp
                   style={{ height: 65, width: "100%" }}
                   label={"Delivery Location*"}
+                  maxLength={50}
                   value={selector.delivery_location}
                   onChangeText={(text) =>
                     dispatch(
@@ -2926,130 +3474,35 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     fontSize: 16,
                     fontWeight: "600",
                   }}
-                  style={{
-                    backgroundColor:
-                      openAccordian === "10" ? Colors.RED : Colors.WHITE,
-                  }}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "10" ? Colors.RED : Colors.SKY_LIGHT_BLUE_COLOR,
+                    },
+                    styles.accordianBorder,
+                  ]}
                 >
-                  <DropDownSelectionItem
-                    label={"Drop Reason"}
-                    value={selector.drop_reason}
-                    onPress={() =>
-                      showDropDownModelMethod("DROP_REASON", "Drop Reason")
-                    }
+
+                  <DropComponent
+                    from="PRE_BOOKING"
+                    data={dropData}
+                    reason={dropReason}
+                    setReason={(text => setDropReason(text))}
+                    subReason={dropSubReason}
+                    setSubReason={(text => setDropSubReason(text))}
+                    brandName={dropBrandName}
+                    setBrandName={text => setDropBrandName(text)}
+                    dealerName={dropDealerName}
+                    setDealerName={text => setDropDealerName(text)}
+                    location={dropLocation}
+                    setLocation={text => setDropLocation(text)}
+                    model={dropModel}
+                    setModel={text => setDropModel(text)}
+                    priceDiff={dropPriceDifference}
+                    setPriceDiff={text => setDropPriceDifference(text)}
+                    remarks={dropRemarks}
+                    setRemarks={(text) => setDropRemarks(text)}
                   />
-                  {selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
-                    "losttocompetitor" ||
-                  selector.drop_reason.replace(/\s/g, "").toLowerCase() ==
-                    "losttoco-dealer" ? (
-                    <DropDownSelectionItem
-                      label={"Drop Sub Reason"}
-                      value={selector.drop_sub_reason}
-                      onPress={() =>
-                        showDropDownModelMethod(
-                          "DROP_SUB_REASON",
-                          "Drop Sub Reason"
-                        )
-                      }
-                    />
-                  ) : null}
-
-                  {selector.drop_reason === "Lost to Competitor" ||
-                  selector.drop_reason ===
-                    "Lost to Used Cars from Co-Dealer" ? (
-                    <View>
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.d_brand_name}
-                        label={"Brand Name"}
-                        maxLength={50}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setBookingDropDetails({
-                              key: "DROP_BRAND_NAME",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  ) : null}
-
-                  {selector.drop_reason === "Lost to Competitor" ||
-                  selector.drop_reason === "Lost to Used Cars from Co-Dealer" ||
-                  selector.drop_reason === "Lost to Co-Dealer" ? (
-                    <View>
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.d_dealer_name}
-                        label={"Dealer Name"}
-                        maxLength={50}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setBookingDropDetails({
-                              key: "DROP_DEALER_NAME",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.d_location}
-                        label={"Location"}
-                        maxLength={50}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setBookingDropDetails({
-                              key: "DROP_LOCATION",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  ) : null}
-
-                  {selector.drop_reason === "Lost to Competitor" ||
-                  selector.drop_reason ===
-                    "Lost to Used Cars from Co-Dealer" ? (
-                    <View>
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.d_model}
-                        label={"Model"}
-                        maxLength={50}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setBookingDropDetails({
-                              key: "DROP_MODEL",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  ) : null}
-
-                  <TextinputComp
-                    style={styles.textInputStyle}
-                    value={selector.drop_remarks}
-                    label={"Remarks"}
-                    maxLength={50}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setBookingDropDetails({
-                          key: "DROP_REMARKS",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={GlobalStyle.underline}></Text>
                 </List.Accordion>
               ) : null}
               {/* // 11.Reject */}
@@ -3063,10 +3516,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     fontSize: 16,
                     fontWeight: "600",
                   }}
-                  style={{
-                    backgroundColor:
-                      openAccordian === "11" ? Colors.RED : Colors.WHITE,
-                  }}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "11"
+                          ? Colors.RED
+                          : Colors.SKY_LIGHT_BLUE_COLOR,
+                    },
+                    styles.accordianBorder,
+                  ]}
                 >
                   <TextinputComp
                     style={styles.textInputStyle}
@@ -3097,10 +3555,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     fontSize: 16,
                     fontWeight: "600",
                   }}
-                  style={{
-                    backgroundColor:
-                      openAccordian === "12" ? Colors.RED : Colors.WHITE,
-                  }}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "12" ? Colors.RED : Colors.SKY_LIGHT_BLUE_COLOR,
+                    },
+                    styles.accordianBorder,
+                  ]}
                 >
                   <View>
                     <View style={styles.select_image_bck_vw}>
@@ -3112,6 +3573,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     {uploadedImagesDataObj.receipt ? (
                       <DisplaySelectedImage
                         fileName={uploadedImagesDataObj.receipt.fileName}
+                        from={"RECEIPT"}
                       />
                     ) : null}
                     <Text style={GlobalStyle.underline}></Text>
@@ -3167,44 +3629,44 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                   {(selector.booking_payment_mode === "InternetBanking" ||
                     selector.booking_payment_mode === "Internet Banking") && (
-                    <View>
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.utr_no}
-                        label={"UTR No"}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setPreBookingPaymentDetials({
-                              key: "UTR_NO",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                      <DateSelectItem
-                        label={"Transaction Date"}
-                        value={selector.transaction_date}
-                        onPress={() =>
-                          dispatch(setDatePicker("TRANSACTION_DATE"))
-                        }
-                      />
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.comapany_bank_name}
-                        label={"Company Bank Name"}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setPreBookingPaymentDetials({
-                              key: "COMPANY_BANK_NAME",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  )}
+                      <View>
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.utr_no}
+                          label={"UTR No"}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setPreBookingPaymentDetials({
+                                key: "UTR_NO",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                        <DateSelectItem
+                          label={"Transaction Date"}
+                          value={selector.transaction_date}
+                          onPress={() =>
+                            dispatch(setDatePicker("TRANSACTION_DATE"))
+                          }
+                        />
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.comapany_bank_name}
+                          label={"Company Bank Name"}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setPreBookingPaymentDetials({
+                                key: "COMPANY_BANK_NAME",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
+                    )}
 
                   {selector.booking_payment_mode === "Cheque" && (
                     <View>
@@ -3376,6 +3838,7 @@ const styles = StyleSheet.create({
   },
   baseVw: {
     paddingHorizontal: 10,
+    paddingVertical: 5,
   },
   drop_down_view_style: {
     paddingTop: 5,
@@ -3425,7 +3888,7 @@ const styles = StyleSheet.create({
   },
   permanentAddText: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "700",
   },
   view2: {
     flexDirection: "row",
@@ -3493,13 +3956,33 @@ const styles = StyleSheet.create({
   },
   selectedImageBckVw: {
     paddingLeft: 12,
-    paddingRight: 15,
+    paddingRight: 10,
     paddingBottom: 5,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     backgroundColor: Colors.WHITE,
   },
   selectedImageTextStyle: {
     fontSize: 12,
     fontWeight: "400",
+    width: "80%",
     color: Colors.DARK_GRAY,
+  },
+  accordianBorder: {
+    borderWidth: 0.5,
+    borderRadius: 4,
+    borderColor: "#7a7b7d",
+  },
+  accessoriText: {
+    fontSize: 10,
+    fontWeight: "400",
+    color: Colors.GRAY,
+  },
+  leftLabel: {
+    fontSize: 14,
+    fontWeight: "400",
+    maxWidth: "70%",
+    color: Colors.GRAY,
   },
 });

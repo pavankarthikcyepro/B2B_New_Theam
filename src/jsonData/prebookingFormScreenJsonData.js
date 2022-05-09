@@ -47,18 +47,22 @@ export const Booking_Payment_Types = [
   },
   {
     id: "2",
-    name: "UPI",
+    name: "Card",
   },
   {
     id: "3",
-    name: "Internet Banking",
+    name: "UPI",
   },
   {
     id: "4",
-    name: "Cheque",
+    name: "Internet Banking",
   },
   {
     id: "5",
+    name: "Cheque",
+  },
+  {
+    id: "6",
     name: "DD",
   },
 ];

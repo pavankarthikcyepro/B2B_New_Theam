@@ -1,22 +1,37 @@
-import * as React from "react";
-import { View } from "react-native";
+import React, { useState } from "react";
+import { View, Linking } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import { IconButton } from "react-native-paper";
+import { IconButton, Searchbar } from "react-native-paper";
 import VectorImage from "react-native-vector-image";
 import { Colors } from "../styles";
-import {
-  EMS_LINE,
-  HOME_LINE,
-  HOME_FILL,
-  SCHEDULE_FILL,
-  SCHEDULE_LINE,
-} from "../assets/svg";
+// import {
+//   EMS_LINE,
+//   HOME_LINE,
+//   HOME_FILL,
+//   SCHEDULE_FILL,
+//   SCHEDULE_LINE,
+// } from "../assets/svg";
+
+import EMS_LINE from '../assets/images/ems_line.svg'; // import SVG
+import HOME_LINE from '../assets/images/home_line.svg'; // import SVG
+import HOME_FILL from '../assets/images/home_fill.svg'; // import SVG
+import SCHEDULE_FILL from '../assets/images/schedule_fill.svg'; // import SVG
+import SCHEDULE_LINE from '../assets/images/my_schedule.svg'; // import SVG
+import PRICE from '../assets/images/price.svg'; // import SVG
+
 
 import HomeScreen from "../scenes/mainScenes/Home";
 import EMSScreen from "../scenes/mainScenes/EMS";
 import MyTasksScreen from "../scenes/mainScenes/MyTasks";
+
+import DigitalPaymentScreen from "../scenes/mainScenes/digitalPaymentScreen";
+import MonthlyTargetScreen from "../scenes/mainScenes/monthlyTargetScreen";
+import HelpDeskScreen from "../scenes/mainScenes/helpDeskScreen";
+import taskManagementScreen from "../scenes/mainScenes/taskManagementScreen";
+import TaskTranferScreen from "../scenes/mainScenes/taskTransferScreen";
+
 
 import EventManagementScreen from "../scenes/mainScenes/eventManagementScreen";
 import SettingsScreen from "../scenes/mainScenes/settingsScreen";
@@ -33,11 +48,20 @@ import HomeVisitScreen from "../scenes/mainScenes/MyTasks/homeVisitScreen";
 import TestDriveScreen from "../scenes/mainScenes/MyTasks/testDriveScreen";
 import EnquiryFollowUpScreen from "../scenes/mainScenes/MyTasks/enquiryFollowUpScreen";
 import TestEnquiryFormScreen from "../scenes/mainScenes/EMS/testEnquiryFormScreen";
-import PaidAccessoriesScreen from "../scenes/mainScenes/EMS/paidAccessoriesScreen";
+import PaidAccessoriesScreen from "../scenes/mainScenes/EMS/paidAccsories";
 import ProceedToPreBookingScreen from "../scenes/mainScenes/MyTasks/proceedToPreBookingScreen";
 import CreateEnquiryScreen from "../scenes/mainScenes/MyTasks/createEnquiryScreen";
 import FilterScreen from "../scenes/mainScenes/Home/filterScreen";
-import SelectBranchComp from "../scenes/loginScenes/selectBranchComp";
+ import SelectBranchComp from "../scenes/loginScenes/selectBranchComp";
+import TargetSettingsScreen from "../scenes/mainScenes/TargetSettingsScreen";
+import TestScreen from "../scenes/mainScenes/Home/testScreen";
+import TaskListScreen from "../scenes/mainScenes/MyTasks/taskListScreen";
+import PriceScreen from "../scenes/mainScenes/price";
+import TaskThreeSixtyScreen from "../scenes/mainScenes/EMS/taskThreeSixty";
+import BookingScreen from "../scenes/mainScenes/EMS/bookingScreen";
+import BookingFormScreen from "../scenes/mainScenes/EMS/bookingFormScreen";
+import ProceedToBookingScreen from "../scenes/mainScenes/MyTasks/proceedToBookingScreen";
+
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -53,6 +77,7 @@ const screeOptionStyle = {
 };
 
 const MenuIcon = ({ navigation }) => {
+
   return (
     <IconButton
       icon="menu"
@@ -64,7 +89,11 @@ const MenuIcon = ({ navigation }) => {
 };
 
 const SearchIcon = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const onChangeSearch = (query) => setSearchQuery(query);
   return (
+
     <IconButton
       icon="magnify"
       color={Colors.WHITE}
@@ -73,19 +102,26 @@ const SearchIcon = () => {
     />
   );
 };
-const RefreshIcon = ({ navigation }) => {
+const MapIcon = ({ navigation }) => {
   return (
     <IconButton
-      icon="refresh"
+      icon="google-maps"
       color={Colors.WHITE}
-      size={30}
-      onPress={() => console.log('refresh icon pressed')}
+      size={25}
+      //onPress={() => console.log('Mpas icon pressed')}
+      onPress={() => {
+        Linking.openURL(
+          `https://www.google.com/maps/search/?api=1&query=india`
+        );
+      }}
     />
   );
 };
 
 
 const NotficationIcon = ({ navigation, identifier }) => {
+
+
   return (
     <IconButton
       icon="bell"
@@ -106,17 +142,24 @@ export const DrawerStackIdentifiers = {
   notification: "NOTIFICATION",
   eventManagement: "EVENT_MANAGEMENT",
   preBooking: "PRE_BOOKING",
+  digitalPayment: "DIGITAL_PAYMENT",
+  monthlyTarget: "MONTHLY_TARGET",
+  helpdesk: "HELP_DESK",
+  taskManagement: "TASK_MANAGEMENT",
+  taskTransfer: "TASK_TRANSFER"
 };
 
 export const TabStackIdentifiers = {
   home: "HOME_TAB",
   ems: "EMS_TAB",
   myTask: "MY_TASK_TAB",
+  price: "PRICE"
 };
 
 export const HomeStackIdentifiers = {
   filter: "FILTER",
-  select_branch: "SELECT_BRANCH"
+  select_branch: "SELECT_BRANCH",
+  test: "TEST"
 };
 
 export const EmsStackIdentifiers = {
@@ -124,14 +167,29 @@ export const EmsStackIdentifiers = {
   confirmedPreEnq: "CONFIRMED_PRE_ENQUIRY",
   detailsOverview: "DETAILS_OVERVIEW",
   preBookingForm: "PRE_BOOKING_FORM",
+
   paidAccessories: "PAID_ACCESSORIES",
   proceedToPreBooking: "PROCEED_TO_PRE_BOOKING",
-  proceedToBooking: "PROCEED_TO_BOOKING",
+  task360: "TASK_360",
+  homeVisit: "HOME_VISIT_1",
+  preBookingFollowUp: "PREBOOKING_FOLLOWUP_1",
+  testDrive: "TEST_DRIVE_1",
+  enquiryFollowUp: "ENQUIRY_FOLLOW_UP_1",
+  proceedToPreBooking: "PROCEED_TO_PRE_BOOKING_1",
+  proceedToBooking: "PROCEED_TO_BOOKING_1",
+  createEnquiry: "CREATE_ENQUIRY_1",
+  bookingForm: "BOOKING_FORM",
 };
 
 export const PreBookingStackIdentifiers = {
   preBooking: "PRE_BOOKING",
   preBookingForm: "PRE_BOOKING_FORM",
+  
+};
+
+export const BookingStackIdentifiers = {
+  booking: "BOOKING",
+  bookingForm: "BOOKING_FORM",
 };
 
 export const MyTasksStackIdentifiers = {
@@ -143,6 +201,11 @@ export const MyTasksStackIdentifiers = {
   proceedToPreBooking: "PROCEED_TO_PRE_BOOKING",
   proceedToBooking: "PROCEED_TO_BOOKING",
   createEnquiry: "CREATE_ENQUIRY",
+  tasksListScreen: "TASKS_LIST_SCREEN"
+};
+
+export const PriceStackIdentifiers = {
+  price: "PRICE"
 };
 
 const HomeStack = createStackNavigator();
@@ -159,14 +222,15 @@ const HomeStackNavigator = ({ navigation }) => {
         initialParams={{ branchName: "" }}
         options={{
           title: "Dashboard",
+          headerShown: false,
           headerLeft: () => <MenuIcon navigation={navigation} />,
           headerRight: () => {
             return (
               <View style={{ flexDirection: "row" }}>
-                <NotficationIcon
+                {/* <NotficationIcon
                   navigation={navigation}
                   identifier={"NOTIF_1"}
-                />
+                /> */}
               </View>
             );
           },
@@ -187,6 +251,11 @@ const HomeStackNavigator = ({ navigation }) => {
         name={HomeStackIdentifiers.select_branch}
         component={SelectBranchComp}
         options={{ title: "Select Branch" }}
+      />
+      <HomeStack.Screen
+        name={HomeStackIdentifiers.test}
+        component={TestScreen}
+        options={{ title: "Test Screen" }}
       />
     </HomeStack.Navigator>
   );
@@ -209,8 +278,9 @@ const EmsStackNavigator = ({ navigation }) => {
           headerRight: () => {
             return (
               <View style={{ flexDirection: "row" }}>
-                {/* <SearchIcon /> */}
-                <RefreshIcon />
+                <SearchIcon />
+                {/* <RefreshIcon /> */}
+                <MapIcon />
                 <NotficationIcon
                   navigation={navigation}
                   identifier={"NOTIF_2"}
@@ -244,17 +314,61 @@ const EmsStackNavigator = ({ navigation }) => {
       <EmsStack.Screen
         name={EmsStackIdentifiers.preBookingForm}
         component={PreBookingFormScreen}
+        initialParams={{ accessoriesList: [] }}
         options={{ title: "Pre-Booking Form" }}
       />
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.bookingForm}
+        component={BookingFormScreen}
+        initialParams={{ accessoriesList: [] }}
+        options={{ title: "Booking Form" }}
+      />
+
       <EmsStack.Screen
         name={EmsStackIdentifiers.paidAccessories}
         component={PaidAccessoriesScreen}
         options={{ title: "Paid Accessories" }}
       />
+
       <EmsStack.Screen
         name={EmsStackIdentifiers.proceedToPreBooking}
         component={ProceedToPreBookingScreen}
         options={{ title: "Proceed To PreBooking" }}
+      />
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.proceedToBooking}
+        component={ProceedToBookingScreen}
+        initialParams={{ accessoriesList: [] }}
+        options={{ title: "Proceed To Booking" }}
+      />
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.task360}
+        component={TaskThreeSixtyScreen}
+        options={{ title: "Task 360" }}
+      />
+
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.homeVisit}
+        component={HomeVisitScreen}
+        options={{ title: "Home Visit" }}
+      />
+
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.testDrive}
+        component={TestDriveScreen}
+        options={{ title: "Test Drive" }}
+      />
+
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.enquiryFollowUp}
+        component={EnquiryFollowUpScreen}
+        options={{ title: "Enquiry Follow Up" }}
+      />
+
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.createEnquiry}
+        component={CreateEnquiryScreen}
+        options={{ title: "Create Enquiry" }}
       />
     </EmsStack.Navigator>
   );
@@ -317,13 +431,56 @@ const MyTaskStackNavigator = ({ navigation }) => {
         component={ProceedToPreBookingScreen}
         options={{ title: "Proceed To PreBooking" }}
       />
+      <MyTaskStack.Screen
+        name={MyTasksStackIdentifiers.proceedToBooking}
+        component={ProceedToBookingScreen}
+        options={{ title: "Proceed To Booking" }}
+      />
 
       <MyTaskStack.Screen
         name={MyTasksStackIdentifiers.createEnquiry}
         component={CreateEnquiryScreen}
         options={{ title: "Create Enquiry" }}
       />
+
+      <MyTaskStack.Screen
+        name={MyTasksStackIdentifiers.tasksListScreen}
+        component={TaskListScreen}
+        options={{ title: "My Tasks" }}
+      />
     </MyTaskStack.Navigator>
+  );
+};
+
+const PriceStack = createStackNavigator();
+
+const PriceStackNavigator = ({ navigation }) => {
+  return (
+    <PriceStack.Navigator
+      initialRouteName={PriceStackIdentifiers.price}
+      screenOptions={screeOptionStyle}
+    >
+      <PriceStack.Screen
+        name={PriceStackIdentifiers.price}
+        component={PriceScreen}
+        options={{
+          title: "Price",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+          // headerRight: () => {
+          //   return (
+          //     <View style={{ flexDirection: "row" }}>
+          //       {/* <SearchIcon /> */}
+          //       <NotficationIcon
+          //         navigation={navigation}
+          //         identifier={"NOTIF_3"}
+          //       />
+          //     </View>
+          //   );
+          // },
+        }}
+      />
+
+    </PriceStack.Navigator>
   );
 };
 
@@ -334,24 +491,26 @@ const TabNavigator = () => {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
 
           if (route.name === TabStackIdentifiers.home) {
-            iconName = focused ? HOME_FILL : HOME_LINE;
+            return focused ? <HOME_FILL width={size} height={size} fill={color} /> : <HOME_LINE width={size} height={size} fill={color} />;
           } else if (route.name === TabStackIdentifiers.ems) {
-            iconName = focused ? EMS_LINE : EMS_LINE;
+            return focused ? <EMS_LINE width={size} height={size} fill={color} /> : <EMS_LINE width={size} height={size} fill={color} />;
           } else if (route.name === TabStackIdentifiers.myTask) {
-            iconName = focused ? SCHEDULE_FILL : SCHEDULE_LINE;
+            return focused ? <SCHEDULE_FILL width={size} height={size} fill={color} /> : <SCHEDULE_LINE width={size} height={size} fill={color} />;
           }
+          // else if (route.name === TabStackIdentifiers.price) {
+          //   return focused ? <PRICE width={size} height={size} fill={color} /> : <PRICE width={size} height={size} fill={color} />;
+          // }
 
-          return (
-            <VectorImage
-              width={size}
-              height={size}
-              source={iconName}
-              style={{ tintColor: color }}
-            />
-          );
+          // return (
+          //   <VectorImage
+          //     width={size}
+          //     height={size}
+          //     source={iconName}
+          //     style={{ tintColor: color }}
+          //   />
+          // );
         },
       })}
       tabBarOptions={{
@@ -375,6 +534,11 @@ const TabNavigator = () => {
         component={MyTaskStackNavigator}
         options={{ title: "My Tasks" }}
       />
+      {/* <Tab.Screen
+        name={TabStackIdentifiers.price}
+        component={PriceStackNavigator}
+        options={{ title: "Price" }}
+      /> */}
     </Tab.Navigator>
   );
 };
@@ -439,6 +603,94 @@ const SettingsStackNavigator = ({ navigation }) => {
   );
 };
 
+const DigitalPaymentStack = createStackNavigator();
+
+const DigitalPaymentStackNavigator = ({ navigation }) => {
+  return (
+    <DigitalPaymentStack.Navigator
+      screenOptions={screeOptionStyle}
+    >
+      <DigitalPaymentStack.Screen
+        name={"DIGITAL_PAYMENT_SCREEN"}
+        component={DigitalPaymentScreen}
+        options={{
+          title: "Digital Payment",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+    </DigitalPaymentStack.Navigator>
+  );
+};
+
+const MonthlyTargetStack = createStackNavigator();
+
+const MonthlyTargetStackNavigator = ({ navigation }) => {
+  return (
+    <MonthlyTargetStack.Navigator screenOptions={screeOptionStyle}>
+      <MonthlyTargetStack.Screen
+        name={"MONTHLY_TARGET_SCREEN"}
+        component={TargetSettingsScreen}
+        options={{
+          title: "Monthly Target planning",
+          headerShown: false,
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+    </MonthlyTargetStack.Navigator>
+  );
+};
+
+const HelpDeskStack = createStackNavigator();
+
+const HelpDeskStackNavigator = ({ navigation }) => {
+  return (
+    <HelpDeskStack.Navigator screenOptions={screeOptionStyle}>
+      <HelpDeskStack.Screen
+        name={"HELP_DESK_SCREEN"}
+        component={HelpDeskScreen}
+        options={{
+          title: "Help Desk",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+    </HelpDeskStack.Navigator>
+  );
+};
+
+const TaskManagementStack = createStackNavigator();
+
+const TaskManagementStackNavigator = ({ navigation }) => {
+  return (
+    <TaskManagementStack.Navigator screenOptions={screeOptionStyle}>
+      <TaskManagementStack.Screen
+        name={"TASK_MANAGEMENT"}
+        component={taskManagementScreen}
+        options={{
+          title: "Task Management",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+    </TaskManagementStack.Navigator>
+  );
+};
+
+const TaskTransferStack = createStackNavigator();
+
+const TaskTransferStackNavigator = ({ navigation }) => {
+  return (
+    <TaskTransferStack.Navigator screenOptions={screeOptionStyle}>
+      <TaskTransferStack.Screen
+        name={"TASK_TRANSFER"}
+        component={TaskTranferScreen}
+        options={{
+          title: "Task Transfer",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+    </TaskTransferStack.Navigator>
+  );
+};
+
 const EventManagementStack = createStackNavigator();
 
 const EventManagementStackNavigator = ({ navigation }) => {
@@ -487,6 +739,34 @@ const PreBookingStackNavigator = ({ navigation }) => {
   );
 };
 
+const BookingStack = createStackNavigator();
+
+const BookingStackNavigator = ({ navigation }) => {
+  return (
+    <BookingStack.Navigator
+      initialRouteName={BookingStackIdentifiers.booking}
+      screenOptions={screeOptionStyle}
+    >
+      <BookingStack.Screen
+        name={BookingStackIdentifiers.booking}
+        component={BookingScreen}
+        options={{
+          title: "Booking",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+
+      <BookingStack.Screen
+        name={BookingStackIdentifiers.bookingForm}
+        component={BookingFormScreen}
+        options={{
+          title: "Booking Form",
+        }}
+      />
+    </BookingStack.Navigator>
+  );
+};
+
 const MainDrawerNavigator = createDrawerNavigator();
 
 const MainStackDrawerNavigator = () => {
@@ -515,6 +795,27 @@ const MainStackDrawerNavigator = () => {
         component={SettingsStackNavigator}
       />
       <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.digitalPayment}
+        component={DigitalPaymentStackNavigator}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.helpdesk}
+        component={HelpDeskStackNavigator}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.monthlyTarget}
+        component={MonthlyTargetStackNavigator}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.taskManagement}
+        component={TaskManagementStackNavigator}
+      />
+      <MainDrawerNavigator.Screen
+        name={DrawerStackIdentifiers.taskTransfer}
+        component={TaskTransferStackNavigator}
+      />
+
+      <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.eventManagement}
         component={EventManagementStackNavigator}
       />
@@ -523,6 +824,10 @@ const MainStackDrawerNavigator = () => {
         name={DrawerStackIdentifiers.preBooking}
         component={PreBookingStackNavigator}
       /> */}
+      <MainDrawerNavigator.Screen
+        name={"Target Settings"}
+        component={TargetSettingsScreen}
+      />
     </MainDrawerNavigator.Navigator>
   );
 };

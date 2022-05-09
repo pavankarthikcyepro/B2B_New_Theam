@@ -2,9 +2,46 @@ import React, { useState, useEffect } from "react";
 import { SafeAreaView, View, StyleSheet, Text, FlatList, Pressable } from "react-native";
 import { EmptyListView } from "../../../pureComponents";
 import { GlobalStyle, Colors } from "../../../styles";
-import { Button, IconButton } from "react-native-paper"
+import { Button, IconButton } from "react-native-paper";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import ChildComp from "./paidAccsories/childComp";
+
+const TopTab = createMaterialTopTabNavigator();
+
+const tabBarOptions = {
+    activeTintColor: Colors.RED,
+    inactiveTintColor: Colors.DARK_GRAY,
+    indicatorStyle: {
+        backgroundColor: Colors.RED,
+    },
+    labelStyle: {
+        fontSize: 14,
+        fontWeight: "600",
+    },
+}
 
 const rupeeSymbol = "\u20B9";
+
+const EMSTopTabNavigatorOne = (titles) => {
+
+    return (
+        <TopTab.Navigator
+            initialRouteName={titles[0]}
+            tabBarOptions={tabBarOptions}
+        >
+            {titles.map((title) => {
+                return (
+                    <TopTab.Screen
+                        name={title}
+                        component={PreEnquiryScreen}
+                        options={{ title: "Pre-Enquiry" }}
+                    />
+                )
+            })}
+
+        </TopTab.Navigator>
+    );
+};
 
 const PaidAccessoriesScreen = ({ route, navigation }) => {
 
@@ -12,6 +49,7 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
     const { accessorylist } = route.params;
 
     useEffect(() => {
+        console.log("accessorylist: ", accessorylist.length)
         let newFormatTableData = [];
         accessorylist.forEach((item) => {
             newFormatTableData.push({

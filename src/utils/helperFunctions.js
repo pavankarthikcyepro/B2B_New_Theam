@@ -1,6 +1,7 @@
 import qs from "qs";
 import { Linking, Alert, Platform } from "react-native";
 import moment from "moment";
+import URL from "../networking/endpoints";
 
 export const isMobileNumber = (mobile) => {
   // var regex = /^[1-9]{1}[0-9]{9}$/; // /^\d{10}$/
@@ -24,6 +25,15 @@ export const isEmail = (email) => {
 export const isPincode = (pincode) => {
   var patterns = /^[0-9]*$/;
   if (patterns.test(pincode)) {
+    return true;
+  }
+  return false;
+};
+
+export const isValidate = (text) => {
+  // const regex = /^[a-zA-Z]+$/;
+  const regex = /^[a-zA-Z ]|([\w-]+(?:\.[\w-]+)*)*$/;
+  if (regex.test(text)) {
     return true;
   }
   return false;
@@ -161,20 +171,151 @@ export const rgbaColor = () => {
   return rgbValue;
 };
 
-export const emiCalculator = (principle, tenure, interestRate) => {
-  if (principle !== "" && tenure !== "" && interestRate !== "") {
-    let P = principle;
-    const R = interestRate;
-    const N = tenure;
-    const monthlyInterstRatio = R / 100 / 12;
-    const top = Math.pow(1 + monthlyInterstRatio, N);
-    const bottom = top - 1;
-    const sp = top / bottom;
-    const emi = P * monthlyInterstRatio * sp;
-    const full = N * emi;
-    const interest = full - P;
-    let int_pge = (interest / full) * 100;
-    return Math.round(emi).toString();
+export const emiCalculator = (principle, tenureInMonths, interestRate) => {
+  if (principle !== "" && tenureInMonths !== "" && interestRate !== "") {
+    const amount = Number(principle);
+    const months = Number(tenureInMonths);
+    const interest = Number(interestRate) / 1200;
+
+    const step1 = Math.pow(1 / (1 + interest), months);
+    const emi = Math.round(((amount * interest) / (1 - step1)) * 100) / 100;
+    const finalEmi = Math.round(emi).toString();
+    console.log("finalEmi: ", finalEmi);
+    return finalEmi;
   }
   return "";
+};
+
+export const PincodeDetails = async (pincode) => {
+  return await new Promise((resolve, reject) => {
+    fetch(`https://api.postalpincode.in/pincode/${pincode}`, {
+      method: "GET",
+    })
+      .then((json) => json.json())
+      .then((res) => {
+        if (res != undefined && res.length > 0) {
+          if (res[0].PostOffice != null && res[0].PostOffice.length > 0) {
+            resolve({ ...res[0].PostOffice[0] });
+          } else {
+            reject({});
+          }
+        } else {
+          reject({});
+        }
+      })
+      .catch((err) => reject(err));
+  });
+};
+
+export const GetCarModelList = async (orgId, token = "") => {
+  return await new Promise((resolve, reject) => {
+    const url = URL.VEHICLE_MODELS(orgId);
+    // console.log("url: ", url);
+    fetch(url, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "auth-token": token,
+      },
+    })
+      .then((json) => json.json())
+      .then((res) => {
+        // console.log("res: ", JSON.stringify(res))
+        if (res != undefined && res.length > 0) {
+          resolve(res);
+        } else {
+          reject([]);
+        }
+      })
+      .catch((err) => reject([]));
+  });
+};
+
+export const GetFinanceBanksList = async (orgId, token) => {
+  return await new Promise((resolve, reject) => {
+    const url = URL.GET_BANK_DETAILS(orgId);
+    console.log("url: ", url);
+    fetch(url, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "auth-token": token,
+      },
+    })
+      .then((json) => json.json())
+      .then((res) => {
+        // console.log("res: ", JSON.stringify(res))
+        if (res != undefined && res.length > 0) {
+          resolve(res);
+        } else {
+          reject([]);
+        }
+      })
+      .catch((err) => reject(err));
+  });
+};
+
+export const GetPaidAccessoriesList = async (vehicleId, orgId, token) => {
+  return await new Promise((resolve, reject) => {
+    const url = URL.GET_PAID_ACCESSORIES_LIST(vehicleId);
+    //console.log("url: ", url);
+    fetch(url, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "auth-token": token,
+        orgId: orgId,
+      },
+    })
+      .then((json) => json.json())
+      .then((res) => {
+        //console.log("res: ", JSON.stringify(res))
+        if (res.success == true) {
+          if (res.accessorylist != undefined && res.accessorylist.length > 0) {
+            resolve(res.accessorylist);
+          } else {
+            resolve([]);
+          }
+        } else {
+          reject("Get Paid Acceossories List failed");
+        }
+      })
+      .catch((err) => reject(err));
+  });
+};
+
+export const GetDropList = async ( orgId, token, type) => {
+  return await new Promise((resolve, reject) => {
+    const url = URL.GET_DROP_LIST(orgId, type);
+    //console.log("url: ", url);
+    fetch(url, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "auth-token": token
+      },
+    })
+      .then((json) => json.json())
+      .then((res) => {
+        //console.log("res: ", JSON.stringify(res))
+        if (res != undefined && res.length > 0) {
+          const updatedData = [];
+          res.forEach(obj => {
+            const newObj = {...obj};
+            if (newObj.status === "Active") {
+              newObj.name = newObj.lostReason;
+              updatedData.push(newObj)
+            } 
+          })
+          resolve(updatedData);
+        } else {
+          resolve([]);
+        }
+      })
+      .catch((err) => reject(err));
+  });
 };

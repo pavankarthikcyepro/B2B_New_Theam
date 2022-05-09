@@ -27,7 +27,6 @@ import {
   createPreEnquiry,
   updatePreEnquiry,
   setCustomerTypeList,
-  setCarModalList,
   setExistingDetails,
   continueToCreatePreEnquiry,
   getEventListApi,
@@ -39,6 +38,7 @@ import {
   isEmail,
   isPincode,
   convertToDate,
+  GetCarModelList,
 } from "../../../utils/helperFunctions";
 import { sales_url } from "../../../networking/endpoints";
 import realm from "../../../database/realm";
@@ -49,18 +49,17 @@ import {
   showAlertMessage,
   showToast,
   showToastRedAlert,
+  showToastSucess,
 } from "../../../utils/toast";
 import URL from "../../../networking/endpoints";
-import { isValidateAlphabetics } from "../../../utils/helperFunctions";
+import { isValidateAlphabetics,isValidate, PincodeDetails } from "../../../utils/helperFunctions";
+import moment from "moment";
 
 const screenWidth = Dimensions.get("window").width;
 
 const AddPreEnquiryScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.addPreEnquiryReducer);
   const homeSelector = useSelector((state) => state.homeReducer);
-  const { vehicle_modal_list, customer_type_list } = useSelector(
-    (state) => state.homeReducer
-  );
   const dispatch = useDispatch();
   const [organizationId, setOrganizationId] = useState(0);
   const [branchId, setBranchId] = useState(0);
@@ -93,25 +92,27 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     msg: "",
   });
   const [subSourceData, setSubSourceData] = useState([]);
+  const [address, setAddress] = useState({ block: "", district: "", region: "", state: "" })
 
   useEffect(() => {
     getAsyncstoreData();
     setExistingData();
-    updateCarModelsData();
     getBranchId();
     getAuthToken();
     // getCustomerTypeListFromDB();
-    // getCarModalListFromDB();
+    console.log("useEffect called");
+    const UnSubscribe = navigation.addListener("focus", () => {
+      console.log("useEffect focus called");
+      if (route.params?.fromEdit === false) {
+        dispatch(clearState());
+      }
+    });
+
+    return UnSubscribe;
   }, []);
 
   const getAsyncstoreData = async () => {
-    const employeeData = await AsyncStore.getData(
-      AsyncStore.Keys.LOGIN_EMPLOYEE
-    );
-
-    // http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails?organizationId=1
-
-    // http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails?organizationId=1
+    const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
 
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
@@ -122,6 +123,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       });
       setOrganizationId(jsonObj.orgId);
       setEmployeeName(jsonObj.empName);
+      getCarModelListFromServer(jsonObj.orgId);
 
       if (jsonObj.hrmsRole === "Reception") {
         const resultAry = homeSelector.source_of_enquiry_list.filter(
@@ -153,30 +155,8 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     }
   };
 
-  const getBranchId = () => {
-    AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then((branchId) => {
-      setBranchId(branchId);
-    });
-  };
-
-  const getAuthToken = () => {
-    AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
-      setUserToken(token);
-    });
-  };
-
-  const updateCarModelsData = () => {
-    let modalList = [];
-    if (vehicle_modal_list.length > 0) {
-      vehicle_modal_list.forEach((item) => {
-        modalList.push({ id: item.vehicleId, name: item.model });
-      });
-    }
-    setDataForCarModels([...modalList]);
-  };
-
   const setExistingData = () => {
-    if (route.params != null && route.params !== undefined) {
+    if (route.params?.fromEdit != null && route.params.fromEdit === true) {
       const preEnquiryDetails = route.params.preEnquiryDetails;
       const fromEdit = route.params.fromEdit;
       setExistingPreEnquiryDetails(preEnquiryDetails);
@@ -188,50 +168,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   const getCustomerTypeListFromDB = () => {
     const data = realm.objects("CUSTOMER_TYPE_TABLE");
     dispatch(setCustomerTypeList(JSON.stringify(data)));
-  };
-
-  const getCarModalListFromDB = () => {
-    const data = realm.objects("CAR_MODAL_LIST_TABLE");
-    dispatch(setCarModalList(JSON.stringify(data)));
-  };
-
-  const gotoConfirmPreEnquiryScreen = (response) => {
-    if (response.hasOwnProperty("dmsEntity")) {
-      let dmsEn;
-      if (response.dmsEntity.hasOwnProperty("dmsContactDto")) {
-        dmsEn = response.dmsEntity.dmsContactDto;
-      } else {
-        dmsEn = response.dmsEntity.dmsAccountDto;
-      }
-      let dms = response.dmsEntity.dmsLeadDto;
-      let itemData = {};
-      itemData.leadId = dms.id;
-      itemData.firstName = dms.firstName;
-      itemData.lastName = dms.lastName;
-      itemData.phone = dms.phone;
-      itemData.customerType = dmsEn.customerType;
-      itemData.email = dms.email;
-      itemData.model = dms.model;
-      itemData.enquirySegment = dms.enquirySegment;
-      itemData.createdDate = dms.createddatetime;
-      itemData.enquirySource = dms.enquirySource;
-      itemData.pincode = dms.dmsAddresses ? dms.dmsAddresses[0].pincode : "";
-      itemData.leadStage = dms.leadStage;
-      itemData.universalId = dms.crmUniversalId;
-      itemData.referencenumber = dms.referencenumber;
-      if (!fromEdit) {
-        showSucessAlert(itemData);
-      } else {
-        navigation.popToTop();
-      }
-      dispatch(clearState());
-    } else {
-      if (response.accountId != null && response.contactId != null) {
-        confirmToCreateLeadAgain(response);
-      } else {
-        showToast(response.message);
-      }
-    }
   };
 
   const showSucessAlert = (itemData) => {
@@ -266,21 +202,103 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   };
 
   const confirmToCreateLeadAgain = (response) => {
+    // "Continue To Create a Lead"
     Alert.alert(
       response.message,
-      "Continue To Create a Lead",
+      "",
       [
         {
-          text: "Cancel",
+          text: "Ok",
           style: "cancel",
         },
-        { text: "Create Lead", onPress: () => proceedToCreateLead(response) },
+        // {
+        //   text: "Create Lead",
+        //   onPress: () => proceedToCreateLeadMethod(response),
+        // },
       ],
       { cancelable: false }
     );
   };
 
-  proceedToCreateLead = (data) => {
+  const getBranchId = () => {
+    AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then((branchId) => {
+      setBranchId(branchId);
+    });
+  };
+
+  const getAuthToken = () => {
+    AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
+      setUserToken(token);
+    });
+  };
+
+  const getCarModelListFromServer = (orgId) => {
+    // Call Api
+    GetCarModelList(orgId)
+      .then(
+        (resolve) => {
+          let modalList = [];
+          if (resolve.length > 0) {
+            resolve.forEach((item) => {
+              modalList.push({
+                id: item.vehicleId,
+                name: item.model,
+                isChecked: false,
+              });
+            });
+          }
+          setDataForCarModels([...modalList]);
+        },
+        (rejected) => {
+          console.log("getCarModelListFromServer Failed");
+        }
+      )
+      .finally(() => {
+        // Get Enquiry Details
+      });
+  };
+
+  const gotoConfirmPreEnquiryScreen = (response) => {
+    if (response.hasOwnProperty("dmsEntity")) {
+      let dmsEn;
+      if (response.dmsEntity.hasOwnProperty("dmsContactDto")) {
+        dmsEn = response.dmsEntity.dmsContactDto;
+      } else {
+        dmsEn = response.dmsEntity.dmsAccountDto;
+      }
+      let dms = response.dmsEntity.dmsLeadDto;
+      let itemData = {};
+      itemData.leadId = dms.id;
+      itemData.firstName = dms.firstName;
+      itemData.lastName = dms.lastName;
+      itemData.phone = dms.phone;
+      itemData.customerType = dmsEn.customerType;
+      itemData.email = dms.email;
+      itemData.model = dms.model;
+      itemData.enquirySegment = dms.enquirySegment;
+      itemData.createdDate = dms.createddatetime;
+      itemData.enquirySource = dms.enquirySource;
+      itemData.pincode = dms.dmsAddresses ? dms.dmsAddresses[0].pincode : "";
+      itemData.leadStage = dms.leadStage;
+      itemData.universalId = dms.crmUniversalId;
+      itemData.referencenumber = dms.referencenumber;
+      if (!fromEdit) {
+        showSucessAlert(itemData);
+      } else {
+        showSucessAlert("Successfully Updated");
+        navigation.popToTop();
+      }
+      dispatch(clearState());
+    } else {
+      if (response.accountId != null && response.contactId != null) {
+        confirmToCreateLeadAgain(response);
+      } else {
+        showToast(response.message || "something went wrong");
+      }
+    }
+  };
+
+  proceedToCreateLeadMethod = (data) => {
     let formData = {
       branchId: branchId,
       createdBy: employeeName,
@@ -347,11 +365,32 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       selector.lastName.length == 0 ||
       selector.mobile.length == 0 ||
       selector.carModel.length == 0 ||
-      selector.sourceOfEnquiry.length == 0 ||
-      selector.pincode.length == 0
+      selector.sourceOfEnquiry.length == 0
     ) {
       showToastRedAlert("Please fill required fields");
       return;
+    }
+    if (selector.enquiryType === "Personal") {
+      if (selector.customerType === "Government") {
+        if (!isValidateAlphabetics(selector.companyName)) {
+          showToast("Please enter alphabetics only Company Name");
+          return;
+        }
+      }
+    }
+
+    if (selector.enquiryType === "Personal" && selector.customerType === "Other") {
+      if (selector.other.length > 0 && !isValidateAlphabetics(selector.other)) {
+        showToast("Please enter the alphabets only in other");
+        return;
+      }
+    }
+
+    if (!fromEdit) {
+      if (selector.pincode.length == 0) {
+        showToastRedAlert("Please fill pincode");
+        return;
+      }
     }
 
     const enquirySegmentName = selector.enquiryType
@@ -361,7 +400,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       enquirySegmentName !== "commercial" &&
       enquirySegmentName !== "company"
     ) {
-      if (!isValidateAlphabetics(selector.firstName)) {
+      if (!isValidate(selector.firstName)) {
         // showToast("please enter alphabetics only in firstname ");
         setFirstNameErrorHandler({
           showError: true,
@@ -369,7 +408,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         });
         return;
       }
-      if (!isValidateAlphabetics(selector.lastName)) {
+      if (!isValidate(selector.lastName)) {
         // showToast("please enter alphabetics only in lastname ");
         setLastNameErrorHandler({
           showError: true,
@@ -378,16 +417,14 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         return;
       }
     }
-
-    // if (selector.mobile.length != 10 && !isMobileNumber(selector.mobile))  {
-    //   showToast("Please enter valid mobile number");
-    //   return;
-    // }
- if (selector.mobile.length > 0 && !isMobileNumber(selector.mobile)) {
+    if (selector.mobile.length > 0 && !isMobileNumber(selector.mobile)) {
       showToast("Please enter valid number");
       return;
     }
-    if (selector.alterMobile.length > 0 && selector.alterMobile.length != 10) {
+    if (
+      selector.alterMobile.length > 0 &&
+      !isMobileNumber(selector.alterMobile)
+    ) {
       showToast("Please enter valid alternate mobile number");
       return;
     }
@@ -397,10 +434,16 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (selector.pincode.length > 0 && !isPincode(selector.pincode)) {
-      showToast("Please enter valid pincode");
-      return;
+    if (!fromEdit) {
+      if (selector.pincode.length > 0 && !isPincode(selector.pincode)) {
+        showToast("Please enter valid pincode");
+        return;
+      }
     }
+
+    // Get Pincode details from server
+    GetPincodeDetails(selector.pincode);
+
     if (selector.sourceOfEnquiry === "Event") {
       if (selector.eventName.length === 0) {
         showToast("Please select event details");
@@ -417,12 +460,28 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     getReferenceNumber();
   };
 
+  const GetPincodeDetails = (pincode) => {
+
+    PincodeDetails(pincode).then(
+      (resolve) => {
+        // update address
+        setAddress({ block: resolve.Block || "", district: resolve.District || "", region: resolve.Region || "", state: resolve.State || "" })
+      },
+      (rejected) => {
+        console.log("rejected...: ", rejected);
+      }
+    );
+  }
+
   const getReferenceNumber = async () => {
     const bodyObj = {
       branchid: Number(branchId),
       leadstage: "PREENQUIRY",
       orgid: userData.orgId,
     };
+
+    // console.log("URL: ", URL.CUSTOMER_LEAD_REFERENCE())
+    // console.log("bodyObj: ", bodyObj)
 
     await fetch(URL.CUSTOMER_LEAD_REFERENCE(), {
       method: "POST",
@@ -539,16 +598,42 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
 
   // Handle Create Enquiry response
   useEffect(() => {
-    if (selector.create_enquiry_response_obj.errorMessage === "") {
+    if (selector.createEnquiryStatus === "success") {
       gotoConfirmPreEnquiryScreen(selector.create_enquiry_response_obj);
-    } else if (selector.errorMsg) {
-      showToast(selector.errorMsg);
+    } else if (selector.createEnquiryStatus === "failed") {
+      if (
+        selector.create_enquiry_response_obj &&
+        selector.create_enquiry_response_obj.accountId != null &&
+        selector.create_enquiry_response_obj.contactId != null
+      ) {
+        confirmToCreateLeadAgain(selector.create_enquiry_response_obj);
+      } else {
+        showToast(
+          selector.create_enquiry_response_obj.message || "something went wrong"
+        );
+      }
     }
-  }, [
-    selector.status,
-    selector.errorMsg,
-    selector.create_enquiry_response_obj,
-  ]);
+  }, [selector.createEnquiryStatus, selector.create_enquiry_response_obj]);
+
+  // Handle update Enquiry response
+  useEffect(() => {
+    if (selector.updateEnquiryStatus === "success") {
+      showToastSucess("Pre-enquiry successfully updated");
+      navigation.popToTop();
+    } else if (selector.updateEnquiryStatus === "failed") {
+      if (
+        selector.create_enquiry_response_obj &&
+        selector.create_enquiry_response_obj.accountId != null &&
+        selector.create_enquiry_response_obj.contactId != null
+      ) {
+        confirmToCreateLeadAgain(selector.create_enquiry_response_obj);
+      } else {
+        showToast(
+          selector.create_enquiry_response_obj.message || "something went wrong"
+        );
+      }
+    }
+  }, [selector.updateEnquiryStatus, selector.create_enquiry_response_obj]);
 
   const updatePreEneuquiryDetails = () => {
     let url = sales_url;
@@ -614,9 +699,17 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         setDataForDropDown([...dataForCarModels]);
         break;
       case "ENQUIRY_SEGMENT":
+        if (selector.enquiry_type_list.length === 0) {
+          showToast("No Enquiry Types found");
+          return;
+        }
         setDataForDropDown([...selector.enquiry_type_list]);
         break;
       case "CUSTOMER_TYPE":
+        if (selector.customer_type_list.length === 0) {
+          showToast("No Customer Types found");
+          return;
+        }
         setDataForDropDown([...selector.customer_type_list]);
         break;
       case "SOURCE_OF_ENQUIRY":
@@ -630,12 +723,11 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         setDataForDropDown([...subSourceData]);
         break;
       case "EVENT_NAME":
-        if (selector.event_list.length > 0) {
-          setDataForDropDown([...selector.event_list]);
-        } else {
+        if (homeSelector.event_list.length === 0) {
           showToast("No events found");
           return;
         }
+        setDataForDropDown([...selector.event_list]);
         break;
     }
     setDropDownKey(key);
@@ -678,8 +770,13 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
   updateSubSourceData = (item) => {
     console.log("item: ", item);
     if (item.subsource && item.subsource.length > 0) {
-      const updatedData = item.subsource.map((item) => {
-        return { ...item, name: item.subSource };
+      const updatedData = [];
+      item.subsource.forEach((subItem, index) => {
+        const newItem = { ...subItem };
+        newItem.name = subItem.subSource;
+        if (newItem.status === "Active") {
+          updatedData.push(newItem);
+        }
       });
       setSubSourceData(updatedData);
     } else {
@@ -794,17 +891,18 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             <TextinputComp
               style={styles.textInputComp}
               value={selector.firstName}
+              autoCapitalize="words"
               label={"First Name*"}
               editable={
                 selector.enquiryType.length > 0 &&
-                selector.customerType.length > 0
+                  selector.customerType.length > 0
                   ? true
                   : false
               }
               maxLength={30}
               disabled={
                 selector.enquiryType.length > 0 &&
-                selector.customerType.length > 0
+                  selector.customerType.length > 0
                   ? false
                   : true
               }
@@ -825,17 +923,18 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             <TextinputComp
               style={styles.textInputComp}
               value={selector.lastName}
+              autoCapitalize="words"
               label={"Last Name*"}
               editable={
                 selector.enquiryType.length > 0 &&
-                selector.customerType.length > 0
+                  selector.customerType.length > 0
                   ? true
                   : false
               }
               maxLength={30}
               disabled={
                 selector.enquiryType.length > 0 &&
-                selector.customerType.length > 0
+                  selector.customerType.length > 0
                   ? false
                   : true
               }
@@ -880,7 +979,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             <Text style={styles.devider}></Text>
 
             <TextinputComp
-              
               style={styles.textInputComp}
               value={selector.email}
               label={"Email-Id"}
@@ -901,14 +999,15 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             />
 
             {selector.customerType === "Corporate" ||
-            selector.customerType === "Government" ||
-            selector.customerType === "Retired" ||
-            selector.customerType === "Fleet" ||
-            selector.customerType === "Institution" ? (
+              selector.customerType === "Government" ||
+              selector.customerType === "Retired" ||
+              selector.customerType === "Fleet" ||
+              selector.customerType === "Institution" ? (
               <View>
                 <TextinputComp
                   style={styles.textInputComp}
                   value={selector.companyName}
+                  autoCapitalize="words"
                   label={"Company Name"}
                   maxLength={50}
                   keyboardType={"default"}
@@ -1015,16 +1114,18 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               </View>
             ) : null}
 
-            <TextinputComp
-              style={styles.textInputComp}
-              value={selector.pincode}
-              label={"Pincode*"}
-              keyboardType={"number-pad"}
-              maxLength={6}
-              onChangeText={(text) =>
-                dispatch(setPreEnquiryDetails({ key: "PINCODE", text: text }))
-              }
-            />
+            {!fromEdit && (
+              <TextinputComp
+                style={styles.textInputComp}
+                value={selector.pincode}
+                label={"Pincode*"}
+                keyboardType={"number-pad"}
+                maxLength={6}
+                onChangeText={(text) =>
+                  dispatch(setPreEnquiryDetails({ key: "PINCODE", text: text }))
+                }
+              />
+            )}
             <Text style={styles.devider}></Text>
           </View>
 
@@ -1084,15 +1185,4 @@ const styles = StyleSheet.create({
     color: Colors.RED,
     paddingVertical: 5,
   },
-});
-
-{
-  /* <DropDownComponant
-                visible={multiDropdownVisible}
-                multiple={true}
-                selectedItems={(items) => {
-                    console.log('selected: ', items);
-                    setMultiDropDownVisible(false);
-                }}
-            /> */
-}
+})

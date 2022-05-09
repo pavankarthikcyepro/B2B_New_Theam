@@ -17,6 +17,7 @@ interface CustomerDetailModel {
   text: string;
 }
 
+
 export const getTaskDetailsApi = createAsyncThunk(
   "ENQUIRY_FOLLOW_UP_SLICE/getTaskDetailsApi",
   async (taskId, { rejectWithValue }) => {
@@ -41,6 +42,16 @@ export const updateTaskApi = createAsyncThunk(
   }
 );
 
+export const getEnquiryDetailsApi = createAsyncThunk("ENQUIRY_FOLLOW_UP_SLICE/getEnquiryDetailsApi", async (universalId, { rejectWithValue }) => {
+
+  const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 const slice = createSlice({
   name: "ENQUIRY_FOLLOW_UP_SLICE",
   initialState: {
@@ -61,7 +72,8 @@ const slice = createSlice({
     model: "",
     varient: "",
     actual_start_time: "",
-    actual_end_time: ""
+    actual_end_time: "",
+    enquiry_details_response: null,
   },
   reducers: {
     clearState: (state, action) => {
@@ -113,7 +125,7 @@ const slice = createSlice({
     updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
       const selectedDate = convertTimeStampToDateString(text, "DD/MM/YYYY");
-      const keyId = key ? key : state.datePickerKeyId
+      const keyId = key ? key : state.datePickerKeyId;
       switch (state.datePickerKeyId) {
         case "ACTUAL_START_TIME":
           state.actual_start_time = selectedDate;
@@ -174,6 +186,27 @@ const slice = createSlice({
       state.is_loading_for_task_update = false;
       state.update_task_response_status = "failed";
     });
+    // Get Prebooking Details
+    builder.addCase(getEnquiryDetailsApi.pending, (state, action) => {
+      state.enquiry_details_response = null;
+    })
+    builder.addCase(getEnquiryDetailsApi.fulfilled, (state, action) => {
+      if (action.payload.dmsEntity) {
+        const dmsLeadDto = action.payload.dmsEntity.dmsLeadDto;
+        console.log("selectedModelObj:", dmsLeadDto)
+
+        if (dmsLeadDto.dmsLeadProducts && dmsLeadDto.dmsLeadProducts.length > 0) {
+          const selectedModelObj = dmsLeadDto.dmsLeadProducts[0];
+          console.log("selectedModelObj2:", selectedModelObj)
+          state.model = selectedModelObj.model;
+          state.varient = selectedModelObj.variant;
+        }
+        state.enquiry_details_response = action.payload.dmsEntity;
+      }
+    })
+    builder.addCase(getEnquiryDetailsApi.rejected, (state, action) => {
+      state.enquiry_details_response = null;
+    })
   },
 });
 

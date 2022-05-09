@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import URL from "../networking/endpoints";
 import { client } from '../networking/client';
 import { showToastRedAlert } from "../utils/toast";
@@ -67,6 +67,17 @@ export const updateEmployeeApi = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/updateE
     return response;
 })
 
+
+interface DropDownModelNew {
+    key: string;
+    value: string;
+    id?: string;
+}
+interface DropDownModel {
+    id: string;
+    name: string;
+    keyId: string;
+}
 export const slice = createSlice({
     name: "CONFIRMED_PRE_ENQUIRY",
     initialState: {
@@ -80,7 +91,17 @@ export const slice = createSlice({
         change_enquiry_status: "",
         isLoading: true,
         create_enquiry_loading: false,
-        status: ""
+        status: "",
+        drop_reasons_list: [],
+        // Booking Drop
+        drop_reason: "",
+        drop_remarks: "",
+        reject_remarks: "",
+        d_brand_name: "",
+        d_dealer_name: "",
+        d_location: "",
+        d_model: "",
+
     },
     reducers: {
         clearState: (state, action) => {
@@ -95,16 +116,57 @@ export const slice = createSlice({
             state.isLoading = false;
             state.create_enquiry_loading = false;
             state.status = "";
-        }
+            state.drop_reasons_list = [];
+            // Booking Drop
+            state.drop_reason = "";
+            state.drop_remarks = "";
+            state.reject_remarks = "";
+            state.d_brand_name = "";
+            state.d_dealer_name = "";
+            state.d_location = "";
+            state.d_model = "";
+        },
+        setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
+            const { key, value, id } = action.payload;
+            switch (key) {
+                case "DROP_REASON":
+                    state.drop_reason = value;
+                    break;
+            }
+        },
+        setPreEnquiryDropDetails: (state, action) => {
+            const { key, text } = action.payload;
+            switch (key) {
+                case "DROP_REMARKS":
+                    state.drop_remarks = text;
+                    break;
+                case "DROP_BRAND_NAME":
+                    state.d_brand_name = text;
+                    break;
+                case "DROP_DEALER_NAME":
+                    state.d_dealer_name = text;
+                    break;
+                case "DROP_LOCATION":
+                    state.d_location = text;
+                    break;
+                case "DROP_MODEL":
+                    state.d_model = text;
+                    break;
+            }
+        },
     },
     extraReducers: (builder) => {
+        builder.addCase(getPreEnquiryDetails.pending, (state, action) => {
+            state.isLoading = true;
+            state.pre_enquiry_details = {};
+        })
         builder.addCase(getPreEnquiryDetails.fulfilled, (state, action) => {
-            // console.log("res: ", JSON.stringify(action.payload));
             state.pre_enquiry_details = action.payload.dmsEntity;
             state.isLoading = false;
         })
         builder.addCase(getPreEnquiryDetails.rejected, (state, action) => {
             state.isLoading = false;
+            state.pre_enquiry_details = {};
         })
         builder.addCase(noThanksApi.fulfilled, (state, action) => {
             console.log("noThanksApi: ", JSON.stringify(action.payload));
@@ -114,12 +176,10 @@ export const slice = createSlice({
             state.employees_list_status = "";
         })
         builder.addCase(getEmployeesListApi.fulfilled, (state, action) => {
-            console.log("S getEmployeesListApi: ", JSON.stringify(action.payload));
             state.employees_list = action.payload.dmsEntity.employeeDTOs || [];
             state.employees_list_status = "success";
         })
         builder.addCase(getEmployeesListApi.rejected, (state, action) => {
-            console.log("F getEmployeesListApi: ", JSON.stringify(action.payload));
             state.employees_list = [];
             state.employees_list_status = "failed";
             if (action.payload["message"]) {
@@ -128,27 +188,51 @@ export const slice = createSlice({
         })
         builder.addCase(getaAllTasks.pending, (state, action) => {
             state.create_enquiry_loading = true;
+            state.all_pre_enquiry_tasks = [];
         })
         builder.addCase(getaAllTasks.fulfilled, (state, action) => {
-            console.log("getaAllTasks: ", JSON.stringify(action.payload));
             const dmsEntity = action.payload.dmsEntity;
             state.all_pre_enquiry_tasks = dmsEntity.tasks || [];
+            state.create_enquiry_loading = false;
+        })
+        builder.addCase(getaAllTasks.rejected, (state, action) => {
+            state.create_enquiry_loading = false;
+            state.all_pre_enquiry_tasks = [];
+        })
+        builder.addCase(assignTaskApi.pending, (state, action) => {
+            state.assign_task_status = "pending";
         })
         builder.addCase(assignTaskApi.fulfilled, (state, action) => {
-            console.log("assignTaskApi: ", JSON.stringify(action.payload));
             state.assign_task_status = "success";
         })
+        builder.addCase(assignTaskApi.rejected, (state, action) => {
+            state.assign_task_status = "failed";
+        })
+        builder.addCase(changeEnquiryStatusApi.pending, (state, action) => {
+            state.change_enquiry_response = {};
+            state.change_enquiry_status = "Pending";
+        })
         builder.addCase(changeEnquiryStatusApi.fulfilled, (state, action) => {
-            console.log("changeEnquiryStatusApi: ", JSON.stringify(action.payload));
+            console.log("S changeEnquiryStatusApi: ", JSON.stringify(action.payload))
             state.change_enquiry_response = action.payload;
             state.change_enquiry_status = "success";
         })
+        builder.addCase(changeEnquiryStatusApi.rejected, (state, action) => {
+            state.change_enquiry_response = {};
+            state.change_enquiry_status = "failed";
+        })
+        builder.addCase(updateEmployeeApi.pending, (state, action) => {
+            state.update_employee_status = "pending";
+        })
         builder.addCase(updateEmployeeApi.fulfilled, (state, action) => {
-            console.log("updateEmployeeApi: ", JSON.stringify(action.payload));
             state.update_employee_status = "success";
         })
+        builder.addCase(updateEmployeeApi.rejected, (state, action) => {
+            state.update_employee_status = "failed";
+        })
     }
+
 });
 
-export const { clearState } = slice.actions;
+export const { clearState, setDropDownData, setPreEnquiryDropDetails } = slice.actions;
 export default slice.reducer;

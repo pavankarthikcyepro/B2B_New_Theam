@@ -54,8 +54,8 @@ const initialState: LoginState = {
   menuListStatus: "",
   menuList: [],
   login_employee_details: {},
-  branchesList: []
-}
+  branchesList: [],
+};
 
 export const postUserData = createAsyncThunk(
   "LOGIN_SLICE/postUserData",
@@ -192,7 +192,7 @@ export const loginSlice = createSlice({
         console.log("res3: ", action.payload);
         state.status = "failed";
         state.isLoading = false;
-        if (action.payload["errorMessage"]) {
+        if (action.payload != undefined && action.payload["errorMessage"]) {
           showToastRedAlert(action.payload["errorMessage"]);
         }
       })
@@ -270,7 +270,6 @@ export const loginSlice = createSlice({
         });
       })
       .addCase(getCarModalList.fulfilled, (state, action) => {
-        console.log("vehicle_modal_list: ", action.payload);
         const data = action.payload;
         data.forEach((item) => {
           realm.write(() => {

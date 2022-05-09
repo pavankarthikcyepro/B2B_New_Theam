@@ -12,6 +12,7 @@ import { getEnquiryList, getMoreEnquiryList } from "../../../redux/enquiryReduce
 import { callNumber } from "../../../utils/helperFunctions";
 import moment from "moment";
 import { Category_Type_List_For_Filter } from '../../../jsonData/enquiryFormScreenJsonData';
+import { MyTaskNewItem } from '../MyTasks/components/MyTasksNewItem';
 
 const dateFormat = "YYYY-MM-DD";
 
@@ -37,7 +38,7 @@ const EnquiryScreen = ({ navigation }) => {
     const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
     setSelectedFromDate(lastMonthFirstDate);
     const tomorrowDate = moment().add(1, "day").format(dateFormat)
-    setSelectedToDate(tomorrowDate);
+    setSelectedToDate(currentDate);
     getAsyncData(lastMonthFirstDate, currentDate);
   }, []);
 
@@ -160,6 +161,7 @@ const EnquiryScreen = ({ navigation }) => {
         value={new Date(Date.now())}
         onChange={(event, selectedDate) => {
           console.log("date: ", selectedDate);
+          setShowDatePicker(false)
           if (Platform.OS === "android") {
             if (selectedDate) {
               updateSelectedDate(selectedDate, datePickerId);
@@ -167,7 +169,6 @@ const EnquiryScreen = ({ navigation }) => {
           } else {
             updateSelectedDate(selectedDate, datePickerId);
           }
-          setShowDatePicker(false)
         }}
         onRequestClose={() => setShowDatePicker(false)}
       />
@@ -205,7 +206,7 @@ const EnquiryScreen = ({ navigation }) => {
       </View>
 
       {selector.enquiry_list.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
-        <View style={[GlobalStyle.shadow, { backgroundColor: 'white', flex: 1, marginBottom: 10 }]}>
+        <View style={[ { backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 }]}>
           <FlatList
             data={selector.enquiry_list}
             extraData={selector.enquiry_list}
@@ -230,17 +231,20 @@ const EnquiryScreen = ({ navigation }) => {
 
               return (
                 <>
-                  <PreEnquiryItem
-                    bgColor={color}
-                    name={item.firstName + " " + item.lastName}
-                    subName={item.enquirySource}
-                    enquiryCategory={item.enquiryCategory}
-                    date={item.createdDate}
-                    modelName={item.model}
-                    onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.detailsOverview, { universalId: item.universalId })}
-                    onCallPress={() => callNumber(item.phone)}
-                  />
-                  <View style={GlobalStyle.underline}></View>
+                  <View style={{ paddingVertical: 5 }}>
+                    <MyTaskNewItem
+                      from='PRE_ENQUIRY'
+                      name={item.firstName + " " + item.lastName}
+                      status={""}
+                      created={item.createdDate}
+                      dmsLead={item.createdBy}
+                      phone={item.phone}
+                      source={item.enquirySource}
+                      model={item.model}
+                      onItemPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId })}
+                      onDocPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.detailsOverview, { universalId: item.universalId })}
+                    />
+                  </View>
                 </>
               );
             }}

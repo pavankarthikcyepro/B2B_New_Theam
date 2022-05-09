@@ -112,7 +112,7 @@ const POTENTIAL_INCENTIVE = require("../images/potential_incentive.svg");
 const PRICE_CONFIRMATION = require("../images/price_confirmation.svg");
 const PRINT = require("../images/print.svg");
 const PURSE = require("../images/purse.svg");
-const QR_CODE = require("../images/qr_code.svg");
+const QR_CODE = require("../images/qr-code.svg");
 const REGISTER = require("../images/register.svg");
 const REPORT_FILL = require("../images/report_fill.svg");
 const REPORT_LINE = require("../images/report_line.svg");
@@ -286,5 +286,5 @@ export {
   VEHICLE_ALLOTMENT_DETAILS,
   VEHICLES,
   WEEK,
-  YEAR,
+  YEAR
 };
