@@ -196,6 +196,7 @@ const HomeScreen = ({ route, navigation }) => {
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             if (selector.allGroupDealerData.length > 0) {
+                console.log("£££££RRRRR:",selector.allGroupDealerData[0] );
                 let tempArr = [], allArray = selector.allGroupDealerData;
                 setGroupDealerCount(selector.allGroupDealerData.length)
                 tempArr = allArray.filter((item) => {
