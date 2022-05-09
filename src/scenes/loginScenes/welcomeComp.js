@@ -19,7 +19,7 @@ const WelcomeScreen = ({ navigation }) => {
             <Image
                 style={{ width: '100%', height: 300 }}
                 resizeMode={'center'}
-                source={require('../../assets/images/welcome.png')}
+                source={require('../../assets/images/logo.png')}
             />
             <ButtonComp title={'LOG IN'} width={ScreenWidth - 40} onPress={loginButtonClicked} />
 
