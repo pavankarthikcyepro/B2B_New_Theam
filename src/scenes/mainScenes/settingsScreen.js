@@ -6,6 +6,7 @@ import {
   StyleSheet,
   FlatList,
   Dimensions,
+  Pressable
 } from "react-native";
 import { Colors } from "../../styles";
 import { SettingsScreenItem } from "../../pureComponents/settingScreenItem";
@@ -13,9 +14,14 @@ const screenWidth = Dimensions.get("window").width;
 
 const datalist = [
   {
-    name: "Change Password (NI)",
+    name: "Change Password",
   },
 ];
+
+const changepasswordclicked = () => {
+  console.log("pasword clicked");
+ //navigation.navigate(AuthNavigator.AuthStackIdentifiers.FORGOT);
+}
 
 const SettingsScreen = () => {
   return (
@@ -31,7 +37,9 @@ const SettingsScreen = () => {
           }}
           renderItem={({ item, index }) => {
             return (
-              <SettingsScreenItem name={item.name} />
+              <Pressable onPress={changepasswordclicked}>
+                <SettingsScreenItem name={item.name} />
+              </Pressable>
             );
           }}
         />

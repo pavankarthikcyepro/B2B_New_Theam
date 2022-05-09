@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { SafeAreaView, View, Text, StyleSheet, Animated } from "react-native";
+import { SafeAreaView, View, Text, StyleSheet, Animated, Dimensions } from "react-native";
 import { TextinputComp } from "../../components/textinputComp";
 import { useSelector, useDispatch } from "react-redux";
 import { Colors } from "../../styles";
@@ -15,6 +15,11 @@ import {
   getCustomerTypeList,
   getCarModalList,
 } from "../../redux/loginReducer";
+
+
+const ScreenWidth = Dimensions.get("window").width;
+const ScreenHeight = Dimensions.get("window").height;
+
 
 const ForgotScreen = () => {
   const selector = useSelector((state) => state.loginReducer);
@@ -76,6 +81,12 @@ const ForgotScreen = () => {
         }}
         onChangeText={(text) => dispatch(updatePassword(text))}
         onRightIconPressed={() => dispatch(updateSecurePassword())}
+      />
+      <ButtonComp
+        title={"LOG IN"}
+        width={ScreenWidth - 40}
+        onPress={loginClicked}
+        disabled={selector.isLoading ? true : false}
       />
     </SafeAreaView>
   );

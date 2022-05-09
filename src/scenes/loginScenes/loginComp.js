@@ -120,6 +120,9 @@ const LoginScreen = ({ navigation }) => {
     }
   }, [selector.status])
 
+
+//    navigation.navigate(AuthNavigator.AuthStackIdentifiers.LOGIN);
+
   useEffect(() => {
 
     if (selector.menuListStatus == "completed") {
@@ -149,7 +152,7 @@ const LoginScreen = ({ navigation }) => {
     dispatch(getPreEnquiryData(endUrl))
   }
 
-  const forgotClicked = () => {
+   const forgotClicked = () => {
     navigation.navigate(AuthNavigator.AuthStackIdentifiers.FORGOT);
   };
 
