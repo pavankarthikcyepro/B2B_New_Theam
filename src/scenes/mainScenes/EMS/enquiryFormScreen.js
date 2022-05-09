@@ -1827,7 +1827,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       openAccordian === "2"
                         ? Colors.RED
                         : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 60,
+                    height: 50,
                   },
                   styles.accordianBorder,
                 ]}
@@ -1977,7 +1977,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       openAccordian === "3"
                         ? Colors.RED
                         : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 60,
+                    height: 50,
                   },
                   styles.accordianBorder,
                 ]}
@@ -2361,7 +2361,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       openAccordian === "4"
                         ? Colors.RED
                         : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 60,
+                    height: 50,
                   },
                   styles.accordianBorder,
                 ]}
@@ -2405,7 +2405,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   value={selector.transmission_type}
                 />
                   <View style={[styles.addView, GlobalStyle.shadow]}>
-                    <Pressable onPress={() => console.log("model pressed")}>
+                    <Pressable onPress={() => console.log("pressed")}>
                         <CREATE_NEW width={60} height={60} fill={"rgba(76,24,197,0.8)"} />
                     </Pressable>
                 </View>
@@ -2426,7 +2426,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     backgroundColor:
                       openAccordian === "5"
                         ? Colors.RED
-                        : Colors.SKY_LIGHT_BLUE_COLOR, height: 60,                  },
+                        : Colors.SKY_LIGHT_BLUE_COLOR, height: 50,                  },
                   styles.accordianBorder,
                 ]}
               >
@@ -2647,7 +2647,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       openAccordian === "6"
                         ? Colors.RED
                         : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 60,
+                    height: 50,
                   },
                   styles.accordianBorder,
                 ]}
@@ -2875,7 +2875,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       openAccordian === "7"
                         ? Colors.RED
                         : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 60,
+                    height: 50,
                   },
                   styles.accordianBorder,
                 ]}
@@ -3126,7 +3126,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         openAccordian === "8"
                           ? Colors.RED
                           : Colors.SKY_LIGHT_BLUE_COLOR,
-                      height: 60,
+                      height: 50,
                     },
                     styles.accordianBorder,
                   ]}
@@ -3247,7 +3247,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         openAccordian === "9"
                           ? Colors.RED
                           : Colors.SKY_LIGHT_BLUE_COLOR,
-                      height: 60,
+                      height: 50,
                     },
                     styles.accordianBorder,
                   ]}
@@ -3649,7 +3649,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         openAccordian === "10"
                           ? Colors.RED
                           : Colors.SKY_LIGHT_BLUE_COLOR,
-                      height: 60,
+                      height: 50,
                     },
                     styles.accordianBorder,
                   ]}
