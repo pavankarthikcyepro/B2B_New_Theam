@@ -22,6 +22,7 @@ import * as AsyncStore from '../../asyncStore';
 // import { useNavigation } from '@react-navigation/native';
 import { useIsFocused } from "@react-navigation/native";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
+import Entypo from "react-native-vector-icons/FontAwesome";
 
 // import { EVENT_MANAGEMENT, CUSTOMER_RELATIONSHIP, DOCUMENT_WALLET, HOME_LINE, BOOKING_TRACKER } from "../assets/svg";
 
@@ -34,7 +35,7 @@ import QR_CODE from "../../assets/images/qr-code.svg";
 import { BOOKING_TRACKER_STR, CUSTOMER_RELATIONSHIP_STR, DOCUMENT_WALLET_STR, EVENT_MANAGEMENT_STR, HOME_LINE_STR, QR_CODE_STR } from "../../redux/sideMenuReducer";
 
 const screenWidth = Dimensions.get("window").width;
-const profileWidth = screenWidth / 4;
+const profileWidth = screenWidth / 6;
 const profileBgWidth = profileWidth + 5;
 
 const receptionMenu = [
@@ -162,6 +163,9 @@ const SideMenuScreen = ({ navigation }) => {
             case 109:
                 navigation.navigate(AppNavigator.DrawerStackIdentifiers.taskTransfer);
                 break;
+            case 111:
+                signOutClicked();
+                break;
             // case 999:
             //   navigation.navigate("Target Settings");
             //   break;
@@ -211,7 +215,7 @@ const SideMenuScreen = ({ navigation }) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.topView}>
+            {/* <View style={styles.topView}>
                 <IconButton
                     icon={"chevron-left"}
                     size={30}
@@ -226,10 +230,13 @@ const SideMenuScreen = ({ navigation }) => {
                         {empName + ","}
                     </Text>
                 </Text>
-            </View>
+            </View> */}
             <View style={styles.profileContainerView}>
-                <View style={[styles.profileBgVw, GlobalStyle.shadow]}>
+                <View style={styles.profileBgVw}>
                     <TouchableOpacity onPress={selectImage}>
+                        <View style={styles.editButton}>
+                            <Entypo size={12} name="pencil" color={Colors.WHITE} />
+                        </View>
                         <Image
                             style={{
                                 width: profileWidth,
@@ -243,88 +250,61 @@ const SideMenuScreen = ({ navigation }) => {
                         //  source={require("../../assets/images/bently.png")}
                         />
                     </TouchableOpacity>
-                </View>
-                <View style={{ marginTop: 15 }}>
-                    <Text style={[styles.nameStyle, { textAlign: "center" }]}>
-                        {empName}
-                    </Text>
-                    <Text style={styles.text1}>{role}</Text>
+                    <View style={styles.profilDetailes}>
+                        <Text style={styles.nameStyle}>{empName}</Text>
+                        <Text style={styles.text1}>{role}</Text>
+                    </View>
                 </View>
 
-                <View style={{ marginTop: 5 }}>
+                <View style={{ marginTop: 10 }}>
                     <Text style={styles.text2}>
-                        {"Email: "}
-                        <Text style={[styles.text2, { color: Colors.SKY_BLUE }]}>
+                        {"Email:  "}
+                        <Text style={[styles.text2, { color: Colors.GRAY, fontWeight: "bold" }]}>
                             {email}
                         </Text>
                     </Text>
-                    <Text style={styles.text2}>{"Office Location: " + location}</Text>
+                    {/* <Text style={styles.text2}>{"Office Location: " + location}</Text> */}
+                    <Text style={styles.text2}>{"Office Location:  "}
+                        <Text style={{ color: Colors.GRAY, fontWeight: "bold" }}>{location || "No Location Set"}</Text>
+                    </Text>
                 </View>
             </View>
             <Divider />
             <FlatList
                 data={newTableData}
-                keyExtractor={(item, index) => index.toString()}
+                keyExtractor={(item, index) => index}
                 renderItem={({ item, index }) => {
                     return (
-                        <>
-                            {/* {item.title !== 'Task Transfer' && item.title !== 'Team Shuffle' &&
-                                <Pressable onPress={() => itemSelected(item)}>
-                                    <View
-                                        style={{
-                                            paddingLeft: 10,
-                                            height: 40,
-                                            justifyContent: "center",
-                                        }}
-                                    >
-                                       
-                                        <View style={{ flexDirection: "row", height: 25, alignItems: "center", paddingLeft: 10, marginBottom: 5 }}>
-                                            {item.icon === EVENT_MANAGEMENT_STR && <EVENT_MANAGEMENT width={20} height={20} color={'black'} />}
-                                            {item.icon === CUSTOMER_RELATIONSHIP_STR && <CUSTOMER_RELATIONSHIP width={20} height={20} color={'black'} />}
-                                            {item.icon === DOCUMENT_WALLET_STR && <DOCUMENT_WALLET width={20} height={20} color={'black'} />}
-                                            {item.icon === HOME_LINE_STR && <HOME_LINE width={20} height={20} color={'black'} />}
-                                            {item.icon === BOOKING_TRACKER_STR && <BOOKING_TRACKER width={20} height={20} color={'black'} />}
-                                            {item.icon === QR_CODE_STR && <Image style={{ height: 20, width: 20 }} source={require('../../assets/images/qr-code-3x.png')} />}
-                                            <Text style={{ fontSize: 16, fontWeight: "600", marginLeft: 15 }}>{item.title}</Text>
-                                        </View>
-                                        <Divider />
-                                    </View>
-                                </Pressable>
-                            } */}
-
-                            {/* {(item.title === 'Task Transfer' || item.title === 'Team Shuffle') && selector.isManager && */}
-                                <Pressable onPress={() => itemSelected(item)}>
-                                    <View
-                                        style={{
-                                            paddingLeft: 10,
-                                            height: 40,
-                                            justifyContent: "center",
-                                        }}
-                                    >
-                                        {/* <List.Item
+                        <Pressable onPress={() => itemSelected(item)}>
+                            <View
+                                style={{
+                                    paddingLeft: 10,
+                                    height: 55,
+                                    justifyContent: "center",
+                                }}
+                            >
+                                {/* <List.Item
                   title={item.title}
                   titleStyle={{ fontSize: 16, fontWeight: "600" }}
                   left={(props) => <List.Icon {...props} icon="folder" style={{ margin: 0 }} />}
                 /> */}
-                                        <View style={{ flexDirection: "row", height: 25, alignItems: "center", paddingLeft: 10, marginBottom: 5 }}>
-                                            {/* <VectorImage source={item.icon} width={20} height={20} /> */}
-                                            {item.icon === EVENT_MANAGEMENT_STR && <EVENT_MANAGEMENT width={20} height={20} color={'black'} />}
-                                            {item.icon === CUSTOMER_RELATIONSHIP_STR && <CUSTOMER_RELATIONSHIP width={20} height={20} color={'black'} />}
-                                            {item.icon === DOCUMENT_WALLET_STR && <DOCUMENT_WALLET width={20} height={20} color={'black'} />}
-                                            {item.icon === HOME_LINE_STR && <HOME_LINE width={20} height={20} color={'black'} />}
-                                            {item.icon === BOOKING_TRACKER_STR && <BOOKING_TRACKER width={20} height={20} color={'black'} />}
-                                            {item.icon === QR_CODE_STR && <Image style={{ height: 20, width: 20 }} source={require('../../assets/images/qr-code-3x.png')} />}
-                                            <Text style={{ fontSize: 16, fontWeight: "600", marginLeft: 15 }}>{item.title}</Text>
-                                        </View>
-                                        <Divider />
-                                    </View>
-                                </Pressable>
-                            {/* } */}
-                        </>
+                                <View style={{ flexDirection: "row", height: 25, alignItems: "center", paddingLeft: 10, marginBottom: 5 }}>
+                                    {/* <VectorImage source={item.icon} width={20} height={20} /> */}
+                                    {item.icon === EVENT_MANAGEMENT_STR && <EVENT_MANAGEMENT width={20} height={20} color='green' />}
+                                    {item.icon === CUSTOMER_RELATIONSHIP_STR && <CUSTOMER_RELATIONSHIP width={20} height={20} color={'black'} />}
+                                    {item.icon === DOCUMENT_WALLET_STR && <DOCUMENT_WALLET width={20} height={20} color={'black'} />}
+                                    {item.icon === HOME_LINE_STR && <HOME_LINE width={20} height={20} color={'black'} />}
+                                    {item.icon === BOOKING_TRACKER_STR && <BOOKING_TRACKER width={20} height={20} color={'black'} />}
+                                    {item.icon === QR_CODE_STR && <QR_CODE width={20} height={20} color={'black'} />}
+                                    <Text style={{ fontSize: 15, fontWeight: "bold", marginLeft: 25, color: "gray" }}>{item.title}</Text>
+                                </View>
+                                {/* <Divider /> */}
+                            </View>
+                        </Pressable>
                     );
                 }}
             />
-            <View style={styles.bottomVw}>
+            {/* <View style={styles.bottomVw}>
                 <Button
                     icon="logout"
                     mode="contained"
@@ -339,7 +319,7 @@ const SideMenuScreen = ({ navigation }) => {
                 >
                     Sign Out
         </Button>
-            </View>
+            </View> */}
         </SafeAreaView>
     );
 };
@@ -357,40 +337,54 @@ const styles = StyleSheet.create({
         alignItems: "center",
         overflow: 'hidden'
     },
+    profilDetailes: {
+        marginLeft: 15
+    },
     nameStyle: {
-        fontSize: 18,
-        fontWeight: "600",
+        fontSize: 17,
+        fontWeight: "bold",
         color: Colors.BLACK,
     },
-    profileContainerView: {
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        marginVertical: 30,
-    },
     text1: {
-        marginTop: 5,
-        fontSize: 16,
+        marginTop: 3,
+        fontSize: 14,
         fontWeight: "200",
         textAlign: 'center',
         color: Colors.DARK_GRAY,
     },
+    profileContainerView: {
+        flexDirection: "column",
+        // justifyContent: "center",
+        // alignItems: "center",
+        marginVertical: 30,
+        paddingHorizontal: 20
+    },
     text2: {
         marginTop: 5,
         fontSize: 14,
-        fontWeight: "400",
+        // fontWeight: "400",
         color: Colors.GRAY,
     },
     profileBgVw: {
-        width: profileBgWidth,
-        height: profileBgWidth,
-        borderRadius: profileBgWidth / 2,
+        // width: profileBgWidth,
+        // height: profileBgWidth,
+        // borderRadius: profileBgWidth / 2,
         backgroundColor: Colors.WHITE,
-        justifyContent: "center",
+        // justifyContent: "center",
         alignItems: "center",
+        flexDirection: "row"
     },
     bottomVw: {
         bottom: 0,
         paddingVertical: 20,
     },
+    editButton: {
+        position: "absolute",
+        top: -1,
+        right: 0,
+        zIndex: 2,
+        backgroundColor: "#f81567e3",
+        borderRadius: 30,
+        padding: 4
+    }
 });

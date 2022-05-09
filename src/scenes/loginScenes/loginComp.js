@@ -7,6 +7,7 @@ import {
   Dimensions,
   Pressable,
   Animated,
+  StatusBar,
   Image,
   Modal,
   TextInput,
@@ -76,7 +77,7 @@ const LoginScreen = ({ navigation }) => {
     if (employeeId.length === 0) {
       let object = {
         key: "EMPLOYEEID",
-        message: "Please enter employee id",
+        message: "Please enter username",
       };
       dispatch(showErrorMessage(object));
       return;
@@ -164,7 +165,7 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-
+      <StatusBar backgroundColor="white" barStyle="dark-content" />
       <LoaderComponent
         visible={selector.isLoading}
         onRequestClose={() => { }}
@@ -177,13 +178,13 @@ const LoginScreen = ({ navigation }) => {
         keyboardVerticalOffset={100}
       >
 
-        <View style={{ flexDirection: 'column', backgroundColor: Colors.LIGHT_GRAY }}>
+        <View style={{ flexDirection: 'column', backgroundColor: Colors.WHITE }}>
 
-          <View style={{ width: "100%", height: ScreenHeight * 0.3, alignItems: "center", justifyContent: 'center', }}>
+          <View style={{ width: "100%", height: ScreenHeight * 0.23, alignItems: "center", justifyContent: 'center', }}>
             <Image
-              style={{ width: 300, height: ScreenHeight * 0.4 }}
+              style={{ width: 200, height: ScreenHeight * 0.4 }}
               resizeMode={"center"}
-              source={require("../../assets/images/welcome.png")}
+              source={require("../../assets/images/logo.png")}
             />
           </View>
         </View>
@@ -193,17 +194,17 @@ const LoginScreen = ({ navigation }) => {
             position: "absolute",
             paddingHorizontal: 20,
             paddingTop: 30,
-            marginTop: ScreenHeight * 0.22,
+            marginTop: ScreenHeight * 0.18,
             backgroundColor: Colors.WHITE,
             borderTopEndRadius: 4,
           }}
         >
-          <Text style={styles.welcomeStyle}>{"Welcome To Automate"}</Text>
+          <Text style={styles.welcomeStyle}>{"Login"}</Text>
           <TextinputComp
             value={selector.employeeId}
             error={selector.showLoginErr}
             errorMsg={selector.loginErrMessage}
-            label={"Employee ID"}
+            label={"Email or Username"}
             mode={"outlined"}
             onChangeText={(text) => dispatch(updateEmployeeId(text))}
           />
@@ -226,18 +227,34 @@ const LoginScreen = ({ navigation }) => {
             </Pressable>
           </View>
           <View style={{ height: 40 }}></View>
-          <ButtonComp
-            title={"LOG IN"}
+          <Pressable 
+            style={styles.loginButton}
+            onPress={() => loginClicked()}
+          >
+            <Text style={styles.buttonText}>Login to Account</Text>
+          </Pressable>
+          <Image 
+            source={require("../../assets/images/loginCar.jpg")}
+            style={styles.loginImage}
+          />
+          <Pressable
+            style={styles.signUpButton}
+            // onPress={loginClicked()}
+          >
+            <Text style={styles.signUpText}>Don't have an account? <Text style={styles.signUpSubtext}>Sign Up</Text></Text>
+          </Pressable>
+          {/* <ButtonComp
+            title={"Login to Account"}
             width={ScreenWidth - 40}
             onPress={loginClicked}
             disabled={selector.isLoading ? true : false}
-          />
-          <View style={{ width: "100%", height: 50, justifyContent: "center", alignItems: 'center' }}>
+          /> */}
+          {/* <View style={{ width: "100%", height: 50, justifyContent: "center", alignItems: 'center' }}>
             <Text style={{ fontSize: 12, fontWeight: "400", color: Colors.GRAY }}>{"Version: 0.4"}</Text>
-          </View>
+          </View> */}
 
           {/* Bottom Popup */}
-          <Animated.View style={[styles.bottomView, { opacity: fadeAnima }]}>
+          {/* <Animated.View style={[styles.bottomView, { opacity: fadeAnima }]}>
             <View style={styles.bottomVwSubVw}>
               <Text style={styles.text1}>{"User’s Profile"}</Text>
               <Text style={styles.text2}>
@@ -253,7 +270,7 @@ const LoginScreen = ({ navigation }) => {
               size={20}
               onPress={closeBottomView}
             />
-          </Animated.View>
+          </Animated.View> */}
         </View>
       </KeyboardAvoidingView>
 
@@ -270,21 +287,22 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.WHITE,
   },
   welcomeStyle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: Colors.RED,
+    fontSize: 24,
+    color: Colors.BLACK,
     textAlign: "center",
-    marginBottom: 40,
+    marginBottom: 30,
+    fontWeight: "bold"
   },
   forgotView: {
     flexDirection: "row",
     justifyContent: "flex-end",
   },
   forgotText: {
-    paddingTop: 5,
+    paddingTop: 15,
     fontSize: 12,
     fontWeight: "400",
-    color: Colors.DARK_GRAY,
+    color: Colors.BLACK,
+    fontWeight: "bold",
     textAlign: "right",
   },
   bottomView: {
@@ -311,4 +329,29 @@ const styles = StyleSheet.create({
     marginTop: 10,
     right: 20,
   },
+  loginButton: {
+    backgroundColor: "#f81567",
+    height: 50,
+    width: ScreenWidth - 40,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 8,
+    elevation: 3
+  },
+  buttonText: {
+    fontWeight: "bold",
+    color: Colors.WHITE
+  },
+  loginImage: {
+    width: ScreenWidth - 40,
+    height: 100,
+    marginTop:30
+  },
+  signUpText: {
+    alignSelf: "center",
+    marginTop: 25
+  },
+  signUpSubtext: {
+    fontWeight: "bold"
+  }
 });
