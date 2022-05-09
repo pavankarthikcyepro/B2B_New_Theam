@@ -197,7 +197,10 @@ const URL = {
     },
     GET_WORK_FLOW_TASKS: (universalId) => {
         return sales_url + `/workflow/lead/universalId/${universalId}`;
-    }
+    },
+    // GET_BOOKING: (employeeId) => {
+    // return sales_url + /lead/employeeId/${employeeId}'
+
 }
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason

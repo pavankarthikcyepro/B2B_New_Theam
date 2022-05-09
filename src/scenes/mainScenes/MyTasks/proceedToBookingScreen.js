@@ -51,7 +51,7 @@ const SecondDependencyArray = [
 
 const ProceedToBookingScreen = ({ route, navigation }) => {
   const { taskId, identifier, universalId, taskStatus } = route.params;
-  const selector = useSelector((state) => state.proceedToPreBookingReducer);
+  const selector = useSelector((state) => state.proceedToBookingReducer);
   const dispatch = useDispatch();
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [dataForDropDown, setDataForDropDown] = useState([]);

@@ -173,7 +173,7 @@ export const getCustomerTypesApi = createAsyncThunk(
 );
 
 export const getDropDataApi = createAsyncThunk(
-  "BOONING_FORMS_SLICE/getDropDataApi",
+  "PREBOONING_FORMS_SLICE/getDropDataApi",
   async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.GET_DROP_DATA(), payload);
     try {
@@ -241,7 +241,7 @@ export const getOnRoadPriceDtoListApi = createAsyncThunk(
 export const preBookingPaymentApi = createAsyncThunk(
   "PREBOONING_FORMS_SLICE/preBookingPaymentApi",
   async (payload, { rejectWithValue }) => {
-    const response = await client.post(URL.PRE_BOOKING_PAYMENT(), payload);
+    const response = await client.post(URL.BOOKING_PAYMENT(), payload);
     try {
       const json = await response.json();
       if (response.status != 200) {
@@ -286,7 +286,7 @@ export const getPaymentDetailsApi = createAsyncThunk(
   "PREBOONING_FORMS_SLICE/getPaymentDetailsApi",
   async (leadId, { rejectWithValue }) => {
     const response = await client.get(
-      URL.GET_PRE_BOOKING_PAYMENT_DETAILS(leadId)
+      URL.GET_BOOKING_PAYMENT_DETAILS(leadId)
     );
     try {
       const json = await response.json();
@@ -331,7 +331,7 @@ export const getBookingAmountDetailsApi = createAsyncThunk(
 export const getAssignedTasksApi = createAsyncThunk(
   "PREBOONING_FORMS_SLICE/getAssignedTasksApi",
   async (universalId, { rejectWithValue }) => {
-    const url = URL.TASKS_PRE_ENQUIRY() + universalId;
+    const url = URL.TASKS_ENQUIRY() + universalId;
     const response = await client.get(url);
     try {
       const json = await response.json();

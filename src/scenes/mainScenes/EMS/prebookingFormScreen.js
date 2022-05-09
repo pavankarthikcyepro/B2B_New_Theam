@@ -478,7 +478,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       if (dmsLeadDto.leadStatus === "SENTFORAPPROVAL") {
         setShowApproveRejectBtn(true);
       }
-      if (dmsLeadDto.leadStatus === "PREBOOKINGCOMPLETED") {
+      if (dmsLeadDto.leadStatus === "BOOKINGCOMPLETED") {
         setShowPrebookingPaymentSection(true);
         // Get Payment Details
         dispatch(getPaymentDetailsApi(dmsLeadDto.id));
