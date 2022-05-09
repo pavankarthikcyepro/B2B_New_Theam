@@ -3,9 +3,13 @@ import { Colors } from "../../styles";
 import {
   View,
   StyleSheet,
-  Image
+  Image,
 } from "react-native";
 import { IconButton } from "react-native-paper";
+
+
+
+
 
 const DigitalPaymentScreen = ({navigation}) => {
 
@@ -22,6 +26,7 @@ const DigitalPaymentScreen = ({navigation}) => {
 
   return (
     <View style={styles.container}>
+     
       <IconButton
         icon="close"
         color={Colors.BLACK}
@@ -52,6 +57,7 @@ const styles = StyleSheet.create({
   tinyLogo: {
     width: 300,
     height: 300,
+    
     alignItems: "center",
     justifyContent: "center",
   },

@@ -108,6 +108,8 @@ import {
   GetFinanceBanksList,
   PincodeDetails,
 } from "../../../utils/helperFunctions";
+
+import CREATE_NEW from "../../../assets/images/create_new.svg";
 import URL from "../../../networking/endpoints";
 import { getEnquiryList } from "../../../redux/enquiryReducer";
 import { AppNavigator } from "../../../navigations";
@@ -1531,7 +1533,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 titleStyle={{
                   color: openAccordian === "1" ? Colors.WHITE : Colors.BLACK,
                   fontSize: 16,
-                  fontWeight: "800",
+                  fontWeight: "600",
                 }}
                 style={[
                   {
@@ -1825,7 +1827,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       openAccordian === "2"
                         ? Colors.RED
                         : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 50,
+                    height: 60,
                   },
                   styles.accordianBorder,
                 ]}
@@ -1975,7 +1977,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       openAccordian === "3"
                         ? Colors.RED
                         : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 50,
+                    height: 60,
                   },
                   styles.accordianBorder,
                 ]}
@@ -2359,7 +2361,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       openAccordian === "4"
                         ? Colors.RED
                         : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 50,
+                    height: 60,
                   },
                   styles.accordianBorder,
                 ]}
@@ -2402,6 +2404,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   editable={false}
                   value={selector.transmission_type}
                 />
+                  <View style={[styles.addView, GlobalStyle.shadow]}>
+                    <Pressable onPress={() => console.log("model pressed")}>
+                        <CREATE_NEW width={60} height={60} fill={"rgba(76,24,197,0.8)"} />
+                    </Pressable>
+                </View>
                 <Text style={GlobalStyle.underline}></Text>
               </List.Accordion>
               <View style={styles.space}></View>
@@ -2419,7 +2426,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     backgroundColor:
                       openAccordian === "5"
                         ? Colors.RED
-                        : Colors.SKY_LIGHT_BLUE_COLOR, height: 50,                  },
+                        : Colors.SKY_LIGHT_BLUE_COLOR, height: 60,                  },
                   styles.accordianBorder,
                 ]}
               >
@@ -2640,7 +2647,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       openAccordian === "6"
                         ? Colors.RED
                         : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 50,
+                    height: 60,
                   },
                   styles.accordianBorder,
                 ]}
@@ -2868,7 +2875,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       openAccordian === "7"
                         ? Colors.RED
                         : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 50,
+                    height: 60,
                   },
                   styles.accordianBorder,
                 ]}
@@ -3110,8 +3117,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   title={"Additional Buyer"}
                   titleStyle={{
                     color: openAccordian === "8" ? Colors.WHITE : Colors.BLACK,
-                    fontSize: 16,
-                    fontWeight: "600",
+                    fontSize: 24,
+                    fontWeight: "400",
                   }}
                   style={[
                     {
@@ -3119,7 +3126,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         openAccordian === "8"
                           ? Colors.RED
                           : Colors.SKY_LIGHT_BLUE_COLOR,
-                      height: 50,
+                      height: 60,
                     },
                     styles.accordianBorder,
                   ]}
@@ -3231,8 +3238,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   title={"Replacement Buyer"}
                   titleStyle={{
                     color: openAccordian === "9" ? Colors.WHITE : Colors.BLACK,
-                    fontSize: 16,
-                    fontWeight: "600",
+                    fontSize: 24,
+                    fontWeight: "400",
                   }}
                   style={[
                     {
@@ -3240,7 +3247,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         openAccordian === "9"
                           ? Colors.RED
                           : Colors.SKY_LIGHT_BLUE_COLOR,
-                      height: 50,
+                      height: 60,
                     },
                     styles.accordianBorder,
                   ]}
@@ -3633,8 +3640,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   title={"Enquiry Drop Section"}
                   titleStyle={{
                     color: openAccordian === "10" ? Colors.WHITE : Colors.BLACK,
-                    fontSize: 16,
-                    fontWeight: "600",
+                    fontSize: 24,
+                    fontWeight: "400",
                   }}
                   style={[
                     {
@@ -3642,7 +3649,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         openAccordian === "10"
                           ? Colors.RED
                           : Colors.SKY_LIGHT_BLUE_COLOR,
-                      height: 50,
+                      height: 60,
                     },
                     styles.accordianBorder,
                   ]}
@@ -3737,8 +3744,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   baseVw: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingHorizontal: 15,
+    paddingVertical: 2,
   },
   shadow: {
     shadowColor: Colors.DARK_GRAY,
@@ -3755,7 +3762,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   space: {
-    height: 5,
+    height: 8,
   },
   drop_down_view_style: {
     paddingTop: 5,
@@ -3834,8 +3841,14 @@ const styles = StyleSheet.create({
     color: Colors.DARK_GRAY,
   },
   accordianBorder: {
-    borderWidth: 0.5,
+    borderWidth: 0.4,
     borderRadius: 4,
     borderColor: "#7a7b7d",
+  },
+  addView: {
+    position: "absolute",
+    bottom: 10,
+    right: 10,
+    backgroundColor: "white",
   },
 });

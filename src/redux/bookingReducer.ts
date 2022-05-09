@@ -3,7 +3,7 @@ import { client } from "../networking/client";
 import URL from "../networking/endpoints";
 
 export const getPreBookingData = createAsyncThunk(
-  "PRE_BOOKING_SLICE/getPreBookingData",
+  "BOOKING_SLICE/getPreBookingData",
   async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.LEADS_LIST_API_FILTER(), payload);
     const json = await response.json();
@@ -15,7 +15,7 @@ export const getPreBookingData = createAsyncThunk(
 );
 
 export const getMorePreBookingData = createAsyncThunk(
-  "PRE_BOOKING_SLICE/getMorePreBookingData",
+  "PREBOOKING_SLICE/getMorePreBookingData",
   async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.LEADS_LIST_API_FILTER(), payload);
     const json = await response.json();
