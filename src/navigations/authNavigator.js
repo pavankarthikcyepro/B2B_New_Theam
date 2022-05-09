@@ -27,7 +27,11 @@ const AuthStackNavigator = () => {
             }}
         >
             <Stack.Screen name={AuthStackIdentifiers.WELCOME} component={WelcomeScreen} options={{ headerShown: false, }} />
-            <Stack.Screen name={AuthStackIdentifiers.LOGIN} component={LoginScreen} options={{ title: 'Sign In', headerBackTitleVisible: false }} />
+            <Stack.Screen 
+                name={AuthStackIdentifiers.LOGIN} 
+                component={LoginScreen} 
+                options={{headerShown: false }}
+            />
             <Stack.Screen name={AuthStackIdentifiers.FORGOT} component={ForgotScreen} options={{ title: 'Forgot', headerBackTitleVisible: false }} />
             <Stack.Screen name={AuthStackIdentifiers.SELECT_BRANCH} component={SelectBranchComp} options={{ title: 'Select Branch', headerBackTitleVisible: false }} />
         </Stack.Navigator>

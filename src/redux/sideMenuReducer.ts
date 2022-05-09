@@ -12,7 +12,7 @@ export const QR_CODE_STR = "QR_CODE"
 const data = [
   {
     title: "Home",
-    icon: HOME_LINE_STR,
+    icon: BOOKING_TRACKER_STR,
     screen: 99,
   },
   {
@@ -47,7 +47,7 @@ const data = [
   },
   {
     title: "Digital Payment",
-    icon: QR_CODE_STR,
+    icon: BOOKING_TRACKER_STR,
     screen: 105,
   },
   // {
@@ -64,6 +64,11 @@ const data = [
     title: "Settings",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 102,
+  },
+  {
+    title: "Sign Out",
+    icon: CUSTOMER_RELATIONSHIP_STR,
+    screen: 111,
   },
 ];
 
