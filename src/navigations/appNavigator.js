@@ -409,11 +409,21 @@ const MyTaskStackNavigator = ({ navigation }) => {
       />
 
       <MyTaskStack.Screen
-        name={MyTasksStackIdentifiers.homeVisit}
-        component={HomeVisitScreen}
-        options={{ title: "Home Visit" }}
+        name={MyTasksStackIdentifiers.tasksListScreen}
+        component={TaskListScreen}
+        options={{ title: "My Tasks" }}
+      />
+      <MyTaskStack.Screen
+        name={MyTasksStackIdentifiers.createEnquiry}
+        component={CreateEnquiryScreen}
+        options={{ title: "Create Enquiry" }}
       />
 
+      <MyTaskStack.Screen
+        name={MyTasksStackIdentifiers.enquiryFollowUp}
+        component={EnquiryFollowUpScreen}
+        options={{ title: "Enquiry Follow Up" }}
+      />
       <MyTaskStack.Screen
         name={MyTasksStackIdentifiers.testDrive}
         component={TestDriveScreen}
@@ -421,9 +431,9 @@ const MyTaskStackNavigator = ({ navigation }) => {
       />
 
       <MyTaskStack.Screen
-        name={MyTasksStackIdentifiers.enquiryFollowUp}
-        component={EnquiryFollowUpScreen}
-        options={{ title: "Enquiry Follow Up" }}
+        name={MyTasksStackIdentifiers.homeVisit}
+        component={HomeVisitScreen}
+        options={{ title: "Home Visit" }}
       />
 
       <MyTaskStack.Screen
@@ -435,18 +445,6 @@ const MyTaskStackNavigator = ({ navigation }) => {
         name={MyTasksStackIdentifiers.proceedToBooking}
         component={ProceedToBookingScreen}
         options={{ title: "Proceed To Booking" }}
-      />
-
-      <MyTaskStack.Screen
-        name={MyTasksStackIdentifiers.createEnquiry}
-        component={CreateEnquiryScreen}
-        options={{ title: "Create Enquiry" }}
-      />
-
-      <MyTaskStack.Screen
-        name={MyTasksStackIdentifiers.tasksListScreen}
-        component={TaskListScreen}
-        options={{ title: "My Tasks" }}
       />
     </MyTaskStack.Navigator>
   );

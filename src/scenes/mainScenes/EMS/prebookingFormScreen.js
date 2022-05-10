@@ -3468,7 +3468,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               {isDropSelected ? (
                 <List.Accordion
                   id={"10"}
-                  title={"PreBooking Drop Section"}
+                  title={"Pre Booking Cancel Section"}
                   titleStyle={{
                     color: openAccordian === "10" ? Colors.WHITE : Colors.BLACK,
                     fontSize: 16,
@@ -3729,7 +3729,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   labelStyle={{ textTransform: "none" }}
                   onPress={() => setIsDropSelected(true)}
                 >
-                  Drop
+                  Cancel
                 </Button>
                 <Button
                   mode="contained"

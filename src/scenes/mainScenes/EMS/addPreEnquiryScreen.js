@@ -370,14 +370,19 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       showToastRedAlert("Please fill required fields");
       return;
     }
-    if (selector.enquiryType === "Personal") {
-      if (selector.customerType === "Government") {
-        if (!isValidateAlphabetics(selector.companyName)) {
-          showToast("Please enter alphabetics only Company Name");
-          return;
+  
+        if (
+          selector.enquiryType === "Personal" &&
+          selector.customerType === "Government"
+        ) {
+          if (
+            selector.companyName.length > 0 &&
+            !isValidateAlphabetics(selector.companyName)
+          ) {
+            showToast("Please enter the alphabets only in companyName");
+            return;
+          }
         }
-      }
-    }
 
     if (selector.enquiryType === "Personal" && selector.customerType === "Other") {
       if (selector.other.length > 0 && !isValidateAlphabetics(selector.other)) {
@@ -444,12 +449,12 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     // Get Pincode details from server
     GetPincodeDetails(selector.pincode);
 
-    if (selector.sourceOfEnquiry === "Event") {
-      if (selector.eventName.length === 0) {
-        showToast("Please select event details");
-        return;
-      }
-    }
+    // if (selector.sourceOfEnquiry === "Event") {
+    //   if (selector.eventName.length === 0) {
+    //     showToast("Please select event details");
+    //     return;
+    //   }
+    // }
 
     if (fromEdit) {
       updatePreEneuquiryDetails();
@@ -1084,7 +1089,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               </View>
             ) : null}
 
-            {selector.sourceOfEnquiry === "Event" ? (
+            {/* {selector.sourceOfEnquiry === "Event" ? (
               <View>
                 <DateSelectItem
                   label={"Event Start Date"}
@@ -1112,7 +1117,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                   </View>
                 ) : null}
               </View>
-            ) : null}
+            ) : null} */}
 
             {!fromEdit && (
               <TextinputComp
