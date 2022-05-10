@@ -22,6 +22,21 @@ const dummyData = [
         id: 3,
         title: "Source of Enquiry",
         subtitle: ""
+    },
+      {
+        id: 3,
+        title: "First Name",
+        subtitle: ""
+    },
+      {
+        id: 3,
+        title: "Last Name",
+        subtitle: ""
+    },
+      {
+        id: 3,
+        title: "Mobile Number",
+        subtitle: ""
     }
 ]
 
@@ -43,40 +58,58 @@ const radioDummyData = [
     }
 ]
 
-const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [], sourceList = [], onRequestClose, submitCallback }) => {
+const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [], sourceList = [],firstName = [],lastName = [], mobileNumber = [], onRequestClose, submitCallback }) => {
 
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [selectedRadioIndex, setSelectedRadioIndex] = useState("0");
     const [localModelList, setLocalModelList] = useState(modelList);
     const [localSourceOfEnquiryList, setLocalSourceOfEnquiryList] = useState(sourceList);
     const [localCategoryList, setLocalCategoryList] = useState(categoryList);
+    const [localFirstNameList, setLocalFirstNameList] = useState(firstName);
+    const [localLastNameList, setLocalLastNameList] = useState(lastName);
+    const [localMobileNumberList, setLocalMobileNumberList] = useState(mobileNumber);
+    
 
-    useEffect(() => {
-        console.log("use effect called: ", localModelList.length)
-    }, [])
 
     itemSelected = (selectedItem, itemIndex) => {
 
         if (selectedIndex === 0) {
-            let categoryList = [...localCategoryList];
-            let selectedObject = { ...categoryList[itemIndex] };
-            selectedObject.isChecked = !selectedObject.isChecked;
-            categoryList[itemIndex] = selectedObject;
-            setLocalCategoryList([...categoryList]);
-        }
-        else if (selectedIndex === 1) {
-            let models = [...localModelList];
-            let selectedObject = { ...models[itemIndex] };
-            selectedObject.isChecked = !selectedObject.isChecked;
-            models[itemIndex] = selectedObject;
-            setLocalModelList([...models]);
-        }
-        else if (selectedIndex === 2) {
-            let sources = [...localSourceOfEnquiryList];
-            let selectedObject = { ...sources[itemIndex] };
-            selectedObject.isChecked = !selectedObject.isChecked;
-            sources[itemIndex] = selectedObject;
-            setLocalSourceOfEnquiryList([...sources]);
+          let categoryList = [...localCategoryList];
+          let selectedObject = { ...categoryList[itemIndex] };
+          selectedObject.isChecked = !selectedObject.isChecked;
+          categoryList[itemIndex] = selectedObject;
+          setLocalCategoryList([...categoryList]);
+        } else if (selectedIndex === 1) {
+          let models = [...localModelList];
+          let selectedObject = { ...models[itemIndex] };
+          selectedObject.isChecked = !selectedObject.isChecked;
+          models[itemIndex] = selectedObject;
+          setLocalModelList([...models]);
+        } else if (selectedIndex === 2) {
+          let sources = [...localSourceOfEnquiryList];
+          let selectedObject = { ...sources[itemIndex] };
+          selectedObject.isChecked = !selectedObject.isChecked;
+          sources[itemIndex] = selectedObject;
+          setLocalSourceOfEnquiryList([...sources]);
+        } else if (selectedIndex === 3) {
+          let firstName = [...localFirstNameList];
+          let selectedObject = { ...firstName[itemIndex] };
+          selectedObject.isChecked = !selectedObject.isChecked;
+          firstName[itemIndex] = selectedObject;
+          setLocalSourceOfEnquiryList([...firstName]);
+        } else if (selectedIndex === 4) {
+          let lastName = [...localLastNameList];
+          let selectedObject = { ...lastName[itemIndex] };
+          selectedObject.isChecked = !selectedObject.isChecked;
+          lastName[itemIndex] = selectedObject;
+          setLocalSourceOfEnquiryList([...lastName]);
+        } 
+        else if (selectedIndex === 5) {
+          let mobileNumber = [...localMobileNumberList];
+          let selectedObject = { ...mobileNumber[itemIndex] };
+          selectedObject.isChecked = !selectedObject.isChecked;
+          mobileNumber[itemIndex] = selectedObject;
+          setLocalSourceOfEnquiryList([...mobileNumber]);
         }
     }
 
@@ -96,12 +129,40 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
         })
         setLocalModelList([...updatedModelList]);
 
-        const updatedSourceList = localModelList.map((item, index) => {
+        const updatedSourceList = localSourceOfEnquiryList.map(
+          (item, index) => {
             let newObj = { ...item };
             newObj.isChecked = false;
             return newObj;
-        })
+          }
+        );
         setLocalSourceOfEnquiryList([...updatedSourceList]);
+
+          const updatedFirstName = localFirstNameList.map(
+            (item, index) => {
+              let newObj = { ...item };
+              newObj.isChecked = false;
+              return newObj;
+            }
+          );
+          setLocalSourceOfEnquiryList([...updatedFirstName]);
+
+            const updatedLastName = localLastNameList.map((item, index) => {
+              let newObj = { ...item };
+              newObj.isChecked = false;
+              return newObj;
+            });
+            setLocalLastNameList([...updatedLastName]);
+
+            
+            const updatedMobileNumber = localMobileNumberList.map((item, index) => {
+              let newObj = { ...item };
+              newObj.isChecked = false;
+              return newObj;
+            });
+            setLocalMobileNumberList([...updatedMobileNumber]);
+
+          
     }
 
     applyButtonClicked = () => {
@@ -109,7 +170,10 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
         const payload = {
             category: localCategoryList,
             source: localSourceOfEnquiryList,
-            model: localModelList
+            model: localModelList,
+            firstname: localFirstNameList,
+            lastname: localLastNameList,
+            mobilenumber : localMobileNumberList
         }
         submitCallback(payload);
     }
@@ -124,151 +188,254 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
     }
 
     return (
-        <Modal
-            animationType={Platform.OS === "ios" ? 'slide' : 'fade'}
-            transparent={true}
-            visible={visible}
-            onRequestClose={onRequestClose}
-        >
-            <View style={styles.container}>
-                <View style={{ backgroundColor: Colors.WHITE }}>
-                    <SafeAreaView >
-                        <View style={{ backgroundColor: Colors.WHITE, height: viewHeight }} >
-                            <View style={styles.view1}>
-                                <Text style={styles.text1}>{'Sort and Filter'}</Text>
-                                <IconButton
-                                    icon={'close'}
-                                    color={Colors.DARK_GRAY}
-                                    size={20}
-                                    onPress={onRequestClose}
-                                />
-                            </View>
-                            <Text style={GlobalStyle.underline}></Text>
-                            <View style={{ flexDirection: 'row', width: '100%', height: viewHeight - 150 }}>
-                                {/* // Left Menu */}
-                                <View style={{ width: '35%', backgroundColor: Colors.LIGHT_GRAY }}>
-                                    <FlatList
-                                        key={"SIDE_MENU"}
-                                        data={dummyData}
-                                        keyExtractor={(item, index) => index.toString()}
-                                        renderItem={({ item, index }) => {
-                                            return (
-                                                <Pressable onPress={() => setSelectedIndex(index)}>
-                                                    <View style={[styles.itemView, { backgroundColor: selectedIndex === index ? Colors.WHITE : Colors.LIGHT_GRAY }]}>
-                                                        <Text style={styles.text2}>{item.title}</Text>
-                                                        {item.subtitle ? <Text style={styles.text3}>{item.subtitle}</Text> : null}
-                                                    </View>
-                                                </Pressable>
-                                            )
-                                        }}
-                                    />
-                                </View>
-                                {/* // Right Content */}
-                                <View style={{ width: '65%', paddingLeft: 10, backgroundColor: Colors.WHITE }}>
-                                    {selectedIndex === 0 && (
-                                        // <RadioButton.Group onValueChange={newValue => setSelectedRadioIndex(newValue)} value={selectedRadioIndex}>
-                                        //     {radioDummyData.map((radioItem, index) => {
-                                        //         return (
-                                        //             <View key={index} style={styles.radiobuttonVw}>
-                                        //                 <RadioButton.Android value={radioItem.id} color={Colors.RED} uncheckedColor={Colors.GRAY} />
-                                        //                 <Text style={[styles.radioText, { color: Colors.BLACK }]}>{radioItem.name}</Text>
-                                        //             </View>
-                                        //         )
-                                        //     })}
-                                        // </RadioButton.Group>
-
-                                        <View>
-                                            <FlatList
-                                                key={"CATEGORY_LIST"}
-                                                data={localCategoryList}
-                                                keyExtractor={(item, index) => index.toString()}
-                                                renderItem={({ item, index }) => {
-                                                    return (
-                                                        <TouchableOpacity onPress={() => itemSelected(item, index)}>
-                                                            <View style={styles.radiobuttonVw}>
-                                                                <Checkbox.Android
-                                                                    status={item.isChecked ? 'checked' : 'unchecked'}
-                                                                />
-                                                                <Text style={[styles.radioText, { color: Colors.BLACK }]}>{item.name}</Text>
-                                                            </View>
-                                                        </TouchableOpacity>
-                                                    )
-                                                }}
-                                            />
-                                        </View>
-                                    )}
-                                    {selectedIndex === 1 && (
-                                        <View>
-                                            <FlatList
-                                                key={"MODEL_LIST"}
-                                                data={localModelList}
-                                                keyExtractor={(item, index) => index.toString()}
-                                                renderItem={({ item, index }) => {
-                                                    return (
-                                                        <TouchableOpacity onPress={() => itemSelected(item, index)}>
-                                                            <View style={styles.radiobuttonVw}>
-                                                                <Checkbox.Android
-                                                                    status={item.isChecked ? 'checked' : 'unchecked'}
-                                                                />
-                                                                <Text style={[styles.radioText, { color: Colors.BLACK }]}>{item.name}</Text>
-                                                            </View>
-                                                        </TouchableOpacity>
-                                                    )
-                                                }}
-                                            />
-                                        </View>
-                                    )}
-                                    {selectedIndex === 2 && (
-                                        <View>
-                                            <FlatList
-                                                key={"SOURCE_LIST"}
-                                                data={localSourceOfEnquiryList}
-                                                keyExtractor={(item, index) => index.toString()}
-                                                renderItem={({ item, index }) => {
-                                                    return (
-                                                        <TouchableOpacity onPress={() => itemSelected(item, index)}>
-                                                            <View style={styles.radiobuttonVw}>
-                                                                <Checkbox.Android
-                                                                    status={item.isChecked ? 'checked' : 'unchecked'}
-                                                                />
-                                                                <Text style={[styles.radioText, { color: Colors.BLACK }]}>{item.name}</Text>
-                                                            </View>
-                                                        </TouchableOpacity>
-                                                    )
-                                                }}
-                                            />
-                                        </View>
-                                    )}
-
-                                </View>
-                            </View>
-                            <Text style={GlobalStyle.underline}></Text>
-                            <View style={styles.view2}>
-                                <Button
-                                    mode="text"
-                                    color={Colors.RED}
-                                    contentStyle={{ paddingHorizontal: 20 }}
-                                    labelStyle={{ textTransform: 'none', fontSize: 16, fontWeight: '600' }}
-                                    onPress={clearAllClicked}
-                                >
-                                    Clear All
-                                </Button>
-                                <Button
-                                    mode="contained"
-                                    color={Colors.RED}
-                                    contentStyle={{ paddingHorizontal: 20 }}
-                                    labelStyle={{ textTransform: 'none', fontSize: 14, fontWeight: '600' }}
-                                    onPress={applyButtonClicked}
-                                >
-                                    Apply
-                                </Button>
-                            </View>
-                        </View>
-                    </SafeAreaView>
+      <Modal
+        animationType={Platform.OS === "ios" ? "slide" : "fade"}
+        transparent={true}
+        visible={visible}
+        onRequestClose={onRequestClose}
+      >
+        <View style={styles.container}>
+          <View style={{ backgroundColor: Colors.WHITE }}>
+            <SafeAreaView>
+              <View
+                style={{ backgroundColor: Colors.WHITE, height: viewHeight }}
+              >
+                <View style={styles.view1}>
+                  <Text style={styles.text1}>{"Sort and Filter"}</Text>
+                  <IconButton
+                    icon={"close"}
+                    color={Colors.DARK_GRAY}
+                    size={20}
+                    onPress={onRequestClose}
+                  />
                 </View>
-            </View>
-        </Modal>
-    )
+                <Text style={GlobalStyle.underline}></Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    width: "100%",
+                    height: viewHeight - 150,
+                  }}
+                >
+                  {/* // Left Menu */}
+                  <View
+                    style={{ width: "35%", backgroundColor: Colors.LIGHT_GRAY }}
+                  >
+                    <FlatList
+                      key={"SIDE_MENU"}
+                      data={dummyData}
+                      keyExtractor={(item, index) => index.toString()}
+                      renderItem={({ item, index }) => {
+                        return (
+                          <Pressable onPress={() => setSelectedIndex(index)}>
+                            <View
+                              style={[
+                                styles.itemView,
+                                {
+                                  backgroundColor:
+                                    selectedIndex === index
+                                      ? Colors.WHITE
+                                      : Colors.LIGHT_GRAY,
+                                },
+                              ]}
+                            >
+                              <Text style={styles.text2}>{item.title}</Text>
+                              {item.subtitle ? (
+                                <Text style={styles.text3}>
+                                  {item.subtitle}
+                                </Text>
+                              ) : null}
+                            </View>
+                          </Pressable>
+                        );
+                      }}
+                    />
+                  </View>
+                  {/* // Right Content */}
+                  <View
+                    style={{
+                      width: "65%",
+                      paddingLeft: 10,
+                      backgroundColor: Colors.WHITE,
+                    }}
+                  >
+                    {selectedIndex === 0 && (
+                      // <RadioButton.Group onValueChange={newValue => setSelectedRadioIndex(newValue)} value={selectedRadioIndex}>
+                      //     {radioDummyData.map((radioItem, index) => {
+                      //         return (
+                      //             <View key={index} style={styles.radiobuttonVw}>
+                      //                 <RadioButton.Android value={radioItem.id} color={Colors.RED} uncheckedColor={Colors.GRAY} />
+                      //                 <Text style={[styles.radioText, { color: Colors.BLACK }]}>{radioItem.name}</Text>
+                      //             </View>
+                      //         )
+                      //     })}
+                      // </RadioButton.Group>
+
+                      <View>
+                        <FlatList
+                          key={"CATEGORY_LIST"}
+                          data={localCategoryList}
+                          keyExtractor={(item, index) => index.toString()}
+                          renderItem={({ item, index }) => {
+                            return (
+                              <TouchableOpacity
+                                onPress={() => itemSelected(item, index)}
+                              >
+                                <View style={styles.radiobuttonVw}>
+                                  <Checkbox.Android
+                                    status={
+                                      item.isChecked ? "checked" : "unchecked"
+                                    }
+                                  />
+                                  <Text
+                                    style={[
+                                      styles.radioText,
+                                      { color: Colors.BLACK },
+                                    ]}
+                                  >
+                                    {item.name}
+                                  </Text>
+                                </View>
+                              </TouchableOpacity>
+                            );
+                          }}
+                        />
+                      </View>
+                    )}
+                    {selectedIndex === 1 && (
+                      <View>
+                        <FlatList
+                          key={"MODEL_LIST"}
+                          data={localModelList}
+                          keyExtractor={(item, index) => index.toString()}
+                          renderItem={({ item, index }) => {
+                            return (
+                              <TouchableOpacity
+                                onPress={() => itemSelected(item, index)}
+                              >
+                                <View style={styles.radiobuttonVw}>
+                                  <Checkbox.Android
+                                    status={
+                                      item.isChecked ? "checked" : "unchecked"
+                                    }
+                                  />
+                                  <Text
+                                    style={[
+                                      styles.radioText,
+                                      { color: Colors.BLACK },
+                                    ]}
+                                  >
+                                    {item.name}
+                                  </Text>
+                                </View>
+                              </TouchableOpacity>
+                            );
+                          }}
+                        />
+                      </View>
+                    )}
+                    {selectedIndex === 2 && (
+                      <View>
+                        <FlatList
+                          key={"SOURCE_LIST"}
+                          data={localSourceOfEnquiryList}
+                          keyExtractor={(item, index) => index.toString()}
+                          renderItem={({ item, index }) => {
+                            return (
+                              <TouchableOpacity
+                                onPress={() => itemSelected(item, index)}
+                              >
+                                <View style={styles.radiobuttonVw}>
+                                  <Checkbox.Android
+                                    status={
+                                      item.isChecked ? "checked" : "unchecked"
+                                    }
+                                  />
+                                  <Text
+                                    style={[
+                                      styles.radioText,
+                                      { color: Colors.BLACK },
+                                    ]}
+                                  >
+                                    {item.name}
+                                  </Text>
+                                </View>
+                              </TouchableOpacity>
+                            );
+                          }}
+                        />
+                      </View>
+                    )}
+                    {selectedIndex === 3 && (
+                      <View>
+                        <FlatList
+                          key={"FIRST_NAME"}
+                          data={localFirstNameList}
+                          keyExtractor={(item, index) => index.toString()}
+                          renderItem={({ item, index }) => {
+                            return (
+                              <TouchableOpacity
+                                onPress={() => itemSelected(item, index)}
+                              >
+                                <View style={styles.radiobuttonVw}>
+                                  <Checkbox.Android
+                                    status={
+                                      item.isChecked ? "checked" : "unchecked"
+                                    }
+                                  />
+                                  <Text
+                                    style={[
+                                      styles.radioText,
+                                      { color: Colors.BLACK },
+                                    ]}
+                                  >
+                                    {item.name}
+                                  </Text>
+                                </View>
+                              </TouchableOpacity>
+                            );
+                          }}
+              
+              />
+                      </View>
+                    )}
+                  </View>
+                </View>
+                <Text style={GlobalStyle.underline}></Text>
+                <View style={styles.view2}>
+                  <Button
+                    mode="text"
+                    color={Colors.RED}
+                    contentStyle={{ paddingHorizontal: 20 }}
+                    labelStyle={{
+                      textTransform: "none",
+                      fontSize: 16,
+                      fontWeight: "600",
+                    }}
+                    onPress={clearAllClicked}
+                  >
+                    Clear All
+                  </Button>
+                  <Button
+                    mode="contained"
+                    color={Colors.RED}
+                    contentStyle={{ paddingHorizontal: 20 }}
+                    labelStyle={{
+                      textTransform: "none",
+                      fontSize: 14,
+                      fontWeight: "600",
+                    }}
+                    onPress={applyButtonClicked}
+                  >
+                    Apply
+                  </Button>
+                </View>
+              </View>
+            </SafeAreaView>
+          </View>
+        </View>
+      </Modal>
+    );
 }
 
 export { SortAndFilterComp };
