@@ -56,7 +56,7 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
     const [defaultContext, setDefaultContext] = useState({});
 
     useEffect(() => {
-        console.log("accessorylist: ", accessorylist.length)
+        // console.log("accessorylist: ", accessorylist.length)
         const titleNames = [];
         const dataObj = {};
         accessorylist.forEach((item) => {
@@ -90,7 +90,7 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
                 allData = allData.concat(JSON.parse(selectedData));
             }
         })
-        console.log("allData: ", allData)
+        console.log("allData: ", JSON.stringify(allData))
 
         navigation.navigate({
             name: AppNavigator.EmsStackIdentifiers.preBookingForm,

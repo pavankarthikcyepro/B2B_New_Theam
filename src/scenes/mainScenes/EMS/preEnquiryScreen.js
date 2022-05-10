@@ -271,7 +271,10 @@ const PreEnquiryScreen = ({ navigation }) => {
                                                 source={item.enquirySource}
                                                 model={item.model}
                                                 onItemPress={() => {}}
-                                                onDocPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq, { itemData: item, fromCreatePreEnquiry: false })}
+                                                onDocPress={() => {
+                                                    console.log("ITEM:", JSON.stringify(item));
+                                                    navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq, { itemData: item, fromCreatePreEnquiry: false })
+                                                }}
                                             />
                                         </View>
                                     </>
