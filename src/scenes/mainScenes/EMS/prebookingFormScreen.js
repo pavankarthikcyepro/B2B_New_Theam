@@ -1039,7 +1039,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         postOnRoadPriceTable.form_or_pan = selector.form_or_pan;
 
         console.log("PAYLOAD:", JSON.stringify(postOnRoadPriceTable));
-        // dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable));
+        dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable));
     };
 
     // Handle On Road Price Response
@@ -2474,7 +2474,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     styles.accordianBorder,
                                 ]}
                             >
-                                {isDataLoaded &&
+                                {/* {isDataLoaded && */}
                                     <DropDownSelectionItem
                                         label={"Form60/PAN"}
                                         value={selector.form_or_pan}
@@ -2482,9 +2482,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             showDropDownModelMethod("FORM_60_PAN", "Retail Finance")
                                         }
                                     />
-                                }
+                                {/* } */}
 
-                                {isDataLoaded && selector.form_or_pan === "PAN" && (
+                                {selector.form_or_pan === "PAN" && (
                                     <View>
                                         <TextinputComp
                                             style={styles.textInputStyle}
@@ -2891,7 +2891,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         {rupeeSymbol + " " + selectedInsurencePrice.toFixed(2)}
                                     </Text>
                                 </View>
-
+                                {console.log("selector.add_on_insurance:", selector.add_on_insurance)}
                                 <View style={styles.symbolview}>
                                     <View style={{ width: "70%" }}>
                                         <DropDownSelectionItem
@@ -3820,7 +3820,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             ) : null}
                         </List.AccordionGroup>
 
-                        {!isDropSelected && showSubmitDropBtn && !userData.isManager && (
+                        {/* {!isDropSelected && showSubmitDropBtn && !userData.isManager && ( */}
                             <View style={styles.actionBtnView}>
                                 <Button
                                     mode="contained"
@@ -3838,7 +3838,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     onPress={submitClicked}
                                 >SUBMIT</Button>
                             </View>
-                        )}
+                        {/* )} */}
 
                         {showApproveRejectBtn &&
                             userData.isPreBookingApprover &&

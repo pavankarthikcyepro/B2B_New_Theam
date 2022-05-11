@@ -200,7 +200,7 @@ const testDriveSlice = createSlice({
       }
     })
     builder.addCase(getTestDriveAppointmentDetailsApi.rejected, (state, action) => {
-      console.log("F getTestDriveAppointmentDetailsApi: ", JSON.stringify(action.payload));
+      // console.log("F getTestDriveAppointmentDetailsApi: ", JSON.stringify(action.payload));
       state.test_drive_appointment_details_response = null;
     })
     // Get Test Drive Vehicle list
@@ -209,7 +209,7 @@ const testDriveSlice = createSlice({
       state.test_drive_vehicle_list_for_drop_down = [];
     })
     builder.addCase(getTestDriveVehicleListApi.fulfilled, (state, action) => {
-      //console.log("S getTestDriveVehicleListApi: ", JSON.stringify(action.payload));
+      // console.log("S getTestDriveVehicleListApi: ", JSON.stringify(action.payload));
       if (action.payload.status === "SUCCESS" && action.payload.vehicles) {
         const vehicles = action.payload.vehicles;
         state.test_drive_vehicle_list = vehicles;

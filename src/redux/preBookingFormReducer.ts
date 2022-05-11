@@ -133,6 +133,8 @@ export const getDropDataApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getDropDa
   const response = await client.post(URL.GET_DROP_DATA(), payload);
   try {
     const json = await response.json();
+    // console.log("DROP:", JSON.stringify(json));
+    
     if (response.status != 200) {
       return rejectWithValue(json);
     }
@@ -968,7 +970,9 @@ const prebookingFormSlice = createSlice({
       state.registration_number = dmsLeadDto.otherVehicleRcNo ? dmsLeadDto.otherVehicleRcNo : "";
 
       // Documents
-      state.form_or_pan = dmsLeadDto.documentType ? dmsLeadDto.documentType : "";
+      if (dmsLeadDto.documentType){
+        state.form_or_pan = dmsLeadDto.documentType;
+      }
       state.gstin_number = dmsLeadDto.gstNumber ? dmsLeadDto.gstNumber : "";
       state.customer_type_category = dmsLeadDto.customerCategoryType ? dmsLeadDto.customerCategoryType : "";
 
