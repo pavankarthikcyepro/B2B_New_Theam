@@ -96,8 +96,7 @@ import {
 } from "../../../utils/toast";
 import {
   convertDateStringToMillisecondsUsingMoment,
-  isValidateAlphabetics,
-  isValidate,
+  isValidateAlphabetics,isValidate,
   isMobileNumber,
   emiCalculator,
   GetCarModelList,

@@ -38,7 +38,7 @@ export const CustomerTypesObj = {
         },
         {
             "id": "6",
-            "name": "Farmer"
+            "name": "Former"
         },
         {
             "id": "7",
