@@ -39,6 +39,8 @@ export const getPrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/
   const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
   try {
     const json = await response.json();
+    // console.log("DATA:", JSON.stringify(json));
+    
     if (response.status != 200) {
       return rejectWithValue(json);
     }
@@ -54,6 +56,8 @@ export const updatePrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLI
   const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
   try {
     const json = await response.json();
+    // console.log("DATA:", JSON.stringify(json));
+    
     if (response.status != 200) {
       return rejectWithValue(json);
     }
@@ -401,7 +405,8 @@ const prebookingFormSlice = createSlice({
     cheque_number: "",
     cheque_date: "",
     dd_number: "",
-    dd_date: ""
+    dd_date: "",
+    isDataLoaded: false
   },
   reducers: {
     clearState: (state, action) => {
@@ -1104,6 +1109,24 @@ const prebookingFormSlice = createSlice({
     builder.addCase(getPrebookingDetailsApi.fulfilled, (state, action) => {
       if (action.payload.dmsEntity) {
         state.pre_booking_details_response = action.payload.dmsEntity;
+        let attachments = action.payload.dmsEntity.dmsLeadDto.dmsAttachments;
+        if(attachments.length > 0){
+          let panDtls = [];
+          panDtls = attachments.filter((item) => {
+            return item.documentType === "pan"
+          })
+          if(panDtls.length > 0){
+            state.form_or_pan = 'PAN'
+            state.isDataLoaded = true
+            setDocumentUploadDetails({
+              key: "PAN_NUMBER",
+              text: state.pan_number,
+            })
+          }
+          else{
+            state.isDataLoaded = true
+          }
+        }
       }
       state.isLoading = false;
     })

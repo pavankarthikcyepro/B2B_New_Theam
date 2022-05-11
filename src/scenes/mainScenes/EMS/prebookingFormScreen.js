@@ -279,7 +279,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const [dropRemarks, setDropRemarks] = useState("");
     const [focPrice, setFocPrice] = useState(0);
     const [mrpPrice, setMrpPrice] = useState(0);
-
+    const [isDataLoaded, setIsDataLoaded] = useState(false);
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -338,7 +338,29 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     ]);
 
     useEffect(() => {
+        if (selector.pan_number){
+            console.log("%%%%%%%%%%", selector.pan_number, selector.form_or_pan);
+            dispatch(
+                setDocumentUploadDetails({
+                    key: "PAN_NUMBER",
+                    text: selector.pan_number,
+                })
+            );
+            setDropDownData({ key: 'FORM_60_PAN', value: 'PAN', id: '' })
+            setIsDataLoaded(true)
+        }
+    }, [
+        selector.isDataLoaded, selector.pan_number
+    ]);
+
+    useEffect(() => {
         setTotalOnRoadPriceAfterDiscount(totalOnRoadPriceAfterDiscount - focPrice) 
+        dispatch(
+            setOfferPriceDetails({
+                key: "FOR_ACCESSORIES",
+                text: focPrice.toString(),
+            })
+        )
     }, [focPrice]);
 
     useEffect(() => {
@@ -1014,7 +1036,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         postOnRoadPriceTable.warrantyAmount = selectedWarrentyPrice;
         postOnRoadPriceTable.warrantyName = selector.warranty;
 
-        dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable));
+        postOnRoadPriceTable.form_or_pan = selector.form_or_pan;
+
+        console.log("PAYLOAD:", JSON.stringify(postOnRoadPriceTable));
+        // dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable));
     };
 
     // Handle On Road Price Response
@@ -1040,6 +1065,62 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
             if (dmsEntity.hasOwnProperty("dmsLeadDto"))
                 dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
+            // const employeeData = await AsyncStore.getData(
+            //     AsyncStore.Keys.LOGIN_EMPLOYEE
+            // );
+            // if (employeeData) {
+            //     const jsonObj = JSON.parse(employeeData);
+            //     let tempAttachments = [];
+            //     if (selector.pan_number) {
+            //         tempAttachments.push({
+            //             "branchId": jsonObj.branchs[0]?.branchId,
+            //             "contentSize": 0,
+            //             "createdBy": new Date().getSeconds(),
+            //             "description": "",
+            //             "documentNumber": selector.pan_number,
+            //             "documentPath": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'pan' })[0].documentPath : '',
+            //             "documentType": "pan",
+            //             "documentVersion": 0,
+            //             "fileName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'pan' })[0].fileName : '',
+            //             "gstNumber": "",
+            //             "id": 0,
+            //             "isActive": 0,
+            //             "isPrivate": 0,
+            //             "keyName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'pan' })[0].keyName : '',
+            //             "modifiedBy": jsonObj.empName,
+            //             "orgId": jsonObj.orgId,
+            //             "ownerId": "",
+            //             "ownerName": jsonObj.empName,
+            //             "parentId": "",
+            //             "tinNumber": ""
+            //         })
+            //     }
+            //     if (selector.adhaar_number) {
+            //         tempAttachments.push({
+            //             "branchId": jsonObj.branchs[0]?.branchId,
+            //             "contentSize": 0,
+            //             "createdBy": new Date().getSeconds(),
+            //             "description": "",
+            //             "documentNumber": selector.adhaar_number,
+            //             "documentPath": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'aadhar' })[0].documentPath : '',
+            //             "documentType": "aadhar",
+            //             "documentVersion": 0,
+            //             "fileName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'aadhar' })[0].fileName : '',
+            //             "gstNumber": "",
+            //             "id": 0,
+            //             "isActive": 0,
+            //             "isPrivate": 0,
+            //             "keyName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'aadhar' })[0].keyName : '',
+            //             "modifiedBy": jsonObj.empName,
+            //             "orgId": jsonObj.orgId,
+            //             "ownerId": "",
+            //             "ownerName": jsonObj.empName,
+            //             "parentId": "",
+            //             "tinNumber": ""
+            //         })
+            //     }
+            //     dmsLeadDto.dmsAttachments = tempAttachments;
+            // }
 
             if (
                 selector.pre_booking_details_response.hasOwnProperty("dmsContactDto")
@@ -2393,15 +2474,17 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     styles.accordianBorder,
                                 ]}
                             >
-                                <DropDownSelectionItem
-                                    label={"Form60/PAN"}
-                                    value={selector.form_or_pan}
-                                    onPress={() =>
-                                        showDropDownModelMethod("FORM_60_PAN", "Retail Finance")
-                                    }
-                                />
+                                {isDataLoaded &&
+                                    <DropDownSelectionItem
+                                        label={"Form60/PAN"}
+                                        value={selector.form_or_pan}
+                                        onPress={() =>
+                                            showDropDownModelMethod("FORM_60_PAN", "Retail Finance")
+                                        }
+                                    />
+                                }
 
-                                {selector.form_or_pan === "PAN" && (
+                                {isDataLoaded && selector.form_or_pan === "PAN" && (
                                     <View>
                                         <TextinputComp
                                             style={styles.textInputStyle}
@@ -2425,7 +2508,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                                 onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
                                             />
                                         </View>
-                                        {uploadedImagesDataObj.pan ? (
+                                        {uploadedImagesDataObj.pan?.fileName ? (
                                             <DisplaySelectedImage
                                                 fileName={uploadedImagesDataObj.pan.fileName}
                                                 from={"PAN"}
@@ -2476,7 +2559,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                                 name={"Upload Adhar"}
                                                 onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
                                             />
-                                            {uploadedImagesDataObj.aadhar ? (
+                                            {uploadedImagesDataObj.aadhar?.fileName ? (
                                                 <DisplaySelectedImage
                                                     fileName={uploadedImagesDataObj.aadhar.fileName}
                                                     from={"AADHAR"}
@@ -3746,18 +3829,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     disabled={selector.isLoading}
                                     labelStyle={{ textTransform: "none" }}
                                     onPress={() => setIsDropSelected(true)}
-                                >
-                                    Drop
-                </Button>
+                                >Drop</Button>
                                 <Button
                                     mode="contained"
                                     color={Colors.RED}
                                     disabled={selector.isLoading}
                                     labelStyle={{ textTransform: "none" }}
                                     onPress={submitClicked}
-                                >
-                                    SUBMIT
-                </Button>
+                                >SUBMIT</Button>
                             </View>
                         )}
 

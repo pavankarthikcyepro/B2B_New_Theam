@@ -601,7 +601,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             let tempAttachments = [];
-            console.log("GDGHDGDGDGDGD", JSON.stringify(dmsLeadDto.dmsAttachments));
+            // console.log("GDGHDGDGDGDGD", JSON.stringify(dmsLeadDto.dmsAttachments));
             if (selector.pan_number) {
                 tempAttachments.push({
                     "branchId": jsonObj.branchs[0]?.branchId,
