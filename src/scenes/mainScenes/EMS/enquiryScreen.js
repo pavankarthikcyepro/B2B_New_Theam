@@ -13,12 +13,14 @@ import { callNumber } from "../../../utils/helperFunctions";
 import moment from "moment";
 import { Category_Type_List_For_Filter } from '../../../jsonData/enquiryFormScreenJsonData';
 import { MyTaskNewItem } from '../MyTasks/components/MyTasksNewItem';
+import { updateTAB, updateIsSearch } from '../../../redux/appReducer';
 
 const dateFormat = "YYYY-MM-DD";
 
 const EnquiryScreen = ({ navigation }) => {
 
     const selector = useSelector((state) => state.enquiryReducer);
+    const appSelector = useSelector(state => state.appReducer);
     const { vehicle_model_list_for_filters, source_of_enquiry_list } = useSelector(state => state.homeReducer);
     const dispatch = useDispatch();
     const [vehicleModelList, setVehicleModelList] = useState(vehicle_model_list_for_filters);
@@ -30,6 +32,31 @@ const EnquiryScreen = ({ navigation }) => {
     const [selectedFromDate, setSelectedFromDate] = useState("");
     const [selectedToDate, setSelectedToDate] = useState("");
     const [sortAndFilterVisible, setSortAndFilterVisible] = useState(false);
+    const [searchedData, setSearchedData] = useState([]);
+
+    useEffect(() => {
+        if (selector.enquiry_list.length > 0) {
+            setSearchedData(selector.enquiry_list)
+        }
+    }, [selector.enquiry_list])
+
+    useEffect(() => {
+        if (appSelector.isSearch) {
+            dispatch(updateIsSearch(false))
+            if (appSelector.searchKey !== '') {
+                let tempData = []
+                tempData = selector.enquiry_list.filter((item) => {
+                    return item.firstName.toLowerCase().includes(appSelector.searchKey.toLowerCase()) || item.lastName.toLowerCase().includes(appSelector.searchKey.toLowerCase())
+                })
+                setSearchedData([]);
+                setSearchedData(tempData);
+            }
+            else {
+                setSearchedData([]);
+                setSearchedData(selector.enquiry_list);
+            }
+        }
+    }, [appSelector.isSearch])
 
     useEffect(() => {
 
@@ -205,11 +232,11 @@ const EnquiryScreen = ({ navigation }) => {
                 </Pressable>
             </View>
 
-            {selector.enquiry_list.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
+            {searchedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
                 <View style={[{ backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 }]}>
                     <FlatList
-                        data={selector.enquiry_list}
-                        extraData={selector.enquiry_list}
+                        data={searchedData}
+                        extraData={searchedData}
                         keyExtractor={(item, index) => index.toString()}
                         refreshControl={(
                             <RefreshControl
@@ -220,7 +247,11 @@ const EnquiryScreen = ({ navigation }) => {
                         )}
                         showsVerticalScrollIndicator={false}
                         onEndReachedThreshold={0}
-                        onEndReached={getMoreEnquiryListFromServer}
+                        onEndReached={() => {
+                            if (appSelector.searchKey === '') {
+                                getMoreEnquiryListFromServer()
+                            }
+                        }}
                         ListFooterComponent={renderFooter}
                         renderItem={({ item, index }) => {
 

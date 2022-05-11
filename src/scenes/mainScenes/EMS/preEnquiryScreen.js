@@ -11,6 +11,7 @@ import CREATE_NEW from '../../../assets/images/create_new.svg';
 import { AppNavigator } from '../../../navigations';
 import { CallUserComponent, SortAndFilterComp, DateRangeComp, DatePickerComponent } from '../../../components';
 import { callPressed, getPreEnquiryData, setPreEnquiryList, getMorePreEnquiryData } from '../../../redux/preEnquiryReducer';
+import { updateTAB, updateIsSearch } from '../../../redux/appReducer';
 import * as AsyncStore from '../../../asyncStore';
 import realm from '../../../database/realm';
 import { callNumber } from '../../../utils/helperFunctions';
@@ -23,6 +24,7 @@ const dateFormat = "YYYY-MM-DD";
 const PreEnquiryScreen = ({ navigation }) => {
 
     const selector = useSelector(state => state.preEnquiryReducer);
+    const appSelector = useSelector(state => state.appReducer);
     const { vehicle_model_list_for_filters, source_of_enquiry_list } = useSelector(state => state.homeReducer);
     const dispatch = useDispatch();
     const [vehicleModelList, setVehicleModelList] = useState(vehicle_model_list_for_filters);
@@ -34,6 +36,7 @@ const PreEnquiryScreen = ({ navigation }) => {
     const [selectedFromDate, setSelectedFromDate] = useState("");
     const [selectedToDate, setSelectedToDate] = useState("");
     const [sortAndFilterVisible, setSortAndFilterVisible] = useState(false);
+    const [searchedData, setSearchedData] = useState([]);
 
     useEffect(() => {
 
@@ -46,6 +49,30 @@ const PreEnquiryScreen = ({ navigation }) => {
         getAsyncData(lastMonthFirstDate, currentDate);
 
     }, [])
+
+    useEffect(() => {
+        if (selector.pre_enquiry_list.length > 0){
+            setSearchedData(selector.pre_enquiry_list)
+        }
+    }, [selector.pre_enquiry_list])
+
+    useEffect(() => {
+        if (appSelector.isSearch) {
+            dispatch(updateIsSearch(false))
+            if (appSelector.searchKey !== ''){
+                let tempData = []
+                tempData = selector.pre_enquiry_list.filter((item) => {
+                    return item.firstName.toLowerCase().includes(appSelector.searchKey.toLowerCase()) || item.lastName.toLowerCase().includes(appSelector.searchKey.toLowerCase())
+                })
+                setSearchedData([]);
+                setSearchedData(tempData);
+            }
+            else{
+                setSearchedData([]);
+                setSearchedData(selector.pre_enquiry_list);
+            }
+        }
+    }, [appSelector.isSearch])
 
     const getPreEnquiryListFromDB = () => {
         const data = realm.objects('PRE_ENQUIRY_TABLE');
@@ -223,11 +250,11 @@ const PreEnquiryScreen = ({ navigation }) => {
                 </View>
                 {/* // filter */}
 
-                {selector.pre_enquiry_list.length === 0 ? <EmptyListView title={'No Data Found'} isLoading={selector.isLoading} /> :
+                {searchedData.length === 0 ? <EmptyListView title={'No Data Found'} isLoading={selector.isLoading} /> :
                     <View style={[ { backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 }]}>
                         <FlatList
-                            data={selector.pre_enquiry_list}
-                            extraData={selector.pre_enquiry_list}
+                            data={searchedData}
+                            extraData={searchedData}
                             keyExtractor={(item, index) => index.toString()}
                             refreshControl={(
                                 <RefreshControl
@@ -238,7 +265,11 @@ const PreEnquiryScreen = ({ navigation }) => {
                             )}
                             showsVerticalScrollIndicator={false}
                             onEndReachedThreshold={0}
-                            onEndReached={getMorePreEnquiryListFromServer}
+                            onEndReached={() => {
+                                if (appSelector.searchKey === ''){
+                                    getMorePreEnquiryListFromServer()
+                                }
+                            }}
                             ListFooterComponent={renderFooter}
                             renderItem={({ item, index }) => {
 
