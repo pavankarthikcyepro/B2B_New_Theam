@@ -96,8 +96,7 @@ import {
 } from "../../../utils/toast";
 import {
   convertDateStringToMillisecondsUsingMoment,
-  isValidateAlphabetics,
-  isValidate,
+  isValidateAlphabetics,isValidate,
   isMobileNumber,
   emiCalculator,
   GetCarModelList,
@@ -279,6 +278,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   const [dropPriceDifference, setDropPriceDifference] = useState("");
   const [dropRemarks, setDropRemarks] = useState("");
 
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -349,11 +349,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   ]);
 
   const getBranchId = () => {
+
     AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then((branchId) => {
-      console.log("branch id:", branchId);
+      console.log("branch id:", branchId)
       setSelectedBranchId(branchId);
     });
-  };
+  }
 
   const getAsyncstoreData = async () => {
     const employeeData = await AsyncStore.getData(
@@ -402,49 +403,37 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
         setUserToken(token);
         getBanksListFromServer(jsonObj.orgId, token);
-        GetPreBookingDropReasons(jsonObj.orgId, token);
+        GetPreBookingDropReasons(jsonObj.orgId, token)
       });
     }
   };
 
   const GetPreBookingDropReasons = (orgId, token) => {
-    GetDropList(orgId, token, "Pre%20Booking").then(
-      (resolve) => {
-        setDropData(resolve);
-      },
-      (reject) => {
-        console.error("Getting drop list faild");
-      }
-    );
-  };
+
+    GetDropList(orgId, token, "Pre%20Booking").then(resolve => {
+      setDropData(resolve);
+    }, reject => {
+      console.error("Getting drop list faild")
+    })
+  }
 
   const getCarModelListFromServer = (orgId) => {
     // Call Api
-    GetCarModelList(orgId)
-      .then(
-        (resolve) => {
-          let modelList = [];
-          if (resolve.length > 0) {
-            resolve.forEach((item) => {
-              modelList.push({
-                id: item.vehicleId,
-                name: item.model,
-                isChecked: false,
-                ...item,
-              });
-            });
-          }
-          setCarModelsData([...modelList]);
-        },
-        (rejected) => {
-          console.log("getCarModelListFromServer Failed");
-        }
-      )
-      .finally(() => {
-        // Get PreBooking Details
-        getPreBookingDetailsFromServer();
-      });
-  };
+    GetCarModelList(orgId).then((resolve) => {
+      let modelList = [];
+      if (resolve.length > 0) {
+        resolve.forEach((item) => {
+          modelList.push({ id: item.vehicleId, name: item.model, isChecked: false, ...item });
+        });
+      }
+      setCarModelsData([...modelList]);
+    }, (rejected) => {
+      console.log("getCarModelListFromServer Failed")
+    }).finally(() => {
+      // Get PreBooking Details
+      getPreBookingDetailsFromServer();
+    })
+  }
 
   const getPreBookingDetailsFromServer = () => {
     if (universalId) {
@@ -489,7 +478,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       if (dmsLeadDto.leadStatus === "SENTFORAPPROVAL") {
         setShowApproveRejectBtn(true);
       }
-      if (dmsLeadDto.leadStatus === "PREBOOKINGCOMPLETED") {
+      if (dmsLeadDto.leadStatus === "BOOKINGCOMPLETED") {
         setShowPrebookingPaymentSection(true);
         // Get Payment Details
         dispatch(getPaymentDetailsApi(dmsLeadDto.id));
@@ -900,7 +889,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       showToast("please enter alphabetics only in firstname");
       return;
     }
-    if (!isValidateAlphabetics(selector.last_name)) {
+    if (!isValidate(selector.last_name)) {
       showToast("please enter alphabetics only in lastname");
       return;
     }
@@ -930,13 +919,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         showToast("please enter pan card number");
       }
     }
-
-    if (
-      selector.enquiry_segment.toLowerCase() === "company" &&
-      selector.customer_type.toLowerCase() === "institution" &&
-      (selector.customer_type_category == "B2B" ||
-        selector.customer_type_category == "B2C")
-    ) {
+    
+    if ((selector.enquiry_segment.toLowerCase() === "company" && selector.customer_type.toLowerCase() === "institution") && (selector.customer_type_category == "B2B" ||
+        selector.customer_type_category == "B2C")) {
       if (selector.gstin_number.length == 0) {
         showToast("please enter GSTIN number");
       }
@@ -1298,6 +1283,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
   };
 
   const proceedToCancelPreBooking = () => {
+
     if (dropRemarks.length === 0 || dropReason.length === 0) {
       showToastRedAlert("Please enter details for drop");
       return;
@@ -1729,7 +1715,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           console.log("imageObj: ", data, keyId);
           uploadSelectedImage(data, keyId);
         }}
-        // onDismiss={() => dispatch(setImagePicker(""))}
+      // onDismiss={() => dispatch(setImagePicker(""))}
       />
 
       <DropDownComponant
@@ -2069,7 +2055,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   }
                 />
                 <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
+                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.mandal}
                   label={"Mandal*"}
@@ -2259,7 +2245,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   }
                 />
                 <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
+                    <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.p_mandal}
                   maxLength={50}
@@ -2452,7 +2438,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 )}
 
                 {/* // Aadhar Number */}
-                {selector.enquiry_segment.toLowerCase() === "personal" ? (
+                {(selector.enquiry_segment.toLowerCase() === "personal") ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -2483,32 +2469,22 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 ) : null}
 
                 {/* // Employeed ID */}
-                {selector.enquiry_segment.toLowerCase() === "personal" &&
-                (selector.customer_type.toLowerCase() === "corporate" ||
-                  selector.customer_type.toLowerCase() === "government" ||
-                  selector.customer_type.toLowerCase() === "retired") ? (
-                  <View>
+                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "corporate" || selector.customer_type.toLowerCase() === "government" || selector.customer_type.toLowerCase() === "retired")) ? (
+                  <View >
                     <TextinputComp
                       style={styles.textInputStyle}
                       value={selector.employee_id}
                       label={"Employee ID*"}
                       maxLength={15}
                       onChangeText={(text) =>
-                        dispatch(
-                          setDocumentUploadDetails({
-                            key: "EMPLOYEE_ID",
-                            text: text,
-                          })
-                        )
+                        dispatch(setDocumentUploadDetails({ key: "EMPLOYEE_ID", text: text }))
                       }
                     />
                     <Text style={GlobalStyle.underline}></Text>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Employee ID"}
-                        onPress={() =>
-                          dispatch(setImagePicker("UPLOAD_EMPLOYEE_ID"))
-                        }
+                        onPress={() => dispatch(setImagePicker("UPLOAD_EMPLOYEE_ID"))}
                       />
                     </View>
                     {uploadedImagesDataObj.empId ? (
@@ -2521,16 +2497,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 ) : null}
 
                 {/* Last 3 month payslip */}
-                {selector.enquiry_segment.toLowerCase() === "personal" &&
-                (selector.customer_type.toLowerCase() === "corporate" ||
-                  selector.customer_type.toLowerCase() === "government") ? (
-                  <View>
+                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "corporate" || selector.customer_type.toLowerCase() === "government")) ? (
+                  <View >
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Last 3 months payslip"}
-                        onPress={() =>
-                          dispatch(setImagePicker("UPLOAD_3_MONTHS_PAYSLIP"))
-                        }
+                        onPress={() => dispatch(setImagePicker("UPLOAD_3_MONTHS_PAYSLIP"))}
                       />
                     </View>
                     {uploadedImagesDataObj.payslip ? (
@@ -2543,15 +2515,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 ) : null}
 
                 {/* Patta Pass book */}
-                {selector.enquiry_segment.toLowerCase() === "personal" &&
-                selector.customer_type.toLowerCase() === "farmer" ? (
-                  <View>
+                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "farmer")) ? (
+                  <View >
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Patta Pass Book"}
-                        onPress={() =>
-                          dispatch(setImagePicker("UPLOAD_PATTA_PASS_BOOK"))
-                        }
+                        onPress={() => dispatch(setImagePicker("UPLOAD_PATTA_PASS_BOOK"))}
                       />
                     </View>
                     {uploadedImagesDataObj.passbook ? (
@@ -2564,15 +2533,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 ) : null}
 
                 {/* Pension Letter */}
-                {selector.enquiry_segment.toLowerCase() === "personal" &&
-                selector.customer_type.toLowerCase() === "retired" ? (
-                  <View>
+                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "retired")) ? (
+                  <View >
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Pension Letter"}
-                        onPress={() =>
-                          dispatch(setImagePicker("UPLOAD_PENSION_LETTER"))
-                        }
+                        onPress={() => dispatch(setImagePicker("UPLOAD_PENSION_LETTER"))}
                       />
                     </View>
                     {uploadedImagesDataObj.pension ? (
@@ -2585,15 +2551,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 ) : null}
 
                 {/* IMA Certificate */}
-                {selector.enquiry_segment.toLowerCase() === "personal" &&
-                selector.customer_type.toLowerCase() === "doctor" ? (
-                  <View>
+                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "doctor")) ? (
+                  <View >
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"IMA Certificate"}
-                        onPress={() =>
-                          dispatch(setImagePicker("UPLOAD_IMA_CERTIFICATE"))
-                        }
+                        onPress={() => dispatch(setImagePicker("UPLOAD_IMA_CERTIFICATE"))}
                       />
                     </View>
                     {uploadedImagesDataObj.imaCertificate ? (
@@ -2606,17 +2569,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 ) : null}
 
                 {/* Leasing Confirmation */}
-                {selector.enquiry_segment.toLowerCase() === "commercial" &&
-                selector.customer_type.toLowerCase() === "fleet" ? (
-                  <View>
+                {(selector.enquiry_segment.toLowerCase() === "commercial" && (selector.customer_type.toLowerCase() === "fleet")) ? (
+                  <View >
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Leasing Confirmation"}
-                        onPress={() =>
-                          dispatch(
-                            setImagePicker("UPLOAD_LEASING_CONFIRMATION")
-                          )
-                        }
+                        onPress={() => dispatch(setImagePicker("UPLOAD_LEASING_CONFIRMATION"))}
                       />
                     </View>
                     {uploadedImagesDataObj.leasingConfirm ? (
@@ -2629,15 +2587,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 ) : null}
 
                 {/* Address Proof */}
-                {selector.enquiry_segment.toLowerCase() === "company" &&
-                selector.customer_type.toLowerCase() === "institution" ? (
-                  <View>
+                {(selector.enquiry_segment.toLowerCase() === "company" && (selector.customer_type.toLowerCase() === "institution")) ? (
+                  <View >
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Address Proof"}
-                        onPress={() =>
-                          dispatch(setImagePicker("UPLOAD_ADDRESS_PROOF"))
-                        }
+                        onPress={() => dispatch(setImagePicker("UPLOAD_ADDRESS_PROOF"))}
                       />
                     </View>
                     {uploadedImagesDataObj.address ? (
@@ -2667,10 +2622,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 )}
 
                 {/* GSTIN Number */}
-                {(selector.enquiry_segment.toLowerCase() === "company" &&
-                  selector.customer_type.toLowerCase() === "institution") ||
-                selector.customer_type_category == "B2B" ||
-                selector.customer_type_category == "B2C" ? (
+                {(selector.enquiry_segment.toLowerCase() === "company" && selector.customer_type.toLowerCase() === "institution") || (selector.customer_type_category == "B2B" ||
+                  selector.customer_type_category == "B2C") ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -2689,8 +2642,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   </View>
                 ) : null}
 
-                {/* // Relationship Number */}
 
+                {/* // Relationship Number */}
                 <View>
                   <TextinputComp
                     style={styles.textInputStyle}
@@ -2718,14 +2671,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   </View>
                   {uploadedImagesDataObj.relationshipProof ? (
                     <DisplaySelectedImage
-                      fileName={
-                        uploadedImagesDataObj.relationshipProof.fileName
-                      }
+                      fileName={uploadedImagesDataObj.relationshipProof.fileName}
                       from={"RELATION_PROOF"}
                     />
                   ) : null}
                   <Text style={GlobalStyle.underline}></Text>
                 </View>
+
               </List.Accordion>
               <View style={styles.space}></View>
 
@@ -3286,51 +3238,51 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                 {(selector.retail_finance === "In House" ||
                   selector.retail_finance === "Out House") && (
-                  <View>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Loan Amount*"}
-                      keyboardType={"number-pad"}
-                      value={selector.loan_amount}
-                      onChangeText={(text) => {
-                        // Calculate EMI
-                        emiCal(
-                          text,
-                          selector.loan_of_tenure,
-                          selector.rate_of_interest
-                        );
-                        dispatch(
-                          setFinancialDetails({
-                            key: "LOAN_AMOUNT",
-                            text: text,
-                          })
-                        );
-                      }}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Rate of Interest*"}
-                      keyboardType={"number-pad"}
-                      value={selector.rate_of_interest}
-                      onChangeText={(text) => {
-                        // Calculate EMI
-                        emiCal(
-                          selector.loan_amount,
-                          selector.loan_of_tenure,
-                          text
-                        );
-                        dispatch(
-                          setFinancialDetails({
-                            key: "RATE_OF_INTEREST",
-                            text: text,
-                          })
-                        );
-                      }}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>
-                )}
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Loan Amount*"}
+                        keyboardType={"number-pad"}
+                        value={selector.loan_amount}
+                        onChangeText={(text) => {
+                          // Calculate EMI
+                          emiCal(
+                            text,
+                            selector.loan_of_tenure,
+                            selector.rate_of_interest
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "LOAN_AMOUNT",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Rate of Interest*"}
+                        keyboardType={"number-pad"}
+                        value={selector.rate_of_interest}
+                        onChangeText={(text) => {
+                          // Calculate EMI
+                          emiCal(
+                            selector.loan_amount,
+                            selector.loan_of_tenure,
+                            text
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "RATE_OF_INTEREST",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
 
                 {selector.retail_finance === "In House" && (
                   <View>
@@ -3516,7 +3468,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               {isDropSelected ? (
                 <List.Accordion
                   id={"10"}
-                  title={"PreBooking Drop Section"}
+                  title={"Pre Booking Cancel Section"}
                   titleStyle={{
                     color: openAccordian === "10" ? Colors.WHITE : Colors.BLACK,
                     fontSize: 16,
@@ -3525,30 +3477,29 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   style={[
                     {
                       backgroundColor:
-                        openAccordian === "10"
-                          ? Colors.RED
-                          : Colors.SKY_LIGHT_BLUE_COLOR,
+                        openAccordian === "10" ? Colors.RED : Colors.SKY_LIGHT_BLUE_COLOR,
                     },
                     styles.accordianBorder,
                   ]}
                 >
+
                   <DropComponent
                     from="PRE_BOOKING"
                     data={dropData}
                     reason={dropReason}
-                    setReason={(text) => setDropReason(text)}
+                    setReason={(text => setDropReason(text))}
                     subReason={dropSubReason}
-                    setSubReason={(text) => setDropSubReason(text)}
+                    setSubReason={(text => setDropSubReason(text))}
                     brandName={dropBrandName}
-                    setBrandName={(text) => setDropBrandName(text)}
+                    setBrandName={text => setDropBrandName(text)}
                     dealerName={dropDealerName}
-                    setDealerName={(text) => setDropDealerName(text)}
+                    setDealerName={text => setDropDealerName(text)}
                     location={dropLocation}
-                    setLocation={(text) => setDropLocation(text)}
+                    setLocation={text => setDropLocation(text)}
                     model={dropModel}
-                    setModel={(text) => setDropModel(text)}
+                    setModel={text => setDropModel(text)}
                     priceDiff={dropPriceDifference}
-                    setPriceDiff={(text) => setDropPriceDifference(text)}
+                    setPriceDiff={text => setDropPriceDifference(text)}
                     remarks={dropRemarks}
                     setRemarks={(text) => setDropRemarks(text)}
                   />
@@ -3607,9 +3558,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   style={[
                     {
                       backgroundColor:
-                        openAccordian === "12"
-                          ? Colors.RED
-                          : Colors.SKY_LIGHT_BLUE_COLOR,
+                        openAccordian === "12" ? Colors.RED : Colors.SKY_LIGHT_BLUE_COLOR,
                     },
                     styles.accordianBorder,
                   ]}
@@ -3680,44 +3629,44 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                   {(selector.booking_payment_mode === "InternetBanking" ||
                     selector.booking_payment_mode === "Internet Banking") && (
-                    <View>
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.utr_no}
-                        label={"UTR No"}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setPreBookingPaymentDetials({
-                              key: "UTR_NO",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                      <DateSelectItem
-                        label={"Transaction Date"}
-                        value={selector.transaction_date}
-                        onPress={() =>
-                          dispatch(setDatePicker("TRANSACTION_DATE"))
-                        }
-                      />
-                      <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.comapany_bank_name}
-                        label={"Company Bank Name"}
-                        onChangeText={(text) =>
-                          dispatch(
-                            setPreBookingPaymentDetials({
-                              key: "COMPANY_BANK_NAME",
-                              text: text,
-                            })
-                          )
-                        }
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  )}
+                      <View>
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.utr_no}
+                          label={"UTR No"}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setPreBookingPaymentDetials({
+                                key: "UTR_NO",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                        <DateSelectItem
+                          label={"Transaction Date"}
+                          value={selector.transaction_date}
+                          onPress={() =>
+                            dispatch(setDatePicker("TRANSACTION_DATE"))
+                          }
+                        />
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.comapany_bank_name}
+                          label={"Company Bank Name"}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setPreBookingPaymentDetials({
+                                key: "COMPANY_BANK_NAME",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
+                    )}
 
                   {selector.booking_payment_mode === "Cheque" && (
                     <View>
@@ -3780,7 +3729,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   labelStyle={{ textTransform: "none" }}
                   onPress={() => setIsDropSelected(true)}
                 >
-                  Drop
+                  Cancel
                 </Button>
                 <Button
                   mode="contained"
