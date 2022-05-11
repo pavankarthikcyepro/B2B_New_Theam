@@ -24,11 +24,11 @@ import { ScrollView } from "react-native-gesture-handler";
 // const paramtersTitlesData = ["Parameter", "E", "TD", "HV", "VC", "B", "Ex", "R", "F", "I", "Ex-W", "Acc.", "Ev"]
 const paramtersTitlesData = ["Parameter", "Target", "Achivement", "Achivement %", "ShortFall", "ShortFall %"]
 const chartTitles = ["Target", "Achivement", "ShortFall"];
-const parameterTitlesForData = ["E", "TD", "HV", "B", "EX", "R", "F", "I", "Ex-W", "Acc.", "Ev"];
+const parameterTitlesForData = ["Enquiry", "TestDrive", "HomeVisit", "Booking", "EX", "Retail", "Finance", "Invoice", "Ex-W", "Acc.", "Ev"];
 
-const eventTitlesData = ["Event Name", "E", "TD", "HV", "B", "R", "L"]
-const vehicleModelTitlesData = ["Model", "E", "TD", "HV", "B", "R", "L"]
-const leadSourceTitlesData = ["Lead", "E", "TD", "HV", "B", "R", "L"]
+const eventTitlesData = ["Event Name", "Enquiry", "TD", "HV", "B", "R", "L"];
+const vehicleModelTitlesData = ["Model", "Enquiry", "TD", "HV", "B", "R", "L"];
+const leadSourceTitlesData = ["Lead", "Enquiry", "TD", "HV", "B", "R", "L"];
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 4;
@@ -309,7 +309,7 @@ const data = {
 
 const targetData = [
     {
-        title: 'Enq',
+        title: 'Enquiry',
         total: 80,
         complete: 62,
         isUp: true,
@@ -320,7 +320,7 @@ const targetData = [
         color: '#9f31bf'
     },
     {
-        title: 'TD',
+        title: 'Test Drive',
         total: 60,
         complete: 17,
         isUp: false,
@@ -331,7 +331,7 @@ const targetData = [
         color: '#00b1ff'
     },
     {
-        title: 'HV',
+        title: 'Home Visit',
         total: 50,
         complete: 24,
         isUp: true,
@@ -343,7 +343,7 @@ const targetData = [
     },
 
     {
-        title: 'Bkg',
+        title: 'Booking',
         total: 80,
         complete: 68,
         isUp: true,
@@ -354,7 +354,7 @@ const targetData = [
         color: '#ffa239'
     },
     {
-        title: 'Fin(%)',
+        title: 'Finance',
         total: 55,
         complete: 37,
         isUp: true,
@@ -365,7 +365,7 @@ const targetData = [
         color: '#d12a78'
     },
     {
-        title: 'Insu(%)',
+        title: 'Insurance',
         total: 50,
         complete: 46,
         isUp: true,
@@ -387,7 +387,7 @@ const targetData = [
         color: '#1f93ab'
     },
     {
-        title: 'Del',
+        title: 'Delivery',
         total: 50,
         complete: 25,
         isUp: true,
@@ -408,6 +408,7 @@ const TargetScreen = ({ route, navigation }) => {
     const [retailData, setRetailData] = useState(null);
     const [bookingData, setBookingData] = useState(null);
     const [enqData, setEnqData] = useState(null);
+ 
     const [visitData, setVisitData] = useState(null);
     const [TDData, setTDData] = useState(null);
     const [dateDiff, setDateDiff] = useState(null);
@@ -682,23 +683,23 @@ const TargetScreen = ({ route, navigation }) => {
                         })
                     }
                     <View style={{ width: '100%', flexDirection: 'row', marginTop: 10 }}>
-                        <View style={{ width: '49%', }}>
+                        <View style={{ width: '50%', }}>
                             <View style={styles.statWrap}>
-                                <Text style={{ marginRight: 5, fontSize: 10, fontWeight: "600" }}>Enquiry to Booking (%)</Text>
+                                <Text style={{ marginRight: 30, fontSize: 10, fontWeight: "600" }}>Enquiry to Booking (%)</Text>
                                 {bookingData !== null && enqData !== null &&
                                     <Text style={{ color: (Math.floor(parseInt(bookingData?.achievment) / parseInt(enqData?.achievment) * 100)) > 40 ? '#14ce40' : '#ff0000', fontSize: 12, }}>{(parseInt(bookingData?.achievment) === 0 || parseInt(enqData?.achievment) === 0) ? 0 : (Math.floor(parseInt(bookingData?.achievment) / parseInt(enqData?.achievment) * 100))}%</Text>
                                 }
                             </View>
 
                             <View style={styles.statWrap}>
-                                <Text style={{ marginRight: 5, fontSize: 10, fontWeight: "600" }}>Enquiry to Retail (%)</Text>
+                                <Text style={{ marginRight: 40, fontSize: 10, fontWeight: "600" }}>Enquiry to Retail (%)</Text>
                                 {retailData !== null && enqData !== null &&
                                     <Text style={{ color: (Math.floor(parseInt(retailData?.achievment) / parseInt(enqData?.achievment) * 100)) > 40 ? '#14ce40' : '#ff0000', fontSize: 12, }}>{(parseInt(retailData?.achievment) === 0 || parseInt(enqData?.achievment) === 0) ? 0 : (Math.floor(parseInt(retailData?.achievment) / parseInt(enqData?.achievment) * 100))}%</Text>
                                 }
                             </View>
 
                             <View style={styles.statWrap}>
-                                <Text style={{ marginRight: 5, fontSize: 10, fontWeight: "600" }}>Enquiry to Test drive (%)</Text>
+                                <Text style={{ marginRight: 23, fontSize: 10, fontWeight: "600" }}>Enquiry to Test drive (%)</Text>
                                 {TDData !== null && enqData !== null &&
                                     <Text style={{ color: (Math.floor(parseInt(TDData?.achievment) / parseInt(enqData?.achievment) * 100)) > 40 ? '#14ce40' : '#ff0000', fontSize: 12, }}>{(parseInt(TDData?.achievment) === 0 || parseInt(enqData?.achievment) === 0) ? 0 : (Math.floor(parseInt(TDData?.achievment) / parseInt(enqData?.achievment) * 100))}%</Text>
                                 }
@@ -709,14 +710,14 @@ const TargetScreen = ({ route, navigation }) => {
 
                         <View style={{ width: '49%', }}>
                             <View style={styles.statWrap}>
-                                <Text style={{ marginRight: 5, fontSize: 10, fontWeight: "600" }}>Booking to Retail (%)</Text>
+                                <Text style={{ marginRight: 25, fontSize: 10, fontWeight: "600" }}>Booking to Retail (%)</Text>
                                 {bookingData !== null && retailData !== null &&
                                     <Text style={{ color: (Math.floor(parseInt(retailData?.achievment) / parseInt(bookingData?.achievment) * 100)) > 40 ? '#14ce40' : '#ff0000', fontSize: 12, }}>{(parseInt(bookingData?.achievment) === 0 || parseInt(retailData?.achievment) === 0) ? 0 : (Math.floor(parseInt(retailData?.achievment) / parseInt(bookingData?.achievment) * 100))}%</Text>
                                 }
                             </View>
 
                             <View style={styles.statWrap}>
-                                <Text style={{ marginRight: 5, fontSize: 10, fontWeight: "600" }}>Booking to Visit (%)</Text>
+                                <Text style={{ marginRight: 30, fontSize: 10, fontWeight: "600" }}>Booking to Visit (%)</Text>
                                 {bookingData !== null && visitData !== null &&
                                     <Text style={{ color: (Math.floor(parseInt(visitData?.achievment) / parseInt(bookingData?.achievment) * 100)) > 40 ? '#14ce40' : '#ff0000', fontSize: 12, }}>{(parseInt(bookingData?.achievment) === 0 || parseInt(visitData?.achievment) === 0) ? 0 : (Math.floor(parseInt(visitData?.achievment) / parseInt(bookingData?.achievment) * 100))}%</Text>
                                 }

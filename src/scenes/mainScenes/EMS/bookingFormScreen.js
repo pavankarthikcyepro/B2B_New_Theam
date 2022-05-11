@@ -58,7 +58,7 @@ import {
   getBookingAmountDetailsApi,
   getAssignedTasksApi,
   updateAddressByPincode,
-} from "../../../redux/preBookingFormReducer";
+} from "../../../redux/bookingFormReducer";
 import {
   RadioTextItem,
   CustomerAccordianHeaderItem,
@@ -88,7 +88,7 @@ import {
   Customer_Category_Types,
 } from "../../../jsonData/prebookingFormScreenJsonData";
 import { AppNavigator } from "../../../navigations";
-import { getPreBookingData } from "../../../redux/preBookingReducer";
+import { getPreBookingData } from "../../../redux/bookingReducer";
 import {
   showToast,
   showToastRedAlert,
@@ -97,6 +97,7 @@ import {
 import {
   convertDateStringToMillisecondsUsingMoment,
   isValidateAlphabetics,
+  isValidate,
   isMobileNumber,
   emiCalculator,
   GetCarModelList,
@@ -197,7 +198,7 @@ const PaidAccessoriesTextAndAmountComp = ({
 
 const BookingFormScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
-  const selector = useSelector((state) => state.preBookingFormReducer);
+  const selector = useSelector((state) => state.bookingFormReducer);
   const { universalId, accessoriesList } = route.params;
   const [openAccordian, setOpenAccordian] = useState(0);
   const [componentAppear, setComponentAppear] = useState(false);
@@ -278,7 +279,6 @@ const BookingFormScreen = ({ route, navigation }) => {
   const [dropPriceDifference, setDropPriceDifference] = useState("");
   const [dropRemarks, setDropRemarks] = useState("");
 
-
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -349,12 +349,11 @@ const BookingFormScreen = ({ route, navigation }) => {
   ]);
 
   const getBranchId = () => {
-
     AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then((branchId) => {
-      console.log("branch id:", branchId)
+      console.log("branch id:", branchId);
       setSelectedBranchId(branchId);
     });
-  }
+  };
 
   const getAsyncstoreData = async () => {
     const employeeData = await AsyncStore.getData(
@@ -403,37 +402,49 @@ const BookingFormScreen = ({ route, navigation }) => {
       AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
         setUserToken(token);
         getBanksListFromServer(jsonObj.orgId, token);
-        GetPreBookingDropReasons(jsonObj.orgId, token)
+        GetPreBookingDropReasons(jsonObj.orgId, token);
       });
     }
   };
 
   const GetPreBookingDropReasons = (orgId, token) => {
-
-    GetDropList(orgId, token, "Pre%20Booking").then(resolve => {
-      setDropData(resolve);
-    }, reject => {
-      console.error("Getting drop list faild")
-    })
-  }
+    GetDropList(orgId, token, "Pre%20Booking").then(
+      (resolve) => {
+        setDropData(resolve);
+      },
+      (reject) => {
+        console.error("Getting drop list faild");
+      }
+    );
+  };
 
   const getCarModelListFromServer = (orgId) => {
     // Call Api
-    GetCarModelList(orgId).then((resolve) => {
-      let modelList = [];
-      if (resolve.length > 0) {
-        resolve.forEach((item) => {
-          modelList.push({ id: item.vehicleId, name: item.model, isChecked: false, ...item });
-        });
-      }
-      setCarModelsData([...modelList]);
-    }, (rejected) => {
-      console.log("getCarModelListFromServer Failed")
-    }).finally(() => {
-      // Get PreBooking Details
-      getPreBookingDetailsFromServer();
-    })
-  }
+    GetCarModelList(orgId)
+      .then(
+        (resolve) => {
+          let modelList = [];
+          if (resolve.length > 0) {
+            resolve.forEach((item) => {
+              modelList.push({
+                id: item.vehicleId,
+                name: item.model,
+                isChecked: false,
+                ...item,
+              });
+            });
+          }
+          setCarModelsData([...modelList]);
+        },
+        (rejected) => {
+          console.log("getCarModelListFromServer Failed");
+        }
+      )
+      .finally(() => {
+        // Get PreBooking Details
+        getPreBookingDetailsFromServer();
+      });
+  };
 
   const getPreBookingDetailsFromServer = () => {
     if (universalId) {
@@ -457,20 +468,20 @@ const BookingFormScreen = ({ route, navigation }) => {
 
   // Handle Pre-Booking Details Response
   useEffect(() => {
-    if (selector.pre_booking_details_response) {
+    if (selector.booking_details_response) {
       let dmsContactOrAccountDto;
       if (
-        selector.pre_booking_details_response.hasOwnProperty("dmsAccountDto")
+        selector.booking_details_response.hasOwnProperty("dmsAccountDto")
       ) {
         dmsContactOrAccountDto =
-          selector.pre_booking_details_response.dmsAccountDto;
+          selector.booking_details_response.dmsAccountDto;
       } else if (
-        selector.pre_booking_details_response.hasOwnProperty("dmsContactDto")
+        selector.booking_details_response.hasOwnProperty("dmsContactDto")
       ) {
         dmsContactOrAccountDto =
-          selector.pre_booking_details_response.dmsContactDto;
+          selector.booking_details_response.dmsContactDto;
       }
-      const dmsLeadDto = selector.pre_booking_details_response.dmsLeadDto;
+      const dmsLeadDto = selector.booking_details_response.dmsLeadDto;
       dispatch(getOnRoadPriceDtoListApi(dmsLeadDto.id));
       if (dmsLeadDto.leadStatus === "ENQUIRYCOMPLETED") {
         setShowSubmitDropBtn(true);
@@ -478,7 +489,7 @@ const BookingFormScreen = ({ route, navigation }) => {
       if (dmsLeadDto.leadStatus === "SENTFORAPPROVAL") {
         setShowApproveRejectBtn(true);
       }
-      if (dmsLeadDto.leadStatus === "PREBOOKINGCOMPLETED") {
+      if (dmsLeadDto.leadStatus === "BOOKINGCOMPLETED") {
         setShowPrebookingPaymentSection(true);
         // Get Payment Details
         dispatch(getPaymentDetailsApi(dmsLeadDto.id));
@@ -512,7 +523,7 @@ const BookingFormScreen = ({ route, navigation }) => {
       }
       setSelectedPaidAccessoriesList([...dmsLeadDto.dmsAccessories]);
     }
-  }, [selector.pre_booking_details_response]);
+  }, [selector.booking_details_response]);
 
   const saveAttachmentDetailsInLocalObject = (dmsAttachments) => {
     const attachments = [...dmsAttachments];
@@ -885,11 +896,11 @@ const BookingFormScreen = ({ route, navigation }) => {
   const submitClicked = () => {
     Keyboard.dismiss();
 
-    if (!isValidateAlphabetics(selector.first_name)) {
+    if (!isValidate(selector.first_name)) {
       showToast("please enter alphabetics only in firstname");
       return;
     }
-    if (!isValidateAlphabetics(selector.last_name)) {
+    if (!isValidate(selector.last_name)) {
       showToast("please enter alphabetics only in lastname");
       return;
     }
@@ -919,9 +930,12 @@ const BookingFormScreen = ({ route, navigation }) => {
         showToast("please enter pan card number");
       }
     }
+
     if (
-      selector.customer_type_category === "B2B" ||
-      selector.customer_type_category == "B2C"
+      selector.enquiry_segment.toLowerCase() === "company" &&
+      selector.customer_type.toLowerCase() === "institution" &&
+      (selector.customer_type_category == "B2B" ||
+        selector.customer_type_category == "B2C")
     ) {
       if (selector.gstin_number.length == 0) {
         showToast("please enter GSTIN number");
@@ -961,7 +975,7 @@ const BookingFormScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (!selector.pre_booking_details_response.dmsLeadDto) {
+    if (!selector.booking_details_response.dmsLeadDto) {
       return;
     }
 
@@ -992,7 +1006,7 @@ const BookingFormScreen = ({ route, navigation }) => {
     postOnRoadPriceTable.insuranceAmount = selectedInsurencePrice;
     postOnRoadPriceTable.insuranceType = selector.insurance_type;
     postOnRoadPriceTable.lead_id =
-      selector.pre_booking_details_response.dmsLeadDto.id;
+      selector.booking_details_response.dmsLeadDto.id;
     postOnRoadPriceTable.lifeTax = lifeTaxAmount;
     postOnRoadPriceTable.onRoadPrice = totalOnRoadPrice;
     postOnRoadPriceTable.finalPrice = totalOnRoadPriceAfterDiscount;
@@ -1011,7 +1025,7 @@ const BookingFormScreen = ({ route, navigation }) => {
   // Handle On Road Price Response
   useEffect(() => {
     if (selector.send_onRoad_price_details_response) {
-      if (!selector.pre_booking_details_response) {
+      if (!selector.booking_details_response) {
         return;
       }
 
@@ -1019,7 +1033,7 @@ const BookingFormScreen = ({ route, navigation }) => {
       let dmsLeadDto = {};
       let formData;
 
-      const dmsEntity = selector.pre_booking_details_response;
+      const dmsEntity = selector.booking_details_response;
       if (dmsEntity.hasOwnProperty("dmsContactDto"))
         dmsContactOrAccountDto = mapContactOrAccountDto(
           dmsEntity.dmsContactDto
@@ -1033,7 +1047,7 @@ const BookingFormScreen = ({ route, navigation }) => {
         dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
 
       if (
-        selector.pre_booking_details_response.hasOwnProperty("dmsContactDto")
+        selector.booking_details_response.hasOwnProperty("dmsContactDto")
       ) {
         formData = {
           dmsContactDto: dmsContactOrAccountDto,
@@ -1052,11 +1066,11 @@ const BookingFormScreen = ({ route, navigation }) => {
   }, [selector.send_onRoad_price_details_response]);
 
   const approveOrRejectMethod = (type) => {
-    if (!selector.pre_booking_details_response) {
+    if (!selector.booking_details_response) {
       return;
     }
 
-    let dmsEntity = { ...selector.pre_booking_details_response };
+    let dmsEntity = { ...selector.booking_details_response };
     let dmsLeadDto = { ...dmsEntity.dmsLeadDto };
     if (type === "APPROVE") {
       dmsLeadDto.leadStatus = "PREBOOKINGCOMPLETED";
@@ -1284,22 +1298,21 @@ const BookingFormScreen = ({ route, navigation }) => {
   };
 
   const proceedToCancelPreBooking = () => {
-
     if (dropRemarks.length === 0 || dropReason.length === 0) {
       showToastRedAlert("Please enter details for drop");
       return;
     }
 
-    if (!selector.pre_booking_details_response) {
+    if (!selector.booking_details_response) {
       return;
     }
 
-    let enquiryDetailsObj = { ...selector.pre_booking_details_response };
+    let enquiryDetailsObj = { ...selector.booking_details_response };
     let dmsLeadDto = { ...enquiryDetailsObj.dmsLeadDto };
     dmsLeadDto.leadStage = "DROPPED";
     enquiryDetailsObj.dmsLeadDto = dmsLeadDto;
 
-    let leadId = selector.pre_booking_details_response.dmsLeadDto.id;
+    let leadId = selector.booking_details_response.dmsLeadDto.id;
     if (!leadId) {
       showToast("lead id not found");
       return;
@@ -1330,14 +1343,14 @@ const BookingFormScreen = ({ route, navigation }) => {
   };
 
   const proceedToBookingClicked = () => {
-    let leadId = selector.pre_booking_details_response.dmsLeadDto.id;
+    let leadId = selector.booking_details_response.dmsLeadDto.id;
     if (!leadId) {
       showToast("lead id not found");
       return;
     }
 
     let bookingId =
-      selector.pre_booking_details_response.dmsLeadDto.dmsBooking.id;
+      selector.booking_details_response.dmsLeadDto.dmsBooking.id;
     if (!bookingId) {
       showToast("lead id not found");
       return;
@@ -1383,22 +1396,23 @@ const BookingFormScreen = ({ route, navigation }) => {
 
   // Handle Payment Response
   useEffect(() => {
-    if (selector.pre_booking_payment_response_status === "success") {
+    if (selector.booking_payment_response_status === "success") {
       sendBookingAmount();
-    } else if (selector.pre_booking_payment_response_status === "failed") {
+    } else if (selector.
+      booking_payment_response_status === "failed") {
       showToastRedAlert("Something went wrong");
     }
-  }, [selector.pre_booking_payment_response_status]);
+  }, [selector.booking_payment_response_status]);
 
   const sendBookingAmount = () => {
-    let leadId = selector.pre_booking_details_response.dmsLeadDto.id;
+    let leadId = selector.booking_details_response.dmsLeadDto.id;
     if (!leadId) {
       showToast("lead id not found");
       return;
     }
 
     let bookingAmount =
-      selector.pre_booking_details_response.dmsLeadDto.dmsBooking.bookingAmount;
+      selector.booking_details_response.dmsLeadDto.dmsBooking.bookingAmount;
     if (!bookingAmount) {
       showToast("lead id not found");
       return;
@@ -1447,7 +1461,7 @@ const BookingFormScreen = ({ route, navigation }) => {
         const taskId = taskData.taskId;
         const taskStatus = taskData.taskStatus;
         navigation.navigate(
-          AppNavigator.MyTasksStackIdentifiers.proceedToPreBooking,
+          AppNavigator.MyTasksStackIdentifiers.proceedToBooking,
           {
             identifier: "PROCEED_TO_BOOKING",
             taskId,
@@ -1475,7 +1489,7 @@ const BookingFormScreen = ({ route, navigation }) => {
           amount: item.cost,
           partName: item.partName,
           accessoriesName: item.partNo,
-          leadId: selector.pre_booking_details_response.dmsLeadDto.id,
+          leadId: selector.booking_details_response.dmsLeadDto.id,
           allotmentStatus: null,
         });
       }
@@ -1716,7 +1730,7 @@ const BookingFormScreen = ({ route, navigation }) => {
           console.log("imageObj: ", data, keyId);
           uploadSelectedImage(data, keyId);
         }}
-      // onDismiss={() => dispatch(setImagePicker(""))}
+        // onDismiss={() => dispatch(setImagePicker(""))}
       />
 
       <DropDownComponant
@@ -1841,6 +1855,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                 <DropDownSelectionItem
                   label={"Salutation"}
                   value={selector.salutation}
+                  disabled={true}
                   onPress={() =>
                     showDropDownModelMethod("SALUTATION", "Salutation")
                   }
@@ -1851,7 +1866,9 @@ const BookingFormScreen = ({ route, navigation }) => {
                   value={selector.first_name}
                   label={"First Name*"}
                   maxLength={50}
-                  editable={false}
+                  // editable={false}
+                  disabled={true}
+                  initialParams={{ accessoriesList: [] }}
                   keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
@@ -1866,7 +1883,8 @@ const BookingFormScreen = ({ route, navigation }) => {
                   label={"Last Name*"}
                   keyboardType={"default"}
                   maxLength={50}
-                  editable={false}
+                  // editable={false}
+                  disabled={true}
                   onChangeText={(text) =>
                     dispatch(
                       setCustomerDetails({ key: "LAST_NAME", text: text })
@@ -1877,7 +1895,8 @@ const BookingFormScreen = ({ route, navigation }) => {
                 <TextinputComp
                   style={{ height: 65, width: "100%" }}
                   value={selector.mobile}
-                  editable={false}
+                  // editable={false}
+                  disabled={true}
                   label={"Mobile Number*"}
                   onChangeText={(text) =>
                     dispatch(setCustomerDetails({ key: "MOBILE", text: text }))
@@ -1888,6 +1907,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   style={{ height: 65, width: "100%" }}
                   value={selector.email}
                   label={"Email ID*"}
+                  disabled={true}
                   keyboardType={"email-address"}
                   onChangeText={(text) =>
                     dispatch(setCustomerDetails({ key: "EMAIL", text: text }))
@@ -1897,6 +1917,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                 <DropDownSelectionItem
                   label={"Enquiry Segment"}
                   value={selector.enquiry_segment}
+                  disabled={true}
                   onPress={() =>
                     showDropDownModelMethod(
                       "ENQUIRY_SEGMENT",
@@ -1907,6 +1928,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                 <DropDownSelectionItem
                   label={"Customer Type"}
                   value={selector.customer_type}
+                  disabled={true}
                   onPress={() =>
                     showDropDownModelMethod("CUSTOMER_TYPE", "Customer Type")
                   }
@@ -1916,6 +1938,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                     <DropDownSelectionItem
                       label={"Gender"}
                       value={selector.gender}
+                      disabled={true}
                       onPress={() =>
                         showDropDownModelMethod("GENDER", "Gender")
                       }
@@ -1923,6 +1946,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                     <DateSelectItem
                       label={"Date Of Birth"}
                       value={selector.date_of_birth}
+                      disabled={true}
                       onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
                     />
                     <TextinputComp
@@ -1930,6 +1954,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                       value={selector.age}
                       label={"Age"}
                       maxLength={3}
+                      disabled={true}
                       keyboardType={"number-pad"}
                       onChangeText={(text) =>
                         dispatch(setCustomerDetails({ key: "AGE", text: text }))
@@ -1939,6 +1964,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                     <DropDownSelectionItem
                       label={"Marital Status"}
                       value={selector.marital_status}
+                      disabled={true}
                       onPress={() =>
                         showDropDownModelMethod(
                           "MARITAL_STATUS",
@@ -1973,6 +1999,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.pincode}
+                  disabled={true}
                   label={"Pincode*"}
                   maxLength={6}
                   keyboardType={"number-pad"}
@@ -1991,6 +2018,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   <RadioTextItem
                     label={"Urban"}
                     value={"urban"}
+                    disabled={true}
                     status={selector.urban_or_rural === 1 ? true : false}
                     onPress={() =>
                       dispatch(
@@ -2004,6 +2032,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   <RadioTextItem
                     label={"Rural"}
                     value={"rural"}
+                    disabled={true}
                     status={selector.urban_or_rural === 2 ? true : false}
                     onPress={() =>
                       dispatch(
@@ -2020,6 +2049,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.house_number}
                   keyboardType={"number-pad"}
+                  disabled={true}
                   label={"H.No*"}
                   maxLength={120}
                   onChangeText={(text) =>
@@ -2032,6 +2062,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.street_name}
+                  disabled={true}
                   label={"Street Name*"}
                   maxLength={120}
                   onChangeText={(text) =>
@@ -2048,6 +2079,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.village}
                   label={"Village*"}
+                  disabled={true}
                   maxLength={40}
                   onChangeText={(text) =>
                     dispatch(
@@ -2056,10 +2088,11 @@ const BookingFormScreen = ({ route, navigation }) => {
                   }
                 />
                 <Text style={GlobalStyle.underline}></Text>
-                 <TextinputComp
+                <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.mandal}
                   label={"Mandal*"}
+                  disabled={true}
                   maxLength={40}
                   onChangeText={(text) =>
                     dispatch(
@@ -2072,6 +2105,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.city}
                   label={"City*"}
+                  disabled={true}
                   maxLength={40}
                   onChangeText={(text) =>
                     dispatch(
@@ -2084,6 +2118,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.district}
                   label={"District*"}
+                  disabled={true}
                   maxLength={40}
                   onChangeText={(text) =>
                     dispatch(
@@ -2096,6 +2131,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.state}
                   label={"State*"}
+                  disabled={true}
                   maxLength={40}
                   onChangeText={(text) =>
                     dispatch(
@@ -2120,6 +2156,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   <RadioTextItem
                     label={"Yes"}
                     value={"yes"}
+                    disabled={true}
                     status={
                       selector.is_permanent_address_same === "YES"
                         ? true
@@ -2137,6 +2174,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   <RadioTextItem
                     label={"No"}
                     value={"no"}
+                    disabled={true}
                     status={
                       selector.is_permanent_address_same === "NO" ? true : false
                     }
@@ -2157,6 +2195,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   value={selector.p_pincode}
                   label={"Pincode*"}
                   maxLength={6}
+                  disabled={true}
                   keyboardType={"number-pad"}
                   onChangeText={(text) => {
                     // get addreess by pincode
@@ -2174,6 +2213,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   <RadioTextItem
                     label={"Urban"}
                     value={"urban"}
+                    disabled={true}
                     status={selector.p_urban_or_rural === 1 ? true : false}
                     onPress={() =>
                       dispatch(
@@ -2187,6 +2227,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   <RadioTextItem
                     label={"Rural"}
                     value={"rural"}
+                    disabled={true}
                     status={selector.p_urban_or_rural === 2 ? true : false}
                     onPress={() =>
                       dispatch(
@@ -2205,6 +2246,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   label={"H.No*"}
                   keyboardType={"number-pad"}
                   maxLength={120}
+                  disabled={true}
                   value={selector.p_houseNum}
                   onChangeText={(text) =>
                     dispatch(
@@ -2220,6 +2262,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   label={"Street Name*"}
                   maxLength={120}
+                  disabled={true}
                   value={selector.p_streetName}
                   onChangeText={(text) =>
                     dispatch(
@@ -2235,6 +2278,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.p_village}
                   maxLength={50}
+                  disabled={true}
                   label={"Village*"}
                   onChangeText={(text) =>
                     dispatch(
@@ -2246,10 +2290,11 @@ const BookingFormScreen = ({ route, navigation }) => {
                   }
                 />
                 <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
+                <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.p_mandal}
                   maxLength={50}
+                  disabled={true}
                   label={"Mandal*"}
                   onChangeText={(text) =>
                     dispatch(
@@ -2265,6 +2310,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.p_city}
                   maxLength={50}
+                  disabled={true}
                   label={"City*"}
                   onChangeText={(text) =>
                     dispatch(
@@ -2277,6 +2323,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.p_district}
                   label={"District*"}
+                  disabled={true}
                   maxLength={50}
                   onChangeText={(text) =>
                     dispatch(
@@ -2292,6 +2339,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.p_state}
                   label={"State*"}
+                  disabled={true}
                   maxLength={50}
                   onChangeText={(text) =>
                     dispatch(
@@ -2328,22 +2376,26 @@ const BookingFormScreen = ({ route, navigation }) => {
                 <DropDownSelectionItem
                   label={"Model"}
                   value={selector.model}
+                  disabled={true}
                   onPress={() => showDropDownModelMethod("MODEL", "Model")}
                 />
                 <DropDownSelectionItem
                   label={"Varient"}
                   value={selector.varient}
+                  disabled={true}
                   onPress={() => showDropDownModelMethod("VARIENT", "Varient")}
                 />
                 <DropDownSelectionItem
                   label={"Color"}
                   value={selector.color}
+                  disabled={true}
                   onPress={() => showDropDownModelMethod("COLOR", "Color")}
                 />
                 <TextinputComp
                   style={{ height: 65, width: "100%" }}
                   value={selector.fuel_type}
                   label={"Fuel Type"}
+                  disabled={true}
                   editable={false}
                 />
                 <Text style={GlobalStyle.underline}></Text>
@@ -2351,6 +2403,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   style={{ height: 65, width: "100%" }}
                   value={selector.transmission_type}
                   label={"Transmission Type"}
+                  disabled={true}
                   editable={false}
                 />
                 <Text style={GlobalStyle.underline}></Text>
@@ -2379,6 +2432,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                 <DropDownSelectionItem
                   label={"Form60/PAN"}
                   value={selector.form_or_pan}
+                  disabled={true}
                   onPress={() =>
                     showDropDownModelMethod("FORM_60_PAN", "Retail Finance")
                   }
@@ -2390,6 +2444,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                       style={styles.textInputStyle}
                       value={selector.pan_number}
                       label={"PAN Number*"}
+                      disabled={true}
                       maxLength={10}
                       autoCapitalize={"characters"}
                       onChangeText={(text) => {
@@ -2405,6 +2460,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"PAN"}
+                        disabled={true}
                         onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
                       />
                     </View>
@@ -2439,12 +2495,13 @@ const BookingFormScreen = ({ route, navigation }) => {
                 )}
 
                 {/* // Aadhar Number */}
-                {(selector.enquiry_segment.toLowerCase() === "personal") ? (
+                {selector.enquiry_segment.toLowerCase() === "personal" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
                       value={selector.adhaar_number}
                       label={"Aadhaar Number*"}
+                      disabled={true}
                       keyboardType="number-pad"
                       maxLength={12}
                       onChangeText={(text) =>
@@ -2470,22 +2527,33 @@ const BookingFormScreen = ({ route, navigation }) => {
                 ) : null}
 
                 {/* // Employeed ID */}
-                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "corporate" || selector.customer_type.toLowerCase() === "government" || selector.customer_type.toLowerCase() === "retired")) ? (
-                  <View >
+                {selector.enquiry_segment.toLowerCase() === "personal" &&
+                (selector.customer_type.toLowerCase() === "corporate" ||
+                  selector.customer_type.toLowerCase() === "government" ||
+                  selector.customer_type.toLowerCase() === "retired") ? (
+                  <View>
                     <TextinputComp
                       style={styles.textInputStyle}
                       value={selector.employee_id}
                       label={"Employee ID*"}
+                      disabled={true}
                       maxLength={15}
                       onChangeText={(text) =>
-                        dispatch(setDocumentUploadDetails({ key: "EMPLOYEE_ID", text: text }))
+                        dispatch(
+                          setDocumentUploadDetails({
+                            key: "EMPLOYEE_ID",
+                            text: text,
+                          })
+                        )
                       }
                     />
                     <Text style={GlobalStyle.underline}></Text>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Employee ID"}
-                        onPress={() => dispatch(setImagePicker("UPLOAD_EMPLOYEE_ID"))}
+                        onPress={() =>
+                          dispatch(setImagePicker("UPLOAD_EMPLOYEE_ID"))
+                        }
                       />
                     </View>
                     {uploadedImagesDataObj.empId ? (
@@ -2498,12 +2566,16 @@ const BookingFormScreen = ({ route, navigation }) => {
                 ) : null}
 
                 {/* Last 3 month payslip */}
-                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "corporate" || selector.customer_type.toLowerCase() === "government")) ? (
-                  <View >
+                {selector.enquiry_segment.toLowerCase() === "personal" &&
+                (selector.customer_type.toLowerCase() === "corporate" ||
+                  selector.customer_type.toLowerCase() === "government") ? (
+                  <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Last 3 months payslip"}
-                        onPress={() => dispatch(setImagePicker("UPLOAD_3_MONTHS_PAYSLIP"))}
+                        onPress={() =>
+                          dispatch(setImagePicker("UPLOAD_3_MONTHS_PAYSLIP"))
+                        }
                       />
                     </View>
                     {uploadedImagesDataObj.payslip ? (
@@ -2516,12 +2588,15 @@ const BookingFormScreen = ({ route, navigation }) => {
                 ) : null}
 
                 {/* Patta Pass book */}
-                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "farmer")) ? (
-                  <View >
+                {selector.enquiry_segment.toLowerCase() === "personal" &&
+                selector.customer_type.toLowerCase() === "farmer" ? (
+                  <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Patta Pass Book"}
-                        onPress={() => dispatch(setImagePicker("UPLOAD_PATTA_PASS_BOOK"))}
+                        onPress={() =>
+                          dispatch(setImagePicker("UPLOAD_PATTA_PASS_BOOK"))
+                        }
                       />
                     </View>
                     {uploadedImagesDataObj.passbook ? (
@@ -2534,12 +2609,15 @@ const BookingFormScreen = ({ route, navigation }) => {
                 ) : null}
 
                 {/* Pension Letter */}
-                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "retired")) ? (
-                  <View >
+                {selector.enquiry_segment.toLowerCase() === "personal" &&
+                selector.customer_type.toLowerCase() === "retired" ? (
+                  <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Pension Letter"}
-                        onPress={() => dispatch(setImagePicker("UPLOAD_PENSION_LETTER"))}
+                        onPress={() =>
+                          dispatch(setImagePicker("UPLOAD_PENSION_LETTER"))
+                        }
                       />
                     </View>
                     {uploadedImagesDataObj.pension ? (
@@ -2552,12 +2630,15 @@ const BookingFormScreen = ({ route, navigation }) => {
                 ) : null}
 
                 {/* IMA Certificate */}
-                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "doctor")) ? (
-                  <View >
+                {selector.enquiry_segment.toLowerCase() === "personal" &&
+                selector.customer_type.toLowerCase() === "doctor" ? (
+                  <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"IMA Certificate"}
-                        onPress={() => dispatch(setImagePicker("UPLOAD_IMA_CERTIFICATE"))}
+                        onPress={() =>
+                          dispatch(setImagePicker("UPLOAD_IMA_CERTIFICATE"))
+                        }
                       />
                     </View>
                     {uploadedImagesDataObj.imaCertificate ? (
@@ -2570,12 +2651,17 @@ const BookingFormScreen = ({ route, navigation }) => {
                 ) : null}
 
                 {/* Leasing Confirmation */}
-                {(selector.enquiry_segment.toLowerCase() === "commercial" && (selector.customer_type.toLowerCase() === "fleet")) ? (
-                  <View >
+                {selector.enquiry_segment.toLowerCase() === "commercial" &&
+                selector.customer_type.toLowerCase() === "fleet" ? (
+                  <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Leasing Confirmation"}
-                        onPress={() => dispatch(setImagePicker("UPLOAD_LEASING_CONFIRMATION"))}
+                        onPress={() =>
+                          dispatch(
+                            setImagePicker("UPLOAD_LEASING_CONFIRMATION")
+                          )
+                        }
                       />
                     </View>
                     {uploadedImagesDataObj.leasingConfirm ? (
@@ -2588,12 +2674,15 @@ const BookingFormScreen = ({ route, navigation }) => {
                 ) : null}
 
                 {/* Address Proof */}
-                {(selector.enquiry_segment.toLowerCase() === "company" && (selector.customer_type.toLowerCase() === "institution")) ? (
-                  <View >
+                {selector.enquiry_segment.toLowerCase() === "company" &&
+                selector.customer_type.toLowerCase() === "institution" ? (
+                  <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Address Proof"}
-                        onPress={() => dispatch(setImagePicker("UPLOAD_ADDRESS_PROOF"))}
+                        onPress={() =>
+                          dispatch(setImagePicker("UPLOAD_ADDRESS_PROOF"))
+                        }
                       />
                     </View>
                     {uploadedImagesDataObj.address ? (
@@ -2611,6 +2700,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                     <DropDownSelectionItem
                       label={"Customer Type Category"}
                       value={selector.customer_type_category}
+                      disabled={true}
                       onPress={() =>
                         showDropDownModelMethod(
                           "CUSTOMER_TYPE_CATEGORY",
@@ -2623,13 +2713,16 @@ const BookingFormScreen = ({ route, navigation }) => {
                 )}
 
                 {/* GSTIN Number */}
-                {(selector.enquiry_segment.toLowerCase() === "company" && selector.customer_type.toLowerCase() === "institution") && (selector.customer_type_category == "B2B" ||
-                  selector.customer_type_category == "B2C") ? (
+                {(selector.enquiry_segment.toLowerCase() === "company" &&
+                  selector.customer_type.toLowerCase() === "institution") ||
+                selector.customer_type_category == "B2B" ||
+                selector.customer_type_category == "B2C" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
                       value={selector.gstin_number}
                       label={"GSTIN Number"}
+                      disabled={true}
                       onChangeText={(text) =>
                         dispatch(
                           setDocumentUploadDetails({
@@ -2643,13 +2736,13 @@ const BookingFormScreen = ({ route, navigation }) => {
                   </View>
                 ) : null}
 
-
                 {/* // Relationship Number */}
                 <View>
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.relationship_proof}
                     label={"Relationship Number*"}
+                    disabled={true}
                     keyboardType="number-pad"
                     maxLength={10}
                     onChangeText={(text) =>
@@ -2672,13 +2765,14 @@ const BookingFormScreen = ({ route, navigation }) => {
                   </View>
                   {uploadedImagesDataObj.relationshipProof ? (
                     <DisplaySelectedImage
-                      fileName={uploadedImagesDataObj.relationshipProof.fileName}
+                      fileName={
+                        uploadedImagesDataObj.relationshipProof.fileName
+                      }
                       from={"RELATION_PROOF"}
                     />
                   ) : null}
                   <Text style={GlobalStyle.underline}></Text>
                 </View>
-
               </List.Accordion>
               <View style={styles.space}></View>
 
@@ -2739,6 +2833,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                     <DropDownSelectionItem
                       label={"Vehicle Type"}
                       value={selector.vehicle_type}
+                      disabled={true}
                       onPress={() =>
                         showDropDownModelMethod("VEHICLE_TYPE", "Vehicle Type")
                       }
@@ -2746,6 +2841,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                     <TextinputComp
                       style={styles.textInputStyle}
                       value={selector.registration_number}
+                      disabled={true}
                       label={"Reg. No"}
                       maxLength={15}
                       autoCapitalize={"characters"}
@@ -2779,6 +2875,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                     <DropDownSelectionItem
                       label={"Insurance Type"}
                       value={selector.insurance_type}
+                      disabled={true}
                       onPress={() =>
                         showDropDownModelMethod(
                           "INSURANCE_TYPE",
@@ -2797,6 +2894,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                     <DropDownSelectionItem
                       label={"Add-on Insurance"}
                       value={selector.add_on_insurance}
+                      disabled={true}
                       onPress={() =>
                         showDropDownModelMethod(
                           "INSURENCE_ADD_ONS",
@@ -2815,6 +2913,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                     <DropDownSelectionItem
                       label={"Warranty"}
                       value={selector.warranty}
+                      disabled={true}
                       onPress={() =>
                         showDropDownModelMethod("WARRANTY", "Warranty")
                       }
@@ -2964,6 +3063,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   style={styles.offerPriceTextInput}
                   label={"Consumer Offer:"}
                   value={selector.consumer_offer}
+                  disabled={true}
                   showLeftAffixText={true}
                   leftAffixText={rupeeSymbol}
                   keyboardType="number-pad"
@@ -2982,6 +3082,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   label={"Exchange Offer:"}
                   value={selector.exchange_offer}
                   showLeftAffixText={true}
+                  disabled={true}
                   keyboardType="number-pad"
                   leftAffixText={rupeeSymbol}
                   onChangeText={(text) =>
@@ -2998,6 +3099,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   style={styles.offerPriceTextInput}
                   label={"Coporate Offer:"}
                   value={selector.corporate_offer}
+                  disabled={true}
                   showLeftAffixText={true}
                   leftAffixText={rupeeSymbol}
                   keyboardType="number-pad"
@@ -3016,6 +3118,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   label={"Promotional Offer:"}
                   value={selector.promotional_offer}
                   showLeftAffixText={true}
+                  disabled={true}
                   keyboardType="number-pad"
                   leftAffixText={rupeeSymbol}
                   onChangeText={(text) =>
@@ -3032,6 +3135,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   style={styles.offerPriceTextInput}
                   label={"Cash Discount:"}
                   value={selector.cash_discount}
+                  disabled={true}
                   showLeftAffixText={true}
                   keyboardType="number-pad"
                   leftAffixText={rupeeSymbol}
@@ -3049,6 +3153,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   style={styles.offerPriceTextInput}
                   label={"Foc Accessories:"}
                   value={selector.for_accessories}
+                  disabled={true}
                   showLeftAffixText={true}
                   keyboardType="number-pad"
                   leftAffixText={rupeeSymbol}
@@ -3067,6 +3172,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   label={"Additional Offer 1:"}
                   value={selector.additional_offer_1}
                   showLeftAffixText={true}
+                  disabled={true}
                   keyboardType="number-pad"
                   leftAffixText={rupeeSymbol}
                   onChangeText={(text) =>
@@ -3084,6 +3190,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   label={"Additional Offer 2:"}
                   value={selector.additional_offer_2}
                   showLeftAffixText={true}
+                  disabled={true}
                   keyboardType="number-pad"
                   leftAffixText={rupeeSymbol}
                   onChangeText={(text) =>
@@ -3128,6 +3235,7 @@ const BookingFormScreen = ({ route, navigation }) => {
               >
                 <DropDownSelectionItem
                   label={"Retail Finance"}
+                  disabled={true}
                   value={selector.retail_finance}
                   onPress={() =>
                     showDropDownModelMethod("RETAIL_FINANCE", "Retail Finance")
@@ -3139,6 +3247,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
                       label={"Bank/Finance Name"}
+                      disabled={true}
                       value={selector.bank_or_finance_name}
                       onChangeText={(text) =>
                         dispatch(
@@ -3155,6 +3264,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                       style={{ height: 65, width: "100%" }}
                       label={"Location"}
                       value={selector.location}
+                      disabled={true}
                       onChangeText={(text) =>
                         dispatch(
                           setFinancialDetails({ key: "LOCATION", text: text })
@@ -3171,6 +3281,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                       style={{ height: 65, width: "100%" }}
                       label={"Leasing Name"}
                       maxLength={50}
+                      disabled={true}
                       value={selector.leashing_name}
                       onChangeText={(text) =>
                         dispatch(
@@ -3188,6 +3299,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                 {selector.retail_finance === "In House" && (
                   <DropDownSelectionItem
                     label={"Finance Category"}
+                    disabled={true}
                     value={selector.finance_category}
                     onPress={() =>
                       showDropDownModelMethod(
@@ -3204,6 +3316,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                       style={{ height: 65, width: "100%" }}
                       label={"Down Payment*"}
                       value={selector.down_payment}
+                      disabled={true}
                       keyboardType={"number-pad"}
                       onChangeText={(text) => {
                         if (text.length > 0) {
@@ -3239,56 +3352,59 @@ const BookingFormScreen = ({ route, navigation }) => {
 
                 {(selector.retail_finance === "In House" ||
                   selector.retail_finance === "Out House") && (
-                    <View>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Loan Amount*"}
-                        keyboardType={"number-pad"}
-                        value={selector.loan_amount}
-                        onChangeText={(text) => {
-                          // Calculate EMI
-                          emiCal(
-                            text,
-                            selector.loan_of_tenure,
-                            selector.rate_of_interest
-                          );
-                          dispatch(
-                            setFinancialDetails({
-                              key: "LOAN_AMOUNT",
-                              text: text,
-                            })
-                          );
-                        }}
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Rate of Interest*"}
-                        keyboardType={"number-pad"}
-                        value={selector.rate_of_interest}
-                        onChangeText={(text) => {
-                          // Calculate EMI
-                          emiCal(
-                            selector.loan_amount,
-                            selector.loan_of_tenure,
-                            text
-                          );
-                          dispatch(
-                            setFinancialDetails({
-                              key: "RATE_OF_INTEREST",
-                              text: text,
-                            })
-                          );
-                        }}
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  )}
+                  <View>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Loan Amount*"}
+                      disabled={true}
+                      keyboardType={"number-pad"}
+                      value={selector.loan_amount}
+                      onChangeText={(text) => {
+                        // Calculate EMI
+                        emiCal(
+                          text,
+                          selector.loan_of_tenure,
+                          selector.rate_of_interest
+                        );
+                        dispatch(
+                          setFinancialDetails({
+                            key: "LOAN_AMOUNT",
+                            text: text,
+                          })
+                        );
+                      }}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Rate of Interest*"}
+                      keyboardType={"number-pad"}
+                      disabled={true}
+                      value={selector.rate_of_interest}
+                      onChangeText={(text) => {
+                        // Calculate EMI
+                        emiCal(
+                          selector.loan_amount,
+                          selector.loan_of_tenure,
+                          text
+                        );
+                        dispatch(
+                          setFinancialDetails({
+                            key: "RATE_OF_INTEREST",
+                            text: text,
+                          })
+                        );
+                      }}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                )}
 
                 {selector.retail_finance === "In House" && (
                   <View>
                     <DropDownSelectionItem
                       label={"Bank/Financer"}
+                      disabled={true}
                       value={selector.bank_or_finance}
                       onPress={() =>
                         showDropDownModelMethod("BANK_FINANCE", "Bank/Financer")
@@ -3299,6 +3415,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                       style={{ height: 65, width: "100%" }}
                       label={"Loan of Tenure(Months)"}
                       value={selector.loan_of_tenure}
+                      disabled={true}
                       keyboardType={"number-pad"}
                       onChangeText={(text) => {
                         // Calculate EMI
@@ -3321,6 +3438,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                       style={{ height: 65, width: "100%" }}
                       label={"EMI*"}
                       value={selector.emi}
+                      disabled={true}
                       keyboardType={"number-pad"}
                       onChangeText={(text) =>
                         dispatch(
@@ -3332,6 +3450,7 @@ const BookingFormScreen = ({ route, navigation }) => {
 
                     <DropDownSelectionItem
                       label={"Approx Annual Income"}
+                      disabled={true}
                       value={selector.approx_annual_income}
                       onPress={() =>
                         showDropDownModelMethod(
@@ -3369,6 +3488,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   value={selector.booking_amount}
                   label={"Booking Amount*"}
                   keyboardType={"number-pad"}
+                  disabled={true}
                   maxLength={9}
                   onChangeText={(text) =>
                     dispatch(
@@ -3384,6 +3504,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                 <DropDownSelectionItem
                   label={"Payment At"}
                   value={selector.payment_at}
+                  disabled={true}
                   onPress={() =>
                     showDropDownModelMethod("PAYMENT_AT", "Payment At")
                   }
@@ -3392,6 +3513,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                 <DropDownSelectionItem
                   label={"Booking Payment Mode"}
                   value={selector.booking_payment_mode}
+                  disabled={true}
                   onPress={() =>
                     showDropDownModelMethod(
                       "BOOKING_PAYMENT_MODE",
@@ -3423,6 +3545,7 @@ const BookingFormScreen = ({ route, navigation }) => {
               >
                 <DateSelectItem
                   label={"Customer Preferred Date*"}
+                  disabled={true}
                   value={selector.customer_preferred_date}
                   onPress={() =>
                     dispatch(setDatePicker("CUSTOMER_PREFERRED_DATE"))
@@ -3431,6 +3554,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                 <TextinputComp
                   style={{ height: 65, width: "100%" }}
                   label={"Occasion*"}
+                  disabled={true}
                   value={selector.occasion}
                   maxLength={50}
                   onChangeText={(text) =>
@@ -3442,6 +3566,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
                 <DateSelectItem
                   label={"Tentative Delivery Date*"}
+                  disabled={true}
                   value={selector.tentative_delivery_date}
                   onPress={() =>
                     dispatch(setDatePicker("TENTATIVE_DELIVERY_DATE"))
@@ -3450,6 +3575,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                 <TextinputComp
                   style={{ height: 65, width: "100%" }}
                   label={"Delivery Location*"}
+                  disabled={true}
                   maxLength={50}
                   value={selector.delivery_location}
                   onChangeText={(text) =>
@@ -3478,29 +3604,30 @@ const BookingFormScreen = ({ route, navigation }) => {
                   style={[
                     {
                       backgroundColor:
-                        openAccordian === "10" ? Colors.RED : Colors.SKY_LIGHT_BLUE_COLOR,
+                        openAccordian === "10"
+                          ? Colors.RED
+                          : Colors.SKY_LIGHT_BLUE_COLOR,
                     },
                     styles.accordianBorder,
                   ]}
                 >
-
                   <DropComponent
                     from="PRE_BOOKING"
                     data={dropData}
                     reason={dropReason}
-                    setReason={(text => setDropReason(text))}
+                    setReason={(text) => setDropReason(text)}
                     subReason={dropSubReason}
-                    setSubReason={(text => setDropSubReason(text))}
+                    setSubReason={(text) => setDropSubReason(text)}
                     brandName={dropBrandName}
-                    setBrandName={text => setDropBrandName(text)}
+                    setBrandName={(text) => setDropBrandName(text)}
                     dealerName={dropDealerName}
-                    setDealerName={text => setDropDealerName(text)}
+                    setDealerName={(text) => setDropDealerName(text)}
                     location={dropLocation}
-                    setLocation={text => setDropLocation(text)}
+                    setLocation={(text) => setDropLocation(text)}
                     model={dropModel}
-                    setModel={text => setDropModel(text)}
+                    setModel={(text) => setDropModel(text)}
                     priceDiff={dropPriceDifference}
-                    setPriceDiff={text => setDropPriceDifference(text)}
+                    setPriceDiff={(text) => setDropPriceDifference(text)}
                     remarks={dropRemarks}
                     setRemarks={(text) => setDropRemarks(text)}
                   />
@@ -3531,6 +3658,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                     style={styles.textInputStyle}
                     value={selector.reject_remarks}
                     label={"Remarks"}
+                    disabled={true}
                     onChangeText={(text) =>
                       dispatch(
                         setBookingDropDetails({
@@ -3559,7 +3687,9 @@ const BookingFormScreen = ({ route, navigation }) => {
                   style={[
                     {
                       backgroundColor:
-                        openAccordian === "12" ? Colors.RED : Colors.SKY_LIGHT_BLUE_COLOR,
+                        openAccordian === "12"
+                          ? Colors.RED
+                          : Colors.SKY_LIGHT_BLUE_COLOR,
                     },
                     styles.accordianBorder,
                   ]}
@@ -3584,6 +3714,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                       <TextinputComp
                         style={styles.textInputStyle}
                         value={selector.type_of_upi}
+                        disabled={true}
                         label={"Type of UPI"}
                         onChangeText={(text) =>
                           dispatch(
@@ -3599,6 +3730,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                         style={styles.textInputStyle}
                         value={selector.transfer_from_mobile}
                         label={"Transfer From Mobile"}
+                        disabled={true}
                         keyboardType={"number-pad"}
                         onChangeText={(text) =>
                           dispatch(
@@ -3614,6 +3746,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                         style={styles.textInputStyle}
                         value={selector.transfer_to_mobile}
                         label={"Transfer To Mobile"}
+                        disabled={true}
                         keyboardType={"number-pad"}
                         onChangeText={(text) =>
                           dispatch(
@@ -3630,50 +3763,54 @@ const BookingFormScreen = ({ route, navigation }) => {
 
                   {(selector.booking_payment_mode === "InternetBanking" ||
                     selector.booking_payment_mode === "Internet Banking") && (
-                      <View>
-                        <TextinputComp
-                          style={styles.textInputStyle}
-                          value={selector.utr_no}
-                          label={"UTR No"}
-                          onChangeText={(text) =>
-                            dispatch(
-                              setPreBookingPaymentDetials({
-                                key: "UTR_NO",
-                                text: text,
-                              })
-                            )
-                          }
-                        />
-                        <Text style={GlobalStyle.underline}></Text>
-                        <DateSelectItem
-                          label={"Transaction Date"}
-                          value={selector.transaction_date}
-                          onPress={() =>
-                            dispatch(setDatePicker("TRANSACTION_DATE"))
-                          }
-                        />
-                        <TextinputComp
-                          style={styles.textInputStyle}
-                          value={selector.comapany_bank_name}
-                          label={"Company Bank Name"}
-                          onChangeText={(text) =>
-                            dispatch(
-                              setPreBookingPaymentDetials({
-                                key: "COMPANY_BANK_NAME",
-                                text: text,
-                              })
-                            )
-                          }
-                        />
-                        <Text style={GlobalStyle.underline}></Text>
-                      </View>
-                    )}
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.utr_no}
+                        disabled={true}
+                        label={"UTR No"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setPreBookingPaymentDetials({
+                              key: "UTR_NO",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <DateSelectItem
+                        label={"Transaction Date"}
+                        value={selector.transaction_date}
+                        disabled={true}
+                        onPress={() =>
+                          dispatch(setDatePicker("TRANSACTION_DATE"))
+                        }
+                      />
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.comapany_bank_name}
+                        label={"Company Bank Name"}
+                        disabled={true}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setPreBookingPaymentDetials({
+                              key: "COMPANY_BANK_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
 
                   {selector.booking_payment_mode === "Cheque" && (
                     <View>
                       <TextinputComp
                         style={styles.textInputStyle}
                         value={selector.cheque_number}
+                        disabled={true}
                         label={"Cheque Number"}
                         onChangeText={(text) =>
                           dispatch(
@@ -3688,6 +3825,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                       <DateSelectItem
                         label={"Cheque Date"}
                         value={selector.cheque_date}
+                        disabled={true}
                         onPress={() => dispatch(setDatePicker("CHEQUE_DATE"))}
                       />
                     </View>
@@ -3699,6 +3837,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                         style={styles.textInputStyle}
                         value={selector.dd_number}
                         label={"DD Number"}
+                        disabled={true}
                         onChangeText={(text) =>
                           dispatch(
                             setPreBookingPaymentDetials({
@@ -3720,7 +3859,7 @@ const BookingFormScreen = ({ route, navigation }) => {
               ) : null}
             </List.AccordionGroup>
 
-            {!isDropSelected && showSubmitDropBtn && !userData.isManager && (
+            {/* {!isDropSelected && showSubmitDropBtn && !userData.isManager && (
               <View style={styles.actionBtnView}>
                 <Button
                   mode="contained"
@@ -3804,9 +3943,9 @@ const BookingFormScreen = ({ route, navigation }) => {
                     Proceed To Booking
                   </Button>
                 </View>
-              )}
+              )} */}
 
-            {isDropSelected && (
+            {/* {isDropSelected && (
               <View style={styles.prebookingBtnView}>
                 <Button
                   mode="contained"
@@ -3818,7 +3957,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   Proceed To Cancellation
                 </Button>
               </View>
-            )}
+            )} */}
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

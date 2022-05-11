@@ -29,6 +29,10 @@ import {
     updateIsTeam,
     updateIsTeamPresent
 } from '../../../redux/homeReducer';
+import {
+    updateData,
+    updateIsManager
+} from '../../../redux/sideMenuReducer';
 import { DateRangeComp, DatePickerComponent, SortAndFilterComp } from '../../../components';
 import { DateModalComp } from "../../../components/dateModalComp";
 import { getMenuList } from '../../../redux/homeReducer';
@@ -84,6 +88,7 @@ const HomeScreen = ({ route, navigation }) => {
     const [isTeamPresent, setIsTeamPresent] = useState(false);
     const [isTeam, setIsTeam] = useState(false);
     const [roles, setRoles] = useState([]);
+    const [headerText, setHeaderText] = useState('');
 
     useLayoutEffect(() => {
 
@@ -251,8 +256,7 @@ const HomeScreen = ({ route, navigation }) => {
                 orgId: jsonObj.orgId,
                 branchId: jsonObj.branchId
             }
-            // console.log("jsonObj: ", jsonObj);
-
+            setHeaderText(jsonObj.empName)
             const dateFormat = "YYYY-MM-DD";
             const currentDate = moment().format(dateFormat)
             const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
@@ -289,11 +293,28 @@ const HomeScreen = ({ route, navigation }) => {
             });
 
             if (jsonObj.roles.length > 0) {
+<<<<<<< HEAD
                 let rolesArr = [];
                 // console.log("ROLLS:", jsonObj.roles);
+=======
+                let rolesArr = [], rolesArr2= [];
+                console.log("ROLLS:", jsonObj.roles);
+>>>>>>> 71918e4ca5d6284fb1ef0988738f6be9325ccf87
                 rolesArr = jsonObj.roles.filter((item) => {
                     return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL" || item === "General Manager" || item === "branch manager" || item === "Testdrive_Manager"
                 })
+                rolesArr2 = jsonObj.roles.filter((item) => {
+                    return item.toLowerCase().includes('manager')
+                })
+
+                if (rolesArr2.length > 0) {
+                    // dispatch(updateData(sidemenuSelector.managerData))
+                    dispatch(updateIsManager(true))
+                }
+                else {
+                    // dispatch(updateData(sidemenuSelector.normalData))
+                    dispatch(updateIsManager(false))
+                }
                 if (rolesArr.length > 0) {
                     setRoles(rolesArr)
                     dispatch(updateIsTeamPresent(true))
@@ -442,7 +463,8 @@ const HomeScreen = ({ route, navigation }) => {
             />
             <HeaderComp
                 // title={"Dashboard"}
-                title={roles.length > 0 ? roles[0] : ''}
+                // title={roles.length > 0 ? roles[0] : ''}
+                title={headerText}
                 branchName={selectedBranchName}
                 menuClicked={() => navigation.openDrawer()}
                 branchClicked={() => moveToSelectBranch()}
@@ -470,7 +492,7 @@ const HomeScreen = ({ route, navigation }) => {
                                                     source={SPEED}
                                                 // style={{ tintColor: Colors.DARK_GRAY }}
                                                 /> */}
-                                                <Image style={{ width: 35, height: 35 }} source={require("../../../assets/images/rank.png")} />
+                                                <Image style={styles.rankIcon} source={require("../../../assets/images/rank.png")} />
                                             </View>
                                             <View style={{
                                                 marginTop: 5,
@@ -500,7 +522,7 @@ const HomeScreen = ({ route, navigation }) => {
                                                     source={SPEED}
                                                 // style={{ tintColor: Colors.DARK_GRAY }}
                                                 /> */}
-                                                <Image style={{ width: 35, height: 35 }} source={require("../../../assets/images/rank.png")} />
+                                                <Image style={styles.rankIcon} source={require("../../../assets/images/rank.png")} />
                                             </View>
                                             <View style={{
                                                 marginTop: 5,
@@ -552,7 +574,7 @@ const HomeScreen = ({ route, navigation }) => {
                                                     source={SPEED}
                                                 // style={{ tintColor: Colors.DARK_GRAY }}
                                                 /> */}
-                                                <Image style={{ width: 35, height: 35 }} source={require("../../../assets/images/retail.png")} />
+                                                <Image style={styles.rankIcon} source={require("../../../assets/images/retail.png")} />
                                             </View>
                                             <View style={{
                                                 marginTop: 5,
@@ -841,7 +863,8 @@ const styles = StyleSheet.create({
         // backgroundColor: 'red',
         marginRight: 10,
         alignItems: 'flex-end'
-    }
+    },
+    rankIcon: { width: 25, height: 25 }
 });
 
 

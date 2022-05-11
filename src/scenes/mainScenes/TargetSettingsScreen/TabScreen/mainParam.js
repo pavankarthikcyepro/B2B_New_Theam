@@ -159,7 +159,35 @@ const MainParamScreen = ({ route, navigation }) => {
                         <View style={styles.paramBox}>
                             <Text style={[styles.text, { color: 'blue' }]}>Retail</Text>
                         </View>
-                        <View style={styles.paramBox}>
+                    <View style={styles.paramBox}>
+                        <Text style={[styles.text]}>Enquiry</Text>
+                    </View>
+                    <View style={styles.paramBox}>
+                        <Text style={[styles.text, ]}>Booking</Text>
+                    </View>
+                    <View style={styles.paramBox}>
+                        <Text style={[styles.text,]}>Test Drive</Text>
+                    </View>
+                    <View style={styles.paramBox}>
+                        <Text style={[styles.text, ]}>Visit</Text>
+                    </View>
+
+                    <View style={styles.paramBox}>
+                        <Text style={[styles.text,]}>Finance</Text>
+                    </View>
+
+                    <View style={styles.paramBox}>
+                        <Text style={[styles.text,]}>Insurance</Text>
+                    </View>
+
+                    <View style={styles.paramBox}>
+                        <Text style={[styles.text, ]}>Accessories</Text>
+                    </View>
+
+                    <View style={styles.paramBox}>
+                        <Text style={[styles.text,]}>Exchange</Text>
+                    </View>
+                        {/* <View style={styles.paramBox}>
                             <Text style={[styles.text, { color: '#00b1ff' }]}>Enquiry</Text>
                         </View>
                         <View style={styles.paramBox}>
@@ -186,7 +214,7 @@ const MainParamScreen = ({ route, navigation }) => {
 
                         <View style={styles.paramBox}>
                             <Text style={[styles.text, { color: '#fb03b9' }]}>Exchange</Text>
-                        </View>
+                        </View> */}
                     </View>
                     <ScrollView style={{ width: '100%' }} contentContainerStyle={{ flexDirection: 'column' }} showsVerticalScrollIndicator={false}
                         showsHorizontalScrollIndicator={false} horizontal={true}>
@@ -351,32 +379,32 @@ const MainParamScreen = ({ route, navigation }) => {
                         <Text style={[styles.text, { color: 'blue' }]}>Retail</Text>
                     </View>
                     <View style={styles.paramBox}>
-                        <Text style={[styles.text, { color: '#00b1ff' }]}>Enquiry</Text>
+                        <Text style={[styles.text,]}>Enquiry</Text>
                     </View>
                     <View style={styles.paramBox}>
-                        <Text style={[styles.text, { color: '#fb03b9' }]}>Booking</Text>
+                        <Text style={[styles.text, ]}>Booking</Text>
                     </View>
                     <View style={styles.paramBox}>
-                        <Text style={[styles.text, { color: '#ffa239' }]}>Test Drive</Text>
+                        <Text style={[styles.text, ]}>Test Drive</Text>
                     </View>
                     <View style={styles.paramBox}>
-                        <Text style={[styles.text, { color: '#d12a78' }]}>Visit</Text>
-                    </View>
-
-                    <View style={styles.paramBox}>
-                        <Text style={[styles.text, { color: '#00b1ff' }]}>Finance</Text>
+                        <Text style={[styles.text, ]}>Visit</Text>
                     </View>
 
                     <View style={styles.paramBox}>
-                        <Text style={[styles.text, { color: '#1f93ab' }]}>Insurance</Text>
+                        <Text style={[styles.text, ]}>Finance</Text>
                     </View>
 
                     <View style={styles.paramBox}>
-                        <Text style={[styles.text, { color: '#ec3466' }]}>Accessories</Text>
+                        <Text style={[styles.text, ]}>Insurance</Text>
                     </View>
 
                     <View style={styles.paramBox}>
-                        <Text style={[styles.text, { color: '#fb03b9' }]}>Exchange</Text>
+                        <Text style={[styles.text, ]}>Accessories</Text>
+                    </View>
+
+                    <View style={styles.paramBox}>
+                        <Text style={[styles.text, ]}>Exchange</Text>
                     </View>
                 </View>
                 <ScrollView style={{ width: '100%' }} contentContainerStyle={{ flexDirection: 'column' }} showsVerticalScrollIndicator={false}
@@ -451,32 +479,32 @@ const MainParamScreen = ({ route, navigation }) => {
                             <Text style={[styles.text, { color: 'blue' }]}>Retail</Text>
                         </View>
                         <View style={styles.paramBox}>
-                            <Text style={[styles.text, { color: '#00b1ff' }]}>Enquiry</Text>
+                            <Text style={[styles.text, ]}>Enquiry</Text>
                         </View>
                         <View style={styles.paramBox}>
-                            <Text style={[styles.text, { color: '#fb03b9' }]}>Booking</Text>
+                            <Text style={[styles.text, ]}>Booking</Text>
                         </View>
                         <View style={styles.paramBox}>
-                            <Text style={[styles.text, { color: '#ffa239' }]}>Test Drive</Text>
+                            <Text style={[styles.text, ]}>Test Drive</Text>
                         </View>
                         <View style={styles.paramBox}>
-                            <Text style={[styles.text, { color: '#d12a78' }]}>Visit</Text>
-                        </View>
-
-                        <View style={styles.paramBox}>
-                            <Text style={[styles.text, { color: '#00b1ff' }]}>Finance</Text>
+                            <Text style={[styles.text, ]}>Visit</Text>
                         </View>
 
                         <View style={styles.paramBox}>
-                            <Text style={[styles.text, { color: '#1f93ab' }]}>Insurance</Text>
+                            <Text style={[styles.text, ]}>Finance</Text>
                         </View>
 
                         <View style={styles.paramBox}>
-                            <Text style={[styles.text, { color: '#ec3466' }]}>Accessories</Text>
+                            <Text style={[styles.text, ]}>Insurance</Text>
                         </View>
 
                         <View style={styles.paramBox}>
-                            <Text style={[styles.text, { color: '#fb03b9' }]}>Exchange</Text>
+                            <Text style={[styles.text, ]}>Accessories</Text>
+                        </View>
+
+                        <View style={styles.paramBox}>
+                            <Text style={[styles.text, ]}>Exchange</Text>
                         </View>
                     </View>
                     <ScrollView style={{ width: '100%' }} contentContainerStyle={{ flexDirection: 'column' }} showsVerticalScrollIndicator={false}
@@ -676,9 +704,9 @@ const styles = StyleSheet.create({
     },
     text: { fontSize: 14, fontWeight: '500' },
     nameWrap: { width: '100%', flexDirection: 'row', marginBottom: 10, marginLeft: 10, marginTop: 10 },
-    nameBox: { width: 100, justifyContent: 'center', alignItems: 'center', marginRight: 5 },
-    textBox: { width: 100, height: 40, borderWidth: 1, borderRadius: 5, borderColor: 'blue', marginRight: 5, justifyContent: 'center', alignItems: 'center' },
-    textBox2: { width: 100, height: 40, borderWidth: 1, borderRadius: 5, marginRight: 5, justifyContent: 'center', alignItems: 'center', borderColor: '#d1d1d1' },
+    nameBox: { width: 80, justifyContent: 'center', alignItems: 'center', marginRight: 5 },
+    textBox: { width: 80, height: 40, borderWidth: 1, borderRadius: 5, borderColor: 'blue', marginRight: 5, justifyContent: 'center', alignItems: 'center' },
+    textBox2: { width: 80, height: 40, borderWidth: 1, borderRadius: 5, marginRight: 5, justifyContent: 'center', alignItems: 'center', borderColor: '#d1d1d1' },
     textInput: {
         fontSize: 14,
         // color: 'red'

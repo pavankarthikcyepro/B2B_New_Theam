@@ -32,6 +32,7 @@ const HelpDeskScreen = () => {
           }}
         />
       </View>
+      
     </SafeAreaView>
   );
 };

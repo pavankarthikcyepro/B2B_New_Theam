@@ -53,13 +53,20 @@ import PaidAccessoriesScreen from "../scenes/mainScenes/EMS/paidAccsories";
 import ProceedToPreBookingScreen from "../scenes/mainScenes/MyTasks/proceedToPreBookingScreen";
 import CreateEnquiryScreen from "../scenes/mainScenes/MyTasks/createEnquiryScreen";
 import FilterScreen from "../scenes/mainScenes/Home/filterScreen";
-import SelectBranchComp from "../scenes/loginScenes/selectBranchComp";
+ import SelectBranchComp from "../scenes/loginScenes/selectBranchComp";
 import TargetSettingsScreen from "../scenes/mainScenes/TargetSettingsScreen";
 import TestScreen from "../scenes/mainScenes/Home/testScreen";
 import TaskListScreen from "../scenes/mainScenes/MyTasks/taskListScreen";
 import PriceScreen from "../scenes/mainScenes/price";
 import TaskThreeSixtyScreen from "../scenes/mainScenes/EMS/taskThreeSixty";
+<<<<<<< HEAD
 import ChangePasswordScreen from "../scenes/mainScenes/changePasswordScreen";
+=======
+import BookingScreen from "../scenes/mainScenes/EMS/bookingScreen";
+import BookingFormScreen from "../scenes/mainScenes/EMS/bookingFormScreen";
+import ProceedToBookingScreen from "../scenes/mainScenes/MyTasks/proceedToBookingScreen";
+
+>>>>>>> 71918e4ca5d6284fb1ef0988738f6be9325ccf87
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -165,6 +172,7 @@ export const EmsStackIdentifiers = {
   confirmedPreEnq: "CONFIRMED_PRE_ENQUIRY",
   detailsOverview: "DETAILS_OVERVIEW",
   preBookingForm: "PRE_BOOKING_FORM",
+
   paidAccessories: "PAID_ACCESSORIES",
   proceedToPreBooking: "PROCEED_TO_PRE_BOOKING",
   task360: "TASK_360",
@@ -175,11 +183,18 @@ export const EmsStackIdentifiers = {
   proceedToPreBooking: "PROCEED_TO_PRE_BOOKING_1",
   proceedToBooking: "PROCEED_TO_BOOKING_1",
   createEnquiry: "CREATE_ENQUIRY_1",
+  bookingForm: "BOOKING_FORM",
 };
 
 export const PreBookingStackIdentifiers = {
   preBooking: "PRE_BOOKING",
   preBookingForm: "PRE_BOOKING_FORM",
+  
+};
+
+export const BookingStackIdentifiers = {
+  booking: "BOOKING",
+  bookingForm: "BOOKING_FORM",
 };
 
 export const MyTasksStackIdentifiers = {
@@ -308,14 +323,28 @@ const EmsStackNavigator = ({ navigation }) => {
         options={{ title: "Pre-Booking Form" }}
       />
       <EmsStack.Screen
+        name={EmsStackIdentifiers.bookingForm}
+        component={BookingFormScreen}
+        initialParams={{ accessoriesList: [] }}
+        options={{ title: "Booking Form" }}
+      />
+
+      <EmsStack.Screen
         name={EmsStackIdentifiers.paidAccessories}
         component={PaidAccessoriesScreen}
         options={{ title: "Paid Accessories" }}
       />
+
       <EmsStack.Screen
         name={EmsStackIdentifiers.proceedToPreBooking}
         component={ProceedToPreBookingScreen}
         options={{ title: "Proceed To PreBooking" }}
+      />
+      <EmsStack.Screen
+        name={EmsStackIdentifiers.proceedToBooking}
+        component={ProceedToBookingScreen}
+        initialParams={{ accessoriesList: [] }}
+        options={{ title: "Proceed To Booking" }}
       />
       <EmsStack.Screen
         name={EmsStackIdentifiers.task360}
@@ -385,29 +414,10 @@ const MyTaskStackNavigator = ({ navigation }) => {
       />
 
       <MyTaskStack.Screen
-        name={MyTasksStackIdentifiers.homeVisit}
-        component={HomeVisitScreen}
-        options={{ title: "Home Visit" }}
+        name={MyTasksStackIdentifiers.tasksListScreen}
+        component={TaskListScreen}
+        options={{ title: "My Tasks" }}
       />
-
-      <MyTaskStack.Screen
-        name={MyTasksStackIdentifiers.testDrive}
-        component={TestDriveScreen}
-        options={{ title: "Test Drive" }}
-      />
-
-      <MyTaskStack.Screen
-        name={MyTasksStackIdentifiers.enquiryFollowUp}
-        component={EnquiryFollowUpScreen}
-        options={{ title: "Enquiry Follow Up" }}
-      />
-
-      <MyTaskStack.Screen
-        name={MyTasksStackIdentifiers.proceedToPreBooking}
-        component={ProceedToPreBookingScreen}
-        options={{ title: "Proceed To PreBooking" }}
-      />
-
       <MyTaskStack.Screen
         name={MyTasksStackIdentifiers.createEnquiry}
         component={CreateEnquiryScreen}
@@ -415,9 +425,31 @@ const MyTaskStackNavigator = ({ navigation }) => {
       />
 
       <MyTaskStack.Screen
-        name={MyTasksStackIdentifiers.tasksListScreen}
-        component={TaskListScreen}
-        options={{ title: "My Tasks" }}
+        name={MyTasksStackIdentifiers.enquiryFollowUp}
+        component={EnquiryFollowUpScreen}
+        options={{ title: "Enquiry Follow Up" }}
+      />
+      <MyTaskStack.Screen
+        name={MyTasksStackIdentifiers.testDrive}
+        component={TestDriveScreen}
+        options={{ title: "Test Drive" }}
+      />
+
+      <MyTaskStack.Screen
+        name={MyTasksStackIdentifiers.homeVisit}
+        component={HomeVisitScreen}
+        options={{ title: "Home Visit" }}
+      />
+
+      <MyTaskStack.Screen
+        name={MyTasksStackIdentifiers.proceedToPreBooking}
+        component={ProceedToPreBookingScreen}
+        options={{ title: "Proceed To PreBooking" }}
+      />
+      <MyTaskStack.Screen
+        name={MyTasksStackIdentifiers.proceedToBooking}
+        component={ProceedToBookingScreen}
+        options={{ title: "Proceed To Booking" }}
       />
     </MyTaskStack.Navigator>
   );
@@ -731,6 +763,34 @@ const PreBookingStackNavigator = ({ navigation }) => {
         }}
       />
     </PreBookingStack.Navigator>
+  );
+};
+
+const BookingStack = createStackNavigator();
+
+const BookingStackNavigator = ({ navigation }) => {
+  return (
+    <BookingStack.Navigator
+      initialRouteName={BookingStackIdentifiers.booking}
+      screenOptions={screeOptionStyle}
+    >
+      <BookingStack.Screen
+        name={BookingStackIdentifiers.booking}
+        component={BookingScreen}
+        options={{
+          title: "Booking",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+
+      <BookingStack.Screen
+        name={BookingStackIdentifiers.bookingForm}
+        component={BookingFormScreen}
+        options={{
+          title: "Booking Form",
+        }}
+      />
+    </BookingStack.Navigator>
   );
 };
 

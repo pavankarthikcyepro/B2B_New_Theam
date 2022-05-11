@@ -176,7 +176,7 @@ const SideMenuScreen = ({ navigation }) => {
                 navigation.navigate(AppNavigator.DrawerStackIdentifiers.helpdesk);
                 break;
             case 108:
-                navigation.navigate(AppNavigator.DrawerStackIdentifiers.taskManagement);
+                navigation.navigate(AppNavigator.MyTaskStackNavigator.mytasks);
                 break;
             case 109:
                 navigation.navigate(AppNavigator.DrawerStackIdentifiers.taskTransfer);

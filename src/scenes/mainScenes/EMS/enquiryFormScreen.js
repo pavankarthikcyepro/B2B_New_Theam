@@ -108,6 +108,8 @@ import {
   GetFinanceBanksList,
   PincodeDetails,
 } from "../../../utils/helperFunctions";
+
+import CREATE_NEW from "../../../assets/images/create_new.svg";
 import URL from "../../../networking/endpoints";
 import { getEnquiryList } from "../../../redux/enquiryReducer";
 import { AppNavigator } from "../../../navigations";
@@ -1531,7 +1533,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 titleStyle={{
                   color: openAccordian === "1" ? Colors.WHITE : Colors.BLACK,
                   fontSize: 16,
-                  fontWeight: "800",
+                  fontWeight: "600",
                 }}
                 style={[
                   {
@@ -1539,8 +1541,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       openAccordian === "1"
                         ? Colors.RED
                         : Colors.SKY_LIGHT_BLUE_COLOR,
-                        height: 50,
-                        // justifyContent: 'center'
+                    height: 50,
+                    // justifyContent: 'center'
                   },
                   styles.accordianBorder,
                 ]}
@@ -1599,11 +1601,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
 
                 {selector.customer_type.toLowerCase() === "fleet" ||
-                  selector.customer_type.toLowerCase() === "institution" ||
-                  selector.customer_type.toLowerCase() === "corporate" ||
-                  selector.customer_type.toLowerCase() === "government" ||
-                  selector.customer_type.toLowerCase() === "retired" ||
-                  selector.customer_type.toLowerCase() === "other" ? (
+                selector.customer_type.toLowerCase() === "institution" ||
+                selector.customer_type.toLowerCase() === "corporate" ||
+                selector.customer_type.toLowerCase() === "government" ||
+                selector.customer_type.toLowerCase() === "retired" ||
+                selector.customer_type.toLowerCase() === "other" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -1653,19 +1655,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     .toLowerCase()
                     .trim()
                     .replace(/ /g, "") === "socialnetwork") && (
-                    <View>
-                      <DropDownSelectionItem
-                        label={"Sub Source Of Enquiry"}
-                        value={selector.sub_source_of_enquiry}
-                        onPress={() =>
-                          showDropDownModelMethod(
-                            "SUB_SOURCE_OF_ENQUIRY",
-                            "Sub Source Of Enquiry"
-                          )
-                        }
-                      />
-                    </View>
-                  )}
+                  <View>
+                    <DropDownSelectionItem
+                      label={"Sub Source Of Enquiry"}
+                      value={selector.sub_source_of_enquiry}
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "SUB_SOURCE_OF_ENQUIRY",
+                          "Sub Source Of Enquiry"
+                        )
+                      }
+                    />
+                  </View>
+                )}
 
                 {selector.source_of_enquiry.toLowerCase() === "reference" && (
                   <View>
@@ -2071,7 +2073,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
                 <Text style={GlobalStyle.underline}></Text>
 
- <TextinputComp
+                <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.mandal}
                   label={"Mandal*"}
@@ -2275,7 +2277,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       }
                     />
                     <Text style={GlobalStyle.underline}></Text>
-                     <TextinputComp
+                    <TextinputComp
                       style={styles.textInputStyle}
                       value={selector.p_mandal}
                       label={"Mandal*"}
@@ -2402,6 +2404,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   editable={false}
                   value={selector.transmission_type}
                 />
+                <View style={[styles.addView, GlobalStyle.shadow]}>
+                  <Pressable onPress={() => console.log("pressed")}>
+                    <CREATE_NEW
+                      width={60}
+                      height={60}
+                      fill={"rgba(76,24,197,0.8)"}
+                    />
+                  </Pressable>
+                </View>
                 <Text style={GlobalStyle.underline}></Text>
               </List.Accordion>
               <View style={styles.space}></View>
@@ -2419,7 +2430,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     backgroundColor:
                       openAccordian === "5"
                         ? Colors.RED
-                        : Colors.SKY_LIGHT_BLUE_COLOR, height: 50,                  },
+                        : Colors.SKY_LIGHT_BLUE_COLOR,
+                    height: 50,
+                  },
                   styles.accordianBorder,
                 ]}
               >
@@ -2520,51 +2533,51 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {(selector.retail_finance === "In House" ||
                   selector.retail_finance === "Out House") && (
-                    <View>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Loan Amount*"}
-                        keyboardType={"numeric"}
-                        maxLength={10}
-                        value={selector.loan_amount}
-                        onChangeText={(text) => {
-                          emiCal(
-                            text,
-                            selector.loan_of_tenure,
-                            selector.rate_of_interest
-                          );
-                          dispatch(
-                            setFinancialDetails({
-                              key: "LOAN_AMOUNT",
-                              text: text,
-                            })
-                          );
-                        }}
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Rate of Interest*"}
-                        keyboardType={"numeric"}
-                        maxLength={10}
-                        value={selector.rate_of_interest}
-                        onChangeText={(text) => {
-                          emiCal(
-                            selector.loan_amount,
-                            selector.loan_of_tenure,
-                            text
-                          );
-                          dispatch(
-                            setFinancialDetails({
-                              key: "RATE_OF_INTEREST",
-                              text: text,
-                            })
-                          );
-                        }}
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  )}
+                  <View>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Loan Amount*"}
+                      keyboardType={"numeric"}
+                      maxLength={10}
+                      value={selector.loan_amount}
+                      onChangeText={(text) => {
+                        emiCal(
+                          text,
+                          selector.loan_of_tenure,
+                          selector.rate_of_interest
+                        );
+                        dispatch(
+                          setFinancialDetails({
+                            key: "LOAN_AMOUNT",
+                            text: text,
+                          })
+                        );
+                      }}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Rate of Interest*"}
+                      keyboardType={"numeric"}
+                      maxLength={10}
+                      value={selector.rate_of_interest}
+                      onChangeText={(text) => {
+                        emiCal(
+                          selector.loan_amount,
+                          selector.loan_of_tenure,
+                          text
+                        );
+                        dispatch(
+                          setFinancialDetails({
+                            key: "RATE_OF_INTEREST",
+                            text: text,
+                          })
+                        );
+                      }}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                )}
 
                 {selector.retail_finance === "In House" && (
                   <View>
@@ -2671,7 +2684,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 ) : null}
 
                 {/* // Adhal Number */}
-                {(selector.enquiry_segment.toLowerCase() === "personal") ? (
+                {selector.enquiry_segment.toLowerCase() === "personal" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -2680,7 +2693,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       keyboardType={"phone-pad"}
                       maxLength={12}
                       onChangeText={(text) =>
-                        dispatch(setUploadDocuments({ key: "ADHAR", text: text }))
+                        dispatch(
+                          setUploadDocuments({ key: "ADHAR", text: text })
+                        )
                       }
                     />
                     <Text style={GlobalStyle.underline}></Text>
@@ -2700,22 +2715,29 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 ) : null}
 
                 {/* // Employeed ID */}
-                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "corporate" || selector.customer_type.toLowerCase() === "government" || selector.customer_type.toLowerCase() === "retired")) ? (
-                  <View >
+                {selector.enquiry_segment.toLowerCase() === "personal" &&
+                (selector.customer_type.toLowerCase() === "corporate" ||
+                  selector.customer_type.toLowerCase() === "government" ||
+                  selector.customer_type.toLowerCase() === "retired") ? (
+                  <View>
                     <TextinputComp
                       style={styles.textInputStyle}
                       value={selector.employee_id}
                       label={"Employee ID*"}
                       maxLength={15}
                       onChangeText={(text) =>
-                        dispatch(setUploadDocuments({ key: "EMPLOYEE_ID", text: text }))
+                        dispatch(
+                          setUploadDocuments({ key: "EMPLOYEE_ID", text: text })
+                        )
                       }
                     />
                     <Text style={GlobalStyle.underline}></Text>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Employee ID"}
-                        onPress={() => dispatch(setImagePicker("UPLOAD_EMPLOYEE_ID"))}
+                        onPress={() =>
+                          dispatch(setImagePicker("UPLOAD_EMPLOYEE_ID"))
+                        }
                       />
                     </View>
                     {uploadedImagesDataObj.empId ? (
@@ -2728,12 +2750,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 ) : null}
 
                 {/* Last 3 month payslip */}
-                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "corporate" || selector.customer_type.toLowerCase() === "government")) ? (
-                  <View >
+                {selector.enquiry_segment.toLowerCase() === "personal" &&
+                (selector.customer_type.toLowerCase() === "corporate" ||
+                  selector.customer_type.toLowerCase() === "government") ? (
+                  <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Last 3 months payslip"}
-                        onPress={() => dispatch(setImagePicker("UPLOAD_3_MONTHS_PAYSLIP"))}
+                        onPress={() =>
+                          dispatch(setImagePicker("UPLOAD_3_MONTHS_PAYSLIP"))
+                        }
                       />
                     </View>
                     {uploadedImagesDataObj.payslip ? (
@@ -2746,12 +2772,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 ) : null}
 
                 {/* Patta Pass book */}
-                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "farmer")) ? (
-                  <View >
+                {selector.enquiry_segment.toLowerCase() === "personal" &&
+                selector.customer_type.toLowerCase() === "farmer" ? (
+                  <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Patta Pass Book"}
-                        onPress={() => dispatch(setImagePicker("UPLOAD_PATTA_PASS_BOOK"))}
+                        onPress={() =>
+                          dispatch(setImagePicker("UPLOAD_PATTA_PASS_BOOK"))
+                        }
                       />
                     </View>
                     {uploadedImagesDataObj.passbook ? (
@@ -2764,12 +2793,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 ) : null}
 
                 {/* Pension Letter */}
-                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "retired")) ? (
-                  <View >
+                {selector.enquiry_segment.toLowerCase() === "personal" &&
+                selector.customer_type.toLowerCase() === "retired" ? (
+                  <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Pension Letter"}
-                        onPress={() => dispatch(setImagePicker("UPLOAD_PENSION_LETTER"))}
+                        onPress={() =>
+                          dispatch(setImagePicker("UPLOAD_PENSION_LETTER"))
+                        }
                       />
                     </View>
                     {uploadedImagesDataObj.pension ? (
@@ -2782,12 +2814,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 ) : null}
 
                 {/* IMA Certificate */}
-                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "doctor")) ? (
-                  <View >
+                {selector.enquiry_segment.toLowerCase() === "personal" &&
+                selector.customer_type.toLowerCase() === "doctor" ? (
+                  <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"IMA Certificate"}
-                        onPress={() => dispatch(setImagePicker("UPLOAD_IMA_CERTIFICATE"))}
+                        onPress={() =>
+                          dispatch(setImagePicker("UPLOAD_IMA_CERTIFICATE"))
+                        }
                       />
                     </View>
                     {uploadedImagesDataObj.imaCertificate ? (
@@ -2800,12 +2835,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 ) : null}
 
                 {/* Leasing Confirmation */}
-                {(selector.enquiry_segment.toLowerCase() === "commercial" && (selector.customer_type.toLowerCase() === "fleet")) ? (
-                  <View >
+                {selector.enquiry_segment.toLowerCase() === "commercial" &&
+                selector.customer_type.toLowerCase() === "fleet" ? (
+                  <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Leasing Confirmation"}
-                        onPress={() => dispatch(setImagePicker("UPLOAD_LEASING_CONFIRMATION"))}
+                        onPress={() =>
+                          dispatch(
+                            setImagePicker("UPLOAD_LEASING_CONFIRMATION")
+                          )
+                        }
                       />
                     </View>
                     {uploadedImagesDataObj.leasingConfirm ? (
@@ -2818,12 +2858,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 ) : null}
 
                 {/* Address Proof */}
-                {(selector.enquiry_segment.toLowerCase() === "company" && (selector.customer_type.toLowerCase() === "institution")) ? (
-                  <View >
+                {selector.enquiry_segment.toLowerCase() === "company" &&
+                selector.customer_type.toLowerCase() === "institution" ? (
+                  <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Address Proof"}
-                        onPress={() => dispatch(setImagePicker("UPLOAD_ADDRESS_PROOF"))}
+                        onPress={() =>
+                          dispatch(setImagePicker("UPLOAD_ADDRESS_PROOF"))
+                        }
                       />
                     </View>
                     {uploadedImagesDataObj.address ? (
@@ -2836,21 +2879,26 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 ) : null}
 
                 {/* GSTIN Number */}
-                {(selector.enquiry_segment.toLowerCase() === "company" && (selector.customer_type.toLowerCase() === "institution")) ? (
-                  <View >
+                {selector.enquiry_segment.toLowerCase() === "company" &&
+                selector.customer_type.toLowerCase() === "institution" ? (
+                  <View>
                     <TextinputComp
                       style={styles.textInputStyle}
                       value={selector.gstin_number}
                       label={"GSTIN Number"}
                       maxLength={30}
                       onChangeText={(text) =>
-                        dispatch(setUploadDocuments({ key: "GSTIN_NUMBER", text: text }))
+                        dispatch(
+                          setUploadDocuments({
+                            key: "GSTIN_NUMBER",
+                            text: text,
+                          })
+                        )
                       }
                     />
                     <Text style={GlobalStyle.underline}></Text>
                   </View>
                 ) : null}
-
               </List.Accordion>
               <View style={styles.space}></View>
               {/* // 7.Customer Need Analysis */}
@@ -3100,7 +3148,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
               </List.Accordion>
               {selector.buyer_type == "Additional Buyer" ||
-                selector.buyer_type == "Replacement Buyer" ? (
+              selector.buyer_type == "Replacement Buyer" ? (
                 <View style={styles.space}></View>
               ) : null}
               {/* // 8.Additional Buyer */}
@@ -3210,6 +3258,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     value={selector.a_reg_no}
                     label={"Reg. No."}
                     maxLength={50}
+                    autoCapitalize={"characters"}
                     keyboardType={"default"}
                     onChangeText={(text) =>
                       dispatch(
@@ -3647,28 +3696,26 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     styles.accordianBorder,
                   ]}
                 >
-
                   <DropComponent
                     from="ENQUIRY"
                     data={dropData}
                     reason={dropReason}
-                    setReason={(text => setDropReason(text))}
+                    setReason={(text) => setDropReason(text)}
                     subReason={dropSubReason}
-                    setSubReason={(text => setDropSubReason(text))}
+                    setSubReason={(text) => setDropSubReason(text)}
                     brandName={dropBrandName}
-                    setBrandName={text => setDropBrandName(text)}
+                    setBrandName={(text) => setDropBrandName(text)}
                     dealerName={dropDealerName}
-                    setDealerName={text => setDropDealerName(text)}
+                    setDealerName={(text) => setDropDealerName(text)}
                     location={dropLocation}
-                    setLocation={text => setDropLocation(text)}
+                    setLocation={(text) => setDropLocation(text)}
                     model={dropModel}
-                    setModel={text => setDropModel(text)}
+                    setModel={(text) => setDropModel(text)}
                     priceDiff={dropPriceDifference}
-                    setPriceDiff={text => setDropPriceDifference(text)}
+                    setPriceDiff={(text) => setDropPriceDifference(text)}
                     remarks={dropRemarks}
                     setRemarks={(text) => setDropRemarks(text)}
                   />
-
                 </List.Accordion>
               ) : null}
             </List.AccordionGroup>
@@ -3682,7 +3729,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 labelStyle={{ textTransform: "none" }}
                 onPress={() => setIsDropSelected(true)}
               >
-                Drop
+                Lost
               </Button>
               <Button
                 mode="contained"
@@ -3737,8 +3784,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   baseVw: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingHorizontal: 15,
+    paddingVertical: 2,
   },
   shadow: {
     shadowColor: Colors.DARK_GRAY,
@@ -3755,7 +3802,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   space: {
-    height: 5,
+    height: 8,
   },
   drop_down_view_style: {
     paddingTop: 5,
@@ -3834,8 +3881,14 @@ const styles = StyleSheet.create({
     color: Colors.DARK_GRAY,
   },
   accordianBorder: {
-    borderWidth: 0.5,
+    borderWidth: 0.4,
     borderRadius: 4,
     borderColor: "#7a7b7d",
+  },
+  addView: {
+    position: "absolute",
+    bottom: 10,
+    right: 10,
+    backgroundColor: "white",
   },
 });

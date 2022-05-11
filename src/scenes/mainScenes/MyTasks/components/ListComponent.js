@@ -74,7 +74,7 @@ const ListComponent = ({ route, navigation }) => {
 
         <View style={{ flex: 1, backgroundColor: Colors.LIGHT_GRAY, padding: 5, }}>
             <View style={{ flexDirection: "row", justifyContent: "center", paddingTop: 15, paddingBottom: 25 }}>
-                <View style={{ width: "75%" }}>
+                {/* <View style={{ width: "75%" }}>
                     <SegmentedControl
                         values={['My Tasks', 'Team Tasks']}
                         enabled={true}
@@ -89,8 +89,21 @@ const ListComponent = ({ route, navigation }) => {
                             setIndex(event.nativeEvent.selectedSegmentIndex);
                         }}
                     />
+                </View> */}
+                <View style={styles.selfBtnWrap}>
+                    <TouchableOpacity onPress={() => {
+                        setIndex(0)
+                    }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: index ? Colors.WHITE : Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
+                        <Text style={{ fontSize: 16, color: index ? Colors.BLACK : Colors.WHITE, fontWeight: '600' }}>Self</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => {
+                        setIndex(1)
+                    }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: index ? Colors.RED : Colors.WHITE, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
+                        <Text style={{ fontSize: 16, color: index ? Colors.WHITE : Colors.BLACK, fontWeight: '600' }}>Teams</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
+            
             {(index === 0 && myTasksData.length > 0) && (
                 <FlatList
                     data={myTasksData}
@@ -150,5 +163,6 @@ const styles = StyleSheet.create({
         flexDirection: "column",
         padding: 5,
         backgroundColor: Colors.LIGHT_GRAY
-    }
+    },
+    selfBtnWrap: { flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, marginTop: 10, justifyContent: 'center', width: '80%', },
 })
