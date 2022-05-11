@@ -139,7 +139,7 @@ const FilterScreen = ({ navigation }) => {
 
     const updateSelectedItems = (data, index) => {
 
-        console.log("index: ", index)
+        // console.log("index: ", index)
 
         const totalDataObjLocal = { ...totalDataObj };
 
@@ -261,7 +261,7 @@ const FilterScreen = ({ navigation }) => {
                 })
             }
         }
-        console.log("selectedIds: ", selectedIds);
+        // console.log("selectedIds: ", selectedIds);
         if (selectedIds.length > 0) {
             setIsLoading(true);
             getDashboadTableDataFromServer(selectedIds, "LEVEL");
@@ -295,7 +295,7 @@ const FilterScreen = ({ navigation }) => {
             selectedIds: selectedIds
         }
 
-        console.log("PAYLOAD 1:", payload1);
+        // console.log("PAYLOAD 1:", payload1);
         Promise.all([
             dispatch(getEmployeesDropDownData(payload1))
         ]).then(() => {
@@ -381,7 +381,7 @@ const FilterScreen = ({ navigation }) => {
                 }
             })
         }
-        console.log("selectedIds: ", selectedIds);
+        // console.log("selectedIds: ", selectedIds);
         if (selectedIds.length > 0) {
             getDashboadTableDataFromServer(selectedIds, "EMPLOYEE");
         }
@@ -432,7 +432,7 @@ const FilterScreen = ({ navigation }) => {
                 mode={"date"}
                 value={new Date(Date.now())}
                 onChange={(event, selectedDate) => {
-                    console.log("date: ", selectedDate);
+                    // console.log("date: ", selectedDate);
                     if (Platform.OS === "android") {
                         if (selectedDate) {
                             updateSelectedDate(selectedDate, datePickerId);

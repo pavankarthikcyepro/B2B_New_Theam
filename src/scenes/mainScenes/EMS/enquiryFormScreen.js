@@ -108,6 +108,8 @@ import {
     GetFinanceBanksList,
     PincodeDetails,
 } from "../../../utils/helperFunctions";
+
+import CREATE_NEW from "../../../assets/images/create_new.svg";
 import URL from "../../../networking/endpoints";
 import { getEnquiryList } from "../../../redux/enquiryReducer";
 import { AppNavigator } from "../../../navigations";
@@ -1909,7 +1911,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                                 titleStyle={{
                                     color: openAccordian === "1" ? Colors.WHITE : Colors.BLACK,
                                     fontSize: 16,
-                                    fontWeight: "800",
+                                    fontWeight: "600",
                                 }}
                                 style={[
                                     {
@@ -4220,5 +4222,11 @@ const styles = StyleSheet.create({
         borderWidth: 0.5,
         borderRadius: 4,
         borderColor: "#7a7b7d",
+    },
+    addView: {
+        position: "absolute",
+        bottom: 10,
+        right: 10,
+        backgroundColor: "white",
     },
 });

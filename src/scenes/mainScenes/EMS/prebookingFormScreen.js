@@ -95,15 +95,16 @@ import {
     showToastSucess,
 } from "../../../utils/toast";
 import {
-    convertDateStringToMillisecondsUsingMoment,
-    isValidateAlphabetics, isValidate,
-    isMobileNumber,
-    emiCalculator,
-    GetCarModelList,
-    PincodeDetails,
-    GetFinanceBanksList,
-    GetPaidAccessoriesList,
-    GetDropList,
+  convertDateStringToMillisecondsUsingMoment,
+  isValidateAlphabetics,
+  isValidate,
+  isMobileNumber,
+  emiCalculator,
+  GetCarModelList,
+  PincodeDetails,
+  GetFinanceBanksList,
+  GetPaidAccessoriesList,
+  GetDropList,
 } from "../../../utils/helperFunctions";
 import URL from "../../../networking/endpoints";
 import uuid from "react-native-uuid";

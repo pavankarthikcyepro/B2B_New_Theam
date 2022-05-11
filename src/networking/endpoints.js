@@ -197,6 +197,12 @@ const URL = {
     },
     GET_WORK_FLOW_TASKS: (universalId) => {
         return sales_url + `/workflow/lead/universalId/${universalId}`;
+    },
+    UPLOAD_PROFILE: (ownerId, orgId, branchId) => {
+        return sales_url + `/documents/uploadEmployeeProfile?ownerId=${ownerId}&orgId=${orgId}&branchId=${branchId}`;
+    },
+    SAVE_PROFILE: () => {
+        return sales_url + `/employeeprofilepic/save`;
     }
 }
 

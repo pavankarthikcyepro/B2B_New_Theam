@@ -27,6 +27,8 @@ const WelcomeScreen = ({ navigation }) => {
                 resizeMode={'center'}
                 source={require('../../assets/images/welcome.png')}
             /> */}
+                {/* source={require('../../assets/images/logo.png')}
+            /> */}
             <ButtonComp title={'LOG IN'} width={ScreenWidth - 40} onPress={loginButtonClicked} />
 
             <View style={styles.bottomViewStyle}>

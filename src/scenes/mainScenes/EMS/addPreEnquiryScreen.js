@@ -1102,7 +1102,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                             </View>
                         ) : null}
 
-                        {selector.sourceOfEnquiry === "Event" ? (
+                        {/* {selector.sourceOfEnquiry === "Event" ? (
                             <View>
                                 <DateSelectItem
                                     label={"Event Start Date"}
@@ -1130,7 +1130,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                                     </View>
                                 ) : null}
                             </View>
-                        ) : null}
+                        ) : null} */}
 
                         {/* {!fromEdit && ( */}
                         <TextinputComp

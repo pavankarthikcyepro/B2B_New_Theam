@@ -78,7 +78,7 @@ export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk("PREBOONING
     }
     return json;
   } catch (error) {
-    console.error("getOnRoadPriceAndInsurenceDetailsApi JSON parse error: ", error + " : " + JSON.stringify(response));
+    console.error("PRE-BOOKING getOnRoadPriceAndInsurenceDetailsApi JSON parse error: ", error + " : " + JSON.stringify(response));
     return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
 })

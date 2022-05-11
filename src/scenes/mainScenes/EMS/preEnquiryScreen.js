@@ -42,8 +42,8 @@ const PreEnquiryScreen = ({ navigation }) => {
         const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
         setSelectedFromDate(lastMonthFirstDate);
         const tomorrowDate = moment().add(1, "day").format(dateFormat)
-        setSelectedToDate(tomorrowDate);
-        getAsyncData(lastMonthFirstDate, tomorrowDate);
+        setSelectedToDate(currentDate);
+        getAsyncData(lastMonthFirstDate, currentDate);
 
     }, [])
 

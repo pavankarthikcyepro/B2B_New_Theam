@@ -103,7 +103,7 @@ export const getCustomerTypeList = createAsyncThunk(
       return rejectWithValue(json);
     }
     return json;
-  }
+  } 
 );
 
 export const getCarModalList = createAsyncThunk(

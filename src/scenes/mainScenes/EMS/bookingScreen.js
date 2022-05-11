@@ -22,16 +22,23 @@ import { AppNavigator } from "../../../navigations";
 import * as AsyncStore from "../../../asyncStore";
 import {
   getPreBookingData,
-  getMorePreBookingData,
-} from "../../../redux/preBookingReducer";
+  getPreMoreBookingData,
+} from "../../../redux/bookingReducer";
+
 import { callNumber } from "../../../utils/helperFunctions";
 import moment from "moment";
 import { Category_Type_List_For_Filter } from "../../../jsonData/enquiryFormScreenJsonData";
+import { MyTaskNewItem } from "../MyTasks/components/MyTasksNewItem";
 
 const dateFormat = "YYYY-MM-DD";
 
 const BookingScreen = ({ navigation }) => {
-  const selector = useSelector((state) => state.preBookingReducer);
+  const selector = useSelector((state) => state.bookingReducer);
+
+
+
+
+
   const { vehicle_model_list_for_filters, source_of_enquiry_list } =
     useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
@@ -58,19 +65,19 @@ const BookingScreen = ({ navigation }) => {
       .format(dateFormat);
     setSelectedFromDate(lastMonthFirstDate);
     const tomorrowDate = moment().add(1, "day").format(dateFormat);
-    setSelectedToDate(tomorrowDate);
-    getAsyncData(lastMonthFirstDate, tomorrowDate);
+    setSelectedToDate(currentDate);
+    getAsyncData(lastMonthFirstDate, currentDate);
   }, []);
 
   const getAsyncData = async (startDate, endDate) => {
     let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
     if (empId) {
-      getPreBookingListFromServer(empId, startDate, endDate);
+      getBookingListFromServer(empId, startDate, endDate);
       setEmployeeId(empId);
     }
   };
 
-  const getPreBookingListFromServer = (empId, startDate, endDate) => {
+  const getBookingListFromServer = (empId, startDate, endDate) => {
     const payload = getPayloadData(empId, startDate, endDate, 0);
     dispatch(getPreBookingData(payload));
   };
@@ -91,7 +98,7 @@ const BookingScreen = ({ navigation }) => {
       categoryType: categoryFilters,
       sourceOfEnquiry: sourceFilters,
       empId: empId,
-      status: "PREBOOKING",
+      status: "BOOKING",
       offset: offSet,
       limit: 10,
     };
@@ -257,8 +264,7 @@ const BookingScreen = ({ navigation }) => {
       ) : (
         <View
           style={[
-            GlobalStyle.shadow,
-            { backgroundColor: "white", flex: 1, marginBottom: 10 },
+            { backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 },
           ]}
         >
           <FlatList
@@ -290,23 +296,30 @@ const BookingScreen = ({ navigation }) => {
 
               return (
                 <>
-                  <PreEnquiryItem
-                    bgColor={color}
-                    name={item.firstName + " " + item.lastName}
-                    subName={item.enquirySource}
-                    date={item.createdDate}
-                    enquiryCategory={item.enquiryCategory}
-                    modelName={item.model}
-                    createdBy={item.createdBy}
-                    onPress={() =>
-                      navigation.navigate(
-                        AppNavigator.PreBookingStackIdentifiers.preBookingForm,
-                        { universalId: item.universalId }
-                      )
-                    }
-                    onCallPress={() => callNumber(item.phone)}
-                  />
-                  <View style={GlobalStyle.underline}></View>
+                  <View style={{ paddingVertical: 5 }}>
+                    <MyTaskNewItem
+                      from="BOOKING"
+                      name={item.firstName + " " + item.lastName}
+                      status={""}
+                      created={item.createdDate}
+                      dmsLead={item.createdBy}
+                      phone={item.phone}
+                      source={item.enquirySource}
+                      model={item.model}
+                      onItemPress={() =>
+                        navigation.navigate(
+                          AppNavigator.EmsStackIdentifiers.task360,
+                          { universalId: item.universalId }
+                        )
+                      }
+                      onDocPress={() =>
+                        navigation.navigate(
+                          AppNavigator.EmsStackIdentifiers.bookingForm,
+                          { universalId: item.universalId }
+                        )
+                      }
+                    />
+                  </View>
                 </>
               );
             }}

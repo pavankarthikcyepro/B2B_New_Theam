@@ -57,31 +57,32 @@ export const TargetAchivementComp = () => {
 }
 
 const styles = StyleSheet.create({
-    container: {
-
-    },
-    itemBaseView: {
-        width: "100%",
-        height: 50,
-        flexDirection: "row",
-        justifyContent: "space-between",
-    },
-    titleStyle: {
-        width: 40,
-        fontSize: 14,
-        fontWeight: "600",
-        textAlign: "center"
-    },
-    subView1: {
-        flexDirection: "row",
-        alignItems: "center"
-    },
-    subView2: {
-
-    },
-    verticleLine: {
-        height: "100%",
-        width: 1,
-        backgroundColor: Colors.GRAY
-    }
-})
+  container: {
+    width: "100%",
+    height: 90,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  itemBaseView: {
+    width: "100%",
+    height: 50,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  titleStyle: {
+    width: 40,
+    fontSize: 14,
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  subView1: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  subView2: {},
+  verticleLine: {
+    height: "100%",
+    width: 1,
+    backgroundColor: Colors.GRAY,
+  },
+});
