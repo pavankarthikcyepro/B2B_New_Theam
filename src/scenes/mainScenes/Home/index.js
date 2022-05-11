@@ -130,7 +130,7 @@ const HomeScreen = ({ route, navigation }) => {
                     return item.empId === jsonObj.empId
                 })
                 if (tempArr.length > 0) {
-                    console.log("RANK", tempArr[0].rank);
+                    // console.log("RANK", tempArr[0].rank);
                     setDealerRank(tempArr[0].rank)
                 }
                 else {
@@ -197,7 +197,7 @@ const HomeScreen = ({ route, navigation }) => {
                     return item.empId === jsonObj.empId
                 })
                 if (tempArr.length > 0) {
-                    console.log("RANK", tempArr[0].rank);
+                    // console.log("RANK", tempArr[0].rank);
                     setGroupDealerRank(tempArr[0].rank)
                 }
                 else {
@@ -290,7 +290,7 @@ const HomeScreen = ({ route, navigation }) => {
 
             if (jsonObj.roles.length > 0) {
                 let rolesArr = [];
-                console.log("ROLLS:", jsonObj.roles);
+                // console.log("ROLLS:", jsonObj.roles);
                 rolesArr = jsonObj.roles.filter((item) => {
                     return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL" || item === "General Manager" || item === "branch manager" || item === "Testdrive_Manager"
                 })
@@ -298,7 +298,7 @@ const HomeScreen = ({ route, navigation }) => {
                     setRoles(rolesArr)
                     dispatch(updateIsTeamPresent(true))
                     setIsTeamPresent(true)
-                    console.log("%%%%% TEAM:", rolesArr);
+                    // console.log("%%%%% TEAM:", rolesArr);
                     const dateFormat = "YYYY-MM-DD";
                     const currentDate = moment().format(dateFormat)
                     const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
@@ -309,7 +309,7 @@ const HomeScreen = ({ route, navigation }) => {
                         "startDate": monthFirstDate,
                         "levelSelected": null
                     }
-                    console.log("PAYLOAD:", payload);
+                    // console.log("PAYLOAD:", payload);
                     getAllTargetParametersDataFromServer(payload)
                 }
             }
@@ -377,7 +377,7 @@ const HomeScreen = ({ route, navigation }) => {
             "pageNo": 0,
             "size": 5
         }
-        console.log("PAYLOAD:", payload1);
+        // console.log("PAYLOAD:", payload1);
         Promise.all([
             dispatch(getTargetParametersAllData(payload1)),
             dispatch(getTargetParametersEmpData(payload1))

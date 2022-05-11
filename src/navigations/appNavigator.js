@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { IconButton, Searchbar } from "react-native-paper";
+import { useRoute } from '@react-navigation/native';
 import VectorImage from "react-native-vector-image";
 import { Colors } from "../styles";
 // import {
@@ -58,6 +59,7 @@ import TestScreen from "../scenes/mainScenes/Home/testScreen";
 import TaskListScreen from "../scenes/mainScenes/MyTasks/taskListScreen";
 import PriceScreen from "../scenes/mainScenes/price";
 import TaskThreeSixtyScreen from "../scenes/mainScenes/EMS/taskThreeSixty";
+import ChangePasswordScreen from "../scenes/mainScenes/changePasswordScreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -146,10 +148,10 @@ export const DrawerStackIdentifiers = {
 };
 
 export const TabStackIdentifiers = {
-  home: "HOME_TAB",
+  home: "HOME_SCREEN",
   ems: "EMS_TAB",
   myTask: "MY_TASK_TAB",
-  price: "PRICE"
+  planning: "MONTHLY_TARGET"
 };
 
 export const HomeStackIdentifiers = {
@@ -455,9 +457,13 @@ const PriceStackNavigator = ({ navigation }) => {
 
 const Tab = createBottomTabNavigator();
 
-const TabNavigator = () => {
+const TabNavigator = (props) => {
+  const routeName = useRoute();
+  // console.log("-----------props", routeName)
+  // console.log("-----------condation", routeName.name === "MONTHLY_TARGET")
   return (
     <Tab.Navigator
+      initialRouteName={routeName.name === "MONTHLY_TARGET" ? TabStackIdentifiers.planning : TabStackIdentifiers.home}
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
 
@@ -468,9 +474,9 @@ const TabNavigator = () => {
           } else if (route.name === TabStackIdentifiers.myTask) {
             return focused ? <SCHEDULE_FILL width={size} height={size} fill={color} /> : <SCHEDULE_LINE width={size} height={size} fill={color} />;
           }
-          // else if (route.name === TabStackIdentifiers.price) {
-          //   return focused ? <PRICE width={size} height={size} fill={color} /> : <PRICE width={size} height={size} fill={color} />;
-          // }
+          else if (route.name === TabStackIdentifiers.planning) {
+            return focused ? <PRICE width={size} height={size} fill={color} /> : <PRICE width={size} height={size} fill={color} />;
+          }
 
           // return (
           //   <VectorImage
@@ -486,7 +492,6 @@ const TabNavigator = () => {
         activeTintColor: Colors.RED,
         inactiveTintColor: "gray",
       }}
-      initialRouteName={TabStackIdentifiers.home}
     >
       <Tab.Screen
         name={TabStackIdentifiers.home}
@@ -503,15 +508,28 @@ const TabNavigator = () => {
         component={MyTaskStackNavigator}
         options={{ title: "My Tasks" }}
       />
-      {/* <Tab.Screen
-        name={TabStackIdentifiers.price}
-        component={PriceStackNavigator}
-        options={{ title: "Price" }}
-      /> */}
+      {
+        routeName.name === "MONTHLY_TARGET" && (
+          <Tab.Screen
+            name={TabStackIdentifiers.planning}
+            component={MonthlyTargetStackNavigator}
+            options={{ title: "Planning" }}
+          />
+        )
+      }
     </Tab.Navigator>
   );
 };
 
+const fun = () => {
+  return (
+    <Tab.Screen
+      name={TabStackIdentifiers.planning}
+      component={MonthlyTargetStackNavigator}
+      options={{ title: "Planning" }}
+    />
+  )
+}
 const ComplaintStack = createStackNavigator();
 
 const ComplaintStackNavigator = ({ navigation }) => {
@@ -565,6 +583,14 @@ const SettingsStackNavigator = ({ navigation }) => {
         component={SettingsScreen}
         options={{
           title: "Settings",
+          headerLeft: () => <MenuIcon navigation={navigation} />,
+        }}
+      />
+      <SettingsStack.Screen
+        name={"CHANGE_PASSWORD_SCREEN"}
+        component={ChangePasswordScreen}
+        options={{
+          title: "Change Password",
           headerLeft: () => <MenuIcon navigation={navigation} />,
         }}
       />
@@ -745,7 +771,7 @@ const MainStackDrawerNavigator = () => {
       />
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.monthlyTarget}
-        component={MonthlyTargetStackNavigator}
+        component={TabNavigator}
       />
       <MainDrawerNavigator.Screen
         name={DrawerStackIdentifiers.taskManagement}

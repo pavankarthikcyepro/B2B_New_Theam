@@ -1,12 +1,17 @@
 import React from "react";
 import { View, StyleSheet, Text, Pressable } from "react-native";
 import { Colors } from '../styles'
+import { AppNavigator } from "../navigations";
+import { useNavigation } from '@react-navigation/native';
 
-export const SettingsScreenItem = ({ name }) => {
+export const SettingsScreenItem = ({ name, screen }) => {
   return (
-    <View style={styles.container}>
+    <Pressable 
+      style={styles.container}
+      onPress={() => navigation.navigate("CHANGE_PASSWORD_SCREEN")}
+    >
       <Text style={styles.text1}>{name}</Text>
-    </View>
+    </Pressable>
   );
 };
 
@@ -19,7 +24,7 @@ const styles = StyleSheet.create({
     height: 50,
     justifyContent: 'center',
     paddingHorizontal: 10
-  },
+  }, 
   text1: {
     color: Colors.BLACK,
     fontSize: 16,

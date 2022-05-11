@@ -71,7 +71,7 @@ export const ParameterScreen = () => {
             }
             setTableDataObject(dataObj);
             setTableData(selector.target_parameters_data);
-            console.log("chartDataLocal: ", chartDataLocal)
+            // console.log("chartDataLocal: ", chartDataLocal)
             setChartData(chartDataLocal);
             setNamesData(namesDataLocal);
         } else {
@@ -141,7 +141,7 @@ export const LeadSourceScreen = () => {
 
     useEffect(() => {
         if (selector.lead_source_table_data) {
-            console.log("test: ", selector.lead_source_table_data)
+            // console.log("test: ", selector.lead_source_table_data)
             const namesDataLocal = [];
             const chartDataLocal = [];
 
@@ -481,7 +481,7 @@ const TargetScreen = ({ route, navigation }) => {
                     return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL" || item === "General Manager" || item === "branch manager" || item === "Testdrive_Manager"
                 })
                 if (rolesArr.length > 0) {
-                    console.log("%%%%% TEAM:", rolesArr);
+                    // console.log("%%%%% TEAM:", rolesArr);
                     setIsTeamPresent(true)
                 }
             }

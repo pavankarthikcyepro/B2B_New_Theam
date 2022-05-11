@@ -23,6 +23,8 @@ import * as AsyncStore from '../../asyncStore';
 import { useIsFocused } from "@react-navigation/native";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import Entypo from "react-native-vector-icons/FontAwesome";
+import { client } from "../../networking/client";
+import URL from "../../networking/endpoints";
 
 // import { EVENT_MANAGEMENT, CUSTOMER_RELATIONSHIP, DOCUMENT_WALLET, HOME_LINE, BOOKING_TRACKER } from "../assets/svg";
 
@@ -64,6 +66,7 @@ const SideMenuScreen = ({ navigation }) => {
     const homeSelector = useSelector((state) => state.loginReducer);
     // const isFocused = useIsFocused();
 
+
     const { signOut } = React.useContext(AuthContext);
     const [empName, setEmpName] = useState("");
     const [email, setEmail] = useState("");
@@ -72,6 +75,8 @@ const SideMenuScreen = ({ navigation }) => {
     const [newTableData, setNewTableData] = useState([]);
     const [imageUri, setImageUri] = useState(null);
     const [dataList, setDataList] = useState([]);
+    const [userData, setUserData] = useState({});
+
 
     useEffect(() => {
         getLoginEmployeeData();
@@ -95,12 +100,22 @@ const SideMenuScreen = ({ navigation }) => {
         }
     }
 
+
     const getProfilePic = () => {
+        console.log(`http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`);
         fetch(
-            "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/146/1/242"
+            `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
         )
             .then((response) => response.json())
-            .then((json) => setDataList(json))
+            .then((json) => {
+                setDataList(json);
+                console.log({json})
+                if (json.length > 0) {
+                    setImageUri(json[json.length - 1].documentPath);
+                } else {
+                    setImageUri("https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg")
+                }
+            })
             .catch((error) => console.error(error));
     }
 
@@ -109,6 +124,9 @@ const SideMenuScreen = ({ navigation }) => {
         setEmail(jsonObj.email);
         setRole(jsonObj.hrmsRole);
         setLocation(jsonObj.branchName);
+        setUserData(jsonObj)
+        getProfilePic();
+
 
         let newFilterData = [];
         if (jsonObj.hrmsRole === "Reception") {
@@ -127,7 +145,7 @@ const SideMenuScreen = ({ navigation }) => {
         switch (item.screen) {
             case 99:
                 // navigation.navigate(AppNavigator.DrawerStackIdentifiers.home);
-                navigation.navigate(AppNavigator.TabStackIdentifiers.home);
+                navigation.navigate(AppNavigator.DrawerStackIdentifiers.home);
                 break;
             case 100:
                 navigation.navigate(
@@ -208,10 +226,48 @@ const SideMenuScreen = ({ navigation }) => {
                 const uriObject = {
                     uri: uriLink,
                 };
-                setImageUri(uriObject);
+                // setImageUri(uriObject);
+                console.log({uriObject})
+                uploadProfile(uriObject);
             }
         });
     };
+
+    const uploadProfile = (uri) => {
+        const formdata = new FormData();
+        formdata.append('documentType', 'profilePic')
+        formdata.append('file', {type: 'image/jpg', uri: uri.uri, name: "image.jpg"})
+
+        fetch(
+            URL.UPLOAD_PROFILE(userData.empId, userData.orgId, userData.branchId),
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                body: formdata
+            }
+        )
+            .then((response) => response.json())
+            .then(async (json) => {
+                const inputData = {
+                    ownerId: userData.empId,
+                    branchId: userData.branchId,
+                    orgId: userData.orgId,
+                    fileName: json.fileName,
+                    documentPath: json.documentPath,
+                    universalid: json.universalId
+                }
+                const response = await client.post(URL.SAVE_PROFILE(), inputData);
+                const saveProfile = await response.json();
+                console.log("save json", saveProfile.dmsEntity.employeeProfileDtos[0].documentPath);
+                if (saveProfile.success) {
+                    setImageUri(saveProfile.dmsEntity.employeeProfileDtos[0].documentPath || "https://www.treeage.com/wp-content/uploads/2020/02/camera.jpg");
+                }
+                // setDataList(json);
+            })
+            .catch((error) => console.error(error));
+    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -244,7 +300,7 @@ const SideMenuScreen = ({ navigation }) => {
                                 borderRadius: profileWidth / 2,
                             }}
                             source={{
-                                uri: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/146-1-242-a94edf7c-77b7-40ef-bd12-b66d9303c631/car.jpg",
+                                uri: imageUri,
                             }}
                         // source={imageUri}
                         //  source={require("../../assets/images/bently.png")}
