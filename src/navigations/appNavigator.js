@@ -59,14 +59,11 @@ import TestScreen from "../scenes/mainScenes/Home/testScreen";
 import TaskListScreen from "../scenes/mainScenes/MyTasks/taskListScreen";
 import PriceScreen from "../scenes/mainScenes/price";
 import TaskThreeSixtyScreen from "../scenes/mainScenes/EMS/taskThreeSixty";
-<<<<<<< HEAD
 import ChangePasswordScreen from "../scenes/mainScenes/changePasswordScreen";
-=======
 import BookingScreen from "../scenes/mainScenes/EMS/bookingScreen";
 import BookingFormScreen from "../scenes/mainScenes/EMS/bookingFormScreen";
 import ProceedToBookingScreen from "../scenes/mainScenes/MyTasks/proceedToBookingScreen";
 
->>>>>>> 71918e4ca5d6284fb1ef0988738f6be9325ccf87
 
 const drawerWidth = 300;
 const screeOptionStyle = {

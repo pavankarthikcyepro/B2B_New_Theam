@@ -293,13 +293,8 @@ const HomeScreen = ({ route, navigation }) => {
             });
 
             if (jsonObj.roles.length > 0) {
-<<<<<<< HEAD
                 let rolesArr = [];
                 // console.log("ROLLS:", jsonObj.roles);
-=======
-                let rolesArr = [], rolesArr2= [];
-                console.log("ROLLS:", jsonObj.roles);
->>>>>>> 71918e4ca5d6284fb1ef0988738f6be9325ccf87
                 rolesArr = jsonObj.roles.filter((item) => {
                     return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL" || item === "General Manager" || item === "branch manager" || item === "Testdrive_Manager"
                 })
