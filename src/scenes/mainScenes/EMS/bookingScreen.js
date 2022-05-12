@@ -22,7 +22,7 @@ import { AppNavigator } from "../../../navigations";
 import * as AsyncStore from "../../../asyncStore";
 import {
     getPreBookingData,
-    getPreMoreBookingData,
+    getMorePreBookingData,
 } from "../../../redux/bookingReducer";
 
 import { callNumber } from "../../../utils/helperFunctions";
@@ -151,6 +151,11 @@ const BookingScreen = ({ navigation }) => {
         setShowDatePicker(true);
         setDatePickerId(key);
     };
+
+    const getPreBookingListFromServer = (empId, startDate, endDate) => {
+        const payload = getPayloadData(empId, startDate, endDate, 0)
+        dispatch(getPreBookingData(payload));
+    }
 
     const updateSelectedDate = (date, key) => {
         const formatDate = moment(date).format(dateFormat);

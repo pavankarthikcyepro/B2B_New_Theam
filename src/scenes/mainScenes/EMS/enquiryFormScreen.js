@@ -972,7 +972,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             };
         }
         
-        // console.log("FORM DATA:", JSON.stringify(formData));
         setTypeOfActionDispatched("UPDATE_ENQUIRY");
         dispatch(updateEnquiryDetailsApi(formData));
     };
@@ -1824,6 +1823,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 data={dataForDropDown}
                 onRequestClose={() => setShowDropDownModel(false)}
                 selectedItems={(item) => {
+                    console.log("ITEM:", JSON.stringify(item));
                     if (dropDownKey === "MODEL") {
                         updateVariantModelsData(item.name, false);
                     } else if (dropDownKey === "VARIENT") {

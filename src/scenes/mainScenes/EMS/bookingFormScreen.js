@@ -11,6 +11,7 @@ import {
   KeyboardAvoidingView,
   Pressable,
   BackHandler,
+  TextInput
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { useDispatch, useSelector } from "react-redux";
@@ -278,6 +279,10 @@ const BookingFormScreen = ({ route, navigation }) => {
   const [dropModel, setDropModel] = useState("");
   const [dropPriceDifference, setDropPriceDifference] = useState("");
   const [dropRemarks, setDropRemarks] = useState("");
+  const [focPrice, setFocPrice] = useState(0);
+  const [mrpPrice, setMrpPrice] = useState(0);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
+  const [taxPercent, setTaxPercent] = useState('');
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -354,6 +359,36 @@ const BookingFormScreen = ({ route, navigation }) => {
       setSelectedBranchId(branchId);
     });
   };
+
+  useEffect(() => {
+    if (selector.pan_number) {
+      console.log("%%%%%%%%%%", selector.pan_number, selector.form_or_pan);
+      dispatch(
+        setDocumentUploadDetails({
+          key: "PAN_NUMBER",
+          text: selector.pan_number,
+        })
+      );
+      setDropDownData({ key: 'FORM_60_PAN', value: 'PAN', id: '' })
+      setIsDataLoaded(true)
+    }
+  }, [
+    selector.isDataLoaded, selector.pan_number
+  ]);
+
+  useEffect(() => {
+    setTotalOnRoadPriceAfterDiscount(totalOnRoadPriceAfterDiscount - focPrice)
+    dispatch(
+      setOfferPriceDetails({
+        key: "FOR_ACCESSORIES",
+        text: focPrice.toString(),
+      })
+    )
+  }, [focPrice]);
+
+  useEffect(() => {
+    setTotalOnRoadPrice(totalOnRoadPrice + mrpPrice)
+  }, [mrpPrice]);
 
   const getAsyncstoreData = async () => {
     const employeeData = await AsyncStore.getData(
@@ -600,6 +635,10 @@ const BookingFormScreen = ({ route, navigation }) => {
           addOnPrice += element.insuranceAmount;
         });
         setSelectedAddOnsPrice(addOnPrice);
+      }
+      if (dmsOnRoadPriceDtoObj.lifeTaxPercentage) {
+        setTaxPercent((Number(dmsOnRoadPriceDtoObj.lifeTaxPercentage) * 100).toString())
+        setLifeTaxAmount(getLifeTaxNew(Number(dmsOnRoadPriceDtoObj.lifeTaxPercentage) * 100))
       }
     }
   }, [selector.on_road_price_dto_list_response]);
@@ -856,7 +895,8 @@ const BookingFormScreen = ({ route, navigation }) => {
   ) => {
     let totalPrice = 0;
     totalPrice += priceInfomationData.ex_showroom_price;
-    const lifeTax = getLifeTax();
+    // const lifeTax = getLifeTax();
+    const lifeTax = taxPercent !== '' ? getLifeTaxNew(Number(taxPercent)) : 0;
     setLifeTaxAmount(lifeTax);
     totalPrice += lifeTax;
     totalPrice += priceInfomationData.registration_charges;
@@ -1478,23 +1518,30 @@ const BookingFormScreen = ({ route, navigation }) => {
   }, [selector.assigned_tasks_list_status]);
 
   const updatePaidAccessroies = (tableData) => {
-    console.log("coming here");
-    let totalPrice = 0;
+    let totalPrice = 0, totFoc = 0, totMrp = 0;
     let newFormatSelectedAccessories = [];
     tableData.forEach((item) => {
       if (item.selected) {
         totalPrice += item.cost;
+        if (item.item === 'FOC') {
+          totFoc += item.cost
+        }
+        if (item.item === 'MRP') {
+          totMrp += item.cost
+        }
         newFormatSelectedAccessories.push({
           id: item.id,
           amount: item.cost,
           partName: item.partName,
           accessoriesName: item.partNo,
-          leadId: selector.booking_details_response.dmsLeadDto.id,
+          leadId: selector.pre_booking_details_response.dmsLeadDto.id,
           allotmentStatus: null,
         });
       }
     });
     setSelectedPaidAccessoriesPrice(totalPrice);
+    setFocPrice(totFoc)
+    setMrpPrice(totMrp)
     setSelectedPaidAccessoriesList([...newFormatSelectedAccessories]);
   };
 
@@ -1509,6 +1556,10 @@ const BookingFormScreen = ({ route, navigation }) => {
       default:
         return priceInfomationData.ex_showroom_price * 0.14;
     }
+  };
+
+  const getLifeTaxNew = (val) => {
+    return priceInfomationData.ex_showroom_price * (val / 100)
   };
 
   const getTcsAmount = () => {
@@ -2858,10 +2909,31 @@ const BookingFormScreen = ({ route, navigation }) => {
                   </View>
                 ) : null}
 
-                <TextAndAmountComp
+                {/* <TextAndAmountComp
                   title={"Life Tax:"}
                   amount={lifeTaxAmount.toFixed(2)}
-                />
+                /> */}
+
+                <View style={styles.textAndAmountView}>
+                  <Text style={[styles.leftLabel]}>{"Life Tax:"}</Text>
+                  <View style={{ width: 80, height: 30, justifyContent: 'center', paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#d1d1d1' }}>
+                    <TextInput
+                      value={taxPercent}
+                      style={[{ fontSize: 14, fontWeight: "400", }]}
+                      keyboardType={"number-pad"}
+                      onChangeText={(text) => {
+                        setTaxPercent(text);
+                        if (text !== '') {
+                          setLifeTaxAmount(getLifeTaxNew(Number(text)))
+                        }
+                        else {
+                          setLifeTaxAmount(0)
+                        }
+                      }}
+                    />
+                  </View>
+                </View>
+
                 <Text style={GlobalStyle.underline}></Text>
 
                 <TextAndAmountComp
@@ -2889,7 +2961,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                   </Text>
                 </View>
 
-                <View style={styles.symbolview}>
+                {/* <View style={styles.symbolview}>
                   <View style={{ width: "70%" }}>
                     <DropDownSelectionItem
                       label={"Add-on Insurance"}
@@ -2906,6 +2978,30 @@ const BookingFormScreen = ({ route, navigation }) => {
                   <Text style={styles.shadowText}>
                     {rupeeSymbol + " " + selectedAddOnsPrice.toFixed(2)}
                   </Text>
+                </View> */}
+                <View style={styles.symbolview}>
+                  <View style={{ width: "70%" }}>
+                    <DropDownSelectionItem
+                      label={"Add-on Insurance"}
+                      value={selector.insurance_type !== '' ? selector.add_on_insurance : ''}
+                      disabled={true}
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "INSURENCE_ADD_ONS",
+                          "Add-on Insurance"
+                        )
+                      }
+                    />
+                  </View>
+                  {selector.insurance_type !== '' ?
+                    <Text style={styles.shadowText}>
+                      {rupeeSymbol + " " + selectedAddOnsPrice.toFixed(2)}
+                    </Text>
+                    :
+                    <Text style={styles.shadowText}>
+                      {rupeeSymbol + " 0.00"}
+                    </Text>
+                  }
                 </View>
 
                 <View style={styles.symbolview}>
