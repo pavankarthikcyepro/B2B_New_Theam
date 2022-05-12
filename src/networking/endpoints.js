@@ -171,6 +171,7 @@ const URL = {
         return salesGap + `/get_employee_role/${employeeId}`
     },
     ADD_TARGET_MAPPING: () => salesGap + `/add_targetmapping_role`,
+    EDIT_TARGET_MAPPING: () => salesGap + `/edit_targetmapping_role`,
     GET_ALL_TARGET_MAPPING: () => salesGap + `/get_all_targetmapping_role`,
     GET_TARGET_PARAMS: () => dashboard + "/v2/get_target_params",
     GET_TARGET_PARAMS_ALL: () => dashboard + "/v2/get_target_params_for_all_emps",

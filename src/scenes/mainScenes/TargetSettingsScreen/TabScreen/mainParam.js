@@ -14,7 +14,8 @@ import { Dropdown } from 'react-native-element-dropdown';
 import {
     getEmployeesDropDownData,
     addTargetMapping,
-    getAllTargetMapping
+    getAllTargetMapping,
+    editTargetMapping
 } from '../../../../redux/targetSettingsReducer';
 import {
     updateIsTeamPresent
@@ -44,6 +45,11 @@ const MainParamScreen = ({ route, navigation }) => {
     const [selectedBranch, setSelectedBranch] = useState(null);
     const [isDataLoaded, setIsDataLoaded] = useState(false);
     const [otherDropDownSelectedValue, setOtherDropDownSelectedValue] = useState([]);
+    const [selectedUser, setSelectedUser] = useState(null);
+    const [loggedInEmpDetails, setLoggedInEmpDetails] = useState(null);
+    const [ownData, setOwnData] = useState(null);
+    const [isNoTargetAvailable, setIsNoTargetAvailable] = useState(false);
+    const [addOrEdit, setAddOrEdit] = useState('');
 
     // const dropdownData = [
     //     { label: 'Item 1', value: '1' },
@@ -59,7 +65,18 @@ const MainParamScreen = ({ route, navigation }) => {
     const [dropdownData, setDropdownData] = useState([]);
     const [employeeDropDownDataLocal, setEmployeeDropDownDataLocal] = useState([]);
 
-    useEffect(() => {
+    useEffect(async () => {
+        navigation.addListener('focus', async () => {
+            let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+            if (employeeData) {
+                const jsonObj = JSON.parse(employeeData);
+                jsonObj.employeeId = jsonObj.empId;
+                setLoggedInEmpDetails(jsonObj)
+            }
+        })
+    }, [navigation])
+
+    useEffect(async () => {
         if (selector.activeBranches.length > 0) {
             let tempBranch = [];
             for (let i = 0; i < selector.activeBranches.length; i++) {
@@ -73,8 +90,40 @@ const MainParamScreen = ({ route, navigation }) => {
         }
     }, [selector.activeBranches])
 
+    useEffect(async () => {
+        if (selector.targetMapping.length > 0 && loggedInEmpDetails !== null) {
+            let ownDataArray = [];
+            ownDataArray = selector.targetMapping.filter((item) => {
+                return Number(item.employeeId) === Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate
+            })
+            console.log("TTT: ", JSON.stringify(ownDataArray));
+            if (ownDataArray.length > 0) {
+                setOwnData(ownDataArray[0])
+            }
+            else {
+                setIsNoTargetAvailable(true)
+                setOwnData({
+                    "retailTarget": null,
+                    "enquiry": null,
+                    "testDrive": null,
+                    "homeVisit": null,
+                    "booking": null,
+                    "exchange": null,
+                    "finance": null,
+                    "insurance": null,
+                    "exWarranty": null,
+                    "accessories": null,
+                    "events": "10",
+                    "startDate": selector.startDate,
+                    "endDate": selector.endDate,
+                    "empName": loggedInEmpDetails?.empName,
+                    "employeeId": loggedInEmpDetails?.empId,
+                })
+            }
+        }
+    }, [selector.targetMapping, loggedInEmpDetails])
+
     const addTargetData = async () => {
-        console.log(JSON.stringify(otherDropDownSelectedValue));
         if (selectedBranch === null) {
             showToast("Please select branch")
         }
@@ -82,24 +131,68 @@ const MainParamScreen = ({ route, navigation }) => {
             showToast("Please enter retail value")
         }
         else {
+            console.log("CALLED ADD");
             setOpenRetail(false)
             let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
             if (employeeData) {
                 const jsonObj = JSON.parse(employeeData);
                 let payload = {
                     "branch": selectedBranch.value,
-                    "branchmangerId": otherDropDownSelectedValue.filter((item) => item.key === 'Managers').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Managers')[0].value.value : '',
-                    "employeeId": jsonObj.empId,
+                    // "branchmangerId": otherDropDownSelectedValue.filter((item) => item.key === 'Managers').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Managers')[0].value.value : '',
+                    "employeeId": selectedUser?.employeeId,
                     "endDate": selector.endDate,
-                    "managerId": otherDropDownSelectedValue.filter((item) => item.key === 'Managers').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Managers')[0].value.value : '',
+                    // "managerId": otherDropDownSelectedValue.filter((item) => item.key === 'Managers').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Managers')[0].value.value : '',
                     "retailTarget": retail,
                     "startDate": selector.startDate,
-                    "teamLeadId": otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead')[0].value.value : '',
+                    // "teamLeadId": otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead')[0].value.value : '',
                 }
                 console.log("PAYLOAD:", payload);
                 Promise.all([
                     dispatch(addTargetMapping(payload))
                 ]).then(() => {
+                    console.log('I did everything!');
+                    setSelectedUser(null)
+                    setRetail('')
+                    const payload2 = {
+                        "empId": jsonObj.empId,
+                        "pageNo": 1,
+                        "size": 10
+                    }
+                    dispatch(getAllTargetMapping(payload2))
+                });
+            }
+        }
+    }
+
+    const editTargetData = async () => {
+        if (selectedBranch === null) {
+            showToast("Please select branch")
+        }
+        else if (retail === '') {
+            showToast("Please enter retail value")
+        }
+        else {
+            console.log("CALLED EDIT");
+            setOpenRetail(false)
+            let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+            if (employeeData) {
+                const jsonObj = JSON.parse(employeeData);
+                let payload = {
+                    "branch": selectedBranch.value,
+                    // "branchmangerId": otherDropDownSelectedValue.filter((item) => item.key === 'Managers').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Managers')[0].value.value : '',
+                    "employeeId": selectedUser?.employeeId,
+                    "endDate": selector.endDate,
+                    // "managerId": otherDropDownSelectedValue.filter((item) => item.key === 'Managers').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Managers')[0].value.value : '',
+                    "retailTarget": retail,
+                    "startDate": selector.startDate,
+                    // "teamLeadId": otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead')[0].value.value : '',
+                }
+                console.log("PAYLOAD:", payload);
+                Promise.all([
+                    dispatch(editTargetMapping(payload))
+                ]).then(() => {
+                    setSelectedUser(null)
+                    setRetail('')
                     console.log('I did everything!');
                     const payload2 = {
                         "empId": jsonObj.empId,
@@ -152,41 +245,41 @@ const MainParamScreen = ({ route, navigation }) => {
 
     return (
         <>
-            {(homeSelector.isTeamPresent && selector.isTeam) &&
+            {loggedInEmpDetails !== null && (homeSelector.isTeamPresent && selector.isTeam) &&
                 <View style={{ flexDirection: 'row' }}>
                     <View style={{ width: '25%', }}>
                         <View style={{ height: 35, }}></View>
                         <View style={styles.paramBox}>
                             <Text style={[styles.text, { color: 'blue' }]}>Retail</Text>
                         </View>
-                    <View style={styles.paramBox}>
-                        <Text style={[styles.text]}>Enquiry</Text>
-                    </View>
-                    <View style={styles.paramBox}>
-                        <Text style={[styles.text, ]}>Booking</Text>
-                    </View>
-                    <View style={styles.paramBox}>
-                        <Text style={[styles.text,]}>Test Drive</Text>
-                    </View>
-                    <View style={styles.paramBox}>
-                        <Text style={[styles.text, ]}>Visit</Text>
-                    </View>
+                        <View style={styles.paramBox}>
+                            <Text style={[styles.text]}>Enquiry</Text>
+                        </View>
+                        <View style={styles.paramBox}>
+                            <Text style={[styles.text,]}>Booking</Text>
+                        </View>
+                        <View style={styles.paramBox}>
+                            <Text style={[styles.text,]}>Test Drive</Text>
+                        </View>
+                        <View style={styles.paramBox}>
+                            <Text style={[styles.text,]}>Visit</Text>
+                        </View>
 
-                    <View style={styles.paramBox}>
-                        <Text style={[styles.text,]}>Finance</Text>
-                    </View>
+                        <View style={styles.paramBox}>
+                            <Text style={[styles.text,]}>Finance</Text>
+                        </View>
 
-                    <View style={styles.paramBox}>
-                        <Text style={[styles.text,]}>Insurance</Text>
-                    </View>
+                        <View style={styles.paramBox}>
+                            <Text style={[styles.text,]}>Insurance</Text>
+                        </View>
 
-                    <View style={styles.paramBox}>
-                        <Text style={[styles.text, ]}>Accessories</Text>
-                    </View>
+                        <View style={styles.paramBox}>
+                            <Text style={[styles.text,]}>Accessories</Text>
+                        </View>
 
-                    <View style={styles.paramBox}>
-                        <Text style={[styles.text,]}>Exchange</Text>
-                    </View>
+                        <View style={styles.paramBox}>
+                            <Text style={[styles.text,]}>Exchange</Text>
+                        </View>
                         {/* <View style={styles.paramBox}>
                             <Text style={[styles.text, { color: '#00b1ff' }]}>Enquiry</Text>
                         </View>
@@ -225,24 +318,37 @@ const MainParamScreen = ({ route, navigation }) => {
                             {
                                 selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
                                     return (
-                                        <View style={styles.nameBox}>
-                                            <Text style={styles.text} numberOfLines={1}>{item.empName}</Text>
-                                        </View>
+                                        <>
+                                            {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
+                                                <View style={styles.nameBox}>
+                                                    <Text style={styles.text} numberOfLines={1}>{item.empName}</Text>
+                                                </View>
+                                            }
+                                        </>
                                     )
                                 })
                             }
                         </View>
 
                         <View style={styles.textBoxWrap}>
-                            <TouchableOpacity style={styles.textBox} onPress={() => setOpenRetail(true)}>
+                            <TouchableOpacity style={styles.textBox}>
                                 <Text style={styles.textInput}>{getTotal('retailTarget')}</Text>
                             </TouchableOpacity>
                             {
                                 selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
                                     return (
-                                        <View style={styles.textBox}>
-                                            <Text style={styles.textInput}>{item.retailTarget !== null ? item.retailTarget : 0}</Text>
-                                        </View>
+                                        <>
+                                            {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
+                                                <TouchableOpacity style={styles.textBox} onPress={() => {
+                                                    setRetail(item.retailTarget !== null ? item.retailTarget : 0)
+                                                    setSelectedUser(item)
+                                                    setAddOrEdit('E')
+                                                    setOpenRetail(true)
+                                                }}>
+                                                    <Text style={styles.textInput}>{item.retailTarget !== null ? item.retailTarget : 0}</Text>
+                                                </TouchableOpacity>
+                                            }
+                                        </>
                                     )
                                 })
                             }
@@ -255,9 +361,13 @@ const MainParamScreen = ({ route, navigation }) => {
                             {
                                 selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
                                     return (
-                                        <View style={styles.textBox2}>
-                                            <Text style={styles.textInput}>{item.enquiry !== null ? item.enquiry : 0}</Text>
-                                        </View>
+                                        <>
+                                            {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
+                                                <View style={styles.textBox2}>
+                                                    <Text style={styles.textInput}>{item.enquiry !== null ? item.enquiry : 0}</Text>
+                                                </View>
+                                            }
+                                        </>
                                     )
                                 })
                             }
@@ -270,9 +380,13 @@ const MainParamScreen = ({ route, navigation }) => {
                             {
                                 selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
                                     return (
-                                        <View style={styles.textBox2}>
-                                            <Text style={styles.textInput}>{item.booking !== null ? item.booking : 0}</Text>
-                                        </View>
+                                        <>
+                                            {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
+                                                <View style={styles.textBox2}>
+                                                    <Text style={styles.textInput}>{item.booking !== null ? item.booking : 0}</Text>
+                                                </View>
+                                            }
+                                        </>
                                     )
                                 })
                             }
@@ -285,9 +399,13 @@ const MainParamScreen = ({ route, navigation }) => {
                             {
                                 selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
                                     return (
-                                        <View style={styles.textBox2}>
-                                            <Text style={styles.textInput}>{item.testDrive !== null ? item.testDrive : 0}</Text>
-                                        </View>
+                                        <>
+                                            {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
+                                                <View style={styles.textBox2}>
+                                                    <Text style={styles.textInput}>{item.testDrive !== null ? item.testDrive : 0}</Text>
+                                                </View>
+                                            }
+                                        </>
                                     )
                                 })
                             }
@@ -302,9 +420,13 @@ const MainParamScreen = ({ route, navigation }) => {
                             {
                                 selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
                                     return (
-                                        <View style={styles.textBox2}>
-                                            <Text style={styles.textInput}>{item.homeVisit !== null ? item.homeVisit : 0}</Text>
-                                        </View>
+                                        <>
+                                            {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
+                                                <View style={styles.textBox2}>
+                                                    <Text style={styles.textInput}>{item.homeVisit !== null ? item.homeVisit : 0}</Text>
+                                                </View>
+                                            }
+                                        </>
                                     )
                                 })
                             }
@@ -317,9 +439,13 @@ const MainParamScreen = ({ route, navigation }) => {
                             {
                                 selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
                                     return (
-                                        <View style={styles.textBox2}>
-                                            <Text style={styles.textInput}>{item.finance !== null ? item.finance : 0}</Text>
-                                        </View>
+                                        <>
+                                            {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
+                                                <View style={styles.textBox2}>
+                                                    <Text style={styles.textInput}>{item.finance !== null ? item.finance : 0}</Text>
+                                                </View>
+                                            }
+                                        </>
                                     )
                                 })
                             }
@@ -332,9 +458,13 @@ const MainParamScreen = ({ route, navigation }) => {
                             {
                                 selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
                                     return (
-                                        <View style={styles.textBox2}>
-                                            <Text style={styles.textInput}>{item.insurance !== null ? item.insurance : 0}</Text>
-                                        </View>
+                                        <>
+                                            {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
+                                                <View style={styles.textBox2}>
+                                                    <Text style={styles.textInput}>{item.insurance !== null ? item.insurance : 0}</Text>
+                                                </View>
+                                            }
+                                        </>
                                     )
                                 })
                             }
@@ -347,9 +477,13 @@ const MainParamScreen = ({ route, navigation }) => {
                             {
                                 selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
                                     return (
-                                        <View style={styles.textBox2}>
-                                            <Text style={styles.textInput}>{item.accessories !== null ? item.accessories : 0}</Text>
-                                        </View>
+                                        <>
+                                            {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
+                                                <View style={styles.textBox2}>
+                                                    <Text style={styles.textInput}>{item.accessories !== null ? item.accessories : 0}</Text>
+                                                </View>
+                                            }
+                                        </>
                                     )
                                 })
                             }
@@ -362,17 +496,22 @@ const MainParamScreen = ({ route, navigation }) => {
                             {
                                 selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
                                     return (
-                                        <View style={styles.textBox2}>
-                                            <Text style={styles.textInput}>{item.exchange !== null ? item.exchange : 0}</Text>
-                                        </View>
+                                        <>
+                                            {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
+                                                <View style={styles.textBox2}>
+                                                    <Text style={styles.textInput}>{item.exchange !== null ? item.exchange : 0}</Text>
+                                                </View>
+                                            }
+                                        </>
                                     )
                                 })
                             }
                         </View>
                     </ScrollView>
-                </View>}
+                </View>
+            }
 
-            {(homeSelector.isTeamPresent && !selector.isTeam) && <View style={{ flexDirection: 'row' }}>
+            {ownData !== null && loggedInEmpDetails !== null && (homeSelector.isTeamPresent && !selector.isTeam) && <View style={{ flexDirection: 'row' }}>
                 <View style={{ width: '25%', }}>
                     <View style={{ height: 35, }}></View>
                     <View style={styles.paramBox}>
@@ -382,96 +521,106 @@ const MainParamScreen = ({ route, navigation }) => {
                         <Text style={[styles.text,]}>Enquiry</Text>
                     </View>
                     <View style={styles.paramBox}>
-                        <Text style={[styles.text, ]}>Booking</Text>
+                        <Text style={[styles.text,]}>Booking</Text>
                     </View>
                     <View style={styles.paramBox}>
-                        <Text style={[styles.text, ]}>Test Drive</Text>
+                        <Text style={[styles.text,]}>Test Drive</Text>
                     </View>
                     <View style={styles.paramBox}>
-                        <Text style={[styles.text, ]}>Visit</Text>
-                    </View>
-
-                    <View style={styles.paramBox}>
-                        <Text style={[styles.text, ]}>Finance</Text>
+                        <Text style={[styles.text,]}>Visit</Text>
                     </View>
 
                     <View style={styles.paramBox}>
-                        <Text style={[styles.text, ]}>Insurance</Text>
+                        <Text style={[styles.text,]}>Finance</Text>
                     </View>
 
                     <View style={styles.paramBox}>
-                        <Text style={[styles.text, ]}>Accessories</Text>
+                        <Text style={[styles.text,]}>Insurance</Text>
                     </View>
 
                     <View style={styles.paramBox}>
-                        <Text style={[styles.text, ]}>Exchange</Text>
+                        <Text style={[styles.text,]}>Accessories</Text>
+                    </View>
+
+                    <View style={styles.paramBox}>
+                        <Text style={[styles.text,]}>Exchange</Text>
                     </View>
                 </View>
                 <ScrollView style={{ width: '100%' }} contentContainerStyle={{ flexDirection: 'column' }} showsVerticalScrollIndicator={false}
                     showsHorizontalScrollIndicator={false} horizontal={true}>
                     <View style={styles.nameWrap}>
-                        <View style={styles.nameBox} onPress={() => setOpenRetail(true)}>
+                        <View style={styles.nameBox}>
                             <Text style={styles.text}>Total</Text>
                         </View>
                     </View>
 
                     <View style={styles.textBoxWrap}>
-                        <TouchableOpacity style={styles.textBox} onPress={() => setOpenRetail(true)}>
-                            <Text style={styles.textInput}>{getTotal('retailTarget')}</Text>
+                        <TouchableOpacity style={styles.textBox} onPress={() => {
+                            setSelectedUser(loggedInEmpDetails)
+                            if (isNoTargetAvailable) {
+                                setAddOrEdit('A')
+                            }
+                            else {
+                                setAddOrEdit('E')
+                            }
+                            ownData.retailTarget !== null ? setRetail(ownData.retailTarget.toString()) : setRetail('')
+                            setOpenRetail(true)
+                        }}>
+                            <Text style={styles.textInput}>{ownData.retailTarget !== null ? ownData.retailTarget : 0}</Text>
                         </TouchableOpacity>
                     </View>
 
                     <View style={styles.textBoxWrap}>
                         <View style={styles.textBox2}>
-                            <Text style={styles.textInput}>{getTotal('enquiry')}</Text>
+                            <Text style={styles.textInput}>{ownData.enquiry !== null ? ownData.enquiry : 0}</Text>
                         </View>
                     </View>
 
                     <View style={styles.textBoxWrap}>
                         <View style={styles.textBox2}>
-                            <Text style={styles.textInput}>{getTotal('booking')}</Text>
+                            <Text style={styles.textInput}>{ownData.booking !== null ? ownData.booking : 0}</Text>
                         </View>
                     </View>
 
                     <View style={styles.textBoxWrap}>
                         <View style={styles.textBox2}>
-                            <Text style={styles.textInput}>{getTotal('testDrive')}</Text>
+                            <Text style={styles.textInput}>{ownData.testDrive !== null ? ownData.testDrive : 0}</Text>
                         </View>
                     </View>
 
                     <View style={styles.textBoxWrap}>
                         <View style={styles.textBox2}>
-                            <Text style={styles.textInput}>{getTotal('homeVisit')}</Text>
+                            <Text style={styles.textInput}>{ownData.homeVisit !== null ? ownData.homeVisit : 0}</Text>
                         </View>
                     </View>
 
                     <View style={styles.textBoxWrap}>
                         <View style={styles.textBox2}>
-                            <Text style={styles.textInput}>{getTotal('finance')}</Text>
+                            <Text style={styles.textInput}>{ownData.finance !== null ? ownData.finance : 0}</Text>
                         </View>
                     </View>
 
                     <View style={styles.textBoxWrap}>
                         <View style={styles.textBox2}>
-                            <Text style={styles.textInput}>{getTotal('insurance')}</Text>
+                            <Text style={styles.textInput}>{ownData.insurance !== null ? ownData.insurance : 0}</Text>
                         </View>
                     </View>
 
                     <View style={styles.textBoxWrap}>
                         <View style={styles.textBox2}>
-                            <Text style={styles.textInput}>{getTotal('accessories')}</Text>
+                            <Text style={styles.textInput}>{ownData.accessories !== null ? ownData.accessories : 0}</Text>
                         </View>
                     </View>
 
                     <View style={styles.textBoxWrap}>
                         <View style={styles.textBox2}>
-                            <Text style={styles.textInput}>{getTotal('exchange')}</Text>
+                            <Text style={styles.textInput}>{ownData.exchange !== null ? ownData.exchange : 0}</Text>
                         </View>
                     </View>
                 </ScrollView>
             </View>
             }
-            {!homeSelector.isTeamPresent &&
+            {ownData !== null && loggedInEmpDetails !== null && !homeSelector.isTeamPresent &&
                 <View style={{ flexDirection: 'row' }}>
                     <View style={{ width: '25%', }}>
                         <View style={{ height: 35, }}></View>
@@ -479,32 +628,32 @@ const MainParamScreen = ({ route, navigation }) => {
                             <Text style={[styles.text, { color: 'blue' }]}>Retail</Text>
                         </View>
                         <View style={styles.paramBox}>
-                            <Text style={[styles.text, ]}>Enquiry</Text>
+                            <Text style={[styles.text,]}>Enquiry</Text>
                         </View>
                         <View style={styles.paramBox}>
-                            <Text style={[styles.text, ]}>Booking</Text>
+                            <Text style={[styles.text,]}>Booking</Text>
                         </View>
                         <View style={styles.paramBox}>
-                            <Text style={[styles.text, ]}>Test Drive</Text>
+                            <Text style={[styles.text,]}>Test Drive</Text>
                         </View>
                         <View style={styles.paramBox}>
-                            <Text style={[styles.text, ]}>Visit</Text>
-                        </View>
-
-                        <View style={styles.paramBox}>
-                            <Text style={[styles.text, ]}>Finance</Text>
+                            <Text style={[styles.text,]}>Visit</Text>
                         </View>
 
                         <View style={styles.paramBox}>
-                            <Text style={[styles.text, ]}>Insurance</Text>
+                            <Text style={[styles.text,]}>Finance</Text>
                         </View>
 
                         <View style={styles.paramBox}>
-                            <Text style={[styles.text, ]}>Accessories</Text>
+                            <Text style={[styles.text,]}>Insurance</Text>
                         </View>
 
                         <View style={styles.paramBox}>
-                            <Text style={[styles.text, ]}>Exchange</Text>
+                            <Text style={[styles.text,]}>Accessories</Text>
+                        </View>
+
+                        <View style={styles.paramBox}>
+                            <Text style={[styles.text,]}>Exchange</Text>
                         </View>
                     </View>
                     <ScrollView style={{ width: '100%' }} contentContainerStyle={{ flexDirection: 'column' }} showsVerticalScrollIndicator={false}
@@ -515,57 +664,69 @@ const MainParamScreen = ({ route, navigation }) => {
                             </View>
                         </View>
 
+
                         <View style={styles.textBoxWrap}>
-                            <TouchableOpacity style={styles.textBox} onPress={() => setOpenRetail(true)}>
-                                <Text style={styles.textInput}>{getTotal('retailTarget')}</Text>
+                            <TouchableOpacity style={styles.textBox} onPress={() => {
+                                if (isNoTargetAvailable) {
+                                    setAddOrEdit('A')
+                                }
+                                else {
+                                    setAddOrEdit('E')
+                                }
+                                setSelectedUser(loggedInEmpDetails)
+                                console.log(ownData, ownData.retailTarget !== null);
+                                ownData.retailTarget !== null ? setRetail(ownData.retailTarget.toString()) : setRetail('')
+                                setOpenRetail(true)
+                            }}>
+                                <Text style={styles.textInput}>{ownData.retailTarget !== null ? ownData.retailTarget : 0}</Text>
                             </TouchableOpacity>
                         </View>
 
                         <View style={styles.textBoxWrap}>
                             <View style={styles.textBox2}>
-                                <Text style={styles.textInput}>{getTotal('enquiry')}</Text>
+                                <Text style={styles.textInput}>{ownData.enquiry !== null ? ownData.enquiry : 0}</Text>
                             </View>
                         </View>
 
                         <View style={styles.textBoxWrap}>
                             <View style={styles.textBox2}>
-                                <Text style={styles.textInput}>{getTotal('booking')}</Text>
+                                <Text style={styles.textInput}>{ownData.booking !== null ? ownData.booking : 0}</Text>
                             </View>
                         </View>
 
                         <View style={styles.textBoxWrap}>
                             <View style={styles.textBox2}>
-                                <Text style={styles.textInput}>{getTotal('testDrive')}</Text>
+                                <Text style={styles.textInput}>{ownData.testDrive !== null ? ownData.testDrive : 0}</Text>
                             </View>
                         </View>
 
                         <View style={styles.textBoxWrap}>
                             <View style={styles.textBox2}>
-                                <Text style={styles.textInput}>{getTotal('homeVisit')}</Text>
+                                <Text style={styles.textInput}>{ownData.homeVisit !== null ? ownData.homeVisit : 0}</Text>
                             </View>
                         </View>
 
                         <View style={styles.textBoxWrap}>
                             <View style={styles.textBox2}>
-                                <Text style={styles.textInput}>{getTotal('finance')}</Text>
+                                <Text style={styles.textInput}>{ownData.finance !== null ? ownData.finance : 0}</Text>
                             </View>
                         </View>
 
                         <View style={styles.textBoxWrap}>
                             <View style={styles.textBox2}>
-                                <Text style={styles.textInput}>{getTotal('insurance')}</Text>
+                                <Text style={styles.textInput}>{ownData.insurance !== null ? ownData.insurance : 0}</Text>
                             </View>
                         </View>
 
                         <View style={styles.textBoxWrap}>
                             <View style={styles.textBox2}>
-                                <Text style={styles.textInput}>{getTotal('accessories')}</Text>
+                                <Text style={styles.textInput}>{ownData.accessories !== null ? ownData.accessories : 0}</Text>
                             </View>
                         </View>
 
                         <View style={styles.textBoxWrap}>
                             <View style={styles.textBox2}>
-                                <Text style={styles.textInput}>{getTotal('exchange')}</Text>
+                                <Text style={styles.textInput}>{ownData.exchange !== null ? ownData.exchange : 0}</Text>
                             </View>
                         </View>
                     </ScrollView>
@@ -667,6 +828,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                 <TextInput
                                     style={{ color: '#333', fontSize: 15, fontWeight: '500' }}
                                     placeholder={"Retail"}
+                                    value={retail}
                                     placeholderTextColor={"#333"}
                                     onChangeText={(text) => {
                                         setRetail(text)
@@ -675,11 +837,20 @@ const MainParamScreen = ({ route, navigation }) => {
                             </View>
                         </View>
                         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                            <TouchableOpacity style={{ width: '38%', backgroundColor: Colors.RED, height: 40, marginRight: 10, borderRadius: 5, justifyContent: 'center', alignItems: 'center' }} onPress={addTargetData}>
+                            <TouchableOpacity style={{ width: '38%', backgroundColor: Colors.RED, height: 40, marginRight: 10, borderRadius: 5, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                                // console.log("££££",selectedUser);
+                                if (addOrEdit === 'A') {
+                                    addTargetData()
+                                }
+                                else{
+                                    editTargetData()
+                                }
+                            }}>
                                 <Text style={{ fontSize: 14, color: '#fff', fontWeight: '600' }}>Submit</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={{ width: '38%', backgroundColor: Colors.GRAY, height: 40, borderRadius: 5, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
                                 setRetail('');
+                                setSelectedUser(null)
                                 setOpenRetail(false)
                                 setEmployeeDropDownDataLocal([])
                             }}>
