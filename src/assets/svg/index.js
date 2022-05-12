@@ -144,6 +144,8 @@ const VEHICLE_ALLOTMENT_DETAILS = require("../images/vehicle_allotment_details.s
 const VEHICLES = require("../images/Vehicles.svg");
 const WEEK = require("../images/week.svg");
 const YEAR = require("../images/year.svg");
+const GROUP = require("../images/Group.svg");
+const TRANSFER = require("../images/Transfer.svg");
 
 export {
   HOME_FILL,
@@ -286,5 +288,7 @@ export {
   VEHICLE_ALLOTMENT_DETAILS,
   VEHICLES,
   WEEK,
-  YEAR
+  YEAR,
+  GROUP,
+  TRANSFER
 };

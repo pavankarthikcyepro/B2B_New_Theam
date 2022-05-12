@@ -649,7 +649,7 @@ const TargetScreen = ({ route, navigation }) => {
                                     <View style={{ width: '10%', marginTop: 10, position: 'relative', backgroundColor: color[index % color.length], height: 20, justifyContent: 'center', alignItems: 'center', borderTopLeftRadius: 3, borderBottomLeftRadius: 3 }}>
                                         <Text style={{ color: '#fff' }}>{item.achievment}</Text>
                                     </View>
-                                    <View style={{ width: '30%', marginTop: 10, position: 'relative' }}>
+                                    <View style={{ width: '25%', marginTop: 10, position: 'relative' }}>
                                         <ProgressBar progress={item.achivementPerc.includes('%') ? parseInt(item.achivementPerc.substring(0, item.achivementPerc.indexOf('%'))) === 0 ? 0 : (parseInt(item.achivementPerc.substring(0, item.achivementPerc.indexOf('%'))) / 100) : (parseFloat(item.achivementPerc) / 100)} color={color[index % color.length]} style={{ height: 20, borderTopRightRadius: 3, borderBottomRightRadius: 3, backgroundColor: '#eeeeee', }} />
                                         {/* <View style={{ position: 'absolute', top: 1, left: 2 }}>
                                             <Text style={{ color: Colors.WHITE }}>{item.achievment}</Text>
@@ -670,11 +670,11 @@ const TargetScreen = ({ route, navigation }) => {
                                             <Text>{item.achivementPerc}</Text>
                                         </View>
                                     </View>
-                                    <View style={{ width: '25%', justifyContent: 'center', flexDirection: 'row', height: 25, alignItems: 'center', marginTop: 8, marginLeft: 25 }}>
-                                        <View style={{ width: 30, height: 25, borderColor: color[index % color.length], borderWidth: 1, justifyContent: 'center', alignItems: 'center' }}>
+                                    <View style={{ width: '35%', justifyContent: 'center', flexDirection: 'row', height: 25, alignItems: 'center', marginTop: 8, marginLeft: 23 }}>
+                                        <View style={{ width: 35, height: 25, borderColor: color[index % color.length], borderWidth: 1, justifyContent: 'center', alignItems: 'center' }}>
                                             <Text>{item.shortfall}</Text>
                                         </View>
-                                        <View style={{ width: 40, height: 25, borderColor: color[index % color.length], borderWidth: 1, justifyContent: 'center', alignItems: 'center', marginLeft: 20 }}>
+                                        <View style={{ width: 40, height: 25, borderColor: color[index % color.length], borderWidth: 1, justifyContent: 'center', alignItems: 'center', marginLeft: 20, marginLeft: 20 }}>
                                             <Text>{dateDiff > 0 && parseInt(item.shortfall) !== 0 ? (parseInt(item.shortfall) / dateDiff).toFixed(2) : 0}</Text>
                                         </View>
                                     </View>

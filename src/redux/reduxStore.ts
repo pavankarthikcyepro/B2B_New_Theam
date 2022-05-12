@@ -27,6 +27,7 @@ import taskThreeSixtyReducer from "./taskThreeSixtyReducer";
 import bookingReducer from "./bookingReducer";
 import bookingFormReducer from "./bookingFormReducer";
 import proceedToBookingReducer from "./proceedToBookingReducer";
+import appReducer from "./appReducer";
 
 const reducer = combineReducers({
   routeReducer,
@@ -52,7 +53,7 @@ const reducer = combineReducers({
   upcomingDeliveriesReducer,
   targetSettingsReducer,
   taskThreeSixtyReducer,
-  bookingReducer,bookingFormReducer,proceedToBookingReducer,
+  bookingReducer, bookingFormReducer, proceedToBookingReducer, appReducer
 });
 
 const store = configureStore({

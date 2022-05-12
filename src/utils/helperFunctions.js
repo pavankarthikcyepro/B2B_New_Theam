@@ -193,6 +193,7 @@ export const PincodeDetails = async (pincode) => {
     })
       .then((json) => json.json())
       .then((res) => {
+        // console.log("PINCODE:", JSON.stringify(res));
         if (res != undefined && res.length > 0) {
           if (res[0].PostOffice != null && res[0].PostOffice.length > 0) {
             resolve({ ...res[0].PostOffice[0] });

@@ -15,7 +15,6 @@ const ChildComp = ({ route, navigation, }) => {
     const myContext = useContext(AccessoriesContext);
 
     useEffect(() => {
-        console.log("accessorylist: ", accessorylist.length)
         setTableData([...accessorylist]);
     }, [])
 
