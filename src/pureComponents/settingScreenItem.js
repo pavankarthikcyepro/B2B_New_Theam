@@ -4,7 +4,10 @@ import { Colors } from '../styles'
 import { AppNavigator } from "../navigations";
 import { useNavigation } from '@react-navigation/native';
 
+
 export const SettingsScreenItem = ({ name, screen }) => {
+  const navigation = useNavigation();
+
   return (
     <Pressable 
       style={styles.container}

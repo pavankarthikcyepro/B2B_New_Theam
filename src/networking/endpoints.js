@@ -203,6 +203,9 @@ const URL = {
     },
     SAVE_PROFILE: () => {
         return sales_url + `/employeeprofilepic/save`;
+    },
+    CHANGE_PASSWORD: (cognitoName) => {
+        return hrms_url + `/changepassword/${cognitoName}`;
     }
 }
 

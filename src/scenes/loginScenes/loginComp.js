@@ -125,10 +125,10 @@ const LoginScreen = ({ navigation }) => {
 
     if (selector.menuListStatus == "completed") {
       console.log("branchList: ", selector.branchesList.length);
-      if (selector.branchesList.length > 1) {
-        navigation.navigate(AuthNavigator.AuthStackIdentifiers.SELECT_BRANCH, { isFromLogin: true, branches: selector.branchesList })
-      }
-      else if (selector.branchesList.length > 0) {
+      // if (selector.branchesList.length > 1) {
+      //   navigation.navigate(AuthNavigator.AuthStackIdentifiers.SELECT_BRANCH, { isFromLogin: true, branches: selector.branchesList })
+      // }
+      if (selector.branchesList.length > 0) {
         const branchId = selector.branchesList[0].branchId;
         const branchName = selector.branchesList[0].branchName;
         AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_ID, branchId.toString());
