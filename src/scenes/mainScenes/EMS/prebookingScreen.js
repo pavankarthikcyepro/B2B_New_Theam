@@ -12,12 +12,14 @@ import { callNumber } from "../../../utils/helperFunctions";
 import moment from "moment";
 import { Category_Type_List_For_Filter } from '../../../jsonData/enquiryFormScreenJsonData';
 import { MyTaskNewItem } from '../MyTasks/components/MyTasksNewItem';
+import { updateTAB, updateIsSearch } from '../../../redux/appReducer';
 
 const dateFormat = "YYYY-MM-DD";
 
 const PreBookingScreen = ({ navigation }) => {
 
     const selector = useSelector((state) => state.preBookingReducer);
+    const appSelector = useSelector(state => state.appReducer);
     const { vehicle_model_list_for_filters, source_of_enquiry_list } = useSelector(state => state.homeReducer);
     const dispatch = useDispatch();
     const [vehicleModelList, setVehicleModelList] = useState(vehicle_model_list_for_filters);
@@ -29,6 +31,31 @@ const PreBookingScreen = ({ navigation }) => {
     const [selectedFromDate, setSelectedFromDate] = useState("");
     const [selectedToDate, setSelectedToDate] = useState("");
     const [sortAndFilterVisible, setSortAndFilterVisible] = useState(false);
+    const [searchedData, setSearchedData] = useState([]);
+
+    useEffect(() => {
+        if (selector.pre_booking_list.length > 0) {
+            setSearchedData(selector.pre_booking_list)
+        }
+    }, [selector.pre_booking_list])
+
+    useEffect(() => {
+        if (appSelector.isSearch) {
+            dispatch(updateIsSearch(false))
+            if (appSelector.searchKey !== '') {
+                let tempData = []
+                tempData = selector.pre_booking_list.filter((item) => {
+                    return item.firstName.toLowerCase().includes(appSelector.searchKey.toLowerCase()) || item.lastName.toLowerCase().includes(appSelector.searchKey.toLowerCase())
+                })
+                setSearchedData([]);
+                setSearchedData(tempData);
+            }
+            else {
+                setSearchedData([]);
+                setSearchedData(selector.pre_booking_list);
+            }
+        }
+    }, [appSelector.isSearch])
 
     useEffect(() => {
 
@@ -205,11 +232,11 @@ const PreBookingScreen = ({ navigation }) => {
                 </Pressable>
             </View>
 
-            {selector.pre_booking_list.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
+            {searchedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
                 <View style={[ { backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 }]}>
                     <FlatList
-                        data={selector.pre_booking_list}
-                        extraData={selector.pre_booking_list}
+                        data={searchedData}
+                        extraData={searchedData}
                         keyExtractor={(item, index) => index.toString()}
                         refreshControl={(
                             <RefreshControl
@@ -220,7 +247,11 @@ const PreBookingScreen = ({ navigation }) => {
                         )}
                         showsVerticalScrollIndicator={false}
                         onEndReachedThreshold={0}
-                        onEndReached={getMorePreBookingListFromServer}
+                        onEndReached={() => {
+                            if (appSelector.searchKey === '') {
+                                getMorePreBookingListFromServer()
+                            }
+                        }}
                         ListFooterComponent={renderFooter}
                         renderItem={({ item, index }) => {
 

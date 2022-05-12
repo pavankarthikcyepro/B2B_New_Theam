@@ -41,7 +41,8 @@ const TargetSettingsTab = () => {
             <TargetSettingsTopTab.Screen
                 name={TargetScreenTabIdentifiers.target}
                 component={MainParamScreen}
-                options={{ title: "Main Parameter" }}
+                // options={{ title: "Main Parameter" }}
+                options={{ title: "Set Target" }}
             />
             {/* <TargetSettingsTopTab.Screen
                 name={TargetScreenTabIdentifiers.Supporting}

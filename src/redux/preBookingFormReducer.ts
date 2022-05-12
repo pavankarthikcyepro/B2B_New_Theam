@@ -39,6 +39,8 @@ export const getPrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/
   const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
   try {
     const json = await response.json();
+    // console.log("DATA:", JSON.stringify(json));
+    
     if (response.status != 200) {
       return rejectWithValue(json);
     }
@@ -54,6 +56,8 @@ export const updatePrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLI
   const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
   try {
     const json = await response.json();
+    // console.log("DATA:", JSON.stringify(json));
+    
     if (response.status != 200) {
       return rejectWithValue(json);
     }
@@ -74,7 +78,7 @@ export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk("PREBOONING
     }
     return json;
   } catch (error) {
-    console.error("getOnRoadPriceAndInsurenceDetailsApi JSON parse error: ", error + " : " + JSON.stringify(response));
+    console.error("PRE-BOOKING getOnRoadPriceAndInsurenceDetailsApi JSON parse error: ", error + " : " + JSON.stringify(response));
     return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
 })
@@ -129,6 +133,8 @@ export const getDropDataApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getDropDa
   const response = await client.post(URL.GET_DROP_DATA(), payload);
   try {
     const json = await response.json();
+    // console.log("DROP:", JSON.stringify(json));
+    
     if (response.status != 200) {
       return rejectWithValue(json);
     }
@@ -401,7 +407,8 @@ const prebookingFormSlice = createSlice({
     cheque_number: "",
     cheque_date: "",
     dd_number: "",
-    dd_date: ""
+    dd_date: "",
+    isDataLoaded: false
   },
   reducers: {
     clearState: (state, action) => {
@@ -963,7 +970,9 @@ const prebookingFormSlice = createSlice({
       state.registration_number = dmsLeadDto.otherVehicleRcNo ? dmsLeadDto.otherVehicleRcNo : "";
 
       // Documents
-      state.form_or_pan = dmsLeadDto.documentType ? dmsLeadDto.documentType : "";
+      if (dmsLeadDto.documentType){
+        state.form_or_pan = dmsLeadDto.documentType;
+      }
       state.gstin_number = dmsLeadDto.gstNumber ? dmsLeadDto.gstNumber : "";
       state.customer_type_category = dmsLeadDto.customerCategoryType ? dmsLeadDto.customerCategoryType : "";
 
@@ -1104,6 +1113,24 @@ const prebookingFormSlice = createSlice({
     builder.addCase(getPrebookingDetailsApi.fulfilled, (state, action) => {
       if (action.payload.dmsEntity) {
         state.pre_booking_details_response = action.payload.dmsEntity;
+        let attachments = action.payload.dmsEntity.dmsLeadDto.dmsAttachments;
+        if(attachments.length > 0){
+          let panDtls = [];
+          panDtls = attachments.filter((item) => {
+            return item.documentType === "pan"
+          })
+          if(panDtls.length > 0){
+            state.form_or_pan = 'PAN'
+            state.isDataLoaded = true
+            setDocumentUploadDetails({
+              key: "PAN_NUMBER",
+              text: state.pan_number,
+            })
+          }
+          else{
+            state.isDataLoaded = true
+          }
+        }
       }
       state.isLoading = false;
     })

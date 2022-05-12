@@ -93,7 +93,7 @@ export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk(
       return json;
     } catch (error) {
       console.error(
-        "getOnRoadPriceAndInsurenceDetailsApi JSON parse error: ",
+        "BOOKING getOnRoadPriceAndInsurenceDetailsApi JSON parse error: ",
         error + " : " + JSON.stringify(response)
       );
       return rejectWithValue({

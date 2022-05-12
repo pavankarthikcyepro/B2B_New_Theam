@@ -245,6 +245,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     enquiry_details_response: null,
     update_enquiry_details_response: null,
     customer_types_response: null,
+    isAddressSet: false
   },
   reducers: {
     clearState: (state, action) => {
@@ -742,6 +743,8 @@ const enquiryDetailsOverViewSlice = createSlice({
     },
     setUploadDocuments: (state, action: PayloadAction<PersonalIntroModel>) => {
       const { key, text } = action.payload;
+      console.log("ID:", key, text);
+      
       switch (key) {
         case "PAN":
           state.pan_number = text;
@@ -956,11 +959,11 @@ const enquiryDetailsOverViewSlice = createSlice({
             state.pincode = address.pincode ? address.pincode : "";
             state.houseNum = address.houseNo ? address.houseNo : "";
             state.streetName = address.street ? address.street : "";
-            state.village = address.village ? address.village : "";
-            state.mandal = address.mandal? address.mandal:"";
-            state.city = address.city ? address.city : "";
-            state.district = address.district ? address.district : "";
-            state.state = address.state ? address.state : "";
+            // state.village = address.village ? address.village : "";
+            // state.mandal = address.mandal? address.mandal:"";
+            // state.city = address.city ? address.city : "";
+            // state.district = address.district ? address.district : "";
+            // state.state = address.state ? address.state : "";
 
             let urbanOrRural = 0;
             if (address.urban) {
@@ -1189,6 +1192,9 @@ const enquiryDetailsOverViewSlice = createSlice({
             case "aadhar":
               state.adhaar_number = item.documentNumber;
               break;
+            case "empId":
+              state.employee_id = item.documentNumber;
+              break;
           }
         });
       }
@@ -1204,6 +1210,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.city = action.payload.Region || ""
       state.district = action.payload.District || ""
       state.state = action.payload.State || ""
+      state.isAddressSet = true
     }
   },
   extraReducers: (builder) => {
@@ -1213,6 +1220,8 @@ const enquiryDetailsOverViewSlice = createSlice({
     });
     builder.addCase(getEnquiryDetailsApi.fulfilled, (state, action) => {
       if (action.payload.dmsEntity) {
+        console.log("DMS:", JSON.stringify(action.payload.dmsEntity));
+        
         state.enquiry_details_response = action.payload.dmsEntity;
       }
       state.isLoading = false;

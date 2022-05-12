@@ -46,9 +46,10 @@ export const preEnquirySlice = createSlice({
       state.isLoading = true;
     })
     builder.addCase(getPreEnquiryData.fulfilled, (state, action) => {
-      console.log('res: ', action.payload);
+      
       const dmsEntityObj = action.payload?.dmsEntity;
       if (dmsEntityObj) {
+        // console.log('$$$$res: ', JSON.stringify(dmsEntityObj.leadDtoPage.content));
         state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
         state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
         state.pre_enquiry_list = dmsEntityObj.leadDtoPage.content;

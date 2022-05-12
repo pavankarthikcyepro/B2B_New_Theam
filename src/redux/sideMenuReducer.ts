@@ -8,6 +8,8 @@ export const CUSTOMER_RELATIONSHIP_STR = "CUSTOMER_RELATIONSHIP";
 export const EVENT_MANAGEMENT_STR = "EVENT_MANAGEMENT";
 export const DIGITAL_PAYMENT_STR = "DIGITAL_PAYMENT"
 export const QR_CODE_STR = "QR_CODE"
+export const GROUP_STR = "GROUP"
+export const TRANSFER_STR = "TRANSFER"
 
 const data = [
   {
@@ -37,12 +39,12 @@ const data = [
   },
   {
     title: "Task Transfer",
-    icon: CUSTOMER_RELATIONSHIP_STR,
+    icon: TRANSFER_STR,
     screen: 109,
   },
   {
     title: "Team Shuffle",
-    icon: CUSTOMER_RELATIONSHIP_STR,
+    icon: GROUP_STR,
     screen: 109,
   },
   {
