@@ -16,15 +16,14 @@ export const HelpDeskItem = ({ name }) => {
 
   return (
     <SafeAreaView>
-      {/* <View style={styles.container}>
-        <Text style={styles.text1}>{name}</Text>
-      </View> */}
       <View style={styles.container1}>
         <Text>Phone Number </Text>
         <PhoneInput
           defaultValue={phoneNumber}
           defaultCode="IN"
           withShadow
+          maxlenghth={10}
+          minlength={20}
           keyboardType={"phone-pad"}
           onChangeFormattedText={(text) => {
             setPhoneNumber(text);
@@ -36,7 +35,6 @@ export const HelpDeskItem = ({ name }) => {
             Alert.alert("please enter valid phoneNumber");
           }}
         >
-          <Text>Get Phone Number</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

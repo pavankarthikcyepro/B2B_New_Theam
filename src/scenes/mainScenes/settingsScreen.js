@@ -13,7 +13,7 @@ const screenWidth = Dimensions.get("window").width;
 
 const datalist = [
   {
-    name: "Change Password (NI)",
+    name: "Click here to Change Password",
   },
 ];
 

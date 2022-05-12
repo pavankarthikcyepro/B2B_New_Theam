@@ -387,7 +387,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         }
         if (selector.enquiryType === "Personal") {
             if (selector.customerType === "Government") {
-                if (!isValidateAlphabetics(selector.companyName)) {
+               if (selector.companyName.length > 0 && !isValidateAlphabetics(selector.companyName))  {
                     showToast("Please enter alphabetics only Company Name");
                     return;
                 }
@@ -458,7 +458,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
 
         // Get Pincode details from server
         if (selector.sourceOfEnquiry === "Event") {
-            if (selector.eventName.length === 0) {
+            if (selector.eventName.length > 0) {
                 showToast("Please select event details");
                 return;
             }
