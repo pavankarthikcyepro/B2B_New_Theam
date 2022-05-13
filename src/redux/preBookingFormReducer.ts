@@ -39,7 +39,7 @@ export const getPrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/
   const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
   try {
     const json = await response.json();
-    // console.log("DATA:", JSON.stringify(json));
+    console.log("ALL DATA:", JSON.stringify(json));
     
     if (response.status != 200) {
       return rejectWithValue(json);
@@ -106,6 +106,8 @@ export const sendOnRoadPriceDetails = createAsyncThunk("PREBOONING_FORMS_SLICE/s
   const response = await client.post(URL.SEND_ON_ROAD_PRICE_DETAILS(), payload);
   try {
     const json = await response.json();
+    console.log("DATA:", JSON.stringify(json));
+    
     if (response.status != 200) {
       return rejectWithValue(json);
     }
@@ -254,6 +256,24 @@ export const getAssignedTasksApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getA
     return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
 })
+
+export const updateRef = createAsyncThunk("ENQUIRY_FORM_SLICE/updateRef",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.UPDATE_REF(), payload);
+    try {
+      // const json = await response.json();
+      console.log("UPDATE REF");
+
+      if (!response.ok) {
+        return rejectWithValue(response);
+      }
+      return response;
+    } catch (error) {
+      console.error(JSON.stringify(response));
+      return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
+    }
+  }
+);
 
 interface CustomerDetailModel {
   key: string;
@@ -413,7 +433,8 @@ const prebookingFormSlice = createSlice({
     dd_number: "",
     dd_date: "",
     isDataLoaded: false,
-    addOnPrice: 0
+    addOnPrice: 0,
+    refNo: ''
   },
   reducers: {
     clearState: (state, action) => {
@@ -1117,6 +1138,7 @@ const prebookingFormSlice = createSlice({
     })
     builder.addCase(getPrebookingDetailsApi.fulfilled, (state, action) => {
       if (action.payload.dmsEntity) {
+        state.refNo = action.payload.dmsEntity.dmsLeadDto.referencenumber;
         state.pre_booking_details_response = action.payload.dmsEntity;
         let attachments = action.payload.dmsEntity.dmsLeadDto.dmsAttachments;
         if(attachments.length > 0){
@@ -1451,6 +1473,16 @@ const prebookingFormSlice = createSlice({
       state.assigned_tasks_list_status = "failed";
       state.isLoading = false;
     })
+    //update ref number
+    builder.addCase(updateRef.pending, (state, action) => {
+
+    });
+    builder.addCase(updateRef.fulfilled, (state, action) => {
+
+    });
+    builder.addCase(updateRef.rejected, (state, action) => {
+
+    });
   }
 });
 

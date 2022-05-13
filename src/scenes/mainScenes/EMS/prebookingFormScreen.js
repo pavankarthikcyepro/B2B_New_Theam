@@ -59,6 +59,7 @@ import {
     getBookingAmountDetailsApi,
     getAssignedTasksApi,
     updateAddressByPincode,
+    updateRef,
 } from "../../../redux/preBookingFormReducer";
 import {
     RadioTextItem,
@@ -1070,7 +1071,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         postOnRoadPriceTable.form_or_pan = selector.form_or_pan;
 
         // console.log("PAYLOAD:", JSON.stringify(postOnRoadPriceTable));
-        dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable));
+        // dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable));
+        Promise.all([
+            dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable))
+        ]).then(async (res) => {
+            console.log("REF NO:", selector.refNo);
+            let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+            if (employeeData) {
+                const jsonObj = JSON.parse(employeeData);
+                const payload = {
+                    "refNo": selector.refNo,
+                    "orgId": jsonObj.orgId,
+                    "stageCompleted": "PREBOOKING"
+                }
+                console.log("PAYLOAD:", payload);
+                dispatch(updateRef(payload))
+            }
+        });
     };
 
     // Handle On Road Price Response

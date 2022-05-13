@@ -26,10 +26,31 @@ export const updateEnquiryDetailsApi = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
     const json = await response.json();
+
     if (!response.ok) {
       return rejectWithValue(json);
     }
     return json;
+  }
+);
+
+export const updateRef = createAsyncThunk("ENQUIRY_FORM_SLICE/updateRef",
+  async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.UPDATE_REF(), payload);
+    try {
+      console.log("PPPP", payload);
+      
+      // const json = await response.json();
+      console.log("UPDATE REF");
+
+      if (!response.ok) {
+        return rejectWithValue(response);
+      }
+      return response;
+    } catch (error) {
+      console.error("getPrebookingDetailsApi JSON parse error: ", error + " : " + JSON.stringify(response));
+      return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
+    }
   }
 );
 
@@ -149,7 +170,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     houseNum: "",
     streetName: "",
     village: "",
-    mandal:"",
+    mandal: "",
     city: "",
     state: "",
     district: "",
@@ -160,7 +181,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     p_houseNum: "",
     p_streetName: "",
     p_village: "",
-    p_mandal:"",
+    p_mandal: "",
     p_city: "",
     p_state: "",
     p_district: "",
@@ -245,7 +266,8 @@ const enquiryDetailsOverViewSlice = createSlice({
     enquiry_details_response: null,
     update_enquiry_details_response: null,
     customer_types_response: null,
-    isAddressSet: false
+    isAddressSet: false,
+    refNo: ''
   },
   reducers: {
     clearState: (state, action) => {
@@ -425,7 +447,7 @@ const enquiryDetailsOverViewSlice = createSlice({
         case "ANNIVERSARY_DATE":
           if (!!state.dateOfBirth) {
             state.minDate = new Date(state.dateOfBirth);
-          }else {
+          } else {
             state.minDate = new Date();
           }
           state.maxDate = null;
@@ -744,7 +766,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     setUploadDocuments: (state, action: PayloadAction<PersonalIntroModel>) => {
       const { key, text } = action.payload;
       console.log("ID:", key, text);
-      
+
       switch (key) {
         case "PAN":
           state.pan_number = text;
@@ -977,7 +999,7 @@ const enquiryDetailsOverViewSlice = createSlice({
             state.p_houseNum = address.houseNo ? address.houseNo : "";
             state.p_streetName = address.street ? address.street : "";
             state.p_village = address.village ? address.village : "";
-            state.p_mandal = address.mandal ? address.mandal:"";
+            state.p_mandal = address.mandal ? address.mandal : "";
             state.p_city = address.city ? address.city : "";
             state.p_district = address.district ? address.district : "";
             state.p_state = address.state ? address.state : "";
@@ -1211,7 +1233,10 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.district = action.payload.District || ""
       state.state = action.payload.State || ""
       state.isAddressSet = true
-    }
+    },
+    updateRefNo: (state, action) => {
+      state.refNo = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getEnquiryDetailsApi.pending, (state) => {
@@ -1220,8 +1245,6 @@ const enquiryDetailsOverViewSlice = createSlice({
     });
     builder.addCase(getEnquiryDetailsApi.fulfilled, (state, action) => {
       if (action.payload.dmsEntity) {
-        console.log("DMS:", JSON.stringify(action.payload.dmsEntity));
-        
         state.enquiry_details_response = action.payload.dmsEntity;
       }
       state.isLoading = false;
@@ -1235,11 +1258,12 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(updateEnquiryDetailsApi.fulfilled, (state, action) => {
-      console.log(
-        "S updateEnquiryDetailsApi: ",
-        JSON.stringify(action.payload)
-      );
+      // console.log(
+      //   "S updateEnquiryDetailsApi: ",
+      //   JSON.stringify(action.payload)
+      // );
       if (action.payload.success == true) {
+        state.refNo = action.payload.dmsEntity.dmsLeadDto.referencenumber;
         state.update_enquiry_details_response = "success";
       }
       state.isLoading = false;
@@ -1324,6 +1348,16 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.customer_types_response = null;
       state.isLoading = false;
     });
+    //update ref number
+    builder.addCase(updateRef.pending, (state, action) => {
+
+    });
+    builder.addCase(updateRef.fulfilled, (state, action) => {
+
+    });
+    builder.addCase(updateRef.rejected, (state, action) => {
+
+    });
   },
 });
 
@@ -1352,6 +1386,7 @@ export const {
   updateCustomerNeedAnalysisData,
   updateAdditionalOrReplacementBuyerData,
   updateDmsAttachmentDetails,
-  updateAddressByPincode
+  updateAddressByPincode,
+  updateRefNo
 } = enquiryDetailsOverViewSlice.actions;
 export default enquiryDetailsOverViewSlice.reducer;

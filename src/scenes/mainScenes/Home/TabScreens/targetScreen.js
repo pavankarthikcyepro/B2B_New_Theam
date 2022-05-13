@@ -685,21 +685,21 @@ const TargetScreen = ({ route, navigation }) => {
                     <View style={{ width: '100%', flexDirection: 'row', marginTop: 10 }}>
                         <View style={{ width: '50%', }}>
                             <View style={styles.statWrap}>
-                                <Text style={{ marginRight: 30, fontSize: 10, fontWeight: "600" }}>Enquiry to Booking (%)</Text>
+                                <Text style={styles.percentText}>Enquiry to Booking (%)</Text>
                                 {bookingData !== null && enqData !== null &&
                                     <Text style={{ color: (Math.floor(parseInt(bookingData?.achievment) / parseInt(enqData?.achievment) * 100)) > 40 ? '#14ce40' : '#ff0000', fontSize: 12, }}>{(parseInt(bookingData?.achievment) === 0 || parseInt(enqData?.achievment) === 0) ? 0 : (Math.floor(parseInt(bookingData?.achievment) / parseInt(enqData?.achievment) * 100))}%</Text>
                                 }
                             </View>
 
                             <View style={styles.statWrap}>
-                                <Text style={{ marginRight: 40, fontSize: 10, fontWeight: "600" }}>Enquiry to Retail (%)</Text>
+                                <Text style={styles.percentText}>Enquiry to Retail (%)</Text>
                                 {retailData !== null && enqData !== null &&
                                     <Text style={{ color: (Math.floor(parseInt(retailData?.achievment) / parseInt(enqData?.achievment) * 100)) > 40 ? '#14ce40' : '#ff0000', fontSize: 12, }}>{(parseInt(retailData?.achievment) === 0 || parseInt(enqData?.achievment) === 0) ? 0 : (Math.floor(parseInt(retailData?.achievment) / parseInt(enqData?.achievment) * 100))}%</Text>
                                 }
                             </View>
 
                             <View style={styles.statWrap}>
-                                <Text style={{ marginRight: 23, fontSize: 10, fontWeight: "600" }}>Enquiry to Test drive (%)</Text>
+                                <Text style={styles.percentText}>Enquiry to Test drive (%)</Text>
                                 {TDData !== null && enqData !== null &&
                                     <Text style={{ color: (Math.floor(parseInt(TDData?.achievment) / parseInt(enqData?.achievment) * 100)) > 40 ? '#14ce40' : '#ff0000', fontSize: 12, }}>{(parseInt(TDData?.achievment) === 0 || parseInt(enqData?.achievment) === 0) ? 0 : (Math.floor(parseInt(TDData?.achievment) / parseInt(enqData?.achievment) * 100))}%</Text>
                                 }
@@ -710,14 +710,14 @@ const TargetScreen = ({ route, navigation }) => {
 
                         <View style={{ width: '49%', }}>
                             <View style={styles.statWrap}>
-                                <Text style={{ marginRight: 25, fontSize: 10, fontWeight: "600" }}>Booking to Retail (%)</Text>
+                                <Text style={styles.percentText}>Booking to Retail (%)</Text>
                                 {bookingData !== null && retailData !== null &&
                                     <Text style={{ color: (Math.floor(parseInt(retailData?.achievment) / parseInt(bookingData?.achievment) * 100)) > 40 ? '#14ce40' : '#ff0000', fontSize: 12, }}>{(parseInt(bookingData?.achievment) === 0 || parseInt(retailData?.achievment) === 0) ? 0 : (Math.floor(parseInt(retailData?.achievment) / parseInt(bookingData?.achievment) * 100))}%</Text>
                                 }
                             </View>
 
                             <View style={styles.statWrap}>
-                                <Text style={{ marginRight: 30, fontSize: 10, fontWeight: "600" }}>Booking to Visit (%)</Text>
+                                <Text style={styles.percentText}>Booking to Visit (%)</Text>
                                 {bookingData !== null && visitData !== null &&
                                     <Text style={{ color: (Math.floor(parseInt(visitData?.achievment) / parseInt(bookingData?.achievment) * 100)) > 40 ? '#14ce40' : '#ff0000', fontSize: 12, }}>{(parseInt(bookingData?.achievment) === 0 || parseInt(visitData?.achievment) === 0) ? 0 : (Math.floor(parseInt(visitData?.achievment) / parseInt(bookingData?.achievment) * 100))}%</Text>
                                 }
@@ -798,7 +798,7 @@ const supportData = [
         ar: '1.5k',
         progress: 0.1,
         color: '#8f39ff'
-    }
+    },
 ]
 
 const SupportingScreen = () => {
@@ -905,5 +905,6 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: Colors.WHITE
     },
-    statWrap: { flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', height: 20, marginLeft: 10 }
+    statWrap: { flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', height: 20, marginLeft: 10 },
+    percentText: { marginRight: 10, fontSize: 10, fontWeight: "600" }
 })

@@ -207,7 +207,10 @@ const URL = {
     },
     CHANGE_PASSWORD: (cognitoName) => {
         return hrms_url + `/changepassword/${cognitoName}`;
-    }
+    },
+    UPDATE_REF: () => {
+        return sales_url + `/lead-customer-reference/update`;
+    },
 }
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason
