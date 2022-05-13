@@ -23,21 +23,7 @@ const dummyData = [
         title: "Source of Enquiry",
         subtitle: ""
     },
-      {
-        id: 3,
-        title: "First Name",
-        subtitle: ""
-    },
-      {
-        id: 3,
-        title: "Last Name",
-        subtitle: ""
-    },
-      {
-        id: 3,
-        title: "Mobile Number",
-        subtitle: ""
-    }
+   
 ]
 
 const radioDummyData = [
@@ -65,9 +51,7 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
     const [localModelList, setLocalModelList] = useState(modelList);
     const [localSourceOfEnquiryList, setLocalSourceOfEnquiryList] = useState(sourceList);
     const [localCategoryList, setLocalCategoryList] = useState(categoryList);
-    const [localFirstNameList, setLocalFirstNameList] = useState(firstName);
-    const [localLastNameList, setLocalLastNameList] = useState(lastName);
-    const [localMobileNumberList, setLocalMobileNumberList] = useState(mobileNumber);
+ 
     
 
 
@@ -91,25 +75,6 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
           selectedObject.isChecked = !selectedObject.isChecked;
           sources[itemIndex] = selectedObject;
           setLocalSourceOfEnquiryList([...sources]);
-        } else if (selectedIndex === 3) {
-          let firstName = [...localFirstNameList];
-          let selectedObject = { ...firstName[itemIndex] };
-          selectedObject.isChecked = !selectedObject.isChecked;
-          firstName[itemIndex] = selectedObject;
-          setLocalSourceOfEnquiryList([...firstName]);
-        } else if (selectedIndex === 4) {
-          let lastName = [...localLastNameList];
-          let selectedObject = { ...lastName[itemIndex] };
-          selectedObject.isChecked = !selectedObject.isChecked;
-          lastName[itemIndex] = selectedObject;
-          setLocalSourceOfEnquiryList([...lastName]);
-        } 
-        else if (selectedIndex === 5) {
-          let mobileNumber = [...localMobileNumberList];
-          let selectedObject = { ...mobileNumber[itemIndex] };
-          selectedObject.isChecked = !selectedObject.isChecked;
-          mobileNumber[itemIndex] = selectedObject;
-          setLocalSourceOfEnquiryList([...mobileNumber]);
         }
     }
 
@@ -145,23 +110,6 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
               return newObj;
             }
           );
-          setLocalSourceOfEnquiryList([...updatedFirstName]);
-
-            const updatedLastName = localLastNameList.map((item, index) => {
-              let newObj = { ...item };
-              newObj.isChecked = false;
-              return newObj;
-            });
-            setLocalLastNameList([...updatedLastName]);
-
-            
-            const updatedMobileNumber = localMobileNumberList.map((item, index) => {
-              let newObj = { ...item };
-              newObj.isChecked = false;
-              return newObj;
-            });
-            setLocalMobileNumberList([...updatedMobileNumber]);
-
           
     }
 
@@ -171,9 +119,7 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
             category: localCategoryList,
             source: localSourceOfEnquiryList,
             model: localModelList,
-            firstname: localFirstNameList,
-            lastname: localLastNameList,
-            mobilenumber : localMobileNumberList
+          
         }
         submitCallback(payload);
     }
@@ -260,17 +206,6 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
                     }}
                   >
                     {selectedIndex === 0 && (
-                      // <RadioButton.Group onValueChange={newValue => setSelectedRadioIndex(newValue)} value={selectedRadioIndex}>
-                      //     {radioDummyData.map((radioItem, index) => {
-                      //         return (
-                      //             <View key={index} style={styles.radiobuttonVw}>
-                      //                 <RadioButton.Android value={radioItem.id} color={Colors.RED} uncheckedColor={Colors.GRAY} />
-                      //                 <Text style={[styles.radioText, { color: Colors.BLACK }]}>{radioItem.name}</Text>
-                      //             </View>
-                      //         )
-                      //     })}
-                      // </RadioButton.Group>
-
                       <View>
                         <FlatList
                           key={"CATEGORY_LIST"}
@@ -366,39 +301,7 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
                         />
                       </View>
                     )}
-                    {selectedIndex === 3 && (
-                      <View>
-                        <FlatList
-                          key={"FIRST_NAME"}
-                          data={localFirstNameList}
-                          keyExtractor={(item, index) => index.toString()}
-                          renderItem={({ item, index }) => {
-                            return (
-                              <TouchableOpacity
-                                onPress={() => itemSelected(item, index)}
-                              >
-                                <View style={styles.radiobuttonVw}>
-                                  <Checkbox.Android
-                                    status={
-                                      item.isChecked ? "checked" : "unchecked"
-                                    }
-                                  />
-                                  <Text
-                                    style={[
-                                      styles.radioText,
-                                      { color: Colors.BLACK },
-                                    ]}
-                                  >
-                                    {item.name}
-                                  </Text>
-                                </View>
-                              </TouchableOpacity>
-                            );
-                          }}
-              
-              />
-                      </View>
-                    )}
+                    
                   </View>
                 </View>
                 <Text style={GlobalStyle.underline}></Text>

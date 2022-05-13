@@ -1870,7 +1870,32 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
             )}
 
-            {/* <View style={styles.view1}>
+        {selector.showDatepicker && (
+          <DatePickerComponent
+            visible={selector.showDatepicker}
+            mode={"date"}
+            value={new Date(Date.now())}
+            minimumDate={selector.minDate}
+            maximumDate={selector.maxDate}
+            onChange={(event, selectedDate) => {
+              console.log("date: ", selectedDate);
+              if (Platform.OS === "android") {
+                if (!selectedDate) {
+                  dispatch(
+                    updateSelectedDate({ key: "NONE", text: selectedDate })
+                  );
+                } else {
+                  dispatch(updateSelectedDate({ key: "", text: selectedDate }));
+                }
+              } else {
+                dispatch(updateSelectedDate({ key: "", text: selectedDate }));
+              }
+            }}
+            onRequestClose={() => dispatch(setDatePicker())}
+          />
+        )}
+
+        {/* <View style={styles.view1}>
         <Text style={styles.titleText}>{"Details Overview"}</Text>
         <IconButton
           icon={selector.enableEdit ? "account-edit" : "account-edit-outline"}
@@ -1881,2115 +1906,2211 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         />
       </View> */}
 
-            <KeyboardAvoidingView
-                style={{
-                    flex: 1,
-                    flexDirection: "column",
-                    justifyContent: "center",
-                }}
-                behavior={Platform.OS == "ios" ? "padding" : "height"}
-                enabled
-                keyboardVerticalOffset={100}
-            >
-                <ScrollView
-                    automaticallyAdjustContentInsets={true}
-                    bounces={true}
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={{ paddingVertical: 10, paddingHorizontal: 5 }}
-                    keyboardShouldPersistTaps={"handled"}
-                    style={{ flex: 1 }}
+        <KeyboardAvoidingView
+          style={{
+            flex: 1,
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+          behavior={Platform.OS == "ios" ? "padding" : "height"}
+          enabled
+          keyboardVerticalOffset={100}
+        >
+          <ScrollView
+            automaticallyAdjustContentInsets={true}
+            bounces={true}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{
+              paddingVertical: 10,
+              paddingHorizontal: 5,
+            }}
+            keyboardShouldPersistTaps={"handled"}
+            style={{ flex: 1 }}
+          >
+            <View style={styles.baseVw}>
+              <List.AccordionGroup
+                expandedId={openAccordian}
+                onAccordionPress={(expandedId) => updateAccordian(expandedId)}
+              >
+                {/* 1.Customer Profile */}
+                <List.Accordion
+                  id={"1"}
+                  title={"Customer Profile"}
+                  titleStyle={{
+                    color: openAccordian === "1" ? Colors.WHITE : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "1"
+                          ? Colors.RED
+                          : Colors.SKY_LIGHT_BLUE_COLOR,
+                      height: 50,
+                      // justifyContent: 'center'
+                    },
+                    styles.accordianBorder,
+                  ]}
                 >
-                    <View style={styles.baseVw}>
-                        <List.AccordionGroup
-                            expandedId={openAccordian}
-                            onAccordionPress={(expandedId) => updateAccordian(expandedId)}
-                        >
-                            {/* 1.Customer Profile */}
-                            <List.Accordion
-                                id={"1"}
-                                title={"Customer Profile"}
-                                titleStyle={{
-                                    color: openAccordian === "1" ? Colors.WHITE : Colors.BLACK,
-                                    fontSize: 16,
-                                    fontWeight: "600",
-                                }}
-                                style={[
-                                    {
-                                        backgroundColor:
-                                            openAccordian === "1"
-                                                ? Colors.RED
-                                                : Colors.SKY_LIGHT_BLUE_COLOR,
-                                        height: 50,
-                                        // justifyContent: 'center'
-                                    },
-                                    styles.accordianBorder,
-                                ]}
-                            >
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    value={selector.occupation}
-                                    autoCapitalize="words"
-                                    label={"Occupation*"}
-                                    keyboardType={"default"}
-                                    maxLength={40}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setCustomerProfile({ key: "OCCUPATION", text: text })
-                                        )
-                                    }
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    value={selector.designation}
-                                    autoCapitalize="words"
-                                    label={"Designation*"}
-                                    keyboardType={"default"}
-                                    maxLength={40}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setCustomerProfile({ key: "DESIGNATION", text: text })
-                                        )
-                                    }
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
-
-                                <DropDownSelectionItem
-                                    label={"Enquiry Segment*"}
-                                    // disabled={!selector.enableEdit}
-                                    value={selector.enquiry_segment}
-                                    onPress={() =>
-                                        showDropDownModelMethod(
-                                            "ENQUIRY_SEGMENT",
-                                            "Select Enquiry Segment"
-                                        )
-                                    }
-                                />
-
-                                <DropDownSelectionItem
-                                    label={"Customer Type"}
-                                    // disabled={!selector.enableEdit}
-                                    value={selector.customer_type}
-                                    onPress={() =>
-                                        showDropDownModelMethod(
-                                            "CUSTOMER_TYPE",
-                                            "Select Customer Type"
-                                        )
-                                    }
-                                />
-
-                                {selector.customer_type.toLowerCase() === "fleet" ||
-                                    selector.customer_type.toLowerCase() === "institution" ||
-                                    selector.customer_type.toLowerCase() === "corporate" ||
-                                    selector.customer_type.toLowerCase() === "government" ||
-                                    selector.customer_type.toLowerCase() === "retired" ||
-                                    selector.customer_type.toLowerCase() === "other" ? (
-                                    <View>
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.company_name}
-                                            label={"Company Name"}
-                                            autoCapitalize="words"
-                                            keyboardType={"default"}
-                                            maxLength={50}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setCustomerProfile({
-                                                        key: "COMPANY_NAME",
-                                                        text: text,
-                                                    })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                    </View>
-                                ) : null}
-
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    value={selector.source_of_enquiry}
-                                    label={"Source Of Enquiry"}
-                                    editable={false}
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
-
-                                {selector.source_of_enquiry.toLowerCase() === "event" && (
-                                    <View>
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.event_code}
-                                            label={"Event Code"}
-                                            editable={false}
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                    </View>
-                                )}
-
-                                {(selector.source_of_enquiry
-                                    .toLowerCase()
-                                    .trim()
-                                    .replace(/ /g, "") === "digitalmarketing" ||
-                                    selector.source_of_enquiry
-                                        .toLowerCase()
-                                        .trim()
-                                        .replace(/ /g, "") === "socialnetwork") && (
-                                        <View>
-                                            <DropDownSelectionItem
-                                                label={"Sub Source Of Enquiry"}
-                                                value={selector.sub_source_of_enquiry}
-                                                onPress={() =>
-                                                    showDropDownModelMethod(
-                                                        "SUB_SOURCE_OF_ENQUIRY",
-                                                        "Sub Source Of Enquiry"
-                                                    )
-                                                }
-                                            />
-                                        </View>
-                                    )}
-
-                                {selector.source_of_enquiry.toLowerCase() === "reference" && (
-                                    <View>
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.rf_by_first_name}
-                                            label={"Referred BY First Name"}
-                                            keyboardType={"default"}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setCustomerProfile({
-                                                        key: "RF_FIRST_NAME",
-                                                        text: text,
-                                                    })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.rf_by_last_name}
-                                            label={"Referred BY Last Name"}
-                                            keyboardType={"default"}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setCustomerProfile({
-                                                        key: "RF_LAST_NAME",
-                                                        text: text,
-                                                    })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.rf_by_mobile}
-                                            label={"Referred BY Mobile"}
-                                            keyboardType={"number-pad"}
-                                            maxLength={10}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setCustomerProfile({ key: "RF_MOBILE", text: text })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                        <DropDownSelectionItem
-                                            label={"Referred BY Source"}
-                                            value={selector.rf_by_source}
-                                            onPress={() =>
-                                                showDropDownModelMethod(
-                                                    "RF_SOURCE",
-                                                    "Referred BY Source"
-                                                )
-                                            }
-                                        />
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.rf_by_source_location}
-                                            label={"Referred BY Source Location"}
-                                            keyboardType={"default"}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setCustomerProfile({
-                                                        key: "RF_SOURCE_LOCATION",
-                                                        text: text,
-                                                    })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                    </View>
-                                )}
-
-                                <DateSelectItem
-                                    label={"Expected Delivery Date"}
-                                    value={selector.expected_delivery_date}
-                                    onPress={() =>
-                                        dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
-                                    }
-                                />
-
-                                <DropDownSelectionItem
-                                    label={"Enquiry Category"}
-                                    disabled={true}
-                                    value={selector.enquiry_category}
-                                    onPress={() =>
-                                        showDropDownModelMethod(
-                                            "ENQUIRY_CATEGORY",
-                                            "Enquiry Category"
-                                        )
-                                    }
-                                />
-
-                                <DropDownSelectionItem
-                                    label={"Buyer Type"}
-                                    value={selector.buyer_type}
-                                    onPress={() =>
-                                        showDropDownModelMethod("BUYER_TYPE", "Buyer Type")
-                                    }
-                                />
-
-                                <DropDownSelectionItem
-                                    label={"KMs Travelled in Month"}
-                                    value={selector.kms_travelled_month}
-                                    onPress={() =>
-                                        showDropDownModelMethod(
-                                            "KMS_TRAVELLED",
-                                            "KMs Travelled in Month"
-                                        )
-                                    }
-                                />
-
-                                <DropDownSelectionItem
-                                    label={"Who Drives"}
-                                    value={selector.who_drives}
-                                    onPress={() =>
-                                        showDropDownModelMethod("WHO_DRIVES", "Who Drives")
-                                    }
-                                />
-
-                                <DropDownSelectionItem
-                                    label={"How many members in your family?"}
-                                    value={selector.members}
-                                    onPress={() =>
-                                        showDropDownModelMethod(
-                                            "MEMBERS",
-                                            "How many members in your family?"
-                                        )
-                                    }
-                                />
-
-                                <DropDownSelectionItem
-                                    label={"What is prime expectation from the car?"}
-                                    value={selector.prime_expectation_from_car}
-                                    onPress={() =>
-                                        showDropDownModelMethod(
-                                            "PRIME_EXPECTATION_CAR",
-                                            "What is prime expectation from the car?"
-                                        )
-                                    }
-                                />
-                            </List.Accordion>
-                            <View style={styles.space}></View>
-                            {/* 2. Personal Intro */}
-                            <List.Accordion
-                                id={"2"}
-                                title="Personal Intro"
-                                titleStyle={{
-                                    color: openAccordian === "2" ? Colors.WHITE : Colors.BLACK,
-                                    fontSize: 16,
-                                    fontWeight: "600",
-                                }}
-                                style={[
-                                    {
-                                        backgroundColor:
-                                            openAccordian === "2"
-                                                ? Colors.RED
-                                                : Colors.SKY_LIGHT_BLUE_COLOR,
-                                        height: 50,
-                                    },
-                                    styles.accordianBorder,
-                                ]}
-                            >
-                                <DropDownSelectionItem
-                                    label={"Salutation*"}
-                                    value={selector.salutation}
-                                    onPress={() =>
-                                        showDropDownModelMethod("SALUTATION", "Select Salutation")
-                                    }
-                                />
-
-                                {selector.enquiry_segment.toLowerCase() == "personal" ? (
-                                    <DropDownSelectionItem
-                                        label={"Gender"}
-                                        value={selector.gender}
-                                        onPress={() => showDropDownModelMethod("GENDER", "Gender")}
-                                    />
-                                ) : null}
-
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    value={selector.firstName}
-                                    label={"First Name*"}
-                                    autoCapitalize="words"
-                                    keyboardType={"default"}
-                                    editable={false}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setPersonalIntro({ key: "FIRST_NAME", text: text })
-                                        )
-                                    }
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    value={selector.lastName}
-                                    label={"Last Name*"}
-                                    editable={false}
-                                    autoCapitalize={"words"}
-                                    keyboardType={"default"}
-                                    onChangeText={(text) =>
-                                        dispatch(setPersonalIntro({ key: "LAST_NAME", text: text }))
-                                    }
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
-                                <DropDownSelectionItem
-                                    label={"Relation"}
-                                    value={selector.relation}
-                                    onPress={() =>
-                                        showDropDownModelMethod("RELATION", "Relation")
-                                    }
-                                />
-
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    value={selector.relationName}
-                                    label={"Relation Name*"}
-                                    autoCapitalize="words"
-                                    keyboardType={"default"}
-                                    maxLength={50}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setPersonalIntro({ key: "RELATION_NAME", text: text })
-                                        )
-                                    }
-                                />
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    value={selector.mobile}
-                                    label={"Mobile Number*"}
-                                    editable={false}
-                                    maxLength={10}
-                                    keyboardType={"phone-pad"}
-                                    onChangeText={(text) =>
-                                        dispatch(setPersonalIntro({ key: "MOBILE", text: text }))
-                                    }
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    value={selector.alterMobile}
-                                    label={"Alternate Mobile Number"}
-                                    editable={true}
-                                    keyboardType={"phone-pad"}
-                                    maxLength={10}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setPersonalIntro({ key: "ALTER_MOBILE", text: text })
-                                        )
-                                    }
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    value={selector.email}
-                                    label={"Email ID*"}
-                                    editable={true}
-                                    keyboardType={"email-address"}
-                                    onChangeText={(text) =>
-                                        dispatch(setPersonalIntro({ key: "EMAIL", text: text }))
-                                    }
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
-
-                                {selector.enquiry_segment.toLowerCase() == "personal" ? (
-                                    <View>
-                                        <DateSelectItem
-                                            label={"Date Of Birth"}
-                                            value={selector.dateOfBirth}
-                                            onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
-                                        />
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.age}
-                                            label={"Age"}
-                                            keyboardType={"phone-pad"}
-                                            maxLength={10}
-                                            onChangeText={(text) =>
-                                                dispatch(setPersonalIntro({ key: "AGE", text: text }))
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                        <DateSelectItem
-                                            label={"Anniversary Date"}
-                                            value={selector.anniversaryDate}
-                                            onPress={() =>
-                                                dispatch(setDatePicker("ANNIVERSARY_DATE"))
-                                            }
-                                        />
-                                    </View>
-                                ) : null}
-                            </List.Accordion>
-                            <View style={styles.space}></View>
-                            {/* // 3.Communication Address */}
-                            <List.Accordion
-                                id={"3"}
-                                title={"Communication Address"}
-                                titleStyle={{
-                                    color: openAccordian === "3" ? Colors.WHITE : Colors.BLACK,
-                                    fontSize: 16,
-                                    fontWeight: "600",
-                                }}
-                                style={[
-                                    {
-                                        backgroundColor:
-                                            openAccordian === "3"
-                                                ? Colors.RED
-                                                : Colors.SKY_LIGHT_BLUE_COLOR,
-                                        height: 50,
-                                    },
-                                    styles.accordianBorder,
-                                ]}
-                            >
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    value={selector.pincode}
-                                    label={"Pincode*"}
-                                    maxLength={6}
-                                    keyboardType={"phone-pad"}
-                                    onChangeText={(text) => {
-                                        // get addreess by pincode
-                                        if (text.length === 6) {
-                                            updateAddressDetails(text);
-                                        }
-                                        dispatch(
-                                            setCommunicationAddress({ key: "PINCODE", text: text })
-                                        );
-                                    }}
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
-                                <View style={styles.radioGroupBcVw}>
-                                    <RadioTextItem
-                                        label={"Urban"}
-                                        value={"urban"}
-                                        status={selector.urban_or_rural === 1 ? true : false}
-                                        onPress={() =>
-                                            dispatch(
-                                                setCommunicationAddress({
-                                                    key: "RURAL_URBAN",
-                                                    text: "1",
-                                                })
-                                            )
-                                        }
-                                    />
-                                    <RadioTextItem
-                                        label={"Rural"}
-                                        value={"rural"}
-                                        status={selector.urban_or_rural === 2 ? true : false}
-                                        onPress={() =>
-                                            dispatch(
-                                                setCommunicationAddress({
-                                                    key: "RURAL_URBAN",
-                                                    text: "2",
-                                                })
-                                            )
-                                        }
-                                    />
-                                </View>
-                                <Text style={GlobalStyle.underline}></Text>
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    value={selector.houseNum}
-                                    label={"H.No*"}
-                                    maxLength={50}
-                                    keyboardType={"default"}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setCommunicationAddress({ key: "HOUSE_NO", text: text })
-                                        )
-                                    }
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    value={selector.streetName}
-                                    label={"Street Name*"}
-                                    autoCapitalize="words"
-                                    maxLength={120}
-                                    keyboardType={"default"}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setCommunicationAddress({
-                                                key: "STREET_NAME",
-                                                text: text,
-                                            })
-                                        )
-                                    }
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
-                                {selector.isAddressSet &&
-                                    <>
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.village}
-                                            label={"Village/Town*"}
-                                            autoCapitalize="words"
-                                            maxLength={50}
-                                            keyboardType={"default"}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setCommunicationAddress({ key: "VILLAGE", text: text })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.mandal}
-                                            label={"Mandal*"}
-                                            autoCapitalize="words"
-                                            maxLength={50}
-                                            keyboardType={"default"}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setCommunicationAddress({ key: "MANDAL", text: text })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.city}
-                                            label={"City*"}
-                                            autoCapitalize="words"
-                                            maxLength={50}
-                                            keyboardType={"default"}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setCommunicationAddress({ key: "CITY", text: text })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.district}
-                                            label={"District*"}
-                                            autoCapitalize="words"
-                                            maxLength={50}
-                                            keyboardType={"default"}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setCommunicationAddress({ key: "DISTRICT", text: text })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.state}
-                                            label={"State*"}
-                                            autoCapitalize="words"
-                                            maxLength={50}
-                                            keyboardType={"default"}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setCommunicationAddress({ key: "STATE", text: text })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                    </>
-                                }
-                                <View
-                                    style={{ height: 20, backgroundColor: Colors.WHITE }}
-                                ></View>
-
-                                {/* // Permanent Addresss */}
-                                <View
-                                    style={{ backgroundColor: Colors.WHITE, paddingLeft: 12 }}
-                                >
-                                    <Text style={styles.permanentAddText}>
-                                        {"Permanent Address Same as Communication Address"}
-                                    </Text>
-                                </View>
-                                <View style={styles.radioGroupBcVw}>
-                                    <RadioTextItem
-                                        label={"Yes"}
-                                        value={"yes"}
-                                        status={
-                                            selector.is_permanent_address_same === "YES"
-                                                ? true
-                                                : false
-                                        }
-                                        onPress={() =>
-                                            dispatch(
-                                                setCommunicationAddress({
-                                                    key: "PERMANENT_ADDRESS",
-                                                    text: "true",
-                                                })
-                                            )
-                                        }
-                                    />
-                                    <RadioTextItem
-                                        label={"No"}
-                                        value={"no"}
-                                        status={
-                                            selector.is_permanent_address_same === "NO" ? true : false
-                                        }
-                                        onPress={() =>
-                                            dispatch(
-                                                setCommunicationAddress({
-                                                    key: "PERMANENT_ADDRESS",
-                                                    text: "false",
-                                                })
-                                            )
-                                        }
-                                    />
-                                </View>
-                                <Text style={GlobalStyle.underline}></Text>
-
-                                {selector.is_permanent_address_same === "NO" ? (
-                                    <View>
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.p_pincode}
-                                            label={"Pincode*"}
-                                            maxLength={6}
-                                            keyboardType={"phone-pad"}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setCommunicationAddress({
-                                                        key: "P_PINCODE",
-                                                        text: text,
-                                                    })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-
-                                        <View style={styles.radioGroupBcVw}>
-                                            <RadioTextItem
-                                                label={"Urban"}
-                                                value={"urban"}
-                                                status={selector.p_urban_or_rural === 1 ? true : false}
-                                                onPress={() =>
-                                                    dispatch(
-                                                        setCommunicationAddress({
-                                                            key: "P_RURAL_URBAN",
-                                                            text: "1",
-                                                        })
-                                                    )
-                                                }
-                                            />
-                                            <RadioTextItem
-                                                label={"Rural"}
-                                                value={"rural"}
-                                                status={selector.p_urban_or_rural === 2 ? true : false}
-                                                onPress={() =>
-                                                    dispatch(
-                                                        setCommunicationAddress({
-                                                            key: "P_RURAL_URBAN",
-                                                            text: "2",
-                                                        })
-                                                    )
-                                                }
-                                            />
-                                        </View>
-                                        <Text style={GlobalStyle.underline}></Text>
-
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            label={"H.No*"}
-                                            keyboardType={"default"}
-                                            maxLength={50}
-                                            value={selector.p_houseNum}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setCommunicationAddress({
-                                                        key: "P_HOUSE_NO",
-                                                        text: text,
-                                                    })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            label={"Street Name*"}
-                                            autoCapitalize="words"
-                                            keyboardType={"default"}
-                                            maxLength={50}
-                                            value={selector.p_streetName}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setCommunicationAddress({
-                                                        key: "P_STREET_NAME",
-                                                        text: text,
-                                                    })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.p_village}
-                                            label={"Village/Town*"}
-                                            autoCapitalize="words"
-                                            maxLength={50}
-                                            keyboardType={"default"}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setCommunicationAddress({
-                                                        key: "P_VILLAGE",
-                                                        text: text,
-                                                    })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.p_mandal}
-                                            label={"Mandal*"}
-                                            autoCapitalize="words"
-                                            maxLength={50}
-                                            keyboardType={"default"}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setCommunicationAddress({
-                                                        key: "P_MANDAL",
-                                                        text: text,
-                                                    })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.p_city}
-                                            label={"City*"}
-                                            autoCapitalize="words"
-                                            maxLength={50}
-                                            keyboardType={"default"}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setCommunicationAddress({ key: "P_CITY", text: text })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.p_district}
-                                            label={"District*"}
-                                            autoCapitalize="words"
-                                            maxLength={50}
-                                            keyboardType={"default"}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setCommunicationAddress({
-                                                        key: "P_DISTRICT",
-                                                        text: text,
-                                                    })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.p_state}
-                                            label={"State*"}
-                                            autoCapitalize="words"
-                                            maxLength={50}
-                                            keyboardType={"default"}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setCommunicationAddress({
-                                                        key: "P_STATE",
-                                                        text: text,
-                                                    })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                    </View>
-                                ) : null}
-                            </List.Accordion>
-                            <View style={styles.space}></View>
-                            {/* // 4.Model Selection */}
-                            <List.Accordion
-                                id={"4"}
-                                title={"Model Selection"}
-                                titleStyle={{
-                                    color: openAccordian === "4" ? Colors.WHITE : Colors.BLACK,
-                                    fontSize: 16,
-                                    fontWeight: "600",
-                                }}
-                                style={[
-                                    {
-                                        backgroundColor:
-                                            openAccordian === "4"
-                                                ? Colors.RED
-                                                : Colors.SKY_LIGHT_BLUE_COLOR,
-                                        height: 50,
-                                    },
-                                    styles.accordianBorder,
-                                ]}
-                            >
-                                <DropDownSelectionItem
-                                    label={"Model*"}
-                                    value={selector.model}
-                                    onPress={() =>
-                                        showDropDownModelMethod("MODEL", "Select Model")
-                                    }
-                                />
-
-                                <DropDownSelectionItem
-                                    label={"Varient*"}
-                                    value={selector.varient}
-                                    onPress={() =>
-                                        showDropDownModelMethod("VARIENT", "Select Varient")
-                                    }
-                                />
-
-                                <DropDownSelectionItem
-                                    label={"Color*"}
-                                    value={selector.color}
-                                    onPress={() =>
-                                        showDropDownModelMethod("COLOR", "Select Color")
-                                    }
-                                />
-
-                                <TextinputComp
-                                    style={{ height: 65, width: "100%" }}
-                                    label={"Fuel Type"}
-                                    editable={false}
-                                    value={selector.fuel_type}
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
-
-                                <TextinputComp
-                                    style={{ height: 65, width: "100%" }}
-                                    label={"Transmission Type"}
-                                    editable={false}
-                                    value={selector.transmission_type}
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
-                            </List.Accordion>
-                            <View style={styles.space}></View>
-                            {/* // 5. Financial Details*/}
-                            <List.Accordion
-                                id={"5"}
-                                title={"Financial Details"}
-                                titleStyle={{
-                                    color: openAccordian === "5" ? Colors.WHITE : Colors.BLACK,
-                                    fontSize: 16,
-                                    fontWeight: "600",
-                                }}
-                                style={[
-                                    {
-                                        backgroundColor:
-                                            openAccordian === "5"
-                                                ? Colors.RED
-                                                : Colors.SKY_LIGHT_BLUE_COLOR, height: 50,
-                                    },
-                                    styles.accordianBorder,
-                                ]}
-                            >
-                                <DropDownSelectionItem
-                                    label={"Retail Finance"}
-                                    value={selector.retail_finance}
-                                    onPress={() =>
-                                        showDropDownModelMethod("RETAIL_FINANCE", "Retail Finance")
-                                    }
-                                />
-
-                                {selector.retail_finance === "Out House" ? (
-                                    <View>
-                                        <TextinputComp
-                                            style={{ height: 65, width: "100%" }}
-                                            label={"Bank/Finance Name"}
-                                            keyboardType={"default"}
-                                            value={selector.bank_or_finance_name}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setFinancialDetails({
-                                                        key: "BANK_R_FINANCE_NAME",
-                                                        text: text,
-                                                    })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-
-                                        <TextinputComp
-                                            style={{ height: 65, width: "100%" }}
-                                            label={"Location"}
-                                            keyboardType={"default"}
-                                            value={selector.location}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setFinancialDetails({ key: "LOCATION", text: text })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                    </View>
-                                ) : null}
-
-                                {selector.retail_finance === "Leasing" && (
-                                    <View>
-                                        <TextinputComp
-                                            style={{ height: 65, width: "100%" }}
-                                            label={"Leasing Name"}
-                                            maxLength={50}
-                                            value={selector.leashing_name}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setFinancialDetails({
-                                                        key: "LEASHING_NAME",
-                                                        text: text,
-                                                    })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                    </View>
-                                )}
-
-                                {selector.retail_finance === "In House" && (
-                                    <DropDownSelectionItem
-                                        label={"Finance Category*"}
-                                        value={selector.finance_category}
-                                        onPress={() =>
-                                            showDropDownModelMethod(
-                                                "FINANCE_CATEGORY",
-                                                "Finance Category"
-                                            )
-                                        }
-                                    />
-                                )}
-
-                                {selector.retail_finance === "In House" && (
-                                    <View>
-                                        <TextinputComp
-                                            style={{ height: 65, width: "100%" }}
-                                            label={"Down Payment*"}
-                                            maxLength={10}
-                                            keyboardType={"numeric"}
-                                            value={selector.down_payment}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setFinancialDetails({
-                                                        key: "DOWN_PAYMENT",
-                                                        text: text,
-                                                    })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                    </View>
-                                )}
-
-                                {(selector.retail_finance === "In House" ||
-                                    selector.retail_finance === "Out House") && (
-                                        <View>
-                                            <TextinputComp
-                                                style={{ height: 65, width: "100%" }}
-                                                label={"Loan Amount*"}
-                                                keyboardType={"numeric"}
-                                                maxLength={10}
-                                                value={selector.loan_amount}
-                                                onChangeText={(text) => {
-                                                    emiCal(
-                                                        text,
-                                                        selector.loan_of_tenure,
-                                                        selector.rate_of_interest
-                                                    );
-                                                    dispatch(
-                                                        setFinancialDetails({
-                                                            key: "LOAN_AMOUNT",
-                                                            text: text,
-                                                        })
-                                                    );
-                                                }}
-                                            />
-                                            <Text style={GlobalStyle.underline}></Text>
-                                            <TextinputComp
-                                                style={{ height: 65, width: "100%" }}
-                                                label={"Rate of Interest*"}
-                                                keyboardType={"numeric"}
-                                                maxLength={10}
-                                                value={selector.rate_of_interest}
-                                                onChangeText={(text) => {
-                                                    emiCal(
-                                                        selector.loan_amount,
-                                                        selector.loan_of_tenure,
-                                                        text
-                                                    );
-                                                    dispatch(
-                                                        setFinancialDetails({
-                                                            key: "RATE_OF_INTEREST",
-                                                            text: text,
-                                                        })
-                                                    );
-                                                }}
-                                            />
-                                            <Text style={GlobalStyle.underline}></Text>
-                                        </View>
-                                    )}
-
-                                {selector.retail_finance === "In House" && (
-                                    <View>
-                                        <DropDownSelectionItem
-                                            label={"Bank/Financer"}
-                                            value={selector.bank_or_finance}
-                                            onPress={() =>
-                                                showDropDownModelMethod("BANK_FINANCE", "Bank/Financer")
-                                            }
-                                        />
-
-                                        <TextinputComp
-                                            style={{ height: 65, width: "100%" }}
-                                            label={"Loan of Tenure(Months)"}
-                                            keyboardType={"numeric"}
-                                            maxLength={3}
-                                            value={selector.loan_of_tenure}
-                                            onChangeText={(text) => {
-                                                emiCal(
-                                                    selector.loan_amount,
-                                                    text,
-                                                    selector.rate_of_interest
-                                                );
-                                                dispatch(
-                                                    setFinancialDetails({
-                                                        key: "LOAN_OF_TENURE",
-                                                        text: text,
-                                                    })
-                                                );
-                                            }}
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-
-                                        <TextinputComp
-                                            style={{ height: 65, width: "100%" }}
-                                            label={"EMI*"}
-                                            keyboardType={"default"}
-                                            value={selector.emi}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setFinancialDetails({ key: "EMI", text: text })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-
-                                        <DropDownSelectionItem
-                                            label={"Approx Annual Income"}
-                                            value={selector.approx_annual_income}
-                                            onPress={() =>
-                                                showDropDownModelMethod(
-                                                    "APPROX_ANNUAL_INCOME",
-                                                    "Approx Annual Income"
-                                                )
-                                            }
-                                        />
-                                    </View>
-                                )}
-                            </List.Accordion>
-                            <View style={styles.space}></View>
-                            {/* // 6.Upload Documents */}
-                            <List.Accordion
-                                id={"6"}
-                                title={"Upload Documents"}
-                                titleStyle={{
-                                    color: openAccordian === "6" ? Colors.WHITE : Colors.BLACK,
-                                    fontSize: 16,
-                                    fontWeight: "600",
-                                }}
-                                style={[
-                                    {
-                                        backgroundColor:
-                                            openAccordian === "6"
-                                                ? Colors.RED
-                                                : Colors.SKY_LIGHT_BLUE_COLOR,
-                                        height: 50,
-                                    },
-                                    styles.accordianBorder,
-                                ]}
-                            >
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    value={selector.pan_number}
-                                    label={"Pan Number"}
-                                    keyboardType={"default"}
-                                    maxLength={10}
-                                    autoCapitalize={"characters"}
-                                    onChangeText={(text) => {
-                                        dispatch(setUploadDocuments({ key: "PAN", text: text }));
-                                    }}
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
-                                <View style={styles.select_image_bck_vw}>
-                                    <ImageSelectItem
-                                        name={"Upload Pan"}
-                                        onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
-                                    />
-                                </View>
-                                {uploadedImagesDataObj?.pan?.fileName ? (
-                                    <DisplaySelectedImage
-                                        fileName={uploadedImagesDataObj.pan.fileName}
-                                        from={"PAN"}
-                                    />
-                                ) : null}
-
-                                {/* // Adhal Number */}
-                                {(selector.enquiry_segment.toLowerCase() === "personal") ? (
-                                    <View>
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.adhaar_number}
-                                            label={"Aadhaar Number"}
-                                            keyboardType={"phone-pad"}
-                                            maxLength={12}
-                                            onChangeText={(text) =>
-                                                dispatch(setUploadDocuments({ key: "ADHAR", text: text }))
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                        <View style={styles.select_image_bck_vw}>
-                                            <ImageSelectItem
-                                                name={"Upload Adhar"}
-                                                onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
-                                            />
-                                        </View>
-                                        {uploadedImagesDataObj?.aadhar?.fileName ? (
-                                            <DisplaySelectedImage
-                                                fileName={uploadedImagesDataObj.aadhar.fileName}
-                                                from={"AADHAR"}
-                                            />
-                                        ) : null}
-                                    </View>
-                                ) : null}
-
-                                {/* // Employeed ID */}
-                                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "corporate" || selector.customer_type.toLowerCase() === "government" || selector.customer_type.toLowerCase() === "retired")) ? (
-                                    <View >
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.employee_id}
-                                            label={"Employee ID*"}
-                                            maxLength={15}
-                                            onChangeText={(text) =>
-                                                dispatch(setUploadDocuments({ key: "EMPLOYEE_ID", text: text }))
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                        <View style={styles.select_image_bck_vw}>
-                                            <ImageSelectItem
-                                                name={"Employee ID"}
-                                                onPress={() => dispatch(setImagePicker("UPLOAD_EMPLOYEE_ID"))}
-                                            />
-                                        </View>
-                                        {uploadedImagesDataObj?.empId?.fileName ? (
-                                            <DisplaySelectedImage
-                                                fileName={uploadedImagesDataObj.empId.fileName}
-                                                from={"EMPLOYEE_ID"}
-                                            />
-                                        ) : null}
-                                    </View>
-                                ) : null}
-
-                                {/* Last 3 month payslip */}
-                                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "corporate" || selector.customer_type.toLowerCase() === "government")) ? (
-                                    <View >
-                                        <View style={styles.select_image_bck_vw}>
-                                            <ImageSelectItem
-                                                name={"Last 3 months payslip"}
-                                                onPress={() => dispatch(setImagePicker("UPLOAD_3_MONTHS_PAYSLIP"))}
-                                            />
-                                        </View>
-                                        {uploadedImagesDataObj.payslip ? (
-                                            <DisplaySelectedImage
-                                                fileName={uploadedImagesDataObj.payslip.fileName}
-                                                from={"3_MONTHS_PAYSLIP"}
-                                            />
-                                        ) : null}
-                                    </View>
-                                ) : null}
-
-                                {/* Patta Pass book */}
-                                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "farmer")) ? (
-                                    <View >
-                                        <View style={styles.select_image_bck_vw}>
-                                            <ImageSelectItem
-                                                name={"Patta Pass Book"}
-                                                onPress={() => dispatch(setImagePicker("UPLOAD_PATTA_PASS_BOOK"))}
-                                            />
-                                        </View>
-                                        {uploadedImagesDataObj.passbook ? (
-                                            <DisplaySelectedImage
-                                                fileName={uploadedImagesDataObj.passbook.fileName}
-                                                from={"PATTA_PASS_BOOK"}
-                                            />
-                                        ) : null}
-                                    </View>
-                                ) : null}
-
-                                {/* Pension Letter */}
-                                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "retired")) ? (
-                                    <View >
-                                        <View style={styles.select_image_bck_vw}>
-                                            <ImageSelectItem
-                                                name={"Pension Letter"}
-                                                onPress={() => dispatch(setImagePicker("UPLOAD_PENSION_LETTER"))}
-                                            />
-                                        </View>
-                                        {uploadedImagesDataObj.pension ? (
-                                            <DisplaySelectedImage
-                                                fileName={uploadedImagesDataObj.pension.fileName}
-                                                from={"PENSION_LETTER"}
-                                            />
-                                        ) : null}
-                                    </View>
-                                ) : null}
-
-                                {/* IMA Certificate */}
-                                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "doctor")) ? (
-                                    <View >
-                                        <View style={styles.select_image_bck_vw}>
-                                            <ImageSelectItem
-                                                name={"IMA Certificate"}
-                                                onPress={() => dispatch(setImagePicker("UPLOAD_IMA_CERTIFICATE"))}
-                                            />
-                                        </View>
-                                        {uploadedImagesDataObj.imaCertificate ? (
-                                            <DisplaySelectedImage
-                                                fileName={uploadedImagesDataObj.imaCertificate.fileName}
-                                                from={"IMA_CERTIFICATE"}
-                                            />
-                                        ) : null}
-                                    </View>
-                                ) : null}
-
-                                {/* Leasing Confirmation */}
-                                {(selector.enquiry_segment.toLowerCase() === "commercial" && (selector.customer_type.toLowerCase() === "fleet")) ? (
-                                    <View >
-                                        <View style={styles.select_image_bck_vw}>
-                                            <ImageSelectItem
-                                                name={"Leasing Confirmation"}
-                                                onPress={() => dispatch(setImagePicker("UPLOAD_LEASING_CONFIRMATION"))}
-                                            />
-                                        </View>
-                                        {uploadedImagesDataObj.leasingConfirm ? (
-                                            <DisplaySelectedImage
-                                                fileName={uploadedImagesDataObj.leasingConfirm.fileName}
-                                                from={"LEASING_CONFIRMATION"}
-                                            />
-                                        ) : null}
-                                    </View>
-                                ) : null}
-
-                                {/* Address Proof */}
-                                {(selector.enquiry_segment.toLowerCase() === "company" && (selector.customer_type.toLowerCase() === "institution")) ? (
-                                    <View >
-                                        <View style={styles.select_image_bck_vw}>
-                                            <ImageSelectItem
-                                                name={"Address Proof"}
-                                                onPress={() => dispatch(setImagePicker("UPLOAD_ADDRESS_PROOF"))}
-                                            />
-                                        </View>
-                                        {uploadedImagesDataObj.address ? (
-                                            <DisplaySelectedImage
-                                                fileName={uploadedImagesDataObj.address.fileName}
-                                                from={"ADDRESS_PROOF"}
-                                            />
-                                        ) : null}
-                                    </View>
-                                ) : null}
-
-                                {/* GSTIN Number */}
-                                {(selector.enquiry_segment.toLowerCase() === "company" && (selector.customer_type.toLowerCase() === "institution")) ? (
-                                    <View >
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.gstin_number}
-                                            label={"GSTIN Number"}
-                                            maxLength={30}
-                                            onChangeText={(text) =>
-                                                dispatch(setUploadDocuments({ key: "GSTIN_NUMBER", text: text }))
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                    </View>
-                                ) : null}
-
-                            </List.Accordion>
-                            <View style={styles.space}></View>
-                            {/* // 7.Customer Need Analysis */}
-                            <List.Accordion
-                                id={"7"}
-                                title={"Customer Need Analysis"}
-                                titleStyle={{
-                                    color: openAccordian === "7" ? Colors.WHITE : Colors.BLACK,
-                                    fontSize: 16,
-                                    fontWeight: "600",
-                                }}
-                                style={[
-                                    {
-                                        backgroundColor:
-                                            openAccordian === "7"
-                                                ? Colors.RED
-                                                : Colors.SKY_LIGHT_BLUE_COLOR,
-                                        height: 50,
-                                    },
-                                    styles.accordianBorder,
-                                ]}
-                            >
-                                <View style={styles.view2}>
-                                    <Text style={styles.looking_any_text}>
-                                        {"Looking for any other brand"}
-                                    </Text>
-                                    <Checkbox.Android
-                                        status={
-                                            selector.c_looking_for_any_other_brand_checked
-                                                ? "checked"
-                                                : "unchecked"
-                                        }
-                                        uncheckedColor={Colors.DARK_GRAY}
-                                        color={Colors.RED}
-                                        onPress={() =>
-                                            dispatch(
-                                                setCustomerNeedAnalysis({ key: "CHECK_BOX", text: "" })
-                                            )
-                                        }
-                                    />
-                                </View>
-
-                                {selector.c_looking_for_any_other_brand_checked && (
-                                    <View>
-                                        <DropDownSelectionItem
-                                            label={"Make"}
-                                            value={selector.c_make}
-                                            onPress={() => showDropDownModelMethod("C_MAKE", "Make")}
-                                        />
-                                        {selector.c_make === "Other" && (
-                                            <View>
-                                                <TextinputComp
-                                                    style={{ height: 65, width: "100%" }}
-                                                    label={"Make Other Name"}
-                                                    editable={true}
-                                                    maxLength={50}
-                                                    value={selector.c_make_other_name}
-                                                    onChangeText={(text) =>
-                                                        dispatch(
-                                                            setCustomerNeedAnalysis({
-                                                                key: "C_MAKE_OTHER_NAME",
-                                                                text: text,
-                                                            })
-                                                        )
-                                                    }
-                                                />
-                                                <Text style={GlobalStyle.underline}></Text>
-                                            </View>
-                                        )}
-                                        <DropDownSelectionItem
-                                            label={"Model"}
-                                            value={selector.c_model}
-                                            onPress={() =>
-                                                showDropDownModelMethod("C_MODEL", "Model")
-                                            }
-                                        />
-                                        {selector.c_model === "Other" && (
-                                            <View>
-                                                <TextinputComp
-                                                    style={{ height: 65, width: "100%" }}
-                                                    label={"Model Other Name"}
-                                                    editable={true}
-                                                    value={selector.c_model_other_name}
-                                                    onChangeText={(text) =>
-                                                        dispatch(
-                                                            setCustomerNeedAnalysis({
-                                                                key: "C_MODEL_OTHER_NAME",
-                                                                text: text,
-                                                            })
-                                                        )
-                                                    }
-                                                />
-                                                <Text style={GlobalStyle.underline}></Text>
-                                            </View>
-                                        )}
-
-                                        <TextinputComp
-                                            style={{ height: 65, width: "100%" }}
-                                            label={"Variant"}
-                                            editable={true}
-                                            maxLength={40}
-                                            value={selector.c_variant}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setCustomerNeedAnalysis({
-                                                        key: "C_VARIANT",
-                                                        text: text,
-                                                    })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-
-                                        <TextinputComp
-                                            style={{ height: 65, width: "100%" }}
-                                            label={"Color"}
-                                            autoCapitalize="words"
-                                            editable={true}
-                                            maxLength={40}
-                                            value={selector.c_color}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setCustomerNeedAnalysis({
-                                                        key: "C_COLOR",
-                                                        text: text,
-                                                    })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-
-                                        <DropDownSelectionItem
-                                            label={"Fuel Type"}
-                                            value={selector.c_fuel_type}
-                                            onPress={() =>
-                                                showDropDownModelMethod("C_FUEL_TYPE", "Variant")
-                                            }
-                                        />
-                                        <DropDownSelectionItem
-                                            label={"Transmission Type"}
-                                            value={selector.c_transmission_type}
-                                            onPress={() =>
-                                                showDropDownModelMethod("C_TRANSMISSION_TYPE", "Color")
-                                            }
-                                        />
-
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.c_price_range}
-                                            label={"Price Range"}
-                                            keyboardType={"number-pad"}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setCustomerNeedAnalysis({
-                                                        key: "PRICE_RANGE",
-                                                        text: text,
-                                                    })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.c_on_road_price}
-                                            label={"On Road Price"}
-                                            keyboardType={"number-pad"}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setCustomerNeedAnalysis({
-                                                        key: "ON_ROAD_PRICE",
-                                                        text: text,
-                                                    })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.c_dealership_name}
-                                            label={"DealerShip Name"}
-                                            autoCapitalize="words"
-                                            keyboardType={"default"}
-                                            maxLength={50}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setCustomerNeedAnalysis({
-                                                        key: "DEALERSHIP_NAME",
-                                                        text: text,
-                                                    })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.c_dealership_location}
-                                            label={"DealerShip Location"}
-                                            autoCapitalize="words"
-                                            keyboardType={"default"}
-                                            maxLength={50}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setCustomerNeedAnalysis({
-                                                        key: "DEALERSHIP_LOCATION",
-                                                        text: text,
-                                                    })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.c_dealership_pending_reason}
-                                            label={"Dealership Pending Reason"}
-                                            autoCapitalize="words"
-                                            keyboardType={"default"}
-                                            maxLength={50}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setCustomerNeedAnalysis({
-                                                        key: "DEALERSHIP_PENDING_REASON",
-                                                        text: text,
-                                                    })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                    </View>
-                                )}
-
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    value={selector.c_voice_of_customer_remarks}
-                                    label={"Voice of Customer Remarks "}
-                                    autoCapitalize="words"
-                                    keyboardType={"default"}
-                                    maxLength={50}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setCustomerNeedAnalysis({
-                                                key: "VOICE_OF_CUSTOMER_REMARKS",
-                                                text: text,
-                                            })
-                                        )
-                                    }
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
-                            </List.Accordion>
-                            {selector.buyer_type == "Additional Buyer" ||
-                                selector.buyer_type == "Replacement Buyer" ? (
-                                <View style={styles.space}></View>
-                            ) : null}
-                            {/* // 8.Additional Buyer */}
-                            {selector.buyer_type == "Additional Buyer" ? (
-                                <List.Accordion
-                                    id={"8"}
-                                    title={"Additional Buyer"}
-                                    titleStyle={{
-                                        color: openAccordian === "8" ? Colors.WHITE : Colors.BLACK,
-                                        fontSize: 16,
-                                        fontWeight: "600",
-                                    }}
-                                    style={[
-                                        {
-                                            backgroundColor:
-                                                openAccordian === "8"
-                                                    ? Colors.RED
-                                                    : Colors.SKY_LIGHT_BLUE_COLOR,
-                                            height: 50,
-                                        },
-                                        styles.accordianBorder,
-                                    ]}
-                                >
-                                    <DropDownSelectionItem
-                                        label={"Make"}
-                                        value={selector.a_make}
-                                        onPress={() => showDropDownModelMethod("A_MAKE", "Make")}
-                                    />
-                                    {selector.a_make === "Other" && (
-                                        <View>
-                                            <TextinputComp
-                                                style={{ height: 65, width: "100%" }}
-                                                label={"Make Other Name"}
-                                                editable={true}
-                                                maxLength={50}
-                                                value={selector.a_make_other_name}
-                                                onChangeText={(text) =>
-                                                    dispatch(
-                                                        setAdditionalBuyerDetails({
-                                                            key: "A_MAKE_OTHER_NAME",
-                                                            text: text,
-                                                        })
-                                                    )
-                                                }
-                                            />
-                                            <Text style={GlobalStyle.underline}></Text>
-                                        </View>
-                                    )}
-                                    <DropDownSelectionItem
-                                        label={"Model"}
-                                        value={selector.a_model}
-                                        onPress={() => showDropDownModelMethod("A_MODEL", "Model")}
-                                    />
-                                    {selector.a_model === "Other" && (
-                                        <View>
-                                            <TextinputComp
-                                                style={{ height: 65, width: "100%" }}
-                                                label={"Model Other Name"}
-                                                editable={true}
-                                                maxLength={50}
-                                                value={selector.a_model_other_name}
-                                                onChangeText={(text) =>
-                                                    dispatch(
-                                                        setAdditionalBuyerDetails({
-                                                            key: "A_MODEL_OTHER_NAME",
-                                                            text: text,
-                                                        })
-                                                    )
-                                                }
-                                            />
-                                            <Text style={GlobalStyle.underline}></Text>
-                                        </View>
-                                    )}
-
-                                    <TextinputComp
-                                        style={styles.textInputStyle}
-                                        value={selector.a_varient}
-                                        label={"Varient"}
-                                        maxLength={50}
-                                        onChangeText={(text) =>
-                                            dispatch(
-                                                setAdditionalBuyerDetails({
-                                                    key: "A_VARIENT",
-                                                    text: text,
-                                                })
-                                            )
-                                        }
-                                    />
-                                    <Text style={GlobalStyle.underline}></Text>
-                                    <TextinputComp
-                                        style={styles.textInputStyle}
-                                        value={selector.a_color}
-                                        label={"Color"}
-                                        maxLength={50}
-                                        onChangeText={(text) =>
-                                            dispatch(
-                                                setAdditionalBuyerDetails({
-                                                    key: "A_COLOR",
-                                                    text: text,
-                                                })
-                                            )
-                                        }
-                                    />
-                                    <Text style={GlobalStyle.underline}></Text>
-                                    <TextinputComp
-                                        style={styles.textInputStyle}
-                                        value={selector.a_reg_no}
-                                        label={"Reg. No."}
-                                        maxLength={50}
-                                        keyboardType={"default"}
-                                        onChangeText={(text) =>
-                                            dispatch(
-                                                setAdditionalBuyerDetails({
-                                                    key: "A_REG_NO",
-                                                    text: text,
-                                                })
-                                            )
-                                        }
-                                    />
-                                    <Text style={GlobalStyle.underline}></Text>
-                                </List.Accordion>
-                            ) : null}
-
-                            {/* // 9.Replacement Buyer */}
-                            {selector.buyer_type == "Replacement Buyer" ? (
-                                <List.Accordion
-                                    id={"9"}
-                                    title={"Replacement Buyer"}
-                                    titleStyle={{
-                                        color: openAccordian === "9" ? Colors.WHITE : Colors.BLACK,
-                                        fontSize: 16,
-                                        fontWeight: "600",
-                                    }}
-                                    style={[
-                                        {
-                                            backgroundColor:
-                                                openAccordian === "9"
-                                                    ? Colors.RED
-                                                    : Colors.SKY_LIGHT_BLUE_COLOR,
-                                            height: 50,
-                                        },
-                                        styles.accordianBorder,
-                                    ]}
-                                >
-                                    <TextinputComp
-                                        style={styles.textInputStyle}
-                                        value={selector.r_reg_no}
-                                        label={"Reg. No."}
-                                        maxLength={50}
-                                        keyboardType={"default"}
-                                        autoCapitalize={"characters"}
-                                        onChangeText={(text) =>
-                                            dispatch(
-                                                setReplacementBuyerDetails({
-                                                    key: "R_REG_NO",
-                                                    text: text,
-                                                })
-                                            )
-                                        }
-                                    />
-                                    <Text style={GlobalStyle.underline}></Text>
-                                    <View style={styles.select_image_bck_vw}>
-                                        <ImageSelectItem
-                                            name={"Upload Reg Doc"}
-                                            onPress={() => dispatch(setImagePicker("UPLOAD_REG_DOC"))}
-                                        />
-                                    </View>
-                                    {uploadedImagesDataObj.REGDOC ? (
-                                        <DisplaySelectedImage
-                                            fileName={uploadedImagesDataObj.REGDOC.fileName}
-                                            from={"REGDOC"}
-                                        />
-                                    ) : null}
-                                    <DropDownSelectionItem
-                                        label={"Make"}
-                                        value={selector.r_make}
-                                        onPress={() => showDropDownModelMethod("R_MAKE", "Make")}
-                                    />
-                                    {selector.r_make === "Other" && (
-                                        <View>
-                                            <TextinputComp
-                                                style={{ height: 65, width: "100%" }}
-                                                label={"Make Other Name"}
-                                                editable={true}
-                                                maxLength={50}
-                                                value={selector.r_make_other_name}
-                                                onChangeText={(text) =>
-                                                    dispatch(
-                                                        setReplacementBuyerDetails({
-                                                            key: "R_MAKE_OTHER_NAME",
-                                                            text: text,
-                                                        })
-                                                    )
-                                                }
-                                            />
-                                            <Text style={GlobalStyle.underline}></Text>
-                                        </View>
-                                    )}
-                                    <DropDownSelectionItem
-                                        label={"Model"}
-                                        value={selector.r_model}
-                                        onPress={() => showDropDownModelMethod("R_MODEL", "Model")}
-                                    />
-                                    {selector.r_model === "Other" && (
-                                        <View>
-                                            <TextinputComp
-                                                style={{ height: 65, width: "100%" }}
-                                                label={"Model Other Name"}
-                                                editable={true}
-                                                maxLength={50}
-                                                value={selector.r_model_other_name}
-                                                onChangeText={(text) =>
-                                                    dispatch(
-                                                        setReplacementBuyerDetails({
-                                                            key: "R_MODEL_OTHER_NAME",
-                                                            text: text,
-                                                        })
-                                                    )
-                                                }
-                                            />
-                                            <Text style={GlobalStyle.underline}></Text>
-                                        </View>
-                                    )}
-
-                                    <TextinputComp
-                                        style={{ height: 65, width: "100%" }}
-                                        label={"Varient"}
-                                        editable={true}
-                                        value={selector.r_varient}
-                                        maxLength={50}
-                                        onChangeText={(text) =>
-                                            dispatch(
-                                                setReplacementBuyerDetails({
-                                                    key: "R_VARIENT",
-                                                    text: text,
-                                                })
-                                            )
-                                        }
-                                    />
-                                    <Text style={GlobalStyle.underline}></Text>
-
-                                    <TextinputComp
-                                        style={{ height: 65, width: "100%" }}
-                                        label={"Color"}
-                                        editable={true}
-                                        maxLength={50}
-                                        value={selector.r_color}
-                                        onChangeText={(text) =>
-                                            dispatch(
-                                                setReplacementBuyerDetails({
-                                                    key: "R_COLOR",
-                                                    text: text,
-                                                })
-                                            )
-                                        }
-                                    />
-                                    <Text style={GlobalStyle.underline}></Text>
-
-                                    <DropDownSelectionItem
-                                        label={"Fuel Type"}
-                                        value={selector.r_fuel_type}
-                                        onPress={() =>
-                                            showDropDownModelMethod("R_FUEL_TYPE", "Fuel Type")
-                                        }
-                                    />
-                                    <DropDownSelectionItem
-                                        label={"Transmission Type"}
-                                        value={selector.r_transmission_type}
-                                        onPress={() =>
-                                            showDropDownModelMethod(
-                                                "R_TRANSMISSION_TYPE",
-                                                "Transmission Type"
-                                            )
-                                        }
-                                    />
-
-                                    <DateSelectItem
-                                        label={"Mth.Yr. of MFG"}
-                                        value={selector.r_mfg_year}
-                                        onPress={() => dispatch(setDatePicker("R_MFG_YEAR"))}
-                                    />
-                                    <TextinputComp
-                                        style={styles.textInputStyle}
-                                        value={selector.r_kms_driven_or_odometer_reading}
-                                        label={"Kms-Driven/Odometer Reading"}
-                                        keyboardType={"number-pad"}
-                                        maxLength={7}
-                                        onChangeText={(text) =>
-                                            dispatch(
-                                                setReplacementBuyerDetails({
-                                                    key: "R_KMS_DRIVEN_OR_ODOMETER_READING",
-                                                    text: text,
-                                                })
-                                            )
-                                        }
-                                    />
-                                    <Text style={GlobalStyle.underline}></Text>
-
-                                    <View style={styles.view2}>
-                                        <Text style={styles.looking_any_text}>
-                                            {"Hypothication"}
-                                        </Text>
-                                        <Checkbox.Android
-                                            status={
-                                                selector.r_hypothication_checked
-                                                    ? "checked"
-                                                    : "unchecked"
-                                            }
-                                            uncheckedColor={Colors.DARK_GRAY}
-                                            color={Colors.RED}
-                                            onPress={() =>
-                                                dispatch(
-                                                    setReplacementBuyerDetails({
-                                                        key: "R_HYPOTHICATION_CHECKED",
-                                                        text: "",
-                                                    })
-                                                )
-                                            }
-                                        />
-                                    </View>
-
-                                    {selector.r_hypothication_checked && (
-                                        <View>
-                                            <TextinputComp
-                                                style={styles.textInputStyle}
-                                                value={selector.r_hypothication_name}
-                                                label={"Hypothication Name"}
-                                                keyboardType={"default"}
-                                                maxLength={50}
-                                                onChangeText={(text) =>
-                                                    dispatch(
-                                                        setReplacementBuyerDetails({
-                                                            key: "R_HYPOTHICATION_NAME",
-                                                            text: text,
-                                                        })
-                                                    )
-                                                }
-                                            />
-                                            <Text style={GlobalStyle.underline}></Text>
-                                            <TextinputComp
-                                                style={styles.textInputStyle}
-                                                value={selector.r_hypothication_branch}
-                                                label={"Hypothication Branch"}
-                                                keyboardType={"default"}
-                                                maxLength={50}
-                                                onChangeText={(text) =>
-                                                    dispatch(
-                                                        setReplacementBuyerDetails({
-                                                            key: "R_HYPOTHICATION_BRANCH",
-                                                            text: text,
-                                                        })
-                                                    )
-                                                }
-                                            />
-                                            <Text style={GlobalStyle.underline}></Text>
-                                        </View>
-                                    )}
-
-                                    <TextinputComp
-                                        style={styles.textInputStyle}
-                                        value={selector.r_expected_price}
-                                        label={"Expected Price"}
-                                        keyboardType={"number-pad"}
-                                        onChangeText={(text) =>
-                                            dispatch(
-                                                setReplacementBuyerDetails({
-                                                    key: "R_EXP_PRICE",
-                                                    text: text,
-                                                })
-                                            )
-                                        }
-                                    />
-                                    <Text style={GlobalStyle.underline}></Text>
-                                    <DateSelectItem
-                                        label={"Registration Date"}
-                                        value={selector.r_registration_date}
-                                        onPress={() => dispatch(setDatePicker("R_REG_DATE"))}
-                                    />
-                                    <DateSelectItem
-                                        label={"Registration Validity Date"}
-                                        value={selector.r_registration_validity_date}
-                                        onPress={() =>
-                                            dispatch(setDatePicker("R_REG_VALIDITY_DATE"))
-                                        }
-                                    />
-                                    <View style={styles.view2}>
-                                        <Text style={styles.looking_any_text}>{"Insurance"}</Text>
-                                        <Checkbox.Android
-                                            status={
-                                                selector.r_insurence_checked ? "checked" : "unchecked"
-                                            }
-                                            uncheckedColor={Colors.DARK_GRAY}
-                                            color={Colors.RED}
-                                            onPress={() =>
-                                                dispatch(
-                                                    setReplacementBuyerDetails({
-                                                        key: "R_INSURENCE_CHECKED",
-                                                        text: "",
-                                                    })
-                                                )
-                                            }
-                                        />
-                                    </View>
-                                    {selector.r_insurence_checked && (
-                                        <View>
-                                            <View style={styles.view2}>
-                                                <Text style={styles.looking_any_text}>
-                                                    {"Insurance Document"}
-                                                </Text>
-                                                <Checkbox.Android
-                                                    status={
-                                                        selector.r_insurence_document_checked
-                                                            ? "checked"
-                                                            : "unchecked"
-                                                    }
-                                                    uncheckedColor={Colors.DARK_GRAY}
-                                                    color={Colors.RED}
-                                                    onPress={() =>
-                                                        dispatch(
-                                                            setReplacementBuyerDetails({
-                                                                key: "R_INSURENCE_DOC_CHECKED",
-                                                                text: "",
-                                                            })
-                                                        )
-                                                    }
-                                                />
-                                            </View>
-                                        </View>
-                                    )}
-                                    {selector.r_insurence_document_checked && (
-                                        <View>
-                                            <View style={styles.select_image_bck_vw}>
-                                                <ImageSelectItem
-                                                    name={"Upload Insurence"}
-                                                    onPress={() =>
-                                                        dispatch(setImagePicker("UPLOAD_INSURENCE"))
-                                                    }
-                                                />
-                                            </View>
-                                            {uploadedImagesDataObj.insurance ? (
-                                                <DisplaySelectedImage
-                                                    fileName={uploadedImagesDataObj.insurance.fileName}
-                                                    from={"INSURENCE"}
-                                                />
-                                            ) : null}
-                                        </View>
-                                    )}
-
-                                    {!selector.r_insurence_checked && (
-                                        <View>
-                                            <DateSelectItem
-                                                label={"Insurance Policy Expiry Date"}
-                                                value={selector.r_insurence_expiry_date}
-                                                onPress={() =>
-                                                    dispatch(
-                                                        setDatePicker("R_INSURENCE_POLICIY_EXPIRY_DATE")
-                                                    )
-                                                }
-                                            />
-                                        </View>
-                                    )}
-                                    {selector.r_insurence_checked &&
-                                        !selector.r_insurence_document_checked && (
-                                            <View>
-                                                <DropDownSelectionItem
-                                                    label={"Insurance Type"}
-                                                    value={selector.r_insurence_type}
-                                                    onPress={() =>
-                                                        showDropDownModelMethod(
-                                                            "R_INSURENCE_TYPE",
-                                                            "Insurance Type"
-                                                        )
-                                                    }
-                                                />
-                                                <DateSelectItem
-                                                    label={"Insurance From Date"}
-                                                    value={selector.r_insurence_from_date}
-                                                    onPress={() =>
-                                                        dispatch(setDatePicker("R_INSURENCE_FROM_DATE"))
-                                                    }
-                                                />
-                                                <DateSelectItem
-                                                    label={"Insurance To Date"}
-                                                    value={selector.r_insurence_to_date}
-                                                    onPress={() =>
-                                                        dispatch(setDatePicker("R_INSURENCE_TO_DATE"))
-                                                    }
-                                                />
-                                            </View>
-                                        )}
-
-                                    {!selector.r_insurence_document_checked && (
-                                        <View>
-                                            <DropDownSelectionItem
-                                                label={"Insurance Company Name"}
-                                                value={selector.r_insurence_company_name}
-                                                onPress={() =>
-                                                    showDropDownModelMethod(
-                                                        "R_INSURENCE_COMPANY_NAME",
-                                                        "Insurence Company Name"
-                                                    )
-                                                }
-                                            />
-                                            {/* <TextinputComp
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.occupation}
+                    autoCapitalize="words"
+                    label={"Occupation*"}
+                    keyboardType={"default"}
+                    maxLength={40}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCustomerProfile({ key: "OCCUPATION", text: text })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.designation}
+                    autoCapitalize="words"
+                    label={"Designation*"}
+                    keyboardType={"default"}
+                    maxLength={40}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCustomerProfile({ key: "DESIGNATION", text: text })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+
+                  <DropDownSelectionItem
+                    label={"Enquiry Segment*"}
+                    // disabled={!selector.enableEdit}
+                    value={selector.enquiry_segment}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "ENQUIRY_SEGMENT",
+                        "Select Enquiry Segment"
+                      )
+                    }
+                  />
+
+                  <DropDownSelectionItem
+                    label={"Customer Type"}
+                    // disabled={!selector.enableEdit}
+                    value={selector.customer_type}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "CUSTOMER_TYPE",
+                        "Select Customer Type"
+                      )
+                    }
+                  />
+
+                  {selector.customer_type.toLowerCase() === "fleet" ||
+                  selector.customer_type.toLowerCase() === "institution" ||
+                  selector.customer_type.toLowerCase() === "corporate" ||
+                  selector.customer_type.toLowerCase() === "government" ||
+                  selector.customer_type.toLowerCase() === "retired" ||
+                  selector.customer_type.toLowerCase() === "other" ? (
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.company_name}
+                        label={"Company Name"}
+                        autoCapitalize="words"
+                        keyboardType={"default"}
+                        maxLength={50}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCustomerProfile({
+                              key: "COMPANY_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  ) : null}
+
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.source_of_enquiry}
+                    label={"Source Of Enquiry"}
+                    editable={false}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+
+                  {selector.source_of_enquiry.toLowerCase() === "event" && (
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.event_code}
+                        label={"Event Code"}
+                        editable={false}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
+
+                  {(selector.source_of_enquiry
+                    .toLowerCase()
+                    .trim()
+                    .replace(/ /g, "") === "digitalmarketing" ||
+                    selector.source_of_enquiry
+                      .toLowerCase()
+                      .trim()
+                      .replace(/ /g, "") === "socialnetwork") && (
+                    <View>
+                      <DropDownSelectionItem
+                        label={"Sub Source Of Enquiry"}
+                        value={selector.sub_source_of_enquiry}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "SUB_SOURCE_OF_ENQUIRY",
+                            "Sub Source Of Enquiry"
+                          )
+                        }
+                      />
+                    </View>
+                  )}
+
+                  {selector.source_of_enquiry.toLowerCase() === "reference" && (
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.rf_by_first_name}
+                        label={"Referred BY First Name"}
+                        keyboardType={"default"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCustomerProfile({
+                              key: "RF_FIRST_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.rf_by_last_name}
+                        label={"Referred BY Last Name"}
+                        keyboardType={"default"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCustomerProfile({
+                              key: "RF_LAST_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.rf_by_mobile}
+                        label={"Referred BY Mobile"}
+                        keyboardType={"number-pad"}
+                        maxLength={10}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCustomerProfile({ key: "RF_MOBILE", text: text })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <DropDownSelectionItem
+                        label={"Referred BY Source"}
+                        value={selector.rf_by_source}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "RF_SOURCE",
+                            "Referred BY Source"
+                          )
+                        }
+                      />
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.rf_by_source_location}
+                        label={"Referred BY Source Location"}
+                        keyboardType={"default"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCustomerProfile({
+                              key: "RF_SOURCE_LOCATION",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
+
+                  <DateSelectItem
+                    label={"Expected Delivery Date"}
+                    value={selector.expected_delivery_date}
+                    onPress={() =>
+                      dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
+                    }
+                  />
+
+                  <DropDownSelectionItem
+                    label={"Enquiry Category"}
+                    disabled={true}
+                    value={selector.enquiry_category}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "ENQUIRY_CATEGORY",
+                        "Enquiry Category"
+                      )
+                    }
+                  />
+
+                  <DropDownSelectionItem
+                    label={"Buyer Type"}
+                    value={selector.buyer_type}
+                    onPress={() =>
+                      showDropDownModelMethod("BUYER_TYPE", "Buyer Type")
+                    }
+                  />
+
+                  <DropDownSelectionItem
+                    label={"KMs Travelled in Month"}
+                    value={selector.kms_travelled_month}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "KMS_TRAVELLED",
+                        "KMs Travelled in Month"
+                      )
+                    }
+                  />
+
+                  <DropDownSelectionItem
+                    label={"Who Drives"}
+                    value={selector.who_drives}
+                    onPress={() =>
+                      showDropDownModelMethod("WHO_DRIVES", "Who Drives")
+                    }
+                  />
+
+                  <DropDownSelectionItem
+                    label={"How many members in your family?"}
+                    value={selector.members}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "MEMBERS",
+                        "How many members in your family?"
+                      )
+                    }
+                  />
+
+                  <DropDownSelectionItem
+                    label={"What is prime expectation from the car?"}
+                    value={selector.prime_expectation_from_car}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "PRIME_EXPECTATION_CAR",
+                        "What is prime expectation from the car?"
+                      )
+                    }
+                  />
+                </List.Accordion>
+                <View style={styles.space}></View>
+                {/* 2. Personal Intro */}
+                <List.Accordion
+                  id={"2"}
+                  title="Personal Intro"
+                  titleStyle={{
+                    color: openAccordian === "2" ? Colors.WHITE : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "2"
+                          ? Colors.RED
+                          : Colors.SKY_LIGHT_BLUE_COLOR,
+                      height: 50,
+                    },
+                    styles.accordianBorder,
+                  ]}
+                >
+                  <DropDownSelectionItem
+                    label={"Salutation*"}
+                    value={selector.salutation}
+                    onPress={() =>
+                      showDropDownModelMethod("SALUTATION", "Select Salutation")
+                    }
+                  />
+
+                  {selector.enquiry_segment.toLowerCase() == "personal" ? (
+                    <DropDownSelectionItem
+                      label={"Gender"}
+                      value={selector.gender}
+                      onPress={() =>
+                        showDropDownModelMethod("GENDER", "Gender")
+                      }
+                    />
+                  ) : null}
+
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.firstName}
+                    label={"First Name*"}
+                    autoCapitalize="words"
+                    keyboardType={"default"}
+                    editable={false}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setPersonalIntro({ key: "FIRST_NAME", text: text })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.lastName}
+                    label={"Last Name*"}
+                    editable={false}
+                    autoCapitalize={"words"}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setPersonalIntro({ key: "LAST_NAME", text: text })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <DropDownSelectionItem
+                    label={"Relation"}
+                    value={selector.relation}
+                    onPress={() =>
+                      showDropDownModelMethod("RELATION", "Relation")
+                    }
+                  />
+
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.relationName}
+                    label={"Relation Name*"}
+                    autoCapitalize="words"
+                    keyboardType={"default"}
+                    maxLength={50}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setPersonalIntro({ key: "RELATION_NAME", text: text })
+                      )
+                    }
+                  />
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.mobile}
+                    label={"Mobile Number*"}
+                    editable={false}
+                    maxLength={10}
+                    keyboardType={"phone-pad"}
+                    onChangeText={(text) =>
+                      dispatch(setPersonalIntro({ key: "MOBILE", text: text }))
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.alterMobile}
+                    label={"Alternate Mobile Number"}
+                    editable={true}
+                    keyboardType={"phone-pad"}
+                    maxLength={10}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setPersonalIntro({ key: "ALTER_MOBILE", text: text })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.email}
+                    label={"Email ID*"}
+                    editable={true}
+                    keyboardType={"email-address"}
+                    onChangeText={(text) =>
+                      dispatch(setPersonalIntro({ key: "EMAIL", text: text }))
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+
+                  {selector.enquiry_segment.toLowerCase() == "personal" ? (
+                    <View>
+                      <DateSelectItem
+                        label={"Date Of Birth"}
+                        value={selector.dateOfBirth}
+                        onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
+                      />
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.age}
+                        label={"Age"}
+                        keyboardType={"phone-pad"}
+                        maxLength={10}
+                        onChangeText={(text) =>
+                          dispatch(setPersonalIntro({ key: "AGE", text: text }))
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <DateSelectItem
+                        label={"Anniversary Date"}
+                        value={selector.anniversaryDate}
+                        onPress={() =>
+                          dispatch(setDatePicker("ANNIVERSARY_DATE"))
+                        }
+                      />
+                    </View>
+                  ) : null}
+                </List.Accordion>
+                <View style={styles.space}></View>
+                {/* // 3.Communication Address */}
+                <List.Accordion
+                  id={"3"}
+                  title={"Communication Address"}
+                  titleStyle={{
+                    color: openAccordian === "3" ? Colors.WHITE : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "3"
+                          ? Colors.RED
+                          : Colors.SKY_LIGHT_BLUE_COLOR,
+                      height: 50,
+                    },
+                    styles.accordianBorder,
+                  ]}
+                >
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.pincode}
+                    label={"Pincode*"}
+                    maxLength={6}
+                    keyboardType={"phone-pad"}
+                    onChangeText={(text) => {
+                      // get addreess by pincode
+                      if (text.length === 6) {
+                        updateAddressDetails(text);
+                      }
+                      dispatch(
+                        setCommunicationAddress({ key: "PINCODE", text: text })
+                      );
+                    }}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <View style={styles.radioGroupBcVw}>
+                    <RadioTextItem
+                      label={"Urban"}
+                      value={"urban"}
+                      status={selector.urban_or_rural === 1 ? true : false}
+                      onPress={() =>
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "RURAL_URBAN",
+                            text: "1",
+                          })
+                        )
+                      }
+                    />
+                    <RadioTextItem
+                      label={"Rural"}
+                      value={"rural"}
+                      status={selector.urban_or_rural === 2 ? true : false}
+                      onPress={() =>
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "RURAL_URBAN",
+                            text: "2",
+                          })
+                        )
+                      }
+                    />
+                  </View>
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.houseNum}
+                    label={"H.No*"}
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({ key: "HOUSE_NO", text: text })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.streetName}
+                    label={"Street Name*"}
+                    autoCapitalize="words"
+                    maxLength={120}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "STREET_NAME",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  {selector.isAddressSet && (
+                    <>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.village}
+                        label={"Village/Town*"}
+                        autoCapitalize="words"
+                        maxLength={50}
+                        keyboardType={"default"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCommunicationAddress({
+                              key: "VILLAGE",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.mandal}
+                        label={"Mandal*"}
+                        autoCapitalize="words"
+                        maxLength={50}
+                        keyboardType={"default"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCommunicationAddress({
+                              key: "MANDAL",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.city}
+                        label={"City*"}
+                        autoCapitalize="words"
+                        maxLength={50}
+                        keyboardType={"default"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCommunicationAddress({ key: "CITY", text: text })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.district}
+                        label={"District*"}
+                        autoCapitalize="words"
+                        maxLength={50}
+                        keyboardType={"default"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCommunicationAddress({
+                              key: "DISTRICT",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.state}
+                        label={"State*"}
+                        autoCapitalize="words"
+                        maxLength={50}
+                        keyboardType={"default"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCommunicationAddress({
+                              key: "STATE",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </>
+                  )}
+                  <View
+                    style={{ height: 20, backgroundColor: Colors.WHITE }}
+                  ></View>
+
+                  {/* // Permanent Addresss */}
+                  <View
+                    style={{ backgroundColor: Colors.WHITE, paddingLeft: 12 }}
+                  >
+                    <Text style={styles.permanentAddText}>
+                      {"Permanent Address Same as Communication Address"}
+                    </Text>
+                  </View>
+                  <View style={styles.radioGroupBcVw}>
+                    <RadioTextItem
+                      label={"Yes"}
+                      value={"yes"}
+                      status={
+                        selector.is_permanent_address_same === "YES"
+                          ? true
+                          : false
+                      }
+                      onPress={() =>
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "PERMANENT_ADDRESS",
+                            text: "true",
+                          })
+                        )
+                      }
+                    />
+                    <RadioTextItem
+                      label={"No"}
+                      value={"no"}
+                      status={
+                        selector.is_permanent_address_same === "NO"
+                          ? true
+                          : false
+                      }
+                      onPress={() =>
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "PERMANENT_ADDRESS",
+                            text: "false",
+                          })
+                        )
+                      }
+                    />
+                  </View>
+                  <Text style={GlobalStyle.underline}></Text>
+
+                  {selector.is_permanent_address_same === "NO" ? (
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.p_pincode}
+                        label={"Pincode*"}
+                        maxLength={6}
+                        keyboardType={"phone-pad"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCommunicationAddress({
+                              key: "P_PINCODE",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+
+                      <View style={styles.radioGroupBcVw}>
+                        <RadioTextItem
+                          label={"Urban"}
+                          value={"urban"}
+                          status={
+                            selector.p_urban_or_rural === 1 ? true : false
+                          }
+                          onPress={() =>
+                            dispatch(
+                              setCommunicationAddress({
+                                key: "P_RURAL_URBAN",
+                                text: "1",
+                              })
+                            )
+                          }
+                        />
+                        <RadioTextItem
+                          label={"Rural"}
+                          value={"rural"}
+                          status={
+                            selector.p_urban_or_rural === 2 ? true : false
+                          }
+                          onPress={() =>
+                            dispatch(
+                              setCommunicationAddress({
+                                key: "P_RURAL_URBAN",
+                                text: "2",
+                              })
+                            )
+                          }
+                        />
+                      </View>
+                      <Text style={GlobalStyle.underline}></Text>
+
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        label={"H.No*"}
+                        keyboardType={"default"}
+                        maxLength={50}
+                        value={selector.p_houseNum}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCommunicationAddress({
+                              key: "P_HOUSE_NO",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        label={"Street Name*"}
+                        autoCapitalize="words"
+                        keyboardType={"default"}
+                        maxLength={50}
+                        value={selector.p_streetName}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCommunicationAddress({
+                              key: "P_STREET_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.p_village}
+                        label={"Village/Town*"}
+                        autoCapitalize="words"
+                        maxLength={50}
+                        keyboardType={"default"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCommunicationAddress({
+                              key: "P_VILLAGE",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.p_mandal}
+                        label={"Mandal*"}
+                        autoCapitalize="words"
+                        maxLength={50}
+                        keyboardType={"default"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCommunicationAddress({
+                              key: "P_MANDAL",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.p_city}
+                        label={"City*"}
+                        autoCapitalize="words"
+                        maxLength={50}
+                        keyboardType={"default"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCommunicationAddress({
+                              key: "P_CITY",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.p_district}
+                        label={"District*"}
+                        autoCapitalize="words"
+                        maxLength={50}
+                        keyboardType={"default"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCommunicationAddress({
+                              key: "P_DISTRICT",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.p_state}
+                        label={"State*"}
+                        autoCapitalize="words"
+                        maxLength={50}
+                        keyboardType={"default"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCommunicationAddress({
+                              key: "P_STATE",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  ) : null}
+                </List.Accordion>
+                <View style={styles.space}></View>
+                {/* // 4.Model Selection */}
+                <List.Accordion
+                  id={"4"}
+                  title={"Model Selection"}
+                  titleStyle={{
+                    color: openAccordian === "4" ? Colors.WHITE : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "4"
+                          ? Colors.RED
+                          : Colors.SKY_LIGHT_BLUE_COLOR,
+                      height: 50,
+                    },
+                    styles.accordianBorder,
+                  ]}
+                >
+                  <DropDownSelectionItem
+                    label={"Model*"}
+                    value={selector.model}
+                    onPress={() =>
+                      showDropDownModelMethod("MODEL", "Select Model")
+                    }
+                  />
+
+                  <DropDownSelectionItem
+                    label={"Varient*"}
+                    value={selector.varient}
+                    onPress={() =>
+                      showDropDownModelMethod("VARIENT", "Select Varient")
+                    }
+                  />
+
+                  <DropDownSelectionItem
+                    label={"Color*"}
+                    value={selector.color}
+                    onPress={() =>
+                      showDropDownModelMethod("COLOR", "Select Color")
+                    }
+                  />
+
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    label={"Fuel Type"}
+                    editable={false}
+                    value={selector.fuel_type}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    label={"Transmission Type"}
+                    editable={false}
+                    value={selector.transmission_type}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                </List.Accordion>
+                <View style={styles.space}></View>
+                {/* // 5. Financial Details*/}
+                <List.Accordion
+                  id={"5"}
+                  title={"Financial Details"}
+                  titleStyle={{
+                    color: openAccordian === "5" ? Colors.WHITE : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "5"
+                          ? Colors.RED
+                          : Colors.SKY_LIGHT_BLUE_COLOR,
+                      height: 50,
+                    },
+                    styles.accordianBorder,
+                  ]}
+                >
+                  <DropDownSelectionItem
+                    label={"Retail Finance"}
+                    value={selector.retail_finance}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "RETAIL_FINANCE",
+                        "Retail Finance"
+                      )
+                    }
+                  />
+
+                  {selector.retail_finance === "Out House" ? (
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Bank/Finance Name"}
+                        keyboardType={"default"}
+                        value={selector.bank_or_finance_name}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setFinancialDetails({
+                              key: "BANK_R_FINANCE_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Location"}
+                        keyboardType={"default"}
+                        value={selector.location}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setFinancialDetails({ key: "LOCATION", text: text })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  ) : null}
+
+                  {selector.retail_finance === "Leasing" && (
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Leasing Name"}
+                        maxLength={50}
+                        value={selector.leashing_name}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setFinancialDetails({
+                              key: "LEASHING_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
+
+                  {selector.retail_finance === "In House" && (
+                    <DropDownSelectionItem
+                      label={"Finance Category*"}
+                      value={selector.finance_category}
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "FINANCE_CATEGORY",
+                          "Finance Category"
+                        )
+                      }
+                    />
+                  )}
+
+                  {selector.retail_finance === "In House" && (
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Down Payment*"}
+                        maxLength={10}
+                        keyboardType={"numeric"}
+                        value={selector.down_payment}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setFinancialDetails({
+                              key: "DOWN_PAYMENT",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
+
+                  {(selector.retail_finance === "In House" ||
+                    selector.retail_finance === "Out House") && (
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Loan Amount*"}
+                        keyboardType={"numeric"}
+                        maxLength={10}
+                        value={selector.loan_amount}
+                        onChangeText={(text) => {
+                          emiCal(
+                            text,
+                            selector.loan_of_tenure,
+                            selector.rate_of_interest
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "LOAN_AMOUNT",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Rate of Interest*"}
+                        keyboardType={"numeric"}
+                        maxLength={10}
+                        value={selector.rate_of_interest}
+                        onChangeText={(text) => {
+                          emiCal(
+                            selector.loan_amount,
+                            selector.loan_of_tenure,
+                            text
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "RATE_OF_INTEREST",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
+
+                  {selector.retail_finance === "In House" && (
+                    <View>
+                      <DropDownSelectionItem
+                        label={"Bank/Financer"}
+                        value={selector.bank_or_finance}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "BANK_FINANCE",
+                            "Bank/Financer"
+                          )
+                        }
+                      />
+
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Loan of Tenure(Months)"}
+                        keyboardType={"numeric"}
+                        maxLength={3}
+                        value={selector.loan_of_tenure}
+                        onChangeText={(text) => {
+                          emiCal(
+                            selector.loan_amount,
+                            text,
+                            selector.rate_of_interest
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "LOAN_OF_TENURE",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"EMI*"}
+                        keyboardType={"default"}
+                        value={selector.emi}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setFinancialDetails({ key: "EMI", text: text })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+
+                      <DropDownSelectionItem
+                        label={"Approx Annual Income"}
+                        value={selector.approx_annual_income}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "APPROX_ANNUAL_INCOME",
+                            "Approx Annual Income"
+                          )
+                        }
+                      />
+                    </View>
+                  )}
+                </List.Accordion>
+                <View style={styles.space}></View>
+                {/* // 6.Upload Documents */}
+                <List.Accordion
+                  id={"6"}
+                  title={"Upload Documents"}
+                  titleStyle={{
+                    color: openAccordian === "6" ? Colors.WHITE : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "6"
+                          ? Colors.RED
+                          : Colors.SKY_LIGHT_BLUE_COLOR,
+                      height: 50,
+                    },
+                    styles.accordianBorder,
+                  ]}
+                >
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.pan_number}
+                    label={"Pan Number"}
+                    keyboardType={"default"}
+                    maxLength={10}
+                    autoCapitalize={"characters"}
+                    onChangeText={(text) => {
+                      dispatch(setUploadDocuments({ key: "PAN", text: text }));
+                    }}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <View style={styles.select_image_bck_vw}>
+                    <ImageSelectItem
+                      name={"Upload Pan"}
+                      onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
+                    />
+                  </View>
+                  {uploadedImagesDataObj?.pan?.fileName ? (
+                    <DisplaySelectedImage
+                      fileName={uploadedImagesDataObj.pan.fileName}
+                      from={"PAN"}
+                    />
+                  ) : null}
+
+                  {/* // Adhal Number */}
+                  {selector.enquiry_segment.toLowerCase() === "personal" ? (
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.adhaar_number}
+                        label={"Aadhaar Number"}
+                        keyboardType={"phone-pad"}
+                        maxLength={12}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setUploadDocuments({ key: "ADHAR", text: text })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <View style={styles.select_image_bck_vw}>
+                        <ImageSelectItem
+                          name={"Upload Adhar"}
+                          onPress={() =>
+                            dispatch(setImagePicker("UPLOAD_ADHAR"))
+                          }
+                        />
+                      </View>
+                      {uploadedImagesDataObj?.aadhar?.fileName ? (
+                        <DisplaySelectedImage
+                          fileName={uploadedImagesDataObj.aadhar.fileName}
+                          from={"AADHAR"}
+                        />
+                      ) : null}
+                    </View>
+                  ) : null}
+
+                  {/* // Employeed ID */}
+                  {selector.enquiry_segment.toLowerCase() === "personal" &&
+                  (selector.customer_type.toLowerCase() === "corporate" ||
+                    selector.customer_type.toLowerCase() === "government" ||
+                    selector.customer_type.toLowerCase() === "retired") ? (
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.employee_id}
+                        label={"Employee ID*"}
+                        maxLength={15}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setUploadDocuments({
+                              key: "EMPLOYEE_ID",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <View style={styles.select_image_bck_vw}>
+                        <ImageSelectItem
+                          name={"Employee ID"}
+                          onPress={() =>
+                            dispatch(setImagePicker("UPLOAD_EMPLOYEE_ID"))
+                          }
+                        />
+                      </View>
+                      {uploadedImagesDataObj?.empId?.fileName ? (
+                        <DisplaySelectedImage
+                          fileName={uploadedImagesDataObj.empId.fileName}
+                          from={"EMPLOYEE_ID"}
+                        />
+                      ) : null}
+                    </View>
+                  ) : null}
+
+                  {/* Last 3 month payslip */}
+                  {selector.enquiry_segment.toLowerCase() === "personal" &&
+                  (selector.customer_type.toLowerCase() === "corporate" ||
+                    selector.customer_type.toLowerCase() === "government") ? (
+                    <View>
+                      <View style={styles.select_image_bck_vw}>
+                        <ImageSelectItem
+                          name={"Last 3 months payslip"}
+                          onPress={() =>
+                            dispatch(setImagePicker("UPLOAD_3_MONTHS_PAYSLIP"))
+                          }
+                        />
+                      </View>
+                      {uploadedImagesDataObj.payslip ? (
+                        <DisplaySelectedImage
+                          fileName={uploadedImagesDataObj.payslip.fileName}
+                          from={"3_MONTHS_PAYSLIP"}
+                        />
+                      ) : null}
+                    </View>
+                  ) : null}
+
+                  {/* Patta Pass book */}
+                  {selector.enquiry_segment.toLowerCase() === "personal" &&
+                  selector.customer_type.toLowerCase() === "farmer" ? (
+                    <View>
+                      <View style={styles.select_image_bck_vw}>
+                        <ImageSelectItem
+                          name={"Patta Pass Book"}
+                          onPress={() =>
+                            dispatch(setImagePicker("UPLOAD_PATTA_PASS_BOOK"))
+                          }
+                        />
+                      </View>
+                      {uploadedImagesDataObj.passbook ? (
+                        <DisplaySelectedImage
+                          fileName={uploadedImagesDataObj.passbook.fileName}
+                          from={"PATTA_PASS_BOOK"}
+                        />
+                      ) : null}
+                    </View>
+                  ) : null}
+
+                  {/* Pension Letter */}
+                  {selector.enquiry_segment.toLowerCase() === "personal" &&
+                  selector.customer_type.toLowerCase() === "retired" ? (
+                    <View>
+                      <View style={styles.select_image_bck_vw}>
+                        <ImageSelectItem
+                          name={"Pension Letter"}
+                          onPress={() =>
+                            dispatch(setImagePicker("UPLOAD_PENSION_LETTER"))
+                          }
+                        />
+                      </View>
+                      {uploadedImagesDataObj.pension ? (
+                        <DisplaySelectedImage
+                          fileName={uploadedImagesDataObj.pension.fileName}
+                          from={"PENSION_LETTER"}
+                        />
+                      ) : null}
+                    </View>
+                  ) : null}
+
+                  {/* IMA Certificate */}
+                  {selector.enquiry_segment.toLowerCase() === "personal" &&
+                  selector.customer_type.toLowerCase() === "doctor" ? (
+                    <View>
+                      <View style={styles.select_image_bck_vw}>
+                        <ImageSelectItem
+                          name={"IMA Certificate"}
+                          onPress={() =>
+                            dispatch(setImagePicker("UPLOAD_IMA_CERTIFICATE"))
+                          }
+                        />
+                      </View>
+                      {uploadedImagesDataObj.imaCertificate ? (
+                        <DisplaySelectedImage
+                          fileName={
+                            uploadedImagesDataObj.imaCertificate.fileName
+                          }
+                          from={"IMA_CERTIFICATE"}
+                        />
+                      ) : null}
+                    </View>
+                  ) : null}
+
+                  {/* Leasing Confirmation */}
+                  {selector.enquiry_segment.toLowerCase() === "commercial" &&
+                  selector.customer_type.toLowerCase() === "fleet" ? (
+                    <View>
+                      <View style={styles.select_image_bck_vw}>
+                        <ImageSelectItem
+                          name={"Leasing Confirmation"}
+                          onPress={() =>
+                            dispatch(
+                              setImagePicker("UPLOAD_LEASING_CONFIRMATION")
+                            )
+                          }
+                        />
+                      </View>
+                      {uploadedImagesDataObj.leasingConfirm ? (
+                        <DisplaySelectedImage
+                          fileName={
+                            uploadedImagesDataObj.leasingConfirm.fileName
+                          }
+                          from={"LEASING_CONFIRMATION"}
+                        />
+                      ) : null}
+                    </View>
+                  ) : null}
+
+                  {/* Address Proof */}
+                  {selector.enquiry_segment.toLowerCase() === "company" &&
+                  selector.customer_type.toLowerCase() === "institution" ? (
+                    <View>
+                      <View style={styles.select_image_bck_vw}>
+                        <ImageSelectItem
+                          name={"Address Proof"}
+                          onPress={() =>
+                            dispatch(setImagePicker("UPLOAD_ADDRESS_PROOF"))
+                          }
+                        />
+                      </View>
+                      {uploadedImagesDataObj.address ? (
+                        <DisplaySelectedImage
+                          fileName={uploadedImagesDataObj.address.fileName}
+                          from={"ADDRESS_PROOF"}
+                        />
+                      ) : null}
+                    </View>
+                  ) : null}
+
+                  {/* GSTIN Number */}
+                  {selector.enquiry_segment.toLowerCase() === "company" &&
+                  selector.customer_type.toLowerCase() === "institution" ? (
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.gstin_number}
+                        label={"GSTIN Number"}
+                        maxLength={30}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setUploadDocuments({
+                              key: "GSTIN_NUMBER",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  ) : null}
+                </List.Accordion>
+                <View style={styles.space}></View>
+                {/* // 7.Customer Need Analysis */}
+                <List.Accordion
+                  id={"7"}
+                  title={"Customer Need Analysis"}
+                  titleStyle={{
+                    color: openAccordian === "7" ? Colors.WHITE : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "7"
+                          ? Colors.RED
+                          : Colors.SKY_LIGHT_BLUE_COLOR,
+                      height: 50,
+                    },
+                    styles.accordianBorder,
+                  ]}
+                >
+                  <View style={styles.view2}>
+                    <Text style={styles.looking_any_text}>
+                      {"Looking for any other brand"}
+                    </Text>
+                    <Checkbox.Android
+                      status={
+                        selector.c_looking_for_any_other_brand_checked
+                          ? "checked"
+                          : "unchecked"
+                      }
+                      uncheckedColor={Colors.DARK_GRAY}
+                      color={Colors.RED}
+                      onPress={() =>
+                        dispatch(
+                          setCustomerNeedAnalysis({
+                            key: "CHECK_BOX",
+                            text: "",
+                          })
+                        )
+                      }
+                    />
+                  </View>
+
+                  {selector.c_looking_for_any_other_brand_checked && (
+                    <View>
+                      <DropDownSelectionItem
+                        label={"Make"}
+                        value={selector.c_make}
+                        onPress={() =>
+                          showDropDownModelMethod("C_MAKE", "Make")
+                        }
+                      />
+                      {selector.c_make === "Other" && (
+                        <View>
+                          <TextinputComp
+                            style={{ height: 65, width: "100%" }}
+                            label={"Make Other Name"}
+                            editable={true}
+                            maxLength={50}
+                            value={selector.c_make_other_name}
+                            onChangeText={(text) =>
+                              dispatch(
+                                setCustomerNeedAnalysis({
+                                  key: "C_MAKE_OTHER_NAME",
+                                  text: text,
+                                })
+                              )
+                            }
+                          />
+                          <Text style={GlobalStyle.underline}></Text>
+                        </View>
+                      )}
+                      <DropDownSelectionItem
+                        label={"Model"}
+                        value={selector.c_model}
+                        onPress={() =>
+                          showDropDownModelMethod("C_MODEL", "Model")
+                        }
+                      />
+                      {selector.c_model === "Other" && (
+                        <View>
+                          <TextinputComp
+                            style={{ height: 65, width: "100%" }}
+                            label={"Model Other Name"}
+                            editable={true}
+                            value={selector.c_model_other_name}
+                            onChangeText={(text) =>
+                              dispatch(
+                                setCustomerNeedAnalysis({
+                                  key: "C_MODEL_OTHER_NAME",
+                                  text: text,
+                                })
+                              )
+                            }
+                          />
+                          <Text style={GlobalStyle.underline}></Text>
+                        </View>
+                      )}
+
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Variant"}
+                        editable={true}
+                        maxLength={40}
+                        value={selector.c_variant}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCustomerNeedAnalysis({
+                              key: "C_VARIANT",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Color"}
+                        autoCapitalize="words"
+                        editable={true}
+                        maxLength={40}
+                        value={selector.c_color}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCustomerNeedAnalysis({
+                              key: "C_COLOR",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+
+                      <DropDownSelectionItem
+                        label={"Fuel Type"}
+                        value={selector.c_fuel_type}
+                        onPress={() =>
+                          showDropDownModelMethod("C_FUEL_TYPE", "Variant")
+                        }
+                      />
+                      <DropDownSelectionItem
+                        label={"Transmission Type"}
+                        value={selector.c_transmission_type}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "C_TRANSMISSION_TYPE",
+                            "Color"
+                          )
+                        }
+                      />
+
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.c_price_range}
+                        label={"Price Range"}
+                        keyboardType={"number-pad"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCustomerNeedAnalysis({
+                              key: "PRICE_RANGE",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.c_on_road_price}
+                        label={"On Road Price"}
+                        keyboardType={"number-pad"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCustomerNeedAnalysis({
+                              key: "ON_ROAD_PRICE",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.c_dealership_name}
+                        label={"DealerShip Name"}
+                        autoCapitalize="words"
+                        keyboardType={"default"}
+                        maxLength={50}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCustomerNeedAnalysis({
+                              key: "DEALERSHIP_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.c_dealership_location}
+                        label={"DealerShip Location"}
+                        autoCapitalize="words"
+                        keyboardType={"default"}
+                        maxLength={50}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCustomerNeedAnalysis({
+                              key: "DEALERSHIP_LOCATION",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.c_dealership_pending_reason}
+                        label={"Dealership Pending Reason"}
+                        autoCapitalize="words"
+                        keyboardType={"default"}
+                        maxLength={50}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCustomerNeedAnalysis({
+                              key: "DEALERSHIP_PENDING_REASON",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
+
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.c_voice_of_customer_remarks}
+                    label={"Voice of Customer Remarks "}
+                    autoCapitalize="words"
+                    keyboardType={"default"}
+                    maxLength={50}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCustomerNeedAnalysis({
+                          key: "VOICE_OF_CUSTOMER_REMARKS",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                </List.Accordion>
+                {selector.buyer_type == "Additional Buyer" ||
+                selector.buyer_type == "Replacement Buyer" ? (
+                  <View style={styles.space}></View>
+                ) : null}
+                {/* // 8.Additional Buyer */}
+                {selector.buyer_type == "Additional Buyer" ? (
+                  <List.Accordion
+                    id={"8"}
+                    title={"Additional Buyer"}
+                    titleStyle={{
+                      color:
+                        openAccordian === "8" ? Colors.WHITE : Colors.BLACK,
+                      fontSize: 16,
+                      fontWeight: "600",
+                    }}
+                    style={[
+                      {
+                        backgroundColor:
+                          openAccordian === "8"
+                            ? Colors.RED
+                            : Colors.SKY_LIGHT_BLUE_COLOR,
+                        height: 50,
+                      },
+                      styles.accordianBorder,
+                    ]}
+                  >
+                    <DropDownSelectionItem
+                      label={"Make"}
+                      value={selector.a_make}
+                      onPress={() => showDropDownModelMethod("A_MAKE", "Make")}
+                    />
+                    {selector.a_make === "Other" && (
+                      <View>
+                        <TextinputComp
+                          style={{ height: 65, width: "100%" }}
+                          label={"Make Other Name"}
+                          editable={true}
+                          maxLength={50}
+                          value={selector.a_make_other_name}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setAdditionalBuyerDetails({
+                                key: "A_MAKE_OTHER_NAME",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
+                    )}
+                    <DropDownSelectionItem
+                      label={"Model"}
+                      value={selector.a_model}
+                      onPress={() =>
+                        showDropDownModelMethod("A_MODEL", "Model")
+                      }
+                    />
+                    {selector.a_model === "Other" && (
+                      <View>
+                        <TextinputComp
+                          style={{ height: 65, width: "100%" }}
+                          label={"Model Other Name"}
+                          editable={true}
+                          maxLength={50}
+                          value={selector.a_model_other_name}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setAdditionalBuyerDetails({
+                                key: "A_MODEL_OTHER_NAME",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
+                    )}
+
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.a_varient}
+                      label={"Varient"}
+                      maxLength={50}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setAdditionalBuyerDetails({
+                            key: "A_VARIENT",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.a_color}
+                      label={"Color"}
+                      maxLength={50}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setAdditionalBuyerDetails({
+                            key: "A_COLOR",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.a_reg_no}
+                      label={"Reg. No."}
+                      maxLength={50}
+                      keyboardType={"default"}
+                      autoCapitalize={"characters"}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setAdditionalBuyerDetails({
+                            key: "A_REG_NO",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </List.Accordion>
+                ) : null}
+
+                {/* // 9.Replacement Buyer */}
+                {selector.buyer_type == "Replacement Buyer" ? (
+                  <List.Accordion
+                    id={"9"}
+                    title={"Replacement Buyer"}
+                    titleStyle={{
+                      color:
+                        openAccordian === "9" ? Colors.WHITE : Colors.BLACK,
+                      fontSize: 16,
+                      fontWeight: "600",
+                    }}
+                    style={[
+                      {
+                        backgroundColor:
+                          openAccordian === "9"
+                            ? Colors.RED
+                            : Colors.SKY_LIGHT_BLUE_COLOR,
+                        height: 50,
+                      },
+                      styles.accordianBorder,
+                    ]}
+                  >
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.r_reg_no}
+                      label={"Reg. No."}
+                      maxLength={50}
+                      keyboardType={"default"}
+                      autoCapitalize={"characters"}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setReplacementBuyerDetails({
+                            key: "R_REG_NO",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Upload Reg Doc"}
+                        onPress={() =>
+                          dispatch(setImagePicker("UPLOAD_REG_DOC"))
+                        }
+                      />
+                    </View>
+                    {uploadedImagesDataObj.REGDOC ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.REGDOC.fileName}
+                        from={"REGDOC"}
+                      />
+                    ) : null}
+                    <DropDownSelectionItem
+                      label={"Make"}
+                      value={selector.r_make}
+                      onPress={() => showDropDownModelMethod("R_MAKE", "Make")}
+                    />
+                    {selector.r_make === "Other" && (
+                      <View>
+                        <TextinputComp
+                          style={{ height: 65, width: "100%" }}
+                          label={"Make Other Name"}
+                          editable={true}
+                          maxLength={50}
+                          value={selector.r_make_other_name}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setReplacementBuyerDetails({
+                                key: "R_MAKE_OTHER_NAME",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
+                    )}
+                    <DropDownSelectionItem
+                      label={"Model"}
+                      value={selector.r_model}
+                      onPress={() =>
+                        showDropDownModelMethod("R_MODEL", "Model")
+                      }
+                    />
+                    {selector.r_model === "Other" && (
+                      <View>
+                        <TextinputComp
+                          style={{ height: 65, width: "100%" }}
+                          label={"Model Other Name"}
+                          editable={true}
+                          maxLength={50}
+                          value={selector.r_model_other_name}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setReplacementBuyerDetails({
+                                key: "R_MODEL_OTHER_NAME",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
+                    )}
+
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Varient"}
+                      editable={true}
+                      value={selector.r_varient}
+                      maxLength={50}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setReplacementBuyerDetails({
+                            key: "R_VARIENT",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Color"}
+                      editable={true}
+                      maxLength={50}
+                      value={selector.r_color}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setReplacementBuyerDetails({
+                            key: "R_COLOR",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+
+                    <DropDownSelectionItem
+                      label={"Fuel Type"}
+                      value={selector.r_fuel_type}
+                      onPress={() =>
+                        showDropDownModelMethod("R_FUEL_TYPE", "Fuel Type")
+                      }
+                    />
+                    <DropDownSelectionItem
+                      label={"Transmission Type"}
+                      value={selector.r_transmission_type}
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "R_TRANSMISSION_TYPE",
+                          "Transmission Type"
+                        )
+                      }
+                    />
+
+                    <DateSelectItem
+                      label={"Mth.Yr. of MFG"}
+                      value={selector.r_mfg_year}
+                      onPress={() => dispatch(setDatePicker("R_MFG_YEAR"))}
+                    />
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.r_kms_driven_or_odometer_reading}
+                      label={"Kms-Driven/Odometer Reading"}
+                      keyboardType={"number-pad"}
+                      maxLength={7}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setReplacementBuyerDetails({
+                            key: "R_KMS_DRIVEN_OR_ODOMETER_READING",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+
+                    <View style={styles.view2}>
+                      <Text style={styles.looking_any_text}>
+                        {"Hypothication"}
+                      </Text>
+                      <Checkbox.Android
+                        status={
+                          selector.r_hypothication_checked
+                            ? "checked"
+                            : "unchecked"
+                        }
+                        uncheckedColor={Colors.DARK_GRAY}
+                        color={Colors.RED}
+                        onPress={() =>
+                          dispatch(
+                            setReplacementBuyerDetails({
+                              key: "R_HYPOTHICATION_CHECKED",
+                              text: "",
+                            })
+                          )
+                        }
+                      />
+                    </View>
+
+                    {selector.r_hypothication_checked && (
+                      <View>
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.r_hypothication_name}
+                          label={"Hypothication Name"}
+                          keyboardType={"default"}
+                          maxLength={50}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setReplacementBuyerDetails({
+                                key: "R_HYPOTHICATION_NAME",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.r_hypothication_branch}
+                          label={"Hypothication Branch"}
+                          keyboardType={"default"}
+                          maxLength={50}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setReplacementBuyerDetails({
+                                key: "R_HYPOTHICATION_BRANCH",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
+                    )}
+
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.r_expected_price}
+                      label={"Expected Price"}
+                      keyboardType={"number-pad"}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setReplacementBuyerDetails({
+                            key: "R_EXP_PRICE",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <DateSelectItem
+                      label={"Registration Date"}
+                      value={selector.r_registration_date}
+                      onPress={() => dispatch(setDatePicker("R_REG_DATE"))}
+                    />
+                    <DateSelectItem
+                      label={"Registration Validity Date"}
+                      value={selector.r_registration_validity_date}
+                      onPress={() =>
+                        dispatch(setDatePicker("R_REG_VALIDITY_DATE"))
+                      }
+                    />
+                    <View style={styles.view2}>
+                      <Text style={styles.looking_any_text}>{"Insurance"}</Text>
+                      <Checkbox.Android
+                        status={
+                          selector.r_insurence_checked ? "checked" : "unchecked"
+                        }
+                        uncheckedColor={Colors.DARK_GRAY}
+                        color={Colors.RED}
+                        onPress={() =>
+                          dispatch(
+                            setReplacementBuyerDetails({
+                              key: "R_INSURENCE_CHECKED",
+                              text: "",
+                            })
+                          )
+                        }
+                      />
+                    </View>
+                    {selector.r_insurence_checked && (
+                      <View>
+                        <View style={styles.view2}>
+                          <Text style={styles.looking_any_text}>
+                            {"Insurance Document"}
+                          </Text>
+                          <Checkbox.Android
+                            status={
+                              selector.r_insurence_document_checked
+                                ? "checked"
+                                : "unchecked"
+                            }
+                            uncheckedColor={Colors.DARK_GRAY}
+                            color={Colors.RED}
+                            onPress={() =>
+                              dispatch(
+                                setReplacementBuyerDetails({
+                                  key: "R_INSURENCE_DOC_CHECKED",
+                                  text: "",
+                                })
+                              )
+                            }
+                          />
+                        </View>
+                      </View>
+                    )}
+                    {selector.r_insurence_document_checked && (
+                      <View>
+                        <View style={styles.select_image_bck_vw}>
+                          <ImageSelectItem
+                            name={"Upload Insurence"}
+                            onPress={() =>
+                              dispatch(setImagePicker("UPLOAD_INSURENCE"))
+                            }
+                          />
+                        </View>
+                        {uploadedImagesDataObj.insurance ? (
+                          <DisplaySelectedImage
+                            fileName={uploadedImagesDataObj.insurance.fileName}
+                            from={"INSURENCE"}
+                          />
+                        ) : null}
+                      </View>
+                    )}
+
+                    {!selector.r_insurence_checked && (
+                      <View>
+                        <DateSelectItem
+                          label={"Insurance Policy Expiry Date"}
+                          value={selector.r_insurence_expiry_date}
+                          onPress={() =>
+                            dispatch(
+                              setDatePicker("R_INSURENCE_POLICIY_EXPIRY_DATE")
+                            )
+                          }
+                        />
+                      </View>
+                    )}
+                    {selector.r_insurence_checked &&
+                      !selector.r_insurence_document_checked && (
+                        <View>
+                          <DropDownSelectionItem
+                            label={"Insurance Type"}
+                            value={selector.r_insurence_type}
+                            onPress={() =>
+                              showDropDownModelMethod(
+                                "R_INSURENCE_TYPE",
+                                "Insurance Type"
+                              )
+                            }
+                          />
+                          <DateSelectItem
+                            label={"Insurance From Date"}
+                            value={selector.r_insurence_from_date}
+                            onPress={() =>
+                              dispatch(setDatePicker("R_INSURENCE_FROM_DATE"))
+                            }
+                          />
+                          <DateSelectItem
+                            label={"Insurance To Date"}
+                            value={selector.r_insurence_to_date}
+                            onPress={() =>
+                              dispatch(setDatePicker("R_INSURENCE_TO_DATE"))
+                            }
+                          />
+                        </View>
+                      )}
+
+                    {!selector.r_insurence_document_checked && (
+                      <View>
+                        <DropDownSelectionItem
+                          label={"Insurance Company Name"}
+                          value={selector.r_insurence_company_name}
+                          onPress={() =>
+                            showDropDownModelMethod(
+                              "R_INSURENCE_COMPANY_NAME",
+                              "Insurence Company Name"
+                            )
+                          }
+                        />
+                        {/* <TextinputComp
                         style={styles.textInputStyle}
                         value={selector.r_insurence_company_name}
                         label={"Insurance Company Name"}
@@ -4004,109 +4125,108 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           )
                         }
                       /> */}
-                                            <Text style={GlobalStyle.underline}></Text>
-                                        </View>
-                                    )}
-                                </List.Accordion>
-                            ) : null}
-
-                            {isDropSelected ? <View style={styles.space}></View> : null}
-                            {/* 10. Drop section */}
-                            {isDropSelected ? (
-                                <List.Accordion
-                                    id={"10"}
-                                    title={"Enquiry Drop Section"}
-                                    titleStyle={{
-                                        color: openAccordian === "10" ? Colors.WHITE : Colors.BLACK,
-                                        fontSize: 16,
-                                        fontWeight: "600",
-                                    }}
-                                    style={[
-                                        {
-                                            backgroundColor:
-                                                openAccordian === "10"
-                                                    ? Colors.RED
-                                                    : Colors.SKY_LIGHT_BLUE_COLOR,
-                                            height: 50,
-                                        },
-                                        styles.accordianBorder,
-                                    ]}
-                                >
-
-                                    <DropComponent
-                                        from="ENQUIRY"
-                                        data={dropData}
-                                        reason={dropReason}
-                                        setReason={(text => setDropReason(text))}
-                                        subReason={dropSubReason}
-                                        setSubReason={(text => setDropSubReason(text))}
-                                        brandName={dropBrandName}
-                                        setBrandName={text => setDropBrandName(text)}
-                                        dealerName={dropDealerName}
-                                        setDealerName={text => setDropDealerName(text)}
-                                        location={dropLocation}
-                                        setLocation={text => setDropLocation(text)}
-                                        model={dropModel}
-                                        setModel={text => setDropModel(text)}
-                                        priceDiff={dropPriceDifference}
-                                        setPriceDiff={text => setDropPriceDifference(text)}
-                                        remarks={dropRemarks}
-                                        setRemarks={(text) => setDropRemarks(text)}
-                                    />
-
-                                </List.Accordion>
-                            ) : null}
-                        </List.AccordionGroup>
-                    </View>
-                    {!isDropSelected && (
-                        <View style={styles.actionBtnView}>
-                            <Button
-                                mode="contained"
-                                style={{ width: 120 }}
-                                color={Colors.RED}
-                                labelStyle={{ textTransform: "none" }}
-                                onPress={() => setIsDropSelected(true)}
-                            >
-                                Drop
-              </Button>
-                            <Button
-                                mode="contained"
-                                style={{ width: 120 }}
-                                color={Colors.BLACK}
-                                labelStyle={{ textTransform: "none" }}
-                                onPress={submitClicked}
-                            >
-                                Submit
-              </Button>
-                        </View>
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
                     )}
-                    {showPreBookingBtn && !isDropSelected && (
-                        <View style={styles.prebookingBtnView}>
-                            <Button
-                                mode="contained"
-                                color={Colors.BLACK}
-                                labelStyle={{ textTransform: "none" }}
-                                onPress={proceedToPreBookingClicked}
-                            >
-                                Proceed To PreBooking
-              </Button>
-                        </View>
-                    )}
-                    {isDropSelected && (
-                        <View style={styles.prebookingBtnView}>
-                            <Button
-                                mode="contained"
-                                color={Colors.RED}
-                                labelStyle={{ textTransform: "none" }}
-                                onPress={proceedToCancelEnquiry}
-                            >
-                                Proceed To Cancellation
-              </Button>
-                        </View>
-                    )}
-                </ScrollView>
-            </KeyboardAvoidingView>
-        </SafeAreaView>
+                  </List.Accordion>
+                ) : null}
+
+                {isDropSelected ? <View style={styles.space}></View> : null}
+                {/* 10. Drop section */}
+                {isDropSelected ? (
+                  <List.Accordion
+                    id={"10"}
+                    title={"Enquiry Drop Section"}
+                    titleStyle={{
+                      color:
+                        openAccordian === "10" ? Colors.WHITE : Colors.BLACK,
+                      fontSize: 16,
+                      fontWeight: "600",
+                    }}
+                    style={[
+                      {
+                        backgroundColor:
+                          openAccordian === "10"
+                            ? Colors.RED
+                            : Colors.SKY_LIGHT_BLUE_COLOR,
+                        height: 50,
+                      },
+                      styles.accordianBorder,
+                    ]}
+                  >
+                    <DropComponent
+                      from="ENQUIRY"
+                      data={dropData}
+                      reason={dropReason}
+                      setReason={(text) => setDropReason(text)}
+                      subReason={dropSubReason}
+                      setSubReason={(text) => setDropSubReason(text)}
+                      brandName={dropBrandName}
+                      setBrandName={(text) => setDropBrandName(text)}
+                      dealerName={dropDealerName}
+                      setDealerName={(text) => setDropDealerName(text)}
+                      location={dropLocation}
+                      setLocation={(text) => setDropLocation(text)}
+                      model={dropModel}
+                      setModel={(text) => setDropModel(text)}
+                      priceDiff={dropPriceDifference}
+                      setPriceDiff={(text) => setDropPriceDifference(text)}
+                      remarks={dropRemarks}
+                      setRemarks={(text) => setDropRemarks(text)}
+                    />
+                  </List.Accordion>
+                ) : null}
+              </List.AccordionGroup>
+            </View>
+            {!isDropSelected && (
+              <View style={styles.actionBtnView}>
+                <Button
+                  mode="contained"
+                  style={{ width: 120 }}
+                  color={Colors.RED}
+                  labelStyle={{ textTransform: "none" }}
+                  onPress={() => setIsDropSelected(true)}
+                >
+                  Lost
+                </Button>
+                <Button
+                  mode="contained"
+                  style={{ width: 120 }}
+                  color={Colors.BLACK}
+                  labelStyle={{ textTransform: "none" }}
+                  onPress={submitClicked}
+                >
+                  Submit
+                </Button>
+              </View>
+            )}
+            {showPreBookingBtn && !isDropSelected && (
+              <View style={styles.prebookingBtnView}>
+                <Button
+                  mode="contained"
+                  color={Colors.BLACK}
+                  labelStyle={{ textTransform: "none" }}
+                  onPress={proceedToPreBookingClicked}
+                >
+                  Proceed To PreBooking
+                </Button>
+              </View>
+            )}
+            {isDropSelected && (
+              <View style={styles.prebookingBtnView}>
+                <Button
+                  mode="contained"
+                  color={Colors.RED}
+                  labelStyle={{ textTransform: "none" }}
+                  onPress={proceedToCancelEnquiry}
+                >
+                  Proceed To Cancellation
+                </Button>
+              </View>
+            )}
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     );
 };
 
