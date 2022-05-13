@@ -508,6 +508,8 @@ const bookingFormSlice = createSlice({
     cheque_date: "",
     dd_number: "",
     dd_date: "",
+    isDataLoaded: false,
+    addOnPrice: 0
   },
   reducers: {
     clearState: (state, action) => {
@@ -1306,6 +1308,15 @@ const bookingFormSlice = createSlice({
         if (action.payload) {
           state.vehicle_on_road_price_insurence_details_response =
             action.payload;
+          if (action.payload.insuranceAddOn.length > 0) {
+            let addOnNames = "", price = 0;
+            action.payload.insuranceAddOn.forEach((element, index) => {
+              addOnNames += element.add_on_price[0].document_name + ((index + 1) < action.payload.insuranceAddOn.length ? ", " : "");
+              price += Number(element.add_on_price[0].cost)
+            });
+            state.add_on_insurance = addOnNames;
+            state.addOnPrice = price;
+          }
         }
         state.isLoading = false;
       }
@@ -1382,7 +1393,7 @@ const bookingFormSlice = createSlice({
                 element.insuranceAddonName +
                 (index + 1 < dataObj.length ? ", " : "");
             });
-            state.add_on_insurance + addOnNames;
+            state.add_on_insurance = addOnNames;
           }
 
           state.consumer_offer = dataObj.specialScheme

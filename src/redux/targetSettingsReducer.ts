@@ -39,6 +39,18 @@ export const addTargetMapping = createAsyncThunk("TARGET_SETTINGS/addTargetMappi
     return json;
 })
 
+export const editTargetMapping = createAsyncThunk("TARGET_SETTINGS/editTargetMapping", async (payload: any, { rejectWithValue }) => {
+
+    const response = await client.post(URL.EDIT_TARGET_MAPPING(), payload)
+    const json = await response.json()
+    console.log("$$$$%%%$$:", JSON.stringify(json));
+    showToast(json.message)
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
 export const getEmployeesDropDownData = createAsyncThunk("TARGET_SETTINGS/getEmployeesDropDownData", async (payload: any, { rejectWithValue }) => {
 
     const response = await client.post(URL.GET_EMPLOYEES_DROP_DOWN_DATA(payload.orgId, payload.empId), payload.selectedIds)
@@ -127,6 +139,17 @@ export const targetSettingsSlice = createSlice({
             })
             .addCase(addTargetMapping.rejected, (state, action) => {
                 
+            })
+            .addCase(editTargetMapping.pending, (state, action) => {
+
+            })
+            .addCase(editTargetMapping.fulfilled, (state, action) => {
+                if (action.payload?.message !== null) {
+                    showToast(action.payload.message)
+                }
+            })
+            .addCase(editTargetMapping.rejected, (state, action) => {
+
             })
             .addCase(getEmployeesDropDownData.pending, (state, action) => {
                 state.employees_drop_down_data = {};

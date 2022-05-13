@@ -972,7 +972,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             };
         }
         
-        // console.log("FORM DATA:", JSON.stringify(formData));
         setTypeOfActionDispatched("UPDATE_ENQUIRY");
         dispatch(updateEnquiryDetailsApi(formData));
     };
@@ -1807,47 +1806,69 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
 
     return (
-      <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
-        <ImagePickerComponent
-          visible={selector.showImagePicker}
-          keyId={selector.imagePickerKeyId}
-          selectedImage={(data, keyId) => {
-            console.log("imageObj: ", data, keyId);
-            uploadSelectedImage(data, keyId);
-          }}
-          onDismiss={() => dispatch(setImagePicker(""))}
-        />
+        <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
+            <ImagePickerComponent
+                visible={selector.showImagePicker}
+                keyId={selector.imagePickerKeyId}
+                selectedImage={(data, keyId) => {
+                    console.log("imageObj: ", data, keyId);
+                    uploadSelectedImage(data, keyId);
+                }}
+                onDismiss={() => dispatch(setImagePicker(""))}
+            />
 
-        <DropDownComponant
-          visible={showDropDownModel}
-          headerTitle={dropDownTitle}
-          data={dataForDropDown}
-          onRequestClose={() => setShowDropDownModel(false)}
-          selectedItems={(item) => {
-            if (dropDownKey === "MODEL") {
-              updateVariantModelsData(item.name, false);
-            } else if (dropDownKey === "VARIENT") {
-              updateColorsDataForSelectedVarient(
-                item.name,
-                selectedCarVarientsData.varientList
-              );
-            } else if (
-              dropDownKey === "C_MAKE" ||
-              dropDownKey === "R_MAKE" ||
-              dropDownKey === "A_MAKE"
-            ) {
-              updateModelTypesForCustomerNeedAnalysis(item.name, dropDownKey);
-            }
-            setShowDropDownModel(false);
-            dispatch(
-              setDropDownData({
-                key: dropDownKey,
-                value: item.name,
-                id: item.id,
-              })
-            );
-          }}
-        />
+            <DropDownComponant
+                visible={showDropDownModel}
+                headerTitle={dropDownTitle}
+                data={dataForDropDown}
+                onRequestClose={() => setShowDropDownModel(false)}
+                selectedItems={(item) => {
+                    console.log("ITEM:", JSON.stringify(item));
+                    if (dropDownKey === "MODEL") {
+                        updateVariantModelsData(item.name, false);
+                    } else if (dropDownKey === "VARIENT") {
+                        updateColorsDataForSelectedVarient(
+                            item.name,
+                            selectedCarVarientsData.varientList
+                        );
+                    } else if (
+                        dropDownKey === "C_MAKE" ||
+                        dropDownKey === "R_MAKE" ||
+                        dropDownKey === "A_MAKE"
+                    ) {
+                        updateModelTypesForCustomerNeedAnalysis(item.name, dropDownKey);
+                    }
+                    setShowDropDownModel(false);
+                    dispatch(
+                        setDropDownData({ key: dropDownKey, value: item.name, id: item.id })
+                    );
+                }}
+            />
+
+            {selector.showDatepicker && (
+                <DatePickerComponent
+                    visible={selector.showDatepicker}
+                    mode={"date"}
+                    value={new Date(Date.now())}
+                    minimumDate={selector.minDate}
+                    maximumDate={selector.maxDate}
+                    onChange={(event, selectedDate) => {
+                        console.log("date: ", selectedDate);
+                        if (Platform.OS === "android") {
+                            if (!selectedDate) {
+                                dispatch(
+                                    updateSelectedDate({ key: "NONE", text: selectedDate })
+                                );
+                            } else {
+                                dispatch(updateSelectedDate({ key: "", text: selectedDate }));
+                            }
+                        } else {
+                            dispatch(updateSelectedDate({ key: "", text: selectedDate }));
+                        }
+                    }}
+                    onRequestClose={() => dispatch(setDatePicker())}
+                />
+            )}
 
         {selector.showDatepicker && (
           <DatePickerComponent

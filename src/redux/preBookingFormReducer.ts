@@ -69,10 +69,13 @@ export const updatePrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLI
 })
 
 export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getOnRoadPriceAndInsurenceDetailsApi", async (payload, { rejectWithValue }) => {
-
+  // console.log("PAYLOAD:", JSON.stringify(payload));
+  
   const response = await client.get(URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(payload["varientId"], payload["orgId"]));
   try {
     const json = await response.json();
+    // console.log("INSURANCE:", JSON.stringify(json));
+    
     if (response.status != 200) {
       return rejectWithValue(json);
     }
@@ -165,6 +168,7 @@ export const getOnRoadPriceDtoListApi = createAsyncThunk("PREBOONING_FORMS_SLICE
   const response = await client.get(URL.GET_ON_ROAD_PRICE_DTO_LIST(leadId));
   try {
     const json = await response.json();
+    console.log("DATA:", JSON.stringify(json));
     if (response.status != 200) {
       return rejectWithValue(json);
     }
@@ -408,7 +412,8 @@ const prebookingFormSlice = createSlice({
     cheque_date: "",
     dd_number: "",
     dd_date: "",
-    isDataLoaded: false
+    isDataLoaded: false,
+    addOnPrice: 0
   },
   reducers: {
     clearState: (state, action) => {
@@ -1162,6 +1167,15 @@ const prebookingFormSlice = createSlice({
     builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.fulfilled, (state, action) => {
       if (action.payload) {
         state.vehicle_on_road_price_insurence_details_response = action.payload;
+        if (action.payload.insuranceAddOn.length > 0){
+          let addOnNames = "", price = 0;
+          action.payload.insuranceAddOn.forEach((element, index) => {
+            addOnNames += element.add_on_price[0].document_name + ((index + 1) < action.payload.insuranceAddOn.length ? ", " : "");
+            price += Number(element.add_on_price[0].cost)
+          });
+          state.add_on_insurance = addOnNames;
+          state.addOnPrice = price;
+        }
       }
       state.isLoading = false;
     })
@@ -1223,7 +1237,7 @@ const prebookingFormSlice = createSlice({
             dataObj.insuranceAddonData.forEach((element, index) => {
               addOnNames += element.insuranceAddonName + ((index + 1) < dataObj.length ? ", " : "");
             });
-            state.add_on_insurance + addOnNames;
+            state.add_on_insurance = addOnNames;
           }
 
           state.consumer_offer = dataObj.specialScheme ? dataObj.specialScheme.toString() : "";

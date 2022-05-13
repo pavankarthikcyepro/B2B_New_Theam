@@ -11,6 +11,7 @@ import {
     KeyboardAvoidingView,
     Pressable,
     BackHandler,
+    TextInput,
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { useDispatch, useSelector } from "react-redux";
@@ -95,15 +96,15 @@ import {
     showToastSucess,
 } from "../../../utils/toast";
 import {
-  convertDateStringToMillisecondsUsingMoment,
-  isValidateAlphabetics,isValidate,
-  isMobileNumber,
-  emiCalculator,
-  GetCarModelList,
-  PincodeDetails,
-  GetFinanceBanksList,
-  GetPaidAccessoriesList,
-  GetDropList,
+    convertDateStringToMillisecondsUsingMoment,
+    isValidateAlphabetics, isValidate,
+    isMobileNumber,
+    emiCalculator,
+    GetCarModelList,
+    PincodeDetails,
+    GetFinanceBanksList,
+    GetPaidAccessoriesList,
+    GetDropList,
 } from "../../../utils/helperFunctions";
 import URL from "../../../networking/endpoints";
 import uuid from "react-native-uuid";
@@ -280,6 +281,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const [focPrice, setFocPrice] = useState(0);
     const [mrpPrice, setMrpPrice] = useState(0);
     const [isDataLoaded, setIsDataLoaded] = useState(false);
+    const [taxPercent, setTaxPercent] = useState('');
+    const [insuranceDiscount, setInsuranceDiscount] = useState('');
+    const [accDiscount, setAccDiscount] = useState('');
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -335,10 +339,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         selectedWarrentyPrice,
         // selectedPaidAccessoriesPrice,
         selector.vechicle_registration,
+        taxPercent
     ]);
 
     useEffect(() => {
-        if (selector.pan_number){
+        if (selector.pan_number) {
             console.log("%%%%%%%%%%", selector.pan_number, selector.form_or_pan);
             dispatch(
                 setDocumentUploadDetails({
@@ -354,7 +359,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     ]);
 
     useEffect(() => {
-        setTotalOnRoadPriceAfterDiscount(totalOnRoadPriceAfterDiscount - focPrice) 
+        setTotalOnRoadPriceAfterDiscount(totalOnRoadPriceAfterDiscount - focPrice)
         dispatch(
             setOfferPriceDetails({
                 key: "FOR_ACCESSORIES",
@@ -616,14 +621,32 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 dmsOnRoadPriceDtoObj.insuranceAddonData &&
                 dmsOnRoadPriceDtoObj.insuranceAddonData.length > 0
             ) {
-                let addOnPrice = 0;
-                dmsOnRoadPriceDtoObj.insuranceAddonData.forEach((element, index) => {
-                    addOnPrice += element.insuranceAmount;
-                });
-                setSelectedAddOnsPrice(addOnPrice);
+                // let addOnPrice = 0;
+                // dmsOnRoadPriceDtoObj.insuranceAddonData.forEach((element, index) => {
+                //     addOnPrice += Number(element.add_on_price[0].cost);
+                // });
+                // setSelectedAddOnsPrice(addOnPrice);
+            }
+            if (dmsOnRoadPriceDtoObj.lifeTaxPercentage) {
+                setTaxPercent((Number(dmsOnRoadPriceDtoObj.lifeTaxPercentage) * 100).toString())
+                setLifeTaxAmount(getLifeTaxNew(Number(dmsOnRoadPriceDtoObj.lifeTaxPercentage) * 100))
+            }
+            if (dmsOnRoadPriceDtoObj.insuranceDiscount){
+                setInsuranceDiscount(dmsOnRoadPriceDtoObj.insuranceDiscount.toString())
+            }
+            if (dmsOnRoadPriceDtoObj.accessoriesDiscount) {
+                setAccDiscount(dmsOnRoadPriceDtoObj.accessoriesDiscount.toString())
             }
         }
     }, [selector.on_road_price_dto_list_response]);
+
+    useEffect(() => {
+        calculateOnRoadPriceAfterDiscount()
+    }, [insuranceDiscount, accDiscount]);
+
+    useEffect(() => {
+        setSelectedAddOnsPrice(selector.addOnPrice)
+    }, [selector.addOnPrice]);
 
     useEffect(() => {
         if (selector.vehicle_on_road_price_insurence_details_response) {
@@ -877,7 +900,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     ) => {
         let totalPrice = 0;
         totalPrice += priceInfomationData.ex_showroom_price;
-        const lifeTax = getLifeTax();
+        // const lifeTax = getLifeTax();
+        let lifeTax = taxPercent !== '' ? getLifeTaxNew(Number(taxPercent)) : 0;
         setLifeTaxAmount(lifeTax);
         totalPrice += lifeTax;
         totalPrice += priceInfomationData.registration_charges;
@@ -911,6 +935,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         totalPrice -= Number(selector.for_accessories);
         totalPrice -= Number(selector.additional_offer_1);
         totalPrice -= Number(selector.additional_offer_2);
+        if(accDiscount !== ''){
+            totalPrice -= Number(accDiscount);
+        }
+        if (insuranceDiscount !== '') {
+            totalPrice -= Number(insuranceDiscount);
+        }
         setTotalOnRoadPriceAfterDiscount(totalPrice);
     };
 
@@ -1025,6 +1055,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         postOnRoadPriceTable.lead_id =
             selector.pre_booking_details_response.dmsLeadDto.id;
         postOnRoadPriceTable.lifeTax = lifeTaxAmount;
+        postOnRoadPriceTable.lifeTaxPercentage = taxPercent !== '' ? Number(taxPercent) / 100 : 0;
         postOnRoadPriceTable.onRoadPrice = totalOnRoadPrice;
         postOnRoadPriceTable.finalPrice = totalOnRoadPriceAfterDiscount;
         postOnRoadPriceTable.promotionalOffers = selector.promotional_offer;
@@ -1038,7 +1069,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
         postOnRoadPriceTable.form_or_pan = selector.form_or_pan;
 
-        console.log("PAYLOAD:", JSON.stringify(postOnRoadPriceTable));
+        // console.log("PAYLOAD:", JSON.stringify(postOnRoadPriceTable));
         dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable));
     };
 
@@ -1560,7 +1591,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         tableData.forEach((item) => {
             if (item.selected) {
                 totalPrice += item.cost;
-                if (item.item === 'FOC'){
+                if (item.item === 'FOC') {
                     totFoc += item.cost
                 }
                 if (item.item === 'MRP') {
@@ -1593,6 +1624,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             default:
                 return priceInfomationData.ex_showroom_price * 0.14;
         }
+    };
+
+    const getLifeTaxNew = (val) => {
+        return priceInfomationData.ex_showroom_price * (val / 100)
     };
 
     const getTcsAmount = () => {
@@ -2475,13 +2510,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 ]}
                             >
                                 {/* {isDataLoaded && */}
-                                    <DropDownSelectionItem
-                                        label={"Form60/PAN"}
-                                        value={selector.form_or_pan}
-                                        onPress={() =>
-                                            showDropDownModelMethod("FORM_60_PAN", "Retail Finance")
-                                        }
-                                    />
+                                <DropDownSelectionItem
+                                    label={"Form60/PAN"}
+                                    value={selector.form_or_pan}
+                                    onPress={() =>
+                                        showDropDownModelMethod("FORM_60_PAN", "Retail Finance")
+                                    }
+                                />
                                 {/* } */}
 
                                 {selector.form_or_pan === "PAN" && (
@@ -2812,7 +2847,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     title={"Ex-Showroom Price:"}
                                     amount={priceInfomationData.ex_showroom_price.toFixed(2)}
                                 />
-                                <View style={styles.radioGroupBcVw}>
+                                {/* <View style={styles.radioGroupBcVw}>
                                     <Checkbox.Android
                                         style={{ margin: 0, padding: 0 }}
                                         uncheckedColor={Colors.GRAY}
@@ -2832,7 +2867,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     <Text style={styles.checkboxAddText}>
                                         {"Any Other Vehicle Registration on Your Name"}
                                     </Text>
-                                </View>
+                                </View> */}
 
                                 {selector.vechicle_registration ? (
                                     <View>
@@ -2862,10 +2897,30 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     </View>
                                 ) : null}
 
-                                <TextAndAmountComp
+                                {/* <TextAndAmountComp
                                     title={"Life Tax:"}
                                     amount={lifeTaxAmount.toFixed(2)}
-                                />
+                                /> */}
+                                <View style={styles.textAndAmountView}>
+                                    <Text style={[styles.leftLabel]}>{"Life Tax:"}</Text>
+                                    <View style={{ width: 80, height: 30, justifyContent: 'center', paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#d1d1d1' }}>
+                                        <TextInput
+                                            value={taxPercent}
+                                            style={[{ fontSize: 14, fontWeight: "400", }]}
+                                            keyboardType={"number-pad"}
+                                            onChangeText={(text) => {
+                                                setTaxPercent(text);
+                                                if (text !== '') {
+                                                    setLifeTaxAmount(getLifeTaxNew(Number(text)))
+                                                }
+                                                else {
+                                                    setLifeTaxAmount(0)
+                                                }
+                                            }}
+                                        />
+                                    </View>
+                                </View>
+
                                 <Text style={GlobalStyle.underline}></Text>
 
                                 <TextAndAmountComp
@@ -2891,12 +2946,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         {rupeeSymbol + " " + selectedInsurencePrice.toFixed(2)}
                                     </Text>
                                 </View>
-                                {console.log("selector.add_on_insurance:", selector.add_on_insurance)}
                                 <View style={styles.symbolview}>
                                     <View style={{ width: "70%" }}>
                                         <DropDownSelectionItem
                                             label={"Add-on Insurance"}
-                                            value={selector.add_on_insurance}
+                                            value={selector.insurance_type !== '' ? selector.add_on_insurance : ''}
+                                            disabled={true}
                                             onPress={() =>
                                                 showDropDownModelMethod(
                                                     "INSURENCE_ADD_ONS",
@@ -2905,9 +2960,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             }
                                         />
                                     </View>
-                                    <Text style={styles.shadowText}>
-                                        {rupeeSymbol + " " + selectedAddOnsPrice.toFixed(2)}
-                                    </Text>
+                                    {selector.insurance_type !== '' ?
+                                        <Text style={styles.shadowText}>
+                                            {rupeeSymbol + " " + selectedAddOnsPrice.toFixed(2)}
+                                        </Text>
+                                        :
+                                        <Text style={styles.shadowText}>
+                                            {rupeeSymbol + " 0.00"}
+                                        </Text>
+                                    }
                                 </View>
 
                                 <View style={styles.symbolview}>
@@ -3162,6 +3223,32 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     }
                                 />
                                 <Text style={GlobalStyle.underline}></Text>
+                                <View style={styles.textAndAmountView}>
+                                    <Text style={[styles.leftLabel]}>{"Insurance Discount:"}</Text>
+                                    <View style={{ width: 80, height: 30, justifyContent: 'center', paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#d1d1d1' }}>
+                                        <TextInput
+                                            value={insuranceDiscount}
+                                            style={[{ fontSize: 14, fontWeight: "400", }]}
+                                            keyboardType={"number-pad"}
+                                            onChangeText={(text) => {
+                                                setInsuranceDiscount(text)
+                                            }}
+                                        />
+                                    </View>
+                                </View>
+                                <View style={styles.textAndAmountView}>
+                                    <Text style={[styles.leftLabel]}>{"Accessories Discount:"}</Text>
+                                    <View style={{ width: 80, height: 30, justifyContent: 'center', paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#d1d1d1' }}>
+                                        <TextInput
+                                            value={accDiscount}
+                                            style={[{ fontSize: 14, fontWeight: "400", }]}
+                                            keyboardType={"number-pad"}
+                                            onChangeText={(text) => {
+                                                setAccDiscount(text)
+                                            }}
+                                        />
+                                    </View>
+                                </View>
                                 <TextinputComp
                                     style={styles.offerPriceTextInput}
                                     label={"Additional Offer 1:"}
@@ -3820,7 +3907,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             ) : null}
                         </List.AccordionGroup>
 
-                        {/* {!isDropSelected && showSubmitDropBtn && !userData.isManager && ( */}
+                        {!isDropSelected && showSubmitDropBtn && !userData.isManager && (
                             <View style={styles.actionBtnView}>
                                 <Button
                                     mode="contained"
@@ -3838,7 +3925,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     onPress={submitClicked}
                                 >SUBMIT</Button>
                             </View>
-                        {/* )} */}
+                        )}
 
                         {showApproveRejectBtn &&
                             userData.isPreBookingApprover &&
