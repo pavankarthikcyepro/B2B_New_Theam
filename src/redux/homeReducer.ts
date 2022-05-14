@@ -230,6 +230,32 @@ export const getSalesComparisonData = createAsyncThunk("HOME/getSalesComparisonD
     return json;
 })
 
+export const getBranchIds = createAsyncThunk("HOME/getBranchIds", async (payload: any, { rejectWithValue }) => {
+    console.log("CALLED");
+    
+    const response = await client.get(URL.GET_BRANCH())
+    const json = await response.json()
+    console.log("SUCCESS:", json);
+    
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const downloadFile = createAsyncThunk("HOME/downloadFile", async (payload: any, { rejectWithValue }) => {
+
+    const response = await client.post(URL.DOWNLOAD_FILE(), payload)
+    // const json = await response.json()
+    console.log("DOWNLOAD: ", response);
+    
+    if (!response.ok) {
+        return rejectWithValue(response);
+    }
+    return response;
+})
+
+
 export const updateIsTeam = createAsyncThunk("HOME/updateIsTeam", async (payload: any) => {
     console.log("PPP", payload);
     

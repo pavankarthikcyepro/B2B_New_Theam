@@ -40,6 +40,8 @@ export const dfGetAll = "http://automatestaging-724985329.ap-south-1.elb.amazona
 export const subSourceAllDetails = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails"
 export const salesGap = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/sales-gap"
 export const lostSubLost = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails"
+export const getBranch = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/oh";
+export const downloadFile = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8093/dynamic-reports";
 
 
 const URL = {
@@ -210,6 +212,12 @@ const URL = {
     },
     UPDATE_REF: () => {
         return sales_url + `/lead-customer-reference/update`;
+    },
+    GET_BRANCH: () => {
+        return getBranch + `/data-nodes?orgId=1&levelCode=Level5`;
+    },
+    DOWNLOAD_FILE: () => {
+        return downloadFile + `/etvbrl_report_md`;
     },
 }
 

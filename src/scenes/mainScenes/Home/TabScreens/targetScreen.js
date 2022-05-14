@@ -1034,7 +1034,7 @@ const TargetScreen = ({ route, navigation }) => {
               <View style={{ width: "50%" }}>
                 <View style={styles.statWrap}>
                   <Text
-                    style={{ marginRight: 40, fontSize: 10, fontWeight: "600" }}
+                    style={{ marginRight: 10, fontSize: 10, fontWeight: "600" }}
                   >
                     Enquiry to Booking (%)
                   </Text>
@@ -1067,7 +1067,7 @@ const TargetScreen = ({ route, navigation }) => {
 
                 <View style={styles.statWrap}>
                   <Text
-                    style={{ marginRight: 50, fontSize: 10, fontWeight: "600" }}
+                    style={{ marginRight: 10, fontSize: 10, fontWeight: "600" }}
                   >
                     Enquiry to Retail (%)
                   </Text>
@@ -1100,7 +1100,7 @@ const TargetScreen = ({ route, navigation }) => {
 
                 <View style={styles.statWrap}>
                   <Text
-                    style={{ marginRight: 32, fontSize: 10, fontWeight: "600" }}
+                    style={{ marginRight: 10, fontSize: 10, fontWeight: "600" }}
                   >
                     Enquiry to Test drive (%)
                   </Text>
@@ -1144,7 +1144,7 @@ const TargetScreen = ({ route, navigation }) => {
               <View style={{ width: "49%" }}>
                 <View style={styles.statWrap}>
                   <Text
-                    style={{ marginRight: 40, fontSize: 10, fontWeight: "600" }}
+                    style={{ marginRight: 10, fontSize: 10, fontWeight: "600" }}
                   >
                     Booking to Retail (%)
                   </Text>
@@ -1177,7 +1177,7 @@ const TargetScreen = ({ route, navigation }) => {
 
                 <View style={styles.statWrap}>
                   <Text
-                    style={{ marginRight: 45, fontSize: 10, fontWeight: "600" }}
+                    style={{ marginRight: 10, fontSize: 10, fontWeight: "600" }}
                   >
                     Booking to Visit (%)
                   </Text>

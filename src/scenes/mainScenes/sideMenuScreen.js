@@ -82,8 +82,14 @@ const SideMenuScreen = ({ navigation }) => {
 
     useEffect(() => {
         getLoginEmployeeData();
-        getProfilePic();
+        // getProfilePic();
     }, [])
+
+    useEffect(() => {
+        if(userData){
+            getProfilePic();
+        }
+    }, [userData])
 
     useEffect(() => {
 
@@ -127,7 +133,7 @@ const SideMenuScreen = ({ navigation }) => {
         setRole(jsonObj.hrmsRole);
         setLocation(jsonObj.branchName);
         setUserData(jsonObj)
-        getProfilePic();
+        // getProfilePic();
 
 
         let newFilterData = [];
