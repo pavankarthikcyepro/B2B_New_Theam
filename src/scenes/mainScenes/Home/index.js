@@ -248,6 +248,18 @@ const HomeScreen = ({ route, navigation }) => {
         }
     }
 
+    const checkLoginUserAndEnableReportButton = async () => {
+        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        console.log("$$$$$ LOGIN EMP:", employeeData);
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            const payload = {
+                orgId: jsonObj.orgId,
+                branchId: jsonObj.branchId
+            }
+        }
+    }
+
     const getLoginEmployeeDetailsFromAsyn = async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
         // console.log("$$$$$ LOGIN EMP:", employeeData);

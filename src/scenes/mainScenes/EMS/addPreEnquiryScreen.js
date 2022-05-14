@@ -31,6 +31,7 @@ import {
     continueToCreatePreEnquiry,
     getEventListApi,
     updateSelectedDate,
+    updateEnqStatus
 } from "../../../redux/addPreEnquiryReducer";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -636,6 +637,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     // Handle update Enquiry response
     useEffect(() => {
         if (selector.updateEnquiryStatus === "success") {
+            dispatch(updateEnqStatus(''))
             showToastSucess("Pre-enquiry successfully updated");
             navigation.popToTop();
         } else if (selector.updateEnquiryStatus === "failed") {

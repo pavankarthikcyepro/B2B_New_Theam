@@ -177,6 +177,9 @@ export const addPreEnquirySlice = createSlice({
     setCreateEnquiryCheckbox: (state, action) => {
       state.create_enquiry_checked = !state.create_enquiry_checked;
     },
+    updateEnqStatus: (state, action) => {
+      state.updateEnquiryStatus = action.payload;
+    },
     setDropDownData: (state, action: PayloadAction<DropDownModel>) => {
       const { key, value, id } = action.payload;
       switch (key) {
@@ -365,5 +368,6 @@ export const {
   setCustomerTypeList,
   setExistingDetails,
   updateSelectedDate,
+  updateEnqStatus,
 } = addPreEnquirySlice.actions;
 export default addPreEnquirySlice.reducer;
