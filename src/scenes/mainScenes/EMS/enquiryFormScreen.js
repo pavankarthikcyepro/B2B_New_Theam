@@ -1885,7 +1885,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         }}
       />
 
-      {selector.showDatepicker && (
+      {/* {selector.showDatepicker && (
         <DatePickerComponent
           visible={selector.showDatepicker}
           mode={"date"}
@@ -1908,9 +1908,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           }}
           onRequestClose={() => dispatch(setDatePicker())}
         />
-      )}
+      )} */}
 
-      {selector.showDatepicker && (
+      {/* {selector.showDatepicker && ( */}
         <DatePickerComponent
           visible={selector.showDatepicker}
           mode={"date"}
@@ -1933,7 +1933,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           }}
           onRequestClose={() => dispatch(setDatePicker())}
         />
-      )}
+      {/* )} */}
 
       {/* <View style={styles.view1}>
         <Text style={styles.titleText}>{"Details Overview"}</Text>
