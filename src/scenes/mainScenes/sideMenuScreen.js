@@ -77,7 +77,7 @@ const SideMenuScreen = ({ navigation }) => {
     const [newTableData, setNewTableData] = useState([]);
     const [imageUri, setImageUri] = useState(null);
     const [dataList, setDataList] = useState([]);
-    const [userData, setUserData] = useState({});
+    // const [userData, setUserData] = useState({});
 
 
     useEffect(() => {
@@ -105,19 +105,21 @@ const SideMenuScreen = ({ navigation }) => {
         if (jsonString) {
             const jsonObj = JSON.parse(jsonString);
             updateUserData(jsonObj);
+            getProfilePic(jsonObj);
+
         }
     }
 
 
-    const getProfilePic = () => {
-        console.log(`http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`);
+    const getProfilePic = (userData) => {
+        // console.log(`http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`);
         fetch(
             `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
         )
             .then((response) => response.json())
             .then((json) => {
                 setDataList(json);
-                console.log({json})
+                // console.log({json})
                 if (json.length > 0) {
                     setImageUri(json[json.length - 1].documentPath);
                 } else {
@@ -132,8 +134,13 @@ const SideMenuScreen = ({ navigation }) => {
         setEmail(jsonObj.email);
         setRole(jsonObj.hrmsRole);
         setLocation(jsonObj.branchName);
+<<<<<<< Updated upstream
         setUserData(jsonObj)
         // getProfilePic();
+=======
+        // setUserData(jsonObj)
+        getProfilePic(jsonObj);
+>>>>>>> Stashed changes
 
 
         let newFilterData = [];
@@ -190,6 +197,9 @@ const SideMenuScreen = ({ navigation }) => {
                 navigation.navigate(AppNavigator.DrawerStackIdentifiers.taskTransfer);
                 break;
             case 111:
+                navigation.navigate(AppNavigator.DrawerStackIdentifiers.evtbrlReport);
+                break;
+            case 112:
                 signOutClicked();
                 break;
             // case 999:

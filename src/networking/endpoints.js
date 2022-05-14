@@ -210,6 +210,7 @@ const URL = {
     CHANGE_PASSWORD: (cognitoName) => {
         return hrms_url + `/changepassword/${cognitoName}`;
     },
+<<<<<<< Updated upstream
     UPDATE_REF: () => {
         return sales_url + `/lead-customer-reference/update`;
     },
@@ -219,6 +220,17 @@ const URL = {
     DOWNLOAD_FILE: () => {
         return downloadFile + `/etvbrl_report_md`;
     },
+=======
+    LOCATION_LIST: (orgId) => {
+        return `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/oh/data-nodes?orgId=${orgId}&levelCode=Level4`;
+    },
+    DEALER_CODE_LIST: (orgId) => {
+        return `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/oh/data-nodes?orgId=1&levelCode=Level5`;
+    },
+    DOWNLOAD_REPORT: () => {
+        return `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8093/dynamic-reports/etvbrl_report`;
+    }
+>>>>>>> Stashed changes
 }
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason

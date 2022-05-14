@@ -66,6 +66,7 @@ import ProceedToBookingScreen from "../scenes/mainScenes/MyTasks/proceedToBookin
 
 import { useSelector, useDispatch } from 'react-redux';
 import { updateModal, updateSearchKey, updateIsSearch } from '../redux/appReducer';
+import etvbrlReportScreen from "../scenes/mainScenes/etvbrlReportScreen";
 
 
 const drawerWidth = 300;
@@ -198,7 +199,8 @@ export const DrawerStackIdentifiers = {
     monthlyTarget: "MONTHLY_TARGET",
     helpdesk: "HELP_DESK",
     taskManagement: "TASK_MANAGEMENT",
-    taskTransfer: "TASK_TRANSFER"
+    taskTransfer: "TASK_TRANSFER",
+    evtbrlReport: "EVTBRL_REPORT"
 };
 
 export const TabStackIdentifiers = {
@@ -785,6 +787,26 @@ const EventManagementStackNavigator = ({ navigation }) => {
     );
 };
 
+const EvtbrlReportStack = createStackNavigator();
+
+const EvtbrlReportStackNavigator = ({ navigation }) => {
+    return (
+        <EvtbrlReportStack.Navigator
+            initialRouteName={"EVENT_MANAGEMENT"}
+            screenOptions={screeOptionStyle}
+        >
+            <EvtbrlReportStack.Screen
+                name={"ETVBRL Report"}
+                component={etvbrlReportScreen}
+                options={{
+                    title: "ETVBRL Report",
+                    headerLeft: () => <MenuIcon navigation={navigation} />,
+                }}
+            />
+        </EvtbrlReportStack.Navigator>
+    );
+};
+
 const PreBookingStack = createStackNavigator();
 
 const PreBookingStackNavigator = ({ navigation }) => {
@@ -892,6 +914,11 @@ const MainStackDrawerNavigator = () => {
             <MainDrawerNavigator.Screen
                 name={DrawerStackIdentifiers.eventManagement}
                 component={EventManagementStackNavigator}
+            />
+
+            <MainDrawerNavigator.Screen
+                name={DrawerStackIdentifiers.evtbrlReport}
+                component={EvtbrlReportStackNavigator}
             />
 
             {/* <MainDrawerNavigator.Screen

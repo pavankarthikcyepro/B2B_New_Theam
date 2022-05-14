@@ -68,9 +68,14 @@ const data = [
     screen: 102,
   },
   {
-    title: "Sign Out",
+    title: "ETVBRL Report",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 111,
+  },
+  {
+    title: "Sign Out",
+    icon: CUSTOMER_RELATIONSHIP_STR,
+    screen: 112,
   },
 ];
 
