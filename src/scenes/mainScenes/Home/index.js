@@ -528,13 +528,13 @@ const HomeScreen = ({ route, navigation }) => {
                         if (index === 0) {
                             return (
                                 <>
-                                    {isButtonPresent &&
+                                    {/* {isButtonPresent &&
                                         <View style={{ width: '100%', alignItems: 'flex-end', marginBottom: 15 }}>
                                         <TouchableOpacity style={{ width: 130, height: 30, backgroundColor: Colors.RED, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={downloadFileFromServer}>
                                                 <Text style={{ fontSize: 14, fontWeight: '600', color: '#fff' }}>ETVBRL Report</Text>
                                             </TouchableOpacity>
                                         </View>
-                                    }
+                                    } */}
                                     <View style={styles.rankView}>
 
                                         <View style={styles.rankBox}>
