@@ -416,7 +416,10 @@ const TargetScreen = ({ route, navigation }) => {
     const [isTeam, setIsTeam] = useState(false);
 
     useEffect(() => {
-
+        const dateFormat = "YYYY-MM-DD";
+        const currentDate = moment().format(dateFormat)
+        const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+        setDateDiff((new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) / (1000 * 60 * 60 * 24));
         if (selector.target_parameters_data.length > 0) {
             let tempRetail = [];
             tempRetail = selector.target_parameters_data.filter((item) => {

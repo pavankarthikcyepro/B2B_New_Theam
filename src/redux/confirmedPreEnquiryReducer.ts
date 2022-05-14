@@ -12,6 +12,17 @@ export const getPreEnquiryDetails = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/getP
     return json;
 })
 
+export const customerLeadRef = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/customerLeadRef", async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.CUSTOMER_LEAD_REFERENCE(), payload)
+    const json = await response.json()
+    console.log("LEAD REF", JSON.stringify(json));
+    
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
 export const noThanksApi = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/noThanksApi", async (leadId, { rejectWithValue }) => {
     const response = await client.get(URL.NO_THANKS(leadId))
     const json = await response.json()
@@ -58,6 +69,7 @@ export const changeEnquiryStatusApi = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/ch
     }
     return json;
 })
+
 
 export const updateEmployeeApi = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/updateEmployeeApi", async (body, { rejectWithValue }) => {
     const response = await client.post(URL.SALES_CONSULTANT(), body)

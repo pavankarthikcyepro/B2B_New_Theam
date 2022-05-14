@@ -62,7 +62,8 @@ import {
   updateDmsAttachmentDetails,
   getPendingTasksApi,
   updateAddressByPincode,
-  updateRef
+  updateRef,
+  customerLeadRef
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
@@ -989,22 +990,30 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
 
     setTypeOfActionDispatched("UPDATE_ENQUIRY");
-    Promise.all([
-      dispatch(updateEnquiryDetailsApi(formData))
-    ]).then(async (res) => {
-      console.log("REF NO:", res[0].payload.dmsEntity.dmsLeadDto.referencenumber);
-      let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-      if (employeeData) {
-        const jsonObj = JSON.parse(employeeData);
+    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      const refPayload = {
+        "branchid": jsonObj.branchs[0]?.branchId,
+        "leadstage": "ENQUIRY",
+        "orgid": jsonObj.orgId,
+        "universalId": universalId
+      }
+      Promise.all([
+        dispatch(updateEnquiryDetailsApi(formData)),
+        dispatch(customerLeadRef(refPayload))
+      ]).then(async (res) => {
+        console.log("REF NO:", JSON.stringify(res));
         const payload = {
-          "refNo": res[0].payload.dmsEntity.dmsLeadDto.referencenumber,
+          "refNo": res[1].payload.dmsEntity.leadCustomerReference.referencenumber,
           "orgId": jsonObj.orgId,
           "stageCompleted": "ENQUIRY"
         }
         console.log("PAYLOAD:", payload);
         dispatch(updateRef(payload))
-      }
-    });
+      });
+    }
+
   };
 
   const mapContactOrAccountDto = (prevData) => {

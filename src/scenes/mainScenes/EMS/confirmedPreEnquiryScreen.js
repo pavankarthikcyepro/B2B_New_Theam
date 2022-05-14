@@ -6,7 +6,7 @@ import { Colors, GlobalStyle } from '../../../styles';
 import { TextinputComp } from '../../../components/textinputComp';
 import { DropDownComponant } from '../../../components/dropDownComp';
 import { convertTimeStampToDateString, GetDropList } from '../../../utils/helperFunctions';
-import { clearState, getPreEnquiryDetails, noThanksApi, getaAllTasks, assignTaskApi, changeEnquiryStatusApi, getEmployeesListApi, updateEmployeeApi } from '../../../redux/confirmedPreEnquiryReducer';
+import { clearState, getPreEnquiryDetails, noThanksApi, getaAllTasks, assignTaskApi, changeEnquiryStatusApi, getEmployeesListApi, updateEmployeeApi, customerLeadRef } from '../../../redux/confirmedPreEnquiryReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppNavigator } from '../../../navigations';
 import * as AsyncStore from "../../../asyncStore";
@@ -368,7 +368,24 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                 orgId: organizationId,
                 branchId: branchId
             }
-            dispatch(getEmployeesListApi(data));
+            
+            Promise.all([
+                dispatch(getEmployeesListApi(data))
+            ]).then(async (res) => {
+                
+                let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+                if (employeeData) {
+                    const jsonObj = JSON.parse(employeeData);
+                    const payload = {
+                        "branchid": branchId,
+                        "leadstage": "ENQUIRY",
+                        "orgid": jsonObj.orgId,
+                        "universalId": itemData.universalId
+                    }
+                    console.log("PAYLOAD:", payload);
+                    dispatch(customerLeadRef(payload))
+                }
+            });
         }
     }
 

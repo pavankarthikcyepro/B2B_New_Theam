@@ -34,6 +34,16 @@ export const updateEnquiryDetailsApi = createAsyncThunk(
   }
 );
 
+export const customerLeadRef = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/customerLeadRef", async (payload, { rejectWithValue }) => {
+  const response = await client.post(URL.CUSTOMER_LEAD_REFERENCE(), payload)
+  const json = await response.json()
+
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 export const updateRef = createAsyncThunk("ENQUIRY_FORM_SLICE/updateRef",
   async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.UPDATE_REF(), payload);
