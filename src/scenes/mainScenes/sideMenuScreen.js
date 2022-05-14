@@ -134,13 +134,8 @@ const SideMenuScreen = ({ navigation }) => {
         setEmail(jsonObj.email);
         setRole(jsonObj.hrmsRole);
         setLocation(jsonObj.branchName);
-<<<<<<< Updated upstream
         setUserData(jsonObj)
         // getProfilePic();
-=======
-        // setUserData(jsonObj)
-        getProfilePic(jsonObj);
->>>>>>> Stashed changes
 
 
         let newFilterData = [];

@@ -146,6 +146,8 @@ const ChangePasswordScreen = () => {
     const changePasswordApi = async (request) => {
         const response = await client.post(URL.CHANGE_PASSWORD(userName), request);
         const changePassword = await response.json();
+
+        // Logout the app if the user change password
         if (changePassword.status == "200") {
             AsyncStore.storeData(AsyncStore.Keys.USER_NAME, "");
             AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, "");
