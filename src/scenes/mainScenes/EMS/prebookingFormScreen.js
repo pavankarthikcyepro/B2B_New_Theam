@@ -3468,7 +3468,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 {/* // 7.Financial Details */}
                 <List.Accordion
                   id={"7"}
-                  title={"Financial Details"}
+                  title={"Finance Details"}
                   titleStyle={{
                     color: openAccordian === "7" ? Colors.WHITE : Colors.BLACK,
                     fontSize: 16,
