@@ -11,10 +11,10 @@ export const Enquiry_Segment_Data = [
     id: "3",
     name: "Company",
   },
-  {
-    id: "4",
-    name: "Handicapped",
-  },
+  // {
+  //   id: "4",
+  //   name: "Handicapped",
+  // },
 ];
 
 export const Category_Type_List_For_Filter = [

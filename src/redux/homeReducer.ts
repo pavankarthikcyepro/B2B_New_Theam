@@ -246,13 +246,13 @@ export const getBranchIds = createAsyncThunk("HOME/getBranchIds", async (payload
 export const downloadFile = createAsyncThunk("HOME/downloadFile", async (payload: any, { rejectWithValue }) => {
 
     const response = await client.post(URL.DOWNLOAD_FILE(), payload)
-    // const json = await response.json()
-    console.log("DOWNLOAD: ", response);
+    const json = await response.json()
+    console.log("DOWNLOAD: ", json);
     
     if (!response.ok) {
-        return rejectWithValue(response);
+        return rejectWithValue(json);
     }
-    return response;
+    return json;
 })
 
 
