@@ -1034,7 +1034,11 @@ const TargetScreen = ({ route, navigation }) => {
               <View style={{ width: "50%" }}>
                 <View style={styles.statWrap}>
                   <Text
-                    style={{ marginRight: 30, fontSize: 10, fontWeight: "600" }}
+                    style={{
+                      marginRight: screenWidth * 0.09,
+                      fontSize: 10,
+                      fontWeight: "600",
+                    }}
                   >
                     Enquiry to Booking (%)
                   </Text>
@@ -1067,9 +1071,13 @@ const TargetScreen = ({ route, navigation }) => {
 
                 <View style={styles.statWrap}>
                   <Text
-                    style={{ marginRight: 40, fontSize: 10, fontWeight: "600" }}
+                    style={{
+                      marginRight: screenWidth * 0.12,
+                      fontSize: 10,
+                      fontWeight: "600",
+                    }}
                   >
-                    Enquiry to Retail (%)
+                    Enquiry to Retail (%)       
                   </Text>
                   {retailData !== null && enqData !== null && (
                     <Text
@@ -1100,7 +1108,11 @@ const TargetScreen = ({ route, navigation }) => {
 
                 <View style={styles.statWrap}>
                   <Text
-                    style={{ marginRight: 28, fontSize: 10, fontWeight: "600" }}
+                    style={{
+                      marginRight: screenWidth * 0.08,
+                      fontSize: 10,
+                      fontWeight: "600",
+                    }}
                   >
                     Enquiry to Test drive (%)
                   </Text>
