@@ -17,7 +17,7 @@ const DigitalPaymentScreen = ({navigation}) => {
 
   useEffect(() => {
     fetch(
-      "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8093/dynamic-reports/get-qrCode/1"
+      "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/qrcode/get/1/242"
     )
       .then((response) => response.json())
       .then((json) => setDataList(json))
@@ -26,7 +26,6 @@ const DigitalPaymentScreen = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-     
       <IconButton
         icon="close"
         color={Colors.BLACK}
@@ -37,7 +36,7 @@ const DigitalPaymentScreen = ({navigation}) => {
       <Image
         style={styles.tinyLogo}
         source={{
-          uri: "https://automate-utils.s3.ap-south-1.amazonaws.com/Organization/BharatHyundai/Hyundai.jpg",
+          uri: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/146-1-242-a94edf7c-77b7-40ef-bd12-b66d9303c631/car.jpg",
         }}
       />
     </View>

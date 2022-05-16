@@ -77,7 +77,7 @@ const SideMenuScreen = ({ navigation }) => {
     const [newTableData, setNewTableData] = useState([]);
     const [imageUri, setImageUri] = useState(null);
     const [dataList, setDataList] = useState([]);
-    // const [userData, setUserData] = useState({});
+    const [userData, setUserData] = useState({});
 
 
     useEffect(() => {
@@ -135,7 +135,7 @@ const SideMenuScreen = ({ navigation }) => {
         setEmail(jsonObj.email);
         setRole(jsonObj.hrmsRole);
         setLocation(jsonObj.branchName);
-        // setUserData(jsonObj)
+        setUserData(jsonObj)
         getProfilePic(jsonObj);
 
 

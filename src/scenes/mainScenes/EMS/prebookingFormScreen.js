@@ -632,7 +632,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 setTaxPercent((Number(dmsOnRoadPriceDtoObj.lifeTaxPercentage) * 100).toString())
                 setLifeTaxAmount(getLifeTaxNew(Number(dmsOnRoadPriceDtoObj.lifeTaxPercentage) * 100))
             }
-            if (dmsOnRoadPriceDtoObj.insuranceDiscount){
+            if (dmsOnRoadPriceDtoObj.insuranceDiscount) {
                 setInsuranceDiscount(dmsOnRoadPriceDtoObj.insuranceDiscount.toString())
             }
             if (dmsOnRoadPriceDtoObj.accessoriesDiscount) {
@@ -936,7 +936,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         totalPrice -= Number(selector.for_accessories);
         totalPrice -= Number(selector.additional_offer_1);
         totalPrice -= Number(selector.additional_offer_2);
-        if(accDiscount !== ''){
+        if (accDiscount !== '') {
             totalPrice -= Number(accDiscount);
         }
         if (insuranceDiscount !== '') {
@@ -2921,7 +2921,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 /> */}
                                 <View style={styles.textAndAmountView}>
                                     {/* <View style={{width: '60%', flexDirection: 'row'}}> */}
-                                        <Text style={[styles.leftLabel]}>{"Life Tax:"}</Text>
+                                    <Text style={[styles.leftLabel]}>{"Life Tax:"}</Text>
                                     {/* </View> */}
                                     <View style={{ width: 80, height: 30, justifyContent: 'center', paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#d1d1d1' }}>
                                         <TextInput
@@ -2938,7 +2938,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                                 }
                                             }}
                                         />
-                                       
+
                                     </View>
                                     <Text style={{ fontSize: 14, fontWeight: "400", }}>{rupeeSymbol + " " + lifeTaxAmount}</Text>
                                 </View>
@@ -3246,7 +3246,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 />
                                 <Text style={GlobalStyle.underline}></Text>
                                 <View style={styles.textAndAmountView}>
-                                    <Text style={{ fontSize: 16, fontWeight: '400', color: Colors.GRAY}}>{"Insurance Discount:"}</Text>
+                                    <Text style={{ fontSize: 16, fontWeight: '400', color: Colors.GRAY }}>{"Insurance Discount:"}</Text>
                                     <View style={{ width: 80, height: 30, justifyContent: 'center', paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#d1d1d1' }}>
                                         <TextInput
                                             value={insuranceDiscount}

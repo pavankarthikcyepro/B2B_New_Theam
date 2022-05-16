@@ -102,7 +102,7 @@ const PreEnquiryScreen = ({ navigation }) => {
             "empId": empId,
             "status": "PREENQUIRY",
             "offset": offSet,
-            "limit": 10
+            "limit": 1000,
         }
         return payload;
     }

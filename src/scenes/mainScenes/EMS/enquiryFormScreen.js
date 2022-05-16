@@ -116,7 +116,9 @@ import URL from "../../../networking/endpoints";
 import { getEnquiryList } from "../../../redux/enquiryReducer";
 import { AppNavigator } from "../../../navigations";
 import {
-  isValidateAlphabetics, isValidate,
+  isValidateAlphabetics,
+   isValidate,
+   isValidateAplhaNumeric,
   isMobileNumber,
 } from "../../../utils/helperFunctions";
 import uuid from "react-native-uuid";
@@ -459,13 +461,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
     if (selector.enquiry_segment.toLowerCase() == "personal") {
       if (
-        selector.dateOfBirth.length == 0 ||
-        selector.anniversaryDate.length == 0
+        selector.dateOfBirth.length == 0
+        // ||
+        // selector.anniversaryDate.length == 0
       ) {
         return;
       }
     }
-
     if (!isValidate(selector.firstName)) {
       return;
     }
@@ -518,6 +520,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       }
     }
 
+   
+      
     if (selector.buyer_type === "Additional Buyer") {
       if (
         selector.a_make == 0 ||
@@ -534,12 +538,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       if (!isValidateAlphabetics(selector.a_color)) {
         return;
       }
-      // if (!isValidateAlphabetics(selector.a_reg_no)) {
-      //   showToast("Please enter alphabetics only in reg no ");
-      //   return;
-      // }
+      
     }
 
+    
     if (selector.buyer_type === "Replacement Buyer") {
       if (selector.r_color.length > 0) {
         if (!isValidateAlphabetics(selector.r_color)) {
@@ -607,6 +609,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       // console.log("GDGHDGDGDGDGD", JSON.stringify(dmsLeadDto.dmsAttachments));
       if (selector.pan_number) {
         tempAttachments.push({
+
           "branchId": jsonObj.branchs[0]?.branchId,
           "contentSize": 0,
           "createdBy": new Date().getSeconds(),
@@ -713,20 +716,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const submitClicked = async () => {
 
-    if (selector.designation.length == 0 || selector.buyer_type.length == 0) {
-      showToast("Please fill required fields in Customer Profile");
-      return;
-    }
-    if (!isValidateAlphabetics(selector.occupation)) {
-      showToast("Please enter alphabetics only in occupation");
-      return;
-    }
-
-    if (!isValidateAlphabetics(selector.designation)) {
-      showToast("Please enter alphabetics only in designation");
-      return;
-    }
-
+    //Personal Intro 
     if (selector.salutation.length == 0) {
       showToast("Please fill required fields in Personal Intro");
       return;
@@ -758,13 +748,22 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("Please enter alphabetics only in street name");
       return;
     }
+//Customer Profile
 
-    // Model Selection
-    if (selector.model.length == 0 || selector.varient.length == 0 || selector.color.length == 0) {
-      showToast("Please fill required fields in Model Selection");
+    if (selector.designation.length == 0 || selector.buyer_type.length == 0) {
+      showToast("Please fill required fields in Customer Profile");
+      return;
+    }
+    if (!isValidateAlphabetics(selector.occupation)) {
+      showToast("Please enter alphabetics only in occupation");
       return;
     }
 
+    if (!isValidateAlphabetics(selector.designation)) {
+      showToast("Please enter alphabetics only in designation");
+      return;
+    }
+//communication Address
     if (
       selector.houseNum.length == 0 ||
       selector.streetName.length == 0 ||
@@ -777,6 +776,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
 
+      // Model Selection
+    if (selector.model.length == 0 || selector.varient.length == 0 || selector.color.length == 0) {
+      showToast("Please fill required fields in Model Selection");
+      return;
+    }
+
+    //Finance Details
     if (selector.retail_finance.length == 0) {
       showToast("Please fill required fields in Financial Details");
       return;
@@ -876,6 +882,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("Please enter proper leasing name");
       return;
     }
+
+      if (
+      selector.pan_number.length > 0 && !isValidateAplhaNumeric(selector.pan_number)
+    ) {
+      showToast("Please enter proper PAN number");
+      return;
+    }
+      if (
+      selector.gstin_number.length > 0 && !isValidateAplhaNumeric(selector.gstin_number)
+    ) {
+      showToast("Please enter proper gstin number");
+      return;
+    }
+
 
     if (!selector.enquiry_details_response) {
       return;
@@ -1911,28 +1931,26 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       )} */}
 
       {/* {selector.showDatepicker && ( */}
-        <DatePickerComponent
-          visible={selector.showDatepicker}
-          mode={"date"}
-          value={new Date(Date.now())}
-          minimumDate={selector.minDate}
-          maximumDate={selector.maxDate}
-          onChange={(event, selectedDate) => {
-            console.log("date: ", selectedDate);
-            if (Platform.OS === "android") {
-              if (!selectedDate) {
-                dispatch(
-                  updateSelectedDate({ key: "NONE", text: selectedDate })
-                );
-              } else {
-                dispatch(updateSelectedDate({ key: "", text: selectedDate }));
-              }
+      <DatePickerComponent
+        visible={selector.showDatepicker}
+        mode={"date"}
+        value={new Date(Date.now())}
+        minimumDate={selector.minDate}
+        maximumDate={selector.maxDate}
+        onChange={(event, selectedDate) => {
+          console.log("date: ", selectedDate);
+          if (Platform.OS === "android") {
+            if (!selectedDate) {
+              dispatch(updateSelectedDate({ key: "NONE", text: selectedDate }));
             } else {
               dispatch(updateSelectedDate({ key: "", text: selectedDate }));
             }
-          }}
-          onRequestClose={() => dispatch(setDatePicker())}
-        />
+          } else {
+            dispatch(updateSelectedDate({ key: "", text: selectedDate }));
+          }
+        }}
+        onRequestClose={() => dispatch(setDatePicker())}
+      />
       {/* )} */}
 
       {/* <View style={styles.view1}>
@@ -1952,7 +1970,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           flexDirection: "column",
           justifyContent: "center",
         }}
-        behavior={Platform.OS == "ios" ? "padding" : "height"}
+        behavior={Platform.OS == "ios" ?
+          "padding" : "height"}
         enabled
         keyboardVerticalOffset={100}
       >
@@ -1972,7 +1991,158 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               expandedId={openAccordian}
               onAccordionPress={(expandedId) => updateAccordian(expandedId)}
             >
-              {/* 1.Customer Profile */}
+              {/* 1. Personal Intro */}
+              <List.Accordion
+                id={"2"}
+                title="Personal Intro"
+                titleStyle={{
+                  color: openAccordian === "2" ? Colors.WHITE : Colors.BLACK,
+                  fontSize: 16,
+                  fontWeight: "600",
+                }}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "2"
+                        ? Colors.RED
+                        : Colors.SKY_LIGHT_BLUE_COLOR,
+                    height: 50,
+                  },
+                  styles.accordianBorder,
+                ]}
+              >
+                <DropDownSelectionItem
+                  label={"Salutation*"}
+                  value={selector.salutation}
+                  onPress={() =>
+                    showDropDownModelMethod("SALUTATION", "Select Salutation")
+                  }
+                />
+
+                {selector.enquiry_segment.toLowerCase() == "personal" ? (
+                  <DropDownSelectionItem
+                    label={"Gender"}
+                    value={selector.gender}
+                    onPress={() => showDropDownModelMethod("GENDER", "Gender")}
+                  />
+                ) : null}
+
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.firstName}
+                  label={"First Name*"}
+                  autoCapitalize="words"
+                  keyboardType={"default"}
+                  editable={false}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setPersonalIntro({ key: "FIRST_NAME", text: text })
+                    )
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.lastName}
+                  label={"Last Name*"}
+                  editable={false}
+                  autoCapitalize={"words"}
+                  keyboardType={"default"}
+                  onChangeText={(text) =>
+                    dispatch(setPersonalIntro({ key: "LAST_NAME", text: text }))
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                <DropDownSelectionItem
+                  label={"Relation"}
+                  value={selector.relation}
+                  onPress={() =>
+                    showDropDownModelMethod("RELATION", "Relation")
+                  }
+                />
+
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.relationName}
+                  label={"Relation Name*"}
+                  autoCapitalize="words"
+                  keyboardType={"default"}
+                  maxLength={50}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setPersonalIntro({ key: "RELATION_NAME", text: text })
+                    )
+                  }
+                />
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.mobile}
+                  label={"Mobile Number*"}
+                  editable={false}
+                  maxLength={10}
+                  keyboardType={"phone-pad"}
+                  onChangeText={(text) =>
+                    dispatch(setPersonalIntro({ key: "MOBILE", text: text }))
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.alterMobile}
+                  label={"Alternate Mobile Number"}
+                  editable={true}
+                  keyboardType={"phone-pad"}
+                  maxLength={10}
+                  onChangeText={(text) =>
+                    dispatch(
+                      setPersonalIntro({ key: "ALTER_MOBILE", text: text })
+                    )
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
+                <TextinputComp
+                  style={styles.textInputStyle}
+                  value={selector.email}
+                  label={"Email ID"}
+                  editable={true}
+                  keyboardType={"email-address"}
+                  onChangeText={(text) =>
+                    dispatch(setPersonalIntro({ key: "EMAIL", text: text }))
+                  }
+                />
+                <Text style={GlobalStyle.underline}></Text>
+
+                {selector.enquiry_segment.toLowerCase() == "personal" ? (
+                  <View>
+                    <DateSelectItem
+                      label={"Date Of Birth"}
+                      value={selector.dateOfBirth}
+                      onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
+                    />
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.age}
+                      label={"Age"}
+                      keyboardType={"phone-pad"}
+                      maxLength={10}
+                      onChangeText={(text) =>
+                        dispatch(setPersonalIntro({ key: "AGE", text: text }))
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <DateSelectItem
+                      label={"Anniversary Date"}
+                      value={selector.anniversaryDate}
+                      onPress={() =>
+                        dispatch(setDatePicker("ANNIVERSARY_DATE"))
+                      }
+                    />
+                  </View>
+                ) : null}
+              </List.Accordion>
+              <View style={styles.space}></View>
+
+              {/* 2.Customer Profile */}
               <List.Accordion
                 id={"1"}
                 title={"Customer Profile"}
@@ -2047,11 +2217,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
 
                 {selector.customer_type.toLowerCase() === "fleet" ||
-                  selector.customer_type.toLowerCase() === "institution" ||
-                  selector.customer_type.toLowerCase() === "corporate" ||
-                  selector.customer_type.toLowerCase() === "government" ||
-                  selector.customer_type.toLowerCase() === "retired" ||
-                  selector.customer_type.toLowerCase() === "other" ? (
+                selector.customer_type.toLowerCase() === "institution" ||
+                selector.customer_type.toLowerCase() === "corporate" ||
+                selector.customer_type.toLowerCase() === "government" ||
+                selector.customer_type.toLowerCase() === "retired" ||
+                selector.customer_type.toLowerCase() === "other" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -2101,19 +2271,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     .toLowerCase()
                     .trim()
                     .replace(/ /g, "") === "socialnetwork") && (
-                    <View>
-                      <DropDownSelectionItem
-                        label={"Sub Source Of Enquiry"}
-                        value={selector.sub_source_of_enquiry}
-                        onPress={() =>
-                          showDropDownModelMethod(
-                            "SUB_SOURCE_OF_ENQUIRY",
-                            "Sub Source Of Enquiry"
-                          )
-                        }
-                      />
-                    </View>
-                  )}
+                  <View>
+                    <DropDownSelectionItem
+                      label={"Sub Source Of Enquiry"}
+                      value={selector.sub_source_of_enquiry}
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "SUB_SOURCE_OF_ENQUIRY",
+                          "Sub Source Of Enquiry"
+                        )
+                      }
+                    />
+                  </View>
+                )}
 
                 {selector.source_of_enquiry.toLowerCase() === "reference" && (
                   <View>
@@ -2256,160 +2426,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     )
                   }
                 />
-              </List.Accordion>
-              <View style={styles.space}></View>
-              {/* 2. Personal Intro */}
-              <List.Accordion
-                id={"2"}
-                title="Personal Intro"
-                titleStyle={{
-                  color: openAccordian === "2" ? Colors.WHITE : Colors.BLACK,
-                  fontSize: 16,
-                  fontWeight: "600",
-                }}
-                style={[
-                  {
-                    backgroundColor:
-                      openAccordian === "2"
-                        ? Colors.RED
-                        : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 50,
-                  },
-                  styles.accordianBorder,
-                ]}
-              >
-                <DropDownSelectionItem
-                  label={"Salutation*"}
-                  value={selector.salutation}
-                  onPress={() =>
-                    showDropDownModelMethod("SALUTATION", "Select Salutation")
-                  }
-                />
-
-                {selector.enquiry_segment.toLowerCase() == "personal" ? (
-                  <DropDownSelectionItem
-                    label={"Gender"}
-                    value={selector.gender}
-                    onPress={() =>
-                      showDropDownModelMethod("GENDER", "Gender")
-                    }
-                  />
-                ) : null}
-
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.firstName}
-                  label={"First Name*"}
-                  autoCapitalize="words"
-                  keyboardType={"default"}
-                  editable={false}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setPersonalIntro({ key: "FIRST_NAME", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.lastName}
-                  label={"Last Name*"}
-                  editable={false}
-                  autoCapitalize={"words"}
-                  keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setPersonalIntro({ key: "LAST_NAME", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <DropDownSelectionItem
-                  label={"Relation"}
-                  value={selector.relation}
-                  onPress={() =>
-                    showDropDownModelMethod("RELATION", "Relation")
-                  }
-                />
-
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.relationName}
-                  label={"Relation Name*"}
-                  autoCapitalize="words"
-                  keyboardType={"default"}
-                  maxLength={50}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setPersonalIntro({ key: "RELATION_NAME", text: text })
-                    )
-                  }
-                />
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.mobile}
-                  label={"Mobile Number*"}
-                  editable={false}
-                  maxLength={10}
-                  keyboardType={"phone-pad"}
-                  onChangeText={(text) =>
-                    dispatch(setPersonalIntro({ key: "MOBILE", text: text }))
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.alterMobile}
-                  label={"Alternate Mobile Number"}
-                  editable={true}
-                  keyboardType={"phone-pad"}
-                  maxLength={10}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setPersonalIntro({ key: "ALTER_MOBILE", text: text })
-                    )
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.email}
-                  label={"Email ID*"}
-                  editable={true}
-                  keyboardType={"email-address"}
-                  onChangeText={(text) =>
-                    dispatch(setPersonalIntro({ key: "EMAIL", text: text }))
-                  }
-                />
-                <Text style={GlobalStyle.underline}></Text>
-
-                {selector.enquiry_segment.toLowerCase() == "personal" ? (
-                  <View>
-                    <DateSelectItem
-                      label={"Date Of Birth"}
-                      value={selector.dateOfBirth}
-                      onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
-                    />
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.age}
-                      label={"Age"}
-                      keyboardType={"phone-pad"}
-                      maxLength={10}
-                      onChangeText={(text) =>
-                        dispatch(setPersonalIntro({ key: "AGE", text: text }))
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <DateSelectItem
-                      label={"Anniversary Date"}
-                      value={selector.anniversaryDate}
-                      onPress={() =>
-                        dispatch(setDatePicker("ANNIVERSARY_DATE"))
-                      }
-                    />
-                  </View>
-                ) : null}
               </List.Accordion>
               <View style={styles.space}></View>
               {/* // 3.Communication Address */}
@@ -2630,9 +2646,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     label={"No"}
                     value={"no"}
                     status={
-                      selector.is_permanent_address_same === "NO"
-                        ? true
-                        : false
+                      selector.is_permanent_address_same === "NO" ? true : false
                     }
                     onPress={() =>
                       dispatch(
@@ -2669,9 +2683,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       <RadioTextItem
                         label={"Urban"}
                         value={"urban"}
-                        status={
-                          selector.p_urban_or_rural === 1 ? true : false
-                        }
+                        status={selector.p_urban_or_rural === 1 ? true : false}
                         onPress={() =>
                           dispatch(
                             setCommunicationAddress({
@@ -2684,9 +2696,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       <RadioTextItem
                         label={"Rural"}
                         value={"rural"}
-                        status={
-                          selector.p_urban_or_rural === 2 ? true : false
-                        }
+                        status={selector.p_urban_or_rural === 2 ? true : false}
                         onPress={() =>
                           dispatch(
                             setCommunicationAddress({
@@ -2885,7 +2895,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               {/* // 5. Financial Details*/}
               <List.Accordion
                 id={"5"}
-                title={"Financial Details"}
+                title={"Finance Details"}
                 titleStyle={{
                   color: openAccordian === "5" ? Colors.WHITE : Colors.BLACK,
                   fontSize: 16,
@@ -2906,10 +2916,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   label={"Retail Finance"}
                   value={selector.retail_finance}
                   onPress={() =>
-                    showDropDownModelMethod(
-                      "RETAIL_FINANCE",
-                      "Retail Finance"
-                    )
+                    showDropDownModelMethod("RETAIL_FINANCE", "Retail Finance")
                   }
                 />
 
@@ -3002,51 +3009,51 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {(selector.retail_finance === "In House" ||
                   selector.retail_finance === "Out House") && (
-                    <View>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Loan Amount*"}
-                        keyboardType={"numeric"}
-                        maxLength={10}
-                        value={selector.loan_amount}
-                        onChangeText={(text) => {
-                          emiCal(
-                            text,
-                            selector.loan_of_tenure,
-                            selector.rate_of_interest
-                          );
-                          dispatch(
-                            setFinancialDetails({
-                              key: "LOAN_AMOUNT",
-                              text: text,
-                            })
-                          );
-                        }}
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Rate of Interest*"}
-                        keyboardType={"numeric"}
-                        maxLength={10}
-                        value={selector.rate_of_interest}
-                        onChangeText={(text) => {
-                          emiCal(
-                            selector.loan_amount,
-                            selector.loan_of_tenure,
-                            text
-                          );
-                          dispatch(
-                            setFinancialDetails({
-                              key: "RATE_OF_INTEREST",
-                              text: text,
-                            })
-                          );
-                        }}
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  )}
+                  <View>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Loan Amount*"}
+                      keyboardType={"numeric"}
+                      maxLength={10}
+                      value={selector.loan_amount}
+                      onChangeText={(text) => {
+                        emiCal(
+                          text,
+                          selector.loan_of_tenure,
+                          selector.rate_of_interest
+                        );
+                        dispatch(
+                          setFinancialDetails({
+                            key: "LOAN_AMOUNT",
+                            text: text,
+                          })
+                        );
+                      }}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Rate of Interest*"}
+                      keyboardType={"numeric"}
+                      maxLength={10}
+                      value={selector.rate_of_interest}
+                      onChangeText={(text) => {
+                        emiCal(
+                          selector.loan_amount,
+                          selector.loan_of_tenure,
+                          text
+                        );
+                        dispatch(
+                          setFinancialDetails({
+                            key: "RATE_OF_INTEREST",
+                            text: text,
+                          })
+                        );
+                      }}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                )}
 
                 {selector.retail_finance === "In House" && (
                   <View>
@@ -3054,10 +3061,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       label={"Bank/Financer"}
                       value={selector.bank_or_finance}
                       onPress={() =>
-                        showDropDownModelMethod(
-                          "BANK_FINANCE",
-                          "Bank/Financer"
-                        )
+                        showDropDownModelMethod("BANK_FINANCE", "Bank/Financer")
                       }
                     />
 
@@ -3174,9 +3178,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
                         name={"Upload Adhar"}
-                        onPress={() =>
-                          dispatch(setImagePicker("UPLOAD_ADHAR"))
-                        }
+                        onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
                       />
                     </View>
                     {uploadedImagesDataObj?.aadhar?.fileName ? (
@@ -3190,9 +3192,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {/* // Employeed ID */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  (selector.customer_type.toLowerCase() === "corporate" ||
-                    selector.customer_type.toLowerCase() === "government" ||
-                    selector.customer_type.toLowerCase() === "retired") ? (
+                (selector.customer_type.toLowerCase() === "corporate" ||
+                  selector.customer_type.toLowerCase() === "government" ||
+                  selector.customer_type.toLowerCase() === "retired") ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -3228,8 +3230,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {/* Last 3 month payslip */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  (selector.customer_type.toLowerCase() === "corporate" ||
-                    selector.customer_type.toLowerCase() === "government") ? (
+                (selector.customer_type.toLowerCase() === "corporate" ||
+                  selector.customer_type.toLowerCase() === "government") ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -3250,7 +3252,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {/* Patta Pass book */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  selector.customer_type.toLowerCase() === "farmer" ? (
+                selector.customer_type.toLowerCase() === "farmer" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -3271,7 +3273,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {/* Pension Letter */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  selector.customer_type.toLowerCase() === "retired" ? (
+                selector.customer_type.toLowerCase() === "retired" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -3292,7 +3294,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {/* IMA Certificate */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  selector.customer_type.toLowerCase() === "doctor" ? (
+                selector.customer_type.toLowerCase() === "doctor" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -3304,9 +3306,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     </View>
                     {uploadedImagesDataObj.imaCertificate ? (
                       <DisplaySelectedImage
-                        fileName={
-                          uploadedImagesDataObj.imaCertificate.fileName
-                        }
+                        fileName={uploadedImagesDataObj.imaCertificate.fileName}
                         from={"IMA_CERTIFICATE"}
                       />
                     ) : null}
@@ -3315,7 +3315,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {/* Leasing Confirmation */}
                 {selector.enquiry_segment.toLowerCase() === "commercial" &&
-                  selector.customer_type.toLowerCase() === "fleet" ? (
+                selector.customer_type.toLowerCase() === "fleet" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -3329,9 +3329,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     </View>
                     {uploadedImagesDataObj.leasingConfirm ? (
                       <DisplaySelectedImage
-                        fileName={
-                          uploadedImagesDataObj.leasingConfirm.fileName
-                        }
+                        fileName={uploadedImagesDataObj.leasingConfirm.fileName}
                         from={"LEASING_CONFIRMATION"}
                       />
                     ) : null}
@@ -3340,7 +3338,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {/* Address Proof */}
                 {selector.enquiry_segment.toLowerCase() === "company" &&
-                  selector.customer_type.toLowerCase() === "institution" ? (
+                selector.customer_type.toLowerCase() === "institution" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -3361,7 +3359,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {/* GSTIN Number */}
                 {selector.enquiry_segment.toLowerCase() === "company" &&
-                  selector.customer_type.toLowerCase() === "institution" ? (
+                selector.customer_type.toLowerCase() === "institution" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -3430,9 +3428,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <DropDownSelectionItem
                       label={"Make"}
                       value={selector.c_make}
-                      onPress={() =>
-                        showDropDownModelMethod("C_MAKE", "Make")
-                      }
+                      onPress={() => showDropDownModelMethod("C_MAKE", "Make")}
                     />
                     {selector.c_make === "Other" && (
                       <View>
@@ -3527,10 +3523,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       label={"Transmission Type"}
                       value={selector.c_transmission_type}
                       onPress={() =>
-                        showDropDownModelMethod(
-                          "C_TRANSMISSION_TYPE",
-                          "Color"
-                        )
+                        showDropDownModelMethod("C_TRANSMISSION_TYPE", "Color")
                       }
                     />
 
@@ -3637,7 +3630,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
               </List.Accordion>
               {selector.buyer_type == "Additional Buyer" ||
-                selector.buyer_type == "Replacement Buyer" ? (
+              selector.buyer_type == "Replacement Buyer" ? (
                 <View style={styles.space}></View>
               ) : null}
               {/* // 8.Additional Buyer */}
@@ -3646,8 +3639,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   id={"8"}
                   title={"Additional Buyer"}
                   titleStyle={{
-                    color:
-                      openAccordian === "8" ? Colors.WHITE : Colors.BLACK,
+                    color: openAccordian === "8" ? Colors.WHITE : Colors.BLACK,
                     fontSize: 16,
                     fontWeight: "600",
                   }}
@@ -3690,9 +3682,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <DropDownSelectionItem
                     label={"Model"}
                     value={selector.a_model}
-                    onPress={() =>
-                      showDropDownModelMethod("A_MODEL", "Model")
-                    }
+                    onPress={() => showDropDownModelMethod("A_MODEL", "Model")}
                   />
                   {selector.a_model === "Other" && (
                     <View>
@@ -3771,8 +3761,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   id={"9"}
                   title={"Replacement Buyer"}
                   titleStyle={{
-                    color:
-                      openAccordian === "9" ? Colors.WHITE : Colors.BLACK,
+                    color: openAccordian === "9" ? Colors.WHITE : Colors.BLACK,
                     fontSize: 16,
                     fontWeight: "600",
                   }}
@@ -3790,7 +3779,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.r_reg_no}
-                    label={"Reg. No."}
+                    label={"Reg. No.*"}
                     maxLength={50}
                     keyboardType={"default"}
                     autoCapitalize={"characters"}
@@ -3807,9 +3796,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <View style={styles.select_image_bck_vw}>
                     <ImageSelectItem
                       name={"Upload Reg Doc"}
-                      onPress={() =>
-                        dispatch(setImagePicker("UPLOAD_REG_DOC"))
-                      }
+                      onPress={() => dispatch(setImagePicker("UPLOAD_REG_DOC"))}
                     />
                   </View>
                   {uploadedImagesDataObj.REGDOC ? (
@@ -3846,9 +3833,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <DropDownSelectionItem
                     label={"Model"}
                     value={selector.r_model}
-                    onPress={() =>
-                      showDropDownModelMethod("R_MODEL", "Model")
-                    }
+                    onPress={() => showDropDownModelMethod("R_MODEL", "Model")}
                   />
                   {selector.r_model === "Other" && (
                     <View>
@@ -4178,8 +4163,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   id={"10"}
                   title={"Enquiry Drop Section"}
                   titleStyle={{
-                    color:
-                      openAccordian === "10" ? Colors.WHITE : Colors.BLACK,
+                    color: openAccordian === "10" ? Colors.WHITE : Colors.BLACK,
                     fontSize: 16,
                     fontWeight: "600",
                   }}
@@ -4228,7 +4212,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 onPress={() => setIsDropSelected(true)}
               >
                 Lost
-                </Button>
+              </Button>
               <Button
                 mode="contained"
                 style={{ width: 120 }}
@@ -4237,7 +4221,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 onPress={submitClicked}
               >
                 Submit
-                </Button>
+              </Button>
             </View>
           )}
           {showPreBookingBtn && !isDropSelected && (
@@ -4249,7 +4233,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 onPress={proceedToPreBookingClicked}
               >
                 Proceed To PreBooking
-                </Button>
+              </Button>
             </View>
           )}
           {isDropSelected && (
@@ -4261,7 +4245,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 onPress={proceedToCancelEnquiry}
               >
                 Proceed To Cancellation
-                </Button>
+              </Button>
             </View>
           )}
         </ScrollView>
