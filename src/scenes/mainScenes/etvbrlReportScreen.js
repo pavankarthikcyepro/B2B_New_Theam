@@ -112,9 +112,9 @@ const etvbrlReportScreen = () => {
             toDate: selectedToDate
         }
         console.log("downloadReport payload", payload)
+        console.log("download Url", URL.DOWNLOAD_REPORT())
         const response = await client.post(URL.DOWNLOAD_REPORT(), payload);
         const report = await response.json();
-        console.log("download Url", report)
         const { config, fs } = RNFetchBlob;
         let downloadDir = fs.dirs.DownloadDir;
         let date = new Date();
