@@ -19,12 +19,28 @@ interface CustomerDetailModel {
 export const getTaskDetailsApi = createAsyncThunk(
   "PROCEED_TO_BOOKING_SLICE/getTaskDetailsApi",
   async (taskId, { rejectWithValue }) => {
+    console.log("CALLED:", taskId);
+    
     const response = await client.get(URL.GET_TASK_DETAILS(taskId));
-    const json = await response.json();
-    if (!response.ok) {
-      return rejectWithValue(json);
+    // const json = await response.json();
+    
+    
+    // if (!response.ok) {
+    //   return rejectWithValue(json);
+    // }
+    // return json;
+
+    try {
+      const json = await response.json();
+      console.log("TASK ID:", JSON.stringify(json));
+      if (response.status != 200) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error("Error: ", error + " : " + JSON.stringify(response));
+      return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
     }
-    return json;
   }
 );
 

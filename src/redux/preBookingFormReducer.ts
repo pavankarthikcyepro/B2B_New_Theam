@@ -39,7 +39,6 @@ export const getPrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/
   const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
   try {
     const json = await response.json();
-    console.log("ALL DATA:", JSON.stringify(json));
     
     if (response.status != 200) {
       return rejectWithValue(json);
@@ -186,6 +185,8 @@ export const preBookingPaymentApi = createAsyncThunk("PREBOONING_FORMS_SLICE/pre
   const response = await client.post(URL.PRE_BOOKING_PAYMENT(), payload);
   try {
     const json = await response.json();
+    console.log("RES:", JSON.stringify(json));
+    
     if (response.status != 200) {
       return rejectWithValue(json);
     }
@@ -212,7 +213,7 @@ export const postBookingAmountApi = createAsyncThunk("PREBOONING_FORMS_SLICE/pos
 })
 
 export const getPaymentDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getPaymentDetailsApi", async (leadId, { rejectWithValue }) => {
-
+  console.log("LEAD ID:", leadId);
   const response = await client.get(URL.GET_PRE_BOOKING_PAYMENT_DETAILS(leadId));
   try {
     const json = await response.json();
@@ -917,6 +918,7 @@ const prebookingFormSlice = createSlice({
           break;
         case "PAN_NUMBER":
           state.pan_number = text;
+          break;
         case "RELATIONSHIP_PROOF":
           state.relationship_proof = text;
           break;
@@ -1117,6 +1119,9 @@ const prebookingFormSlice = createSlice({
           }
           else if (item.documentType === "aadhar") {
             state.adhaar_number = item.documentNumber;
+          }
+          else if (item.documentType === "empId") {
+            state.employee_id = item.documentNumber;
           }
         })
       }

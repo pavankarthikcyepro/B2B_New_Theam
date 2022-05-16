@@ -25,7 +25,7 @@ import {
   changeEnquiryStatusApi,
   getDropDataApi,
   getDropSubReasonDataApi,
-} from "../../../redux/proceedToPreBookingReducer";
+} from "../../../redux/proceedToBookingReducer";
 import {
   showToast,
   showToastRedAlert,
@@ -104,11 +104,15 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-    getAuthToken();
-    getAsyncstoreData();
-    dispatch(getTaskDetailsApi(taskId));
-    getPreBookingDetailsFromServer();
-  }, []);
+    navigation.addListener('focus', () => {
+      console.log("@@@@@@@@@@@@@@@@@@@@@@");
+      dispatch(getTaskDetailsApi(taskId));
+      getAuthToken();
+      getAsyncstoreData();
+      
+      getPreBookingDetailsFromServer();
+    })
+  }, [navigation]);
 
   const getAsyncstoreData = async () => {
     const employeeData = await AsyncStore.getData(
@@ -237,6 +241,7 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
 
   const proceedToPreBookingClicked = () => {
     setTypeOfActionDispatched("PROCEED_TO_PREBOOKING");
+    console.log("DTLS:", selector.task_details_response?.taskId, taskId);
     if (selector.task_details_response?.taskId !== taskId) {
       return;
     }

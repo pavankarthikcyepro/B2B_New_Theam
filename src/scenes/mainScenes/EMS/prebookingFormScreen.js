@@ -1514,6 +1514,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         payload.transferToMobile = selector.transfer_to_mobile;
         payload.typeUpi = selector.type_of_upi;
         payload.utrNo = selector.utr_no;
+        console.log("BEFORE");
         dispatch(preBookingPaymentApi(payload));
     };
 
@@ -1585,7 +1586,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 const taskId = taskData.taskId;
                 const taskStatus = taskData.taskStatus;
                 navigation.navigate(
-                    AppNavigator.MyTasksStackIdentifiers.proceedToPreBooking,
+                    AppNavigator.EmsStackIdentifiers.proceedToBooking,
                     {
                         identifier: "PROCEED_TO_BOOKING",
                         taskId,
@@ -2640,7 +2641,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                                 onPress={() => dispatch(setImagePicker("UPLOAD_EMPLOYEE_ID"))}
                                             />
                                         </View>
-                                        {uploadedImagesDataObj.empId ? (
+                                        {uploadedImagesDataObj.empId.fileName ? (
                                             <DisplaySelectedImage
                                                 fileName={uploadedImagesDataObj.empId.fileName}
                                                 from={"EMPLOYEE_ID"}
@@ -3245,7 +3246,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 />
                                 <Text style={GlobalStyle.underline}></Text>
                                 <View style={styles.textAndAmountView}>
-                                    <Text style={[styles.leftLabel]}>{"Insurance Discount:"}</Text>
+                                    <Text style={{ fontSize: 16, fontWeight: '400', color: Colors.GRAY}}>{"Insurance Discount:"}</Text>
                                     <View style={{ width: 80, height: 30, justifyContent: 'center', paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#d1d1d1' }}>
                                         <TextInput
                                             value={insuranceDiscount}
@@ -3258,7 +3259,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     </View>
                                 </View>
                                 <View style={styles.textAndAmountView}>
-                                    <Text style={[styles.leftLabel]}>{"Accessories Discount:"}</Text>
+                                    <Text style={{ fontSize: 16, fontWeight: '400', color: Colors.GRAY }}>{"Accessories Discount:"}</Text>
                                     <View style={{ width: 80, height: 30, justifyContent: 'center', paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#d1d1d1' }}>
                                         <TextInput
                                             value={accDiscount}
@@ -3995,13 +3996,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     <Button
                                         mode="contained"
                                         color={Colors.RED}
-                                        disabled={
-                                            uploadedImagesDataObj.receipt
-                                                ? selector.isLoading == true
-                                                    ? true
-                                                    : false
-                                                : true
-                                        }
+                                        // disabled={
+                                        //     uploadedImagesDataObj.receipt
+                                        //         ? selector.isLoading == true
+                                        //             ? true
+                                        //             : false
+                                        //         : true
+                                        // }
                                         labelStyle={{ textTransform: "none" }}
                                         onPress={proceedToBookingClicked}
                                     >
