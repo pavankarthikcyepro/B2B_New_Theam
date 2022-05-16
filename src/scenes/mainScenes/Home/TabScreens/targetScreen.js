@@ -21,7 +21,7 @@ import moment from 'moment';
 import * as AsyncStore from '../../../../asyncStore';
 import { ScrollView } from "react-native-gesture-handler";
 
-// const paramtersTitlesData = ["Parameter", "E", "TD", "HV", "VC", "B", "Ex", "R", "F", "I", "Ex-W", "Acc.", "Ev"]
+//const paramtersTitlesData = ["Parameter", "E", "TD", "HV", "VC", "B", "Ex", "R", "F", "I", "Ex-W", "Acc.", "Ev"]
 const paramtersTitlesData = ["Parameter", "Target", "Achivement", "Achivement %", "ShortFall", "ShortFall %"]
 const chartTitles = ["Target", "Achivement", "ShortFall"];
 const parameterTitlesForData = ["Enquiry", "TestDrive", "HomeVisit", "Booking", "EX", "Retail", "Finance", "Invoice", "Ex-W", "Acc.", "Ev"];
@@ -1034,7 +1034,7 @@ const TargetScreen = ({ route, navigation }) => {
               <View style={{ width: "50%" }}>
                 <View style={styles.statWrap}>
                   <Text
-                    style={{ marginRight: 10, fontSize: 10, fontWeight: "600" }}
+                    style={{ marginRight: 30, fontSize: 10, fontWeight: "600" }}
                   >
                     Enquiry to Booking (%)
                   </Text>
@@ -1067,7 +1067,7 @@ const TargetScreen = ({ route, navigation }) => {
 
                 <View style={styles.statWrap}>
                   <Text
-                    style={{ marginRight: 10, fontSize: 10, fontWeight: "600" }}
+                    style={{ marginRight: 40, fontSize: 10, fontWeight: "600" }}
                   >
                     Enquiry to Retail (%)
                   </Text>
@@ -1100,7 +1100,7 @@ const TargetScreen = ({ route, navigation }) => {
 
                 <View style={styles.statWrap}>
                   <Text
-                    style={{ marginRight: 10, fontSize: 10, fontWeight: "600" }}
+                    style={{ marginRight: 28, fontSize: 10, fontWeight: "600" }}
                   >
                     Enquiry to Test drive (%)
                   </Text>
@@ -1144,7 +1144,7 @@ const TargetScreen = ({ route, navigation }) => {
               <View style={{ width: "49%" }}>
                 <View style={styles.statWrap}>
                   <Text
-                    style={{ marginRight: 10, fontSize: 10, fontWeight: "600" }}
+                    style={{ marginRight: 28, fontSize: 10, fontWeight: "600" }}
                   >
                     Booking to Retail (%)
                   </Text>
@@ -1177,7 +1177,7 @@ const TargetScreen = ({ route, navigation }) => {
 
                 <View style={styles.statWrap}>
                   <Text
-                    style={{ marginRight: 10, fontSize: 10, fontWeight: "600" }}
+                    style={{ marginRight: 32, fontSize: 10, fontWeight: "600" }}
                   >
                     Booking to Visit (%)
                   </Text>
@@ -1340,7 +1340,7 @@ const SupportingScreen = () => {
             }
             <View style={{ flexDirection: 'row', marginTop: 20, marginLeft: 10 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                    <Text style={{ marginRight: -15, fontSize: 10, fontWeight: "600" }}>Enquiry to Booking (%)</Text>
+                    <Text style={{ marginRight: 30, fontSize: 10, fontWeight: "600" }}>Enquiry to Booking (%)</Text>
                     <IconButton
                         icon={"menu-up"}
                         color={'#14ce40'}
@@ -1361,7 +1361,7 @@ const SupportingScreen = () => {
             </View>
 
             <View style={{ flexDirection: 'row', marginLeft: 10, alignItems: 'center', marginTop: -20 }}>
-                <Text style={{ marginRight: -15, fontSize: 10, fontWeight: "600" }}>Enquiry to Retail (%)</Text>
+                <Text style={{ marginRight:30, fontSize: 10, fontWeight: "600" }}>Enquiry to Retail (%)</Text>
                 <IconButton
                     icon={"menu-up"}
                     color={'#14ce40'}
