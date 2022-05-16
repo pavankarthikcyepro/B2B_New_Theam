@@ -85,17 +85,18 @@ const SideMenuScreen = ({ navigation }) => {
         // getProfilePic();
     }, [])
 
-    useEffect(() => {
-        if(userData){
-            getProfilePic();
-        }
-    }, [userData])
+    // useEffect(() => {
+    //     if(userData){
+    //         getProfilePic();
+    //     }
+    // }, [userData])
 
     useEffect(() => {
 
         if (homeSelector.login_employee_details) {
             const jsonObj = homeSelector.login_employee_details;
             updateUserData(jsonObj);
+            getProfilePic(jsonObj);
         }
     }, [homeSelector.login_employee_details])
 
@@ -129,13 +130,13 @@ const SideMenuScreen = ({ navigation }) => {
             .catch((error) => console.error(error));
     }
 
-    updateUserData = (jsonObj) => {
+    const updateUserData = (jsonObj) => {
         setEmpName(jsonObj.empName);
         setEmail(jsonObj.email);
         setRole(jsonObj.hrmsRole);
         setLocation(jsonObj.branchName);
-        setUserData(jsonObj)
-        // getProfilePic();
+        // setUserData(jsonObj)
+        getProfilePic(jsonObj);
 
 
         let newFilterData = [];
