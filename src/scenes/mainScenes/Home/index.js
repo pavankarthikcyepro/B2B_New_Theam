@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { SafeAreaView, View, Text, StyleSheet, FlatList, Dimensions, Pressable, Alert, TouchableOpacity, ScrollView, Keyboard, Image } from 'react-native';
+import { SafeAreaView, View, Text, StyleSheet, FlatList, Dimensions, Pressable, Alert, TouchableOpacity, ScrollView, Keyboard, Image, Platform } from 'react-native';
 import { Colors, GlobalStyle } from '../../../styles';
 import { IconButton, Card, Button } from 'react-native-paper';
 import VectorImage from 'react-native-vector-image';
@@ -44,8 +44,9 @@ import { HomeStackIdentifiers } from '../../../navigations/appNavigator';
 import * as AsyncStore from '../../../asyncStore';
 import moment from 'moment';
 import { TargetAchivementComp } from './targetAchivementComp';
-import { HeaderComp, DropDownComponant } from '../../../components';
+import { HeaderComp, DropDownComponant, LoaderComponent } from '../../../components';
 import { TargetDropdown } from "../../../pureComponents";
+import RNFetchBlob from 'rn-fetch-blob'
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 30) / 2;
@@ -92,6 +93,7 @@ const HomeScreen = ({ route, navigation }) => {
     const [roles, setRoles] = useState([]);
     const [headerText, setHeaderText] = useState('');
     const [isButtonPresent, setIsButtonPresent] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     useLayoutEffect(() => {
 
@@ -462,7 +464,8 @@ const HomeScreen = ({ route, navigation }) => {
         setShowDropDownModel(true);
     };
 
-    const downloadFileFromServer = async() => {
+    const downloadFileFromServer = async () => {
+        setLoading(true)
         Promise.all([
             dispatch(getBranchIds({}))
         ]).then(async (res) => {
@@ -481,20 +484,106 @@ const HomeScreen = ({ route, navigation }) => {
                             const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
                             const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
                             let payload = {
-                                "branchIdList": branchIds,
-                                "fromDate": monthFirstDate + " 00:00:00",
-                                "orgId": jsonObj.orgId,
-                                "toDate": monthLastDate + " 23:59:59"
+                                branchIdList: branchIds,
+                                orgId: jsonObj.orgId,
+                                fromDate: monthFirstDate + " 00:00:00",                            
+                                toDate: monthLastDate + " 23:59:59"
                             }
                             console.log("PAYLOAD:", payload);
-                            dispatch(downloadFile(payload))
+                            Promise.all([
+                                dispatch(downloadFile(payload))
+                            ]).then(async (res) => {
+                                console.log('DATA', JSON.stringify(res));
+                                if (res[0]?.payload?.downloadUrl) {
+                                    downloadInLocal(res[0]?.payload?.downloadUrl)
+                                }
+                                else {
+                                    setLoading(false)
+                                }
+                            }).catch(() => {
+                                setLoading(false)
+                            })
+
+                            // try {
+                            //     const response = await client.post(URL.DOWNLOAD_FILE(), payload)
+                            //     const json = await response.json()
+                            //     console.log("DOWNLOAD: ", json);
+                            // } catch (error) {
+                            //     setLoading(false)
+                            // }
                         }
                     }
                 }
             }
-            
-        });
+
+        }).catch(() => {
+            setLoading(false)
+        })
     }
+
+    const downloadInLocal = async (url) => {
+        const { config, fs } = RNFetchBlob;
+        let downloadDir = Platform.select({ ios: fs.dirs.DocumentDir, android: fs.dirs.DownloadDir });
+        let date = new Date();
+        let file_ext = getFileExtention(url);
+        file_ext = '.' + file_ext[0];
+        console.log({ file_ext })
+        let options = {}
+        if (Platform.OS === 'android') {
+            options = {
+                fileCache: true,
+                addAndroidDownloads: {
+                    useDownloadManager: true, // setting it to true will use the device's native download manager and will be shown in the notification bar.
+                    notification: true,
+                    path: downloadDir + "/ETVBRL_" + Math.floor(date.getTime() + date.getSeconds() / 2) + file_ext, // this is the path where your downloaded file will live in
+                    description: 'Downloading image.'
+                }
+            }
+            config(options)
+                .fetch('GET', url)
+                .then((res) => {
+                    console.log(JSON.stringify(res), "sucess");
+                    setLoading(false);
+                    RNFetchBlob.android.actionViewIntent(res.path());
+                    // do some magic here
+                }).catch((err) => {
+                    console.error(err);
+                    setLoading(false)
+                })
+        }
+        if (Platform.OS === 'ios') {
+            options = {
+                fileCache: true,
+                path: downloadDir + "/ETVBRL_" + Math.floor(date.getTime() + date.getSeconds() / 2) + file_ext,
+                // mime: 'application/xlsx',
+                // appendExt: 'xlsx',
+                //path: filePath,
+                //appendExt: fileExt,
+                notification: true,
+            }
+
+            config(options)
+                .fetch('GET', url)
+                .then(res => {
+                    setLoading(false);
+                    setTimeout(() => {
+                        // RNFetchBlob.ios.previewDocument('file://' + res.path());   //<---Property to display iOS option to save file
+                        RNFetchBlob.ios.openDocument(res.data);                      //<---Property to display downloaded file on documaent viewer
+                        // Alert.alert(CONSTANTS.APP_NAME,'File download successfully');
+                    }, 300);
+
+                })
+                .catch(errorMessage => {
+                    setLoading(false);
+                });
+        }
+    }
+
+    const getFileExtention = fileUrl => {
+        // To get the file extension
+        return /[.]/.exec(fileUrl) ?
+            /[^.]+$/.exec(fileUrl) : undefined;
+    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -528,13 +617,13 @@ const HomeScreen = ({ route, navigation }) => {
                         if (index === 0) {
                             return (
                                 <>
-                                    {/* {isButtonPresent &&
+                                    {isButtonPresent &&
                                         <View style={{ width: '100%', alignItems: 'flex-end', marginBottom: 15 }}>
-                                        <TouchableOpacity style={{ width: 130, height: 30, backgroundColor: Colors.RED, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={downloadFileFromServer}>
+                                            <TouchableOpacity style={{ width: 130, height: 30, backgroundColor: Colors.RED, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={downloadFileFromServer}>
                                                 <Text style={{ fontSize: 14, fontWeight: '600', color: '#fff' }}>ETVBRL Report</Text>
                                             </TouchableOpacity>
                                         </View>
-                                    } */}
+                                    }
                                     <View style={styles.rankView}>
 
                                         <View style={styles.rankBox}>
@@ -774,6 +863,7 @@ const HomeScreen = ({ route, navigation }) => {
 
         </View>
       </ScrollView> */}
+            <LoaderComponent visible={loading} />
         </SafeAreaView>
     );
 };

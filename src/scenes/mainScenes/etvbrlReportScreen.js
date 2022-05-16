@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Linking, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { DatePickerComponent, DropDownComponant, LoaderComponent } from '../../components';
 import { Colors } from '../../styles';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -116,30 +116,59 @@ const etvbrlReportScreen = () => {
         const report = await response.json();
         console.log("download Url", report)
         const { config, fs } = RNFetchBlob;
-        let downloadDir = fs.dirs.DownloadDir;
+        let downloadDir = Platform.select({ ios: fs.dirs.DocumentDir, android: fs.dirs.DownloadDir });
         let date = new Date();
-        let file_ext = getFileExtention(report);
+        let file_ext = getFileExtention(report.downloadUrl);
         file_ext = '.' + file_ext[0];
         console.log({file_ext})
-        let options = {
-            fileCache: true,
-            addAndroidDownloads: {
-                useDownloadManager: true, // setting it to true will use the device's native download manager and will be shown in the notification bar.
-                notification: true,
-                path: downloadDir + "/ETVBRL_" + Math.floor(date.getTime() + date.getSeconds() / 2) + file_ext, // this is the path where your downloaded file will live in
-                description: 'Downloading image.'
+        let options = {}
+        if (Platform.OS === 'android') {
+            options = {
+                fileCache: true,
+                addAndroidDownloads: {
+                    useDownloadManager: true, // setting it to true will use the device's native download manager and will be shown in the notification bar.
+                    notification: true,
+                    path: downloadDir + "/ETVBRL_" + Math.floor(date.getTime() + date.getSeconds() / 2) + file_ext, // this is the path where your downloaded file will live in
+                    description: 'Downloading image.'
+                }
             }
+            config(options)
+                .fetch('GET', report.downloadUrl)
+                .then((res) => {
+                    console.log(JSON.stringify(res), "sucess");
+                    setLoading(false);
+                    RNFetchBlob.android.actionViewIntent(res.path());
+                    // do some magic here
+                }).catch((err) => {
+                    console.error(err);
+                    setLoading(false)
+                })
         }
-        config(options)
-            .fetch('GET', report)
-        .then((res) => {
-            console.log(JSON.stringify(res), "sucess");
-            setLoading(false);
-            // do some magic here
-        }).catch((err) => {
-            console.error(err);
-            setLoading(false)
-        })
+        if (Platform.OS === 'ios') {
+            options = {
+                fileCache: true,
+                path: downloadDir + "/ETVBRL_" + Math.floor(date.getTime() + date.getSeconds() / 2) + file_ext,
+                // mime: 'application/xlsx',
+                // appendExt: 'xlsx',
+                //path: filePath,
+                //appendExt: fileExt,
+                notification: true,
+            }
+
+            config(options)
+                .fetch('GET', report.downloadUrl)
+                .then(res => {
+                    setLoading(false);
+                    setTimeout(() => {
+                        // RNFetchBlob.ios.previewDocument('file://' + res.path());   //<---Property to display iOS option to save file
+                        RNFetchBlob.ios.openDocument(res.data);                    
+                    }, 300);
+
+                })
+                .catch(errorMessage => {
+                    setLoading(false);
+                });
+        }
     }
 
     const getFileExtention = fileUrl => {
