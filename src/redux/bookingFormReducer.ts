@@ -1253,6 +1253,9 @@ const bookingFormSlice = createSlice({
           } else if (item.documentType === "aadhar") {
             state.adhaar_number = item.documentNumber;
           }
+          else if (item.documentType === "empId") {
+            state.employee_id = item.documentNumber;
+          }
         });
       }
     },

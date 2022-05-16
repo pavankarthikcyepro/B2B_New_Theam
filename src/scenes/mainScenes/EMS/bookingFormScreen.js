@@ -833,6 +833,7 @@ const BookingFormScreen = ({ route, navigation }) => {
 
         let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
         if (carModelObj !== undefined) {
+            console.log("INSIDE IF");
             let newArray = [];
             let mArray = carModelObj.varients;
             setSelectedModelId(carModelObj.vehicleId);
@@ -1168,64 +1169,6 @@ const BookingFormScreen = ({ route, navigation }) => {
             navigation.goBack();
         }
     }, [selector.update_pre_booking_details_response]);
-
-    useEffect(() => {
-        if (selector.pre_booking_details_response) {
-            let dmsContactOrAccountDto;
-            if (
-                selector.pre_booking_details_response.hasOwnProperty("dmsAccountDto")
-            ) {
-                dmsContactOrAccountDto =
-                    selector.pre_booking_details_response.dmsAccountDto;
-            } else if (
-                selector.pre_booking_details_response.hasOwnProperty("dmsContactDto")
-            ) {
-                dmsContactOrAccountDto =
-                    selector.pre_booking_details_response.dmsContactDto;
-            }
-            const dmsLeadDto = selector.pre_booking_details_response.dmsLeadDto;
-            dispatch(getOnRoadPriceDtoListApi(dmsLeadDto.id));
-            if (dmsLeadDto.leadStatus === "ENQUIRYCOMPLETED") {
-                setShowSubmitDropBtn(true);
-            }
-            if (dmsLeadDto.leadStatus === "SENTFORAPPROVAL") {
-                setShowApproveRejectBtn(true);
-            }
-            if (dmsLeadDto.leadStatus === "PREBOOKINGCOMPLETED") {
-                setShowPrebookingPaymentSection(true);
-                // Get Payment Details
-                dispatch(getPaymentDetailsApi(dmsLeadDto.id));
-                dispatch(getBookingAmountDetailsApi(dmsLeadDto.id));
-            }
-
-            // Update dmsContactOrAccountDto
-            dispatch(updateDmsContactOrAccountDtoData(dmsContactOrAccountDto));
-            // Update updateDmsLeadDtoData
-            dispatch(updateDmsLeadDtoData(dmsLeadDto));
-            // Update Addresses
-            dispatch(updateDmsAddressData(dmsLeadDto.dmsAddresses));
-            // Updaet Model Selection
-            dispatch(updateModelSelectionData(dmsLeadDto.dmsLeadProducts));
-            // Update Finance Details
-            dispatch(updateFinancialData(dmsLeadDto.dmsfinancedetails));
-            // // Update Booking Payment Data
-            dispatch(updateBookingPaymentData(dmsLeadDto.dmsBooking));
-            // Update Attachment details
-            saveAttachmentDetailsInLocalObject(dmsLeadDto.dmsAttachments);
-            dispatch(updateDmsAttachments(dmsLeadDto.dmsAttachments));
-
-            // Update Paid Accesories
-            if (dmsLeadDto.dmsAccessories.length > 0) {
-                let initialValue = 0;
-                const totalPrice = dmsLeadDto.dmsAccessories.reduce(
-                    (preValue, currentValue) => preValue + currentValue.amount,
-                    initialValue
-                );
-                setSelectedPaidAccessoriesPrice(totalPrice);
-            }
-            setSelectedPaidAccessoriesList([...dmsLeadDto.dmsAccessories]);
-        }
-    }, [selector.pre_booking_details_response]);
 
     const mapContactOrAccountDto = (prevData) => {
         let dataObj = { ...prevData };
@@ -2596,7 +2539,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                                 onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
                                             />
                                         </View>
-                                        {uploadedImagesDataObj.pan ? (
+                                        {uploadedImagesDataObj.pan?.fileName ? (
                                             <DisplaySelectedImage
                                                 fileName={uploadedImagesDataObj.pan.fileName}
                                                 from={"PAN"}
@@ -2648,7 +2591,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                                 name={"Upload Adhar"}
                                                 onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
                                             />
-                                            {uploadedImagesDataObj.aadhar ? (
+                                            {uploadedImagesDataObj.aadhar?.fileName ? (
                                                 <DisplaySelectedImage
                                                     fileName={uploadedImagesDataObj.aadhar.fileName}
                                                     from={"AADHAR"}
@@ -2688,7 +2631,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                                 }
                                             />
                                         </View>
-                                        {uploadedImagesDataObj.empId ? (
+                                            {uploadedImagesDataObj.empId?.fileName ? (
                                             <DisplaySelectedImage
                                                 fileName={uploadedImagesDataObj.empId.fileName}
                                                 from={"EMPLOYEE_ID"}
