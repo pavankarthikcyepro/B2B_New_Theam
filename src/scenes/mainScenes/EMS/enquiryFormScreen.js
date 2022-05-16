@@ -459,8 +459,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
     if (selector.enquiry_segment.toLowerCase() == "personal") {
       if (
-        selector.dateOfBirth.length == 0 ||
-        selector.anniversaryDate.length == 0
+        selector.dateOfBirth.length == 0
+        // ||
+        // selector.anniversaryDate.length == 0
       ) {
         return;
       }
@@ -518,6 +519,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       }
     }
 
+   
+      
     if (selector.buyer_type === "Additional Buyer") {
       if (
         selector.a_make == 0 ||
@@ -607,6 +610,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       // console.log("GDGHDGDGDGDGD", JSON.stringify(dmsLeadDto.dmsAttachments));
       if (selector.pan_number) {
         tempAttachments.push({
+
           "branchId": jsonObj.branchs[0]?.branchId,
           "contentSize": 0,
           "createdBy": new Date().getSeconds(),
@@ -1952,7 +1956,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           flexDirection: "column",
           justifyContent: "center",
         }}
-        behavior={Platform.OS == "ios" ? "padding" : "height"}
+        behavior={Platform.OS == "ios" ?
+          "padding" : "height"}
         enabled
         keyboardVerticalOffset={100}
       >
@@ -3790,7 +3795,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.r_reg_no}
-                    label={"Reg. No."}
+                    label={"Reg. No.*"}
                     maxLength={50}
                     keyboardType={"default"}
                     autoCapitalize={"characters"}
