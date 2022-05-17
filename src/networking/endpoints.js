@@ -227,6 +227,9 @@ const URL = {
     },
     DOWNLOAD_REPORT: () => {
         return `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8093/dynamic-reports/etvbrl_report`;
+    },
+    QR: (orgId, branchId) => {
+        return sales_url + `/qrcode/get/${orgId}/${branchId}`;
     }
 }
 
