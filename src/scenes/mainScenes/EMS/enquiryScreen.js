@@ -92,7 +92,7 @@ const EnquiryScreen = ({ navigation }) => {
             "empId": empId,
             "status": "ENQUIRY",
             "offset": offSet,
-            "limit": 10
+            "limit": 1000,
         }
         return payload;
     }

@@ -26,7 +26,8 @@ export const updateEnquiryDetailsApi = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
     const json = await response.json();
-
+    console.log("UPDATE ENQ:", JSON.stringify(json));
+    
     if (!response.ok) {
       return rejectWithValue(json);
     }

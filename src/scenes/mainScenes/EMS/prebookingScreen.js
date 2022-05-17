@@ -91,7 +91,7 @@ const PreBookingScreen = ({ navigation }) => {
             "empId": empId,
             "status": "PREBOOKING",
             "offset": offSet,
-            "limit": 10
+            "limit": 1000,
         }
         return payload;
     }

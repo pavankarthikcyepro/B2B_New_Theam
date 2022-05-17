@@ -127,7 +127,7 @@ const BookingScreen = ({ navigation }) => {
             empId: empId,
             status: "BOOKING",
             offset: offSet,
-            limit: 10,
+            limit: 1000,
         };
         return payload;
     };

@@ -187,10 +187,10 @@ const URL = {
         return `${dashboard}/v2/get_emp_target_ranking/org/${orgId}/branch/${branchId}`
     },
     GET_BANK_DETAILS: (orgId) => {
-        return dfGetAll + `/${orgId}/%22Active%22/${orgId}/bankFinancier`;
+        return dfGetAll + `/${orgId}/"Active"/${orgId}/bankFinancier`;
     },
     GET_INSURENCE_COMPANY_NAMES: (orgId) => {
-        return dfGetAll + `/${orgId}/%22Active%22/${orgId}/incuranceCompany`
+        return dfGetAll + `/${orgId}/"Active"/${orgId}/incuranceCompany`
     },
     GET_DROP_LIST: (ordId, type) => {
         return lostSubLost + `?organizationId=${ordId}&stageName=${type}`

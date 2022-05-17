@@ -38,6 +38,8 @@ export const getPrebookingDetailsApi = createAsyncThunk(
     const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
     try {
       const json = await response.json();
+      console.log("DETAILS:", JSON.stringify(json));
+      
       if (response.status != 200) {
         return rejectWithValue(json);
       }
@@ -156,6 +158,8 @@ export const getCustomerTypesApi = createAsyncThunk(
     const response = await client.get(URL.GET_CUSTOMER_TYPES());
     try {
       const json = await response.json();
+      console.log("SUCCESS");
+      
       if (response.status != 200) {
         return rejectWithValue(json);
       }
@@ -995,6 +999,7 @@ const bookingFormSlice = createSlice({
           break;
         case "PAN_NUMBER":
           state.pan_number = text;
+          break;
         case "RELATIONSHIP_PROOF":
           state.relationship_proof = text;
           break;
@@ -1248,6 +1253,9 @@ const bookingFormSlice = createSlice({
           } else if (item.documentType === "aadhar") {
             state.adhaar_number = item.documentNumber;
           }
+          else if (item.documentType === "empId") {
+            state.employee_id = item.documentNumber;
+          }
         });
       }
     },
@@ -1268,6 +1276,24 @@ const bookingFormSlice = createSlice({
     builder.addCase(getPrebookingDetailsApi.fulfilled, (state, action) => {
       if (action.payload.dmsEntity) {
         state.pre_booking_details_response = action.payload.dmsEntity;
+        let attachments = action.payload.dmsEntity.dmsLeadDto.dmsAttachments;
+        if (attachments.length > 0) {
+          let panDtls = [];
+          panDtls = attachments.filter((item) => {
+            return item.documentType === "pan"
+          })
+          if (panDtls.length > 0) {
+            state.form_or_pan = 'PAN'
+            state.isDataLoaded = true
+            setDocumentUploadDetails({
+              key: "PAN_NUMBER",
+              text: state.pan_number,
+            })
+          }
+          else {
+            state.isDataLoaded = true
+          }
+        }
       }
       state.isLoading = false;
     });

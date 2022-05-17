@@ -104,7 +104,9 @@ export const DropComponent = ({
                 />
                 <Text style={GlobalStyle.underline}></Text>
 
-                {(reasonInLowerCase === lostToCompetitor || reasonInLowerCase === lostToCoDealer || reasonInLowerCase === NoProperResponse || reasonInLowerCase === casualEnquiry || reasonInLowerCase == lostToSameDealer) ? (
+                {(
+                    //reasonInLowerCase === lostToCompetitor || reasonInLowerCase === lostToCoDealer || 
+                reasonInLowerCase === NoProperResponse || reasonInLowerCase === casualEnquiry || reasonInLowerCase == lostToSameDealer) ? (
                     <View>
                         <DropDownSelectionItem
                             label={"Drop Sub Reason"}
@@ -115,7 +117,9 @@ export const DropComponent = ({
                     </View>
                 ) : null}
 
-                {reasonInLowerCase === lostToCompetitor || reasonInLowerCase === lostToUsedCarsFromCoDelear || reasonInLowerCase === lostToCometitorName ? (
+                {
+                //reasonInLowerCase === lostToCompetitor || 
+                reasonInLowerCase === lostToUsedCarsFromCoDelear || reasonInLowerCase === lostToCometitorName ? (
                     <View>
                         <TextinputComp
                             style={styles.textInputStyle}
