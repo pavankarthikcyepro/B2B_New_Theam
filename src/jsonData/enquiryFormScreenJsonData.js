@@ -17,6 +17,14 @@ export const Enquiry_Segment_Data = [
   // },
 ];
 
+export const Category_Type = [
+  {
+    id: "1",
+    name: "No Data Found",
+  }
+];
+
+
 export const Category_Type_List_For_Filter = [
   {
     id: "1",

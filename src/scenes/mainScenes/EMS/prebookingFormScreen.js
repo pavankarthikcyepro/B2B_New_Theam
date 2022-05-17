@@ -3023,8 +3023,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                                 <CheckboxTextAndAmountComp
                                     title={"Handling Charges:"}
-                                    amount={priceInfomationData.handling_charges.toFixed(2)}
-                                    // amount={handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : "0.00"}
+                                    //amount={priceInfomationData.handling_charges.toFixed(2)}
+                                     amount={handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : "0.00"}
                                     isChecked={handlingChargSlctd}
                                     onPress={() => {
                                         setHandlingChargSlctd(!handlingChargSlctd);
@@ -3361,7 +3361,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             {/* // 7.Financial Details */}
                             <List.Accordion
                                 id={"7"}
-                                title={"Financial Details"}
+                                title={"Finance Details"}
                                 titleStyle={{
                                     color: openAccordian === "7" ? Colors.WHITE : Colors.BLACK,
                                     fontSize: 16,
