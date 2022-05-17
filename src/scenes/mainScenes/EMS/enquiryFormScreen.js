@@ -715,8 +715,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   }
 
   const submitClicked = async () => {
-
-    //Personal Intro 
+    //Personal Intro
     if (selector.salutation.length == 0) {
       showToast("Please fill required fields in Personal Intro");
       return;
@@ -724,8 +723,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
     if (selector.enquiry_segment.toLowerCase() == "personal") {
       if (
-        selector.dateOfBirth.length == 0 ||
-        selector.anniversaryDate.length == 0
+        selector.dateOfBirth.length == 0
+        // ||
+        // selector.anniversaryDate.length == 0
       ) {
         showToast("Please fill required fields in Personal Intro");
         return;
@@ -748,7 +748,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("Please enter alphabetics only in street name");
       return;
     }
-//Customer Profile
+    //Customer Profile
 
     if (selector.designation.length == 0 || selector.buyer_type.length == 0) {
       showToast("Please fill required fields in Customer Profile");
@@ -763,7 +763,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("Please enter alphabetics only in designation");
       return;
     }
-//communication Address
+    //communication Address
     if (
       selector.houseNum.length == 0 ||
       selector.streetName.length == 0 ||
@@ -776,8 +776,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
 
-      // Model Selection
-    if (selector.model.length == 0 || selector.varient.length == 0 || selector.color.length == 0) {
+    // Model Selection
+    if (
+      selector.model.length == 0 ||
+      selector.varient.length == 0 ||
+      selector.color.length == 0
+    ) {
       showToast("Please fill required fields in Model Selection");
       return;
     }
@@ -809,6 +813,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       }
     }
 
+    //Customer Customer need Analysis
+    if (selector.c_voice_of_customer_remarks == 0) {
+      showToast("Please fill required fields in Customer need Analysis");
+      return;
+    }
+
     if (selector.buyer_type === "Additional Buyer") {
       if (
         selector.a_make == 0 ||
@@ -828,12 +838,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         showToast("Please enter alphabetics only in color ");
         return;
       }
+
       // if (!isValidateAlphabetics(selector.a_reg_no)) {
       //   showToast("Please enter alphabetics only in reg no ");
       //   return;
       // }
     }
-
+ if (selector.r_reg_no == 0) {
+   showToast("Please fill r_reg no is mandatory");
+   return;
+ }
     if (selector.buyer_type === "Replacement Buyer") {
       if (selector.r_color.length > 0) {
         if (!isValidateAlphabetics(selector.r_color)) {
@@ -883,19 +897,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
 
-      if (
-      selector.pan_number.length > 0 && !isValidateAplhaNumeric(selector.pan_number)
+    if (
+      selector.pan_number.length > 0 &&
+      !isValidateAplhaNumeric(selector.pan_number)
     ) {
       showToast("Please enter proper PAN number");
       return;
     }
-      if (
-      selector.gstin_number.length > 0 && !isValidateAplhaNumeric(selector.gstin_number)
+    if (
+      selector.gstin_number.length > 0 &&
+      !isValidateAplhaNumeric(selector.gstin_number)
     ) {
       showToast("Please enter proper gstin number");
       return;
     }
-
 
     if (!selector.enquiry_details_response) {
       return;
@@ -922,79 +937,123 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         console.log("GDGHDGDGDGDGD", JSON.stringify(dmsLeadDto.dmsAttachments));
         if (selector.pan_number) {
           tempAttachments.push({
-            "branchId": jsonObj.branchs[0]?.branchId,
-            "contentSize": 0,
-            "createdBy": new Date().getSeconds(),
-            "description": "",
-            "documentNumber": selector.pan_number,
-            "documentPath": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'pan' })[0].documentPath : '',
-            "documentType": "pan",
-            "documentVersion": 0,
-            "fileName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'pan' })[0].fileName : '',
-            "gstNumber": "",
-            "id": 0,
-            "isActive": 0,
-            "isPrivate": 0,
-            "keyName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'pan' })[0].keyName : '',
-            "modifiedBy": jsonObj.empName,
-            "orgId": jsonObj.orgId,
-            "ownerId": "",
-            "ownerName": jsonObj.empName,
-            "parentId": "",
-            "tinNumber": ""
-          })
+            branchId: jsonObj.branchs[0]?.branchId,
+            contentSize: 0,
+            createdBy: new Date().getSeconds(),
+            description: "",
+            documentNumber: selector.pan_number,
+            documentPath:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "pan";
+                  })[0].documentPath
+                : "",
+            documentType: "pan",
+            documentVersion: 0,
+            fileName:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "pan";
+                  })[0].fileName
+                : "",
+            gstNumber: "",
+            id: 0,
+            isActive: 0,
+            isPrivate: 0,
+            keyName:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "pan";
+                  })[0].keyName
+                : "",
+            modifiedBy: jsonObj.empName,
+            orgId: jsonObj.orgId,
+            ownerId: "",
+            ownerName: jsonObj.empName,
+            parentId: "",
+            tinNumber: "",
+          });
         }
         if (selector.adhaar_number) {
           tempAttachments.push({
-            "branchId": jsonObj.branchs[0]?.branchId,
-            "contentSize": 0,
-            "createdBy": new Date().getSeconds(),
-            "description": "",
-            "documentNumber": selector.adhaar_number,
-            "documentPath": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'aadhar' })[0].documentPath : '',
-            "documentType": "aadhar",
-            "documentVersion": 0,
-            "fileName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'aadhar' })[0].fileName : '',
-            "gstNumber": "",
-            "id": 0,
-            "isActive": 0,
-            "isPrivate": 0,
-            "keyName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'aadhar' })[0].keyName : '',
-            "modifiedBy": jsonObj.empName,
-            "orgId": jsonObj.orgId,
-            "ownerId": "",
-            "ownerName": jsonObj.empName,
-            "parentId": "",
-            "tinNumber": ""
-          })
+            branchId: jsonObj.branchs[0]?.branchId,
+            contentSize: 0,
+            createdBy: new Date().getSeconds(),
+            description: "",
+            documentNumber: selector.adhaar_number,
+            documentPath:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "aadhar";
+                  })[0].documentPath
+                : "",
+            documentType: "aadhar",
+            documentVersion: 0,
+            fileName:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "aadhar";
+                  })[0].fileName
+                : "",
+            gstNumber: "",
+            id: 0,
+            isActive: 0,
+            isPrivate: 0,
+            keyName:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "aadhar";
+                  })[0].keyName
+                : "",
+            modifiedBy: jsonObj.empName,
+            orgId: jsonObj.orgId,
+            ownerId: "",
+            ownerName: jsonObj.empName,
+            parentId: "",
+            tinNumber: "",
+          });
         }
         if (selector.employee_id) {
           tempAttachments.push({
-            "branchId": jsonObj.branchs[0]?.branchId,
-            "contentSize": 0,
-            "createdBy": new Date().getSeconds(),
-            "description": "",
-            "documentNumber": selector.employee_id,
-            "documentPath": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'empId' })[0].documentPath : '',
-            "documentType": "empId",
-            "documentVersion": 0,
-            "fileName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'empId' })[0].fileName : '',
-            "gstNumber": "",
-            "id": 0,
-            "isActive": 0,
-            "isPrivate": 0,
-            "keyName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'empId' })[0].keyName : '',
-            "modifiedBy": jsonObj.empName,
-            "orgId": jsonObj.orgId,
-            "ownerId": "",
-            "ownerName": jsonObj.empName,
-            "parentId": "",
-            "tinNumber": ""
-          })
+            branchId: jsonObj.branchs[0]?.branchId,
+            contentSize: 0,
+            createdBy: new Date().getSeconds(),
+            description: "",
+            documentNumber: selector.employee_id,
+            documentPath:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "empId";
+                  })[0].documentPath
+                : "",
+            documentType: "empId",
+            documentVersion: 0,
+            fileName:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "empId";
+                  })[0].fileName
+                : "",
+            gstNumber: "",
+            id: 0,
+            isActive: 0,
+            isPrivate: 0,
+            keyName:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "empId";
+                  })[0].keyName
+                : "",
+            modifiedBy: jsonObj.empName,
+            orgId: jsonObj.orgId,
+            ownerId: "",
+            ownerName: jsonObj.empName,
+            parentId: "",
+            tinNumber: "",
+          });
         }
         dmsLeadDto.dmsAttachments = tempAttachments;
       }
-
     }
 
     if (selector.enquiry_details_response.hasOwnProperty("dmsContactDto")) {
@@ -1014,26 +1073,25 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       const refPayload = {
-        "branchid": jsonObj.branchs[0]?.branchId,
-        "leadstage": "ENQUIRY",
-        "orgid": jsonObj.orgId,
-        "universalId": universalId
-      }
+        branchid: jsonObj.branchs[0]?.branchId,
+        leadstage: "ENQUIRY",
+        orgid: jsonObj.orgId,
+        universalId: universalId,
+      };
       Promise.all([
         dispatch(updateEnquiryDetailsApi(formData)),
-        dispatch(customerLeadRef(refPayload))
+        dispatch(customerLeadRef(refPayload)),
       ]).then(async (res) => {
         console.log("REF NO:", JSON.stringify(res));
         const payload = {
-          "refNo": res[1].payload.dmsEntity.leadCustomerReference.referencenumber,
-          "orgId": jsonObj.orgId,
-          "stageCompleted": "ENQUIRY"
-        }
+          refNo: res[1].payload.dmsEntity.leadCustomerReference.referencenumber,
+          orgId: jsonObj.orgId,
+          stageCompleted: "ENQUIRY",
+        };
         console.log("PAYLOAD:", payload);
-        dispatch(updateRef(payload))
+        dispatch(updateRef(payload));
       });
     }
-
   };
 
   const mapContactOrAccountDto = (prevData) => {

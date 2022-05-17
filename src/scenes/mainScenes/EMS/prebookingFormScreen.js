@@ -381,7 +381,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         selector.corporate_offer,
         selector.promotional_offer,
         selector.cash_discount,
+
         selector.for_accessories,
+        selector.insurance_discount,
+        selector.accessories_discount,
         selector.additional_offer_1,
         selector.additional_offer_2,
     ]);
@@ -934,6 +937,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         totalPrice -= Number(selector.promotional_offer);
         totalPrice -= Number(selector.cash_discount);
         totalPrice -= Number(selector.for_accessories);
+        totalPrice -= Number(selector.insurance_discount);
+        totalPrice -= Number(selector.accessories_discount);
         totalPrice -= Number(selector.additional_offer_1);
         totalPrice -= Number(selector.additional_offer_2);
         if (accDiscount !== '') {
@@ -1038,6 +1043,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             priceInfomationData.ex_showroom_price;
         postOnRoadPriceTable.offerData = [];
         postOnRoadPriceTable.focAccessories = selector.for_accessories;
+        postOnRoadPriceTable.insuranceDiscount = selector.insurance_discount;
+        postOnRoadPriceTable.accessoriesDiscount = selector.accessories_discount;
         postOnRoadPriceTable.handlingCharges = handlingChargSlctd
             ? priceInfomationData.handling_charges
             : 0;
@@ -2799,7 +2806,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                                 {/* // Relationship Number */}
                                 <View>
-                                    <TextinputComp
+                                    {/* <TextinputComp
                                         style={styles.textInputStyle}
                                         value={selector.relationship_proof}
                                         label={"Relationship Number*"}
@@ -2814,10 +2821,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             )
                                         }
                                     />
-                                    <Text style={GlobalStyle.underline}></Text>
+                                    <Text style={GlobalStyle.underline}></Text> */}
                                     <View style={styles.select_image_bck_vw}>
                                         <ImageSelectItem
-                                            name={"Relationship Proof"}
+                                            name={"Others"}
                                             onPress={() =>
                                                 dispatch(setImagePicker("UPLOAD_RELATION_PROOF"))
                                             }
@@ -2923,7 +2930,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     {/* <View style={{width: '60%', flexDirection: 'row'}}> */}
                                     <Text style={[styles.leftLabel]}>{"Life Tax:"}</Text>
                                     {/* </View> */}
-                                    <View style={{ width: 80, height: 30, justifyContent: 'center', paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#d1d1d1' }}>
+                                    <View style={{
+                                        // width: 80, height: 30,
+                                        // justifyContent: 'center',
+                                        paddingHorizontal: 10,
+                                        borderBottomWidth: 1, borderBottomColor: '#d1d1d1'
+                                    }}>
                                         <TextInput
                                             value={taxPercent}
                                             style={[{ fontSize: 14, fontWeight: "400", }]}
@@ -3042,7 +3054,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 <Text style={GlobalStyle.underline}></Text>
 
                                 <TextAndAmountComp
-                                    title={"TCS(>10Lakhs -> %):"}
+                                    title={"TCS(>10Lakhs -> 1%):"}
                                     amount={tcsAmount.toFixed(2)}
                                 />
                                 <Text style={GlobalStyle.underline}></Text>
@@ -3245,7 +3257,37 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     }
                                 />
                                 <Text style={GlobalStyle.underline}></Text>
-                                <View style={styles.textAndAmountView}>
+                                <TextinputComp
+                                    style={styles.offerPriceTextInput}
+                                    label={"Insurance Discount:"}
+                                    value={selector.insurance_discount}
+                                    showLeftAffixText={true}
+                                    keyboardType="number-pad"
+                                    leftAffixText={rupeeSymbol}
+                                    onChangeText={(text) => dispatch(
+                                        setOfferPriceDetails({
+                                            key: "INSURANCE_DISCOUNT",
+                                            text:"text",
+                                    })
+                                    )} />
+                                <Text style={GlobalStyle.underline}></Text>
+                                <TextinputComp
+                                    style={styles.offerPriceTextInput}
+                                    label={"Accessories Discount:"}
+                                    value={selector.accessories_discount}
+                                    showLeftAffixText={true}
+                                    keyboardType="number-pad"
+                                    leftAffixText={rupeeSymbol}
+                                    onChangeText={(text) => dispatch(
+                                        setOfferPriceDetails({
+                                            key: "ACCESSORIES_DISCOUNT",
+                                            text:"text",
+                                        })
+                                    )}
+                                />
+                                <Text style={GlobalStyle.underline}></Text>
+
+                                {/* <View style={styles.textAndAmountView}>
                                     <Text style={{ fontSize: 16, fontWeight: '400', color: Colors.GRAY }}>{"Insurance Discount:"}</Text>
                                     <View style={{ width: 80, height: 30, justifyContent: 'center', paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#d1d1d1' }}>
                                         <TextInput
@@ -3257,8 +3299,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             }}
                                         />
                                     </View>
-                                </View>
-                                <View style={styles.textAndAmountView}>
+                                </View> */}
+                                {/* <View style={styles.textAndAmountView}>
                                     <Text style={{ fontSize: 16, fontWeight: '400', color: Colors.GRAY }}>{"Accessories Discount:"}</Text>
                                     <View style={{ width: 80, height: 30, justifyContent: 'center', paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#d1d1d1' }}>
                                         <TextInput
@@ -3270,7 +3312,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             }}
                                         />
                                     </View>
-                                </View>
+                                </View> */}
                                 <TextinputComp
                                     style={styles.offerPriceTextInput}
                                     label={"Additional Offer 1:"}
