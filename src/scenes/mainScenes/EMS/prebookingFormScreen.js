@@ -2079,7 +2079,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             }
                                         />
                                         <DateSelectItem
-                                            label={"Date Of Birth"}
+                                            label={"Date Of Birth*"}
                                             value={selector.date_of_birth}
                                             onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
                                         />
@@ -2095,7 +2095,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         />
                                         <Text style={GlobalStyle.underline}></Text>
                                         <DropDownSelectionItem
-                                            label={"Marital Status"}
+                                            label={"Marital Status*"}
                                             value={selector.marital_status}
                                             onPress={() =>
                                                 showDropDownModelMethod(
@@ -2536,7 +2536,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             >
                                 {/* {isDataLoaded && */}
                                 <DropDownSelectionItem
-                                    label={"Form60/PAN"}
+                                    label={"Form60/PAN*"}
                                     value={selector.form_or_pan}
                                     onPress={() =>
                                         showDropDownModelMethod("FORM_60_PAN", "Retail Finance")
@@ -2564,7 +2564,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         <Text style={GlobalStyle.underline}></Text>
                                         <View style={styles.select_image_bck_vw}>
                                             <ImageSelectItem
-                                                name={"PAN"}
+                                                name={"PAN*"}
                                                 onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
                                             />
                                         </View>
@@ -2582,7 +2582,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     <View>
                                         <View style={styles.select_image_bck_vw}>
                                             <ImageSelectItem
-                                                name={"Form60"}
+                                                name={"Form60*"}
                                                 onPress={() =>
                                                     dispatch(setImagePicker("UPLOAD_FORM60"))
                                                 }
@@ -2616,7 +2616,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         <Text style={GlobalStyle.underline}></Text>
                                         <View style={styles.select_image_bck_vw}>
                                             <ImageSelectItem
-                                                name={"Upload Adhar"}
+                                                name={"Upload Adhar*"}
                                                 onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
                                             />
                                             {uploadedImagesDataObj.aadhar?.fileName ? (
@@ -2644,14 +2644,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         <Text style={GlobalStyle.underline}></Text>
                                         <View style={styles.select_image_bck_vw}>
                                             <ImageSelectItem
-                                                name={"Employee ID"}
+                                                name={"Employee ID*"}
                                                 onPress={() => dispatch(setImagePicker("UPLOAD_EMPLOYEE_ID"))}
                                             />
                                         </View>
                                         {uploadedImagesDataObj.empId.fileName ? (
                                             <DisplaySelectedImage
                                                 fileName={uploadedImagesDataObj.empId.fileName}
-                                                from={"EMPLOYEE_ID"}
+                                                from={"EMPLOYEE_ID*"}
                                             />
                                         ) : null}
                                     </View>
@@ -2662,7 +2662,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     <View >
                                         <View style={styles.select_image_bck_vw}>
                                             <ImageSelectItem
-                                                name={"Last 3 months payslip"}
+                                                name={"Last 3 months payslip*"}
                                                 onPress={() => dispatch(setImagePicker("UPLOAD_3_MONTHS_PAYSLIP"))}
                                             />
                                         </View>
@@ -2680,7 +2680,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     <View >
                                         <View style={styles.select_image_bck_vw}>
                                             <ImageSelectItem
-                                                name={"Patta Pass Book"}
+                                                name={"Patta Pass Book*"}
                                                 onPress={() => dispatch(setImagePicker("UPLOAD_PATTA_PASS_BOOK"))}
                                             />
                                         </View>
@@ -2698,7 +2698,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     <View >
                                         <View style={styles.select_image_bck_vw}>
                                             <ImageSelectItem
-                                                name={"Pension Letter"}
+                                                name={"Pension Letter*"}
                                                 onPress={() => dispatch(setImagePicker("UPLOAD_PENSION_LETTER"))}
                                             />
                                         </View>
@@ -2716,7 +2716,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     <View >
                                         <View style={styles.select_image_bck_vw}>
                                             <ImageSelectItem
-                                                name={"IMA Certificate"}
+                                                name={"IMA Certificate*"}
                                                 onPress={() => dispatch(setImagePicker("UPLOAD_IMA_CERTIFICATE"))}
                                             />
                                         </View>
@@ -2734,7 +2734,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     <View >
                                         <View style={styles.select_image_bck_vw}>
                                             <ImageSelectItem
-                                                name={"Leasing Confirmation"}
+                                                name={"Leasing Confirmation*"}
                                                 onPress={() => dispatch(setImagePicker("UPLOAD_LEASING_CONFIRMATION"))}
                                             />
                                         </View>
@@ -2752,7 +2752,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     <View >
                                         <View style={styles.select_image_bck_vw}>
                                             <ImageSelectItem
-                                                name={"Address Proof"}
+                                                name={"Address Proof*"}
                                                 onPress={() => dispatch(setImagePicker("UPLOAD_ADDRESS_PROOF"))}
                                             />
                                         </View>
@@ -2769,7 +2769,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 {selector.customer_type === "Individual" && (
                                     <View>
                                         <DropDownSelectionItem
-                                            label={"Customer Type Category"}
+                                            label={"Customer Type Category*"}
                                             value={selector.customer_type_category}
                                             onPress={() =>
                                                 showDropDownModelMethod(
@@ -2789,7 +2789,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         <TextinputComp
                                             style={styles.textInputStyle}
                                             value={selector.gstin_number}
-                                            label={"GSTIN Number"}
+                                            label={"GSTIN Number*"}
                                             onChangeText={(text) =>
                                                 dispatch(
                                                     setDocumentUploadDetails({
@@ -2824,7 +2824,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     <Text style={GlobalStyle.underline}></Text> */}
                                     <View style={styles.select_image_bck_vw}>
                                         <ImageSelectItem
-                                            name={"Others"}
+                                            name={"Others*"}
                                             onPress={() =>
                                                 dispatch(setImagePicker("UPLOAD_RELATION_PROOF"))
                                             }
@@ -3633,7 +3633,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 <Text style={GlobalStyle.underline}></Text>
 
                                 <DropDownSelectionItem
-                                    label={"Payment At"}
+                                    label={"Payment At*"}
                                     value={selector.payment_at}
                                     onPress={() =>
                                         showDropDownModelMethod("PAYMENT_AT", "Payment At")
@@ -3641,7 +3641,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 />
 
                                 <DropDownSelectionItem
-                                    label={"Booking Payment Mode"}
+                                    label={"Booking Payment Mode*"}
                                     value={selector.booking_payment_mode}
                                     onPress={() =>
                                         showDropDownModelMethod(

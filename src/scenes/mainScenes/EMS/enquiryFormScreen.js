@@ -2437,7 +2437,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
 
                 <DropDownSelectionItem
-                  label={"Buyer Type"}
+                  label={"Buyer Type*"}
                   value={selector.buyer_type}
                   onPress={() =>
                     showDropDownModelMethod("BUYER_TYPE", "Buyer Type")
@@ -2971,7 +2971,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 ]}
               >
                 <DropDownSelectionItem
-                  label={"Retail Finance"}
+                  label={"Retail Finance*"}
                   value={selector.retail_finance}
                   onPress={() =>
                     showDropDownModelMethod("RETAIL_FINANCE", "Retail Finance")
