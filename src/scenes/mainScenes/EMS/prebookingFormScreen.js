@@ -968,7 +968,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         if (
             selector.form_or_pan.length == 0 ||
             selector.adhaar_number.length == 0 ||
-            selector.relationship_proof.length == 0 ||
+            // selector.relationship_proof.length == 0 ||
             selector.customer_type_category.length == 0
         ) {
             showToast("please enter document upload section");
