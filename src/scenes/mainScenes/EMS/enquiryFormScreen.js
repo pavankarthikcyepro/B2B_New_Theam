@@ -839,31 +839,31 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         return;
       }
 
-      // if (!isValidateAlphabetics(selector.a_reg_no)) {
-      //   showToast("Please enter alphabetics only in reg no ");
-      //   return;
-      // }
     }
- if (selector.r_reg_no == 0) {
-   showToast("Please fill r_reg no is mandatory");
-   return;
- }
+
     if (selector.buyer_type === "Replacement Buyer") {
       if (selector.r_color.length > 0) {
         if (!isValidateAlphabetics(selector.r_color)) {
           showToast("Please enter alphabetics only in color ");
           return;
         }
-      }
-      if (selector.r_insurence_company_name.length == 0) {
-        showToast("Please select the insurance company name");
-        return;
-      }
+         if (selector.r_reg_no == 0) {
+   showToast("Please fill reg no is mandatory");
+   return;
+
       if (!isValidateAlphabetics(selector.r_model_other_name)) {
         showToast("Please enter proper model other name");
         return;
       }
 
+ }
+        
+      }
+      if (selector.r_insurence_company_name.length == 0) {
+        showToast("Please select the insurance company name");
+        return;
+      }
+   
       if (selector.r_hypothication_checked === true) {
         if (selector.r_hypothication_name.length > 0) {
           if (!isValidateAlphabetics(selector.r_hypothication_name)) {
@@ -2225,7 +2225,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.occupation}
                   autoCapitalize="words"
-                  label={"Occupation*"}
+                  label={"Occupation"}
                   keyboardType={"default"}
                   maxLength={40}
                   onChangeText={(text) =>
@@ -2251,7 +2251,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
 
                 <DropDownSelectionItem
-                  label={"Enquiry Segment*"}
+                  label={"Enquiry Segment"}
                   // disabled={!selector.enableEdit}
                   value={selector.enquiry_segment}
                   onPress={() =>

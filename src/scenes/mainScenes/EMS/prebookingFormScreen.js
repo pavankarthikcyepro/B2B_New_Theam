@@ -1997,7 +1997,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 ]}
                             >
                                 <DropDownSelectionItem
-                                    label={"Salutation"}
+                                    label={"Salutation*"}
                                     value={selector.salutation}
                                     onPress={() =>
                                         showDropDownModelMethod("SALUTATION", "Salutation")
