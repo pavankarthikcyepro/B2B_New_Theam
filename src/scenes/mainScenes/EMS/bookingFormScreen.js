@@ -2942,7 +2942,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                     {/* <View style={{width: '60%', flexDirection: 'row'}}> */}
                                     <Text style={[styles.leftLabel]}>{"Life Tax:"}</Text>
                                     {/* </View> */}
-                                    <View style={{ width: 80, height: 30, justifyContent: 'center', paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#d1d1d1' }}>
+                                    <View style={{ width: 100, height: 30, justifyContent: 'center', paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#d1d1d1' }}>
                                         <TextInput
                                             value={taxPercent}
                                             style={[{ fontSize: 14, fontWeight: "400", }]}

@@ -227,7 +227,10 @@ const URL = {
     },
     DOWNLOAD_REPORT: () => {
         return `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8093/dynamic-reports/etvbrl_report`;
-    }
+    },
+    AUTO_SAVE: () => {
+        return downloadFile + `/autosave`;
+    },
 }
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason

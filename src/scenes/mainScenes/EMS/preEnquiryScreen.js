@@ -10,11 +10,11 @@ import CREATE_NEW from '../../../assets/images/create_new.svg';
 
 import { AppNavigator } from '../../../navigations';
 import { CallUserComponent, SortAndFilterComp, DateRangeComp, DatePickerComponent } from '../../../components';
-import { callPressed, getPreEnquiryData, setPreEnquiryList, getMorePreEnquiryData } from '../../../redux/preEnquiryReducer';
+import { callPressed, getPreEnquiryData, setPreEnquiryList, getMorePreEnquiryData, setCarModels } from '../../../redux/preEnquiryReducer';
 import { updateTAB, updateIsSearch } from '../../../redux/appReducer';
 import * as AsyncStore from '../../../asyncStore';
 import realm from '../../../database/realm';
-import { callNumber } from '../../../utils/helperFunctions';
+import { callNumber, GetCarModelList } from '../../../utils/helperFunctions';
 import moment from "moment";
 import { Category_Type_List_For_Filter } from '../../../jsonData/enquiryFormScreenJsonData';
 import { MyTaskNewItem } from '../MyTasks/components/MyTasksNewItem';
@@ -30,6 +30,7 @@ const PreEnquiryScreen = ({ navigation }) => {
     const [vehicleModelList, setVehicleModelList] = useState(vehicle_model_list_for_filters);
     const [sourceList, setSourceList] = useState(source_of_enquiry_list);
     const [categoryList, setCategoryList] = useState(Category_Type_List_For_Filter);
+    const [modelList, setModelList] = useState([]);
     const [employeeId, setEmployeeId] = useState("");
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [datePickerId, setDatePickerId] = useState("");
@@ -173,11 +174,49 @@ const PreEnquiryScreen = ({ navigation }) => {
         setCategoryList([...categoryFilters])
         setVehicleModelList([...modelData]);
         setSourceList([...sourceData]);
+        setModelList([...modelData])
 
         // Make Server call
         const payload2 = getPayloadData(employeeId, selectedFromDate, selectedToDate, 0, modelFilters, categoryFilters, sourceFilters)
+        console.log("PAYLOAD:", JSON.stringify(payload2));
         dispatch(getPreEnquiryData(payload2));
     }
+
+    useEffect(async () => {
+        const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            getCarModelListFromServer(jsonObj.orgId);
+        }
+    })
+
+    const getCarModelListFromServer = (orgId) => {
+        // Call Api
+        GetCarModelList(orgId)
+            .then(
+                (resolve) => {
+                    let modalList = [];
+                    if (resolve.length > 0) {
+                        resolve.forEach((item) => {
+                            modalList.push({
+                                id: item.vehicleId,
+                                name: item.model,
+                                isChecked: false,
+                            });
+                        });
+                    }
+                    // dispatch(setCarModels(modalList))
+                    setModelList([...modalList])
+                },
+                (rejected) => {
+                    console.log("getCarModelListFromServer Failed");
+                }
+            )
+            .finally(() => {
+                // Get Enquiry Details
+            });
+    };
 
     const renderFooter = () => {
         if (!selector.isLoadingExtraData) { return null }
@@ -215,20 +254,22 @@ const PreEnquiryScreen = ({ navigation }) => {
                 onRequestClose={() => dispatch(callPressed())}
             /> */}
 
-            <SortAndFilterComp
-                visible={sortAndFilterVisible}
-                categoryList={categoryList}
-                modelList={vehicleModelList}
-                sourceList={sourceList}
-                submitCallback={(payload) => {
-                    // console.log("payload: ", payload);
-                    applySelectedFilters(payload);
-                    setSortAndFilterVisible(false);
-                }}
-                onRequestClose={() => {
-                    setSortAndFilterVisible(false);
-                }}
-            />
+            {modelList.length > 0 &&
+                <SortAndFilterComp
+                    visible={sortAndFilterVisible}
+                    categoryList={categoryList}
+                    modelList={modelList}
+                    sourceList={sourceList}
+                    submitCallback={(payload) => {
+                        // console.log("payload: ", payload);
+                        applySelectedFilters(payload);
+                        setSortAndFilterVisible(false);
+                    }}
+                    onRequestClose={() => {
+                        setSortAndFilterVisible(false);
+                    }}
+                />
+            }
 
             <View style={{ flex: 1, paddingHorizontal: 10, paddingTop: 5 }}>
 

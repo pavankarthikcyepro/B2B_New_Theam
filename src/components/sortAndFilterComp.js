@@ -51,8 +51,6 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
     const [localModelList, setLocalModelList] = useState(modelList);
     const [localSourceOfEnquiryList, setLocalSourceOfEnquiryList] = useState(sourceList);
     const [localCategoryList, setLocalCategoryList] = useState(categoryList);
- 
-    
 
 
     itemSelected = (selectedItem, itemIndex) => {
@@ -101,16 +99,7 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
             return newObj;
           }
         );
-        setLocalSourceOfEnquiryList([...updatedSourceList]);
-
-          const updatedFirstName = localFirstNameList.map(
-            (item, index) => {
-              let newObj = { ...item };
-              newObj.isChecked = false;
-              return newObj;
-            }
-          );
-          
+        setLocalSourceOfEnquiryList([...updatedSourceList]);          
     }
 
     applyButtonClicked = () => {

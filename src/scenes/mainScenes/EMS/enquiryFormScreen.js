@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -13,6 +13,9 @@ import {
   KeyboardAvoidingView,
   Alert,
   BackHandler,
+  Image,
+  TouchableOpacity,
+  Modal
 } from "react-native";
 import {
   DefaultTheme,
@@ -58,12 +61,14 @@ import {
   updateAdditionalOrReplacementBuyerData,
   dropEnquiryApi,
   updateEnquiryDetailsApi,
+  updateEnquiryDetailsApiAutoSave,
   uploadDocumentApi,
   updateDmsAttachmentDetails,
   getPendingTasksApi,
   updateAddressByPincode,
   updateRef,
-  customerLeadRef
+  customerLeadRef,
+  updateFormData
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
@@ -117,8 +122,8 @@ import { getEnquiryList } from "../../../redux/enquiryReducer";
 import { AppNavigator } from "../../../navigations";
 import {
   isValidateAlphabetics,
-   isValidate,
-   isValidateAplhaNumeric,
+  isValidate,
+  isValidateAplhaNumeric,
   isMobileNumber,
 } from "../../../utils/helperFunctions";
 import uuid from "react-native-uuid";
@@ -142,7 +147,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.enquiryFormReducer);
   const [openAccordian, setOpenAccordian] = useState("0");
   const [componentAppear, setComponentAppear] = useState(false);
-  const { universalId } = route.params;
+  const { universalId, enqDetails } = route.params;
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [dataForDropDown, setDataForDropDown] = useState([]);
   const [dropDownKey, setDropDownKey] = useState("");
@@ -183,7 +188,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [dropModel, setDropModel] = useState("");
   const [dropPriceDifference, setDropPriceDifference] = useState("");
   const [dropRemarks, setDropRemarks] = useState("");
-
+  const [isSameData, setIsSameData] = useState(true);
+  const [imagePath, setImagePath] = useState('');
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -198,29 +204,36 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     });
   }, [navigation]);
 
+
+
   useEffect(() => {
-    let interval;
-    navigation.addListener('focus', () => {
-      interval = setInterval(() => {
+    const interval = setInterval(() => {
+      if (enqDetails?.leadStage === "ENQUIRY" && enqDetails?.leadStatus === null) {
         autoSave()
-      }, 60000)
-    })
-    navigation.addListener('blur', () => {
+      }
+    }, 10000);
+    return () => {
       console.log("CLEAR");
       clearInterval(interval)
-    })
-  }, [navigation]);
+    }
+  }, [autoSave, selector])
 
   const goParentScreen = () => {
     navigation.goBack();
     dispatch(clearState());
   };
 
-  useEffect(() => {
+  useEffect(async () => {
     getAsyncstoreData();
     getBranchId();
     setComponentAppear(true);
     dispatch(getCustomerTypesApi());
+    if (Number(await AsyncStore.getData(AsyncStore.Keys.UNIVERSAL_ID)) === Number(universalId)) {
+      setIsSameData(true)
+    }
+    else {
+      AsyncStore.storeData(AsyncStore.Keys.UNIVERSAL_ID, universalId)
+    }
 
     BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
     return () => {
@@ -362,8 +375,48 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
   }, [selector.pincode]);
 
-  useEffect(() => {
+  useEffect(async () => {
     if (selector.enquiry_details_response) {
+      // if (Number(await AsyncStore.getData(AsyncStore.Keys.UNIVERSAL_ID)) === Number(universalId)){
+      //   console.log("INSIDE");
+      //   let data = await AsyncStore.getJsonData(AsyncStore.Keys.ENQ_PAYLOAD)
+      //   let storeData = selector.enquiry_details_response;
+
+      //   storeData.dmsAccountDto = data?.data.dmsAccountDto;
+      //   storeData.dmsLeadDto = data?.data.dmsLeadDto;
+
+      //   let dmsContactOrAccountDto = data?.data.dmsAccountDto;
+      //   const dmsLeadDto = data?.data.dmsLeadDto;
+      //   if (dmsLeadDto.leadStatus === "ENQUIRYCOMPLETED") {
+      //     setShowPreBookingBtn(true);
+      //   }
+
+      //   // Update dmsContactOrAccountDto
+      //   dispatch(updateDmsContactOrAccountDtoData(dmsContactOrAccountDto));
+      //   // Update updateDmsLeadDtoData
+      //   dispatch(updateDmsLeadDtoData(dmsLeadDto));
+      //   if (dmsLeadDto.model) {
+      //     updateVariantModelsData(dmsLeadDto.model, false);
+      //   }
+      //   // Update Addresses
+      //   dispatch(updateDmsAddressData(dmsLeadDto.dmsAddresses));
+      //   // Updaet Model Selection
+      //   dispatch(updateModelSelectionData(dmsLeadDto.dmsLeadProducts));
+      //   // Update Finance Details
+      //   dispatch(updateFinancialData(dmsLeadDto.dmsfinancedetails));
+      //   // Update Customer Need Analysys
+      //   dispatch(updateCustomerNeedAnalysisData(dmsLeadDto.dmsLeadScoreCards));
+      //   // Update Additional ore Replacement Buyer Data
+      //   dispatch(
+      //     updateAdditionalOrReplacementBuyerData(dmsLeadDto.dmsExchagedetails)
+      //   );
+      //   // Update Attachment details
+
+      //   saveAttachmentDetailsInLocalObject(dmsLeadDto.dmsAttachments);
+      //   dispatch(updateDmsAttachmentDetails(dmsLeadDto.dmsAttachments));
+      //   dispatch(updateFormData(storeData))
+      // }
+      // else{
       let dmsContactOrAccountDto;
       if (selector.enquiry_details_response.hasOwnProperty("dmsAccountDto")) {
         dmsContactOrAccountDto =
@@ -402,8 +455,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
       saveAttachmentDetailsInLocalObject(dmsLeadDto.dmsAttachments);
       dispatch(updateDmsAttachmentDetails(dmsLeadDto.dmsAttachments));
+      // }
     }
-  }, [selector.enquiry_details_response]);
+  }, [selector.enquiry_details_response, isSameData]);
 
   const saveAttachmentDetailsInLocalObject = (dmsAttachments) => {
     if (dmsAttachments.length > 0) {
@@ -443,151 +497,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   const autoSave = async () => {
-    console.log("CALLED AUTO SAVE");
-    if (selector.designation.length == 0 || selector.buyer_type.length == 0) {
-      return;
-    }
-    if (!isValidateAlphabetics(selector.occupation)) {
-      return;
-    }
-
-    if (!isValidateAlphabetics(selector.designation)) {
-      return;
-    }
-
-    if (selector.salutation.length == 0) {
-      return;
-    }
-
-    if (selector.enquiry_segment.toLowerCase() == "personal") {
-      if (
-        selector.dateOfBirth.length == 0
-        // ||
-        // selector.anniversaryDate.length == 0
-      ) {
-        return;
-      }
-    }
-    if (!isValidate(selector.firstName)) {
-      return;
-    }
-    if (!isValidate(selector.lastName)) {
-      return;
-    }
-    if (!isValidateAlphabetics(selector.relationName)) {
-      return;
-    }
-    if (!isValidateAlphabetics(selector.streetName)) {
-      return;
-    }
-
-    // Model Selection
-    if (selector.model.length == 0 || selector.varient.length == 0 || selector.color.length == 0) {
-      return;
-    }
-
-    if (
-      selector.houseNum.length == 0 ||
-      selector.streetName.length == 0 ||
-      selector.village.length == 0 ||
-      selector.city.length == 0 ||
-      selector.state.length == 0 ||
-      selector.district.length == 0
-    ) {
-      return;
-    }
-
-    if (selector.retail_finance.length == 0) {
-      return;
-    }
-
-    if (selector.retail_finance === "In House") {
-      if (
-        selector.finance_category.length == 0 ||
-        selector.loan_of_tenure.length == 0 ||
-        selector.emi.length == 0 ||
-        selector.approx_annual_income.length == 0 ||
-        selector.bank_or_finance.length == 0
-      ) {
-        return;
-      }
-    }
-
-    // Leashing
-    if (selector.retail_finance == "Leasing") {
-      if (selector.leashing_name.length == 0) {
-        return;
-      }
-    }
-
-   
-      
-    if (selector.buyer_type === "Additional Buyer") {
-      if (
-        selector.a_make == 0 ||
-        selector.a_model == 0 ||
-        selector.a_varient == 0 ||
-        selector.a_color == 0 ||
-        selector.a_reg_no == 0
-      ) {
-        return;
-      }
-      if (!isValidateAlphabetics(selector.a_varient)) {
-        return;
-      }
-      if (!isValidateAlphabetics(selector.a_color)) {
-        return;
-      }
-      
-    }
-
-    
-    if (selector.buyer_type === "Replacement Buyer") {
-      if (selector.r_color.length > 0) {
-        if (!isValidateAlphabetics(selector.r_color)) {
-          return;
-        }
-      }
-      if (selector.r_insurence_company_name.length == 0) {
-        return;
-      }
-      if (!isValidateAlphabetics(selector.r_model_other_name)) {
-        return;
-      }
-
-      if (selector.r_hypothication_checked === true) {
-        if (selector.r_hypothication_name.length > 0) {
-          if (!isValidateAlphabetics(selector.r_hypothication_name)) {
-            return;
-          }
-        }
-        if (selector.r_hypothication_branch.length > 0) {
-          if (!isValidateAlphabetics(selector.r_hypothication_branch)) {
-            return;
-          }
-        }
-      }
-    }
-
-    if (selector.c_looking_for_any_other_brand_checked === true) {
-      if (selector.c_dealership_name.length > 0) {
-        if (!isValidateAlphabetics(selector.c_dealership_name)) {
-          return;
-        }
-      }
-    }
-
-    if (
-      selector.leashing_name.length > 0 &&
-      !isValidateAlphabetics(selector.leashing_name)
-    ) {
-      return;
-    }
-
-    if (!selector.enquiry_details_response) {
-      return;
-    }
-
+    //Personal Intro
+    console.log("CALLED AUTOSAVE");
     let dmsContactOrAccountDto = {};
     let dmsLeadDto = {};
     let formData;
@@ -598,89 +509,134 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     else if (dmsEntity.hasOwnProperty("dmsAccountDto"))
       dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsAccountDto);
 
-    if (dmsEntity.hasOwnProperty("dmsLeadDto"))
+    if (dmsEntity.hasOwnProperty("dmsLeadDto")) {
       dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
-    const employeeData = await AsyncStore.getData(
-      AsyncStore.Keys.LOGIN_EMPLOYEE
-    );
-    if (employeeData) {
-      const jsonObj = JSON.parse(employeeData);
-      let tempAttachments = [];
-      // console.log("GDGHDGDGDGDGD", JSON.stringify(dmsLeadDto.dmsAttachments));
-      if (selector.pan_number) {
-        tempAttachments.push({
-
-          "branchId": jsonObj.branchs[0]?.branchId,
-          "contentSize": 0,
-          "createdBy": new Date().getSeconds(),
-          "description": "",
-          "documentNumber": selector.pan_number,
-          "documentPath": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'pan' })[0].documentPath : '',
-          "documentType": "pan",
-          "documentVersion": 0,
-          "fileName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'pan' })[0].fileName : '',
-          "gstNumber": "",
-          "id": 0,
-          "isActive": 0,
-          "isPrivate": 0,
-          "keyName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'pan' })[0].keyName : '',
-          "modifiedBy": jsonObj.empName,
-          "orgId": jsonObj.orgId,
-          "ownerId": "",
-          "ownerName": jsonObj.empName,
-          "parentId": "",
-          "tinNumber": ""
-        })
+      const employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        let tempAttachments = [];
+        console.log("GDGHDGDGDGDGD", JSON.stringify(dmsLeadDto.dmsAttachments));
+        if (selector.pan_number) {
+          tempAttachments.push({
+            branchId: jsonObj.branchs[0]?.branchId,
+            contentSize: 0,
+            createdBy: new Date().getSeconds(),
+            description: "",
+            documentNumber: selector.pan_number,
+            documentPath:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "pan";
+                })[0].documentPath
+                : "",
+            documentType: "pan",
+            documentVersion: 0,
+            fileName:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "pan";
+                })[0].fileName
+                : "",
+            gstNumber: "",
+            id: 0,
+            isActive: 0,
+            isPrivate: 0,
+            keyName:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "pan";
+                })[0].keyName
+                : "",
+            modifiedBy: jsonObj.empName,
+            orgId: jsonObj.orgId,
+            ownerId: "",
+            ownerName: jsonObj.empName,
+            parentId: "",
+            tinNumber: "",
+          });
+        }
+        if (selector.adhaar_number) {
+          tempAttachments.push({
+            branchId: jsonObj.branchs[0]?.branchId,
+            contentSize: 0,
+            createdBy: new Date().getSeconds(),
+            description: "",
+            documentNumber: selector.adhaar_number,
+            documentPath:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "aadhar";
+                })[0].documentPath
+                : "",
+            documentType: "aadhar",
+            documentVersion: 0,
+            fileName:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "aadhar";
+                })[0].fileName
+                : "",
+            gstNumber: "",
+            id: 0,
+            isActive: 0,
+            isPrivate: 0,
+            keyName:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "aadhar";
+                })[0].keyName
+                : "",
+            modifiedBy: jsonObj.empName,
+            orgId: jsonObj.orgId,
+            ownerId: "",
+            ownerName: jsonObj.empName,
+            parentId: "",
+            tinNumber: "",
+          });
+        }
+        if (selector.employee_id) {
+          tempAttachments.push({
+            branchId: jsonObj.branchs[0]?.branchId,
+            contentSize: 0,
+            createdBy: new Date().getSeconds(),
+            description: "",
+            documentNumber: selector.employee_id,
+            documentPath:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "empId";
+                })[0].documentPath
+                : "",
+            documentType: "empId",
+            documentVersion: 0,
+            fileName:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "empId";
+                })[0].fileName
+                : "",
+            gstNumber: "",
+            id: 0,
+            isActive: 0,
+            isPrivate: 0,
+            keyName:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "empId";
+                })[0].keyName
+                : "",
+            modifiedBy: jsonObj.empName,
+            orgId: jsonObj.orgId,
+            ownerId: "",
+            ownerName: jsonObj.empName,
+            parentId: "",
+            tinNumber: "",
+          });
+        }
+        dmsLeadDto.dmsAttachments = tempAttachments;
       }
-      if (selector.adhaar_number) {
-        tempAttachments.push({
-          "branchId": jsonObj.branchs[0]?.branchId,
-          "contentSize": 0,
-          "createdBy": new Date().getSeconds(),
-          "description": "",
-          "documentNumber": selector.adhaar_number,
-          "documentPath": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'aadhar' })[0].documentPath : '',
-          "documentType": "aadhar",
-          "documentVersion": 0,
-          "fileName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'aadhar' })[0].fileName : '',
-          "gstNumber": "",
-          "id": 0,
-          "isActive": 0,
-          "isPrivate": 0,
-          "keyName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'aadhar' })[0].keyName : '',
-          "modifiedBy": jsonObj.empName,
-          "orgId": jsonObj.orgId,
-          "ownerId": "",
-          "ownerName": jsonObj.empName,
-          "parentId": "",
-          "tinNumber": ""
-        })
-      }
-      if (selector.employee_id) {
-        tempAttachments.push({
-          "branchId": jsonObj.branchs[0]?.branchId,
-          "contentSize": 0,
-          "createdBy": new Date().getSeconds(),
-          "description": "",
-          "documentNumber": selector.employee_id,
-          "documentPath": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'empId' })[0].documentPath : '',
-          "documentType": "empId",
-          "documentVersion": 0,
-          "fileName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'empId' })[0].fileName : '',
-          "gstNumber": "",
-          "id": 0,
-          "isActive": 0,
-          "isPrivate": 0,
-          "keyName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'empId' })[0].keyName : '',
-          "modifiedBy": jsonObj.empName,
-          "orgId": jsonObj.orgId,
-          "ownerId": "",
-          "ownerName": jsonObj.empName,
-          "parentId": "",
-          "tinNumber": ""
-        })
-      }
-      dmsLeadDto.dmsAttachments = tempAttachments;
     }
 
     if (selector.enquiry_details_response.hasOwnProperty("dmsContactDto")) {
@@ -694,28 +650,23 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         dmsLeadDto: dmsLeadDto,
       };
     }
-    setTypeOfActionDispatched("UPDATE_ENQUIRY");
-    // dispatch(updateEnquiryDetailsApi(formData));
+    let payload = {
+      data: formData,
+      status: "Active",
+      universalId: universalId
+    }
+    AsyncStore.storeJsonData(AsyncStore.Keys.ENQ_PAYLOAD, payload);
+
     Promise.all([
-      dispatch(updateEnquiryDetailsApi(formData))
-    ]).then(async (res) => {
-      console.log("REF NO:", res[0].payload.dmsEntity.dmsLeadDto.referencenumber);
-      let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-      if (employeeData) {
-        const jsonObj = JSON.parse(employeeData);
-        const payload = {
-          "refNo": res[0].payload.dmsEntity.dmsLeadDto.referencenumber,
-          "orgId": jsonObj.orgId,
-          "stageCompleted": "ENQUIRY"
-        }
-        console.log("PAYLOAD:", payload);
-        dispatch(updateRef(payload))
-      }
+      dispatch(updateEnquiryDetailsApiAutoSave(payload)),
+    ]).then(async () => {
+      console.log("REF NO");
     });
-  }
+  };
 
   const submitClicked = async () => {
     //Personal Intro
+    console.log("LEN:", selector.salutation.length);
     if (selector.salutation.length == 0) {
       showToast("Please fill required fields in Personal Intro");
       return;
@@ -844,10 +795,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       //   return;
       // }
     }
- if (selector.r_reg_no == 0) {
-   showToast("Please fill r_reg no is mandatory");
-   return;
- }
+    if (selector.buyer_type == "Additional Buyer" && selector.r_reg_no == 0) {
+      showToast("Please fill r_reg no is mandatory");
+      return;
+    }
+
     if (selector.buyer_type === "Replacement Buyer") {
       if (selector.r_color.length > 0) {
         if (!isValidateAlphabetics(selector.r_color)) {
@@ -945,16 +897,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             documentPath:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "pan";
-                  })[0].documentPath
+                  return item.documentType === "pan";
+                })[0].documentPath
                 : "",
             documentType: "pan",
             documentVersion: 0,
             fileName:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "pan";
-                  })[0].fileName
+                  return item.documentType === "pan";
+                })[0].fileName
                 : "",
             gstNumber: "",
             id: 0,
@@ -963,8 +915,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             keyName:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "pan";
-                  })[0].keyName
+                  return item.documentType === "pan";
+                })[0].keyName
                 : "",
             modifiedBy: jsonObj.empName,
             orgId: jsonObj.orgId,
@@ -984,16 +936,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             documentPath:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "aadhar";
-                  })[0].documentPath
+                  return item.documentType === "aadhar";
+                })[0].documentPath
                 : "",
             documentType: "aadhar",
             documentVersion: 0,
             fileName:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "aadhar";
-                  })[0].fileName
+                  return item.documentType === "aadhar";
+                })[0].fileName
                 : "",
             gstNumber: "",
             id: 0,
@@ -1002,8 +954,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             keyName:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "aadhar";
-                  })[0].keyName
+                  return item.documentType === "aadhar";
+                })[0].keyName
                 : "",
             modifiedBy: jsonObj.empName,
             orgId: jsonObj.orgId,
@@ -1023,16 +975,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             documentPath:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "empId";
-                  })[0].documentPath
+                  return item.documentType === "empId";
+                })[0].documentPath
                 : "",
             documentType: "empId",
             documentVersion: 0,
             fileName:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "empId";
-                  })[0].fileName
+                  return item.documentType === "empId";
+                })[0].fileName
                 : "",
             gstNumber: "",
             id: 0,
@@ -1041,8 +993,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             keyName:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "empId";
-                  })[0].keyName
+                  return item.documentType === "empId";
+                })[0].keyName
                 : "",
             modifiedBy: jsonObj.empName,
             orgId: jsonObj.orgId,
@@ -1067,7 +1019,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         dmsLeadDto: dmsLeadDto,
       };
     }
-
+    console.log("RRRR");
     setTypeOfActionDispatched("UPDATE_ENQUIRY");
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
@@ -2091,7 +2043,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   label={"First Name*"}
                   autoCapitalize="words"
                   keyboardType={"default"}
-                  editable={false}
+                  // editable={false}
                   onChangeText={(text) =>
                     dispatch(
                       setPersonalIntro({ key: "FIRST_NAME", text: text })
@@ -2103,7 +2055,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.lastName}
                   label={"Last Name*"}
-                  editable={false}
+                  // editable={false}
                   autoCapitalize={"words"}
                   keyboardType={"default"}
                   onChangeText={(text) =>
@@ -2136,7 +2088,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.mobile}
                   label={"Mobile Number*"}
-                  editable={false}
+                  // editable={false}
                   maxLength={10}
                   keyboardType={"phone-pad"}
                   onChangeText={(text) =>
@@ -2191,6 +2143,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <DateSelectItem
                       label={"Anniversary Date"}
                       value={selector.anniversaryDate}
+                      disabled={selector.dateOfBirth ? false : true}
                       onPress={() =>
                         dispatch(setDatePicker("ANNIVERSARY_DATE"))
                       }
@@ -2275,11 +2228,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
 
                 {selector.customer_type.toLowerCase() === "fleet" ||
-                selector.customer_type.toLowerCase() === "institution" ||
-                selector.customer_type.toLowerCase() === "corporate" ||
-                selector.customer_type.toLowerCase() === "government" ||
-                selector.customer_type.toLowerCase() === "retired" ||
-                selector.customer_type.toLowerCase() === "other" ? (
+                  selector.customer_type.toLowerCase() === "institution" ||
+                  selector.customer_type.toLowerCase() === "corporate" ||
+                  selector.customer_type.toLowerCase() === "government" ||
+                  selector.customer_type.toLowerCase() === "retired" ||
+                  selector.customer_type.toLowerCase() === "other" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -2329,19 +2282,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     .toLowerCase()
                     .trim()
                     .replace(/ /g, "") === "socialnetwork") && (
-                  <View>
-                    <DropDownSelectionItem
-                      label={"Sub Source Of Enquiry"}
-                      value={selector.sub_source_of_enquiry}
-                      onPress={() =>
-                        showDropDownModelMethod(
-                          "SUB_SOURCE_OF_ENQUIRY",
-                          "Sub Source Of Enquiry"
-                        )
-                      }
-                    />
-                  </View>
-                )}
+                    <View>
+                      <DropDownSelectionItem
+                        label={"Sub Source Of Enquiry"}
+                        value={selector.sub_source_of_enquiry}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "SUB_SOURCE_OF_ENQUIRY",
+                            "Sub Source Of Enquiry"
+                          )
+                        }
+                      />
+                    </View>
+                  )}
 
                 {selector.source_of_enquiry.toLowerCase() === "reference" && (
                   <View>
@@ -3067,51 +3020,51 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {(selector.retail_finance === "In House" ||
                   selector.retail_finance === "Out House") && (
-                  <View>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Loan Amount*"}
-                      keyboardType={"numeric"}
-                      maxLength={10}
-                      value={selector.loan_amount}
-                      onChangeText={(text) => {
-                        emiCal(
-                          text,
-                          selector.loan_of_tenure,
-                          selector.rate_of_interest
-                        );
-                        dispatch(
-                          setFinancialDetails({
-                            key: "LOAN_AMOUNT",
-                            text: text,
-                          })
-                        );
-                      }}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Rate of Interest*"}
-                      keyboardType={"numeric"}
-                      maxLength={10}
-                      value={selector.rate_of_interest}
-                      onChangeText={(text) => {
-                        emiCal(
-                          selector.loan_amount,
-                          selector.loan_of_tenure,
-                          text
-                        );
-                        dispatch(
-                          setFinancialDetails({
-                            key: "RATE_OF_INTEREST",
-                            text: text,
-                          })
-                        );
-                      }}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>
-                )}
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Loan Amount*"}
+                        keyboardType={"numeric"}
+                        maxLength={10}
+                        value={selector.loan_amount}
+                        onChangeText={(text) => {
+                          emiCal(
+                            text,
+                            selector.loan_of_tenure,
+                            selector.rate_of_interest
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "LOAN_AMOUNT",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Rate of Interest*"}
+                        keyboardType={"numeric"}
+                        maxLength={10}
+                        value={selector.rate_of_interest}
+                        onChangeText={(text) => {
+                          emiCal(
+                            selector.loan_amount,
+                            selector.loan_of_tenure,
+                            text
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "RATE_OF_INTEREST",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
 
                 {selector.retail_finance === "In House" && (
                   <View>
@@ -3211,10 +3164,22 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   />
                 </View>
                 {uploadedImagesDataObj?.pan?.fileName ? (
-                  <DisplaySelectedImage
-                    fileName={uploadedImagesDataObj.pan.fileName}
-                    from={"PAN"}
-                  />
+
+                  <View style={{ flexDirection: 'row' }}>
+                    <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                      if (uploadedImagesDataObj.pan?.documentPath) {
+                        setImagePath(uploadedImagesDataObj.pan?.documentPath)
+                      }
+                    }}>
+                      <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                    </TouchableOpacity>
+                    <View style={{ width: '80%' }}>
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.pan.fileName}
+                        from={"PAN"}
+                      />
+                    </View>
+                  </View>
                 ) : null}
 
                 {/* // Adhal Number */}
@@ -3240,19 +3205,31 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       />
                     </View>
                     {uploadedImagesDataObj?.aadhar?.fileName ? (
-                      <DisplaySelectedImage
-                        fileName={uploadedImagesDataObj.aadhar.fileName}
-                        from={"AADHAR"}
-                      />
+
+                      <View style={{ flexDirection: 'row' }}>
+                        <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                          if (uploadedImagesDataObj.aadhar?.documentPath) {
+                            setImagePath(uploadedImagesDataObj.aadhar?.documentPath)
+                          }
+                        }}>
+                          <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                        </TouchableOpacity>
+                        <View style={{ width: '80%' }}>
+                          <DisplaySelectedImage
+                            fileName={uploadedImagesDataObj.aadhar.fileName}
+                            from={"AADHAR"}
+                          />
+                        </View>
+                      </View>
                     ) : null}
                   </View>
                 ) : null}
 
                 {/* // Employeed ID */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                (selector.customer_type.toLowerCase() === "corporate" ||
-                  selector.customer_type.toLowerCase() === "government" ||
-                  selector.customer_type.toLowerCase() === "retired") ? (
+                  (selector.customer_type.toLowerCase() === "corporate" ||
+                    selector.customer_type.toLowerCase() === "government" ||
+                    selector.customer_type.toLowerCase() === "retired") ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -3278,18 +3255,30 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       />
                     </View>
                     {uploadedImagesDataObj?.empId?.fileName ? (
-                      <DisplaySelectedImage
-                        fileName={uploadedImagesDataObj.empId.fileName}
-                        from={"EMPLOYEE_ID"}
-                      />
+
+                      <View style={{ flexDirection: 'row' }}>
+                        <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                          if (uploadedImagesDataObj.empId?.documentPath) {
+                            setImagePath(uploadedImagesDataObj.empId?.documentPath)
+                          }
+                        }}>
+                          <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                        </TouchableOpacity>
+                        <View style={{ width: '80%' }}>
+                          <DisplaySelectedImage
+                            fileName={uploadedImagesDataObj.empId.fileName}
+                            from={"EMPLOYEE_ID"}
+                          />
+                        </View>
+                      </View>
                     ) : null}
                   </View>
                 ) : null}
 
                 {/* Last 3 month payslip */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                (selector.customer_type.toLowerCase() === "corporate" ||
-                  selector.customer_type.toLowerCase() === "government") ? (
+                  (selector.customer_type.toLowerCase() === "corporate" ||
+                    selector.customer_type.toLowerCase() === "government") ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -3299,18 +3288,30 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         }
                       />
                     </View>
-                    {uploadedImagesDataObj.payslip ? (
-                      <DisplaySelectedImage
-                        fileName={uploadedImagesDataObj.payslip.fileName}
-                        from={"3_MONTHS_PAYSLIP"}
-                      />
+                      {uploadedImagesDataObj.payslip?.fileName ? (
+
+                      <View style={{ flexDirection: 'row' }}>
+                        <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                          if (uploadedImagesDataObj.payslip?.documentPath) {
+                            setImagePath(uploadedImagesDataObj.payslip?.documentPath)
+                          }
+                        }}>
+                          <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                        </TouchableOpacity>
+                        <View style={{ width: '80%' }}>
+                          <DisplaySelectedImage
+                            fileName={uploadedImagesDataObj.payslip.fileName}
+                            from={"3_MONTHS_PAYSLIP"}
+                          />
+                        </View>
+                      </View>
                     ) : null}
                   </View>
                 ) : null}
 
                 {/* Patta Pass book */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                selector.customer_type.toLowerCase() === "farmer" ? (
+                  selector.customer_type.toLowerCase() === "farmer" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -3320,18 +3321,30 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         }
                       />
                     </View>
-                    {uploadedImagesDataObj.passbook ? (
-                      <DisplaySelectedImage
-                        fileName={uploadedImagesDataObj.passbook.fileName}
-                        from={"PATTA_PASS_BOOK"}
-                      />
+                      {uploadedImagesDataObj.passbook?.fileName ? (
+
+                      <View style={{ flexDirection: 'row' }}>
+                        <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                          if (uploadedImagesDataObj.passbook?.documentPath) {
+                            setImagePath(uploadedImagesDataObj.passbook?.documentPath)
+                          }
+                        }}>
+                          <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                        </TouchableOpacity>
+                        <View style={{ width: '80%' }}>
+                          <DisplaySelectedImage
+                            fileName={uploadedImagesDataObj.passbook.fileName}
+                            from={"PATTA_PASS_BOOK"}
+                          />
+                        </View>
+                      </View>
                     ) : null}
                   </View>
                 ) : null}
 
                 {/* Pension Letter */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                selector.customer_type.toLowerCase() === "retired" ? (
+                  selector.customer_type.toLowerCase() === "retired" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -3341,18 +3354,30 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         }
                       />
                     </View>
-                    {uploadedImagesDataObj.pension ? (
-                      <DisplaySelectedImage
-                        fileName={uploadedImagesDataObj.pension.fileName}
-                        from={"PENSION_LETTER"}
-                      />
+                      {uploadedImagesDataObj.pension?.fileName ? (
+
+                      <View style={{ flexDirection: 'row' }}>
+                        <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                          if (uploadedImagesDataObj.pension?.documentPath) {
+                            setImagePath(uploadedImagesDataObj.pension?.documentPath)
+                          }
+                        }}>
+                          <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                        </TouchableOpacity>
+                        <View style={{ width: '80%' }}>
+                          <DisplaySelectedImage
+                            fileName={uploadedImagesDataObj.pension.fileName}
+                            from={"PENSION_LETTER"}
+                          />
+                        </View>
+                      </View>
                     ) : null}
                   </View>
                 ) : null}
 
                 {/* IMA Certificate */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                selector.customer_type.toLowerCase() === "doctor" ? (
+                  selector.customer_type.toLowerCase() === "doctor" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -3362,18 +3387,30 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         }
                       />
                     </View>
-                    {uploadedImagesDataObj.imaCertificate ? (
-                      <DisplaySelectedImage
-                        fileName={uploadedImagesDataObj.imaCertificate.fileName}
-                        from={"IMA_CERTIFICATE"}
-                      />
+                      {uploadedImagesDataObj.imaCertificate?.fileName ? (
+
+                      <View style={{ flexDirection: 'row' }}>
+                        <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                          if (uploadedImagesDataObj.imaCertificate?.documentPath) {
+                            setImagePath(uploadedImagesDataObj.imaCertificate?.documentPath)
+                          }
+                        }}>
+                          <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                        </TouchableOpacity>
+                        <View style={{ width: '80%' }}>
+                          <DisplaySelectedImage
+                            fileName={uploadedImagesDataObj.imaCertificate.fileName}
+                            from={"IMA_CERTIFICATE"}
+                          />
+                        </View>
+                      </View>
                     ) : null}
                   </View>
                 ) : null}
 
                 {/* Leasing Confirmation */}
                 {selector.enquiry_segment.toLowerCase() === "commercial" &&
-                selector.customer_type.toLowerCase() === "fleet" ? (
+                  selector.customer_type.toLowerCase() === "fleet" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -3385,18 +3422,30 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         }
                       />
                     </View>
-                    {uploadedImagesDataObj.leasingConfirm ? (
-                      <DisplaySelectedImage
-                        fileName={uploadedImagesDataObj.leasingConfirm.fileName}
-                        from={"LEASING_CONFIRMATION"}
-                      />
+                      {uploadedImagesDataObj.leasingConfirm?.fileName ? (
+
+                      <View style={{ flexDirection: 'row' }}>
+                        <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                          if (uploadedImagesDataObj.leasingConfirm?.documentPath) {
+                            setImagePath(uploadedImagesDataObj.leasingConfirm?.documentPath)
+                          }
+                        }}>
+                          <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                        </TouchableOpacity>
+                        <View style={{ width: '80%' }}>
+                          <DisplaySelectedImage
+                            fileName={uploadedImagesDataObj.leasingConfirm.fileName}
+                            from={"LEASING_CONFIRMATION"}
+                          />
+                        </View>
+                      </View>
                     ) : null}
                   </View>
                 ) : null}
 
                 {/* Address Proof */}
                 {selector.enquiry_segment.toLowerCase() === "company" &&
-                selector.customer_type.toLowerCase() === "institution" ? (
+                  selector.customer_type.toLowerCase() === "institution" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -3406,18 +3455,30 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         }
                       />
                     </View>
-                    {uploadedImagesDataObj.address ? (
-                      <DisplaySelectedImage
-                        fileName={uploadedImagesDataObj.address.fileName}
-                        from={"ADDRESS_PROOF"}
-                      />
+                      {uploadedImagesDataObj.address?.fileName ? (
+
+                      <View style={{ flexDirection: 'row' }}>
+                        <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                          if (uploadedImagesDataObj.address?.documentPath) {
+                            setImagePath(uploadedImagesDataObj.address?.documentPath)
+                          }
+                        }}>
+                          <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                        </TouchableOpacity>
+                        <View style={{ width: '80%' }}>
+                          <DisplaySelectedImage
+                            fileName={uploadedImagesDataObj.address.fileName}
+                            from={"ADDRESS_PROOF"}
+                          />
+                        </View>
+                      </View>
                     ) : null}
                   </View>
                 ) : null}
 
                 {/* GSTIN Number */}
                 {selector.enquiry_segment.toLowerCase() === "company" &&
-                selector.customer_type.toLowerCase() === "institution" ? (
+                  selector.customer_type.toLowerCase() === "institution" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -3688,7 +3749,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
               </List.Accordion>
               {selector.buyer_type == "Additional Buyer" ||
-              selector.buyer_type == "Replacement Buyer" ? (
+                selector.buyer_type == "Replacement Buyer" ? (
                 <View style={styles.space}></View>
               ) : null}
               {/* // 8.Additional Buyer */}
@@ -3857,11 +3918,23 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       onPress={() => dispatch(setImagePicker("UPLOAD_REG_DOC"))}
                     />
                   </View>
-                  {uploadedImagesDataObj.REGDOC ? (
-                    <DisplaySelectedImage
-                      fileName={uploadedImagesDataObj.REGDOC.fileName}
-                      from={"REGDOC"}
-                    />
+                  {uploadedImagesDataObj.REGDOC?.fileName ? (
+
+                    <View style={{ flexDirection: 'row' }}>
+                      <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                        if (uploadedImagesDataObj.REGDOC?.documentPath) {
+                          setImagePath(uploadedImagesDataObj.REGDOC?.documentPath)
+                        }
+                      }}>
+                        <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                      </TouchableOpacity>
+                      <View style={{ width: '80%' }}>
+                        <DisplaySelectedImage
+                          fileName={uploadedImagesDataObj.REGDOC.fileName}
+                          from={"REGDOC"}
+                        />
+                      </View>
+                    </View>
                   ) : null}
                   <DropDownSelectionItem
                     label={"Make"}
@@ -4129,11 +4202,23 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           }
                         />
                       </View>
-                      {uploadedImagesDataObj.insurance ? (
-                        <DisplaySelectedImage
-                          fileName={uploadedImagesDataObj.insurance.fileName}
-                          from={"INSURENCE"}
-                        />
+                      {uploadedImagesDataObj.insurance?.fileName ? (
+
+                        <View style={{ flexDirection: 'row' }}>
+                          <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                            if (uploadedImagesDataObj.insurance?.documentPath) {
+                              setImagePath(uploadedImagesDataObj.insurance?.documentPath)
+                            }
+                          }}>
+                            <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                          </TouchableOpacity>
+                          <View style={{ width: '80%' }}>
+                            <DisplaySelectedImage
+                              fileName={uploadedImagesDataObj.insurance.fileName}
+                              from={"INSURENCE"}
+                            />
+                          </View>
+                        </View>
                       ) : null}
                     </View>
                   )}
@@ -4308,6 +4393,26 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           )}
         </ScrollView>
       </KeyboardAvoidingView>
+
+      <Modal
+        animationType="fade"
+        visible={imagePath !== ''}
+        onRequestClose={() => { setImagePath('') }}
+        transparent={true}>
+        <View style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'rgba(0,0,0,0.7)',
+        }}>
+          <View style={{ width: '90%' }}>
+            <Image style={{ width: '100%', height: 400, borderRadius: 4 }} resizeMode="contain" source={{ uri: imagePath }} />
+          </View>
+          <TouchableOpacity style={{ width: 100, height: 40, justifyContent: 'center', alignItems: 'center', position: 'absolute', left: '37%', bottom: '15%', borderRadius: 5, backgroundColor: Colors.RED }} onPress={() => setImagePath('')}>
+            <Text style={{ fontSize: 14, fontWeight: '600', color: Colors.WHITE }}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };

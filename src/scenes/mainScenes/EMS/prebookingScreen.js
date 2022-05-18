@@ -178,6 +178,10 @@ const PreBookingScreen = ({ navigation }) => {
         );
     };
 
+    const Capitalize = (str) => {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
 
     return (
         <SafeAreaView style={styles.container}>
@@ -265,7 +269,7 @@ const PreBookingScreen = ({ navigation }) => {
                                     <View style={{ paddingVertical: 5 }}>
                                         <MyTaskNewItem
                                             from='PRE_BOOKING'
-                                            name={item.firstName + " " + item.lastName}
+                                            name={Capitalize(item.firstName) + " " + Capitalize(item.lastName)}
                                             status={""}
                                             created={item.createdDate}
                                             dmsLead={item.createdBy}

@@ -35,6 +35,21 @@ export const updateEnquiryDetailsApi = createAsyncThunk(
   }
 );
 
+export const updateEnquiryDetailsApiAutoSave = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/updateEnquiryDetailsApiAutoSave",
+  async (payload, { rejectWithValue }) => {
+    
+    const response = await client.post(URL.AUTO_SAVE(), payload);
+    const json = await response.json();
+    console.log("SUCCESS:", json);
+    
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 export const customerLeadRef = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/customerLeadRef", async (payload, { rejectWithValue }) => {
   const response = await client.post(URL.CUSTOMER_LEAD_REFERENCE(), payload)
   const json = await response.json()
@@ -302,6 +317,9 @@ const enquiryDetailsOverViewSlice = createSlice({
       console.log("pressed");
       state.enableEdit = !state.enableEdit;
     },
+    updateFormData: (state, action) => {
+      state.enquiry_details_response = action.payload;
+    },
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
       const { key, value, id } = action.payload;
       switch (key) {
@@ -456,8 +474,10 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.maxDate = new Date();
           break;
         case "ANNIVERSARY_DATE":
-          if (!!state.dateOfBirth) {
-            state.minDate = new Date(state.dateOfBirth);
+          if (state.dateOfBirth) {
+            let dobArr = state.dateOfBirth.split('/')
+            console.log(new Date(state.dateOfBirth), new Date(Number(dobArr[2]), Number(dobArr[1]), Number(dobArr[0])));
+            state.minDate = new Date(Number(dobArr[2]), Number(dobArr[1]), Number(dobArr[0]));
           } else {
             state.minDate = new Date();
           }
@@ -1290,6 +1310,14 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.update_enquiry_details_response = "failed";
       state.isLoading = false;
     });
+    builder.addCase(updateEnquiryDetailsApiAutoSave.pending, (state, action) => {
+    });
+    builder.addCase(updateEnquiryDetailsApiAutoSave.fulfilled, (state, action) => {
+      state.isLoading = false;
+    });
+    builder.addCase(updateEnquiryDetailsApiAutoSave.rejected, (state, action) => {
+      
+    });
     // Drop Enquiry
     builder.addCase(dropEnquiryApi.pending, (state, action) => {
       state.enquiry_drop_response_status = "pending";
@@ -1398,6 +1426,7 @@ export const {
   updateAdditionalOrReplacementBuyerData,
   updateDmsAttachmentDetails,
   updateAddressByPincode,
-  updateRefNo
+  updateRefNo,
+  updateFormData
 } = enquiryDetailsOverViewSlice.actions;
 export default enquiryDetailsOverViewSlice.reducer;

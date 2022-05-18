@@ -12,6 +12,9 @@ import {
     Pressable,
     BackHandler,
     TextInput,
+    Image,
+    TouchableOpacity,
+    Modal
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { useDispatch, useSelector } from "react-redux";
@@ -60,6 +63,7 @@ import {
     getAssignedTasksApi,
     updateAddressByPincode,
     updateRef,
+    updateResponseStatus
 } from "../../../redux/preBookingFormReducer";
 import {
     RadioTextItem,
@@ -285,6 +289,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const [taxPercent, setTaxPercent] = useState('');
     const [insuranceDiscount, setInsuranceDiscount] = useState('');
     const [accDiscount, setAccDiscount] = useState('');
+    const [imagePath, setImagePath] = useState('');
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -499,6 +504,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     // Handle Pre-Booking Details Response
     useEffect(() => {
         if (selector.pre_booking_details_response) {
+            console.log("DDDDD", JSON.stringify(selector.pre_booking_details_response));
             let dmsContactOrAccountDto;
             if (
                 selector.pre_booking_details_response.hasOwnProperty("dmsAccountDto")
@@ -961,7 +967,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             showToast("please enter alphabetics only in lastname");
             return;
         }
-        if (selector.marital_status.length == 0) {
+        if (selector.enquiry_segment.toLowerCase() === "personal" && selector.marital_status.length == 0) {
             showToast("Please fill the martial status");
             return;
         }
@@ -1077,7 +1083,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
         postOnRoadPriceTable.form_or_pan = selector.form_or_pan;
 
-        // console.log("PAYLOAD:", JSON.stringify(postOnRoadPriceTable));
+        console.log("PAYLOAD:", JSON.stringify(postOnRoadPriceTable));
         // dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable));
         Promise.all([
             dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable))
@@ -1222,6 +1228,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     // Handle Update Pre-Booking Details Response
     useEffect(() => {
         if (selector.update_pre_booking_details_response === "success") {
+            dispatch(updateResponseStatus(''))
             if (typeOfActionDispatched === "DROP_ENQUIRY") {
                 showToastSucess("Successfully Pre-Booking Dropped");
                 getPreBookingListFromServer();
@@ -2569,10 +2576,21 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             />
                                         </View>
                                         {uploadedImagesDataObj.pan?.fileName ? (
-                                            <DisplaySelectedImage
-                                                fileName={uploadedImagesDataObj.pan.fileName}
-                                                from={"PAN"}
-                                            />
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                                                    if (uploadedImagesDataObj.pan?.documentPath) {
+                                                        setImagePath(uploadedImagesDataObj.pan?.documentPath)
+                                                    }
+                                                }}>
+                                                    <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                                                </TouchableOpacity>
+                                                <View style={{ width: '80%' }}>
+                                                    <DisplaySelectedImage
+                                                        fileName={uploadedImagesDataObj.pan.fileName}
+                                                        from={"PAN"}
+                                                    />
+                                                </View>
+                                            </View>
                                         ) : null}
                                         <Text style={GlobalStyle.underline}></Text>
                                     </View>
@@ -2588,11 +2606,22 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                                 }
                                             />
                                         </View>
-                                        {uploadedImagesDataObj.form60 ? (
-                                            <DisplaySelectedImage
-                                                fileName={uploadedImagesDataObj.form60.fileName}
-                                                from={"FORM60"}
-                                            />
+                                        {uploadedImagesDataObj.form60?.fileName ? (
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                                                    if (uploadedImagesDataObj.form60?.documentPath) {
+                                                        setImagePath(uploadedImagesDataObj.form60?.documentPath)
+                                                    }
+                                                }}>
+                                                    <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                                                </TouchableOpacity>
+                                                <View style={{ width: '80%' }}>
+                                                    <DisplaySelectedImage
+                                                        fileName={uploadedImagesDataObj.form60.fileName}
+                                                        from={"FORM60"}
+                                                    />
+                                                </View>
+                                            </View>
                                         ) : null}
                                         <Text style={GlobalStyle.underline}></Text>
                                     </View>
@@ -2620,10 +2649,22 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                                 onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
                                             />
                                             {uploadedImagesDataObj.aadhar?.fileName ? (
-                                                <DisplaySelectedImage
-                                                    fileName={uploadedImagesDataObj.aadhar.fileName}
-                                                    from={"AADHAR"}
-                                                />
+
+                                                <View style={{ flexDirection: 'row' }}>
+                                                    <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                                                        if (uploadedImagesDataObj.aadhar?.documentPath) {
+                                                            setImagePath(uploadedImagesDataObj.aadhar?.documentPath)
+                                                        }
+                                                    }}>
+                                                        <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                                                    </TouchableOpacity>
+                                                    <View style={{ width: '80%' }}>
+                                                        <DisplaySelectedImage
+                                                            fileName={uploadedImagesDataObj.aadhar.fileName}
+                                                            from={"AADHAR"}
+                                                        />
+                                                    </View>
+                                                </View>
                                             ) : null}
                                         </View>
                                     </View>
@@ -2648,11 +2689,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                                 onPress={() => dispatch(setImagePicker("UPLOAD_EMPLOYEE_ID"))}
                                             />
                                         </View>
-                                        {uploadedImagesDataObj.empId.fileName ? (
-                                            <DisplaySelectedImage
-                                                fileName={uploadedImagesDataObj.empId.fileName}
-                                                from={"EMPLOYEE_ID"}
-                                            />
+                                        {uploadedImagesDataObj.empId?.fileName ? (
+
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                                                    if (uploadedImagesDataObj.empId?.documentPath) {
+                                                        setImagePath(uploadedImagesDataObj.empId?.documentPath)
+                                                    }
+                                                }}>
+                                                    <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                                                </TouchableOpacity>
+                                                <View style={{ width: '80%' }}>
+                                                    <DisplaySelectedImage
+                                                        fileName={uploadedImagesDataObj.empId.fileName}
+                                                        from={"EMPLOYEE_ID"}
+                                                    />
+                                                </View>
+                                            </View>
                                         ) : null}
                                     </View>
                                 ) : null}
@@ -2666,11 +2719,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                                 onPress={() => dispatch(setImagePicker("UPLOAD_3_MONTHS_PAYSLIP"))}
                                             />
                                         </View>
-                                        {uploadedImagesDataObj.payslip ? (
-                                            <DisplaySelectedImage
-                                                fileName={uploadedImagesDataObj.payslip.fileName}
-                                                from={"3_MONTHS_PAYSLIP"}
-                                            />
+                                        {uploadedImagesDataObj.payslip?.fileName ? (
+                                            
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                                                    if (uploadedImagesDataObj.payslip?.documentPath) {
+                                                        setImagePath(uploadedImagesDataObj.payslip?.documentPath)
+                                                    }
+                                                }}>
+                                                    <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                                                </TouchableOpacity>
+                                                <View style={{ width: '80%' }}>
+                                                    <DisplaySelectedImage
+                                                        fileName={uploadedImagesDataObj.payslip.fileName}
+                                                        from={"3_MONTHS_PAYSLIP"}
+                                                    />
+                                                </View>
+                                            </View>
                                         ) : null}
                                     </View>
                                 ) : null}
@@ -2684,11 +2749,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                                 onPress={() => dispatch(setImagePicker("UPLOAD_PATTA_PASS_BOOK"))}
                                             />
                                         </View>
-                                        {uploadedImagesDataObj.passbook ? (
-                                            <DisplaySelectedImage
-                                                fileName={uploadedImagesDataObj.passbook.fileName}
-                                                from={"PATTA_PASS_BOOK"}
-                                            />
+                                        {uploadedImagesDataObj.passbook?.fileName ? (
+                                            
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                                                    if (uploadedImagesDataObj.passbook?.documentPath) {
+                                                        setImagePath(uploadedImagesDataObj.passbook?.documentPath)
+                                                    }
+                                                }}>
+                                                    <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                                                </TouchableOpacity>
+                                                <View style={{ width: '80%' }}>
+                                                    <DisplaySelectedImage
+                                                        fileName={uploadedImagesDataObj.passbook.fileName}
+                                                        from={"PATTA_PASS_BOOK"}
+                                                    />
+                                                </View>
+                                            </View>
                                         ) : null}
                                     </View>
                                 ) : null}
@@ -2702,11 +2779,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                                 onPress={() => dispatch(setImagePicker("UPLOAD_PENSION_LETTER"))}
                                             />
                                         </View>
-                                        {uploadedImagesDataObj.pension ? (
-                                            <DisplaySelectedImage
-                                                fileName={uploadedImagesDataObj.pension.fileName}
-                                                from={"PENSION_LETTER"}
-                                            />
+                                        {uploadedImagesDataObj.pension?.fileName ? (
+                                            
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                                                    if (uploadedImagesDataObj.pension?.documentPath) {
+                                                        setImagePath(uploadedImagesDataObj.pension?.documentPath)
+                                                    }
+                                                }}>
+                                                    <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                                                </TouchableOpacity>
+                                                <View style={{ width: '80%' }}>
+                                                    <DisplaySelectedImage
+                                                        fileName={uploadedImagesDataObj.pension.fileName}
+                                                        from={"PENSION_LETTER"}
+                                                    />
+                                                </View>
+                                            </View>
                                         ) : null}
                                     </View>
                                 ) : null}
@@ -2720,11 +2809,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                                 onPress={() => dispatch(setImagePicker("UPLOAD_IMA_CERTIFICATE"))}
                                             />
                                         </View>
-                                        {uploadedImagesDataObj.imaCertificate ? (
-                                            <DisplaySelectedImage
-                                                fileName={uploadedImagesDataObj.imaCertificate.fileName}
-                                                from={"IMA_CERTIFICATE"}
-                                            />
+                                        {uploadedImagesDataObj.imaCertificate?.fileName ? (
+                                            
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                                                    if (uploadedImagesDataObj.imaCertificate?.documentPath) {
+                                                        setImagePath(uploadedImagesDataObj.imaCertificate?.documentPath)
+                                                    }
+                                                }}>
+                                                    <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                                                </TouchableOpacity>
+                                                <View style={{ width: '80%' }}>
+                                                    <DisplaySelectedImage
+                                                        fileName={uploadedImagesDataObj.imaCertificate.fileName}
+                                                        from={"IMA_CERTIFICATE"}
+                                                    />
+                                                </View>
+                                            </View>
                                         ) : null}
                                     </View>
                                 ) : null}
@@ -2738,11 +2839,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                                 onPress={() => dispatch(setImagePicker("UPLOAD_LEASING_CONFIRMATION"))}
                                             />
                                         </View>
-                                        {uploadedImagesDataObj.leasingConfirm ? (
-                                            <DisplaySelectedImage
-                                                fileName={uploadedImagesDataObj.leasingConfirm.fileName}
-                                                from={"LEASING_CONFIRMATION"}
-                                            />
+                                        {uploadedImagesDataObj.leasingConfirm?.fileName ? (
+                                            
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                                                    if (uploadedImagesDataObj.leasingConfirm?.documentPath) {
+                                                        setImagePath(uploadedImagesDataObj.leasingConfirm?.documentPath)
+                                                    }
+                                                }}>
+                                                    <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                                                </TouchableOpacity>
+                                                <View style={{ width: '80%' }}>
+                                                    <DisplaySelectedImage
+                                                        fileName={uploadedImagesDataObj.leasingConfirm.fileName}
+                                                        from={"LEASING_CONFIRMATION"}
+                                                    />
+                                                </View>
+                                            </View>
                                         ) : null}
                                     </View>
                                 ) : null}
@@ -2756,11 +2869,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                                 onPress={() => dispatch(setImagePicker("UPLOAD_ADDRESS_PROOF"))}
                                             />
                                         </View>
-                                        {uploadedImagesDataObj.address ? (
-                                            <DisplaySelectedImage
-                                                fileName={uploadedImagesDataObj.address.fileName}
-                                                from={"ADDRESS_PROOF"}
-                                            />
+                                        {uploadedImagesDataObj.address?.fileName ? (
+                                            
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                                                    if (uploadedImagesDataObj.address?.documentPath) {
+                                                        setImagePath(uploadedImagesDataObj.address?.documentPath)
+                                                    }
+                                                }}>
+                                                    <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                                                </TouchableOpacity>
+                                                <View style={{ width: '80%' }}>
+                                                    <DisplaySelectedImage
+                                                        fileName={uploadedImagesDataObj.address.fileName}
+                                                        from={"ADDRESS_PROOF"}
+                                                    />
+                                                </View>
+                                            </View>
                                         ) : null}
                                     </View>
                                 ) : null}
@@ -2830,11 +2955,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             }
                                         />
                                     </View>
-                                    {uploadedImagesDataObj.relationshipProof ? (
-                                        <DisplaySelectedImage
-                                            fileName={uploadedImagesDataObj.relationshipProof.fileName}
-                                            from={"RELATION_PROOF"}
-                                        />
+                                    {uploadedImagesDataObj.relationshipProof?.fileName ? (
+                                       
+                                        <View style={{ flexDirection: 'row' }}>
+                                                <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                                                if (uploadedImagesDataObj.relationshipProof?.documentPath) {
+                                                        setImagePath(uploadedImagesDataObj.relationshipProof?.documentPath)
+                                                    }
+                                                }}>
+                                                    <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                                                </TouchableOpacity>
+                                                <View style={{ width: '80%' }}>
+                                                <DisplaySelectedImage
+                                                    fileName={uploadedImagesDataObj.relationshipProof.fileName}
+                                                    from={"RELATION_PROOF"}
+                                                />
+                                                </View>
+                                            </View>
                                     ) : null}
                                     <Text style={GlobalStyle.underline}></Text>
                                 </View>
@@ -2931,7 +3068,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     <Text style={[styles.leftLabel]}>{"Life Tax:"}</Text>
                                     {/* </View> */}
                                     <View style={{
-                                        // width: 80, height: 30,
+                                        width: 100,
+                                        // height: 30,
                                         // justifyContent: 'center',
                                         paddingHorizontal: 10,
                                         borderBottomWidth: 1, borderBottomColor: '#d1d1d1'
@@ -3267,8 +3405,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     onChangeText={(text) => dispatch(
                                         setOfferPriceDetails({
                                             key: "INSURANCE_DISCOUNT",
-                                            text:"text",
-                                    })
+                                            text: text,
+                                        })
                                     )} />
                                 <Text style={GlobalStyle.underline}></Text>
                                 <TextinputComp
@@ -3281,7 +3419,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     onChangeText={(text) => dispatch(
                                         setOfferPriceDetails({
                                             key: "ACCESSORIES_DISCOUNT",
-                                            text:"text",
+                                            text: text,
                                         })
                                     )}
                                 />
@@ -3822,11 +3960,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                                 onPress={() => dispatch(setImagePicker("RECEIPT_DOC"))}
                                             />
                                         </View>
-                                        {uploadedImagesDataObj.receipt ? (
-                                            <DisplaySelectedImage
-                                                fileName={uploadedImagesDataObj.receipt.fileName}
-                                                from={"RECEIPT"}
-                                            />
+                                        {uploadedImagesDataObj.receipt?.fileName ? (
+                                            
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                                                    if (uploadedImagesDataObj.receipt?.documentPath) {
+                                                    setImagePath(uploadedImagesDataObj.receipt?.documentPath)
+                                                    }
+                                                }}>
+                                                    <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                                                </TouchableOpacity>
+                                                <View style={{ width: '80%' }}>
+                                                    <DisplaySelectedImage
+                                                        fileName={uploadedImagesDataObj.receipt.fileName}
+                                                        from={"RECEIPT"}
+                                                    />
+                                                </View>
+                                            </View>
                                         ) : null}
                                         <Text style={GlobalStyle.underline}></Text>
                                     </View>
@@ -3971,25 +4121,25 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             ) : null}
                         </List.AccordionGroup>
 
-                        {!isDropSelected && showSubmitDropBtn && !userData.isManager && (
-                            <View style={styles.actionBtnView}>
-                                <Button
-                                    mode="contained"
-                                    style={{ width: 120 }}
-                                    color={Colors.BLACK}
-                                    disabled={selector.isLoading}
-                                    labelStyle={{ textTransform: "none" }}
-                                    onPress={() => setIsDropSelected(true)}
-                                >Cancel</Button>
-                                <Button
-                                    mode="contained"
-                                    color={Colors.RED}
-                                    disabled={selector.isLoading}
-                                    labelStyle={{ textTransform: "none" }}
-                                    onPress={submitClicked}
-                                >SUBMIT</Button>
-                            </View>
-                        )}
+                        {/* {!isDropSelected && showSubmitDropBtn && !userData.isManager && ( */}
+                        <View style={styles.actionBtnView}>
+                            <Button
+                                mode="contained"
+                                style={{ width: 120 }}
+                                color={Colors.BLACK}
+                                disabled={selector.isLoading}
+                                labelStyle={{ textTransform: "none" }}
+                                onPress={() => setIsDropSelected(true)}
+                            >Cancel</Button>
+                            <Button
+                                mode="contained"
+                                color={Colors.RED}
+                                disabled={selector.isLoading}
+                                labelStyle={{ textTransform: "none" }}
+                                onPress={submitClicked}
+                            >SUBMIT</Button>
+                        </View>
+                        {/* )} */}
 
                         {showApproveRejectBtn &&
                             userData.isPreBookingApprover &&
@@ -4069,6 +4219,26 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>
+
+            <Modal
+                animationType="fade"
+                visible={imagePath !== ''}
+                onRequestClose={() => { setImagePath('') }}
+                transparent={true}>
+                <View style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backgroundColor: 'rgba(0,0,0,0.7)',
+                }}>
+                    <View style={{ width: '90%' }}>
+                        <Image style={{ width: '100%', height: 400, borderRadius: 4 }} resizeMode="contain" source={{ uri: imagePath }} />
+                    </View>
+                    <TouchableOpacity style={{ width: 100, height: 40, justifyContent: 'center', alignItems: 'center', position: 'absolute', left: '37%', bottom: '15%', borderRadius: 5, backgroundColor: Colors.RED }} onPress={() => setImagePath('')}>
+                        <Text style={{ fontSize: 14, fontWeight: '600', color: Colors.WHITE }}>Close</Text>
+                    </TouchableOpacity>
+                </View>
+            </Modal>
         </SafeAreaView>
     );
 };
