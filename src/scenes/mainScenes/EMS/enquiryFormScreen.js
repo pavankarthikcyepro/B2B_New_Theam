@@ -2054,7 +2054,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 id={"2"}
                 title="Personal Intro"
                 titleStyle={{
-                  color: openAccordian === "2" ? Colors.WHITE : Colors.BLACK,
+                  color: openAccordian === "2" ? Colors.WHITE : Colors.WHITE,
                   fontSize: 16,
                   fontWeight: "600",
                 }}
@@ -2063,8 +2063,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     backgroundColor:
                       openAccordian === "2"
                         ? Colors.RED
-                        : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 50,
+                        : Colors.LIGHT_GRAY2,
+                    height: 60,
                   },
                   styles.accordianBorder,
                 ]}
@@ -2205,7 +2205,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 id={"1"}
                 title={"Customer Profile"}
                 titleStyle={{
-                  color: openAccordian === "1" ? Colors.WHITE : Colors.BLACK,
+                  color: openAccordian === "1" ? Colors.WHITE : Colors.WHITE,
                   fontSize: 16,
                   fontWeight: "600",
                 }}
@@ -2214,8 +2214,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     backgroundColor:
                       openAccordian === "1"
                         ? Colors.RED
-                        : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 50,
+                        : Colors.LIGHT_GRAY2,
+                    height: 60,
                     // justifyContent: 'center'
                   },
                   styles.accordianBorder,
@@ -2491,7 +2491,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 id={"3"}
                 title={"Communication Address"}
                 titleStyle={{
-                  color: openAccordian === "3" ? Colors.WHITE : Colors.BLACK,
+                  color: openAccordian === "3" ? Colors.WHITE : Colors.WHITE,
                   fontSize: 16,
                   fontWeight: "600",
                 }}
@@ -2500,8 +2500,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     backgroundColor:
                       openAccordian === "3"
                         ? Colors.RED
-                        : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 50,
+                        : Colors.LIGHT_GRAY2,
+                    height: 60,
                   },
                   styles.accordianBorder,
                 ]}
@@ -2894,7 +2894,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 id={"4"}
                 title={"Model Selection"}
                 titleStyle={{
-                  color: openAccordian === "4" ? Colors.WHITE : Colors.BLACK,
+                  color: openAccordian === "4" ? Colors.WHITE : Colors.WHITE,
                   fontSize: 16,
                   fontWeight: "600",
                 }}
@@ -2903,8 +2903,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     backgroundColor:
                       openAccordian === "4"
                         ? Colors.RED
-                        : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 50,
+                        : Colors.LIGHT_GRAY2,
+                    height: 60,
                   },
                   styles.accordianBorder,
                 ]}
@@ -2955,7 +2955,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 id={"5"}
                 title={"Finance Details"}
                 titleStyle={{
-                  color: openAccordian === "5" ? Colors.WHITE : Colors.BLACK,
+                  color: openAccordian === "5" ? Colors.WHITE : Colors.WHITE,
                   fontSize: 16,
                   fontWeight: "600",
                 }}
@@ -2964,8 +2964,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     backgroundColor:
                       openAccordian === "5"
                         ? Colors.RED
-                        : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 50,
+                        : Colors.LIGHT_GRAY2,
+                    height: 60,
                   },
                   styles.accordianBorder,
                 ]}
@@ -3177,7 +3177,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 id={"6"}
                 title={"Upload Documents"}
                 titleStyle={{
-                  color: openAccordian === "6" ? Colors.WHITE : Colors.BLACK,
+                  color: openAccordian === "6" ? Colors.WHITE : Colors.WHITE,
                   fontSize: 16,
                   fontWeight: "600",
                 }}
@@ -3186,8 +3186,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     backgroundColor:
                       openAccordian === "6"
                         ? Colors.RED
-                        : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 50,
+                        : Colors.LIGHT_GRAY2,
+                    height: 60,
                   },
                   styles.accordianBorder,
                 ]}
@@ -3443,7 +3443,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 id={"7"}
                 title={"Customer Need Analysis"}
                 titleStyle={{
-                  color: openAccordian === "7" ? Colors.WHITE : Colors.BLACK,
+                  color: openAccordian === "7" ? Colors.WHITE : Colors.WHITE,
                   fontSize: 16,
                   fontWeight: "600",
                 }}
@@ -3452,8 +3452,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     backgroundColor:
                       openAccordian === "7"
                         ? Colors.RED
-                        : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 50,
+                        : Colors.LIGHT_GRAY2,
+                    height: 60,
                   },
                   styles.accordianBorder,
                 ]}
@@ -3697,7 +3697,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   id={"8"}
                   title={"Additional Buyer"}
                   titleStyle={{
-                    color: openAccordian === "8" ? Colors.WHITE : Colors.BLACK,
+                    color: openAccordian === "8" ? Colors.WHITE : Colors.WHITE,
                     fontSize: 16,
                     fontWeight: "600",
                   }}
@@ -3706,8 +3706,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       backgroundColor:
                         openAccordian === "8"
                           ? Colors.RED
-                          : Colors.SKY_LIGHT_BLUE_COLOR,
-                      height: 50,
+                          : Colors.LIGHT_GRAY2,
+                      height: 60,
                     },
                     styles.accordianBorder,
                   ]}
@@ -3819,7 +3819,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   id={"9"}
                   title={"Replacement Buyer"}
                   titleStyle={{
-                    color: openAccordian === "9" ? Colors.WHITE : Colors.BLACK,
+                    color: openAccordian === "9" ? Colors.WHITE : Colors.WHITE,
                     fontSize: 16,
                     fontWeight: "600",
                   }}
@@ -3828,8 +3828,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       backgroundColor:
                         openAccordian === "9"
                           ? Colors.RED
-                          : Colors.SKY_LIGHT_BLUE_COLOR,
-                      height: 50,
+                          : Colors.LIGHT_GRAY2,
+                      height: 60,
                     },
                     styles.accordianBorder,
                   ]}
@@ -4221,7 +4221,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   id={"10"}
                   title={"Enquiry Drop Section"}
                   titleStyle={{
-                    color: openAccordian === "10" ? Colors.WHITE : Colors.BLACK,
+                    color: openAccordian === "10" ? Colors.WHITE : Colors.WHITE,
                     fontSize: 16,
                     fontWeight: "600",
                   }}
@@ -4230,8 +4230,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       backgroundColor:
                         openAccordian === "10"
                           ? Colors.RED
-                          : Colors.SKY_LIGHT_BLUE_COLOR,
-                      height: 50,
+                          : Colors.LIGHT_GRAY2,
+                      height: 60,
                     },
                     styles.accordianBorder,
                   ]}
@@ -4265,8 +4265,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               <Button
                 mode="contained"
                 style={{ width: 120 }}
-                color={Colors.RED}
-                labelStyle={{ textTransform: "none" }}
+                color={Colors.GRAY}
+
+                labelStyle={{ textTransform: "none",  color: Colors.WHITE }}
                 onPress={() => setIsDropSelected(true)}
               >
                 Lost
@@ -4274,7 +4275,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               <Button
                 mode="contained"
                 style={{ width: 120 }}
-                color={Colors.BLACK}
+                color={Colors.PINK}
                 labelStyle={{ textTransform: "none" }}
                 onPress={submitClicked}
               >
@@ -4286,7 +4287,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             <View style={styles.prebookingBtnView}>
               <Button
                 mode="contained"
-                color={Colors.BLACK}
+                color={Colors.PINK}
                 labelStyle={{ textTransform: "none" }}
                 onPress={proceedToPreBookingClicked}
               >
