@@ -563,6 +563,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     const saveAttachmentDetailsInLocalObject = (dmsAttachments) => {
         const attachments = [...dmsAttachments];
+        console.log("BEFORE:", JSON.stringify(attachments));
         if (attachments.length > 0) {
             const dataObj = {};
             attachments.forEach((item, index) => {
@@ -575,6 +576,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 };
                 dataObj[item.documentType] = obj;
             });
+            console.log("AFTER:", JSON.stringify(dataObj));
             setUploadedImagesDataObj({ ...dataObj });
         }
     };
@@ -2719,19 +2721,19 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                                 onPress={() => dispatch(setImagePicker("UPLOAD_3_MONTHS_PAYSLIP"))}
                                             />
                                         </View>
-                                        {uploadedImagesDataObj.payslip?.fileName ? (
+                                        {uploadedImagesDataObj.payslips?.fileName ? (
 
                                             <View style={{ flexDirection: 'row' }}>
                                                 <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                                                    if (uploadedImagesDataObj.payslip?.documentPath) {
-                                                        setImagePath(uploadedImagesDataObj.payslip?.documentPath)
+                                                    if (uploadedImagesDataObj.payslips?.documentPath) {
+                                                        setImagePath(uploadedImagesDataObj.payslips?.documentPath)
                                                     }
                                                 }}>
                                                     <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
                                                 </TouchableOpacity>
                                                 <View style={{ width: '80%' }}>
                                                     <DisplaySelectedImage
-                                                        fileName={uploadedImagesDataObj.payslip.fileName}
+                                                        fileName={uploadedImagesDataObj.payslips.fileName}
                                                         from={"3_MONTHS_PAYSLIP"}
                                                     />
                                                 </View>
