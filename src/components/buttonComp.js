@@ -10,7 +10,7 @@ const ButtonComp = ({ title, width, height = 50, disabled = false, onPress }) =>
             disabled={disabled}
             mode="contained"
             style={{}}
-            contentStyle={{ width: width ? width : null, height: height, backgroundColor: disabled ? Colors.GRAY : Colors.DARK_GRAY }}
+            contentStyle={{ width: width ? width : null, height: height, backgroundColor: disabled ? Colors.GRAY : Colors.PINK }}
             onPress={onPress}
         >
             {title}
