@@ -67,7 +67,7 @@ export const getAllTargetMapping = createAsyncThunk("TARGET_SETTINGS/getAllTarge
 
     const response = await client.post(URL.GET_ALL_TARGET_MAPPING(), payload)
     const json = await response.json()
-    // console.log("$$$$$$$$$ TARGET:", JSON.stringify(json));
+    console.log("$$$$$$$$$ TARGET:", JSON.stringify(json));
     if (!response.ok) {
         return rejectWithValue(json);
     }
