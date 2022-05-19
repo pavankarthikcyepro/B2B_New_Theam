@@ -136,7 +136,6 @@ const SideMenuScreen = ({ navigation }) => {
         setRole(jsonObj.hrmsRole);
         setLocation(jsonObj.branchName);
         setUserData(jsonObj)
-        // setUserData(jsonObj)
         getProfilePic(jsonObj);
 
 
