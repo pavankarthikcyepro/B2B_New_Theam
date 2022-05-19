@@ -81,7 +81,7 @@ import {
   Buyer_Type_Data,
   Kms_Travelled_Type_Data,
   Who_Drive_Type_Data,
-  How_Many_Family_Members_Data,
+  How_Many_Family_Members_Data, 
   Prime_Exception_Types_Data,
   Finance_Types,
   Finance_Category_Types,
@@ -124,6 +124,8 @@ import {
 import uuid from "react-native-uuid";
 import { DropComponent } from "./components/dropComp";
 import { useNavigation } from '@react-navigation/native';
+import moment from "moment";
+
 
 const theme = {
   ...DefaultTheme,
@@ -1924,6 +1926,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     );
   }
 
+  console.log(selector.expected_delivery_date, "Joke")
+
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
       <ImagePickerComponent
@@ -1943,6 +1947,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
           console.log("ITEM:", JSON.stringify(item));
+          console.log("ITEM:", dropDownKey);
           if (dropDownKey === "MODEL") {
             updateVariantModelsData(item.name, false);
           } else if (dropDownKey === "VARIENT") {
@@ -1950,7 +1955,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               item.name,
               selectedCarVarientsData.varientList
             );
-          } else if (
+          } else if ( 
             dropDownKey === "C_MAKE" ||
             dropDownKey === "R_MAKE" ||
             dropDownKey === "A_MAKE"
@@ -2419,7 +2424,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 <DateSelectItem
                   label={"Expected Delivery Date"}
-                  value={selector.expected_delivery_date}
+                  value={selector.expected_delivery_date.length == 0 ? moment().format("DD/MM/YYYY") : selector.expected_delivery_date}
                   onPress={() =>
                     dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
                   }
@@ -2428,7 +2433,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <DropDownSelectionItem
                   label={"Enquiry Category"}
                   disabled={true}
-                  value={selector.enquiry_category}
+                  value={selector.enquiry_category.length == 0 ? "Hot" : selector.enquiry_category}
                   onPress={() =>
                     showDropDownModelMethod(
                       "ENQUIRY_CATEGORY",
