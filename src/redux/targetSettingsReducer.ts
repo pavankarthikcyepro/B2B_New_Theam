@@ -84,6 +84,70 @@ export const targetSettingsSlice = createSlice({
         roles: [],
         targetMapping: [],
         employees_drop_down_data: {},
+        monthList: [
+            {
+                id: 1,
+                name: "January",
+                isChecked: false,
+            },
+            {
+                id: 2,
+                name: "February",
+                isChecked: false,
+            },
+            {
+                id: 3,
+                name: "March",
+                isChecked: false,
+            },
+            {
+                id: 4,
+                name: "April",
+                isChecked: false,
+            },
+            {
+                id: 5,
+                name: "May",
+                isChecked: false,
+            },
+            {
+                id: 6,
+                name: "June",
+                isChecked: false,
+            },
+            {
+                id: 7,
+                name: "July",
+                isChecked: false,
+            },
+            {
+                id: 8,
+                name: "August",
+                isChecked: false,
+            },
+            {
+                id: 9,
+                name: "September",
+                isChecked: false,
+            },
+            {
+                id: 10,
+                name: "October",
+                isChecked: false,
+            },
+            {
+                id: 11,
+                name: "November	",
+                isChecked: false,
+            },
+            {
+                id: 12,
+                name: "December",
+                isChecked: false,
+            }
+        ],
+        selectedMonth: null,
+        targetType: 'MONTHLY'
     },
     reducers: {
         updateStartDate: (state, action) => {
@@ -94,6 +158,12 @@ export const targetSettingsSlice = createSlice({
         },
         updateIsTeam: (state, action) => {
             state.isTeam = action.payload;
+        },
+        updateMonth: (state, action) => {
+            state.selectedMonth = action.payload;
+        },
+        updateTargetType: (state, action) => {
+            state.targetType = action.payload;
         }
     },
     extraReducers: (builder) => {
@@ -166,5 +236,5 @@ export const targetSettingsSlice = createSlice({
     }
 });
 
-export const { updateStartDate, updateEndDate, updateIsTeam } = targetSettingsSlice.actions;
+export const { updateStartDate, updateEndDate, updateIsTeam, updateMonth, updateTargetType } = targetSettingsSlice.actions;
 export default targetSettingsSlice.reducer;
