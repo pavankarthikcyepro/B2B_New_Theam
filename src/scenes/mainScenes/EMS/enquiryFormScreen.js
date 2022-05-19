@@ -790,10 +790,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         return;
       }
 
-      // if (!isValidateAlphabetics(selector.a_reg_no)) {
-      //   showToast("Please enter alphabetics only in reg no ");
-      //   return;
-      // }
     }
     if (selector.buyer_type == "Additional Buyer" && selector.r_reg_no == 0) {
       showToast("Please fill r_reg no is mandatory");
@@ -806,16 +802,23 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           showToast("Please enter alphabetics only in color ");
           return;
         }
-      }
-      if (selector.r_insurence_company_name.length == 0) {
-        showToast("Please select the insurance company name");
-        return;
-      }
+         if (selector.r_reg_no == 0) {
+   showToast("Please fill reg no is mandatory");
+   return;
+
       if (!isValidateAlphabetics(selector.r_model_other_name)) {
         showToast("Please enter proper model other name");
         return;
       }
 
+ }
+        
+      }
+      if (selector.r_insurence_company_name.length == 0) {
+        showToast("Please select the insurance company name");
+        return;
+      }
+   
       if (selector.r_hypothication_checked === true) {
         if (selector.r_hypothication_name.length > 0) {
           if (!isValidateAlphabetics(selector.r_hypothication_name)) {
@@ -2006,7 +2009,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 id={"2"}
                 title="Personal Intro"
                 titleStyle={{
-                  color: openAccordian === "2" ? Colors.WHITE : Colors.BLACK,
+                  color: openAccordian === "2" ? Colors.WHITE : Colors.WHITE,
                   fontSize: 16,
                   fontWeight: "600",
                 }}
@@ -2015,8 +2018,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     backgroundColor:
                       openAccordian === "2"
                         ? Colors.RED
-                        : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 50,
+                        : Colors.LIGHT_GRAY2,
+                    height: 60,
                   },
                   styles.accordianBorder,
                 ]}
@@ -2158,7 +2161,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 id={"1"}
                 title={"Customer Profile"}
                 titleStyle={{
-                  color: openAccordian === "1" ? Colors.WHITE : Colors.BLACK,
+                  color: openAccordian === "1" ? Colors.WHITE : Colors.WHITE,
                   fontSize: 16,
                   fontWeight: "600",
                 }}
@@ -2167,8 +2170,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     backgroundColor:
                       openAccordian === "1"
                         ? Colors.RED
-                        : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 50,
+                        : Colors.LIGHT_GRAY2,
+                    height: 60,
                     // justifyContent: 'center'
                   },
                   styles.accordianBorder,
@@ -2178,7 +2181,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.occupation}
                   autoCapitalize="words"
-                  label={"Occupation*"}
+                  label={"Occupation"}
                   keyboardType={"default"}
                   maxLength={40}
                   onChangeText={(text) =>
@@ -2204,7 +2207,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
 
                 <DropDownSelectionItem
-                  label={"Enquiry Segment*"}
+                  label={"Enquiry Segment"}
                   // disabled={!selector.enableEdit}
                   value={selector.enquiry_segment}
                   onPress={() =>
@@ -2390,7 +2393,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
 
                 <DropDownSelectionItem
-                  label={"Buyer Type"}
+                  label={"Buyer Type*"}
                   value={selector.buyer_type}
                   onPress={() =>
                     showDropDownModelMethod("BUYER_TYPE", "Buyer Type")
@@ -2444,7 +2447,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 id={"3"}
                 title={"Communication Address"}
                 titleStyle={{
-                  color: openAccordian === "3" ? Colors.WHITE : Colors.BLACK,
+                  color: openAccordian === "3" ? Colors.WHITE : Colors.WHITE,
                   fontSize: 16,
                   fontWeight: "600",
                 }}
@@ -2453,8 +2456,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     backgroundColor:
                       openAccordian === "3"
                         ? Colors.RED
-                        : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 50,
+                        : Colors.LIGHT_GRAY2,
+                    height: 60,
                   },
                   styles.accordianBorder,
                 ]}
@@ -2847,7 +2850,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 id={"4"}
                 title={"Model Selection"}
                 titleStyle={{
-                  color: openAccordian === "4" ? Colors.WHITE : Colors.BLACK,
+                  color: openAccordian === "4" ? Colors.WHITE : Colors.WHITE,
                   fontSize: 16,
                   fontWeight: "600",
                 }}
@@ -2856,8 +2859,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     backgroundColor:
                       openAccordian === "4"
                         ? Colors.RED
-                        : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 50,
+                        : Colors.LIGHT_GRAY2,
+                    height: 60,
                   },
                   styles.accordianBorder,
                 ]}
@@ -2908,7 +2911,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 id={"5"}
                 title={"Finance Details"}
                 titleStyle={{
-                  color: openAccordian === "5" ? Colors.WHITE : Colors.BLACK,
+                  color: openAccordian === "5" ? Colors.WHITE : Colors.WHITE,
                   fontSize: 16,
                   fontWeight: "600",
                 }}
@@ -2917,14 +2920,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     backgroundColor:
                       openAccordian === "5"
                         ? Colors.RED
-                        : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 50,
+                        : Colors.LIGHT_GRAY2,
+                    height: 60,
                   },
                   styles.accordianBorder,
                 ]}
               >
                 <DropDownSelectionItem
-                  label={"Retail Finance"}
+                  label={"Retail Finance*"}
                   value={selector.retail_finance}
                   onPress={() =>
                     showDropDownModelMethod("RETAIL_FINANCE", "Retail Finance")
@@ -3130,7 +3133,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 id={"6"}
                 title={"Upload Documents"}
                 titleStyle={{
-                  color: openAccordian === "6" ? Colors.WHITE : Colors.BLACK,
+                  color: openAccordian === "6" ? Colors.WHITE : Colors.WHITE,
                   fontSize: 16,
                   fontWeight: "600",
                 }}
@@ -3139,8 +3142,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     backgroundColor:
                       openAccordian === "6"
                         ? Colors.RED
-                        : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 50,
+                        : Colors.LIGHT_GRAY2,
+                    height: 60,
                   },
                   styles.accordianBorder,
                 ]}
@@ -3504,7 +3507,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 id={"7"}
                 title={"Customer Need Analysis"}
                 titleStyle={{
-                  color: openAccordian === "7" ? Colors.WHITE : Colors.BLACK,
+                  color: openAccordian === "7" ? Colors.WHITE : Colors.WHITE,
                   fontSize: 16,
                   fontWeight: "600",
                 }}
@@ -3513,8 +3516,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     backgroundColor:
                       openAccordian === "7"
                         ? Colors.RED
-                        : Colors.SKY_LIGHT_BLUE_COLOR,
-                    height: 50,
+                        : Colors.LIGHT_GRAY2,
+                    height: 60,
                   },
                   styles.accordianBorder,
                 ]}
@@ -3758,7 +3761,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   id={"8"}
                   title={"Additional Buyer"}
                   titleStyle={{
-                    color: openAccordian === "8" ? Colors.WHITE : Colors.BLACK,
+                    color: openAccordian === "8" ? Colors.WHITE : Colors.WHITE,
                     fontSize: 16,
                     fontWeight: "600",
                   }}
@@ -3767,8 +3770,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       backgroundColor:
                         openAccordian === "8"
                           ? Colors.RED
-                          : Colors.SKY_LIGHT_BLUE_COLOR,
-                      height: 50,
+                          : Colors.LIGHT_GRAY2,
+                      height: 60,
                     },
                     styles.accordianBorder,
                   ]}
@@ -3880,7 +3883,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   id={"9"}
                   title={"Replacement Buyer"}
                   titleStyle={{
-                    color: openAccordian === "9" ? Colors.WHITE : Colors.BLACK,
+                    color: openAccordian === "9" ? Colors.WHITE : Colors.WHITE,
                     fontSize: 16,
                     fontWeight: "600",
                   }}
@@ -3889,8 +3892,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       backgroundColor:
                         openAccordian === "9"
                           ? Colors.RED
-                          : Colors.SKY_LIGHT_BLUE_COLOR,
-                      height: 50,
+                          : Colors.LIGHT_GRAY2,
+                      height: 60,
                     },
                     styles.accordianBorder,
                   ]}
@@ -4306,7 +4309,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   id={"10"}
                   title={"Enquiry Drop Section"}
                   titleStyle={{
-                    color: openAccordian === "10" ? Colors.WHITE : Colors.BLACK,
+                    color: openAccordian === "10" ? Colors.WHITE : Colors.WHITE,
                     fontSize: 16,
                     fontWeight: "600",
                   }}
@@ -4315,8 +4318,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       backgroundColor:
                         openAccordian === "10"
                           ? Colors.RED
-                          : Colors.SKY_LIGHT_BLUE_COLOR,
-                      height: 50,
+                          : Colors.LIGHT_GRAY2,
+                      height: 60,
                     },
                     styles.accordianBorder,
                   ]}
@@ -4350,8 +4353,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               <Button
                 mode="contained"
                 style={{ width: 120 }}
-                color={Colors.RED}
-                labelStyle={{ textTransform: "none" }}
+                color={Colors.GRAY}
+
+                labelStyle={{ textTransform: "none",  color: Colors.WHITE }}
                 onPress={() => setIsDropSelected(true)}
               >
                 Lost
@@ -4359,7 +4363,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               <Button
                 mode="contained"
                 style={{ width: 120 }}
-                color={Colors.BLACK}
+                color={Colors.PINK}
                 labelStyle={{ textTransform: "none" }}
                 onPress={submitClicked}
               >
@@ -4371,7 +4375,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             <View style={styles.prebookingBtnView}>
               <Button
                 mode="contained"
-                color={Colors.BLACK}
+                color={Colors.PINK}
                 labelStyle={{ textTransform: "none" }}
                 onPress={proceedToPreBookingClicked}
               >

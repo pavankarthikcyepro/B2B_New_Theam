@@ -14,29 +14,45 @@ const WelcomeScreen = ({ navigation }) => {
     }
 
     return (
-        <SafeAreaView style={styles.container}>
-            <View style={{ width: '100%', height: 300, justifyContent: 'flex-start', alignItems: 'center', }}>
-                <Image
-                    style={{ width: '80%', height: 80 }}
-                    resizeMode={'center'}
-                    source={require('../../assets/images/logo.png')}
-                />
-            </View>
-            {/* <Image
+      <SafeAreaView style={styles.container}>
+        <View
+          style={{
+            width: "100%",
+            height: 300,
+            justifyContent: "flex-start",
+            alignItems: "center",
+          }}
+        >
+          <Image
+            style={{ width: "80%", height: 80 }}
+            resizeMode={"center"}
+            source={require("../../assets/images/logo.png")}
+          />
+        </View>
+        {/* <Image
                 style={{ width: '100%', height: 300 }}
                 resizeMode={'center'}
                 source={require('../../assets/images/welcome.png')}
             /> */}
-                {/* source={require('../../assets/images/logo.png')}
+        {/* source={require('../../assets/images/logo.png')}
             /> */}
-            <ButtonComp title={'LOG IN'} width={ScreenWidth - 40} onPress={loginButtonClicked} />
+        <ButtonComp
+          title={"LOG IN"}
+          width={ScreenWidth - 40}
+          onPress={loginButtonClicked}
+          color={ Colors.PINK}
+        />
 
-            <View style={styles.bottomViewStyle}>
-                <Text style={styles.textOneStyle}>{'Important Notice'}</Text>
-                <Text style={styles.textTwoStyle}>{'By using this app, you agree to the use of cookies and data processing technologies by us.'}</Text>
-            </View>
-        </SafeAreaView>
-    )
+        <View style={styles.bottomViewStyle}>
+          <Text style={styles.textOneStyle}>{"Important Notice"}</Text>
+          <Text style={styles.textTwoStyle}>
+            {
+              "By using this app, you agree to the use of cookies and data processing technologies by us."
+            }
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
 }
 
 export default WelcomeScreen;

@@ -16,7 +16,10 @@ import * as AsyncStore from '../../../asyncStore';
 import realm from '../../../database/realm';
 import { callNumber, GetCarModelList } from '../../../utils/helperFunctions';
 import moment from "moment";
-import { Category_Type_List_For_Filter } from '../../../jsonData/enquiryFormScreenJsonData';
+import {
+  Category_Type_List_For_Filter,
+  Category_Type,
+} from "../../../jsonData/enquiryFormScreenJsonData";
 import { MyTaskNewItem } from '../MyTasks/components/MyTasksNewItem';
 
 const dateFormat = "YYYY-MM-DD";
@@ -31,6 +34,7 @@ const PreEnquiryScreen = ({ navigation }) => {
     const [sourceList, setSourceList] = useState(source_of_enquiry_list);
     const [categoryList, setCategoryList] = useState(Category_Type_List_For_Filter);
     const [modelList, setModelList] = useState([]);
+    // const [categoryList, setCategoryList] = useState(Category_Type);
     const [employeeId, setEmployeeId] = useState("");
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [datePickerId, setDatePickerId] = useState("");

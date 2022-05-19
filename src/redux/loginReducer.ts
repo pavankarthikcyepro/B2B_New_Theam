@@ -4,7 +4,7 @@ import { client } from "../networking/client";
 import URL from "../networking/endpoints";
 import * as AsyncStore from "../asyncStore";
 import realm from "../database/realm";
-import { showToastRedAlert } from "../utils/toast";
+import { showAlertMessage, showToastRedAlert } from "../utils/toast";
 
 interface LoginState {
   employeeId: string;
@@ -185,7 +185,8 @@ export const loginSlice = createSlice({
           state.userData = dataObj;
           AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, dataObj.idToken);
         } else if (dataObj.reason) {
-          showToastRedAlert(dataObj.reason);
+          showAlertMessage("Failed", "Incorrect Password");
+          state.isLoading = false;
         }
       })
       .addCase(postUserData.rejected, (state, action) => {

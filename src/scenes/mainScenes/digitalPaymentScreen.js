@@ -4,41 +4,52 @@ import {
   View,
   StyleSheet,
   Image,
+  Text
 } from "react-native";
 import { IconButton } from "react-native-paper";
-
-
-
-
+import * as AsyncStore from '../../asyncStore';
+import { client } from "../../networking/client";
+import URL from "../../networking/endpoints";
 
 const DigitalPaymentScreen = ({navigation}) => {
 
-  const [dataList, setDataList] = useState([]);
+  const [dataList, setDataList] = useState("https://www.bigpharmacy.com.my/scripts/timthumb.php");
 
   useEffect(() => {
-    fetch(
-      "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/qrcode/get/1/242"
-    )
-      .then((response) => response.json())
-      .then((json) => setDataList(json))
-      .catch((error) => console.error(error));
+    getQrCode();
   }, []);
+
+  const getQrCode = async () => {
+    const userData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    const { orgId, branchId } = JSON.parse(userData);
+    const response = await client.get(URL.QR(orgId, branchId));
+    const qr = await response.json();
+    if (qr.length > 0) {
+      setDataList(qr[0].documentPath);
+    } else {
+      setDataList("https://www.bigpharmacy.com.my/scripts/timthumb.php")
+    }
+    console.log({qr})
+  }
 
   return (
     <View style={styles.container}>
-      <IconButton
+      {/* <Text>Scan QR Code</Text> */}
+      {/* <IconButton
         icon="close"
         color={Colors.BLACK}
         size={30}
         onPress={() => navigation.navigate("Home")}
-      />
+      /> */}
 
-      <Image
-        style={styles.tinyLogo}
-        source={{
-          uri: "https://dms-automate-prod.s3.ap-south-1.amazonaws.com/146-1-242-a94edf7c-77b7-40ef-bd12-b66d9303c631/car.jpg",
-        }}
-      />
+      {/* <View style={{elevation: 7, backgroundColor: "white", padding: 15, borderRadius: 6}}> */}
+        <Image
+          style={styles.tinyLogo}
+          source={{
+            uri: dataList
+          }}
+        />
+      {/* </View> */}
     </View>
   );
 };
@@ -48,6 +59,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "white"
   },
   rootStyle: {
     flex: 1,
@@ -55,7 +67,7 @@ const styles = StyleSheet.create({
   },
   tinyLogo: {
     width: 300,
-    height: 300,
+    height: 400,
     
     alignItems: "center",
     justifyContent: "center",

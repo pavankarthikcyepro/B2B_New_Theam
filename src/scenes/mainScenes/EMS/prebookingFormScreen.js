@@ -2720,7 +2720,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             />
                                         </View>
                                         {uploadedImagesDataObj.payslip?.fileName ? (
-                                            
+
                                             <View style={{ flexDirection: 'row' }}>
                                                 <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
                                                     if (uploadedImagesDataObj.payslip?.documentPath) {
@@ -2750,7 +2750,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             />
                                         </View>
                                         {uploadedImagesDataObj.passbook?.fileName ? (
-                                            
+
                                             <View style={{ flexDirection: 'row' }}>
                                                 <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
                                                     if (uploadedImagesDataObj.passbook?.documentPath) {
@@ -2780,7 +2780,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             />
                                         </View>
                                         {uploadedImagesDataObj.pension?.fileName ? (
-                                            
+
                                             <View style={{ flexDirection: 'row' }}>
                                                 <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
                                                     if (uploadedImagesDataObj.pension?.documentPath) {
@@ -2810,7 +2810,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             />
                                         </View>
                                         {uploadedImagesDataObj.imaCertificate?.fileName ? (
-                                            
+
                                             <View style={{ flexDirection: 'row' }}>
                                                 <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
                                                     if (uploadedImagesDataObj.imaCertificate?.documentPath) {
@@ -2840,7 +2840,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             />
                                         </View>
                                         {uploadedImagesDataObj.leasingConfirm?.fileName ? (
-                                            
+
                                             <View style={{ flexDirection: 'row' }}>
                                                 <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
                                                     if (uploadedImagesDataObj.leasingConfirm?.documentPath) {
@@ -2870,7 +2870,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             />
                                         </View>
                                         {uploadedImagesDataObj.address?.fileName ? (
-                                            
+
                                             <View style={{ flexDirection: 'row' }}>
                                                 <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
                                                     if (uploadedImagesDataObj.address?.documentPath) {
@@ -2956,22 +2956,22 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         />
                                     </View>
                                     {uploadedImagesDataObj.relationshipProof?.fileName ? (
-                                       
+
                                         <View style={{ flexDirection: 'row' }}>
-                                                <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                                            <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
                                                 if (uploadedImagesDataObj.relationshipProof?.documentPath) {
-                                                        setImagePath(uploadedImagesDataObj.relationshipProof?.documentPath)
-                                                    }
-                                                }}>
-                                                    <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
-                                                </TouchableOpacity>
-                                                <View style={{ width: '80%' }}>
+                                                    setImagePath(uploadedImagesDataObj.relationshipProof?.documentPath)
+                                                }
+                                            }}>
+                                                <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                                            </TouchableOpacity>
+                                            <View style={{ width: '80%' }}>
                                                 <DisplaySelectedImage
                                                     fileName={uploadedImagesDataObj.relationshipProof.fileName}
                                                     from={"RELATION_PROOF"}
                                                 />
-                                                </View>
                                             </View>
+                                        </View>
                                     ) : null}
                                     <Text style={GlobalStyle.underline}></Text>
                                 </View>
@@ -3961,11 +3961,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             />
                                         </View>
                                         {uploadedImagesDataObj.receipt?.fileName ? (
-                                            
+
                                             <View style={{ flexDirection: 'row' }}>
                                                 <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
                                                     if (uploadedImagesDataObj.receipt?.documentPath) {
-                                                    setImagePath(uploadedImagesDataObj.receipt?.documentPath)
+                                                        setImagePath(uploadedImagesDataObj.receipt?.documentPath)
                                                     }
                                                 }}>
                                                     <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>

@@ -573,7 +573,7 @@ const TabNavigator = (props) => {
                 },
             })}
             tabBarOptions={{
-                activeTintColor: Colors.RED,
+                activeTintColor: Colors.PINK,
                 inactiveTintColor: "gray",
             }}
         >

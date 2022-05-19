@@ -231,6 +231,9 @@ const URL = {
     AUTO_SAVE: () => {
         return downloadFile + `/autosave`;
     },
+    QR: (orgId, branchId) => {
+        return sales_url + `/qrcode/get/${orgId}/${branchId}`;
+    }
 }
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason
