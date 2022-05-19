@@ -56,7 +56,7 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
     const [defaultContext, setDefaultContext] = useState({});
 
     useEffect(() => {
-        console.log("accessorylist: ", accessorylist.length)
+        // console.log("accessorylist: ", accessorylist.length)
         const titleNames = [];
         const dataObj = {};
         accessorylist.forEach((item) => {

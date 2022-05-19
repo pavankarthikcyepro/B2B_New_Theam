@@ -435,9 +435,7 @@ const prebookingFormSlice = createSlice({
     dd_date: "",
     isDataLoaded: false,
     addOnPrice: 0,
-    refNo: '',
-    accessories_discount: '',
-    insurance_discount: ''
+    refNo: ''
   },
   reducers: {
     clearState: (state, action) => {
@@ -882,12 +880,6 @@ const prebookingFormSlice = createSlice({
         case "ADDITIONAL_OFFER_2":
           state.additional_offer_2 = text;
           break;
-        case "ACCESSORIES_DISCOUNT":
-          state.accessories_discount = text;
-          break;
-        case "INSURANCE_DISCOUNT":
-          state.insurance_discount = text;
-          break;
       }
     },
     setBookingPaymentDetails: (
@@ -945,9 +937,6 @@ const prebookingFormSlice = createSlice({
           state.reject_remarks = text;
           break;
       }
-    },
-    updateResponseStatus: (state, action) => {
-      state.update_pre_booking_details_response = action.payload
     },
     setPreBookingPaymentDetials: (state, action) => {
       const { key, text } = action.payload;
@@ -1292,8 +1281,6 @@ const prebookingFormSlice = createSlice({
           state.for_accessories = dataObj.focAccessories ? dataObj.focAccessories.toString() : "";
           state.additional_offer_1 = dataObj.additionalOffer1 ? dataObj.additionalOffer1.toString() : "";
           state.additional_offer_2 = dataObj.additionalOffer2 ? dataObj.additionalOffer2.toString() : "";
-          state.insurance_discount = dataObj.insuranceDiscount ? dataObj.insuranceDiscount.toString() : "";
-          state.accessories_discount = dataObj.accessoriesDiscount ? dataObj.accessoriesDiscount.toString() : "";
         }
       }
       state.isLoading = false;
@@ -1534,7 +1521,6 @@ export const {
   updateFinancialData,
   updateBookingPaymentData,
   updateDmsAttachments,
-  updateAddressByPincode,
-  updateResponseStatus
+  updateAddressByPincode
 } = prebookingFormSlice.actions;
 export default prebookingFormSlice.reducer;

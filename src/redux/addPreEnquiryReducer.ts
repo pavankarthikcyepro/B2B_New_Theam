@@ -182,8 +182,6 @@ export const addPreEnquirySlice = createSlice({
     },
     setDropDownData: (state, action: PayloadAction<DropDownModel>) => {
       const { key, value, id } = action.payload;
-      console.log("£££", key, value, id);
-      
       switch (key) {
         case "ENQUIRY_SEGMENT":
           state.enquiryType = value;
@@ -267,10 +265,7 @@ export const addPreEnquirySlice = createSlice({
       state.customer_type_list = JSON.parse(action.payload);
     },
     setExistingDetails: (state, action) => {
-      
-      
       const preEnquiryDetails = action.payload.dmsLeadDto;
-      console.log("TYPES:", JSON.stringify(preEnquiryDetails));
       let dmsAccountOrContactObj = {};
       if (action.payload.dmsAccountDto) {
         dmsAccountOrContactObj = action.payload.dmsAccountDto;
@@ -286,8 +281,8 @@ export const addPreEnquirySlice = createSlice({
       state.pincode = preEnquiryDetails.pincode;
       state.carModel = preEnquiryDetails.model;
       state.enquiryType = preEnquiryDetails.enquirySegment;
-      state.customer_type_list = CustomerTypesObj[preEnquiryDetails.enquirySegment.toLowerCase()];
-      state.enquiry_type_list = EnquiryTypes;
+      state.enquiry_type_list =
+        CustomerTypesObj[preEnquiryDetails.enquirySegment.toLowerCase()];
       state.customerType = dmsAccountOrContactObj["customerType"] || "";
       state.sourceOfEnquiry = preEnquiryDetails.enquirySource;
       state.sourceOfEnquiryId = preEnquiryDetails.sourceOfEnquiry;
