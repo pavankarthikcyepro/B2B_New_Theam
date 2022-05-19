@@ -533,6 +533,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         return;
       }
       if (!isValidateAlphabetics(selector.a_varient)) {
+
         return;
       }
       if (!isValidateAlphabetics(selector.a_color)) {
@@ -717,7 +718,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const submitClicked = async () => {
     //Personal Intro
     if (selector.salutation.length == 0) {
-      showToast("Please fill required fields in Personal Intro");
+      showToast("Please fill required salutation field in Personal Intro");
       return;
     }
 
@@ -751,7 +752,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //Customer Profile
 
     if (selector.designation.length == 0 || selector.buyer_type.length == 0) {
-      showToast("Please fill required fields in Customer Profile");
+      showToast("Please fill required designation field in Customer Profile");
       return;
     }
     if (!isValidateAlphabetics(selector.occupation)) {
@@ -788,7 +789,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
     //Finance Details
     if (selector.retail_finance.length == 0) {
-      showToast("Please fill required fields in Financial Details");
+      showToast("Please fill required fields in Finance Details");
       return;
     }
 
@@ -815,7 +816,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
     //Customer Customer need Analysis
     if (selector.c_voice_of_customer_remarks == 0) {
-      showToast("Please fill required fields in Customer need Analysis");
+      showToast("Please fill required remarks field in Customer need Analysis");
       return;
     }
 
