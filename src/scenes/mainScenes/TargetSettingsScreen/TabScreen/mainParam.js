@@ -145,6 +145,8 @@ const MainParamScreen = ({ route, navigation }) => {
                     "retailTarget": retail,
                     "startDate": selector.startDate,
                     // "teamLeadId": otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead')[0].value.value : '',
+                    "targetType": selector.targetType,
+                    "targetName": selector.selectedMonth.value
                 }
                 console.log("PAYLOAD:", payload);
                 Promise.all([
@@ -186,6 +188,8 @@ const MainParamScreen = ({ route, navigation }) => {
                     "retailTarget": retail,
                     "startDate": selector.startDate,
                     // "teamLeadId": otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead')[0].value.value : '',
+                    "targetType": selector.targetType,
+                    "targetName": selector.selectedMonth.value
                 }
                 console.log("PAYLOAD:", payload);
                 Promise.all([
