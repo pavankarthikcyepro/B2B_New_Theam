@@ -862,10 +862,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
  }
         
       }
-      if (selector.r_insurence_company_name.length == 0) {
-        showToast("Please select the insurance company name");
-        return;
-      }
+      // if (selector.r_insurence_company_name.length == 0) {
+      //   showToast("Please select the insurance company name");
+      //   return;
+      // }
    
       if (selector.r_hypothication_checked === true) {
         if (selector.r_hypothication_name.length > 0) {
@@ -3263,7 +3263,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <TextinputComp
                       style={styles.textInputStyle}
                       value={selector.employee_id}
-                      label={"Employee ID*"}
+                      label={"Employee ID"}
                       maxLength={15}
                       onChangeText={(text) =>
                         dispatch(
