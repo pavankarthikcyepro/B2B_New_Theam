@@ -17,7 +17,7 @@ import * as AsyncStore from '../../../asyncStore';
 import moment from 'moment';
 import { TargetAchivementComp } from './targetAchivementComp';
 import { HeaderComp, DropDownComponant, DatePickerComponent } from '../../../components';
-import { DateSelectItem, TargetDropdown, DateSelectItemForTargetSettings, RadioTextItem } from '../../../pureComponents';
+import { DateSelectItem, TargetDropdown, DateSelectItemForTargetSettings } from '../../../pureComponents';
 
 import {
     getEmployeesActiveBranch,
@@ -27,9 +27,7 @@ import {
     addTargetMapping,
     updateIsTeam,
     getAllTargetMapping,
-    getEmployeesDropDownData,
-    updateMonth,
-    updateTargetType
+    getEmployeesDropDownData
 } from '../../../redux/targetSettingsReducer';
 
 import {
@@ -115,19 +113,11 @@ const TargetSettingsScreen = ({ route, navigation }) => {
 
             const payload2 = {
                 "empId": jsonObj.empId,
-                "pageNo": 1,
+                "pageNo": 1, 
                 "size": 10
             }
             const dateFormat = "YYYY-MM-DD";
             const currentDate = moment().format(dateFormat)
-            console.log("CURRENT MONTH:", new Date().getMonth());
-            let monthArr = [];
-            monthArr = selector.monthList.filter((item) => {
-                return item.id === (new Date().getMonth() + 1)
-            })
-            if (monthArr.length > 0) {
-                dispatch(updateMonth({ key: '', value: monthArr[0].name, id: monthArr[0].id }))
-            }
             const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
             const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
             dispatch(updateStartDate(monthFirstDate))
@@ -164,7 +154,23 @@ const TargetSettingsScreen = ({ route, navigation }) => {
         Keyboard.dismiss();
         switch (key) {
             case "TARGET_MODEL":
-                setDataForDropDown(selector.monthList);
+                setDataForDropDown([
+                    {
+                        id: 1,
+                        name: "Target 1",
+                        isChecked: false,
+                    },
+                    {
+                        id: 2,
+                        name: "Target 2",
+                        isChecked: false,
+                    },
+                    {
+                        id: 3,
+                        name: "Target 3",
+                        isChecked: false,
+                    },
+                ]);
                 break;
         }
         setDropDownKey(key);
@@ -201,24 +207,8 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                 data={dataForDropDown}
                 onRequestClose={() => setShowDropDownModel(false)}
                 selectedItems={(item) => {
-                    console.log("ITEM:", item);
                     setShowDropDownModel(false);
                     setDropDownData({ key: dropDownKey, value: item.name, id: item.id })
-                    dispatch(updateMonth({ key: dropDownKey, value: item.name, id: item.id }))
-
-                    const dateFormat = "YYYY-MM-DD";
-                    const currentDate = moment().format(dateFormat)
-                    const splitDate = currentDate.split('-')
-                    const tempDate = new Date(splitDate[0], item.id - 1, 1, 1, 1, 1)
-                    console.log("DATE:", tempDate, moment(tempDate).format(dateFormat));
-                    const selectedMonthDate = moment(tempDate).format(dateFormat);
-                    const monthFirstDate = moment(selectedMonthDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-                    const monthLastDate = moment(selectedMonthDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-                    dispatch(updateStartDate(monthFirstDate))
-                    setFromDate(monthFirstDate);
-
-                    dispatch(updateEndDate(monthLastDate))
-                    setToDate(monthLastDate);
                 }}
             />
             <DatePickerComponent
@@ -280,10 +270,9 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                         else if (index === 1) {
                             return (
                                 <>
-                                    <View style={{ flexDirection: "row", justifyContent: "space-evenly", paddingBottom: 0, paddingTop: 10, }}>
+                                    <View style={{ flexDirection: "row", justifyContent: "space-evenly", paddingBottom: 20, paddingTop: 10, }}>
                                         <View style={{ width: "45%", }}>
                                             <DateSelectItemForTargetSettings
-                                                disabled={selector.targetType === "MONTHLY"}
                                                 label={"Start Date"}
                                                 placeholder={"Set Target"}
                                                 value={fromDate}
@@ -291,45 +280,14 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                                             />
                                         </View>
 
-                                        <View style={{ width: "45%", }}>
+                                        <View style={{ width: "45%",  }}>
                                             <DateSelectItemForTargetSettings
-                                                disabled={selector.targetType === "MONTHLY"}
                                                 label={"End Date"}
                                                 placeholder={"Set Target"}
                                                 value={toDate}
                                                 onPress={() => showDatePickerMethod("END_DATE")}
                                             />
                                         </View>
-                                    </View>
-                                    <View style={{ alignItems: 'center', width: '100%', paddingBottom: 10 }}>
-                                        <View style={styles.radioGroupBcVw}>
-                                            <RadioTextItem
-                                                label={"Monthly"}
-                                                value={"MONTHLY"}
-                                                // disabled={true}
-                                                status={selector.targetType === "MONTHLY" ? true : false}
-                                                onPress={() => {
-                                                    dispatch(updateTargetType("MONTHLY"))
-                                                }}
-                                            />
-                                            <RadioTextItem
-                                                label={"Special"}
-                                                value={"SPECIAL"}
-                                                // disabled={true}
-                                                status={selector.targetType === "SPECIAL" ? true : false}
-                                                onPress={() => {
-                                                    dispatch(updateTargetType("SPECIAL"))
-                                                }}
-                                            />
-                                        </View>
-                                        <TargetDropdown
-                                            disabled={selector.targetType === "SPECIAL"}
-                                            label={"Select Target"}
-                                            value={selector.selectedMonth && selector.targetType === "MONTHLY" ? selector.selectedMonth.value : ''}
-                                            onPress={() =>
-                                                showDropDownModelMethod("TARGET_MODEL", "Select Target")
-                                            }
-                                        />
                                     </View>
                                 </>
                             )
@@ -510,12 +468,5 @@ const styles = StyleSheet.create({
         // backgroundColor: 'red',
         marginRight: 10,
         alignItems: 'flex-end'
-    },
-    radioGroupBcVw: {
-        flexDirection: "row",
-        alignItems: "center",
-        height: 35,
-        paddingLeft: 12,
-        backgroundColor: Colors.WHITE,
-    },
+    }
 });
