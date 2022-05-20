@@ -13,6 +13,7 @@ import {
     showDateModal,
     getCustomerTypeList,
     getSourceOfEnquiryList,
+    getVehicalModalList,
     getOrganaizationHirarchyList,
     getLeadSourceTableList,
     getVehicleModelTableList,
@@ -286,6 +287,11 @@ const HomeScreen = ({ route, navigation }) => {
             Promise.all([
                 dispatch(getOrganaizationHirarchyList(payload)),
                 dispatch(getSourceOfEnquiryList(jsonObj.orgId)),
+                dispatch(getVehicalModalList({
+                    "bu": jsonObj.orgId,
+                    "dropdownType": "model",
+                    "parentId": 0
+                })),
                 dispatch(getDealerRanking({
                     payload: {
                         "endDate": monthLastDate,

@@ -27,13 +27,14 @@ interface Item {
 }
 
 export const createPreEnquiry = createAsyncThunk("ADD_PRE_ENQUIRY_SLICE/createPreEnquiry", async (data, { rejectWithValue }) => {
+  console.log("first:", data)
   const response = await client.post(data["url"], data["body"]);
-  console.log("PAYLOAD PRE ENQ:", JSON.stringify(data["body"]));
+  // console.log("PAYLOAD PRE ENQ:", JSON.stringify(data["body"]));
   
-  console.log("resp pre enq: ", JSON.stringify(response));
+  // console.log("resp pre enq: ", JSON.stringify(response));
   try {
     const json = await response.json();
-    console.log("json: ", json)
+    // console.log("json: ", json)
     if (response.status != 200) {
       return rejectWithValue(json);
     }
@@ -181,7 +182,7 @@ export const addPreEnquirySlice = createSlice({
       state.updateEnquiryStatus = action.payload;
     },
     setDropDownData: (state, action: PayloadAction<DropDownModel>) => {
-      const { key, value, id } = action.payload;
+      const { key, value, id } = action.payload; 
       switch (key) {
         case "ENQUIRY_SEGMENT":
           state.enquiryType = value;
@@ -298,7 +299,7 @@ export const addPreEnquirySlice = createSlice({
         state.create_enquiry_response_obj = {};
       })
       .addCase(createPreEnquiry.fulfilled, (state, action) => {
-        console.log('res2: ', action.payload);
+        // console.log('res2: ', action.payload);
         state.isLoading = false;
         state.create_enquiry_response_obj = action.payload;
         state.createEnquiryStatus = "success";

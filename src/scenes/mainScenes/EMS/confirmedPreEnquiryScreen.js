@@ -218,7 +218,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
-            console.log("json:", jsonObj);
+            // console.log("json:", jsonObj);
             setOrganizationId(jsonObj.orgId);
             setEmployeeId(jsonObj.empId);
             setUserData({

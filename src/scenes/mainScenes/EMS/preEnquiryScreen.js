@@ -41,6 +41,8 @@ const PreEnquiryScreen = ({ navigation }) => {
     const [sortAndFilterVisible, setSortAndFilterVisible] = useState(false);
     const [searchedData, setSearchedData] = useState([]);
 
+    // console.log({ vehicle_model_list_for_filters })
+
     useEffect(() => {
 
         // Get Data From Server
@@ -56,8 +58,32 @@ const PreEnquiryScreen = ({ navigation }) => {
     useEffect(() => {
         if (selector.pre_enquiry_list.length > 0){
             setSearchedData(selector.pre_enquiry_list)
+            // console.log("PreEnquiryAfterScreen:", selector.pre_enquiry_list[0])
+
         }
-    }, [selector.pre_enquiry_list])
+    }, [selector.pre_enquiry_list]);
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            console.log({ selectedFromDate})
+                 const currentDate = moment().add(0, "day").format(dateFormat)
+                 const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                 getAsyncData(currentDate, lastMonthFirstDate);
+                 getPreEnquiryListFromServer(employeeId, selectedFromDate, selectedToDate);
+                // if (selector.pre_enquiry_list.length > 0) {
+                //     setSearchedData(selector.pre_enquiry_list)
+                //     // console.log("PreEnquiryAfterScreen:", selector.pre_enquiry_list[0])
+
+                // }
+                // console.log("selector.pre_enquiry_list", selector.pre_enquiry_list[0])
+            });
+
+        return () => {
+            // Clear setInterval in case of screen unmount
+            // Unsubscribe for the focus Listener
+            unsubscribe;
+        };
+    }, [navigation]);
 
     useEffect(() => {
         if (appSelector.isSearch) {
@@ -139,7 +165,6 @@ const PreEnquiryScreen = ({ navigation }) => {
     }
 
     const applySelectedFilters = (payload) => {
-
         const modelData = payload.model;
         const sourceData = payload.source;
         const categoryData = payload.category;
@@ -283,17 +308,6 @@ const PreEnquiryScreen = ({ navigation }) => {
 
                                 return (
                                     <>
-                                        {/* < PreEnquiryItem
-                                            bgColor={color}
-                                            name={item.firstName + " " + item.lastName}
-                                            subName={item.enquirySource}
-                                            date={item.createdDate}
-                                            enquiryCategory={item.enquiryCategory}
-                                            modelName={item.model}
-                                            createdBy={item.createdBy}
-                                            onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq, { itemData: item, fromCreatePreEnquiry: false })}
-                                            onCallPress={() => callNumber(item.phone)}
-                                        /> */}
                                         <View style={{paddingVertical: 5}}>
                                             <MyTaskNewItem
                                                 from='PRE_ENQUIRY'
@@ -315,7 +329,8 @@ const PreEnquiryScreen = ({ navigation }) => {
                                 )
                             }}
                         />
-                    </View>}
+                    </View>
+                    }
 
                 <View style={[styles.addView, GlobalStyle.shadow]}>
                     <Pressable onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.addPreEnq, { fromEdit: false })}>

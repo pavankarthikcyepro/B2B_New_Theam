@@ -479,7 +479,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             PincodeDetails(pincode).then(
                 (data) => {
                     // update address
-                    console.log("PIN:", JSON.stringify(data));
+                    // console.log("PIN:", JSON.stringify(data));
                     // setAddress({ block: data.Block || "", district: data.District || "", region: data.Region || "", state: data.State || "" })
                     setAddress(data)
                     resolve(data)

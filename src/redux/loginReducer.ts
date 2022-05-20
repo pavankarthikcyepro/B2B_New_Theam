@@ -175,7 +175,7 @@ export const loginSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(postUserData.fulfilled, (state, action) => {
-        console.log("res2: ", action.payload);
+        // console.log("res2: ", action.payload);
         const dataObj = action.payload;
         if (dataObj.status == "200") {
           state.status = "sucess";

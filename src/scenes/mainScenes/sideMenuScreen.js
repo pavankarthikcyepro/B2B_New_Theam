@@ -241,7 +241,7 @@ const SideMenuScreen = ({ navigation }) => {
                     uri: uriLink,
                 };
                 // setImageUri(uriObject);
-                console.log({uriObject})
+                console.log({ uriObject })
                 uploadProfile(uriObject);
             }
         });
@@ -250,7 +250,7 @@ const SideMenuScreen = ({ navigation }) => {
     const uploadProfile = (uri) => {
         const formdata = new FormData();
         formdata.append('documentType', 'profilePic')
-        formdata.append('file', {type: 'image/jpg', uri: uri.uri, name: "image.jpg"})
+        formdata.append('file', { type: 'image/jpg', uri: uri.uri, name: "image.jpg" })
 
         fetch(
             URL.UPLOAD_PROFILE(userData.empId, userData.orgId, userData.branchId),

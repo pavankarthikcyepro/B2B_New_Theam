@@ -84,6 +84,16 @@ export const getSourceOfEnquiryList = createAsyncThunk("HOME/getSourceOfEnquiryL
     return json;
 })
 
+export const getVehicalModalList = createAsyncThunk("HOME/getVehicalModalList", async (payload: any, { rejectWithValue }) => {
+
+    const response = await client.post(URL.GET_VEHICAL_MODAL(), payload)
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
 export const getLeadSourceTableList = createAsyncThunk("HOME/getLeadSourceTableList", async (payload: any, { rejectWithValue }) => {
 
     const response = await client.post(URL.LEAD_SOURCE_DATA(), payload)
@@ -120,7 +130,7 @@ export const getTaskTableList = createAsyncThunk("HOME/getTaskTableList", async 
     const json = await response.json()
     if (!response.ok) {
         return rejectWithValue(json);
-    }
+    } 
     return json;
 })
 
@@ -139,19 +149,21 @@ export const getTargetParametersData = createAsyncThunk("HOME/getTargetParameter
     
     const response = await client.post(URL.GET_TARGET_PARAMS(), payload)
     const json = await response.json()
-    // console.log("&&&&&& DATA:", JSON.stringify(json));
+    console.log("homeReducer", payload);
+
 
     if (!response.ok) {
         return rejectWithValue(json);
     }
     return json;
-})
+}) 
 
 export const getTargetParametersAllData = createAsyncThunk("HOME/getTargetParametersAllData", async (payload: any, { rejectWithValue }) => {
     // console.log("PAYLOAD:", payload);
 
     const response = await client.post(URL.GET_TARGET_PARAMS_ALL(), payload)
     const json = await response.json()
+
     // console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
 
     if (!response.ok) {
@@ -165,6 +177,7 @@ export const getTargetParametersEmpData = createAsyncThunk("HOME/getTargetParame
 
     const response = await client.post(URL.GET_TARGET_PARAMS_EMP(), payload)
     const json = await response.json()
+
     // console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
 
     if (!response.ok) {
@@ -384,6 +397,26 @@ export const homeSlice = createSlice({
             .addCase(getSourceOfEnquiryList.rejected, (state, action) => {
                 state.source_of_enquiry_list = [];
             })
+            // Get Vehical Modal List
+            .addCase(getVehicalModalList.pending, (state, action) => {
+                state.vehicle_model_list_for_filters = [];
+            })
+            .addCase(getVehicalModalList.fulfilled, (state, action) => {
+                //console.log("getSourceOfEnquiryList S: ", JSON.stringify(action.payload))
+                if (action.payload) {
+                    const modalList = action.payload;
+                    let sourceList = [];
+                    if (modalList.length > 0) {
+                        modalList.forEach((item) => {
+                            sourceList.push({ ...item, isChecked: false });
+                        });
+                    }
+                    state.vehicle_model_list_for_filters = modalList;
+                }
+            })
+            .addCase(getVehicalModalList.rejected, (state, action) => {
+                state.vehicle_model_list_for_filters = [];
+            })
             // Get Filter Dropdown list
             .addCase(getOrganaizationHirarchyList.pending, (state, action) => {
 
@@ -469,6 +502,7 @@ export const homeSlice = createSlice({
             .addCase(getTargetParametersData.fulfilled, (state, action) => {
                 if (action.payload) {
                     state.target_parameters_data = [];
+                    // console.log(action.payload, "action:")
                     state.target_parameters_data = action.payload;
                 }
             })
@@ -485,6 +519,7 @@ export const homeSlice = createSlice({
                     
                     state.all_target_parameters_data = [];
                     state.all_emp_parameters_data = [];
+                    console.log(action.payload.employeeTargetAchievements, "dashboard")
                     state.isTeamPresent = action.payload.employeeTargetAchievements.length > 1;
                     state.all_target_parameters_data = action.payload.overallTargetAchivements;
                     state.all_emp_parameters_data = action.payload.employeeTargetAchievements;

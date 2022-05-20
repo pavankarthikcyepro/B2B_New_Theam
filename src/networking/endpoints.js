@@ -230,6 +230,9 @@ const URL = {
     },
     QR: (orgId, branchId) => {
         return sales_url + `/qrcode/get/${orgId}/${branchId}`;
+    },
+    GET_VEHICAL_MODAL: () => {
+        return vehicleInfoService_url + `/api/vehicle_details/vehicle_models`;
     }
 }
 
