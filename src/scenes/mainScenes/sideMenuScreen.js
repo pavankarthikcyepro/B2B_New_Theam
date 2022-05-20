@@ -361,14 +361,15 @@ const SideMenuScreen = ({ navigation }) => {
                 /> */}
                                 <View style={{ flexDirection: "row", height: 25, alignItems: "center", paddingLeft: 10, marginBottom: 5 }}>
                                     {/* <VectorImage source={item.icon} width={20} height={20} /> */}
-                                    {item.icon === EVENT_MANAGEMENT_STR && <EVENT_MANAGEMENT width={20} height={20} color='green' />}
+                                    <Image style={{ height: 20, width: 20 }} source={item.pngIcon}/>
+                                    {/* {item.icon === EVENT_MANAGEMENT_STR && <EVENT_MANAGEMENT width={20} height={20} color='green' />}
                                     {item.icon === CUSTOMER_RELATIONSHIP_STR && <CUSTOMER_RELATIONSHIP width={20} height={20} color={'black'} />}
                                     {item.icon === DOCUMENT_WALLET_STR && <DOCUMENT_WALLET width={20} height={20} color={'black'} />}
                                     {item.icon === HOME_LINE_STR && <HOME_LINE width={20} height={20} color={'black'} />}
                                     {item.icon === BOOKING_TRACKER_STR && <BOOKING_TRACKER width={20} height={20} color={'black'} />}
                                     {item.icon === QR_CODE_STR && <QR_CODE width={20} height={20} color={'black'} />}
                                     {item.icon === GROUP_STR && <GROUP width={20} height={20} color={'black'} />}
-                                    {item.icon === TRANSFER_STR && <TRANSFER width={20} height={20} color={'black'} />}
+                                    {item.icon === TRANSFER_STR && <TRANSFER width={20} height={20} color={'black'} />} */}
                                     <Text style={{ fontSize: 15, fontWeight: "bold", marginLeft: 25, color: "gray" }}>{item.title}</Text>
                                 </View>
                                 {/* <Divider /> */}
