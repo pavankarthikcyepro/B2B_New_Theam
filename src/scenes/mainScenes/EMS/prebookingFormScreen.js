@@ -4123,7 +4123,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             ) : null}
                         </List.AccordionGroup>
 
-                        {/* {!isDropSelected && showSubmitDropBtn && !userData.isManager && ( */}
+                        {!isDropSelected && showSubmitDropBtn && !userData.isManager && (
                         <View style={styles.actionBtnView}>
                             <Button
                                 mode="contained"
@@ -4141,7 +4141,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 onPress={submitClicked}
                             >SUBMIT</Button>
                         </View>
-                        {/* )} */}
+                        )}
 
                         {showApproveRejectBtn &&
                             userData.isPreBookingApprover &&

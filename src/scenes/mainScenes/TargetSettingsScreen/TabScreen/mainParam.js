@@ -80,7 +80,7 @@ const MainParamScreen = ({ route, navigation }) => {
         if (selector.activeBranches.length > 0) {
             let tempBranch = [];
             for (let i = 0; i < selector.activeBranches.length; i++) {
-                tempBranch.push({ label: selector.activeBranches[i].name, value: selector.activeBranches[i].id })
+                tempBranch.push({ label: selector.activeBranches[i].name, value: selector.activeBranches[i].branch })
                 if (i === selector.activeBranches.length - 1) {
                     setDropdownData(tempBranch)
                     setIsDataLoaded(true)
@@ -91,11 +91,18 @@ const MainParamScreen = ({ route, navigation }) => {
     }, [selector.activeBranches])
 
     useEffect(async () => {
-        if (selector.targetMapping.length > 0 && loggedInEmpDetails !== null) {
+        if (selector.targetMapping.length > 0 && loggedInEmpDetails !== null && selector.isDataLoaded) {
             let ownDataArray = [];
-            ownDataArray = selector.targetMapping.filter((item) => {
-                return Number(item.employeeId) === Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate
-            })
+            if (selector.targetType === 'MONTHLY'){
+                ownDataArray = selector.targetMapping.filter((item) => {
+                    return Number(item.employeeId) === Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate
+                })
+            }
+            else{
+                ownDataArray = selector.targetMapping.filter((item) => {
+                    return Number(item.employeeId) === Number(loggedInEmpDetails?.empId)
+                })
+            }
             console.log("TTT: ", JSON.stringify(ownDataArray));
             if (ownDataArray.length > 0) {
                 setOwnData(ownDataArray[0])
@@ -121,7 +128,43 @@ const MainParamScreen = ({ route, navigation }) => {
                 })
             }
         }
-    }, [selector.targetMapping, loggedInEmpDetails])
+        if (selector.isDataLoaded && selector.targetMapping.length === 0){
+            setIsNoTargetAvailable(true)
+            setOwnData({
+                "retailTarget": null,
+                "enquiry": null,
+                "testDrive": null,
+                "homeVisit": null,
+                "booking": null,
+                "exchange": null,
+                "finance": null,
+                "insurance": null,
+                "exWarranty": null,
+                "accessories": null,
+                "events": "10",
+                "startDate": selector.startDate,
+                "endDate": selector.endDate,
+                "empName": loggedInEmpDetails?.empName,
+                "employeeId": loggedInEmpDetails?.empId,
+            })
+        }
+    }, [selector.targetMapping, loggedInEmpDetails, selector.isDataLoaded])
+
+    useEffect(async () => {
+        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        // console.log("$$$$$ LOGIN EMP:", employeeData);
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData)
+            const payload = {
+                "empId": jsonObj.empId,
+                "pageNo": 1,
+                "size": 1000,
+                "targetType": selector.targetType
+            }
+            console.log("PAYLOAD", payload);
+            dispatch(getAllTargetMapping(payload))
+        }
+    }, [selector.targetType])
 
     const addTargetData = async () => {
         if (selectedBranch === null) {
@@ -146,7 +189,7 @@ const MainParamScreen = ({ route, navigation }) => {
                     "startDate": selector.startDate,
                     // "teamLeadId": otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead')[0].value.value : '',
                     "targetType": selector.targetType,
-                    "targetName": selector.selectedMonth.value
+                    "targetName": selector.targetType === 'MONTHLY' ? selector.selectedMonth.value : selector.selectedSpecial.keyId
                 }
                 console.log("PAYLOAD:", payload);
                 Promise.all([
@@ -158,7 +201,8 @@ const MainParamScreen = ({ route, navigation }) => {
                     const payload2 = {
                         "empId": jsonObj.empId,
                         "pageNo": 1,
-                        "size": 10
+                        "size": 1000,
+                        "targetType": selector.targetType
                     }
                     dispatch(getAllTargetMapping(payload2))
                 });
@@ -189,7 +233,7 @@ const MainParamScreen = ({ route, navigation }) => {
                     "startDate": selector.startDate,
                     // "teamLeadId": otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead')[0].value.value : '',
                     "targetType": selector.targetType,
-                    "targetName": selector.selectedMonth.value
+                    "targetName": selector.targetType === 'MONTHLY' ? selector.selectedMonth.value : selector.selectedSpecial.keyId
                 }
                 console.log("PAYLOAD:", payload);
                 Promise.all([
@@ -201,7 +245,8 @@ const MainParamScreen = ({ route, navigation }) => {
                     const payload2 = {
                         "empId": jsonObj.empId,
                         "pageNo": 1,
-                        "size": 10
+                        "size": 1000,
+                        "targetType": selector.targetType
                     }
                     dispatch(getAllTargetMapping(payload2))
                 });

@@ -456,8 +456,10 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.maxDate = new Date();
           break;
         case "ANNIVERSARY_DATE":
-          if (!!state.dateOfBirth) {
-            state.minDate = new Date(state.dateOfBirth);
+          if (state.dateOfBirth) {
+            let dobArr = state.dateOfBirth.split('/')
+            console.log(new Date(state.dateOfBirth), new Date(Number(dobArr[2]), Number(dobArr[1]), Number(dobArr[0])));
+            state.minDate = new Date(Number(dobArr[2]), Number(dobArr[1]), Number(dobArr[0]));
           } else {
             state.minDate = new Date();
           }
