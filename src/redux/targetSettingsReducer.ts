@@ -64,10 +64,22 @@ export const getEmployeesDropDownData = createAsyncThunk("TARGET_SETTINGS/getEmp
 })
 
 export const getAllTargetMapping = createAsyncThunk("TARGET_SETTINGS/getAllTargetMapping", async (payload: any, { rejectWithValue }) => {
-
+    console.log("PAYLOAD:", JSON.stringify(payload));
+    
     const response = await client.post(URL.GET_ALL_TARGET_MAPPING(), payload)
     const json = await response.json()
-    // console.log("$$$$$$$$$ TARGET:", JSON.stringify(json));
+    console.log("$$$$$$$$$ TARGET:", JSON.stringify(json));
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const getSpecialDropValue = createAsyncThunk("TARGET_SETTINGS/getSpecialDropValue", async (payload: any, { rejectWithValue }) => {
+
+    const response = await client.post(URL.GET_SPECIAL_DROP_VALUE(), payload)
+    const json = await response.json()
+    
     if (!response.ok) {
         return rejectWithValue(json);
     }
@@ -147,7 +159,10 @@ export const targetSettingsSlice = createSlice({
             }
         ],
         selectedMonth: null,
-        targetType: 'MONTHLY'
+        targetType: 'MONTHLY',
+        isDataLoaded: false,
+        specialOcation: [],
+        selectedSpecial: null
     },
     reducers: {
         updateStartDate: (state, action) => {
@@ -164,7 +179,10 @@ export const targetSettingsSlice = createSlice({
         },
         updateTargetType: (state, action) => {
             state.targetType = action.payload;
-        }
+        },
+        updateSpecial: (state, action) => {
+            state.selectedSpecial = action.payload;
+        },
     },
     extraReducers: (builder) => {
 
@@ -190,14 +208,18 @@ export const targetSettingsSlice = createSlice({
                 state.roles = [];
             })
             .addCase(getAllTargetMapping.pending, (state, action) => {
+                state.isDataLoaded = false
                 state.targetMapping = [];
             })
             .addCase(getAllTargetMapping.fulfilled, (state, action) => {
                 // console.log('menu_list: ', JSON.stringify(action.payload));
+                state.targetMapping = []
                 state.targetMapping = action.payload.data ? action.payload.data : [];
+                state.isDataLoaded = true
             })
             .addCase(getAllTargetMapping.rejected, (state, action) => {
                 state.targetMapping = [];
+                state.isDataLoaded = true
             })
             .addCase(addTargetMapping.pending, (state, action) => {
                 
@@ -233,8 +255,31 @@ export const targetSettingsSlice = createSlice({
             .addCase(getEmployeesDropDownData.rejected, (state, action) => {
                 state.employees_drop_down_data = {};
             })
+            .addCase(getSpecialDropValue.pending, (state, action) => {
+                // state.employees_drop_down_data = {};
+            })
+            .addCase(getSpecialDropValue.fulfilled, (state, action) => {
+                console.log("$$$$$$$$$ SPECIAL1:", JSON.stringify(action.payload));
+                if (action.payload.length > 0) {
+                    let temp = [];
+                    for (let i = 0; i < action.payload.length; i++){
+                        temp.push({
+                            ...action.payload[i],
+                            id: action.payload[i].id,
+                            name: action.payload[i].value,
+                            isChecked: false,
+                        })
+                        if (i === action.payload.length - 1){
+                            state.specialOcation = temp;
+                        }
+                    }
+                }
+            })
+            .addCase(getSpecialDropValue.rejected, (state, action) => {
+                // state.employees_drop_down_data = {};
+            })
     }
 });
 
-export const { updateStartDate, updateEndDate, updateIsTeam, updateMonth, updateTargetType } = targetSettingsSlice.actions;
+export const { updateStartDate, updateEndDate, updateIsTeam, updateMonth, updateTargetType, updateSpecial } = targetSettingsSlice.actions;
 export default targetSettingsSlice.reducer;

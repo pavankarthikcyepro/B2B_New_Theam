@@ -640,7 +640,7 @@ const TargetScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text style={{ fontSize: 12, fontWeight: "600" }}>
-                            {item.shortfall}
+                            {Number(item.shortfall) >= 100000 ? Number(item.shortfall) / 100000 + 'L' : item.shortfall}
                           </Text>
                         </View>
                         <View
@@ -654,7 +654,7 @@ const TargetScreen = ({ route, navigation }) => {
                         >
                           <Text style={{ fontSize: 12, fontWeight: "600" }}>
                             {dateDiff > 0 && parseInt(item.shortfall) !== 0
-                              ? (parseInt(item.shortfall) / dateDiff).toFixed(2)
+                              ? (parseInt(item.shortfall) / dateDiff).toFixed(1)
                               : 0}
                           </Text>
                         </View>
@@ -801,7 +801,7 @@ const TargetScreen = ({ route, navigation }) => {
                                         fontWeight: "600",
                                       }}
                                     >
-                                      {innerItem.shortfall}
+                                      {Number(innerItem.shortfall) >= 100000 ? Number(innerItem.shortfall) / 100000 + 'L' : innerItem.shortfall}
                                     </Text>
                                   </View>
                                   <View
@@ -824,7 +824,7 @@ const TargetScreen = ({ route, navigation }) => {
                                         ? (
                                             parseInt(innerItem.shortfall) /
                                             dateDiff
-                                          ).toFixed(2)
+                                          ).toFixed(1)
                                         : 0}
                                     </Text>
                                   </View>
@@ -1004,7 +1004,7 @@ const TargetScreen = ({ route, navigation }) => {
                         alignItems: "center",
                       }}
                     >
-                      <Text>{item.shortfall}</Text>
+                      <Text>{Number(item.shortfall) >= 100000 ? Number(item.shortfall) / 100000 + 'L' : item.shortfall}</Text>
                     </View>
                     <View
                       style={{
@@ -1020,7 +1020,7 @@ const TargetScreen = ({ route, navigation }) => {
                     >
                       <Text>
                         {dateDiff > 0 && parseInt(item.shortfall) !== 0
-                          ? (parseInt(item.shortfall) / dateDiff).toFixed(2)
+                          ? (parseInt(item.shortfall) / dateDiff).toFixed(1)
                           : 0}
                       </Text>
                     </View>

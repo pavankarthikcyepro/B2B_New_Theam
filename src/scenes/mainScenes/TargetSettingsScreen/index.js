@@ -29,7 +29,9 @@ import {
     getAllTargetMapping,
     getEmployeesDropDownData,
     updateMonth,
-    updateTargetType
+    updateTargetType,
+    getSpecialDropValue,
+    updateSpecial
 } from '../../../redux/targetSettingsReducer';
 
 import {
@@ -87,15 +89,34 @@ const TargetSettingsScreen = ({ route, navigation }) => {
     const [datePickerId, setDatePickerId] = useState("");
 
     useEffect(() => {
-
-        
-
         const unsubscribe = navigation.addListener('focus', () => {
             initialTask()
+            
         });
-
         return unsubscribe;
     }, [navigation]);
+
+    const setCurrentMonthDate = async () => {
+        return new Promise((resolve) => {
+            const dateFormat = "YYYY-MM-DD";
+            const currentDate = moment().format(dateFormat)
+            let monthArr = [];
+            monthArr = selector.monthList.filter((item) => {
+                return item.id === (new Date().getMonth() + 1)
+            })
+            if (monthArr.length > 0) {
+                dispatch(updateMonth({ key: '', value: monthArr[0].name, id: monthArr[0].id }))
+            }
+            const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+            const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+            dispatch(updateStartDate(monthFirstDate))
+            setFromDate(monthFirstDate);
+
+            dispatch(updateEndDate(monthLastDate))
+            setToDate(monthLastDate);
+            resolve()
+        })
+    }
 
     const initialTask = async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -116,7 +137,8 @@ const TargetSettingsScreen = ({ route, navigation }) => {
             const payload2 = {
                 "empId": jsonObj.empId,
                 "pageNo": 1,
-                "size": 10
+                "size": 1000,
+                "targetType": selector.targetType
             }
             const dateFormat = "YYYY-MM-DD";
             const currentDate = moment().format(dateFormat)
@@ -149,6 +171,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
             }
             // console.log("$$$$$$$ PAYLOAD: ", payload2)
             Promise.all([
+                dispatch(getSpecialDropValue({ "bu": "1", "dropdownType": "Specialselection", "parentId": 0 })),
                 dispatch(getEmployeesActiveBranch(payload)),
                 dispatch(getEmployeesRolls(payload)),
                 dispatch(getAllTargetMapping(payload2)),
@@ -165,6 +188,9 @@ const TargetSettingsScreen = ({ route, navigation }) => {
         switch (key) {
             case "TARGET_MODEL":
                 setDataForDropDown(selector.monthList);
+                break;
+            case "SPECIAL_MODEL":
+                setDataForDropDown(selector.specialOcation);
                 break;
         }
         setDropDownKey(key);
@@ -204,21 +230,26 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                     console.log("ITEM:", item);
                     setShowDropDownModel(false);
                     setDropDownData({ key: dropDownKey, value: item.name, id: item.id })
-                    dispatch(updateMonth({ key: dropDownKey, value: item.name, id: item.id }))
+                    if (selector.targetType === "MONTHLY"){
+                        dispatch(updateMonth({ key: dropDownKey, value: item.name, id: item.id }))
 
-                    const dateFormat = "YYYY-MM-DD";
-                    const currentDate = moment().format(dateFormat)
-                    const splitDate = currentDate.split('-')
-                    const tempDate = new Date(splitDate[0], item.id - 1, 1, 1, 1, 1)
-                    console.log("DATE:", tempDate, moment(tempDate).format(dateFormat));
-                    const selectedMonthDate = moment(tempDate).format(dateFormat);
-                    const monthFirstDate = moment(selectedMonthDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-                    const monthLastDate = moment(selectedMonthDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-                    dispatch(updateStartDate(monthFirstDate))
-                    setFromDate(monthFirstDate);
+                        const dateFormat = "YYYY-MM-DD";
+                        const currentDate = moment().format(dateFormat)
+                        const splitDate = currentDate.split('-')
+                        const tempDate = new Date(splitDate[0], item.id - 1, 1, 1, 1, 1)
+                        console.log("DATE:", tempDate, moment(tempDate).format(dateFormat));
+                        const selectedMonthDate = moment(tempDate).format(dateFormat);
+                        const monthFirstDate = moment(selectedMonthDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                        const monthLastDate = moment(selectedMonthDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                        dispatch(updateStartDate(monthFirstDate))
+                        setFromDate(monthFirstDate);
 
-                    dispatch(updateEndDate(monthLastDate))
-                    setToDate(monthLastDate);
+                        dispatch(updateEndDate(monthLastDate))
+                        setToDate(monthLastDate);
+                    }
+                    else if (selector.targetType === "SPECIAL") {
+                        dispatch(updateSpecial({ key: dropDownKey, value: item.name, id: item.id, keyId: item.key }))
+                    }
                 }}
             />
             <DatePickerComponent
@@ -309,7 +340,9 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                                                 // disabled={true}
                                                 status={selector.targetType === "MONTHLY" ? true : false}
                                                 onPress={() => {
-                                                    dispatch(updateTargetType("MONTHLY"))
+                                                    setCurrentMonthDate().then(() => {
+                                                        dispatch(updateTargetType("MONTHLY"))
+                                                    })                                                    
                                                 }}
                                             />
                                             <RadioTextItem
@@ -323,12 +356,18 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                                             />
                                         </View>
                                         <TargetDropdown
-                                            disabled={selector.targetType === "SPECIAL"}
+                                            // disabled={selector.targetType === "SPECIAL"}
                                             label={"Select Target"}
-                                            value={selector.selectedMonth && selector.targetType === "MONTHLY" ? selector.selectedMonth.value : ''}
-                                            onPress={() =>
-                                                showDropDownModelMethod("TARGET_MODEL", "Select Target")
-                                            }
+                                            // value={selector.selectedMonth && selector.targetType === "MONTHLY" ? selector.selectedMonth.value : ''}
+                                            value={(selector.selectedMonth && selector.targetType === "MONTHLY") ? selector.selectedMonth.value : (selector.selectedSpecial && selector.targetType === "SPECIAL" ? selector.selectedSpecial.value : '')}
+                                            onPress={() => {
+                                                if (selector.targetType === "SPECIAL"){
+                                                    showDropDownModelMethod("SPECIAL_MODEL", "Select Target")
+                                                }
+                                                else if (selector.targetType === "MONTHLY") {
+                                                    showDropDownModelMethod("TARGET_MODEL", "Select Target")
+                                                }
+                                            }}
                                         />
                                     </View>
                                 </>
