@@ -276,7 +276,7 @@ const EnquiryScreen = ({ navigation }) => {
                                                 console.log("ENQ: ", JSON.stringify(item));
                                                 navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId })
                                             }}
-                                            onDocPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.detailsOverview, { universalId: item.universalId })}
+                                            onDocPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.detailsOverview, { universalId: item.universalId, enqDetails: item })}
                                         />
                                     </View>
                                 </>

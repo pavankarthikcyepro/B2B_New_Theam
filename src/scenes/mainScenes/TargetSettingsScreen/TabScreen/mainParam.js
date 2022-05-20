@@ -280,6 +280,10 @@ const MainParamScreen = ({ route, navigation }) => {
                         <View style={styles.paramBox}>
                             <Text style={[styles.text,]}>Exchange</Text>
                         </View>
+
+                    <View style={styles.paramBox}>
+                        <Text style={[styles.text,]}>Extended Warranty</Text>
+                    </View>
                         {/* <View style={styles.paramBox}>
                             <Text style={[styles.text, { color: '#00b1ff' }]}>Enquiry</Text>
                         </View>
@@ -507,6 +511,25 @@ const MainParamScreen = ({ route, navigation }) => {
                                 })
                             }
                         </View>
+
+                        <View style={styles.textBoxWrap}>
+                            <View style={styles.textBox2}>
+                                <Text style={styles.textInput}>{getTotal('exWarranty')}</Text>
+                            </View>
+                            {
+                                selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
+                                    return (
+                                        <>
+                                            {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
+                                                <View style={styles.textBox2}>
+                                                    <Text style={styles.textInput}>{item.exWarranty !== null ? item.exWarranty : 0}</Text>
+                                                </View>
+                                            }
+                                        </>
+                                    )
+                                })
+                            }
+                        </View>
                     </ScrollView>
                 </View>
             }
@@ -544,6 +567,9 @@ const MainParamScreen = ({ route, navigation }) => {
 
                     <View style={styles.paramBox}>
                         <Text style={[styles.text,]}>Exchange</Text>
+                    </View>
+                    <View style={styles.paramBox}>
+                        <Text style={[styles.text,]}>Extended Warranty</Text>
                     </View>
                 </View>
                 <ScrollView style={{ width: '100%' }} contentContainerStyle={{ flexDirection: 'column' }} showsVerticalScrollIndicator={false}
@@ -617,6 +643,12 @@ const MainParamScreen = ({ route, navigation }) => {
                             <Text style={styles.textInput}>{ownData.exchange !== null ? ownData.exchange : 0}</Text>
                         </View>
                     </View>
+
+                    <View style={styles.textBoxWrap}>
+                        <View style={styles.textBox2}>
+                            <Text style={styles.textInput}>{ownData.exWarranty !== null ? ownData.exWarranty : 0}</Text>
+                        </View>
+                    </View>
                 </ScrollView>
             </View>
             }
@@ -654,6 +686,10 @@ const MainParamScreen = ({ route, navigation }) => {
 
                         <View style={styles.paramBox}>
                             <Text style={[styles.text,]}>Exchange</Text>
+                        </View>
+
+                        <View style={styles.paramBox}>
+                            <Text style={[styles.text,]}>Extended Warranty</Text>
                         </View>
                     </View>
                     <ScrollView style={{ width: '100%' }} contentContainerStyle={{ flexDirection: 'column' }} showsVerticalScrollIndicator={false}
@@ -727,6 +763,12 @@ const MainParamScreen = ({ route, navigation }) => {
                         <View style={styles.textBoxWrap}>
                             <View style={styles.textBox2}>
                                 <Text style={styles.textInput}>{ownData.exchange !== null ? ownData.exchange : 0}</Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.textBoxWrap}>
+                            <View style={styles.textBox2}>
+                                <Text style={styles.textInput}>{ownData.exWarranty !== null ? ownData.exWarranty : 0}</Text>
                             </View>
                         </View>
                     </ScrollView>
@@ -842,7 +884,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                 if (addOrEdit === 'A') {
                                     addTargetData()
                                 }
-                                else{
+                                else {
                                     editTargetData()
                                 }
                             }}>

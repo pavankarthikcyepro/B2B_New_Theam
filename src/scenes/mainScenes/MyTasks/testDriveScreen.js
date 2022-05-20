@@ -208,7 +208,7 @@ const TestDriveScreen = ({ route, navigation }) => {
         })
             .then(json => json.json())
             .then(resp => {
-                console.log("$$$$resp: ", JSON.stringify(resp))
+                // console.log("$$$$resp: ", JSON.stringify(resp))
                 if (resp.dmsEntity?.dmsLeadDto) {
 
                     const leadDtoObj = resp.dmsEntity?.dmsLeadDto;
@@ -253,23 +253,52 @@ const TestDriveScreen = ({ route, navigation }) => {
         }
     }, [selector.test_drive_vehicle_list_for_drop_down]);
 
+    useEffect(() => {
+        if (selector.task_details_response) {
+            getTestDriveAppointmentDetailsFromServer()
+        }
+    }, [selector.task_details_response]);
+
     const getTestDriveAppointmentDetailsFromServer = () => {
-        if (selector.task_details_response.entityModuleId) {
+        if (selector.task_details_response.entityId) {
             const payload = {
                 barnchId: selectedBranchId,
                 orgId: userData.orgId,
-                entityModuleId: selector.task_details_response.entityModuleId,
+                entityModuleId: selector.task_details_response.entityId,
             };
             dispatch(getTestDriveAppointmentDetailsApi(payload));
         }
     };
 
-    useEffect(() => {
-        if (selector.test_drive_appointment_details_response) {
-            const taskStatus =
-                selector.test_drive_appointment_details_response.status;
-            const taskName = selector.task_details_response.taskName;
+    // useEffect(() => {
+    //     if (selector.test_drive_appointment_details_response) {
+    //         const taskStatus =
+    //             selector.test_drive_appointment_details_response.status;
+    //         const taskName = selector.task_details_response.taskName;
+    //         console.log("TASK STATUS:", taskStatus, taskName);
+    //         if (taskStatus === "SENT_FOR_APPROVAL" && taskName === "Test Drive") {
+    //             setHandleActionButtons(2);
+    //         } else if (
+    //             taskStatus === "SENT_FOR_APPROVAL" &&
+    //             taskName === "Test Drive Approval"
+    //         ) {
+    //             setHandleActionButtons(3);
+    //         } else if (taskStatus === "APPROVED" && taskName === "Test Drive") {
+    //             setHandleActionButtons(4);
+    //         } else if (taskStatus === "CANCELLED") {
+    //             setHandleActionButtons(5);
+    //         }
+    //         setIsRecordEditable(false);
+    //         updateTaskDetails(selector.test_drive_appointment_details_response);
+    //     }
+    // }, [selector.test_drive_appointment_details_response]);
 
+    useEffect(() => {
+        if (selector.task_details_response) {
+            const taskStatus =
+                selector.task_details_response.taskStatus;
+            const taskName = selector.task_details_response.taskName;
+            console.log("TASK STATUS:", taskStatus, taskName);
             if (taskStatus === "SENT_FOR_APPROVAL" && taskName === "Test Drive") {
                 setHandleActionButtons(2);
             } else if (
@@ -282,10 +311,18 @@ const TestDriveScreen = ({ route, navigation }) => {
             } else if (taskStatus === "CANCELLED") {
                 setHandleActionButtons(5);
             }
+            else if (taskStatus === "ASSIGNED" && taskName === "Test Drive") {
+                setHandleActionButtons(1);
+            }
+
+            setSelectedDseDetails({
+                name: selector.task_details_response.assignee.empName,
+                id: selector.task_details_response.assignee.empId,
+            });
             setIsRecordEditable(false);
-            updateTaskDetails(selector.test_drive_appointment_details_response);
+            updateTaskDetails(selector.task_details_response);
         }
-    }, [selector.test_drive_appointment_details_response]);
+    }, [selector.task_details_response]);
 
     const updateTaskDetails = (taskDetailsObj) => {
         console.log("taskDetailsObj: ", taskDetailsObj);
@@ -417,10 +454,10 @@ const TestDriveScreen = ({ route, navigation }) => {
     const showDatePickerModelMethod = (key, mode) => {
         Keyboard.dismiss();
 
-        if (selectedVehicleDetails.vehicleId == 0) {
-            showToast("Please select model");
-            return;
-        }
+        // if (selectedVehicleDetails.vehicleId == 0) {
+        //     showToast("Please select model");
+        //     return;
+        // }
 
         setDatePickerMode(mode);
         setDatePickerKey(key);
@@ -966,6 +1003,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                                     showDatePickerModelMethod("CUSTOMER_PREFERRED_TIME", "time")
                                 }
                             />
+                            <View style={{ flexDirection: "row" }}>
+                                <View style={{ width: "50%" }}>
                                     <DateSelectItem
                                         label={"Actual start Time"}
                                         value={selector.actual_start_time}
@@ -975,8 +1014,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                                             showDatePickerModelMethod("ACTUAL_START_TIME", "time")
                                         }
                                     />
-                                
-                                
+                                </View>
+                                <View style={{ width: "50%" }}>
                                     <DateSelectItem
                                         label={"Actual End Time"}
                                         value={selector.actual_end_time}
@@ -986,6 +1025,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                                             showDatePickerModelMethod("ACTUAL_END_TIME", "time")
                                         }
                                     />
+                                </View>
+                            </View>
 
                             {/* <View style={styles.space}></View> */}
                             {/* <Text style={{ padding: 10 }}>{"Allotment ID"}</Text>
@@ -1001,6 +1042,11 @@ const TestDriveScreen = ({ route, navigation }) => {
 
                     {handleActionButtons === 1 && (
                         <View style={styles.view1}>
+                            <LocalButtonComp
+                                title={"Close"}
+                                disabled={selector.isLoading}
+                                onPress={() => navigation.goBack()}
+                            />
                             <LocalButtonComp
                                 title={"Submit"}
                                 disabled={selector.isLoading}

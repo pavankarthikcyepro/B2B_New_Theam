@@ -10,11 +10,14 @@ export const DIGITAL_PAYMENT_STR = "DIGITAL_PAYMENT"
 export const QR_CODE_STR = "QR_CODE"
 export const GROUP_STR = "GROUP"
 export const TRANSFER_STR = "TRANSFER"
+export const HOME_STR = "HOME"
+export const UPCOMING_DELIVERIES_STR = "UPCOMING_DELIVERIES"
+export const LOGOUT_NEW_STR = "LOGOUT_NEW"
 
 const data = [
   {
     title: "Home",
-    icon: BOOKING_TRACKER_STR,
+    icon: HOME_STR,
     screen: 99,
   },
   {
@@ -29,7 +32,7 @@ const data = [
   },
   {
     title: "Upcoming Deliveries",
-    icon: BOOKING_TRACKER_STR,
+    icon: UPCOMING_DELIVERIES_STR,
     screen: 100,
   },
   {
@@ -74,7 +77,7 @@ const data = [
   },
   {
     title: "Sign Out",
-    icon: CUSTOMER_RELATIONSHIP_STR,
+    icon: LOGOUT_NEW_STR,
     screen: 112,
   },
 ];
@@ -82,7 +85,7 @@ const data = [
 const dataForManager = [
   {
     title: "Home",
-    icon: HOME_LINE_STR,
+    icon: HOME_STR,
     screen: 99,
   },
   {
@@ -97,7 +100,7 @@ const dataForManager = [
   },
   {
     title: "Upcoming Deliveries",
-    icon: BOOKING_TRACKER_STR,
+    icon: UPCOMING_DELIVERIES_STR ,
     screen: 100,
   },
   {

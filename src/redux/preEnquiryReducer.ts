@@ -31,7 +31,8 @@ export const preEnquirySlice = createSlice({
     totalPages: 1,
     isLoading: false,
     isLoadingExtraData: false,
-    status: ""
+    status: "",
+    carModels: []
   },
   reducers: {
     callPressed: (state, action) => {
@@ -39,6 +40,9 @@ export const preEnquirySlice = createSlice({
     },
     setPreEnquiryList: (state, action) => {
       state.pre_enquiry_list = JSON.parse(action.payload);
+    },
+    setCarModels: (state, action) => {
+      state.carModels = action.payload;
     }
   },
   extraReducers: (builder) => {
@@ -78,7 +82,7 @@ export const preEnquirySlice = createSlice({
   }
 });
 
-export const { callPressed, setPreEnquiryList } = preEnquirySlice.actions;
+export const { callPressed, setPreEnquiryList, setCarModels } = preEnquirySlice.actions;
 export default preEnquirySlice.reducer;
 
 

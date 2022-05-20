@@ -531,6 +531,8 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             branchId: Number(branchId),
             createdBy: employeeName,
             customerType: selector.customerType,
+            enquiryType: selector.enquiryType,
+            customerCategoryType: selector.customerType,
             firstName: selector.firstName,
             lastName: selector.lastName,
             modifiedBy: employeeName,
@@ -548,6 +550,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             branchId: Number(branchId),
             createdBy: employeeName,
             enquirySegment: selector.enquiryType,
+            customerType: selector.customerType,
             firstName: selector.firstName,
             lastName: selector.lastName,
             email: selector.email,
@@ -713,7 +716,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
 
     const showDropDownModelMethod = (key, headerText) => {
         Keyboard.dismiss();
-
+        console.log("DD:", JSON.stringify(selector.enquiry_type_list));
         switch (key) {
             case "CAR_MODEL":
                 setDataForDropDown([...dataForCarModels]);
@@ -1058,7 +1061,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                         ) : null}
 
                         <DropDownSelectionItem
-                            label={"Source of Create Lead*"}
+                            label={"Source Of Lead*"}
                             value={selector.sourceOfEnquiry}
                             disabled={fromEdit}
                             onPress={() =>
@@ -1071,7 +1074,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
 
                         {subSourceData.length > 0 && (
                             <DropDownSelectionItem
-                                label={"Sub Source of Create Lead*"}
+                                label={"Sub Source Of Lead*"}
                                 value={selector.subSourceOfEnquiry}
                                 disabled={fromEdit}
                                 onPress={() =>

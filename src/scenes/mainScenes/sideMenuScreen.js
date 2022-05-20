@@ -36,7 +36,10 @@ import BOOKING_TRACKER from "../../assets/images/booking_tracker.svg";
 import QR_CODE from "../../assets/images/qr-code.svg";
 import GROUP from "../../assets/images/Group.svg";
 import TRANSFER from "../../assets/images/Transfer.svg";
-import { BOOKING_TRACKER_STR, CUSTOMER_RELATIONSHIP_STR, DOCUMENT_WALLET_STR, EVENT_MANAGEMENT_STR, HOME_LINE_STR, QR_CODE_STR, GROUP_STR, TRANSFER_STR } from "../../redux/sideMenuReducer";
+import HOME from "../../assets/images/Home_icon.svg";
+import UPCOMING_DELIVERIES from "../../assets/images/Upcoming_delivery_icon.svg";
+import LOGOUT_NEW from "../../assets/images/Signout_icon.svg";
+import { BOOKING_TRACKER_STR, CUSTOMER_RELATIONSHIP_STR, DOCUMENT_WALLET_STR, EVENT_MANAGEMENT_STR, HOME_LINE_STR, QR_CODE_STR, GROUP_STR, TRANSFER_STR, HOME_STR, UPCOMING_DELIVERIES_STR, LOGOUT_NEW_STR } from "../../redux/sideMenuReducer";
 
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 6;
@@ -369,6 +372,10 @@ const SideMenuScreen = ({ navigation }) => {
                                     {item.icon === QR_CODE_STR && <QR_CODE width={20} height={20} color={'black'} />}
                                     {item.icon === GROUP_STR && <GROUP width={20} height={20} color={'black'} />}
                                     {item.icon === TRANSFER_STR && <TRANSFER width={20} height={20} color={'black'} />}
+
+                                    {item.icon === HOME_STR && <HOME width={20} height={20} color={'black'} />}
+                                    {item.icon === UPCOMING_DELIVERIES_STR && <UPCOMING_DELIVERIES width={20} height={20} color={'blue'} />}
+                                    {item.icon === LOGOUT_NEW_STR && <LOGOUT_NEW width={20} height={20} color={'black'} />}
                                     <Text style={{ fontSize: 15, fontWeight: "bold", marginLeft: 25, color: "gray" }}>{item.title}</Text>
                                 </View>
                                 {/* <Divider /> */}

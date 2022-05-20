@@ -146,6 +146,9 @@ const WEEK = require("../images/week.svg");
 const YEAR = require("../images/year.svg");
 const GROUP = require("../images/Group.svg");
 const TRANSFER = require("../images/Transfer.svg");
+const HOME = require("../images/Home_icon.svg");
+const UPCOMING_DELIVERIES = require("../images/Upcoming_delivery_icon.svg");
+const LOGOUT_NEW = require("../images/Signout_icon.svg");
 
 export {
   HOME_FILL,
@@ -290,5 +293,8 @@ export {
   WEEK,
   YEAR,
   GROUP,
-  TRANSFER
+  TRANSFER,
+  HOME,
+  UPCOMING_DELIVERIES,
+  LOGOUT_NEW
 };
