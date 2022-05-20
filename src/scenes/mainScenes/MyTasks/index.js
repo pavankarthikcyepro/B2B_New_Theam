@@ -64,9 +64,10 @@ const MyTasksScreen = ({ navigation }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-
-    getAsyncstoreData();
-  }, [])
+    navigation.addListener('focus', () => {
+      getAsyncstoreData();
+    })
+  }, [navigation])
 
   const getAsyncstoreData = async () => {
     const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
