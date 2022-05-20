@@ -41,7 +41,8 @@ const DashboardTopTabNavigatorNew = () => {
             <DashboardTopTab.Screen
                 name={DashboardTopTabNavigatorIdentifiers.target}
                 component={TargetScreen}
-                options={{ title: "Target vs Actual" }}
+                // options={{ title: "Target vs Actual" }}
+                options={{ title: "Dashboard" }}
             />
             {/* <DashboardTopTab.Screen
                 name={DashboardTopTabNavigatorIdentifiers.Supporting}

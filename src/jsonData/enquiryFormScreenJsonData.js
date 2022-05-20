@@ -119,7 +119,16 @@ export const Gender_Data_Obj = {
       name: "Transgender",
     },
   ],
-  "M/S": []
+  "m/s": [
+    {
+      id: "1",
+      name: "Male",
+    },
+    {
+      id: "2",
+      name: "Female",
+    },
+  ]
 };
 
 export const Relation_Data_Obj = {
@@ -157,6 +166,16 @@ export const Relation_Data_Obj = {
     {
       id: "3",
       name: "D/O",
+    },
+  ],
+  "m/s": [
+    {
+      id: "1",
+      name: "Male",
+    },
+    {
+      id: "2",
+      name: "Female",
     },
   ],
 };

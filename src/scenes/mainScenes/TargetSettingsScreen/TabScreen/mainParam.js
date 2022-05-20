@@ -156,7 +156,7 @@ const MainParamScreen = ({ route, navigation }) => {
                     const payload2 = {
                         "empId": jsonObj.empId,
                         "pageNo": 1,
-                        "size": 10
+                        "size": 1000
                     }
                     dispatch(getAllTargetMapping(payload2))
                 });
@@ -197,7 +197,7 @@ const MainParamScreen = ({ route, navigation }) => {
                     const payload2 = {
                         "empId": jsonObj.empId,
                         "pageNo": 1,
-                        "size": 10
+                        "size": 1000
                     }
                     dispatch(getAllTargetMapping(payload2))
                 });
@@ -247,7 +247,7 @@ const MainParamScreen = ({ route, navigation }) => {
         <>
             {loggedInEmpDetails !== null && (homeSelector.isTeamPresent && selector.isTeam) &&
                 <View style={{ flexDirection: 'row' }}>
-                    <View style={{ width: '25%', }}>
+                    <View style={{ width: '30%', }}>
                         <View style={{ height: 35, }}></View>
                         <View style={styles.paramBox}>
                             <Text style={[styles.text, { color: 'blue' }]}>Retail</Text>
@@ -512,7 +512,7 @@ const MainParamScreen = ({ route, navigation }) => {
             }
 
             {ownData !== null && loggedInEmpDetails !== null && (homeSelector.isTeamPresent && !selector.isTeam) && <View style={{ flexDirection: 'row' }}>
-                <View style={{ width: '25%', }}>
+                <View style={{ width: '30%', }}>
                     <View style={{ height: 35, }}></View>
                     <View style={styles.paramBox}>
                         <Text style={[styles.text, { color: 'blue' }]}>Retail</Text>
@@ -622,7 +622,7 @@ const MainParamScreen = ({ route, navigation }) => {
             }
             {ownData !== null && loggedInEmpDetails !== null && !homeSelector.isTeamPresent &&
                 <View style={{ flexDirection: 'row' }}>
-                    <View style={{ width: '25%', }}>
+                    <View style={{ width: '30%', }}>
                         <View style={{ height: 35, }}></View>
                         <View style={styles.paramBox}>
                             <Text style={[styles.text, { color: 'blue' }]}>Retail</Text>
