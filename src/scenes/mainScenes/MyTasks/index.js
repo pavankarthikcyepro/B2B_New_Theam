@@ -6,7 +6,7 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import ListComponent from "./components/ListComponent";
 import URL from "../../../networking/endpoints";
 import * as AsyncStore from "../../../asyncStore";
-import { getMyTasksListApi, role } from "../../../redux/mytaskReducer";
+import { getMyTasksListApi } from "../../../redux/mytaskReducer";
 import { useDispatch } from "react-redux";
 
 
@@ -63,21 +63,17 @@ const MyTasksScreen = ({ navigation }) => {
   const [response, setResponse] = useState({});
   const dispatch = useDispatch();
 
-
   useEffect(() => {
-    navigation.addListener('focus', () => {
-      getAsyncstoreData();
-    })
-  }, [navigation])
+
+    getAsyncstoreData();
+  }, [])
 
   const getAsyncstoreData = async () => {
     const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
 
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
-      // const payload = { empId: jsonObj.empId, role: jsonObj.hrmsRole}
       dispatch(getMyTasksListApi(jsonObj.empId));
-      dispatch(role(jsonObj.hrmsRole));
 
       // AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
       //   getTableDataFromServer(jsonObj.empId, token);
@@ -116,11 +112,7 @@ const MyTasksScreen = ({ navigation }) => {
 
       <View style={[{ flex: 1, backgroundColor: Colors.WHITE }, GlobalStyle.shadow]}>
         <View style={[{ flex: 1, backgroundColor: Colors.WHITE }]}>
-          <SecondTopTabNavigator 
-              todaysData={response.todaysData} 
-              upcomingData={response.upcomingData} 
-              pendingData={response.pendingData} 
-          />
+          <SecondTopTabNavigator todaysData={response.todaysData} upcomingData={response.upcomingData} pendingData={response.pendingData} />
         </View>
       </View>
     </SafeAreaView>

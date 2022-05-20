@@ -166,7 +166,7 @@ android {
     }
     signingConfigs {
         debug {
-            storeFile file('debug.keystore')
+            storeFile file('/Users/mono-hyd-mac-5/Desktop/Projects/B2B_New_Theam/android/app/debug.keystore')
             storePassword 'android'
             keyAlias 'androiddebugkey'
             keyPassword 'android'

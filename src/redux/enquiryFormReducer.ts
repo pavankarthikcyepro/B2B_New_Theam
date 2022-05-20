@@ -17,7 +17,7 @@ export const getEnquiryDetailsApi = createAsyncThunk(
     if (!response.ok) {
       return rejectWithValue(json);
     }
-    return json; 
+    return json;
   }
 );
 
@@ -155,7 +155,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     rf_by_source: "",
     rf_by_source_location: "",
     sub_source_of_enquiry: "",
-    expected_delivery_date: "hello",
+    expected_delivery_date: "",
     enquiry_category: "",
     buyer_type: "",
     kms_travelled_month: "",
@@ -318,12 +318,12 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.customer_type = value;
           break;
         case "RF_SOURCE":
-          state.rf_by_source = value; 
+          state.rf_by_source = value;
           break;
         case "SALUTATION":
           if (state.salutation !== value) {
+
             const genderData = Gender_Data_Obj[value.toLowerCase()];
-            console.log(genderData)
             state.gender = genderData.length > 0 ? genderData[0].name : "";
             state.relation = "";
             state.gender_types_data = genderData;
@@ -521,8 +521,7 @@ const enquiryDetailsOverViewSlice = createSlice({
             const startDate = moment(currentDate, "DD/MM/YYYY");
             var endDate = moment(selectedDate, "DD/MM/YYYY");
             var daysCount = endDate.diff(startDate, "days");
-            console.log({ daysCount })
-            // if (daysCount) {
+            if (daysCount) {
               if (daysCount <= 7) {
                 categoryType = "Hot";
               } else if (daysCount >= 8 && daysCount <= 15) {
@@ -530,7 +529,7 @@ const enquiryDetailsOverViewSlice = createSlice({
               } else if (daysCount > 15) {
                 categoryType = "Cold";
               }
-            // }
+            }
           }
 
           state.enquiry_category = categoryType;

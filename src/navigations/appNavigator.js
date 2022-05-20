@@ -581,16 +581,16 @@ const TabNavigator = (props) => {
                 name={TabStackIdentifiers.home}
                 component={HomeStackNavigator}
                 options={{ title: "Home" }}
-            />            
-            <Tab.Screen
-                name={TabStackIdentifiers.myTask}
-                component={MyTaskStackNavigator}
-                options={{ title: "My Tasks" }}
             />
             <Tab.Screen
                 name={TabStackIdentifiers.ems}
                 component={EmsStackNavigator}
                 options={{ title: "EMS" }}
+            />
+            <Tab.Screen
+                name={TabStackIdentifiers.myTask}
+                component={MyTaskStackNavigator}
+                options={{ title: "My Tasks" }}
             />
             {
                 routeName.name === "MONTHLY_TARGET" && (
