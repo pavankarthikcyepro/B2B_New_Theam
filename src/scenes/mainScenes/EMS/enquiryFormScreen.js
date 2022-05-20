@@ -852,22 +852,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           showToast("Please enter alphabetics only in color ");
           return;
         }
-        if (selector.r_reg_no == 0) {
-          showToast("Please fill reg no is mandatory");
-          return;
-
-          if (!isValidateAlphabetics(selector.r_model_other_name)) {
-            showToast("Please enter proper model other name");
-            return;
-          }
-
-        }
-
       }
-      if (selector.r_insurence_company_name.length == 0) {
-        showToast("Please select the insurance company name");
-        return;
-      }
+       if (selector.r_reg_no.length == 0) {
+         showToast("Please fill reg no is mandatory");
+         return;
+       }
+       if (!isValidateAlphabetics(selector.r_model_other_name)) {
+         showToast("Please enter proper model other name");
+         return;
+       }
+
+      // if (selector.r_insurence_company_name.length == 0) {
+      //   showToast("Please select the insurance company name");
+      //   return;
+      // }
 
       if (selector.r_hypothication_checked === true) {
         if (selector.r_hypothication_name.length > 0) {
@@ -3286,7 +3284,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <TextinputComp
                       style={styles.textInputStyle}
                       value={selector.employee_id}
-                      label={"Employee ID*"}
+                      label={"Employee ID"}
                       maxLength={15}
                       onChangeText={(text) =>
                         dispatch(

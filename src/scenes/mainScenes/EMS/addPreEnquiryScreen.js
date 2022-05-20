@@ -1058,7 +1058,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                         ) : null}
 
                         <DropDownSelectionItem
-                            label={"Source of Create Lead*"}
+                            label={"Source of Lead*"}
                             value={selector.sourceOfEnquiry}
                             disabled={fromEdit}
                             onPress={() =>
@@ -1071,7 +1071,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
 
                         {subSourceData.length > 0 && (
                             <DropDownSelectionItem
-                                label={"Sub Source of Create Lead*"}
+                                label={"Sub Source of Lead*"}
                                 value={selector.subSourceOfEnquiry}
                                 disabled={fromEdit}
                                 onPress={() =>
