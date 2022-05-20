@@ -48,10 +48,10 @@ export const getMorePendingTasksListApi = createAsyncThunk("MY_TASKS/getMorePend
   return json;
 })
 
-export const getMyTasksListApi = createAsyncThunk("MY_TASKS/getMyTasksListApi", async (empId, { rejectWithValue }) => {
+export const getMyTasksListApi = createAsyncThunk("MY_TASKS/getMyTasksListApi", async (userId, { rejectWithValue }) => {
 
   const payload = {
-    "loggedInEmpId": empId,
+    "loggedInEmpId": userId,
     "onlyForEmp": true
   }
 
@@ -63,10 +63,6 @@ export const getMyTasksListApi = createAsyncThunk("MY_TASKS/getMyTasksListApi", 
     return rejectWithValue(json);
   }
   return json;
-})
-
-export const role = createAsyncThunk("MY-_TASKS/role", (role) => {
-  return role;
 })
 
 export const mytaskSlice = createSlice({
@@ -85,8 +81,7 @@ export const mytaskSlice = createSlice({
     isLoadingForPendingTask: false,
     isLoadingExtraDataForPendingTask: false,
     mytasksLisResponse: {},
-    myTasksListResponseStatus: "",
-    role: ""
+    myTasksListResponseStatus: ""
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -164,10 +159,6 @@ export const mytaskSlice = createSlice({
     builder.addCase(getMyTasksListApi.rejected, (state, action) => {
       state.mytasksLisResponse = action.payload;
       state.myTasksListResponseStatus = "failed";
-    })
-    // Store Role
-    builder.addCase(role.fulfilled, (state: any, action) => {
-      state.role = action.payload;
     })
   }
 });

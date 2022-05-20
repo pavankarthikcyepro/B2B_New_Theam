@@ -91,10 +91,6 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     width: 75
   },
-  text4: {
-    fontSize: 14,
-    fontWeight: '400'
-  },
   bckVw: {
     flexDirection: "row",
     alignItems: 'center',
@@ -112,6 +108,6 @@ const styles = StyleSheet.create({
   text4: {
     fontSize: 12,
     fontWeight: "600",
-    color: Colors.RED
+    color: Colors.LIGHT_GRAY2
   }
 });

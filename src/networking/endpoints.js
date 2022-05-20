@@ -175,7 +175,7 @@ const URL = {
     ADD_TARGET_MAPPING: () => salesGap + `/add_targetmapping_role`,
     EDIT_TARGET_MAPPING: () => salesGap + `/edit_targetmapping_role`,
     GET_ALL_TARGET_MAPPING: () => salesGap + `/get_all_targetmapping_role`,
-    GET_TARGET_PARAMS: () => dashboard + "/v2/get_target_params",
+    GET_TARGET_PARAMS: () => dashboard + "/v2/get_target_params_scheduler",
     GET_TARGET_PARAMS_ALL: () => dashboard + "/v2/get_target_params_for_all_emps",
     GET_TARGET_PARAMS_EMP: () => dashboard + "/v2/get_target_params_for_emp",
     GET_SALES_DATA: () => dashboard + "/v2/get_sales_data",
@@ -233,7 +233,10 @@ const URL = {
     },
     GET_VEHICAL_MODAL: () => {
         return vehicleInfoService_url + `/api/vehicle_details/vehicle_models`;
-    }
+    },
+    GET_SPECIAL_DROP_VALUE: () => {
+        return dynamicForms + `/dropdown`;
+    },
 }
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason

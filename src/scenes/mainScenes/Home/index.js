@@ -369,7 +369,8 @@ const HomeScreen = ({ route, navigation }) => {
             "endDate": monthLastDate,
             "loggedInEmpId": empId,
             "startDate": monthFirstDate,
-            "levelSelected": null
+            "levelSelected": null,
+            "empId": empId
         }
 
         Promise.all([

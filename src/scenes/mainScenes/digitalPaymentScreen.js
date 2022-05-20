@@ -21,8 +21,7 @@ const DigitalPaymentScreen = ({navigation}) => {
 
   const getQrCode = async () => {
     const userData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-    const branchId = await AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID);
-    const { orgId } = JSON.parse(userData);
+    const { orgId, branchId } = JSON.parse(userData);
     const response = await client.get(URL.QR(orgId, branchId));
     const qr = await response.json();
     if (qr.length > 0) {
@@ -30,6 +29,7 @@ const DigitalPaymentScreen = ({navigation}) => {
     } else {
       setDataList("https://www.bigpharmacy.com.my/scripts/timthumb.php")
     }
+    console.log({qr})
   }
 
   return (

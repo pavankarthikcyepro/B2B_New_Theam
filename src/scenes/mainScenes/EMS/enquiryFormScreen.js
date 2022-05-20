@@ -13,6 +13,9 @@ import {
   KeyboardAvoidingView,
   Alert,
   BackHandler,
+  Image,
+  TouchableOpacity,
+  Modal
 } from "react-native";
 import {
   DefaultTheme,
@@ -81,7 +84,7 @@ import {
   Buyer_Type_Data,
   Kms_Travelled_Type_Data,
   Who_Drive_Type_Data,
-  How_Many_Family_Members_Data, 
+  How_Many_Family_Members_Data,
   Prime_Exception_Types_Data,
   Finance_Types,
   Finance_Category_Types,
@@ -117,15 +120,13 @@ import { getEnquiryList } from "../../../redux/enquiryReducer";
 import { AppNavigator } from "../../../navigations";
 import {
   isValidateAlphabetics,
-   isValidate,
-   isValidateAplhaNumeric,
+  isValidate,
+  isValidateAplhaNumeric,
   isMobileNumber,
 } from "../../../utils/helperFunctions";
 import uuid from "react-native-uuid";
 import { DropComponent } from "./components/dropComp";
 import { useNavigation } from '@react-navigation/native';
-import moment from "moment";
-
 
 const theme = {
   ...DefaultTheme,
@@ -185,6 +186,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [dropModel, setDropModel] = useState("");
   const [dropPriceDifference, setDropPriceDifference] = useState("");
   const [dropRemarks, setDropRemarks] = useState("");
+  const [imagePath, setImagePath] = useState('');
 
 
   useLayoutEffect(() => {
@@ -522,8 +524,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       }
     }
 
-   
-      
+
+
     if (selector.buyer_type === "Additional Buyer") {
       if (
         selector.a_make == 0 ||
@@ -541,10 +543,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       if (!isValidateAlphabetics(selector.a_color)) {
         return;
       }
-      
+
     }
 
-    
+
     if (selector.buyer_type === "Replacement Buyer") {
       if (selector.r_color.length > 0) {
         if (!isValidateAlphabetics(selector.r_color)) {
@@ -850,23 +852,21 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           showToast("Please enter alphabetics only in color ");
           return;
         }
-         if (selector.r_reg_no == 0) {
-   showToast("Please fill reg no is mandatory");
-   return;
+      }
+       if (selector.r_reg_no.length == 0) {
+         showToast("Please fill reg no is mandatory");
+         return;
+       }
+       if (!isValidateAlphabetics(selector.r_model_other_name)) {
+         showToast("Please enter proper model other name");
+         return;
+       }
 
-      if (!isValidateAlphabetics(selector.r_model_other_name)) {
-        showToast("Please enter proper model other name");
-        return;
-      }
+      // if (selector.r_insurence_company_name.length == 0) {
+      //   showToast("Please select the insurance company name");
+      //   return;
+      // }
 
- }
-        
-      }
-      if (selector.r_insurence_company_name.length == 0) {
-        showToast("Please select the insurance company name");
-        return;
-      }
-   
       if (selector.r_hypothication_checked === true) {
         if (selector.r_hypothication_name.length > 0) {
           if (!isValidateAlphabetics(selector.r_hypothication_name)) {
@@ -948,16 +948,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             documentPath:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "pan";
-                  })[0].documentPath
+                  return item.documentType === "pan";
+                })[0].documentPath
                 : "",
             documentType: "pan",
             documentVersion: 0,
             fileName:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "pan";
-                  })[0].fileName
+                  return item.documentType === "pan";
+                })[0].fileName
                 : "",
             gstNumber: "",
             id: 0,
@@ -966,8 +966,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             keyName:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "pan";
-                  })[0].keyName
+                  return item.documentType === "pan";
+                })[0].keyName
                 : "",
             modifiedBy: jsonObj.empName,
             orgId: jsonObj.orgId,
@@ -987,16 +987,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             documentPath:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "aadhar";
-                  })[0].documentPath
+                  return item.documentType === "aadhar";
+                })[0].documentPath
                 : "",
             documentType: "aadhar",
             documentVersion: 0,
             fileName:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "aadhar";
-                  })[0].fileName
+                  return item.documentType === "aadhar";
+                })[0].fileName
                 : "",
             gstNumber: "",
             id: 0,
@@ -1005,8 +1005,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             keyName:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "aadhar";
-                  })[0].keyName
+                  return item.documentType === "aadhar";
+                })[0].keyName
                 : "",
             modifiedBy: jsonObj.empName,
             orgId: jsonObj.orgId,
@@ -1026,16 +1026,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             documentPath:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "empId";
-                  })[0].documentPath
+                  return item.documentType === "empId";
+                })[0].documentPath
                 : "",
             documentType: "empId",
             documentVersion: 0,
             fileName:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "empId";
-                  })[0].fileName
+                  return item.documentType === "empId";
+                })[0].fileName
                 : "",
             gstNumber: "",
             id: 0,
@@ -1044,8 +1044,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             keyName:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "empId";
-                  })[0].keyName
+                  return item.documentType === "empId";
+                })[0].keyName
                 : "",
             modifiedBy: jsonObj.empName,
             orgId: jsonObj.orgId,
@@ -1926,8 +1926,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     );
   }
 
-  console.log(selector.expected_delivery_date, "Joke")
-
   return (
     <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
       <ImagePickerComponent
@@ -1947,7 +1945,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
           console.log("ITEM:", JSON.stringify(item));
-          console.log("ITEM:", dropDownKey);
           if (dropDownKey === "MODEL") {
             updateVariantModelsData(item.name, false);
           } else if (dropDownKey === "VARIENT") {
@@ -1955,7 +1952,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               item.name,
               selectedCarVarientsData.varientList
             );
-          } else if ( 
+          } else if (
             dropDownKey === "C_MAKE" ||
             dropDownKey === "R_MAKE" ||
             dropDownKey === "A_MAKE"
@@ -2281,11 +2278,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
 
                 {selector.customer_type.toLowerCase() === "fleet" ||
-                selector.customer_type.toLowerCase() === "institution" ||
-                selector.customer_type.toLowerCase() === "corporate" ||
-                selector.customer_type.toLowerCase() === "government" ||
-                selector.customer_type.toLowerCase() === "retired" ||
-                selector.customer_type.toLowerCase() === "other" ? (
+                  selector.customer_type.toLowerCase() === "institution" ||
+                  selector.customer_type.toLowerCase() === "corporate" ||
+                  selector.customer_type.toLowerCase() === "government" ||
+                  selector.customer_type.toLowerCase() === "retired" ||
+                  selector.customer_type.toLowerCase() === "other" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -2335,19 +2332,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     .toLowerCase()
                     .trim()
                     .replace(/ /g, "") === "socialnetwork") && (
-                  <View>
-                    <DropDownSelectionItem
-                      label={"Sub Source Of Enquiry"}
-                      value={selector.sub_source_of_enquiry}
-                      onPress={() =>
-                        showDropDownModelMethod(
-                          "SUB_SOURCE_OF_ENQUIRY",
-                          "Sub Source Of Enquiry"
-                        )
-                      }
-                    />
-                  </View>
-                )}
+                    <View>
+                      <DropDownSelectionItem
+                        label={"Sub Source Of Enquiry"}
+                        value={selector.sub_source_of_enquiry}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "SUB_SOURCE_OF_ENQUIRY",
+                            "Sub Source Of Enquiry"
+                          )
+                        }
+                      />
+                    </View>
+                  )}
 
                 {selector.source_of_enquiry.toLowerCase() === "reference" && (
                   <View>
@@ -2424,7 +2421,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 <DateSelectItem
                   label={"Expected Delivery Date"}
-                  value={selector.expected_delivery_date.length == 0 ? moment().format("DD/MM/YYYY") : selector.expected_delivery_date}
+                  value={selector.expected_delivery_date}
                   onPress={() =>
                     dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
                   }
@@ -2433,7 +2430,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <DropDownSelectionItem
                   label={"Enquiry Category"}
                   disabled={true}
-                  value={selector.enquiry_category.length == 0 ? "Hot" : selector.enquiry_category}
+                  value={selector.enquiry_category}
                   onPress={() =>
                     showDropDownModelMethod(
                       "ENQUIRY_CATEGORY",
@@ -3073,51 +3070,51 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {(selector.retail_finance === "In House" ||
                   selector.retail_finance === "Out House") && (
-                  <View>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Loan Amount*"}
-                      keyboardType={"numeric"}
-                      maxLength={10}
-                      value={selector.loan_amount}
-                      onChangeText={(text) => {
-                        emiCal(
-                          text,
-                          selector.loan_of_tenure,
-                          selector.rate_of_interest
-                        );
-                        dispatch(
-                          setFinancialDetails({
-                            key: "LOAN_AMOUNT",
-                            text: text,
-                          })
-                        );
-                      }}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Rate of Interest*"}
-                      keyboardType={"numeric"}
-                      maxLength={10}
-                      value={selector.rate_of_interest}
-                      onChangeText={(text) => {
-                        emiCal(
-                          selector.loan_amount,
-                          selector.loan_of_tenure,
-                          text
-                        );
-                        dispatch(
-                          setFinancialDetails({
-                            key: "RATE_OF_INTEREST",
-                            text: text,
-                          })
-                        );
-                      }}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>
-                )}
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Loan Amount*"}
+                        keyboardType={"numeric"}
+                        maxLength={10}
+                        value={selector.loan_amount}
+                        onChangeText={(text) => {
+                          emiCal(
+                            text,
+                            selector.loan_of_tenure,
+                            selector.rate_of_interest
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "LOAN_AMOUNT",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Rate of Interest*"}
+                        keyboardType={"numeric"}
+                        maxLength={10}
+                        value={selector.rate_of_interest}
+                        onChangeText={(text) => {
+                          emiCal(
+                            selector.loan_amount,
+                            selector.loan_of_tenure,
+                            text
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "RATE_OF_INTEREST",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
 
                 {selector.retail_finance === "In House" && (
                   <View>
@@ -3217,10 +3214,22 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   />
                 </View>
                 {uploadedImagesDataObj?.pan?.fileName ? (
-                  <DisplaySelectedImage
-                    fileName={uploadedImagesDataObj.pan.fileName}
-                    from={"PAN"}
-                  />
+
+                  <View style={{ flexDirection: 'row' }}>
+                    <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                      if (uploadedImagesDataObj.pan?.documentPath) {
+                        setImagePath(uploadedImagesDataObj.pan?.documentPath)
+                      }
+                    }}>
+                      <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                    </TouchableOpacity>
+                    <View style={{ width: '80%' }}>
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.pan.fileName}
+                        from={"PAN"}
+                      />
+                    </View>
+                  </View>
                 ) : null}
 
                 {/* // Adhal Number */}
@@ -3246,24 +3255,36 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       />
                     </View>
                     {uploadedImagesDataObj?.aadhar?.fileName ? (
-                      <DisplaySelectedImage
-                        fileName={uploadedImagesDataObj.aadhar.fileName}
-                        from={"AADHAR"}
-                      />
+
+                      <View style={{ flexDirection: 'row' }}>
+                        <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                          if (uploadedImagesDataObj.aadhar?.documentPath) {
+                            setImagePath(uploadedImagesDataObj.aadhar?.documentPath)
+                          }
+                        }}>
+                          <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                        </TouchableOpacity>
+                        <View style={{ width: '80%' }}>
+                          <DisplaySelectedImage
+                            fileName={uploadedImagesDataObj.aadhar.fileName}
+                            from={"AADHAR"}
+                          />
+                        </View>
+                      </View>
                     ) : null}
                   </View>
                 ) : null}
 
                 {/* // Employeed ID */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                (selector.customer_type.toLowerCase() === "corporate" ||
-                  selector.customer_type.toLowerCase() === "government" ||
-                  selector.customer_type.toLowerCase() === "retired") ? (
+                  (selector.customer_type.toLowerCase() === "corporate" ||
+                    selector.customer_type.toLowerCase() === "government" ||
+                    selector.customer_type.toLowerCase() === "retired") ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
                       value={selector.employee_id}
-                      label={"Employee ID*"}
+                      label={"Employee ID"}
                       maxLength={15}
                       onChangeText={(text) =>
                         dispatch(
@@ -3284,18 +3305,30 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       />
                     </View>
                     {uploadedImagesDataObj?.empId?.fileName ? (
-                      <DisplaySelectedImage
-                        fileName={uploadedImagesDataObj.empId.fileName}
-                        from={"EMPLOYEE_ID"}
-                      />
+
+                      <View style={{ flexDirection: 'row' }}>
+                        <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                          if (uploadedImagesDataObj.empId?.documentPath) {
+                            setImagePath(uploadedImagesDataObj.empId?.documentPath)
+                          }
+                        }}>
+                          <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                        </TouchableOpacity>
+                        <View style={{ width: '80%' }}>
+                          <DisplaySelectedImage
+                            fileName={uploadedImagesDataObj.empId.fileName}
+                            from={"EMPLOYEE_ID"}
+                          />
+                        </View>
+                      </View>
                     ) : null}
                   </View>
                 ) : null}
 
                 {/* Last 3 month payslip */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                (selector.customer_type.toLowerCase() === "corporate" ||
-                  selector.customer_type.toLowerCase() === "government") ? (
+                  (selector.customer_type.toLowerCase() === "corporate" ||
+                    selector.customer_type.toLowerCase() === "government") ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -3306,17 +3339,29 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       />
                     </View>
                     {uploadedImagesDataObj.payslip ? (
-                      <DisplaySelectedImage
-                        fileName={uploadedImagesDataObj.payslip.fileName}
-                        from={"3_MONTHS_PAYSLIP"}
-                      />
+
+                      <View style={{ flexDirection: 'row' }}>
+                        <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                          if (uploadedImagesDataObj.payslips?.documentPath) {
+                            setImagePath(uploadedImagesDataObj.payslips?.documentPath)
+                          }
+                        }}>
+                          <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                        </TouchableOpacity>
+                        <View style={{ width: '80%' }}>
+                          <DisplaySelectedImage
+                            fileName={uploadedImagesDataObj.payslips.fileName}
+                            from={"3_MONTHS_PAYSLIP"}
+                          />
+                        </View>
+                      </View>
                     ) : null}
                   </View>
                 ) : null}
 
                 {/* Patta Pass book */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                selector.customer_type.toLowerCase() === "farmer" ? (
+                  selector.customer_type.toLowerCase() === "farmer" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -3327,17 +3372,29 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       />
                     </View>
                     {uploadedImagesDataObj.passbook ? (
-                      <DisplaySelectedImage
-                        fileName={uploadedImagesDataObj.passbook.fileName}
-                        from={"PATTA_PASS_BOOK"}
-                      />
+
+                      <View style={{ flexDirection: 'row' }}>
+                        <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                          if (uploadedImagesDataObj.passbook?.documentPath) {
+                            setImagePath(uploadedImagesDataObj.passbook?.documentPath)
+                          }
+                        }}>
+                          <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                        </TouchableOpacity>
+                        <View style={{ width: '80%' }}>
+                          <DisplaySelectedImage
+                            fileName={uploadedImagesDataObj.passbook.fileName}
+                            from={"PATTA_PASS_BOOK"}
+                          />
+                        </View>
+                      </View>
                     ) : null}
                   </View>
                 ) : null}
 
                 {/* Pension Letter */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                selector.customer_type.toLowerCase() === "retired" ? (
+                  selector.customer_type.toLowerCase() === "retired" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -3348,17 +3405,29 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       />
                     </View>
                     {uploadedImagesDataObj.pension ? (
-                      <DisplaySelectedImage
-                        fileName={uploadedImagesDataObj.pension.fileName}
-                        from={"PENSION_LETTER"}
-                      />
+
+                      <View style={{ flexDirection: 'row' }}>
+                        <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                          if (uploadedImagesDataObj.pension?.documentPath) {
+                            setImagePath(uploadedImagesDataObj.pension?.documentPath)
+                          }
+                        }}>
+                          <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                        </TouchableOpacity>
+                        <View style={{ width: '80%' }}>
+                          <DisplaySelectedImage
+                            fileName={uploadedImagesDataObj.pension.fileName}
+                            from={"PENSION_LETTER"}
+                          />
+                        </View>
+                      </View>
                     ) : null}
                   </View>
                 ) : null}
 
                 {/* IMA Certificate */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                selector.customer_type.toLowerCase() === "doctor" ? (
+                  selector.customer_type.toLowerCase() === "doctor" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -3369,17 +3438,29 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       />
                     </View>
                     {uploadedImagesDataObj.imaCertificate ? (
-                      <DisplaySelectedImage
-                        fileName={uploadedImagesDataObj.imaCertificate.fileName}
-                        from={"IMA_CERTIFICATE"}
-                      />
+
+                      <View style={{ flexDirection: 'row' }}>
+                        <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                          if (uploadedImagesDataObj.imaCertificate?.documentPath) {
+                            setImagePath(uploadedImagesDataObj.imaCertificate?.documentPath)
+                          }
+                        }}>
+                          <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                        </TouchableOpacity>
+                        <View style={{ width: '80%' }}>
+                          <DisplaySelectedImage
+                            fileName={uploadedImagesDataObj.imaCertificate.fileName}
+                            from={"IMA_CERTIFICATE"}
+                          />
+                        </View>
+                      </View>
                     ) : null}
                   </View>
                 ) : null}
 
                 {/* Leasing Confirmation */}
                 {selector.enquiry_segment.toLowerCase() === "commercial" &&
-                selector.customer_type.toLowerCase() === "fleet" ? (
+                  selector.customer_type.toLowerCase() === "fleet" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -3392,17 +3473,29 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       />
                     </View>
                     {uploadedImagesDataObj.leasingConfirm ? (
-                      <DisplaySelectedImage
-                        fileName={uploadedImagesDataObj.leasingConfirm.fileName}
-                        from={"LEASING_CONFIRMATION"}
-                      />
+
+                      <View style={{ flexDirection: 'row' }}>
+                        <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                          if (uploadedImagesDataObj.leasingConfirm?.documentPath) {
+                            setImagePath(uploadedImagesDataObj.leasingConfirm?.documentPath)
+                          }
+                        }}>
+                          <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                        </TouchableOpacity>
+                        <View style={{ width: '80%' }}>
+                          <DisplaySelectedImage
+                            fileName={uploadedImagesDataObj.leasingConfirm.fileName}
+                            from={"LEASING_CONFIRMATION"}
+                          />
+                        </View>
+                      </View>
                     ) : null}
                   </View>
                 ) : null}
 
                 {/* Address Proof */}
                 {selector.enquiry_segment.toLowerCase() === "company" &&
-                selector.customer_type.toLowerCase() === "institution" ? (
+                  selector.customer_type.toLowerCase() === "institution" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -3413,17 +3506,29 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       />
                     </View>
                     {uploadedImagesDataObj.address ? (
-                      <DisplaySelectedImage
-                        fileName={uploadedImagesDataObj.address.fileName}
-                        from={"ADDRESS_PROOF"}
-                      />
+
+                      <View style={{ flexDirection: 'row' }}>
+                        <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                          if (uploadedImagesDataObj.address?.documentPath) {
+                            setImagePath(uploadedImagesDataObj.address?.documentPath)
+                          }
+                        }}>
+                          <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                        </TouchableOpacity>
+                        <View style={{ width: '80%' }}>
+                          <DisplaySelectedImage
+                            fileName={uploadedImagesDataObj.address.fileName}
+                            from={"ADDRESS_PROOF"}
+                          />
+                        </View>
+                      </View>
                     ) : null}
                   </View>
                 ) : null}
 
                 {/* GSTIN Number */}
                 {selector.enquiry_segment.toLowerCase() === "company" &&
-                selector.customer_type.toLowerCase() === "institution" ? (
+                  selector.customer_type.toLowerCase() === "institution" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -3694,7 +3799,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
               </List.Accordion>
               {selector.buyer_type == "Additional Buyer" ||
-              selector.buyer_type == "Replacement Buyer" ? (
+                selector.buyer_type == "Replacement Buyer" ? (
                 <View style={styles.space}></View>
               ) : null}
               {/* // 8.Additional Buyer */}
@@ -3864,10 +3969,22 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     />
                   </View>
                   {uploadedImagesDataObj.REGDOC ? (
-                    <DisplaySelectedImage
-                      fileName={uploadedImagesDataObj.REGDOC.fileName}
-                      from={"REGDOC"}
-                    />
+
+                    <View style={{ flexDirection: 'row' }}>
+                      <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                        if (uploadedImagesDataObj.REGDOC?.documentPath) {
+                          setImagePath(uploadedImagesDataObj.REGDOC?.documentPath)
+                        }
+                      }}>
+                        <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                      </TouchableOpacity>
+                      <View style={{ width: '80%' }}>
+                        <DisplaySelectedImage
+                          fileName={uploadedImagesDataObj.REGDOC.fileName}
+                          from={"REGDOC"}
+                        />
+                      </View>
+                    </View>
                   ) : null}
                   <DropDownSelectionItem
                     label={"Make"}
@@ -4273,7 +4390,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 style={{ width: 120 }}
                 color={Colors.GRAY}
 
-                labelStyle={{ textTransform: "none",  color: Colors.WHITE }}
+                labelStyle={{ textTransform: "none", color: Colors.WHITE }}
                 onPress={() => setIsDropSelected(true)}
               >
                 Lost
@@ -4315,6 +4432,26 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           )}
         </ScrollView>
       </KeyboardAvoidingView>
+
+      <Modal
+        animationType="fade"
+        visible={imagePath !== ''}
+        onRequestClose={() => { setImagePath('') }}
+        transparent={true}>
+        <View style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'rgba(0,0,0,0.7)',
+        }}>
+          <View style={{ width: '90%' }}>
+            <Image style={{ width: '100%', height: 400, borderRadius: 4 }} resizeMode="contain" source={{ uri: imagePath }} />
+          </View>
+          <TouchableOpacity style={{ width: 100, height: 40, justifyContent: 'center', alignItems: 'center', position: 'absolute', left: '37%', bottom: '15%', borderRadius: 5, backgroundColor: Colors.RED }} onPress={() => setImagePath('')}>
+            <Text style={{ fontSize: 14, fontWeight: '600', color: Colors.WHITE }}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };

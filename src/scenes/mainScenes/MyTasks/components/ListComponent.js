@@ -34,8 +34,6 @@ const ListComponent = ({ route, navigation }) => {
 
     useEffect(() => {
         console.log('data: ', selector.mytasksLisResponse);
-        console.log("role: ", selector.role);
-
         if (selector.myTasksListResponseStatus === "success") {
             if (route.params.from === "TODAY") {
                 const todaysData = selector.mytasksLisResponse.todaysData[0];
@@ -92,24 +90,18 @@ const ListComponent = ({ route, navigation }) => {
                         }}
                     />
                 </View> */}
-
-                {/* Hide the tabs only for sales  */}
-                {
-                    selector.role != "Showroom DSE" && (
-                        <View style={styles.selfBtnWrap}>
-                            <TouchableOpacity onPress={() => {
-                                setIndex(0)
-                            }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: index ? Colors.WHITE : Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
-                                <Text style={{ fontSize: 16, color: index ? Colors.BLACK : Colors.WHITE, fontWeight: '600' }}>Self</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => {
-                                setIndex(1)
-                            }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: index ? Colors.RED : Colors.WHITE, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
-                                <Text style={{ fontSize: 16, color: index ? Colors.WHITE : Colors.BLACK, fontWeight: '600' }}>Teams</Text>
-                            </TouchableOpacity>
-                        </View>
-                    )
-                }
+                <View style={styles.selfBtnWrap}>
+                    <TouchableOpacity onPress={() => {
+                        setIndex(0)
+                    }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: index ? Colors.WHITE : Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
+                        <Text style={{ fontSize: 16, color: index ? Colors.BLACK : Colors.WHITE, fontWeight: '600' }}>Self</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => {
+                        setIndex(1)
+                    }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: index ? Colors.RED : Colors.WHITE, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
+                        <Text style={{ fontSize: 16, color: index ? Colors.WHITE : Colors.BLACK, fontWeight: '600' }}>Teams</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
             
             {(index === 0 && myTasksData.length > 0) && (

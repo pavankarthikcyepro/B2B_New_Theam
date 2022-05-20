@@ -64,10 +64,22 @@ export const getEmployeesDropDownData = createAsyncThunk("TARGET_SETTINGS/getEmp
 })
 
 export const getAllTargetMapping = createAsyncThunk("TARGET_SETTINGS/getAllTargetMapping", async (payload: any, { rejectWithValue }) => {
-
+    console.log("PAYLOAD:", JSON.stringify(payload));
+    
     const response = await client.post(URL.GET_ALL_TARGET_MAPPING(), payload)
     const json = await response.json()
-    // console.log("$$$$$$$$$ TARGET:", JSON.stringify(json));
+    console.log("$$$$$$$$$ TARGET:", JSON.stringify(json));
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const getSpecialDropValue = createAsyncThunk("TARGET_SETTINGS/getSpecialDropValue", async (payload: any, { rejectWithValue }) => {
+
+    const response = await client.post(URL.GET_SPECIAL_DROP_VALUE(), payload)
+    const json = await response.json()
+    
     if (!response.ok) {
         return rejectWithValue(json);
     }
@@ -84,6 +96,73 @@ export const targetSettingsSlice = createSlice({
         roles: [],
         targetMapping: [],
         employees_drop_down_data: {},
+        monthList: [
+            {
+                id: 1,
+                name: "January",
+                isChecked: false,
+            },
+            {
+                id: 2,
+                name: "February",
+                isChecked: false,
+            },
+            {
+                id: 3,
+                name: "March",
+                isChecked: false,
+            },
+            {
+                id: 4,
+                name: "April",
+                isChecked: false,
+            },
+            {
+                id: 5,
+                name: "May",
+                isChecked: false,
+            },
+            {
+                id: 6,
+                name: "June",
+                isChecked: false,
+            },
+            {
+                id: 7,
+                name: "July",
+                isChecked: false,
+            },
+            {
+                id: 8,
+                name: "August",
+                isChecked: false,
+            },
+            {
+                id: 9,
+                name: "September",
+                isChecked: false,
+            },
+            {
+                id: 10,
+                name: "October",
+                isChecked: false,
+            },
+            {
+                id: 11,
+                name: "November	",
+                isChecked: false,
+            },
+            {
+                id: 12,
+                name: "December",
+                isChecked: false,
+            }
+        ],
+        selectedMonth: null,
+        targetType: 'MONTHLY',
+        isDataLoaded: false,
+        specialOcation: [],
+        selectedSpecial: null
     },
     reducers: {
         updateStartDate: (state, action) => {
@@ -94,7 +173,16 @@ export const targetSettingsSlice = createSlice({
         },
         updateIsTeam: (state, action) => {
             state.isTeam = action.payload;
-        }
+        },
+        updateMonth: (state, action) => {
+            state.selectedMonth = action.payload;
+        },
+        updateTargetType: (state, action) => {
+            state.targetType = action.payload;
+        },
+        updateSpecial: (state, action) => {
+            state.selectedSpecial = action.payload;
+        },
     },
     extraReducers: (builder) => {
 
@@ -120,14 +208,18 @@ export const targetSettingsSlice = createSlice({
                 state.roles = [];
             })
             .addCase(getAllTargetMapping.pending, (state, action) => {
+                state.isDataLoaded = false
                 state.targetMapping = [];
             })
             .addCase(getAllTargetMapping.fulfilled, (state, action) => {
                 // console.log('menu_list: ', JSON.stringify(action.payload));
+                state.targetMapping = []
                 state.targetMapping = action.payload.data ? action.payload.data : [];
+                state.isDataLoaded = true
             })
             .addCase(getAllTargetMapping.rejected, (state, action) => {
                 state.targetMapping = [];
+                state.isDataLoaded = true
             })
             .addCase(addTargetMapping.pending, (state, action) => {
                 
@@ -163,8 +255,31 @@ export const targetSettingsSlice = createSlice({
             .addCase(getEmployeesDropDownData.rejected, (state, action) => {
                 state.employees_drop_down_data = {};
             })
+            .addCase(getSpecialDropValue.pending, (state, action) => {
+                // state.employees_drop_down_data = {};
+            })
+            .addCase(getSpecialDropValue.fulfilled, (state, action) => {
+                console.log("$$$$$$$$$ SPECIAL1:", JSON.stringify(action.payload));
+                if (action.payload.length > 0) {
+                    let temp = [];
+                    for (let i = 0; i < action.payload.length; i++){
+                        temp.push({
+                            ...action.payload[i],
+                            id: action.payload[i].id,
+                            name: action.payload[i].value,
+                            isChecked: false,
+                        })
+                        if (i === action.payload.length - 1){
+                            state.specialOcation = temp;
+                        }
+                    }
+                }
+            })
+            .addCase(getSpecialDropValue.rejected, (state, action) => {
+                // state.employees_drop_down_data = {};
+            })
     }
 });
 
-export const { updateStartDate, updateEndDate, updateIsTeam } = targetSettingsSlice.actions;
+export const { updateStartDate, updateEndDate, updateIsTeam, updateMonth, updateTargetType, updateSpecial } = targetSettingsSlice.actions;
 export default targetSettingsSlice.reducer;

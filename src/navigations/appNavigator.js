@@ -18,6 +18,8 @@ import { Colors } from "../styles";
 import EMS_LINE from '../assets/images/ems_line.svg'; // import SVG
 import HOME_LINE from '../assets/images/home_line.svg'; // import SVG
 import HOME_FILL from '../assets/images/home_fill.svg'; // import SVG
+import { HOME_LINE_STR } from "../redux/sideMenuReducer";//import SVG
+
 import SCHEDULE_FILL from '../assets/images/schedule_fill.svg'; // import SVG
 import SCHEDULE_LINE from '../assets/images/my_schedule.svg'; // import SVG
 import PRICE from '../assets/images/price.svg'; // import SVG
@@ -552,11 +554,11 @@ const TabNavigator = (props) => {
                 tabBarIcon: ({ focused, color, size }) => {
 
                     if (route.name === TabStackIdentifiers.home) {
-                        return focused ? <HOME_FILL width={size} height={size} fill={color} /> : <HOME_LINE width={size} height={size} fill={color} />;
+                        return focused ? <HOME_LINE width={size} height={size} fill={color} /> : <HOME_LINE width={size} height={size} fill={color} />;
                     } else if (route.name === TabStackIdentifiers.ems) {
                         return focused ? <EMS_LINE width={size} height={size} fill={color} /> : <EMS_LINE width={size} height={size} fill={color} />;
                     } else if (route.name === TabStackIdentifiers.myTask) {
-                        return focused ? <SCHEDULE_FILL width={size} height={size} fill={color} /> : <SCHEDULE_LINE width={size} height={size} fill={color} />;
+                        return focused ? <SCHEDULE_LINE width={size} height={size} fill={color} /> : <SCHEDULE_LINE width={size} height={size} fill={color} />;
                     }
                     else if (route.name === TabStackIdentifiers.planning) {
                         return focused ? <PRICE width={size} height={size} fill={color} /> : <PRICE width={size} height={size} fill={color} />;

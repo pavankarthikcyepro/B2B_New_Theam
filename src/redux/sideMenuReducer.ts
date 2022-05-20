@@ -16,41 +16,49 @@ const data = [
     title: "Home",
     icon: BOOKING_TRACKER_STR,
     screen: 99,
+    pngIcon: require('../assets/images/Home-01.png')
   },
   {
     title: "Target Planning",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 106,
+    pngIcon: require('../assets/images/Target_Planning-01.png')
   },
   {
     title: "Task Management",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 108,
+    pngIcon: require('../assets/images/Task_Management-01.png')
   },
   {
     title: "Upcoming Deliveries",
     icon: BOOKING_TRACKER_STR,
     screen: 100,
+    pngIcon: require('../assets/images/Upcoming_Deliveries-01.png')
   },
   {
     title: "Event Management",
     icon: EVENT_MANAGEMENT_STR,
     screen: 103,
+    pngIcon: require('../assets/images/Event_Management-01.png')
   },
-  {
-    title: "Task Transfer",
-    icon: TRANSFER_STR,
-    screen: 109,
-  },
-  {
-    title: "Team Shuffle",
-    icon: GROUP_STR,
-    screen: 109,
-  },
+  // {
+  //   title: "Task Transfer",
+  //   icon: TRANSFER_STR,
+  //   screen: 109,
+  //   pngIcon: require('../assets/images/Task_Trasnfer-01.png')
+  // },
+  // {
+  //   title: "Team Shuffle",
+  //   icon: GROUP_STR,
+  //   screen: 109,
+  //   pngIcon: require('../assets/images/Team_Shuffle-01.png')
+  // },
   {
     title: "Digital Payment",
     icon: BOOKING_TRACKER_STR,
     screen: 105,
+    pngIcon: require('../assets/images/Digital_Payment-01.png')
   },
   // {
   //   title: "Complaints",
@@ -61,21 +69,25 @@ const data = [
     title: "Helpdesk",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 107,
+    pngIcon: require('../assets/images/Help_Desk-01.png')
   },
   {
     title: "Settings",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 102,
+    pngIcon: require('../assets/images/Settings-01.png')
   },
   {
     title: "ETVBRL Report",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 111,
+    pngIcon: require('../assets/images/Reports-01.png')
   },
   {
     title: "Sign Out",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 112,
+    pngIcon: require('../assets/images/Signout-01.png')
   },
 ];
 
@@ -105,16 +117,16 @@ const dataForManager = [
     icon: EVENT_MANAGEMENT_STR,
     screen: 103,
   },
-  {
-    title: "Task Transfer",
-    icon: CUSTOMER_RELATIONSHIP_STR,
-    screen: 109,
-  },
-  {
-    title: "Team Shuffle",
-    icon: CUSTOMER_RELATIONSHIP_STR,
-    screen: 109,
-  },
+  // {
+  //   title: "Task Transfer",
+  //   icon: CUSTOMER_RELATIONSHIP_STR,
+  //   screen: 109,
+  // },
+  // {
+  //   title: "Team Shuffle",
+  //   icon: CUSTOMER_RELATIONSHIP_STR,
+  //   screen: 109,
+  // },
   {
     title: "Digital Payment",
     icon: QR_CODE_STR,

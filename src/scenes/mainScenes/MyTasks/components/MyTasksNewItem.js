@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     text4: {
-        backgroundColor: Colors.RED,
+        backgroundColor: Colors.LIGHT_GRAY2,
         color: Colors.WHITE,
         fontSize: 12,
         fontWeight: "700",
