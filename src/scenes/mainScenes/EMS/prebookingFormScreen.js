@@ -2018,7 +2018,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     value={selector.first_name}
                                     label={"First Name*"}
                                     maxLength={50}
-                                    editable={false}
+                                    // editable={false}
                                     keyboardType={"default"}
                                     onChangeText={(text) =>
                                         dispatch(
@@ -2033,7 +2033,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     label={"Last Name*"}
                                     keyboardType={"default"}
                                     maxLength={50}
-                                    editable={false}
+                                    // editable={false}
                                     onChangeText={(text) =>
                                         dispatch(
                                             setCustomerDetails({ key: "LAST_NAME", text: text })
@@ -2044,7 +2044,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 <TextinputComp
                                     style={{ height: 65, width: "100%" }}
                                     value={selector.mobile}
-                                    editable={false}
+                                    // editable={false}
                                     label={"Mobile Number*"}
                                     onChangeText={(text) =>
                                         dispatch(setCustomerDetails({ key: "MOBILE", text: text }))
@@ -3092,7 +3092,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         />
 
                                     </View>
-                                    <Text style={{ fontSize: 14, fontWeight: "400", }}>{rupeeSymbol + " " + lifeTaxAmount}</Text>
+                                    <Text style={{ fontSize: 14, fontWeight: "400", }}>{rupeeSymbol + " " + lifeTaxAmount.toFixed(2)}</Text>
                                 </View>
 
                                 <Text style={GlobalStyle.underline}></Text>
