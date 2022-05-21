@@ -2678,7 +2678,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         <TextinputComp
                                             style={styles.textInputStyle}
                                             value={selector.employee_id}
-                                            label={"Employee ID*"}
+                                            label={"Employee ID"}
                                             maxLength={15}
                                             onChangeText={(text) =>
                                                 dispatch(setDocumentUploadDetails({ key: "EMPLOYEE_ID", text: text }))
