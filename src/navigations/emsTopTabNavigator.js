@@ -55,7 +55,7 @@ const EMSTopTabNavigatorTwo = () => {
       <EMSTopTab.Screen
         name={EmsTopTabNavigatorIdentifiers.preEnquiry}
         component={PreEnquiryScreen}
-        options={{ title: "Pre-Enquiry" }}
+        options={{ title: "Pre- Enquiry" }}
       />
       <EMSTopTab.Screen
         name={EmsTopTabNavigatorIdentifiers.enquiry}
@@ -65,7 +65,7 @@ const EMSTopTabNavigatorTwo = () => {
       <EMSTopTab.Screen
         name={EmsTopTabNavigatorIdentifiers.preBooking}
         component={PreBookingScreen}
-        options={{ title: "Pre-Booking" }}
+        options={{ title: "Pre- Booking" }}
       />
       <EMSTopTab.Screen
         name={EmsTopTabNavigatorIdentifiers.booking}

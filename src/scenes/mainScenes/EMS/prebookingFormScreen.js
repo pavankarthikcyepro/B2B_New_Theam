@@ -3498,10 +3498,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             </List.Accordion>
                             <View style={styles.space}></View>
 
-                            {/* // 7.Financial Details */}
+                            {/* // 7.Finance Details */}
                             <List.Accordion
                                 id={"7"}
-                                title={"Financial Details"}
+                                title={"Finance Details"}
                                 titleStyle={{
                                     color: openAccordian === "7" ? Colors.WHITE : Colors.WHITE,
                                     fontSize: 16,
@@ -3793,10 +3793,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             </List.Accordion>
                             <View style={styles.space}></View>
 
-                            {/* // 9.Commitment */}
+                            {/* // 9.DOD Confirmation */}
                             <List.Accordion
                                 id={"9"}
-                                title={"Commitment"}
+                                title={"DOD Confirmation"}
                                 titleStyle={{
                                     color: openAccordian === "9" ? Colors.WHITE : Colors.WHITE,
                                     fontSize: 16,
