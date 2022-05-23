@@ -3,11 +3,8 @@ import { client } from '../networking/client';
 import URL from "../networking/endpoints";
 
 export const getPreEnquiryData = createAsyncThunk('PRE_ENQUIRY/getPreEnquiryData', async (payload, { rejectWithValue }) => {
-  // console.log("payload---------", URL.LEADS_LIST_API_FILTER(), payload)
-
   const response = await client.post(URL.LEADS_LIST_API_FILTER(), payload);
   const json = await response.json()
-  // console.log("first--------------", json[0])
   if (!response.ok) {
     return rejectWithValue(json);
   }
@@ -24,6 +21,7 @@ export const getMorePreEnquiryData = createAsyncThunk('PRE_ENQUIRY/getMorePreEnq
   }
   return json;
 })
+
 
 export const preEnquirySlice = createSlice({
   name: "PRE_ENQUIRY",
@@ -56,6 +54,8 @@ export const preEnquirySlice = createSlice({
         state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
         state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
         state.pre_enquiry_list = dmsEntityObj.leadDtoPage.content;
+        console.log("first--------------", dmsEntityObj.leadDtoPage.content[0])
+
       }
       state.isLoading = false;
     })

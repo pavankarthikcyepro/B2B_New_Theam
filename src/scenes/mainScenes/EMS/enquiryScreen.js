@@ -33,6 +33,7 @@ const EnquiryScreen = ({ navigation }) => {
     const [selectedToDate, setSelectedToDate] = useState("");
     const [sortAndFilterVisible, setSortAndFilterVisible] = useState(false);
     const [searchedData, setSearchedData] = useState([]);
+    const [orgId, setOrgId] = useState("");
 
     useEffect(() => {
         if (selector.enquiry_list.length > 0) {
@@ -58,7 +59,7 @@ const EnquiryScreen = ({ navigation }) => {
         }
     }, [appSelector.isSearch])
 
-    useEffect(() => {
+    useEffect(() => { 
 
         // Get Data From Server
         const currentDate = moment().add(0, "day").format(dateFormat)
@@ -71,9 +72,12 @@ const EnquiryScreen = ({ navigation }) => {
 
     const getAsyncData = async (startDate, endDate) => {
         let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
+        let orgId = await AsyncStore.getData(AsyncStore.Keys.ORG_ID);
+
         if (empId) {
             getEnquiryListFromServer(empId, startDate, endDate);
             setEmployeeId(empId);
+            setOrgId(orgId);
         }
     }
 
@@ -155,7 +159,8 @@ const EnquiryScreen = ({ navigation }) => {
             if (element.isChecked) {
                 sourceFilters.push({
                     id: element.id,
-                    name: element.name
+                    name: element.name,
+                    orgId: orgId
                 })
             }
         });

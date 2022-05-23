@@ -32,6 +32,7 @@ const PreBookingScreen = ({ navigation }) => {
     const [selectedToDate, setSelectedToDate] = useState("");
     const [sortAndFilterVisible, setSortAndFilterVisible] = useState(false);
     const [searchedData, setSearchedData] = useState([]);
+    const [orgId, setOrgId] = useState("");
 
     useEffect(() => {
         if (selector.pre_booking_list.length > 0) {
@@ -70,9 +71,12 @@ const PreBookingScreen = ({ navigation }) => {
 
     const getAsyncData = async (startDate, endDate) => {
         let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
+        let orgId = await AsyncStore.getData(AsyncStore.Keys.ORG_ID);
+
         if (empId) {
             getPreBookingListFromServer(empId, startDate, endDate);
             setEmployeeId(empId);
+            setOrgId(orgId);
         }
     }
 
@@ -154,7 +158,8 @@ const PreBookingScreen = ({ navigation }) => {
             if (element.isChecked) {
                 sourceFilters.push({
                     id: element.id,
-                    name: element.name
+                    name: element.name,
+                    orgId: orgId
                 })
             }
         });

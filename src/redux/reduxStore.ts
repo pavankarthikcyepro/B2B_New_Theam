@@ -56,9 +56,15 @@ const reducer = combineReducers({
   bookingReducer, bookingFormReducer, proceedToBookingReducer, appReducer
 });
 
+const createDebugger = require("redux-flipper").default;
+
 const store = configureStore({
   reducer,
-  middleware: (getDefaultMiddleware) =>
+  middleware: (getDefaultMiddleware) => __DEV__ ?
+    getDefaultMiddleware({
+      immutableCheck: false,
+      serializableCheck: false,
+    }).concat(createDebugger()) : 
     getDefaultMiddleware({
       immutableCheck: false,
       serializableCheck: false,

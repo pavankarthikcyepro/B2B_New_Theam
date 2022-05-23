@@ -127,6 +127,8 @@ import {
 import uuid from "react-native-uuid";
 import { DropComponent } from "./components/dropComp";
 import { useNavigation } from '@react-navigation/native';
+import moment from "moment";
+
 
 const theme = {
   ...DefaultTheme,
@@ -137,7 +139,7 @@ const theme = {
     ...DefaultTheme.colors,
     background: Colors.WHITE,
   },
-};
+}; 
 
 const DetailsOverviewScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
@@ -188,6 +190,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [dropRemarks, setDropRemarks] = useState("");
   const [imagePath, setImagePath] = useState('');
 
+  // console.log(selector, "gender")
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -206,14 +209,23 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     let interval;
     navigation.addListener('focus', () => {
       interval = setInterval(() => {
-        autoSave()
-      }, 60000)
-    })
+        updateEnquiry()
+      }, 60000);
+    });
     navigation.addListener('blur', () => {
       console.log("CLEAR");
       clearInterval(interval)
     })
   }, [navigation]);
+
+  useEffect(() => {
+    let autoSaveInterval;
+      autoSaveInterval = setInterval(() => {
+        autoSave()
+      }, 6000);
+      return () => clearInterval(autoSaveInterval);
+  }, [])
+
 
   const goParentScreen = () => {
     navigation.goBack();
@@ -446,8 +458,127 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
   };
 
+  console.log(selector)
+
   const autoSave = async () => {
     console.log("CALLED AUTO SAVE");
+
+    let dmsContactOrAccountDto = {};
+    let dmsLeadDto = {};
+    let formData;
+    let dmsEntity;
+
+    if (selector.enquiry_details_response != null) {
+      dmsEntity = selector.enquiry_details_response;
+      if (dmsEntity.hasOwnProperty("dmsContactDto"))
+        dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsContactDto);
+      else if (dmsEntity.hasOwnProperty("dmsAccountDto"))
+        dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsAccountDto);
+
+      if (dmsEntity.hasOwnProperty("dmsLeadDto"))
+        dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
+    }
+
+    const employeeData = await AsyncStore.getData(
+      AsyncStore.Keys.LOGIN_EMPLOYEE
+    );
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      let tempAttachments = [];
+      // console.log("GDGHDGDGDGDGD", JSON.stringify(dmsLeadDto.dmsAttachments));
+      if (selector.pan_number) {
+        tempAttachments.push({
+
+          "branchId": jsonObj.branchs[0]?.branchId,
+          "contentSize": 0,
+          "createdBy": new Date().getSeconds(),
+          "description": "",
+          "documentNumber": selector.pan_number,
+          "documentPath": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'pan' })[0].documentPath : '',
+          "documentType": "pan",
+          "documentVersion": 0,
+          "fileName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'pan' })[0].fileName : '',
+          "gstNumber": "",
+          "id": 0,
+          "isActive": 0,
+          "isPrivate": 0,
+          "keyName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'pan' })[0].keyName : '',
+          "modifiedBy": jsonObj.empName,
+          "orgId": jsonObj.orgId,
+          "ownerId": "",
+          "ownerName": jsonObj.empName,
+          "parentId": "",
+          "tinNumber": ""
+        })
+      }
+      if (selector.adhaar_number) {
+        tempAttachments.push({
+          "branchId": jsonObj.branchs[0]?.branchId,
+          "contentSize": 0,
+          "createdBy": new Date().getSeconds(),
+          "description": "",
+          "documentNumber": selector.adhaar_number,
+          "documentPath": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'aadhar' })[0].documentPath : '',
+          "documentType": "aadhar",
+          "documentVersion": 0,
+          "fileName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'aadhar' })[0].fileName : '',
+          "gstNumber": "",
+          "id": 0,
+          "isActive": 0,
+          "isPrivate": 0,
+          "keyName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'aadhar' })[0].keyName : '',
+          "modifiedBy": jsonObj.empName,
+          "orgId": jsonObj.orgId,
+          "ownerId": "",
+          "ownerName": jsonObj.empName,
+          "parentId": "",
+          "tinNumber": ""
+        })
+      }
+      if (selector.employee_id) {
+        tempAttachments.push({
+          "branchId": jsonObj.branchs[0]?.branchId,
+          "contentSize": 0,
+          "createdBy": new Date().getSeconds(),
+          "description": "",
+          "documentNumber": selector.employee_id,
+          "documentPath": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'empId' })[0].documentPath : '',
+          "documentType": "empId",
+          "documentVersion": 0,
+          "fileName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'empId' })[0].fileName : '',
+          "gstNumber": "",
+          "id": 0,
+          "isActive": 0,
+          "isPrivate": 0,
+          "keyName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'empId' })[0].keyName : '',
+          "modifiedBy": jsonObj.empName,
+          "orgId": jsonObj.orgId,
+          "ownerId": "",
+          "ownerName": jsonObj.empName,
+          "parentId": "",
+          "tinNumber": ""
+        })
+      }
+      dmsLeadDto.dmsAttachments = tempAttachments;
+    }
+
+    if (selector.enquiry_details_response) {
+      if (selector.enquiry_details_response.hasOwnProperty("dmsContactDto")) {
+        formData = {
+          dmsContactDto: dmsContactOrAccountDto,
+          dmsLeadDto: dmsLeadDto,
+        };
+      } else {
+        formData = {
+          dmsAccountDto: dmsContactOrAccountDto,
+          dmsLeadDto: dmsLeadDto,
+        };
+      }
+    }
+  } 
+
+  const updateEnquiry = async () => {
+    console.log("CALLED AUTO UPDATE");
     if (selector.designation.length == 0 || selector.buyer_type.length == 0) {
       return;
     }
@@ -1098,6 +1229,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   const mapContactOrAccountDto = (prevData) => {
+    console.log("first", selector.salutation)
     let dataObj = { ...prevData };
     dataObj.dateOfBirth = convertDateStringToMillisecondsUsingMoment(
       selector.dateOfBirth
@@ -2421,7 +2553,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 <DateSelectItem
                   label={"Expected Delivery Date"}
-                  value={selector.expected_delivery_date}
+                  value={selector.expected_delivery_date.length == 0 ? moment().format("DD/MM/YYYY") : selector.expected_delivery_date}
                   onPress={() =>
                     dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
                   }
@@ -2430,7 +2562,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <DropDownSelectionItem
                   label={"Enquiry Category"}
                   disabled={true}
-                  value={selector.enquiry_category}
+                  value={selector.enquiry_category.length == 0 ? "Hot" : selector.enquiry_category}
                   onPress={() =>
                     showDropDownModelMethod(
                       "ENQUIRY_CATEGORY",

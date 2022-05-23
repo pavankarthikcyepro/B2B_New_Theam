@@ -23,6 +23,8 @@ import {
 import { MyTaskNewItem } from '../MyTasks/components/MyTasksNewItem';
 
 const dateFormat = "YYYY-MM-DD";
+const currentDate = moment().add(0, "day").format(dateFormat)
+const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
 
 const PreEnquiryScreen = ({ navigation }) => {
 
@@ -34,6 +36,7 @@ const PreEnquiryScreen = ({ navigation }) => {
     const [sourceList, setSourceList] = useState(source_of_enquiry_list);
     const [categoryList, setCategoryList] = useState(Category_Type);
     const [employeeId, setEmployeeId] = useState("");
+    const [orgId, setOrgId] = useState("");
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [datePickerId, setDatePickerId] = useState("");
     const [selectedFromDate, setSelectedFromDate] = useState("");
@@ -41,13 +44,11 @@ const PreEnquiryScreen = ({ navigation }) => {
     const [sortAndFilterVisible, setSortAndFilterVisible] = useState(false);
     const [searchedData, setSearchedData] = useState([]);
 
-    // console.log({ vehicle_model_list_for_filters })
 
     useEffect(() => {
 
         // Get Data From Server
-        const currentDate = moment().add(0, "day").format(dateFormat)
-        const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+
         setSelectedFromDate(lastMonthFirstDate);
         const tomorrowDate = moment().add(1, "day").format(dateFormat)
         setSelectedToDate(currentDate);
@@ -65,22 +66,10 @@ const PreEnquiryScreen = ({ navigation }) => {
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
-            console.log({ selectedFromDate})
-                 const currentDate = moment().add(0, "day").format(dateFormat)
-                 const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-                 getAsyncData(currentDate, lastMonthFirstDate);
-                 getPreEnquiryListFromServer(employeeId, selectedFromDate, selectedToDate);
-                // if (selector.pre_enquiry_list.length > 0) {
-                //     setSearchedData(selector.pre_enquiry_list)
-                //     // console.log("PreEnquiryAfterScreen:", selector.pre_enquiry_list[0])
-
-                // }
-                // console.log("selector.pre_enquiry_list", selector.pre_enquiry_list[0])
-            });
+            getAsyncData(lastMonthFirstDate, currentDate);
+        });
 
         return () => {
-            // Clear setInterval in case of screen unmount
-            // Unsubscribe for the focus Listener
             unsubscribe;
         };
     }, [navigation]);
@@ -110,9 +99,12 @@ const PreEnquiryScreen = ({ navigation }) => {
 
     const getAsyncData = async (startDate, endDate) => {
         let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
+        let orgId = await AsyncStore.getData(AsyncStore.Keys.ORG_ID);
+
         if (empId) {
             getPreEnquiryListFromServer(empId, startDate, endDate);
             setEmployeeId(empId);
+            setOrgId(orgId);
         }
     }
 
@@ -121,8 +113,10 @@ const PreEnquiryScreen = ({ navigation }) => {
         dispatch(getPreEnquiryData(payload));
     }
 
+
     const getPayloadData = (empId, startDate, endDate, offSet, modelFilters = [], categoryFilters = [], sourceFilters = []) => {
-        const payload = {
+        let payload = new Object();
+        payload = {
             "startdate": startDate,
             "enddate": endDate,
             "model": modelFilters,
@@ -169,6 +163,8 @@ const PreEnquiryScreen = ({ navigation }) => {
         const sourceData = payload.source;
         const categoryData = payload.category;
 
+        
+
         const categoryFilters = [];
         const modelFilters = [];
         const sourceFilters = [];
@@ -185,7 +181,7 @@ const PreEnquiryScreen = ({ navigation }) => {
             if (element.isChecked) {
                 modelFilters.push({
                     id: element.id,
-                    name: element.name
+                    name: element.value
                 })
             }
         });
@@ -193,7 +189,8 @@ const PreEnquiryScreen = ({ navigation }) => {
             if (element.isChecked) {
                 sourceFilters.push({
                     id: element.id,
-                    name: element.name
+                    name: element.name,
+                    orgId: orgId
                 })
             }
         });
@@ -204,8 +201,16 @@ const PreEnquiryScreen = ({ navigation }) => {
 
         // Make Server call
         const payload2 = getPayloadData(employeeId, selectedFromDate, selectedToDate, 0, modelFilters, categoryFilters, sourceFilters)
+        
         dispatch(getPreEnquiryData(payload2));
     }
+
+    // let obj = {
+    //     "a": 1,
+    //     "c": 2,
+    //     "b": 3
+    // }
+    // console.log(JSON.stringify(obj))
 
     const renderFooter = () => {
         if (!selector.isLoadingExtraData) { return null }
