@@ -3163,7 +3163,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                                 <CheckboxTextAndAmountComp
                                     title={"Handling Charges:"}
-                                    amount={priceInfomationData.handling_charges.toFixed(2)}
+                                    amount={handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : 0}
                                     // amount={handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : "0.00"}
                                     isChecked={handlingChargSlctd}
                                     onPress={() => {

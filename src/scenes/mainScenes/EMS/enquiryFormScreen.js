@@ -769,11 +769,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
     //communication Address
     if (selector.houseNum.length == 0) {
-      showToast("Please fill houseNum ");
+      showToast("Please fill H.No ");
       return;
     }
     if (selector.streetName.length == 0) {
-      showToast("Please fill street ");
+      showToast("Please fill Street Name ");
       return;
     }
     if (selector.village.length == 0) {
@@ -3981,7 +3981,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     style={styles.textInputStyle}
                     value={selector.r_reg_no}
                     label={"Reg. No.*"}
-                    maxLength={50}
+                    maxLength={12}
                     keyboardType={"default"}
                     autoCapitalize={"characters"}
                     onChangeText={(text) =>
