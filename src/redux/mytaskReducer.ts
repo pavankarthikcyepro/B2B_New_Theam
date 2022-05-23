@@ -6,6 +6,7 @@ import URL from "../networking/endpoints";
 export const getCurrentTasksListApi = createAsyncThunk("MY_TASKS/getCurrentTasksListApi", async (endUrl, { rejectWithValue }) => {
 
   const url = URL.GET_CURRENT_TASK_LIST() + endUrl;
+  console.log("START", url);
   const response = await client.get(url);
   const json = await response.json()
   console.log(json)
@@ -56,9 +57,11 @@ export const getMyTasksListApi = createAsyncThunk("MY_TASKS/getMyTasksListApi", 
   }
 
   const url = URL.GET_MY_TASKS_NEW_DATA();
+  console.log("START:", url, userId);
+  
   const response = await client.post(url, payload);
   const json = await response.json()
-  console.log(json)
+  console.log("RES: ",json)
   if (!response.ok) {
     return rejectWithValue(json);
   }

@@ -179,6 +179,10 @@ const EnquiryScreen = ({ navigation }) => {
         );
     };
 
+    const getFirstLetterUpperCase = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
     return (
         <SafeAreaView style={styles.container}>
 
@@ -265,7 +269,7 @@ const EnquiryScreen = ({ navigation }) => {
                                     <View style={{ paddingVertical: 5 }}>
                                         <MyTaskNewItem
                                             from='PRE_ENQUIRY'
-                                            name={item.firstName + " " + item.lastName}
+                                            name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
                                             status={""}
                                             created={item.createdDate}
                                             dmsLead={item.createdBy}
@@ -276,7 +280,7 @@ const EnquiryScreen = ({ navigation }) => {
                                                 console.log("ENQ: ", JSON.stringify(item));
                                                 navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId })
                                             }}
-                                            onDocPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.detailsOverview, { universalId: item.universalId })}
+                                            onDocPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.detailsOverview, { universalId: item.universalId, enqDetails: item })}
                                         />
                                     </View>
                                 </>

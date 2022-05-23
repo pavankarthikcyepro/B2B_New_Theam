@@ -66,7 +66,8 @@ import {
   getPendingTasksApi,
   updateAddressByPincode,
   updateRef,
-  customerLeadRef
+  customerLeadRef,
+  updateEnquiryDetailsApiAutoSave
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
@@ -145,7 +146,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.enquiryFormReducer);
   const [openAccordian, setOpenAccordian] = useState("0");
   const [componentAppear, setComponentAppear] = useState(false);
-  const { universalId } = route.params;
+  const { universalId, enqDetails } = route.params;
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [dataForDropDown, setDataForDropDown] = useState([]);
   const [dropDownKey, setDropDownKey] = useState("");
@@ -203,17 +204,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   }, [navigation]);
 
   useEffect(() => {
-    let interval;
-    navigation.addListener('focus', () => {
-      interval = setInterval(() => {
+    const interval = setInterval(() => {
+      if (enqDetails?.leadStage === "ENQUIRY" && enqDetails?.leadStatus === null) {
         autoSave()
-      }, 60000)
-    })
-    navigation.addListener('blur', () => {
+      }
+    }, 10000);
+    return () => {
       console.log("CLEAR");
       clearInterval(interval)
-    })
-  }, [navigation]);
+    }
+  }, [autoSave, selector])
 
   const goParentScreen = () => {
     navigation.goBack();
@@ -447,151 +447,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   const autoSave = async () => {
-    console.log("CALLED AUTO SAVE");
-    if (selector.designation.length == 0 || selector.buyer_type.length == 0) {
-      return;
-    }
-    if (!isValidateAlphabetics(selector.occupation)) {
-      return;
-    }
-
-    if (!isValidateAlphabetics(selector.designation)) {
-      return;
-    }
-
-    if (selector.salutation.length == 0) {
-      return;
-    }
-
-    if (selector.enquiry_segment.toLowerCase() == "personal") {
-      if (
-        selector.dateOfBirth.length == 0
-        // ||
-        // selector.anniversaryDate.length == 0
-      ) {
-        return;
-      }
-    }
-    if (!isValidate(selector.firstName)) {
-      return;
-    }
-    if (!isValidate(selector.lastName)) {
-      return;
-    }
-    if (!isValidateAlphabetics(selector.relationName)) {
-      return;
-    }
-    if (!isValidateAlphabetics(selector.streetName)) {
-      return;
-    }
-    // Model Selection
-    if (selector.model.length == 0 || selector.varient.length == 0 || selector.color.length == 0) {
-      return;
-    }
-
-    if (
-      selector.houseNum.length == 0 ||
-      selector.streetName.length == 0 ||
-      selector.village.length == 0 ||
-      selector.city.length == 0 ||
-      selector.state.length == 0 ||
-      selector.district.length == 0
-    ) {
-      return;
-    }
-
-    if (selector.retail_finance.length == 0) {
-      return;
-    }
-
-    if (selector.retail_finance === "In House") {
-      if (
-        selector.finance_category.length == 0 ||
-        selector.loan_of_tenure.length == 0 ||
-        selector.emi.length == 0 ||
-        selector.approx_annual_income.length == 0 ||
-        selector.bank_or_finance.length == 0
-      ) {
-        return;
-      }
-    }
-
-    // Leashing
-    if (selector.retail_finance == "Leasing") {
-      if (selector.leashing_name.length == 0) {
-        return;
-      }
-    }
-
-
-
-    if (selector.buyer_type === "Additional Buyer") {
-      if (
-        selector.a_make == 0 ||
-        selector.a_model == 0 ||
-        selector.a_varient == 0 ||
-        selector.a_color == 0 ||
-        selector.a_reg_no == 0
-      ) {
-        return;
-      }
-      if (!isValidateAlphabetics(selector.a_varient)) {
-
-        return;
-      }
-      if (!isValidateAlphabetics(selector.a_color)) {
-        return;
-      }
-
-    }
-
-
-    if (selector.buyer_type === "Replacement Buyer") {
-      if (selector.r_color.length > 0) {
-        if (!isValidateAlphabetics(selector.r_color)) {
-          return;
-        }
-      }
-      if (selector.r_insurence_company_name.length == 0) {
-        return;
-      }
-      if (!isValidateAlphabetics(selector.r_model_other_name)) {
-        return;
-      }
-
-      if (selector.r_hypothication_checked === true) {
-        if (selector.r_hypothication_name.length > 0) {
-          if (!isValidateAlphabetics(selector.r_hypothication_name)) {
-            return;
-          }
-        }
-        if (selector.r_hypothication_branch.length > 0) {
-          if (!isValidateAlphabetics(selector.r_hypothication_branch)) {
-            return;
-          }
-        }
-      }
-    }
-
-    if (selector.c_looking_for_any_other_brand_checked === true) {
-      if (selector.c_dealership_name.length > 0) {
-        if (!isValidateAlphabetics(selector.c_dealership_name)) {
-          return;
-        }
-      }
-    }
-
-    if (
-      selector.leashing_name.length > 0 &&
-      !isValidateAlphabetics(selector.leashing_name)
-    ) {
-      return;
-    }
-
-    if (!selector.enquiry_details_response) {
-      return;
-    }
-
+    //Personal Intro
+    console.log("CALLED AUTOSAVE");
     let dmsContactOrAccountDto = {};
     let dmsLeadDto = {};
     let formData;
@@ -602,89 +459,134 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     else if (dmsEntity.hasOwnProperty("dmsAccountDto"))
       dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsAccountDto);
 
-    if (dmsEntity.hasOwnProperty("dmsLeadDto"))
+    if (dmsEntity.hasOwnProperty("dmsLeadDto")) {
       dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
-    const employeeData = await AsyncStore.getData(
-      AsyncStore.Keys.LOGIN_EMPLOYEE
-    );
-    if (employeeData) {
-      const jsonObj = JSON.parse(employeeData);
-      let tempAttachments = [];
-      // console.log("GDGHDGDGDGDGD", JSON.stringify(dmsLeadDto.dmsAttachments));
-      if (selector.pan_number) {
-        tempAttachments.push({
-
-          "branchId": jsonObj.branchs[0]?.branchId,
-          "contentSize": 0,
-          "createdBy": new Date().getSeconds(),
-          "description": "",
-          "documentNumber": selector.pan_number,
-          "documentPath": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'pan' })[0].documentPath : '',
-          "documentType": "pan",
-          "documentVersion": 0,
-          "fileName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'pan' })[0].fileName : '',
-          "gstNumber": "",
-          "id": 0,
-          "isActive": 0,
-          "isPrivate": 0,
-          "keyName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'pan' })[0].keyName : '',
-          "modifiedBy": jsonObj.empName,
-          "orgId": jsonObj.orgId,
-          "ownerId": "",
-          "ownerName": jsonObj.empName,
-          "parentId": "",
-          "tinNumber": ""
-        })
+      const employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        let tempAttachments = [];
+        console.log("GDGHDGDGDGDGD", JSON.stringify(dmsLeadDto.dmsAttachments));
+        if (selector.pan_number) {
+          tempAttachments.push({
+            branchId: jsonObj.branchs[0]?.branchId,
+            contentSize: 0,
+            createdBy: new Date().getSeconds(),
+            description: "",
+            documentNumber: selector.pan_number,
+            documentPath:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "pan";
+                })[0].documentPath
+                : "",
+            documentType: "pan",
+            documentVersion: 0,
+            fileName:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "pan";
+                })[0].fileName
+                : "",
+            gstNumber: "",
+            id: 0,
+            isActive: 0,
+            isPrivate: 0,
+            keyName:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "pan";
+                })[0].keyName
+                : "",
+            modifiedBy: jsonObj.empName,
+            orgId: jsonObj.orgId,
+            ownerId: "",
+            ownerName: jsonObj.empName,
+            parentId: "",
+            tinNumber: "",
+          });
+        }
+        if (selector.adhaar_number) {
+          tempAttachments.push({
+            branchId: jsonObj.branchs[0]?.branchId,
+            contentSize: 0,
+            createdBy: new Date().getSeconds(),
+            description: "",
+            documentNumber: selector.adhaar_number,
+            documentPath:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "aadhar";
+                })[0].documentPath
+                : "",
+            documentType: "aadhar",
+            documentVersion: 0,
+            fileName:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "aadhar";
+                })[0].fileName
+                : "",
+            gstNumber: "",
+            id: 0,
+            isActive: 0,
+            isPrivate: 0,
+            keyName:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "aadhar";
+                })[0].keyName
+                : "",
+            modifiedBy: jsonObj.empName,
+            orgId: jsonObj.orgId,
+            ownerId: "",
+            ownerName: jsonObj.empName,
+            parentId: "",
+            tinNumber: "",
+          });
+        }
+        if (selector.employee_id) {
+          tempAttachments.push({
+            branchId: jsonObj.branchs[0]?.branchId,
+            contentSize: 0,
+            createdBy: new Date().getSeconds(),
+            description: "",
+            documentNumber: selector.employee_id,
+            documentPath:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "empId";
+                })[0].documentPath
+                : "",
+            documentType: "empId",
+            documentVersion: 0,
+            fileName:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "empId";
+                })[0].fileName
+                : "",
+            gstNumber: "",
+            id: 0,
+            isActive: 0,
+            isPrivate: 0,
+            keyName:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "empId";
+                })[0].keyName
+                : "",
+            modifiedBy: jsonObj.empName,
+            orgId: jsonObj.orgId,
+            ownerId: "",
+            ownerName: jsonObj.empName,
+            parentId: "",
+            tinNumber: "",
+          });
+        }
+        dmsLeadDto.dmsAttachments = tempAttachments;
       }
-      if (selector.adhaar_number) {
-        tempAttachments.push({
-          "branchId": jsonObj.branchs[0]?.branchId,
-          "contentSize": 0,
-          "createdBy": new Date().getSeconds(),
-          "description": "",
-          "documentNumber": selector.adhaar_number,
-          "documentPath": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'aadhar' })[0].documentPath : '',
-          "documentType": "aadhar",
-          "documentVersion": 0,
-          "fileName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'aadhar' })[0].fileName : '',
-          "gstNumber": "",
-          "id": 0,
-          "isActive": 0,
-          "isPrivate": 0,
-          "keyName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'aadhar' })[0].keyName : '',
-          "modifiedBy": jsonObj.empName,
-          "orgId": jsonObj.orgId,
-          "ownerId": "",
-          "ownerName": jsonObj.empName,
-          "parentId": "",
-          "tinNumber": ""
-        })
-      }
-      if (selector.employee_id) {
-        tempAttachments.push({
-          "branchId": jsonObj.branchs[0]?.branchId,
-          "contentSize": 0,
-          "createdBy": new Date().getSeconds(),
-          "description": "",
-          "documentNumber": selector.employee_id,
-          "documentPath": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'empId' })[0].documentPath : '',
-          "documentType": "empId",
-          "documentVersion": 0,
-          "fileName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'empId' })[0].fileName : '',
-          "gstNumber": "",
-          "id": 0,
-          "isActive": 0,
-          "isPrivate": 0,
-          "keyName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'empId' })[0].keyName : '',
-          "modifiedBy": jsonObj.empName,
-          "orgId": jsonObj.orgId,
-          "ownerId": "",
-          "ownerName": jsonObj.empName,
-          "parentId": "",
-          "tinNumber": ""
-        })
-      }
-      dmsLeadDto.dmsAttachments = tempAttachments;
     }
 
     if (selector.enquiry_details_response.hasOwnProperty("dmsContactDto")) {
@@ -698,25 +600,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         dmsLeadDto: dmsLeadDto,
       };
     }
-    setTypeOfActionDispatched("UPDATE_ENQUIRY");
-    // dispatch(updateEnquiryDetailsApi(formData));
+    let payload = {
+      data: formData,
+      status: "Active",
+      universalId: universalId
+    }
+    AsyncStore.storeJsonData(AsyncStore.Keys.ENQ_PAYLOAD, payload);
+
     Promise.all([
-      dispatch(updateEnquiryDetailsApi(formData))
-    ]).then(async (res) => {
-      console.log("REF NO:", res[0].payload.dmsEntity.dmsLeadDto.referencenumber);
-      let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-      if (employeeData) {
-        const jsonObj = JSON.parse(employeeData);
-        const payload = {
-          "refNo": res[0].payload.dmsEntity.dmsLeadDto.referencenumber,
-          "orgId": jsonObj.orgId,
-          "stageCompleted": "ENQUIRY"
-        }
-        console.log("PAYLOAD:", payload);
-        dispatch(updateRef(payload))
-      }
+      dispatch(updateEnquiryDetailsApiAutoSave(payload)),
+    ]).then(async () => {
+      console.log("REF NO");
     });
-  }
+  };
 
   const submitClicked = async () => {
     //Personal Intro
@@ -1102,6 +998,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         dmsLeadDto: dmsLeadDto,
       };
     }
+    console.log("PAYLOAD:", JSON.stringify(formData));
 
     setTypeOfActionDispatched("UPDATE_ENQUIRY");
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -1283,6 +1180,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.variant = selector.c_variant;
     dataObj.color = selector.c_color;
     dataObj.fuel = selector.c_fuel_type;
+    dataObj.transmission = selector.c_transmission_type;
     dataObj.priceRange = selector.c_price_range;
     dataObj.onRoadPriceanyDifference = selector.c_on_road_price;
     dataObj.dealershipName = selector.c_dealership_name;
@@ -1327,6 +1225,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dataObj.yearofManufacture = convertDateStringToMillisecondsUsingMoment(
         selector.r_mfg_year
       );
+      console.log("TTTT£££££:", dataObj.yearofManufacture, selector.r_mfg_year);
       dataObj.kiloMeters = selector.r_kms_driven_or_odometer_reading;
       dataObj.expectedPrice = selector.r_expected_price
         ? Number(selector.r_expected_price)
