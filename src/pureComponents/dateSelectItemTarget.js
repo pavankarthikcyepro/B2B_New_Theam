@@ -14,7 +14,7 @@ export const DateSelectItemForTargetSettings = ({ placeholder, label, value, dis
                     <Text style={[styles.text3, { color: value ? (disabled ? Colors.GRAY : Colors.BLACK) : Colors.GRAY }]}>{value ? value : placeholder}</Text>
                     <IconButton
                         icon="calendar-range"
-                        color={Colors.RED}
+                        color={Colors.GRAY_LIGHT}
                         size={25}
                     />
                 </View>

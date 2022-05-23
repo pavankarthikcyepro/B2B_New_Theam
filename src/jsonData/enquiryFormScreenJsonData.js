@@ -122,7 +122,7 @@ export const Gender_Data_Obj = {
   "m/s": [
     {
       id: "1",
-      name: "Rel by",
+      name: "Rep by",
     }
   ]
 };

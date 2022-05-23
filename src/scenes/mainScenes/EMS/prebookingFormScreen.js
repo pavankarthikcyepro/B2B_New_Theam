@@ -2678,7 +2678,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         <TextinputComp
                                             style={styles.textInputStyle}
                                             value={selector.employee_id}
-                                            label={"Employee ID*"}
+                                            label={"Employee ID"}
                                             maxLength={15}
                                             onChangeText={(text) =>
                                                 dispatch(setDocumentUploadDetails({ key: "EMPLOYEE_ID", text: text }))
@@ -2718,23 +2718,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         <View style={styles.select_image_bck_vw}>
                                             <ImageSelectItem
                                                 name={"Last 3 months payslip"}
-                                                onPress={() => dispatch(setImagePicker("UPLOAD_3_MONTHS_PAYSLIP"))}
+                                                onPress={() => dispatch(setImagePicker("UPLOAD_PATTA_PASS_BOOK"))}
                                             />
                                         </View>
-                                        {uploadedImagesDataObj.payslips?.fileName ? (
+                                        {uploadedImagesDataObj.passbook?.fileName ? (
 
                                             <View style={{ flexDirection: 'row' }}>
                                                 <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                                                    if (uploadedImagesDataObj.payslips?.documentPath) {
-                                                        setImagePath(uploadedImagesDataObj.payslips?.documentPath)
+                                                    if (uploadedImagesDataObj.passbook?.documentPath) {
+                                                        setImagePath(uploadedImagesDataObj.passbook?.documentPath)
                                                     }
                                                 }}>
                                                     <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
                                                 </TouchableOpacity>
                                                 <View style={{ width: '80%' }}>
                                                     <DisplaySelectedImage
-                                                        fileName={uploadedImagesDataObj.payslips.fileName}
-                                                        from={"3_MONTHS_PAYSLIP"}
+                                                        fileName={uploadedImagesDataObj.passbook.fileName}
+                                                        from={"PATTA_PASS_BOOK"}
                                                     />
                                                 </View>
                                             </View>
@@ -3163,7 +3163,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                                 <CheckboxTextAndAmountComp
                                     title={"Handling Charges:"}
-                                    amount={priceInfomationData.handling_charges.toFixed(2)}
+                                    amount={handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : 0}
                                     // amount={handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : "0.00"}
                                     isChecked={handlingChargSlctd}
                                     onPress={() => {
@@ -3498,10 +3498,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             </List.Accordion>
                             <View style={styles.space}></View>
 
-                            {/* // 7.Financial Details */}
+                            {/* // 7.Finance Details */}
                             <List.Accordion
                                 id={"7"}
-                                title={"Financial Details"}
+                                title={"Finance Details"}
                                 titleStyle={{
                                     color: openAccordian === "7" ? Colors.WHITE : Colors.WHITE,
                                     fontSize: 16,
@@ -3793,10 +3793,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             </List.Accordion>
                             <View style={styles.space}></View>
 
-                            {/* // 9.Commitment */}
+                            {/* // 9.DOD Confirmation */}
                             <List.Accordion
                                 id={"9"}
-                                title={"Commitment"}
+                                title={"DOD Confirmation"}
                                 titleStyle={{
                                     color: openAccordian === "9" ? Colors.WHITE : Colors.WHITE,
                                     fontSize: 16,

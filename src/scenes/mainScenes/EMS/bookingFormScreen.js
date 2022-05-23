@@ -352,6 +352,8 @@ const BookingFormScreen = ({ route, navigation }) => {
         selector.promotional_offer,
         selector.cash_discount,
         selector.for_accessories,
+        selector.insurance_discount,
+        selector.accessories_discount,
         selector.additional_offer_1,
         selector.additional_offer_2,
     ]);
@@ -946,6 +948,8 @@ const BookingFormScreen = ({ route, navigation }) => {
         totalPrice -= Number(selector.promotional_offer);
         totalPrice -= Number(selector.cash_discount);
         totalPrice -= Number(selector.for_accessories);
+        totalPrice -= Number(selector.insurance_discount);
+        totalPrice -= Number(selector.accessories_discount);
         totalPrice -= Number(selector.additional_offer_1);
         totalPrice -= Number(selector.additional_offer_2);
         if (accDiscount !== '') {
@@ -975,7 +979,7 @@ const BookingFormScreen = ({ route, navigation }) => {
         if (
             selector.form_or_pan.length == 0 ||
             selector.adhaar_number.length == 0 ||
-            selector.relationship_proof.length == 0 ||
+            // selector.relationship_proof.length == 0 ||
             selector.customer_type_category.length == 0
         ) {
             showToast("please enter document upload section");
@@ -1054,6 +1058,8 @@ const BookingFormScreen = ({ route, navigation }) => {
             priceInfomationData.ex_showroom_price;
         postOnRoadPriceTable.offerData = [];
         postOnRoadPriceTable.focAccessories = selector.for_accessories;
+        postOnRoadPriceTable.insuranceDiscount = selector.insurance_discount;
+        postOnRoadPriceTable.accessoriesDiscount = selector.accessories_discount;
         postOnRoadPriceTable.handlingCharges = handlingChargSlctd
             ? priceInfomationData.handling_charges
             : 0;
@@ -2813,7 +2819,7 @@ const BookingFormScreen = ({ route, navigation }) => {
 
                                 {/* // Relationship Number */}
                                 <View>
-                                    <TextinputComp
+                                    {/* <TextinputComp
                                         style={styles.textInputStyle}
                                         value={selector.relationship_proof}
                                         label={"Relationship Number*"}
@@ -2829,10 +2835,10 @@ const BookingFormScreen = ({ route, navigation }) => {
                                             )
                                         }
                                     />
-                                    <Text style={GlobalStyle.underline}></Text>
+                                    <Text style={GlobalStyle.underline}></Text> */}
                                     <View style={styles.select_image_bck_vw}>
                                         <ImageSelectItem
-                                            name={"Relationship Proof"}
+                                            name={"Others"}
                                             onPress={() =>
                                                 dispatch(setImagePicker("UPLOAD_RELATION_PROOF"))
                                             }
@@ -2942,7 +2948,11 @@ const BookingFormScreen = ({ route, navigation }) => {
                                     {/* <View style={{width: '60%', flexDirection: 'row'}}> */}
                                     <Text style={[styles.leftLabel]}>{"Life Tax:"}</Text>
                                     {/* </View> */}
-                                    <View style={{ width: 80, height: 30, justifyContent: 'center', paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#d1d1d1' }}>
+                                    <View style={{
+                                        // width: 80, height: 30,
+                                        // justifyContent: 'center',
+                                        paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#d1d1d1'
+                                    }}>
                                         <TextInput
                                             value={taxPercent}
                                             style={[{ fontSize: 14, fontWeight: "400", }]}
@@ -3082,7 +3092,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 <Text style={GlobalStyle.underline}></Text>
 
                                 <TextAndAmountComp
-                                    title={"TCS(>10Lakhs -> %):"}
+                                    title={"TCS(>=10Lakhs -> 1%):"}
                                     amount={tcsAmount.toFixed(2)}
                                 />
                                 <Text style={GlobalStyle.underline}></Text>
@@ -3291,7 +3301,37 @@ const BookingFormScreen = ({ route, navigation }) => {
                                     }
                                 />
                                 <Text style={GlobalStyle.underline}></Text>
-                                <View style={styles.textAndAmountView}>
+                                <TextinputComp
+                                    style={styles.offerPriceTextInput}
+                                    label={"Insurance Discount:"}
+                                    value={selector.insurance_discount}
+                                    showLeftAffixText={true}
+                                    keyboardType="number-pad"
+                                    leftAffixText={rupeeSymbol}
+                                    onChangeText={(text) => dispatch(
+                                        setOfferPriceDetails({
+                                            key: "INSURANCE_DISCOUNT",
+                                            text: text,
+                                        })
+                                    )}/>
+                                <Text style={GlobalStyle.underline}></Text>
+                                <TextinputComp
+                                    style={styles.offerPriceTextInput}
+                                    label={"Accessories Discount:"}
+                                    value={selector.accessories_discount}
+                                    showLeftAffixText={true}
+                                    keyboardType="number-pad"
+                                    leftAffixText={rupeeSymbol}
+                                    onChangeText={(text) => dispatch(
+                                        setOfferPriceDetails({
+                                            key: "ACCESSORIES_DISCOUNT",
+                                            text:text,
+                                        })
+                                    )}/>
+                                  <Text style={GlobalStyle.underline}></Text>  
+                                
+
+                                {/* <View style={styles.textAndAmountView}>
                                     <Text style={{ fontSize: 16, fontWeight: '400', color: Colors.GRAY }}>{"Insurance Discount:"}</Text>
                                     <View style={{ width: 80, height: 30, justifyContent: 'center', paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#d1d1d1' }}>
                                         <TextInput
@@ -3303,8 +3343,8 @@ const BookingFormScreen = ({ route, navigation }) => {
                                             }}
                                         />
                                     </View>
-                                </View>
-                                <View style={styles.textAndAmountView}>
+                                </View> */}
+                                {/* <View style={styles.textAndAmountView}>
                                     <Text style={{ fontSize: 16, fontWeight: '400', color: Colors.GRAY }}>{"Accessories Discount:"}</Text>
                                     <View style={{ width: 80, height: 30, justifyContent: 'center', paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#d1d1d1' }}>
                                         <TextInput
@@ -3316,7 +3356,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                             }}
                                         />
                                     </View>
-                                </View>
+                                </View> */}
                                 <TextinputComp
                                     style={styles.offerPriceTextInput}
                                     label={"Additional Offer 1:"}
@@ -3364,10 +3404,10 @@ const BookingFormScreen = ({ route, navigation }) => {
                             </List.Accordion>
                             <View style={styles.space}></View>
 
-                            {/* // 7.Financial Details */}
+                            {/* // 7.Finance Details */}
                             <List.Accordion
                                 id={"7"}
-                                title={"Financial Details"}
+                                title={"Finance Details"}
                                 titleStyle={{
                                     color: openAccordian === "7" ? Colors.WHITE : Colors.WHITE,
                                     fontSize: 16,
@@ -3674,10 +3714,10 @@ const BookingFormScreen = ({ route, navigation }) => {
                             </List.Accordion>
                             <View style={styles.space}></View>
 
-                            {/* // 9.Commitment */}
+                            {/* // 9.DOD Confirmation */}
                             <List.Accordion
                                 id={"9"}
-                                title={"Commitment"}
+                                title={"DOD Confirmation"}
                                 titleStyle={{
                                     color: openAccordian === "9" ? Colors.WHITE : Colors.WHITE,
                                     fontSize: 16,

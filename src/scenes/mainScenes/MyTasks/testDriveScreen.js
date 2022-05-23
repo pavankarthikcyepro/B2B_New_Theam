@@ -1003,8 +1003,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                                     showDatePickerModelMethod("CUSTOMER_PREFERRED_TIME", "time")
                                 }
                             />
-                            <View style={{ flexDirection: "row" }}>
-                                <View style={{ width: "50%" }}>
+                            {/* <View style={{ flexDirection: "row" }}>
+                                <View style={{ width: "50%" }}> */}
                                     <DateSelectItem
                                         label={"Actual start Time"}
                                         value={selector.actual_start_time}
@@ -1014,8 +1014,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                                             showDatePickerModelMethod("ACTUAL_START_TIME", "time")
                                         }
                                     />
-                                </View>
-                                <View style={{ width: "50%" }}>
+                                {/* </View>
+                                <View style={{ width: "50%" }}> */}
                                     <DateSelectItem
                                         label={"Actual End Time"}
                                         value={selector.actual_end_time}
@@ -1025,8 +1025,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                                             showDatePickerModelMethod("ACTUAL_END_TIME", "time")
                                         }
                                     />
-                                </View>
-                            </View>
+                                {/* </View> */}
+                            {/* </View> */}
 
                             {/* <View style={styles.space}></View> */}
                             {/* <Text style={{ padding: 10 }}>{"Allotment ID"}</Text>
