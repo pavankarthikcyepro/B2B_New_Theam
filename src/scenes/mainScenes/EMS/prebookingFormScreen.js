@@ -2718,23 +2718,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         <View style={styles.select_image_bck_vw}>
                                             <ImageSelectItem
                                                 name={"Last 3 months payslip"}
-                                                onPress={() => dispatch(setImagePicker("UPLOAD_3_MONTHS_PAYSLIP"))}
+                                                onPress={() => dispatch(setImagePicker("UPLOAD_PATTA_PASS_BOOK"))}
                                             />
                                         </View>
-                                        {uploadedImagesDataObj.payslips?.fileName ? (
+                                        {uploadedImagesDataObj.passbook?.fileName ? (
 
                                             <View style={{ flexDirection: 'row' }}>
                                                 <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                                                    if (uploadedImagesDataObj.payslips?.documentPath) {
-                                                        setImagePath(uploadedImagesDataObj.payslips?.documentPath)
+                                                    if (uploadedImagesDataObj.passbook?.documentPath) {
+                                                        setImagePath(uploadedImagesDataObj.passbook?.documentPath)
                                                     }
                                                 }}>
                                                     <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
                                                 </TouchableOpacity>
                                                 <View style={{ width: '80%' }}>
                                                     <DisplaySelectedImage
-                                                        fileName={uploadedImagesDataObj.payslips.fileName}
-                                                        from={"3_MONTHS_PAYSLIP"}
+                                                        fileName={uploadedImagesDataObj.passbook.fileName}
+                                                        from={"PATTA_PASS_BOOK"}
                                                     />
                                                 </View>
                                             </View>

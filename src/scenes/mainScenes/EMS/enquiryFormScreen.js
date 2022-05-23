@@ -484,7 +484,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (!isValidateAlphabetics(selector.streetName)) {
       return;
     }
-
     // Model Selection
     if (selector.model.length == 0 || selector.varient.length == 0 || selector.color.length == 0) {
       return;
@@ -769,47 +768,80 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
     //communication Address
-    if (
-      selector.houseNum.length == 0 ||
-      selector.streetName.length == 0 ||
-      selector.village.length == 0 ||
-      selector.city.length == 0 ||
-      selector.state.length == 0 ||
-      selector.district.length == 0
-    ) {
-      showToast("Please fill required fields in Communication Address");
+    if (selector.houseNum.length == 0) {
+      showToast("Please fill houseNum ");
       return;
     }
-
+    if (selector.streetName.length == 0) {
+      showToast("Please fill street ");
+      return;
+    }
+    if (selector.village.length == 0) {
+      showToast("Please fill village ");
+      return;
+    }
+    if (selector.mandal.length == 0) {
+      showToast("Please fill mandal");
+      return;
+    }
+    if (selector.city.length == 0) {
+      showToast("Please fill city ");
+      return;
+    }
+    if (selector.state.length == 0) {
+      showToast("Please fill state ");
+      return;
+    }
+    if (
+      selector.district.length == 0) {
+      showToast("Please fill district ");
+      return;
+      }
     // Model Selection
     if (
-      selector.model.length == 0 ||
-      selector.varient.length == 0 ||
-      selector.color.length == 0
-    ) {
-      showToast("Please fill required fields in Model Selection");
+      selector.model.length == 0) {
+      showToast("Please fill model");
       return;
     }
-
+    if (selector.varient.length == 0) {
+      showToast("Please fill Varient");
+      return;
+    }
+    if (selector.color.length == 0) {
+      showToast("Please fill color");
+      return;
+    }
     //Finance Details
     if (selector.retail_finance.length == 0) {
       showToast("Please fill required fields in Finance Details");
       return;
     }
-
     if (selector.retail_finance === "In House") {
       if (
-        selector.finance_category.length == 0 ||
-        selector.loan_of_tenure.length == 0 ||
-        selector.emi.length == 0 ||
-        selector.approx_annual_income.length == 0 ||
-        selector.bank_or_finance.length == 0
+        selector.finance_category.length == 0) {
+        showToast("Please fill finance category");
+        return;
+      }
+      if (
+         selector.loan_of_tenure.length == 0
       ) {
-        showToast("plaese enter the proper details in finace category ");
+        showToast("Please fill loan of tenure");
+        return;
+      }
+      if (selector.emi.length == 0) {
+        showToast("Please fill emi");
+        return;
+      }
+      if (selector.approx_annual_income.length == 0) {
+        showToast("Please fill approx annual income");
+        return;
+       }
+      if (selector.bank_or_finance.length == 0) {
+        showToast("Please fill bank/Finance");
         return;
       }
     }
-
+    
     // Leashing
     if (selector.retail_finance == "Leasing") {
       if (selector.leashing_name.length == 0) {
