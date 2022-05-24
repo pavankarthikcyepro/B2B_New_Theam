@@ -206,35 +206,47 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     });
   }, [navigation]);
 
-  useEffect(() => {
+  // useEffect(() => {
 
+  //   const interval = setInterval(() => {
+  //     if (enqDetails?.leadStage === "ENQUIRY" && enqDetails?.leadStatus === null) {
+  //       autoSave()
+  //     }
+  //   }, 10000);
+  //   return () => {
+
+  //   let interval;
+  //   navigation.addListener('focus', () => {
+  //     interval = setInterval(() => {
+  //       updateEnquiry()
+  //     }, 60000);
+  //   });
+  //   navigation.addListener('blur', () => {
+
+  //     console.log("CLEAR");
+  //     clearInterval(interval)
+  //   }
+  // }, [autoSave, selector])
+
+  useEffect(() => {
     const interval = setInterval(() => {
       if (enqDetails?.leadStage === "ENQUIRY" && enqDetails?.leadStatus === null) {
         autoSave()
       }
     }, 10000);
     return () => {
-
-    let interval;
-    navigation.addListener('focus', () => {
-      interval = setInterval(() => {
-        updateEnquiry()
-      }, 60000);
-    });
-    navigation.addListener('blur', () => {
-
       console.log("CLEAR");
       clearInterval(interval)
     }
   }, [autoSave, selector])
 
-  useEffect(() => {
-    let autoSaveInterval;
-      autoSaveInterval = setInterval(() => {
-        autoSave()
-      }, 6000);
-      return () => clearInterval(autoSaveInterval);
-  }, [])
+  // useEffect(() => {
+  //   let autoSaveInterval;
+  //     autoSaveInterval = setInterval(() => {
+  //       autoSave()
+  //     }, 6000);
+  //     return () => clearInterval(autoSaveInterval);
+  // }, [])
 
 
   const goParentScreen = () => {
