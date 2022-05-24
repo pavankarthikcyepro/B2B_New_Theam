@@ -994,13 +994,16 @@ const prebookingFormSlice = createSlice({
       const dateOfBirth = dms_C_Or_A_Dto.dateOfBirth ? dms_C_Or_A_Dto.dateOfBirth : "";
       state.date_of_birth = convertTimeStampToDateString(dateOfBirth, "DD/MM/YYYY");
       state.gender = dms_C_Or_A_Dto.gender ? dms_C_Or_A_Dto.gender : "";
-      state.age = dms_C_Or_A_Dto.age ? dms_C_Or_A_Dto.age.toString() : "0";
-      // const given = convertTimeStampToDateString(dateOfBirth, "DD/MM/YYYY");
-      // const current = moment().startOf('day');
-      // const total = Number(moment.duration(current.diff(given)).asYears()).toFixed(0);
-      // if (Number(total) > 0) {
-      //   state.age = total.toString();
-      // }
+      // state.age = dms_C_Or_A_Dto.age ? dms_C_Or_A_Dto.age.toString() : "0";
+      const dob = convertTimeStampToDateString(dateOfBirth, "DD/MM/YYYY");
+      const given = moment(dob, "DD/MM/YYYY");
+      const current = moment().startOf('day');
+      const total = Number(moment.duration(current.diff(given)).asYears()).toFixed(0);
+      console.log("DOB:", given, total);
+      
+      if (Number(total) > 0) {
+        state.age = total.toString();
+      }
       state.customer_type = dms_C_Or_A_Dto.customerType ? dms_C_Or_A_Dto.customerType : "";
     },
     updateDmsLeadDtoData: (state, action) => {
@@ -1126,7 +1129,8 @@ const prebookingFormSlice = createSlice({
 
       state.pan_number = "";
       state.adhaar_number = "";
-
+      console.log("DOCS:", JSON.stringify(action.payload));
+      
       const dmsAttachments = action.payload;
       const attachments = [...dmsAttachments];
       if (attachments.length > 0) {
@@ -1137,7 +1141,7 @@ const prebookingFormSlice = createSlice({
           else if (item.documentType === "aadhar") {
             state.adhaar_number = item.documentNumber;
           }
-          else if (item.documentType === "empId") {
+          else if (item.documentType === "empId" || item.documentType === "employeeId") {
             state.employee_id = item.documentNumber;
           }
         })

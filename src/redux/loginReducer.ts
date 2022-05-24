@@ -184,6 +184,7 @@ export const loginSlice = createSlice({
           state.userName = dataObj.userName;
           state.userData = dataObj;
           AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, dataObj.idToken);
+          AsyncStore.storeData(AsyncStore.Keys.IS_LOGIN, 'true');
         } else if (dataObj.reason) {
           showAlertMessage("Failed", "Incorrect Password");
           state.isLoading = false;

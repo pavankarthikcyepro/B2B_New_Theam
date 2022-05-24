@@ -56,7 +56,7 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
     const [defaultContext, setDefaultContext] = useState({});
 
     useEffect(() => {
-        // console.log("accessorylist: ", accessorylist.length)
+        console.log("accessorylist: ", accessorylist)
         const titleNames = [];
         const dataObj = {};
         accessorylist.forEach((item) => {
@@ -66,10 +66,11 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
                 const newData = [...oldData, newItem];
                 dataObj[item.item] = newData;
             } else {
-                titleNames.push(item.item.toUpperCase());
+                titleNames.push(item.item);
                 dataObj[item.item] = [newItem];
             }
         })
+        console.log("DATAOBJ: ", JSON.stringify(dataObj));
         setAccessoriesData({ names: titleNames, data: dataObj });
         removeExistingKeysFromAsync(titleNames);
     }, [])
