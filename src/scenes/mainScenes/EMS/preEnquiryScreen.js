@@ -44,16 +44,33 @@ const PreEnquiryScreen = ({ navigation }) => {
     const [sortAndFilterVisible, setSortAndFilterVisible] = useState(false);
     const [searchedData, setSearchedData] = useState([]);
 
+    const orgIdStateRef = React.useRef(orgId);
+    const empIdStateRef = React.useRef(employeeId);
+
+    const setMyState = data => {
+        empIdStateRef.current = data.empId;
+        orgIdStateRef.current = data.orgId;
+        setEmployeeId(data.empId);
+        setOrgId(data.orgId);
+    };
+
+    console.log({employeeId, orgId})
 
     useEffect(() => {
 
         // Get Data From Server
-
+        let isMounted = true;
         setSelectedFromDate(lastMonthFirstDate);
         const tomorrowDate = moment().add(1, "day").format(dateFormat)
         setSelectedToDate(currentDate);
-        getAsyncData(lastMonthFirstDate, currentDate);
+        getAsyncData().then(data => {
+            if (isMounted) {
+                setMyState(data);
+                getPreEnquiryListFromServer(empIdStateRef.current, lastMonthFirstDate, currentDate);
+            }
+        });
 
+        return () => { isMounted = false };
     }, [])
 
     useEffect(() => {
@@ -66,7 +83,10 @@ const PreEnquiryScreen = ({ navigation }) => {
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
-            getAsyncData(lastMonthFirstDate, currentDate);
+            // getAsyncData(lastMonthFirstDate, currentDate).then(data => {
+            //     console.log(data)
+            // });
+            getPreEnquiryListFromServer(empIdStateRef.current, lastMonthFirstDate, currentDate);
         });
 
         return () => {
@@ -97,15 +117,16 @@ const PreEnquiryScreen = ({ navigation }) => {
         dispatch(setPreEnquiryList(JSON.stringify(data)));
     }
 
-    const getAsyncData = async (startDate, endDate) => {
+    const getAsyncData = async () => {
         let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
         let orgId = await AsyncStore.getData(AsyncStore.Keys.ORG_ID);
 
-        if (empId) {
-            getPreEnquiryListFromServer(empId, startDate, endDate);
-            setEmployeeId(empId);
-            setOrgId(orgId);
-        }
+        return {empId, orgId};
+        // if (empId) {
+        //     getPreEnquiryListFromServer(empId, startDate, endDate);
+        //     setEmployeeId(empId);
+        //     setOrgId(orgId);
+        // }
     }
 
     const getPreEnquiryListFromServer = (empId, startDate, endDate) => {
