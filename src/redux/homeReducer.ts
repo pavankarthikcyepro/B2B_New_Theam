@@ -188,7 +188,7 @@ export const getTargetParametersEmpData = createAsyncThunk("HOME/getTargetParame
 })
 
 export const getGroupDealerRanking = createAsyncThunk("HOME/getGroupDealerRanking", async (payload: any, { rejectWithValue }) => {
-    // console.log("&&&&", URL.GET_TARGET_RANKING(payload.orgId), payload.payload);
+    console.log("%%%%GROUP", URL.GET_TARGET_GROUP_RANKING(payload.orgId), payload.payload);
     console.log("CALLED");
 
     const response = await client.post(URL.GET_TARGET_GROUP_RANKING(payload.orgId), payload.payload)
@@ -202,7 +202,7 @@ export const getGroupDealerRanking = createAsyncThunk("HOME/getGroupDealerRankin
 })
 
 export const getDealerRanking = createAsyncThunk("HOME/getDealerRanking", async (payload: any, { rejectWithValue }) => {
-
+    console.log("%%%DEALER", URL.GET_TARGET_RANKING(payload.orgId, payload.branchId), payload.payload);
     const response = await client.post(URL.GET_TARGET_RANKING(payload.orgId, payload.branchId), payload.payload)
     const json = await response.json()
     console.log("&&&&&& DATA GET_TARGET_RANKING:", json);
@@ -318,7 +318,9 @@ export const homeSlice = createSlice({
         allGroupDealerData: [],
         allDealerData: [],
         isTeam: false,
-        isTeamPresent: false
+        isTeamPresent: false,
+        isMD: false,
+        isDSE: false,
     },
     reducers: {
         dateSelected: (state, action) => {
@@ -329,6 +331,12 @@ export const homeSlice = createSlice({
         },
         updateIsTeamPresent: (state, action) => {
             state.isTeamPresent = action.payload;
+        },
+        updateIsMD: (state, action) => {
+            state.isMD = action.payload;
+        },
+        updateIsDSE: (state, action) => {
+            state.isDSE = action.payload;
         },
     },
     extraReducers: (builder) => {
@@ -595,7 +603,7 @@ export const homeSlice = createSlice({
     }
 });
 
-export const { dateSelected, updateFilterDropDownData, updateIsTeamPresent } = homeSlice.actions;
+export const { dateSelected, updateFilterDropDownData, updateIsTeamPresent, updateIsMD, updateIsDSE } = homeSlice.actions;
 export default homeSlice.reducer;
 
 

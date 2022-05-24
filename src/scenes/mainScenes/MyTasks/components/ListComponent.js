@@ -31,6 +31,7 @@ const ListComponent = ({ route, navigation }) => {
     const [index, setIndex] = useState(0);
     const [myTasksData, setMyTasksData] = useState([]);
     const selector = useSelector((state) => state.mytaskReducer);
+    const homeSelector = useSelector((state) => state.homeReducer);
 
     useEffect(() => {
         console.log('data: ', selector.mytasksLisResponse);
@@ -94,7 +95,7 @@ const ListComponent = ({ route, navigation }) => {
                 </View> */}
 
                 {/* Hide the tabs only for sales  */}
-                {
+                {/* {
                     selector.role != "Showroom DSE" && (
                         <View style={styles.selfBtnWrap}>
                             <TouchableOpacity onPress={() => {
@@ -109,6 +110,34 @@ const ListComponent = ({ route, navigation }) => {
                             </TouchableOpacity>
                         </View>
                     )
+                } */}
+                {homeSelector.isTeamPresent && !homeSelector.isMD && !homeSelector.isDSE &&
+                    <View style={styles.selfBtnWrap}>
+                        <TouchableOpacity onPress={() => {
+                            setIndex(0)
+                        }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: index ? Colors.WHITE : Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
+                            <Text style={{ fontSize: 16, color: index ? Colors.BLACK : Colors.WHITE, fontWeight: '600' }}>Self</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => {
+                            setIndex(1)
+                        }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: index ? Colors.RED : Colors.WHITE, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
+                            <Text style={{ fontSize: 16, color: index ? Colors.WHITE : Colors.BLACK, fontWeight: '600' }}>Teams</Text>
+                        </TouchableOpacity>
+                    </View>
+                }
+                {homeSelector.isDSE &&
+                    <View style={styles.selfBtnWrap}>
+                        <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
+                            <Text style={{ fontSize: 16, color: Colors.WHITE, fontWeight: '600' }}>Self</Text>
+                        </View>
+                    </View>
+                }
+                {homeSelector.isMD &&
+                    <View style={styles.selfBtnWrap}>
+                        <TouchableOpacity style={{ width: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.RED, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
+                            <Text style={{ fontSize: 16, color: Colors.WHITE, fontWeight: '600' }}>Teams</Text>
+                        </TouchableOpacity>
+                    </View>
                 }
             </View>
 

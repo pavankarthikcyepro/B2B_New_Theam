@@ -287,7 +287,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                         if (index === 0) {
                             return (
                                 <>
-                                    {homeSelector.isTeamPresent &&
+                                    {homeSelector.isTeamPresent && !homeSelector.isMD && !homeSelector.isDSE &&
                                         <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                                             <View style={{ width: '50%', justifyContent: 'center', flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, marginTop: 10, }}>
                                                 <TouchableOpacity onPress={() => {
@@ -301,6 +301,30 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                                                     dispatch(updateIsTeam(true))
                                                 }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: selector.isTeam ? Colors.RED : Colors.WHITE, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
                                                 <Text style={{ fontSize: 16, color: selector.isTeam ? Colors.WHITE : Colors.BLACK, fontWeight: '600' }}>Teams</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
+                                    }
+                                    {homeSelector.isDSE &&
+                                        <View style={{ flexDirection: 'row', marginBottom: 20, justifyContent: 'center', alignItems: 'center' }}>
+                                            <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, marginTop: 10, justifyContent: 'center', width: '80%' }}>
+                                                <TouchableOpacity onPress={() => {
+                                                    // setIsTeam(true)
+                                                    dispatch(updateIsTeam(false))
+                                                }} style={{ width: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
+                                                    <Text style={{ fontSize: 16, color: Colors.WHITE, fontWeight: '600' }}>Self</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
+                                    }
+                                    {homeSelector.isMD &&
+                                        <View style={{ flexDirection: 'row', marginBottom: 20, justifyContent: 'center', alignItems: 'center' }}>
+                                            <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, marginTop: 10, justifyContent: 'center', width: '80%' }}>
+                                                <TouchableOpacity onPress={() => {
+                                                    // setIsTeam(false)
+                                                    dispatch(updateIsTeam(true))
+                                                }} style={{ width: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.RED, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
+                                                    <Text style={{ fontSize: 16, color: Colors.WHITE, fontWeight: '600' }}>Teams</Text>
                                                 </TouchableOpacity>
                                             </View>
                                         </View>

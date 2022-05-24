@@ -188,7 +188,7 @@ const SideMenuScreen = ({ navigation }) => {
                 navigation.navigate(AppNavigator.DrawerStackIdentifiers.helpdesk);
                 break;
             case 108:
-                navigation.navigate(AppNavigator.MyTaskStackNavigator.mytasks);
+                navigation.navigate(AppNavigator.TabStackIdentifiers.myTask);
                 break;
             case 109:
                 navigation.navigate(AppNavigator.DrawerStackIdentifiers.taskTransfer);
@@ -206,13 +206,13 @@ const SideMenuScreen = ({ navigation }) => {
     };
 
     const signOutClicked = () => {
-
         AsyncStore.storeData(AsyncStore.Keys.USER_NAME, "");
         AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, "");
         AsyncStore.storeData(AsyncStore.Keys.EMP_ID, "");
         AsyncStore.storeData(AsyncStore.Keys.LOGIN_EMPLOYEE, "");
         AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_ID, "");
         AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_NAME, "");
+        AsyncStore.storeData(AsyncStore.Keys.IS_LOGIN, 'false');
         navigation.closeDrawer()
         //realm.close();
         signOut();
