@@ -337,7 +337,7 @@ const EmsStackNavigator = ({ navigation }) => {
                 <View style={{ flexDirection: "row" }}>
                   <SearchIcon />
                   {/* <RefreshIcon /> */}
-                  <MapIcon />
+                  {/* <MapIcon /> */}
                   <NotficationIcon
                     navigation={navigation}
                     identifier={"NOTIF_2"}

@@ -279,11 +279,13 @@ export const addPreEnquirySlice = createSlice({
       state.mobile = preEnquiryDetails.phone;
       state.alterMobile = dmsAccountOrContactObj["secondaryPhone"] || "";
       state.email = preEnquiryDetails.email;
+      console.log("PINCODE:", JSON.stringify(preEnquiryDetails));
+      
       state.pincode = preEnquiryDetails.pincode;
       state.carModel = preEnquiryDetails.model;
       state.enquiryType = preEnquiryDetails.enquirySegment;
-      state.enquiry_type_list =
-        CustomerTypesObj[preEnquiryDetails.enquirySegment.toLowerCase()];
+      state.customer_type_list = CustomerTypesObj[preEnquiryDetails.enquirySegment.toLowerCase()];
+      state.enquiry_type_list = EnquiryTypes;
       state.customerType = dmsAccountOrContactObj["customerType"] || "";
       state.sourceOfEnquiry = preEnquiryDetails.enquirySource;
       state.sourceOfEnquiryId = preEnquiryDetails.sourceOfEnquiry;

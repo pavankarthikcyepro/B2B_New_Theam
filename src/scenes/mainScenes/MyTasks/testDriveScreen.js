@@ -239,10 +239,11 @@ const TestDriveScreen = ({ route, navigation }) => {
     // Handle Task Details Response
     useEffect(() => {
         if (selector.test_drive_vehicle_list_for_drop_down.length > 0 && selectedVehicleDetails?.varient !== '') {
-            let tempObj = selectedVehicleDetails;
+            console.log("VEHICLE INFO BEFORE:", JSON.stringify(selector.test_drive_vehicle_list_for_drop_down));
+            let tempObj = {...selectedVehicleDetails};
             let findModel = [];
             findModel = selector.test_drive_vehicle_list_for_drop_down.filter((item) => {
-                return item.varientName === selectedVehicleDetails.varient
+                return item.varientName === selectedVehicleDetails.varient || item.model === selectedVehicleDetails.model
             })
             if (findModel.length > 0) {
                 tempObj.vehicleId = findModel[0].vehicleId;

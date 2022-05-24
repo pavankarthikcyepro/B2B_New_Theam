@@ -4,7 +4,7 @@ import { Button, IconButton } from 'react-native-paper';
 import { Colors } from '../styles';
 
 
-const HeaderComp = ({ title, branchName = "", height = 56, menuClicked, branchClicked }) => {
+const HeaderComp = ({ title, branchName = "", height = 56, menuClicked, branchClicked, filterClicked }) => {
     return (
         <View style={[style.container, { height: height }]}>
             <View style={style.subContainer}>
@@ -30,6 +30,15 @@ const HeaderComp = ({ title, branchName = "", height = 56, menuClicked, branchCl
                         </View>
                     </TouchableOpacity>
                 ) : null}
+            </View>
+            <View>
+                <View style={style.filterContainer}>
+                    <IconButton icon="filter-outline"
+                        style={{ padding: 0, margin: 0 }}
+                        color={Colors.RED}
+                        size={30}
+                    onPress={filterClicked}/>
+                </View>
             </View>
         </View>
     )

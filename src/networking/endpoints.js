@@ -22,26 +22,27 @@
 
 // Dev End Points
 
-export const hrms_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8088/hrms";
-export const sales_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales";
-export const roleManagement_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8089/role-management";
-export const vehicleInfoService_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8090/vehicle-information-service";
-export const ops_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8084/ops"
-export const inventory_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8087/inventory";
-export const vehicleServices_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8083/vehicle-services";
-export const admin_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8082/admin";
-export const notificationServices_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8086/notification-service";
-export const customerService_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8085/customer-service";
-export const dynamicReports_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/dynamic-reports";
-export const dynamicForms = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/dynamic-forms";
-export const orgnaizationHirarchy = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/oh";
-export const dashboard = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard";
-export const dfGetAll = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/df-get-all"
-export const subSourceAllDetails = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails"
-export const salesGap = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/sales-gap"
-export const lostSubLost = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails"
-export const getBranch = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/oh";
-export const downloadFile = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8093/dynamic-reports";
+export const hrms_url = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8088/hrms";
+export const sales_url = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8081/sales";
+export const roleManagement_url = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8089/role-management";
+export const vehicleInfoService_url = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8090/vehicle-information-service";
+export const ops_url = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8084/ops"
+export const inventory_url = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8087/inventory";
+export const vehicleServices_url = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8083/vehicle-services";
+export const admin_url = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8082/admin";
+export const notificationServices_url = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8086/notification-service";
+export const customerService_url = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8085/customer-service";
+export const dynamicReports_url = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/dynamic-reports";
+export const dynamicForms = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/dynamic-forms";
+export const orgnaizationHirarchy = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/oh";
+export const dashboard = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8092/dashboard";
+export const dfGetAll = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/df-get-all"
+export const subSourceAllDetails = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails"
+export const salesGap = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8092/sales-gap"
+export const lostSubLost = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails"
+export const getBranch = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8092/oh";
+export const downloadFile = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8093/dynamic-reports";
+export const downloadFile1 = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8095/dynamic-reports/etvbrl_report_download";
 
 
 const URL = {
@@ -176,15 +177,15 @@ const URL = {
     EDIT_TARGET_MAPPING: () => salesGap + `/edit_targetmapping_role`,
     GET_ALL_TARGET_MAPPING: () => salesGap + `/get_all_targetmapping_role`,
     GET_TARGET_PARAMS: () => dashboard + "/v2/get_target_params_scheduler",
-    GET_TARGET_PARAMS_ALL: () => dashboard + "/v2/get_target_params_for_all_emps",
-    GET_TARGET_PARAMS_EMP: () => dashboard + "/v2/get_target_params_for_emp",
+    GET_TARGET_PARAMS_ALL: () => dashboard + "/v2/get_target_params_for_all_emps_scheduler",
+    GET_TARGET_PARAMS_EMP: () => dashboard + "/v2/get_target_params_for_emp_scheduler",
     GET_SALES_DATA: () => dashboard + "/v2/get_sales_data",
     GET_SALES_COMPARISON_DATA: () => dashboard + "/v2/get_sales_comparsion_data",
     GET_TARGET_GROUP_RANKING: (orgId) => {
-        return `${dashboard}/v2/get_emp_target_ranking/org/${orgId}`
+        return `${dashboard}/v2/get_emp_target_ranking_scheduler/org/${orgId}`
     },
     GET_TARGET_RANKING: (orgId, branchId) => {
-        return `${dashboard}/v2/get_emp_target_ranking/org/${orgId}/branch/${branchId}`
+        return `${dashboard}/v2/get_emp_target_ranking_scheduler/org/${orgId}/branch/${branchId}`
     },
     GET_BANK_DETAILS: (orgId) => {
         return dfGetAll + `/${orgId}/"Active"/${orgId}/bankFinancier`;
@@ -217,17 +218,18 @@ const URL = {
         return getBranch + `/data-nodes?orgId=1&levelCode=Level5`;
     },
     DOWNLOAD_FILE: () => {
-        return downloadFile + `/etvbrl_report_md`;
+        return downloadFile1;
     },
     LOCATION_LIST: (orgId) => {
-        return `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/oh/data-nodes?orgId=${orgId}&levelCode=Level4`;
+        return `http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8092/oh/data-nodes?orgId=${orgId}&levelCode=Level4`;
     },
     DEALER_CODE_LIST: (orgId) => {
-        return `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/oh/data-nodes?orgId=1&levelCode=Level5`;
+        return `http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8092/oh/data-nodes?orgId=1&levelCode=Level5`;
     },
     DOWNLOAD_REPORT: () => {
-        return `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8093/dynamic-reports/etvbrl_report`;
+        return `http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8093/dynamic-reports/etvbrl_report`;
     },
+    
     QR: (orgId, branchId) => {
         return sales_url + `/qrcode/get/${orgId}/${branchId}`;
     },
@@ -237,10 +239,13 @@ const URL = {
     GET_SPECIAL_DROP_VALUE: () => {
         return dynamicForms + `/dropdown`;
     },
+    AUTO_SAVE: () => {
+        return downloadFile + `/autosave`;
+    },
 }
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason
-// http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/df-get-all/1/%22Active%22/1/enqueryCategory
+// http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/df-get-all/1/%22Active%22/1/enqueryCategory
 
 // http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/oh/active-dropdowns/13/412
 

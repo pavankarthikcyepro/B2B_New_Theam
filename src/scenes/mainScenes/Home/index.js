@@ -246,7 +246,9 @@ const HomeScreen = ({ route, navigation }) => {
     const moveToSelectBranch = () => {
         navigation.navigate(AppNavigator.HomeStackIdentifiers.select_branch, { isFromLogin: false, })
     }
-
+    const moveToFilter = () => {
+    navigation.navigate(AppNavigator.HomeStackIdentifiers.filter,{isFromLogin:false,})
+}
     const getMenuListFromServer = async () => {
         let name = await AsyncStore.getData(AsyncStore.Keys.USER_NAME);
         if (name) {
@@ -350,7 +352,8 @@ const HomeScreen = ({ route, navigation }) => {
                         "endDate": monthLastDate,
                         "loggedInEmpId": jsonObj.empId,
                         "startDate": monthFirstDate,
-                        "levelSelected": null
+                        "levelSelected": null,
+                        "empId": jsonObj.empId
                     }
                     // console.log("PAYLOAD:", payload);
                     getAllTargetParametersDataFromServer(payload)
@@ -528,6 +531,64 @@ const HomeScreen = ({ route, navigation }) => {
         })
     }
 
+
+    const downloadFileFromServer1 = async () => {
+        setLoading(true)
+        Promise.all([
+            dispatch(getBranchIds({}))
+        ]).then(async (res) => {
+            console.log('DATA', res[0]);
+            let branchIds = []
+            let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+            if (employeeData) {
+                const jsonObj = JSON.parse(employeeData);
+              //  if (res[0]?.payload.length > 0) {
+               //     let braches = res[0]?.payload;
+                //    for (let i = 0; i < braches.length; i++) {
+                 //       branchIds.push(braches[i].id);
+                     //   if (i == braches.length - 1) {
+                            const dateFormat = "YYYY-MM-DD";
+                            const currentDate = moment().format(dateFormat)
+                            const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                            const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                            let payload7 = {
+                                orgId: jsonObj.orgId,
+                                reportFrequency: "MONTHLY",
+                                reportType: "ORG",
+                                location: "Khammam"  
+                            }
+                            console.log("PAYLOAD:", payload7);
+                            Promise.all([
+                                dispatch(downloadFile(payload7))
+                            ]).then(async (res) => {
+                                console.log('DATA', JSON.stringify(res));
+                                if (res[0]?.payload7?.downloadUrl1) {
+                                    downloadInLocal(res[0]?.payload7?.downloadUrl1)
+                                }
+                                else {
+                                    setLoading(false)
+                                }
+                            }).catch(() => {
+                                setLoading(false)
+                            })
+
+                            // try {
+                            //     const response = await client.post(URL.DOWNLOAD_FILE(), payload)
+                            //     const json = await response.json()
+                            //     console.log("DOWNLOAD: ", json);
+                            // } catch (error) {
+                            //     setLoading(false)
+                            // }
+                      //  }
+                 //   }
+            //    }
+            }
+
+        }).catch(() => {
+            setLoading(false)
+        })
+    }
+
     const downloadInLocal = async (url) => {
         const { config, fs } = RNFetchBlob;
         let downloadDir = Platform.select({ ios: fs.dirs.DocumentDir, android: fs.dirs.DownloadDir });
@@ -612,6 +673,7 @@ const HomeScreen = ({ route, navigation }) => {
                 branchName={selectedBranchName}
                 menuClicked={() => navigation.openDrawer()}
                 branchClicked={() => moveToSelectBranch()}
+                filterClicked={()=> moveToFilter()}
             />
             <View style={{ flex: 1, padding: 10 }}>
                 <FlatList
@@ -626,7 +688,7 @@ const HomeScreen = ({ route, navigation }) => {
                                 <>
                                     {isButtonPresent &&
                                         <View style={{ width: '100%', alignItems: 'flex-end', marginBottom: 15 }}>
-                                            <TouchableOpacity style={{ width: 130, height: 30, backgroundColor: Colors.RED, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={downloadFileFromServer}>
+                                            <TouchableOpacity style={{ width: 130, height: 30, backgroundColor: Colors.RED, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={downloadFileFromServer1}>
                                                 <Text style={{ fontSize: 14, fontWeight: '600', color: '#fff' }}>ETVBRL Report</Text>
                                             </TouchableOpacity>
                                         </View>
@@ -646,7 +708,7 @@ const HomeScreen = ({ route, navigation }) => {
                                                     source={SPEED}
                                                 // style={{ tintColor: Colors.DARK_GRAY }}
                                                 /> */}
-                                                    <Image style={styles.rankIcon} source={require("../../../assets/images/rank.png")} />
+                                                    <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
                                                 </View>
                                                 <View style={{
                                                     marginTop: 5,
@@ -677,7 +739,7 @@ const HomeScreen = ({ route, navigation }) => {
                                                     source={SPEED}
                                                 // style={{ tintColor: Colors.DARK_GRAY }}
                                                 /> */}
-                                                    <Image style={styles.rankIcon} source={require("../../../assets/images/rank.png")} />
+                                                    <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
                                                 </View>
                                                 <View style={{
                                                     marginTop: 5,
@@ -749,12 +811,13 @@ const HomeScreen = ({ route, navigation }) => {
                                             </View>
                                         </View>
 
-                                        <TouchableOpacity style={{ position: 'absolute', top: -10, right: -10 }} onPress={() => navigation.navigate(HomeStackIdentifiers.filter)}>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        {/* <TouchableOpacity style={{ position: 'absolute', top: -10, right: -10 }}
+                                            onPress={() => navigation.navigate(HomeStackIdentifiers.filter)}>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}> */}
                                                 {/* <Text style={[styles.text1, { color: Colors.RED }]}>{'Filters'}</Text> */}
-                                                <IconButton icon={'filter-outline'} size={25} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
+                                                {/* <IconButton icon={'filter-outline'} size={25} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
                                             </View>
-                                        </TouchableOpacity>
+                                        </TouchableOpacity> */}
                                     </View>
                                 </>
                             )

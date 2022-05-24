@@ -204,7 +204,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       ),
     });
   }, [navigation]);
-
+/*
   useEffect(() => {
     let interval;
     navigation.addListener('focus', () => {
@@ -217,6 +217,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       clearInterval(interval)
     })
   }, [navigation]);
+*/
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (enqDetails?.leadStage === "ENQUIRY" && enqDetails?.leadStatus === null) {
+        autoSave()
+      }
+    }, 10000);
+    return () => {
+      console.log("CLEAR");
+      clearInterval(interval)
+    }
+  }, [autoSave, selector])
 
   useEffect(() => {
     let autoSaveInterval;

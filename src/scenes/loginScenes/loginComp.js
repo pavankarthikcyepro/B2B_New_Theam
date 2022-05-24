@@ -221,11 +221,11 @@ const LoginScreen = ({ navigation }) => {
             onChangeText={(text) => dispatch(updatePassword(text))}
             onRightIconPressed={() => dispatch(updateSecurePassword())}
           />
-          <View style={styles.forgotView}>
+          {/* <View style={styles.forgotView}>
             <Pressable onPress={forgotClicked}>
               <Text style={styles.forgotText}>{"Forgot Password?"}</Text>
             </Pressable>
-          </View>
+          </View> */}
           <View style={{ height: 40 }}></View>
           <Pressable 
             style={styles.loginButton}
