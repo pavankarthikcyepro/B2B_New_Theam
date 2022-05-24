@@ -325,6 +325,53 @@ const HomeScreen = ({ route, navigation }) => {
             ]).then(() => {
                 console.log('I did everything!');
             });
+            console.log("LOGIN DATA:", JSON.stringify(jsonObj));
+            if (jsonObj?.hrmsRole === "Admin Prod" || jsonObj?.hrmsRole === "App Admin" || jsonObj?.hrmsRole === "Manager" || jsonObj?.hrmsRole === "TL" || jsonObj?.hrmsRole === "General Manager" || jsonObj?.hrmsRole === "branch manager" || jsonObj?.hrmsRole  === "Testdrive_Manager"){
+                dispatch(updateIsTeamPresent(true))
+                setIsTeamPresent(true)
+                // console.log("%%%%% TEAM:", rolesArr);
+                const dateFormat = "YYYY-MM-DD";
+                const currentDate = moment().format(dateFormat)
+                const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                const payload = {
+                    "endDate": monthLastDate,
+                    "loggedInEmpId": jsonObj.empId,
+                    "startDate": monthFirstDate,
+                    "levelSelected": null,
+                    "empId": jsonObj.empId
+                }
+                // console.log("PAYLOAD:", payload);
+                getAllTargetParametersDataFromServer(payload)
+            }
+            if (jsonObj?.hrmsRole.toLowerCase().includes('manager')) {
+                // dispatch(updateData(sidemenuSelector.managerData))
+                dispatch(updateIsManager(true))
+            }
+            else {
+                // dispatch(updateData(sidemenuSelector.normalData))
+                dispatch(updateIsManager(false))
+            }
+
+            if (jsonObj?.hrmsRole.toLowerCase().includes('dse')) {
+                // dispatch(updateData(sidemenuSelector.managerData))
+                dispatch(updateIsDSE(true))
+            }
+            else {
+                // dispatch(updateData(sidemenuSelector.normalData))
+                dispatch(updateIsDSE(false))
+            }
+
+            if (jsonObj?.hrmsRole.toLowerCase().includes('md')) {
+                // dispatch(updateData(sidemenuSelector.managerData))
+                dispatch(updateIsTeam(true))
+                dispatch(acctionCreator.updateIsTeam(true))
+                dispatch(updateIsMD(true))
+            }
+            else {
+                // dispatch(updateData(sidemenuSelector.normalData))
+                dispatch(updateIsMD(false))
+            }
 
             if (jsonObj?.roles.length > 0) {
                 let rolesArr = [], mdArr = [], dseArr = [];
@@ -332,64 +379,64 @@ const HomeScreen = ({ route, navigation }) => {
                 rolesArr = jsonObj.roles.filter((item) => {
                     return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL" || item === "General Manager" || item === "branch manager" || item === "Testdrive_Manager"
                 })
-                rolesArr2 = jsonObj.roles.filter((item) => {
-                    return item.toLowerCase().includes('manager')
-                })
+                // rolesArr2 = jsonObj.roles.filter((item) => {
+                //     return item.toLowerCase().includes('manager')
+                // })
 
-                mdArr = jsonObj.roles.filter((item) => {
-                    return item.toLowerCase().includes('md')
-                })
+                // mdArr = jsonObj.roles.filter((item) => {
+                //     return item.toLowerCase().includes('md')
+                // })
 
-                dseArr = jsonObj.roles.filter((item) => {
-                    return item.toLowerCase().includes('dse')
-                })
+                // dseArr = jsonObj.roles.filter((item) => {
+                //     return item.toLowerCase().includes('dse')
+                // })
 
-                if (rolesArr2.length > 0) {
-                    // dispatch(updateData(sidemenuSelector.managerData))
-                    dispatch(updateIsManager(true))
-                }
-                else {
-                    // dispatch(updateData(sidemenuSelector.normalData))
-                    dispatch(updateIsManager(false))
-                }
+                // if (item.toLowerCase().includes('manager')) {
+                //     // dispatch(updateData(sidemenuSelector.managerData))
+                //     dispatch(updateIsManager(true))
+                // }
+                // else {
+                //     // dispatch(updateData(sidemenuSelector.normalData))
+                //     dispatch(updateIsManager(false))
+                // }
 
-                if (dseArr.length > 0) {
-                    // dispatch(updateData(sidemenuSelector.managerData))
-                    dispatch(updateIsDSE(true))
-                }
-                else {
-                    // dispatch(updateData(sidemenuSelector.normalData))
-                    dispatch(updateIsDSE(false))
-                }
+                // if (dseArr.length > 0) {
+                //     // dispatch(updateData(sidemenuSelector.managerData))
+                //     dispatch(updateIsDSE(true))
+                // }
+                // else {
+                //     // dispatch(updateData(sidemenuSelector.normalData))
+                //     dispatch(updateIsDSE(false))
+                // }
 
-                if (mdArr.length > 0) {
-                    // dispatch(updateData(sidemenuSelector.managerData))
-                    dispatch(updateIsTeam(true))
-                    dispatch(acctionCreator.updateIsTeam(true))
-                    dispatch(updateIsMD(true))
-                }
-                else {
-                    // dispatch(updateData(sidemenuSelector.normalData))
-                    dispatch(updateIsMD(false))
-                }
+                // if (mdArr.length > 0) {
+                //     // dispatch(updateData(sidemenuSelector.managerData))
+                //     dispatch(updateIsTeam(true))
+                //     dispatch(acctionCreator.updateIsTeam(true))
+                //     dispatch(updateIsMD(true))
+                // }
+                // else {
+                //     // dispatch(updateData(sidemenuSelector.normalData))
+                //     dispatch(updateIsMD(false))
+                // }
                 if (rolesArr.length > 0) {
                     setRoles(rolesArr)
-                    dispatch(updateIsTeamPresent(true))
-                    setIsTeamPresent(true)
-                    // console.log("%%%%% TEAM:", rolesArr);
-                    const dateFormat = "YYYY-MM-DD";
-                    const currentDate = moment().format(dateFormat)
-                    const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-                    const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-                    const payload = {
-                        "endDate": monthLastDate,
-                        "loggedInEmpId": jsonObj.empId,
-                        "startDate": monthFirstDate,
-                        "levelSelected": null,
-                        "empId": jsonObj.empId
-                    }
-                    // console.log("PAYLOAD:", payload);
-                    getAllTargetParametersDataFromServer(payload)
+                    // dispatch(updateIsTeamPresent(true))
+                    // setIsTeamPresent(true)
+                    // // console.log("%%%%% TEAM:", rolesArr);
+                    // const dateFormat = "YYYY-MM-DD";
+                    // const currentDate = moment().format(dateFormat)
+                    // const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                    // const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                    // const payload = {
+                    //     "endDate": monthLastDate,
+                    //     "loggedInEmpId": jsonObj.empId,
+                    //     "startDate": monthFirstDate,
+                    //     "levelSelected": null,
+                    //     "empId": jsonObj.empId
+                    // }
+                    // // console.log("PAYLOAD:", payload);
+                    // getAllTargetParametersDataFromServer(payload)
                 }
             }
             getDashboadTableDataFromServer(jsonObj.empId);
