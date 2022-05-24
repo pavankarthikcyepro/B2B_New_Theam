@@ -66,13 +66,27 @@ export const bookTestDriveAppointmentApi = createAsyncThunk("TEST_DRIVE_SLICE/bo
 })
 
 export const updateTestDriveTaskApi = createAsyncThunk("TEST_DRIVE_SLICE/updateTestDriveTaskApi", async (payload, { rejectWithValue }) => {
-
+  console.log("PAY:", JSON.stringify(payload));
+  
   const response = await client.post(URL.UPDATE_TEST_DRIVE_TASK(), payload);
-  const json = await response.json()
-  if (!response.ok) {
-    return rejectWithValue(json);
+
+  try {
+    const json = await response.json();
+    console.log("DATA:", JSON.stringify(json));
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  } catch (error) {
+    console.error("JSON parse error: ", error + " : " + JSON.stringify(response));
+    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
-  return json;
+
+  // const json = await response.json()
+  // if (!response.ok) {
+  //   return rejectWithValue(json);
+  // }
+  // return json;
 })
 
 export const getTestDriveAppointmentDetailsApi = createAsyncThunk("TEST_DRIVE_SLICE/getAppointmentDetailsApi", async (payload, { rejectWithValue }) => {

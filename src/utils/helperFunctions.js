@@ -116,7 +116,7 @@ export const convertToDate = (isoDate, format = "DD/MM/YYYY") => {
 export const convertTimeStampToDateString = (timeStamp, format) => {
   if (!timeStamp || timeStamp.length === 0) return "";
   format = format ? format : "DD/MM/YYYY h:mm a";
-  const date = moment(timeStamp).format(format);
+  const date = moment(Number(timeStamp)).format(format);
   return date;
 };
 

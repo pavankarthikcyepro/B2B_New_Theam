@@ -519,7 +519,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             }
             const dmsLeadDto = selector.pre_booking_details_response.dmsLeadDto;
             dispatch(getOnRoadPriceDtoListApi(dmsLeadDto.id));
-            if (dmsLeadDto.leadStatus === "ENQUIRYCOMPLETED") {
+            if (dmsLeadDto.leadStatus === "ENQUIRYCOMPLETED" || dmsLeadDto.leadStatus === "SENTFORAPPROVAL") {
                 setShowSubmitDropBtn(true);
             }
             if (dmsLeadDto.leadStatus === "SENTFORAPPROVAL") {
@@ -4123,7 +4123,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             ) : null}
                         </List.AccordionGroup>
 
-                        {!isDropSelected && showSubmitDropBtn && !userData.isManager && (
+                        {!isDropSelected && showSubmitDropBtn && !userData.isManager && !userData.isPreBookingApprover && (
                         <View style={styles.actionBtnView}>
                             <Button
                                 mode="contained"

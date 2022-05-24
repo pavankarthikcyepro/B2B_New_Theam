@@ -237,6 +237,9 @@ const URL = {
     GET_SPECIAL_DROP_VALUE: () => {
         return dynamicForms + `/dropdown`;
     },
+    AUTO_SAVE: () => {
+        return downloadFile + `/autosave`;
+    },
 }
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason

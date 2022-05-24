@@ -222,6 +222,10 @@ const PreEnquiryScreen = ({ navigation }) => {
         );
     };
 
+    const getFirstLetterUpperCase = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
     return (
         <SafeAreaView style={styles.conatiner}>
 
@@ -316,7 +320,7 @@ const PreEnquiryScreen = ({ navigation }) => {
                                         <View style={{paddingVertical: 5}}>
                                             <MyTaskNewItem
                                                 from='PRE_ENQUIRY'
-                                                name={item.firstName + " " + item.lastName}
+                                                name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
                                                 status={""}
                                                 created={item.createdDate}
                                                 dmsLead={item.createdBy}

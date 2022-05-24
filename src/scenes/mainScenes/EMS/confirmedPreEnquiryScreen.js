@@ -475,7 +475,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
               <TextinputComp
                 style={{ height: 70 }}
                 value={itemData.model}
-                label={"Modal"}
+                label={"Model"}
                 editable={false}
               />
               <Text style={styles.devider}></Text>

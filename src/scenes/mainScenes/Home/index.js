@@ -646,7 +646,7 @@ const HomeScreen = ({ route, navigation }) => {
                                                     source={SPEED}
                                                 // style={{ tintColor: Colors.DARK_GRAY }}
                                                 /> */}
-                                                    <Image style={styles.rankIcon} source={require("../../../assets/images/rank.png")} />
+                                                    <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
                                                 </View>
                                                 <View style={{
                                                     marginTop: 5,
@@ -677,7 +677,7 @@ const HomeScreen = ({ route, navigation }) => {
                                                     source={SPEED}
                                                 // style={{ tintColor: Colors.DARK_GRAY }}
                                                 /> */}
-                                                    <Image style={styles.rankIcon} source={require("../../../assets/images/rank.png")} />
+                                                    <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
                                                 </View>
                                                 <View style={{
                                                     marginTop: 5,

@@ -14,7 +14,7 @@ export const getEnquiryDetailsApi = createAsyncThunk(
   async (universalId, { rejectWithValue }) => {
     const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
     const json = await response.json();
-    console.log("form", json)
+
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -45,6 +45,21 @@ export const customerLeadRef = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/customerL
   }
   return json;
 })
+
+export const updateEnquiryDetailsApiAutoSave = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/updateEnquiryDetailsApiAutoSave",
+  async (payload, { rejectWithValue }) => {
+    
+    const response = await client.post(URL.AUTO_SAVE(), payload);
+    const json = await response.json();
+    console.log("SUCCESS:", json);
+    
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
 
 export const updateRef = createAsyncThunk("ENQUIRY_FORM_SLICE/updateRef",
   async (payload, { rejectWithValue }) => {
@@ -279,7 +294,8 @@ const enquiryDetailsOverViewSlice = createSlice({
     update_enquiry_details_response: null,
     customer_types_response: null,
     isAddressSet: false,
-    refNo: ''
+    refNo: '',
+    rmfgYear: null,
   },
   reducers: {
     clearState: (state, action) => {
@@ -460,7 +476,7 @@ const enquiryDetailsOverViewSlice = createSlice({
           if (state.dateOfBirth) {
             let dobArr = state.dateOfBirth.split('/')
             console.log(new Date(state.dateOfBirth), new Date(Number(dobArr[2]), Number(dobArr[1]), Number(dobArr[0])));
-            state.minDate = new Date(Number(dobArr[2]), Number(dobArr[1]), Number(dobArr[0]));
+            state.minDate = new Date(Number(dobArr[2]) + 1, Number(dobArr[1]), Number(dobArr[0]));
           } else {
             state.minDate = new Date();
           }
@@ -995,11 +1011,11 @@ const enquiryDetailsOverViewSlice = createSlice({
             state.pincode = address.pincode ? address.pincode : "";
             state.houseNum = address.houseNo ? address.houseNo : "";
             state.streetName = address.street ? address.street : "";
-            // state.village = address.village ? address.village : "";
-            // state.mandal = address.mandal? address.mandal:"";
-            // state.city = address.city ? address.city : "";
-            // state.district = address.district ? address.district : "";
-            // state.state = address.state ? address.state : "";
+            state.village = address.village ? address.village : "";
+            state.mandal = address.mandal ? address.mandal : "";
+            state.city = address.city ? address.city : "";
+            state.district = address.district ? address.district : "";
+            state.state = address.state ? address.state : "";
 
             let urbanOrRural = 0;
             if (address.urban) {
@@ -1035,7 +1051,9 @@ const enquiryDetailsOverViewSlice = createSlice({
         dataObj = { ...dmsLeadProducts[0] };
       }
       state.lead_product_id = dataObj.id ? dataObj.id : 0;
-      //state.model = dataObj.model ? dataObj.model : "";
+      if (dataObj.model){
+        state.model = dataObj.model;
+      }
       state.varient = dataObj.variant ? dataObj.variant : "";
       state.color = dataObj.color ? dataObj.color : "";
       state.fuel_type = dataObj.fuel ? dataObj.fuel : "";
@@ -1100,7 +1118,9 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.c_color = dataObj.color ? dataObj.color : "";
       state.c_fuel_type = dataObj.fuel ? dataObj.fuel : "";
       // TODO:- Need to check transmission type in response
-      state.c_transmission_type = "";
+      state.c_transmission_type = dataObj.transmission
+        ? dataObj.transmission
+        : "";
       state.c_price_range = dataObj.priceRange ? dataObj.priceRange : "";
       state.c_on_road_price = dataObj.onRoadPriceanyDifference
         ? dataObj.onRoadPriceanyDifference
@@ -1141,14 +1161,18 @@ const enquiryDetailsOverViewSlice = createSlice({
         state.r_transmission_type = dataObj.transmission
           ? dataObj.transmission
           : "";
+        console.log("TRAN TYPE:", state.r_transmission_type);
+          
         const yearOfManfac = dataObj.yearofManufacture
           ? dataObj.yearofManufacture
           : "";
+        state.rmfgYear = yearOfManfac;
         state.r_mfg_year = convertTimeStampToDateString(
           yearOfManfac,
-          "DD/MM/YYYY"
+          "MM/DD/YYYY"
         );
-
+        console.log("DATE:", state.r_mfg_year, dataObj.yearofManufacture);
+          
         state.r_kms_driven_or_odometer_reading = dataObj.kiloMeters
           ? dataObj.kiloMeters
           : "";
@@ -1241,11 +1265,11 @@ const enquiryDetailsOverViewSlice = createSlice({
     },
     updateAddressByPincode: (state, action) => {
 
-      state.village = action.payload.Block || ""
-      state.mandal = action.payload.Mandal || ""
-      state.city = action.payload.Region || ""
-      state.district = action.payload.District || ""
-      state.state = action.payload.State || ""
+      state.village = state.village ? state.village : action.payload.Block || ""
+      state.mandal = state.mandal ? state.mandal : action.payload.Mandal || ""
+      state.city = state.city ? state.city : action.payload.Region || ""
+      state.district = state.district ? state.district : action.payload.District || ""
+      state.state = state.state ? state.state : action.payload.State || ""
       state.isAddressSet = true
     },
     updateRefNo: (state, action) => {
@@ -1370,6 +1394,14 @@ const enquiryDetailsOverViewSlice = createSlice({
 
     });
     builder.addCase(updateRef.rejected, (state, action) => {
+
+    });
+    builder.addCase(updateEnquiryDetailsApiAutoSave.pending, (state, action) => {
+    });
+    builder.addCase(updateEnquiryDetailsApiAutoSave.fulfilled, (state, action) => {
+      state.isLoading = false;
+    });
+    builder.addCase(updateEnquiryDetailsApiAutoSave.rejected, (state, action) => {
 
     });
   },
