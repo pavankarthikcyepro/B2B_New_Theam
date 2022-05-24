@@ -531,6 +531,64 @@ const HomeScreen = ({ route, navigation }) => {
         })
     }
 
+
+    const downloadFileFromServer1 = async () => {
+        setLoading(true)
+        Promise.all([
+            dispatch(getBranchIds({}))
+        ]).then(async (res) => {
+            console.log('DATA', res[0]);
+            let branchIds = []
+            let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+            if (employeeData) {
+                const jsonObj = JSON.parse(employeeData);
+              //  if (res[0]?.payload.length > 0) {
+               //     let braches = res[0]?.payload;
+                //    for (let i = 0; i < braches.length; i++) {
+                 //       branchIds.push(braches[i].id);
+                     //   if (i == braches.length - 1) {
+                            const dateFormat = "YYYY-MM-DD";
+                            const currentDate = moment().format(dateFormat)
+                            const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                            const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                            let payload7 = {
+                                orgId: jsonObj.orgId,
+                                reportFrequency: "MONTHLY",
+                                reportType: "ORG",
+                                location: "Khammam"  
+                            }
+                            console.log("PAYLOAD:", payload7);
+                            Promise.all([
+                                dispatch(downloadFile(payload7))
+                            ]).then(async (res) => {
+                                console.log('DATA', JSON.stringify(res));
+                                if (res[0]?.payload7?.downloadUrl1) {
+                                    downloadInLocal(res[0]?.payload7?.downloadUrl1)
+                                }
+                                else {
+                                    setLoading(false)
+                                }
+                            }).catch(() => {
+                                setLoading(false)
+                            })
+
+                            // try {
+                            //     const response = await client.post(URL.DOWNLOAD_FILE(), payload)
+                            //     const json = await response.json()
+                            //     console.log("DOWNLOAD: ", json);
+                            // } catch (error) {
+                            //     setLoading(false)
+                            // }
+                      //  }
+                 //   }
+            //    }
+            }
+
+        }).catch(() => {
+            setLoading(false)
+        })
+    }
+
     const downloadInLocal = async (url) => {
         const { config, fs } = RNFetchBlob;
         let downloadDir = Platform.select({ ios: fs.dirs.DocumentDir, android: fs.dirs.DownloadDir });
@@ -630,7 +688,7 @@ const HomeScreen = ({ route, navigation }) => {
                                 <>
                                     {isButtonPresent &&
                                         <View style={{ width: '100%', alignItems: 'flex-end', marginBottom: 15 }}>
-                                            <TouchableOpacity style={{ width: 130, height: 30, backgroundColor: Colors.RED, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={downloadFileFromServer}>
+                                            <TouchableOpacity style={{ width: 130, height: 30, backgroundColor: Colors.RED, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={downloadFileFromServer1}>
                                                 <Text style={{ fontSize: 14, fontWeight: '600', color: '#fff' }}>ETVBRL Report</Text>
                                             </TouchableOpacity>
                                         </View>

@@ -42,7 +42,7 @@ export const salesGap = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.
 export const lostSubLost = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails"
 export const getBranch = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8092/oh";
 export const downloadFile = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8093/dynamic-reports";
-export const downloadFile1 = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8095/etvbrl_report_download";
+export const downloadFile1 = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8095/dynamic-reports/etvbrl_report_download";
 
 
 const URL = {
