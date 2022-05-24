@@ -128,6 +128,8 @@ import {
 import uuid from "react-native-uuid";
 import { DropComponent } from "./components/dropComp";
 import { useNavigation } from '@react-navigation/native';
+import moment from "moment";
+
 
 const theme = {
   ...DefaultTheme,
@@ -138,7 +140,7 @@ const theme = {
     ...DefaultTheme.colors,
     background: Colors.WHITE,
   },
-};
+}; 
 
 const DetailsOverviewScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
@@ -189,6 +191,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [dropRemarks, setDropRemarks] = useState("");
   const [imagePath, setImagePath] = useState('');
 
+  // console.log(selector, "gender")
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -204,16 +207,35 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   }, [navigation]);
 
   useEffect(() => {
+
     const interval = setInterval(() => {
       if (enqDetails?.leadStage === "ENQUIRY" && enqDetails?.leadStatus === null) {
         autoSave()
       }
     }, 10000);
     return () => {
+
+    let interval;
+    navigation.addListener('focus', () => {
+      interval = setInterval(() => {
+        updateEnquiry()
+      }, 60000);
+    });
+    navigation.addListener('blur', () => {
+
       console.log("CLEAR");
       clearInterval(interval)
     }
   }, [autoSave, selector])
+
+  useEffect(() => {
+    let autoSaveInterval;
+      autoSaveInterval = setInterval(() => {
+        autoSave()
+      }, 6000);
+      return () => clearInterval(autoSaveInterval);
+  }, [])
+
 
   const goParentScreen = () => {
     navigation.goBack();
@@ -446,9 +468,276 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
   };
 
+  console.log(selector)
+
   const autoSave = async () => {
+
     //Personal Intro
     console.log("CALLED AUTOSAVE");
+
+    console.log("CALLED AUTO SAVE");
+
+    let dmsContactOrAccountDto = {};
+    let dmsLeadDto = {};
+    let formData;
+    let dmsEntity;
+
+    if (selector.enquiry_details_response != null) {
+      dmsEntity = selector.enquiry_details_response;
+      if (dmsEntity.hasOwnProperty("dmsContactDto"))
+        dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsContactDto);
+      else if (dmsEntity.hasOwnProperty("dmsAccountDto"))
+        dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsAccountDto);
+
+      if (dmsEntity.hasOwnProperty("dmsLeadDto"))
+        dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
+    }
+
+    const employeeData = await AsyncStore.getData(
+      AsyncStore.Keys.LOGIN_EMPLOYEE
+    );
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      let tempAttachments = [];
+      // console.log("GDGHDGDGDGDGD", JSON.stringify(dmsLeadDto.dmsAttachments));
+      if (selector.pan_number) {
+        tempAttachments.push({
+
+          "branchId": jsonObj.branchs[0]?.branchId,
+          "contentSize": 0,
+          "createdBy": new Date().getSeconds(),
+          "description": "",
+          "documentNumber": selector.pan_number,
+          "documentPath": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'pan' })[0].documentPath : '',
+          "documentType": "pan",
+          "documentVersion": 0,
+          "fileName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'pan' })[0].fileName : '',
+          "gstNumber": "",
+          "id": 0,
+          "isActive": 0,
+          "isPrivate": 0,
+          "keyName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'pan' })[0].keyName : '',
+          "modifiedBy": jsonObj.empName,
+          "orgId": jsonObj.orgId,
+          "ownerId": "",
+          "ownerName": jsonObj.empName,
+          "parentId": "",
+          "tinNumber": ""
+        })
+      }
+      if (selector.adhaar_number) {
+        tempAttachments.push({
+          "branchId": jsonObj.branchs[0]?.branchId,
+          "contentSize": 0,
+          "createdBy": new Date().getSeconds(),
+          "description": "",
+          "documentNumber": selector.adhaar_number,
+          "documentPath": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'aadhar' })[0].documentPath : '',
+          "documentType": "aadhar",
+          "documentVersion": 0,
+          "fileName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'aadhar' })[0].fileName : '',
+          "gstNumber": "",
+          "id": 0,
+          "isActive": 0,
+          "isPrivate": 0,
+          "keyName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'aadhar' })[0].keyName : '',
+          "modifiedBy": jsonObj.empName,
+          "orgId": jsonObj.orgId,
+          "ownerId": "",
+          "ownerName": jsonObj.empName,
+          "parentId": "",
+          "tinNumber": ""
+        })
+      }
+      if (selector.employee_id) {
+        tempAttachments.push({
+          "branchId": jsonObj.branchs[0]?.branchId,
+          "contentSize": 0,
+          "createdBy": new Date().getSeconds(),
+          "description": "",
+          "documentNumber": selector.employee_id,
+          "documentPath": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'empId' })[0].documentPath : '',
+          "documentType": "empId",
+          "documentVersion": 0,
+          "fileName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'empId' })[0].fileName : '',
+          "gstNumber": "",
+          "id": 0,
+          "isActive": 0,
+          "isPrivate": 0,
+          "keyName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'empId' })[0].keyName : '',
+          "modifiedBy": jsonObj.empName,
+          "orgId": jsonObj.orgId,
+          "ownerId": "",
+          "ownerName": jsonObj.empName,
+          "parentId": "",
+          "tinNumber": ""
+        })
+      }
+      dmsLeadDto.dmsAttachments = tempAttachments;
+    }
+
+    if (selector.enquiry_details_response) {
+      if (selector.enquiry_details_response.hasOwnProperty("dmsContactDto")) {
+        formData = {
+          dmsContactDto: dmsContactOrAccountDto,
+          dmsLeadDto: dmsLeadDto,
+        };
+      } else {
+        formData = {
+          dmsAccountDto: dmsContactOrAccountDto,
+          dmsLeadDto: dmsLeadDto,
+        };
+      }
+    }
+  } 
+
+  const updateEnquiry = async () => {
+    console.log("CALLED AUTO UPDATE");
+    if (selector.designation.length == 0 || selector.buyer_type.length == 0) {
+      return;
+    }
+    if (!isValidateAlphabetics(selector.occupation)) {
+      return;
+    }
+
+    if (!isValidateAlphabetics(selector.designation)) {
+      return;
+    }
+
+    if (selector.salutation.length == 0) {
+      return;
+    }
+
+    if (selector.enquiry_segment.toLowerCase() == "personal") {
+      if (
+        selector.dateOfBirth.length == 0
+        // ||
+        // selector.anniversaryDate.length == 0
+      ) {
+        return;
+      }
+    }
+    if (!isValidate(selector.firstName)) {
+      return;
+    }
+    if (!isValidate(selector.lastName)) {
+      return;
+    }
+    if (!isValidateAlphabetics(selector.relationName)) {
+      return;
+    }
+    if (!isValidateAlphabetics(selector.streetName)) {
+      return;
+    }
+    // Model Selection
+    if (selector.model.length == 0 || selector.varient.length == 0 || selector.color.length == 0) {
+      return;
+    }
+
+    if (
+      selector.houseNum.length == 0 ||
+      selector.streetName.length == 0 ||
+      selector.village.length == 0 ||
+      selector.city.length == 0 ||
+      selector.state.length == 0 ||
+      selector.district.length == 0
+    ) {
+      return;
+    }
+
+    if (selector.retail_finance.length == 0) {
+      return;
+    }
+
+    if (selector.retail_finance === "In House") {
+      if (
+        selector.finance_category.length == 0 ||
+        selector.loan_of_tenure.length == 0 ||
+        selector.emi.length == 0 ||
+        selector.approx_annual_income.length == 0 ||
+        selector.bank_or_finance.length == 0
+      ) {
+        return;
+      }
+    }
+
+    // Leashing
+    if (selector.retail_finance == "Leasing") {
+      if (selector.leashing_name.length == 0) {
+        return;
+      }
+    }
+
+
+
+    if (selector.buyer_type === "Additional Buyer") {
+      if (
+        selector.a_make == 0 ||
+        selector.a_model == 0 ||
+        selector.a_varient == 0 ||
+        selector.a_color == 0 ||
+        selector.a_reg_no == 0
+      ) {
+        return;
+      }
+      if (!isValidateAlphabetics(selector.a_varient)) {
+
+        return;
+      }
+      if (!isValidateAlphabetics(selector.a_color)) {
+        return;
+      }
+
+    }
+
+
+    if (selector.buyer_type === "Replacement Buyer") {
+      if (selector.r_color.length > 0) {
+        if (!isValidateAlphabetics(selector.r_color)) {
+          return;
+        }
+      }
+      if (selector.r_insurence_company_name.length == 0) {
+        return;
+      }
+      if (!isValidateAlphabetics(selector.r_model_other_name)) {
+        return;
+      }
+
+      if (selector.r_hypothication_checked === true) {
+        if (selector.r_hypothication_name.length > 0) {
+          if (!isValidateAlphabetics(selector.r_hypothication_name)) {
+            return;
+          }
+        }
+        if (selector.r_hypothication_branch.length > 0) {
+          if (!isValidateAlphabetics(selector.r_hypothication_branch)) {
+            return;
+          }
+        }
+      }
+    }
+
+    if (selector.c_looking_for_any_other_brand_checked === true) {
+      if (selector.c_dealership_name.length > 0) {
+        if (!isValidateAlphabetics(selector.c_dealership_name)) {
+          return;
+        }
+      }
+    }
+
+    if (
+      selector.leashing_name.length > 0 &&
+      !isValidateAlphabetics(selector.leashing_name)
+    ) {
+      return;
+    }
+
+    if (!selector.enquiry_details_response) {
+      return;
+    }
+
+
     let dmsContactOrAccountDto = {};
     let dmsLeadDto = {};
     let formData;
@@ -665,11 +954,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
     //communication Address
     if (selector.houseNum.length == 0) {
-      showToast("Please fill houseNum ");
+      showToast("Please fill H.No ");
       return;
     }
     if (selector.streetName.length == 0) {
-      showToast("Please fill street ");
+      showToast("Please fill Street Name ");
       return;
     }
     if (selector.village.length == 0) {
@@ -1027,6 +1316,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   const mapContactOrAccountDto = (prevData) => {
+    console.log("first", selector.salutation)
     let dataObj = { ...prevData };
     dataObj.dateOfBirth = convertDateStringToMillisecondsUsingMoment(
       selector.dateOfBirth
@@ -2352,7 +2642,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 <DateSelectItem
                   label={"Expected Delivery Date"}
-                  value={selector.expected_delivery_date}
+                  value={selector.expected_delivery_date.length == 0 ? moment().format("DD/MM/YYYY") : selector.expected_delivery_date}
                   onPress={() =>
                     dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
                   }
@@ -2361,7 +2651,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <DropDownSelectionItem
                   label={"Enquiry Category"}
                   disabled={true}
-                  value={selector.enquiry_category}
+                  value={selector.enquiry_category.length == 0 ? "Hot" : selector.enquiry_category}
                   onPress={() =>
                     showDropDownModelMethod(
                       "ENQUIRY_CATEGORY",
@@ -3880,7 +4170,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     style={styles.textInputStyle}
                     value={selector.r_reg_no}
                     label={"Reg. No.*"}
-                    maxLength={50}
+                    maxLength={12}
                     keyboardType={"default"}
                     autoCapitalize={"characters"}
                     onChangeText={(text) =>

@@ -283,6 +283,7 @@ const HomeStackNavigator = ({ navigation }) => {
                     headerRight: () => {
                         return (
                             <View style={{ flexDirection: "row" }}>
+                                
                                 {/* <NotficationIcon
                   navigation={navigation}
                   identifier={"NOTIF_1"}
@@ -385,7 +386,13 @@ const EmsStackNavigator = ({ navigation }) => {
           component={PaidAccessoriesScreen}
           options={{
             title: "Paid Accessories",
-            headerRight: () => <SearchIcon/>
+              headerRight: () => {
+                  return (
+                      <View style={{flexDirection:"row"}}>
+                          <SearchIcon />
+                      </View>
+                  );
+              },
           }}
         />
 

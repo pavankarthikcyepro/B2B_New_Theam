@@ -14,8 +14,7 @@ export const getEnquiryDetailsApi = createAsyncThunk(
   async (universalId, { rejectWithValue }) => {
     const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
     const json = await response.json();
-    console.log("ENQ DATA:", JSON.stringify(json));
-    
+
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -340,7 +339,7 @@ const enquiryDetailsOverViewSlice = createSlice({
           break;
         case "SALUTATION":
           if (state.salutation !== value) {
-
+            
             const genderData = Gender_Data_Obj[value.toLowerCase()];
             state.gender = genderData.length > 0 ? genderData[0].name : "";
             state.relation = "";

@@ -590,7 +590,7 @@ const TargetScreen = ({ route, navigation }) => {
                 <View style={{ width: "10%", marginTop: 5 }}>
                   {selector.all_target_parameters_data.map((item, index) => {
                     return (
-                      <View style={{ height: 30 }}>
+                      <View style={{ height: 30 }} key={index}>
                         <Text
                           style={{
                             color: color[index % color.length],
@@ -616,7 +616,7 @@ const TargetScreen = ({ route, navigation }) => {
                 <View style={{ width: "40%" }}>
                   {selector.all_target_parameters_data.map((item, index) => {
                     return (
-                      <View style={{ flexDirection: "row", height: 30 }}>
+                      <View style={{ flexDirection: "row", height: 30 }} key={index}>
                         <View
                           style={{
                             width: "33%",
@@ -671,7 +671,7 @@ const TargetScreen = ({ route, navigation }) => {
                 >
                   {selector.all_emp_parameters_data.map((item, index) => {
                     return (
-                      <View style={{ flexDirection: "column", marginTop: 5 }}>
+                      <View style={{ flexDirection: "column", marginTop: 5 }} key={index}>
                         <View
                           style={{
                             flexDirection: "row",
@@ -767,6 +767,7 @@ const TargetScreen = ({ route, navigation }) => {
                               <>
                                 <View
                                   style={{ flexDirection: "row", height: 30 }}
+                                  key={innerIndex}
                                 >
                                   <View
                                     style={{
@@ -855,7 +856,7 @@ const TargetScreen = ({ route, navigation }) => {
             </View>
             {selector.target_parameters_data.map((item, index) => {
               return (
-                <View style={{ flexDirection: "row", marginLeft: 8 }}>
+                <View style={{ flexDirection: "row", marginLeft: 8 }} key={index}>
                   <View
                     style={{
                       width: "10%",
@@ -1313,9 +1314,9 @@ const SupportingScreen = () => {
                 </View>
             </View>
             {
-                supportData.map((item) => {
+                supportData.map((item, index) => {
                     return (
-                        <View style={{ flexDirection: 'row', marginLeft: 8 }}>
+                        <View style={{ flexDirection: 'row', marginLeft: 8 }} key={index}>
                             <View style={{ width: '10%', justifyContent: 'center', marginTop: 5 }}>
                                 <Text>{item.title}</Text>
                             </View>
