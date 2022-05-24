@@ -352,7 +352,8 @@ const HomeScreen = ({ route, navigation }) => {
                         "endDate": monthLastDate,
                         "loggedInEmpId": jsonObj.empId,
                         "startDate": monthFirstDate,
-                        "levelSelected": null
+                        "levelSelected": null,
+                        "empId": jsonObj.empId
                     }
                     // console.log("PAYLOAD:", payload);
                     getAllTargetParametersDataFromServer(payload)
