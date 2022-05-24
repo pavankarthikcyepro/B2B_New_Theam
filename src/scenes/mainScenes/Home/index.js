@@ -246,7 +246,9 @@ const HomeScreen = ({ route, navigation }) => {
     const moveToSelectBranch = () => {
         navigation.navigate(AppNavigator.HomeStackIdentifiers.select_branch, { isFromLogin: false, })
     }
-
+    const moveToFilter = () => {
+    navigation.navigate(AppNavigator.HomeStackIdentifiers.filter,{isFromLogin:false,})
+}
     const getMenuListFromServer = async () => {
         let name = await AsyncStore.getData(AsyncStore.Keys.USER_NAME);
         if (name) {
@@ -612,6 +614,7 @@ const HomeScreen = ({ route, navigation }) => {
                 branchName={selectedBranchName}
                 menuClicked={() => navigation.openDrawer()}
                 branchClicked={() => moveToSelectBranch()}
+                filterClicked={()=> moveToFilter()}
             />
             <View style={{ flex: 1, padding: 10 }}>
                 <FlatList
@@ -749,12 +752,13 @@ const HomeScreen = ({ route, navigation }) => {
                                             </View>
                                         </View>
 
-                                        <TouchableOpacity style={{ position: 'absolute', top: -10, right: -10 }} onPress={() => navigation.navigate(HomeStackIdentifiers.filter)}>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                        {/* <TouchableOpacity style={{ position: 'absolute', top: -10, right: -10 }}
+                                            onPress={() => navigation.navigate(HomeStackIdentifiers.filter)}>
+                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}> */}
                                                 {/* <Text style={[styles.text1, { color: Colors.RED }]}>{'Filters'}</Text> */}
-                                                <IconButton icon={'filter-outline'} size={25} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
+                                                {/* <IconButton icon={'filter-outline'} size={25} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
                                             </View>
-                                        </TouchableOpacity>
+                                        </TouchableOpacity> */}
                                     </View>
                                 </>
                             )
