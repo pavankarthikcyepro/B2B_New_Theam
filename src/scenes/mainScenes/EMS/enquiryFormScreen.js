@@ -66,8 +66,7 @@ import {
   getPendingTasksApi,
   updateAddressByPincode,
   updateRef,
-  customerLeadRef,
-  updateEnquiryDetailsApiAutoSave
+  customerLeadRef
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
@@ -148,7 +147,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.enquiryFormReducer);
   const [openAccordian, setOpenAccordian] = useState("0");
   const [componentAppear, setComponentAppear] = useState(false);
-  const { universalId, enqDetails } = route.params;
+  const { universalId } = route.params;
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [dataForDropDown, setDataForDropDown] = useState([]);
   const [dropDownKey, setDropDownKey] = useState("");
@@ -228,6 +227,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   //   }
   // }, [autoSave, selector])
 
+/*
+  useEffect(() => {
+    let interval;
+    navigation.addListener('focus', () => {
+      interval = setInterval(() => {
+        updateEnquiry()
+      }, 60000);
+    });
+    navigation.addListener('blur', () => {
+      console.log("CLEAR");
+      clearInterval(interval)
+    })
+  }, [navigation]);
+*/
   useEffect(() => {
     const interval = setInterval(() => {
       if (enqDetails?.leadStage === "ENQUIRY" && enqDetails?.leadStatus === null) {
@@ -483,10 +496,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   console.log(selector)
 
   const autoSave = async () => {
-
-    //Personal Intro
-    console.log("CALLED AUTOSAVE");
-
     console.log("CALLED AUTO SAVE");
 
     let dmsContactOrAccountDto = {};
@@ -749,7 +758,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
 
-
     let dmsContactOrAccountDto = {};
     let dmsLeadDto = {};
     let formData;
@@ -760,134 +768,89 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     else if (dmsEntity.hasOwnProperty("dmsAccountDto"))
       dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsAccountDto);
 
-    if (dmsEntity.hasOwnProperty("dmsLeadDto")) {
+    if (dmsEntity.hasOwnProperty("dmsLeadDto"))
       dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
-      const employeeData = await AsyncStore.getData(
-        AsyncStore.Keys.LOGIN_EMPLOYEE
-      );
-      if (employeeData) {
-        const jsonObj = JSON.parse(employeeData);
-        let tempAttachments = [];
-        console.log("GDGHDGDGDGDGD", JSON.stringify(dmsLeadDto.dmsAttachments));
-        if (selector.pan_number) {
-          tempAttachments.push({
-            branchId: jsonObj.branchs[0]?.branchId,
-            contentSize: 0,
-            createdBy: new Date().getSeconds(),
-            description: "",
-            documentNumber: selector.pan_number,
-            documentPath:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0].documentPath
-                : "",
-            documentType: "pan",
-            documentVersion: 0,
-            fileName:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0].fileName
-                : "",
-            gstNumber: "",
-            id: 0,
-            isActive: 0,
-            isPrivate: 0,
-            keyName:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0].keyName
-                : "",
-            modifiedBy: jsonObj.empName,
-            orgId: jsonObj.orgId,
-            ownerId: "",
-            ownerName: jsonObj.empName,
-            parentId: "",
-            tinNumber: "",
-          });
-        }
-        if (selector.adhaar_number) {
-          tempAttachments.push({
-            branchId: jsonObj.branchs[0]?.branchId,
-            contentSize: 0,
-            createdBy: new Date().getSeconds(),
-            description: "",
-            documentNumber: selector.adhaar_number,
-            documentPath:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0].documentPath
-                : "",
-            documentType: "aadhar",
-            documentVersion: 0,
-            fileName:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0].fileName
-                : "",
-            gstNumber: "",
-            id: 0,
-            isActive: 0,
-            isPrivate: 0,
-            keyName:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0].keyName
-                : "",
-            modifiedBy: jsonObj.empName,
-            orgId: jsonObj.orgId,
-            ownerId: "",
-            ownerName: jsonObj.empName,
-            parentId: "",
-            tinNumber: "",
-          });
-        }
-        if (selector.employee_id) {
-          tempAttachments.push({
-            branchId: jsonObj.branchs[0]?.branchId,
-            contentSize: 0,
-            createdBy: new Date().getSeconds(),
-            description: "",
-            documentNumber: selector.employee_id,
-            documentPath:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "empId";
-                })[0].documentPath
-                : "",
-            documentType: "empId",
-            documentVersion: 0,
-            fileName:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "empId";
-                })[0].fileName
-                : "",
-            gstNumber: "",
-            id: 0,
-            isActive: 0,
-            isPrivate: 0,
-            keyName:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "empId";
-                })[0].keyName
-                : "",
-            modifiedBy: jsonObj.empName,
-            orgId: jsonObj.orgId,
-            ownerId: "",
-            ownerName: jsonObj.empName,
-            parentId: "",
-            tinNumber: "",
-          });
-        }
-        dmsLeadDto.dmsAttachments = tempAttachments;
+    const employeeData = await AsyncStore.getData(
+      AsyncStore.Keys.LOGIN_EMPLOYEE
+    );
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      let tempAttachments = [];
+      // console.log("GDGHDGDGDGDGD", JSON.stringify(dmsLeadDto.dmsAttachments));
+      if (selector.pan_number) {
+        tempAttachments.push({
+
+          "branchId": jsonObj.branchs[0]?.branchId,
+          "contentSize": 0,
+          "createdBy": new Date().getSeconds(),
+          "description": "",
+          "documentNumber": selector.pan_number,
+          "documentPath": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'pan' })[0].documentPath : '',
+          "documentType": "pan",
+          "documentVersion": 0,
+          "fileName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'pan' })[0].fileName : '',
+          "gstNumber": "",
+          "id": 0,
+          "isActive": 0,
+          "isPrivate": 0,
+          "keyName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'pan' })[0].keyName : '',
+          "modifiedBy": jsonObj.empName,
+          "orgId": jsonObj.orgId,
+          "ownerId": "",
+          "ownerName": jsonObj.empName,
+          "parentId": "",
+          "tinNumber": ""
+        })
       }
+      if (selector.adhaar_number) {
+        tempAttachments.push({
+          "branchId": jsonObj.branchs[0]?.branchId,
+          "contentSize": 0,
+          "createdBy": new Date().getSeconds(),
+          "description": "",
+          "documentNumber": selector.adhaar_number,
+          "documentPath": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'aadhar' })[0].documentPath : '',
+          "documentType": "aadhar",
+          "documentVersion": 0,
+          "fileName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'aadhar' })[0].fileName : '',
+          "gstNumber": "",
+          "id": 0,
+          "isActive": 0,
+          "isPrivate": 0,
+          "keyName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'aadhar' })[0].keyName : '',
+          "modifiedBy": jsonObj.empName,
+          "orgId": jsonObj.orgId,
+          "ownerId": "",
+          "ownerName": jsonObj.empName,
+          "parentId": "",
+          "tinNumber": ""
+        })
+      }
+      if (selector.employee_id) {
+        tempAttachments.push({
+          "branchId": jsonObj.branchs[0]?.branchId,
+          "contentSize": 0,
+          "createdBy": new Date().getSeconds(),
+          "description": "",
+          "documentNumber": selector.employee_id,
+          "documentPath": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'empId' })[0].documentPath : '',
+          "documentType": "empId",
+          "documentVersion": 0,
+          "fileName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'empId' })[0].fileName : '',
+          "gstNumber": "",
+          "id": 0,
+          "isActive": 0,
+          "isPrivate": 0,
+          "keyName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'empId' })[0].keyName : '',
+          "modifiedBy": jsonObj.empName,
+          "orgId": jsonObj.orgId,
+          "ownerId": "",
+          "ownerName": jsonObj.empName,
+          "parentId": "",
+          "tinNumber": ""
+        })
+      }
+      dmsLeadDto.dmsAttachments = tempAttachments;
     }
 
     if (selector.enquiry_details_response.hasOwnProperty("dmsContactDto")) {
@@ -901,19 +864,25 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         dmsLeadDto: dmsLeadDto,
       };
     }
-    let payload = {
-      data: formData,
-      status: "Active",
-      universalId: universalId
-    }
-    AsyncStore.storeJsonData(AsyncStore.Keys.ENQ_PAYLOAD, payload);
-
+    setTypeOfActionDispatched("UPDATE_ENQUIRY");
+    // dispatch(updateEnquiryDetailsApi(formData));
     Promise.all([
-      dispatch(updateEnquiryDetailsApiAutoSave(payload)),
-    ]).then(async () => {
-      console.log("REF NO");
+      dispatch(updateEnquiryDetailsApi(formData))
+    ]).then(async (res) => {
+      console.log("REF NO:", res[0].payload.dmsEntity.dmsLeadDto.referencenumber);
+      let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        const payload = {
+          "refNo": res[0].payload.dmsEntity.dmsLeadDto.referencenumber,
+          "orgId": jsonObj.orgId,
+          "stageCompleted": "ENQUIRY"
+        }
+        console.log("PAYLOAD:", payload);
+        dispatch(updateRef(payload))
+      }
     });
-  };
+  }
 
   const submitClicked = async () => {
     //Personal Intro
@@ -1299,7 +1268,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         dmsLeadDto: dmsLeadDto,
       };
     }
-    console.log("PAYLOAD:", JSON.stringify(formData));
 
     setTypeOfActionDispatched("UPDATE_ENQUIRY");
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -1482,7 +1450,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.variant = selector.c_variant;
     dataObj.color = selector.c_color;
     dataObj.fuel = selector.c_fuel_type;
-    dataObj.transmission = selector.c_transmission_type;
     dataObj.priceRange = selector.c_price_range;
     dataObj.onRoadPriceanyDifference = selector.c_on_road_price;
     dataObj.dealershipName = selector.c_dealership_name;
@@ -1527,7 +1494,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dataObj.yearofManufacture = convertDateStringToMillisecondsUsingMoment(
         selector.r_mfg_year
       );
-      console.log("TTTT£££££:", dataObj.yearofManufacture, selector.r_mfg_year);
       dataObj.kiloMeters = selector.r_kms_driven_or_odometer_reading;
       dataObj.expectedPrice = selector.r_expected_price
         ? Number(selector.r_expected_price)
