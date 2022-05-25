@@ -28,10 +28,11 @@ export const getEmployeesRolls = createAsyncThunk("TARGET_SETTINGS/getEmployeesR
 })
 
 export const addTargetMapping = createAsyncThunk("TARGET_SETTINGS/addTargetMapping", async (payload: any, { rejectWithValue }) => {
-
+    console.log("PAYLOAD:", URL.ADD_TARGET_MAPPING(), JSON.stringify(payload))
     const response = await client.post(URL.ADD_TARGET_MAPPING(), payload)
+    
     const json = await response.json()
-    console.log("$$$$%%%$$:", JSON.stringify(json));
+    console.log("$$$$%%%$$ ADD:", JSON.stringify(json));
     showToast(json.message)
     if (!response.ok) {
         return rejectWithValue(json);
@@ -43,7 +44,7 @@ export const editTargetMapping = createAsyncThunk("TARGET_SETTINGS/editTargetMap
 
     const response = await client.post(URL.EDIT_TARGET_MAPPING(), payload)
     const json = await response.json()
-    console.log("$$$$%%%$$:", JSON.stringify(json));
+    console.log("$$$$%%%$$ EDIT:", JSON.stringify(json));
     showToast(json.message)
     if (!response.ok) {
         return rejectWithValue(json);

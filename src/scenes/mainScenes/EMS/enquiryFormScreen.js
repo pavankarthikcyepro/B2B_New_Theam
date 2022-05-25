@@ -2417,7 +2417,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   label={"First Name*"}
                   autoCapitalize="words"
                   keyboardType={"default"}
-                  editable={false}
+                  // editable={false}
                   onChangeText={(text) =>
                     dispatch(
                       setPersonalIntro({ key: "FIRST_NAME", text: text })
@@ -2429,7 +2429,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.lastName}
                   label={"Last Name*"}
-                  editable={false}
+                  // editable={false}
                   autoCapitalize={"words"}
                   keyboardType={"default"}
                   onChangeText={(text) =>
@@ -2462,7 +2462,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.mobile}
                   label={"Mobile Number*"}
-                  editable={false}
+                  // editable={false}
                   maxLength={10}
                   keyboardType={"phone-pad"}
                   onChangeText={(text) =>

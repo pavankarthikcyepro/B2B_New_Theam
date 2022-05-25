@@ -205,7 +205,7 @@ const HomeScreen = ({ route, navigation }) => {
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             if (selector.allGroupDealerData.length > 0) {
-                console.log("£££££RRRRR:", selector.allGroupDealerData[0]);
+                // console.log("£££££RRRRR:", selector.allGroupDealerData[0]);
                 let tempArr = [], allArray = selector.allGroupDealerData;
                 setGroupDealerCount(selector.allGroupDealerData.length)
                 tempArr = allArray.filter((item) => {
@@ -263,7 +263,7 @@ const HomeScreen = ({ route, navigation }) => {
 
     const checkLoginUserAndEnableReportButton = async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        console.log("$$$$$ LOGIN EMP:", employeeData);
+        // console.log("$$$$$ LOGIN EMP:", employeeData);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             let findMdArr = [];
@@ -362,7 +362,7 @@ const HomeScreen = ({ route, navigation }) => {
                 dispatch(updateIsDSE(false))
             }
 
-            if (jsonObj?.hrmsRole.toLowerCase().includes('md')) {
+            if (jsonObj?.hrmsRole.toLowerCase().includes('md') || jsonObj?.hrmsRole.toLowerCase().includes("admin prod")) {
                 // dispatch(updateData(sidemenuSelector.managerData))
                 dispatch(updateIsTeam(true))
                 dispatch(acctionCreator.updateIsTeam(true))
@@ -375,7 +375,7 @@ const HomeScreen = ({ route, navigation }) => {
 
             if (jsonObj?.roles.length > 0) {
                 let rolesArr = [], mdArr = [], dseArr = [];
-                // console.log("ROLLS:", jsonObj.roles);
+                console.log("ROLLS:", jsonObj.roles);
                 rolesArr = jsonObj.roles.filter((item) => {
                     return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL" || item === "General Manager" || item === "branch manager" || item === "Testdrive_Manager"
                 })
@@ -559,7 +559,7 @@ const HomeScreen = ({ route, navigation }) => {
         Promise.all([
             dispatch(getBranchIds({}))
         ]).then(async (res) => {
-            console.log('DATA', res[0]);
+            // console.log('DATA', res[0]);
             let branchIds = []
             let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
             if (employeeData) {
@@ -579,11 +579,11 @@ const HomeScreen = ({ route, navigation }) => {
                                 fromDate: monthFirstDate + " 00:00:00",
                                 toDate: monthLastDate + " 23:59:59"
                             }
-                            console.log("PAYLOAD:", payload);
+                            // console.log("PAYLOAD:", payload);
                             Promise.all([
                                 dispatch(downloadFile(payload))
                             ]).then(async (res) => {
-                                console.log('DATA', JSON.stringify(res));
+                                // console.log('DATA', JSON.stringify(res));
                                 if (res[0]?.payload?.downloadUrl) {
                                     downloadInLocal(res[0]?.payload?.downloadUrl)
                                 }
@@ -617,7 +617,7 @@ const HomeScreen = ({ route, navigation }) => {
         Promise.all([
             dispatch(getBranchIds({}))
         ]).then(async (res) => {
-            console.log('DATA', res[0]);
+            // console.log('DATA', res[0]);
             let branchIds = []
             let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
             if (employeeData) {
@@ -637,11 +637,11 @@ const HomeScreen = ({ route, navigation }) => {
                     reportType: "ORG",
                     location: "Khammam"
                 }
-                console.log("PAYLOAD:", payload7);
+                // console.log("PAYLOAD:", payload7);
                 Promise.all([
                     dispatch(downloadFile(payload7))
                 ]).then(async (res) => {
-                    console.log('DATA', JSON.stringify(res));
+                    // console.log('DATA', JSON.stringify(res));
                     if (res[0]?.payload?.downloadUrl) {
                         downloadInLocal(res[0]?.payload?.downloadUrl)
                     }
@@ -675,7 +675,7 @@ const HomeScreen = ({ route, navigation }) => {
         let date = new Date();
         let file_ext = getFileExtention(url);
         file_ext = '.' + file_ext[0];
-        console.log({ file_ext })
+        // console.log({ file_ext })
         let options = {}
         if (Platform.OS === 'android') {
             options = {
@@ -690,7 +690,7 @@ const HomeScreen = ({ route, navigation }) => {
             config(options)
                 .fetch('GET', url)
                 .then((res) => {
-                    console.log(JSON.stringify(res), "sucess");
+                    // console.log(JSON.stringify(res), "sucess");
                     setLoading(false);
                     RNFetchBlob.android.actionViewIntent(res.path());
                     // do some magic here
