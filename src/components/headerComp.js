@@ -35,7 +35,7 @@ const HeaderComp = ({ title, branchName = "", height = 56, menuClicked, branchCl
                 <View style={style.filterContainer}>
                     <IconButton icon="filter-outline"
                         style={{ padding: 0, margin: 0 }}
-                        color={Colors.RED}
+                        color={Colors.WHITE}
                         size={30}
                     onPress={filterClicked}/>
                 </View>

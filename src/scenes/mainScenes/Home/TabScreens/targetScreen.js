@@ -616,7 +616,10 @@ const TargetScreen = ({ route, navigation }) => {
                 <View style={{ width: "40%" }}>
                   {selector.all_target_parameters_data.map((item, index) => {
                     return (
-                      <View style={{ flexDirection: "row", height: 30 }} key={index}>
+                      <View
+                        style={{ flexDirection: "row", height: 30 }}
+                        key={index}
+                      >
                         <View
                           style={{
                             width: "33%",
@@ -640,7 +643,9 @@ const TargetScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text style={{ fontSize: 12, fontWeight: "600" }}>
-                            {Number(item.shortfall) >= 100000 ? Number(item.shortfall) / 100000 + 'L' : item.shortfall}
+                            {Number(item.shortfall) >= 100000
+                              ? Number(item.shortfall) / 100000 + "L"
+                              : item.shortfall}
                           </Text>
                         </View>
                         <View
@@ -671,7 +676,10 @@ const TargetScreen = ({ route, navigation }) => {
                 >
                   {selector.all_emp_parameters_data.map((item, index) => {
                     return (
-                      <View style={{ flexDirection: "column", marginTop: 5 }} key={index}>
+                      <View
+                        style={{ flexDirection: "column", marginTop: 5 }}
+                        key={index}
+                      >
                         <View
                           style={{
                             flexDirection: "row",
@@ -802,7 +810,10 @@ const TargetScreen = ({ route, navigation }) => {
                                         fontWeight: "600",
                                       }}
                                     >
-                                      {Number(innerItem.shortfall) >= 100000 ? Number(innerItem.shortfall) / 100000 + 'L' : innerItem.shortfall}
+                                      {Number(innerItem.shortfall) >= 100000
+                                        ? Number(innerItem.shortfall) / 100000 +
+                                          "L"
+                                        : innerItem.shortfall}
                                     </Text>
                                   </View>
                                   <View
@@ -856,7 +867,10 @@ const TargetScreen = ({ route, navigation }) => {
             </View>
             {selector.target_parameters_data.map((item, index) => {
               return (
-                <View style={{ flexDirection: "row", marginLeft: 8 }} key={index}>
+                <View
+                  style={{ flexDirection: "row", marginLeft: 8 }}
+                  key={index}
+                >
                   <View
                     style={{
                       width: "10%",
@@ -875,8 +889,8 @@ const TargetScreen = ({ route, navigation }) => {
                       height: 20,
                       justifyContent: "center",
                       alignItems: "center",
-                      borderTopLeftRadius: 3,
-                      borderBottomLeftRadius: 3,
+                      borderTopLeftRadius: 12,
+                      borderBottomLeftRadius: 12,
                     }}
                   >
                     <Text style={{ color: "#fff" }}>{item.achievment}</Text>
@@ -909,15 +923,15 @@ const TargetScreen = ({ route, navigation }) => {
                       color={color[index % color.length]}
                       style={{
                         height: 20,
-                        borderTopRightRadius: 3,
-                        borderBottomRightRadius: 3,
+                        borderTopRightRadius: 12,
+                        borderBottomRightRadius: 12,
                         backgroundColor: "#eeeeee",
                       }}
                     />
                     {/* <View style={{ position: 'absolute', top: 1, left: 2 }}>
                                             <Text style={{ color: Colors.WHITE }}>{item.achievment}</Text>
                                         </View> */}
-                    <View style={{ position: "absolute", top: 1, right: 3 }}>
+                    <View style={{ position: "absolute", top: 1, right: 5 }}>
                       <Text
                         style={{
                           color:
@@ -1005,7 +1019,11 @@ const TargetScreen = ({ route, navigation }) => {
                         alignItems: "center",
                       }}
                     >
-                      <Text>{Number(item.shortfall) >= 100000 ? Number(item.shortfall) / 100000 + 'L' : item.shortfall}</Text>
+                      <Text>
+                        {Number(item.shortfall) >= 100000
+                          ? Number(item.shortfall) / 100000 + "L"
+                          : item.shortfall}
+                      </Text>
                     </View>
                     <View
                       style={{
@@ -1032,13 +1050,14 @@ const TargetScreen = ({ route, navigation }) => {
             <View
               style={{ width: "100%", flexDirection: "row", marginTop: 10 }}
             >
-              <View style={{ width: "50%" }}>
+              <View style={{ width: "98%" }}>
                 <View style={styles.statWrap}>
                   <Text
                     style={{
-                      marginRight: screenWidth * 0.09,
-                      fontSize: 10,
+                      marginRight: "50%",
+                      fontSize: 14,
                       fontWeight: "600",
+                      flexDirection: "row",
                     }}
                   >
                     Enquiry to Booking (%)
@@ -1069,16 +1088,16 @@ const TargetScreen = ({ route, navigation }) => {
                     </Text>
                   )}
                 </View>
-
+                <View style={{ height: 5 }}></View>
                 <View style={styles.statWrap}>
                   <Text
                     style={{
-                      marginRight: screenWidth * 0.12,
-                      fontSize: 10,
+                      marginRight: "55%",
+                      fontSize: 14,
                       fontWeight: "600",
                     }}
                   >
-                    Enquiry to Retail (%)       
+                    Enquiry to Retail (%)
                   </Text>
                   {retailData !== null && enqData !== null && (
                     <Text
@@ -1106,12 +1125,12 @@ const TargetScreen = ({ route, navigation }) => {
                     </Text>
                   )}
                 </View>
-
+                <View style={{ height: 5 }}></View>
                 <View style={styles.statWrap}>
                   <Text
                     style={{
-                      marginRight: screenWidth * 0.08,
-                      fontSize: 10,
+                      marginRight: "47%",
+                      fontSize: 14,
                       fontWeight: "600",
                     }}
                   >
@@ -1143,21 +1162,25 @@ const TargetScreen = ({ route, navigation }) => {
                     </Text>
                   )}
                 </View>
-              </View>
 
-              <View
+                <View style={{ height: 5 }}></View>
+                {/* <View
                 style={{
                   width: "1%",
                   borderRightColor: Colors.GRAY,
                   height: 60,
                   borderRightWidth: 1,
                 }}
-              ></View>
+              ></View> */}
 
-              <View style={{ width: "49%" }}>
+                {/* <View style={{ width: "49%" }}> */}
                 <View style={styles.statWrap}>
                   <Text
-                    style={{ marginRight: 28, fontSize: 10, fontWeight: "600" }}
+                    style={{
+                      marginRight: "54%",
+                      fontSize: 14,
+                      fontWeight: "600",
+                    }}
                   >
                     Booking to Retail (%)
                   </Text>
@@ -1187,10 +1210,14 @@ const TargetScreen = ({ route, navigation }) => {
                     </Text>
                   )}
                 </View>
-
+                <View style={{ height: 5 }}></View>
                 <View style={styles.statWrap}>
                   <Text
-                    style={{ marginRight: 32, fontSize: 10, fontWeight: "600" }}
+                    style={{
+                      marginRight: "56%",
+                      fontSize: 14,
+                      fontWeight: "600",
+                    }}
                   >
                     Booking to Visit (%)
                   </Text>
@@ -1220,6 +1247,7 @@ const TargetScreen = ({ route, navigation }) => {
                     </Text>
                   )}
                 </View>
+                <View style={{ height: 15 }}></View>
               </View>
             </View>
           </>
@@ -1403,7 +1431,10 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: Colors.WHITE
     },
-    statWrap: { flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', height: 20, marginLeft: 10 },
+  statWrap: {
+     flexDirection: 'row',
+    justifyContent: 'flex-start', alignItems: 'center', height: 20, marginLeft: 10,backgroundColor:"#F5F5F5"
+  },
 
     
 })
