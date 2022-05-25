@@ -54,7 +54,6 @@ const PreEnquiryScreen = ({ navigation }) => {
         setOrgId(data.orgId);
     };
 
-    console.log({employeeId, orgId})
 
     useEffect(() => {
 
@@ -219,6 +218,7 @@ const PreEnquiryScreen = ({ navigation }) => {
         setCategoryList([...categoryFilters])
         setVehicleModelList([...modelData]);
         setSourceList([...sourceData]);
+        
 
         // Make Server call
         const payload2 = getPayloadData(employeeId, selectedFromDate, selectedToDate, 0, modelFilters, categoryFilters, sourceFilters)
@@ -226,12 +226,7 @@ const PreEnquiryScreen = ({ navigation }) => {
         dispatch(getPreEnquiryData(payload2));
     }
 
-    // let obj = {
-    //     "a": 1,
-    //     "c": 2,
-    //     "b": 3
-    // }
-    // console.log(JSON.stringify(obj))
+    // console.log({vehicleModelList})
 
     const renderFooter = () => {
         if (!selector.isLoadingExtraData) { return null }
@@ -338,7 +333,7 @@ const PreEnquiryScreen = ({ navigation }) => {
 
                                 return (
                                     <>
-                                        <View style={{paddingVertical: 5}}>
+                                        <View>
                                             <MyTaskNewItem
                                                 from='PRE_ENQUIRY'
                                                 name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
@@ -348,7 +343,10 @@ const PreEnquiryScreen = ({ navigation }) => {
                                                 phone={item.phone}
                                                 source={item.enquirySource}
                                                 model={item.model}
-                                                onItemPress={() => {}}
+                                                onItemPress={() => {
+                                                    console.log("ENQ: ", JSON.stringify(item));
+                                                    navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId })
+                                                }}
                                                 onDocPress={() => {
                                                     console.log("ITEM:", JSON.stringify(item));
                                                     navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq, { itemData: item, fromCreatePreEnquiry: false })
@@ -386,11 +384,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 5,
+        marginVertical: 5,
         paddingHorizontal: 5,
         borderWidth: 1,
         borderColor: Colors.LIGHT_GRAY,
-        backgroundColor: Colors.WHITE
+        backgroundColor: Colors.WHITE,
     },
     text1: {
         fontSize: 16,

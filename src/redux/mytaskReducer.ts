@@ -6,7 +6,6 @@ import URL from "../networking/endpoints";
 export const getCurrentTasksListApi = createAsyncThunk("MY_TASKS/getCurrentTasksListApi", async (endUrl, { rejectWithValue }) => {
 
   const url = URL.GET_CURRENT_TASK_LIST() + endUrl;
-  console.log("START", url);
   const response = await client.get(url);
   const json = await response.json()
   console.log(json)
@@ -57,15 +56,17 @@ export const getMyTasksListApi = createAsyncThunk("MY_TASKS/getMyTasksListApi", 
   }
 
   const url = URL.GET_MY_TASKS_NEW_DATA();
-  console.log("START:", url, userId);
-  
   const response = await client.post(url, payload);
   const json = await response.json()
-  console.log("RES: ",json)
+  console.log(json)
   if (!response.ok) {
     return rejectWithValue(json);
   }
   return json;
+})
+
+export const role = createAsyncThunk("MY-_TASKS/role", (role) => {
+  return role;
 })
 
 export const mytaskSlice = createSlice({
@@ -84,7 +85,9 @@ export const mytaskSlice = createSlice({
     isLoadingForPendingTask: false,
     isLoadingExtraDataForPendingTask: false,
     mytasksLisResponse: {},
-    myTasksListResponseStatus: ""
+    myTasksListResponseStatus: "",
+    role: "",
+    isLoading: true,
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -154,14 +157,21 @@ export const mytaskSlice = createSlice({
     builder.addCase(getMyTasksListApi.pending, (state) => {
       state.mytasksLisResponse = {};
       state.myTasksListResponseStatus = "pending";
+      state.isLoading = true;
     })
     builder.addCase(getMyTasksListApi.fulfilled, (state, action) => {
       state.mytasksLisResponse = action.payload;
       state.myTasksListResponseStatus = "success";
+      state.isLoading = false;
     })
     builder.addCase(getMyTasksListApi.rejected, (state, action) => {
       state.mytasksLisResponse = action.payload;
       state.myTasksListResponseStatus = "failed";
+      state.isLoading = false;
+    })
+    // Store Role
+    builder.addCase(role.fulfilled, (state: any, action) => {
+      state.role = action.payload;
     })
   }
 });

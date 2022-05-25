@@ -9,6 +9,7 @@ import { convertTimeStampToDateString, GetDropList } from '../../../utils/helper
 import { clearState, getPreEnquiryDetails, noThanksApi, getaAllTasks, assignTaskApi, changeEnquiryStatusApi, getEmployeesListApi, updateEmployeeApi, customerLeadRef } from '../../../redux/confirmedPreEnquiryReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppNavigator } from '../../../navigations';
+import { EmsTopTabNavigatorIdentifiers } from '../../../navigations/emsTopTabNavigator';
 import * as AsyncStore from "../../../asyncStore";
 import { LoaderComponent, SelectEmployeeComponant } from '../../../components';
 import { getPreEnquiryData } from '../../../redux/preEnquiryReducer';
@@ -324,7 +325,8 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
     const goToParentScreen = () => {
         getPreEnquiryListFromServer();
-        navigation.popToTop();
+        navigation.navigate(EmsTopTabNavigatorIdentifiers.enquiry);
+        // navigation.popToTop();
         dispatch(clearState());
     }
 
