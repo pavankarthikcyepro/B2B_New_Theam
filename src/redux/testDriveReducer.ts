@@ -223,7 +223,7 @@ const testDriveSlice = createSlice({
       state.test_drive_vehicle_list_for_drop_down = [];
     })
     builder.addCase(getTestDriveVehicleListApi.fulfilled, (state, action) => {
-      // console.log("S getTestDriveVehicleListApi: ", JSON.stringify(action.payload));
+      console.log("S getTestDriveVehicleListApi: ", JSON.stringify(action.payload));
       if (action.payload.status === "SUCCESS" && action.payload.vehicles) {
         const vehicles = action.payload.vehicles;
         state.test_drive_vehicle_list = vehicles;
