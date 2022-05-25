@@ -973,14 +973,19 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             showToast("Please fill the martial status");
             return;
         }
-        if (
-            selector.form_or_pan.length == 0 ||
-            selector.adhaar_number.length == 0 ||
-            // selector.relationship_proof.length == 0 ||
-            selector.customer_type_category.length == 0
-        ) {
-            showToast("please enter document upload section");
-        }
+        if (selector.form_or_pan.length == 0 ||
+            selector.adhaar_number.length == 0
+            ) {
+            showToast("Please upload document section")
+            }
+        // if (
+        //     selector.form_or_pan.length == 0 ||
+        //     selector.adhaar_number.length == 0 ||
+        //     // selector.relationship_proof.length == 0 ||
+        //     selector.customer_type_category.length == 0
+        // ) {
+        //     showToast("please enter document upload section");
+        // }
 
         // if (
         //   selector.adhaar_number.length > 0 &&
@@ -994,6 +999,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             if (selector.pan_number.length == 0) {
                 showToast("please enter pan card number");
             }
+            
         }
 
         if ((selector.enquiry_segment.toLowerCase() === "company" && selector.customer_type.toLowerCase() === "institution") && (selector.customer_type_category == "B2B" ||
@@ -1032,7 +1038,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             selector.customer_preferred_date.length === 0 ||
             selector.tentative_delivery_date.length === 0
         ) {
-            showToast("Please enter commitment details");
+            showToast("Please enter DOD details");
             return;
         }
 
@@ -1627,6 +1633,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 totalPrice += item.cost;
                 if (item.item === 'FOC') {
                     totFoc += item.cost
+                    // totMrp += item.cost
                 }
                 if (item.item === 'MRP') {
                     totMrp += item.cost
@@ -2718,23 +2725,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         <View style={styles.select_image_bck_vw}>
                                             <ImageSelectItem
                                                 name={"Last 3 months payslip"}
-                                                onPress={() => dispatch(setImagePicker("UPLOAD_PATTA_PASS_BOOK"))}
+                                                onPress={() => dispatch(setImagePicker("UPLOAD_3_MONTHS_PAYSLIP"))}
                                             />
                                         </View>
-                                        {uploadedImagesDataObj.passbook?.fileName ? (
+                                        {uploadedImagesDataObj.payslips?.fileName ? (
 
                                             <View style={{ flexDirection: 'row' }}>
                                                 <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                                                    if (uploadedImagesDataObj.passbook?.documentPath) {
-                                                        setImagePath(uploadedImagesDataObj.passbook?.documentPath)
+                                                    if (uploadedImagesDataObj.payslips?.documentPath) {
+                                                        setImagePath(uploadedImagesDataObj.payslips?.documentPath)
                                                     }
                                                 }}>
                                                     <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
                                                 </TouchableOpacity>
                                                 <View style={{ width: '80%' }}>
                                                     <DisplaySelectedImage
-                                                        fileName={uploadedImagesDataObj.passbook.fileName}
-                                                        from={"PATTA_PASS_BOOK"}
+                                                        fileName={uploadedImagesDataObj.payslips.fileName}
+                                                        from={"3_MONTHS_PAYSLIP"}
                                                     />
                                                 </View>
                                             </View>

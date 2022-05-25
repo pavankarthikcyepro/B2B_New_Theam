@@ -30,12 +30,15 @@ import {
     updateIsTeam,
     updateIsTeamPresent,
     getBranchIds,
-    downloadFile
+    downloadFile,
+    updateIsMD,
+    updateIsDSE
 } from '../../../redux/homeReducer';
 import {
     updateData,
-    updateIsManager
+    updateIsManager,
 } from '../../../redux/sideMenuReducer';
+import * as acctionCreator from '../../../redux/targetSettingsReducer';
 import { DateRangeComp, DatePickerComponent, SortAndFilterComp } from '../../../components';
 import { DateModalComp } from "../../../components/dateModalComp";
 import { getMenuList } from '../../../redux/homeReducer';
@@ -202,7 +205,7 @@ const HomeScreen = ({ route, navigation }) => {
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             if (selector.allGroupDealerData.length > 0) {
-                console.log("£££££RRRRR:", selector.allGroupDealerData[0]);
+                // console.log("£££££RRRRR:", selector.allGroupDealerData[0]);
                 let tempArr = [], allArray = selector.allGroupDealerData;
                 setGroupDealerCount(selector.allGroupDealerData.length)
                 tempArr = allArray.filter((item) => {
@@ -220,13 +223,15 @@ const HomeScreen = ({ route, navigation }) => {
 
     }, [selector.allGroupDealerData])
 
-    useEffect(() => {
-
-        updateBranchNameInHeader()
-        getMenuListFromServer();
-        getLoginEmployeeDetailsFromAsyn();
-        dispatch(getCustomerTypeList());
-        checkLoginUserAndEnableReportButton();
+    useEffect(async () => {
+        // if (await AsyncStore.getData(AsyncStore.Keys.IS_LOGIN) === 'true'){
+            updateBranchNameInHeader()
+            getMenuListFromServer();
+            getLoginEmployeeDetailsFromAsyn();
+            dispatch(getCustomerTypeList());
+            checkLoginUserAndEnableReportButton();
+        // }
+        
         const unsubscribe = navigation.addListener('focus', () => {
             updateBranchNameInHeader()
         });
@@ -247,8 +252,8 @@ const HomeScreen = ({ route, navigation }) => {
         navigation.navigate(AppNavigator.HomeStackIdentifiers.select_branch, { isFromLogin: false, })
     }
     const moveToFilter = () => {
-    navigation.navigate(AppNavigator.HomeStackIdentifiers.filter,{isFromLogin:false,})
-}
+        navigation.navigate(AppNavigator.HomeStackIdentifiers.filter, { isFromLogin: false, })
+    }
     const getMenuListFromServer = async () => {
         let name = await AsyncStore.getData(AsyncStore.Keys.USER_NAME);
         if (name) {
@@ -258,7 +263,7 @@ const HomeScreen = ({ route, navigation }) => {
 
     const checkLoginUserAndEnableReportButton = async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        console.log("$$$$$ LOGIN EMP:", employeeData);
+        // console.log("$$$$$ LOGIN EMP:", employeeData);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             let findMdArr = [];
@@ -320,43 +325,118 @@ const HomeScreen = ({ route, navigation }) => {
             ]).then(() => {
                 console.log('I did everything!');
             });
+            console.log("LOGIN DATA:", JSON.stringify(jsonObj));
+            if (jsonObj?.hrmsRole === "Admin Prod" || jsonObj?.hrmsRole === "App Admin" || jsonObj?.hrmsRole === "Manager" || jsonObj?.hrmsRole === "TL" || jsonObj?.hrmsRole === "General Manager" || jsonObj?.hrmsRole === "branch manager" || jsonObj?.hrmsRole  === "Testdrive_Manager"){
+                dispatch(updateIsTeamPresent(true))
+                setIsTeamPresent(true)
+                // console.log("%%%%% TEAM:", rolesArr);
+                const dateFormat = "YYYY-MM-DD";
+                const currentDate = moment().format(dateFormat)
+                const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                const payload = {
+                    "endDate": monthLastDate,
+                    "loggedInEmpId": jsonObj.empId,
+                    "startDate": monthFirstDate,
+                    "levelSelected": null,
+                    "empId": jsonObj.empId
+                }
+                // console.log("PAYLOAD:", payload);
+                getAllTargetParametersDataFromServer(payload)
+            }
+            if (jsonObj?.hrmsRole.toLowerCase().includes('manager')) {
+                // dispatch(updateData(sidemenuSelector.managerData))
+                dispatch(updateIsManager(true))
+            }
+            else {
+                // dispatch(updateData(sidemenuSelector.normalData))
+                dispatch(updateIsManager(false))
+            }
 
-            if (jsonObj.roles.length > 0) {
-                let rolesArr = [];
-                // console.log("ROLLS:", jsonObj.roles);
+            if (jsonObj?.hrmsRole.toLowerCase().includes('dse')) {
+                // dispatch(updateData(sidemenuSelector.managerData))
+                dispatch(updateIsDSE(true))
+            }
+            else {
+                // dispatch(updateData(sidemenuSelector.normalData))
+                dispatch(updateIsDSE(false))
+            }
+
+            if (jsonObj?.hrmsRole.toLowerCase().includes('md') || jsonObj?.hrmsRole.toLowerCase().includes("admin prod")) {
+                // dispatch(updateData(sidemenuSelector.managerData))
+                dispatch(updateIsTeam(true))
+                dispatch(acctionCreator.updateIsTeam(true))
+                dispatch(updateIsMD(true))
+            }
+            else {
+                // dispatch(updateData(sidemenuSelector.normalData))
+                dispatch(updateIsMD(false))
+            }
+
+            if (jsonObj?.roles.length > 0) {
+                let rolesArr = [], mdArr = [], dseArr = [];
+                console.log("ROLLS:", jsonObj.roles);
                 rolesArr = jsonObj.roles.filter((item) => {
                     return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL" || item === "General Manager" || item === "branch manager" || item === "Testdrive_Manager"
                 })
-                rolesArr2 = jsonObj.roles.filter((item) => {
-                    return item.toLowerCase().includes('manager')
-                })
+                // rolesArr2 = jsonObj.roles.filter((item) => {
+                //     return item.toLowerCase().includes('manager')
+                // })
 
-                if (rolesArr2.length > 0) {
-                    // dispatch(updateData(sidemenuSelector.managerData))
-                    dispatch(updateIsManager(true))
-                }
-                else {
-                    // dispatch(updateData(sidemenuSelector.normalData))
-                    dispatch(updateIsManager(false))
-                }
+                // mdArr = jsonObj.roles.filter((item) => {
+                //     return item.toLowerCase().includes('md')
+                // })
+
+                // dseArr = jsonObj.roles.filter((item) => {
+                //     return item.toLowerCase().includes('dse')
+                // })
+
+                // if (item.toLowerCase().includes('manager')) {
+                //     // dispatch(updateData(sidemenuSelector.managerData))
+                //     dispatch(updateIsManager(true))
+                // }
+                // else {
+                //     // dispatch(updateData(sidemenuSelector.normalData))
+                //     dispatch(updateIsManager(false))
+                // }
+
+                // if (dseArr.length > 0) {
+                //     // dispatch(updateData(sidemenuSelector.managerData))
+                //     dispatch(updateIsDSE(true))
+                // }
+                // else {
+                //     // dispatch(updateData(sidemenuSelector.normalData))
+                //     dispatch(updateIsDSE(false))
+                // }
+
+                // if (mdArr.length > 0) {
+                //     // dispatch(updateData(sidemenuSelector.managerData))
+                //     dispatch(updateIsTeam(true))
+                //     dispatch(acctionCreator.updateIsTeam(true))
+                //     dispatch(updateIsMD(true))
+                // }
+                // else {
+                //     // dispatch(updateData(sidemenuSelector.normalData))
+                //     dispatch(updateIsMD(false))
+                // }
                 if (rolesArr.length > 0) {
                     setRoles(rolesArr)
-                    dispatch(updateIsTeamPresent(true))
-                    setIsTeamPresent(true)
-                    // console.log("%%%%% TEAM:", rolesArr);
-                    const dateFormat = "YYYY-MM-DD";
-                    const currentDate = moment().format(dateFormat)
-                    const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-                    const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-                    const payload = {
-                        "endDate": monthLastDate,
-                        "loggedInEmpId": jsonObj.empId,
-                        "startDate": monthFirstDate,
-                        "levelSelected": null,
-                        "empId": jsonObj.empId
-                    }
-                    // console.log("PAYLOAD:", payload);
-                    getAllTargetParametersDataFromServer(payload)
+                    // dispatch(updateIsTeamPresent(true))
+                    // setIsTeamPresent(true)
+                    // // console.log("%%%%% TEAM:", rolesArr);
+                    // const dateFormat = "YYYY-MM-DD";
+                    // const currentDate = moment().format(dateFormat)
+                    // const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                    // const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                    // const payload = {
+                    //     "endDate": monthLastDate,
+                    //     "loggedInEmpId": jsonObj.empId,
+                    //     "startDate": monthFirstDate,
+                    //     "levelSelected": null,
+                    //     "empId": jsonObj.empId
+                    // }
+                    // // console.log("PAYLOAD:", payload);
+                    // getAllTargetParametersDataFromServer(payload)
                 }
             }
             getDashboadTableDataFromServer(jsonObj.empId);
@@ -479,7 +559,7 @@ const HomeScreen = ({ route, navigation }) => {
         Promise.all([
             dispatch(getBranchIds({}))
         ]).then(async (res) => {
-            console.log('DATA', res[0]);
+            // console.log('DATA', res[0]);
             let branchIds = []
             let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
             if (employeeData) {
@@ -496,14 +576,14 @@ const HomeScreen = ({ route, navigation }) => {
                             let payload = {
                                 branchIdList: branchIds,
                                 orgId: jsonObj.orgId,
-                                fromDate: monthFirstDate + " 00:00:00",                            
+                                fromDate: monthFirstDate + " 00:00:00",
                                 toDate: monthLastDate + " 23:59:59"
                             }
-                            console.log("PAYLOAD:", payload);
+                            // console.log("PAYLOAD:", payload);
                             Promise.all([
                                 dispatch(downloadFile(payload))
                             ]).then(async (res) => {
-                                console.log('DATA', JSON.stringify(res));
+                                // console.log('DATA', JSON.stringify(res));
                                 if (res[0]?.payload?.downloadUrl) {
                                     downloadInLocal(res[0]?.payload?.downloadUrl)
                                 }
@@ -537,51 +617,51 @@ const HomeScreen = ({ route, navigation }) => {
         Promise.all([
             dispatch(getBranchIds({}))
         ]).then(async (res) => {
-            console.log('DATA', res[0]);
+            // console.log('DATA', res[0]);
             let branchIds = []
             let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
             if (employeeData) {
                 const jsonObj = JSON.parse(employeeData);
-              //  if (res[0]?.payload.length > 0) {
-               //     let braches = res[0]?.payload;
+                //  if (res[0]?.payload.length > 0) {
+                //     let braches = res[0]?.payload;
                 //    for (let i = 0; i < braches.length; i++) {
-                 //       branchIds.push(braches[i].id);
-                     //   if (i == braches.length - 1) {
-                            const dateFormat = "YYYY-MM-DD";
-                            const currentDate = moment().format(dateFormat)
-                            const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-                            const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-                            let payload7 = {
-                                orgId: jsonObj.orgId,
-                                reportFrequency: "MONTHLY",
-                                reportType: "ORG",
-                                location: "Khammam"  
-                            }
-                            console.log("PAYLOAD:", payload7);
-                            Promise.all([
-                                dispatch(downloadFile(payload7))
-                            ]).then(async (res) => {
-                                console.log('DATA', JSON.stringify(res));
-                                if (res[0]?.payload7?.downloadUrl1) {
-                                    downloadInLocal(res[0]?.payload7?.downloadUrl1)
-                                }
-                                else {
-                                    setLoading(false)
-                                }
-                            }).catch(() => {
-                                setLoading(false)
-                            })
+                //       branchIds.push(braches[i].id);
+                //   if (i == braches.length - 1) {
+                const dateFormat = "YYYY-MM-DD";
+                const currentDate = moment().format(dateFormat)
+                const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                let payload7 = {
+                    orgId: jsonObj.orgId,
+                    reportFrequency: "MONTHLY",
+                    reportType: "ORG",
+                    location: "Khammam"
+                }
+                // console.log("PAYLOAD:", payload7);
+                Promise.all([
+                    dispatch(downloadFile(payload7))
+                ]).then(async (res) => {
+                    // console.log('DATA', JSON.stringify(res));
+                    if (res[0]?.payload?.downloadUrl) {
+                        downloadInLocal(res[0]?.payload?.downloadUrl)
+                    }
+                    else {
+                        setLoading(false)
+                    }
+                }).catch(() => {
+                    setLoading(false)
+                })
 
-                            // try {
-                            //     const response = await client.post(URL.DOWNLOAD_FILE(), payload)
-                            //     const json = await response.json()
-                            //     console.log("DOWNLOAD: ", json);
-                            // } catch (error) {
-                            //     setLoading(false)
-                            // }
-                      //  }
-                 //   }
-            //    }
+                // try {
+                //     const response = await client.post(URL.DOWNLOAD_FILE(), payload)
+                //     const json = await response.json()
+                //     console.log("DOWNLOAD: ", json);
+                // } catch (error) {
+                //     setLoading(false)
+                // }
+                //  }
+                //   }
+                //    }
             }
 
         }).catch(() => {
@@ -595,7 +675,7 @@ const HomeScreen = ({ route, navigation }) => {
         let date = new Date();
         let file_ext = getFileExtention(url);
         file_ext = '.' + file_ext[0];
-        console.log({ file_ext })
+        // console.log({ file_ext })
         let options = {}
         if (Platform.OS === 'android') {
             options = {
@@ -610,7 +690,7 @@ const HomeScreen = ({ route, navigation }) => {
             config(options)
                 .fetch('GET', url)
                 .then((res) => {
-                    console.log(JSON.stringify(res), "sucess");
+                    // console.log(JSON.stringify(res), "sucess");
                     setLoading(false);
                     RNFetchBlob.android.actionViewIntent(res.path());
                     // do some magic here
@@ -673,7 +753,7 @@ const HomeScreen = ({ route, navigation }) => {
                 branchName={selectedBranchName}
                 menuClicked={() => navigation.openDrawer()}
                 branchClicked={() => moveToSelectBranch()}
-                filterClicked={()=> moveToFilter()}
+                filterClicked={() => moveToFilter()}
             />
             <View style={{ flex: 1, padding: 10 }}>
                 <FlatList
@@ -814,8 +894,8 @@ const HomeScreen = ({ route, navigation }) => {
                                         {/* <TouchableOpacity style={{ position: 'absolute', top: -10, right: -10 }}
                                             onPress={() => navigation.navigate(HomeStackIdentifiers.filter)}>
                                             <View style={{ flexDirection: 'row', alignItems: 'center' }}> */}
-                                                {/* <Text style={[styles.text1, { color: Colors.RED }]}>{'Filters'}</Text> */}
-                                                {/* <IconButton icon={'filter-outline'} size={25} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
+                                        {/* <Text style={[styles.text1, { color: Colors.RED }]}>{'Filters'}</Text> */}
+                                        {/* <IconButton icon={'filter-outline'} size={25} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
                                             </View>
                                         </TouchableOpacity> */}
                                     </View>
@@ -849,20 +929,10 @@ const HomeScreen = ({ route, navigation }) => {
                                         }
                                     </View> */}
 
-                                    {isTeamPresent &&
+                                    {isTeamPresent && !selector.isDSE && !selector.isMD &&
                                         <View style={{ flexDirection: 'row', marginBottom: 20, justifyContent: 'center', alignItems: 'center' }}>
-                                            {/* <View style={{ width: '40%', marginRight: 60 }}>
-                                                <View >
-                                                    <TargetDropdown
-                                                        label={"Select Target"}
-                                                        value={dropDownData ? dropDownData.value : ''}
-                                                        onPress={() =>
-                                                            showDropDownModelMethod("TARGET_MODEL", "Select Target")
-                                                        }
-                                                    />
-                                                </View>
-                                            </View> */}
                                             <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, marginTop: 10, justifyContent: 'center', width: '80%' }}>
+
                                                 <TouchableOpacity onPress={() => {
                                                     // setIsTeam(true)
                                                     dispatch(updateIsTeam(false))
@@ -874,6 +944,31 @@ const HomeScreen = ({ route, navigation }) => {
                                                     dispatch(updateIsTeam(true))
                                                 }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: selector.isTeam ? Colors.RED : Colors.WHITE, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
                                                     <Text style={{ fontSize: 16, color: selector.isTeam ? Colors.WHITE : Colors.BLACK, fontWeight: '600' }}>Teams</Text>
+                                                </TouchableOpacity>
+
+                                            </View>
+                                        </View>
+                                    }
+                                    {selector.isDSE &&
+                                        <View style={{ flexDirection: 'row', marginBottom: 20, justifyContent: 'center', alignItems: 'center' }}>
+                                            <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, marginTop: 10, justifyContent: 'center', width: '80%' }}>
+                                                <TouchableOpacity onPress={() => {
+                                                    // setIsTeam(true)
+                                                    dispatch(updateIsTeam(false))
+                                                }} style={{ width: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
+                                                    <Text style={{ fontSize: 16, color: Colors.WHITE, fontWeight: '600' }}>Self</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
+                                    }
+                                    {selector.isMD &&
+                                        <View style={{ flexDirection: 'row', marginBottom: 20, justifyContent: 'center', alignItems: 'center' }}>
+                                            <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, marginTop: 10, justifyContent: 'center', width: '80%' }}>
+                                                <TouchableOpacity onPress={() => {
+                                                    // setIsTeam(false)
+                                                    dispatch(updateIsTeam(true))
+                                                }} style={{ width: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.RED, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
+                                                    <Text style={{ fontSize: 16, color: Colors.WHITE, fontWeight: '600' }}>Teams</Text>
                                                 </TouchableOpacity>
                                             </View>
                                         </View>

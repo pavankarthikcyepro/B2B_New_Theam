@@ -151,7 +151,7 @@ export const getTargetParametersData = createAsyncThunk("HOME/getTargetParameter
     const json = await response.json()
     // console.log("homeReducer", payload);
 
-    // console.log("&&&&&& DATA:", JSON.stringify(json));
+    console.log("&&&&&& TARGET DATA:", JSON.stringify(json));
 
     if (!response.ok) {
         return rejectWithValue(json);
@@ -188,8 +188,7 @@ export const getTargetParametersEmpData = createAsyncThunk("HOME/getTargetParame
 })
 
 export const getGroupDealerRanking = createAsyncThunk("HOME/getGroupDealerRanking", async (payload: any, { rejectWithValue }) => {
-    // console.log("&&&&", URL.GET_TARGET_RANKING(payload.orgId), payload.payload);
-    console.log("CALLED");
+    // console.log("%%%%GROUP", URL.GET_TARGET_GROUP_RANKING(payload.orgId), payload.payload);
 
     const response = await client.post(URL.GET_TARGET_GROUP_RANKING(payload.orgId), payload.payload)
     const json = await response.json()
@@ -202,10 +201,10 @@ export const getGroupDealerRanking = createAsyncThunk("HOME/getGroupDealerRankin
 })
 
 export const getDealerRanking = createAsyncThunk("HOME/getDealerRanking", async (payload: any, { rejectWithValue }) => {
-
+    // console.log("%%%DEALER", URL.GET_TARGET_RANKING(payload.orgId, payload.branchId), payload.payload);
     const response = await client.post(URL.GET_TARGET_RANKING(payload.orgId, payload.branchId), payload.payload)
     const json = await response.json()
-    console.log("&&&&&& DATA GET_TARGET_RANKING:", json);
+    // console.log("&&&&&& DATA GET_TARGET_RANKING:", json);
 
     if (!response.ok) {
         return rejectWithValue(json);
@@ -245,11 +244,11 @@ export const getSalesComparisonData = createAsyncThunk("HOME/getSalesComparisonD
 })
 
 export const getBranchIds = createAsyncThunk("HOME/getBranchIds", async (payload: any, { rejectWithValue }) => {
-    console.log("CALLED");
+    // console.log("CALLED");
     
     const response = await client.get(URL.GET_BRANCH())
     const json = await response.json()
-    console.log("SUCCESS:", json);
+    // console.log("SUCCESS:", json);
     
     if (!response.ok) {
         return rejectWithValue(json);
@@ -261,7 +260,7 @@ export const downloadFile = createAsyncThunk("HOME/downloadFile", async (payload
 
     const response = await client.post(URL.DOWNLOAD_FILE(), payload)
     const json = await response.json()
-    console.log("DOWNLOAD: ", json);
+    // console.log("DOWNLOAD: ", json);
     
     if (!response.ok) {
         return rejectWithValue(json);
@@ -271,7 +270,7 @@ export const downloadFile = createAsyncThunk("HOME/downloadFile", async (payload
 
 
 export const updateIsTeam = createAsyncThunk("HOME/updateIsTeam", async (payload: any) => {
-    console.log("PPP", payload);
+    // console.log("PPP", payload);
     
     return payload;
 })
@@ -318,7 +317,9 @@ export const homeSlice = createSlice({
         allGroupDealerData: [],
         allDealerData: [],
         isTeam: false,
-        isTeamPresent: false
+        isTeamPresent: false,
+        isMD: false,
+        isDSE: false,
     },
     reducers: {
         dateSelected: (state, action) => {
@@ -329,6 +330,12 @@ export const homeSlice = createSlice({
         },
         updateIsTeamPresent: (state, action) => {
             state.isTeamPresent = action.payload;
+        },
+        updateIsMD: (state, action) => {
+            state.isMD = action.payload;
+        },
+        updateIsDSE: (state, action) => {
+            state.isDSE = action.payload;
         },
     },
     extraReducers: (builder) => {
@@ -365,7 +372,7 @@ export const homeSlice = createSlice({
                 state.branchesList = [];
             })
             .addCase(updateIsTeam.fulfilled, (state, action) => {
-                console.log("TEAM: ", action.payload);
+                // console.log("TEAM: ", action.payload);
                 
                 state.isTeam = action.payload;
             })
@@ -520,7 +527,7 @@ export const homeSlice = createSlice({
                     
                     state.all_target_parameters_data = [];
                     state.all_emp_parameters_data = [];
-                    console.log(action.payload.employeeTargetAchievements, "dashboard")
+                    // console.log(action.payload.employeeTargetAchievements, "dashboard")
                     state.isTeamPresent = action.payload.employeeTargetAchievements.length > 1;
                     state.all_target_parameters_data = action.payload.overallTargetAchivements;
                     state.all_emp_parameters_data = action.payload.employeeTargetAchievements;
@@ -595,7 +602,7 @@ export const homeSlice = createSlice({
     }
 });
 
-export const { dateSelected, updateFilterDropDownData, updateIsTeamPresent } = homeSlice.actions;
+export const { dateSelected, updateFilterDropDownData, updateIsTeamPresent, updateIsMD, updateIsDSE } = homeSlice.actions;
 export default homeSlice.reducer;
 
 

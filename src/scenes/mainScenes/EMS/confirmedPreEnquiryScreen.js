@@ -529,7 +529,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                       }}
                       onPress={createEnquiryClicked}
                     >
-                      Create Enuqiry
+                      Create Enquiry
                     </Button>
 
                     <Button

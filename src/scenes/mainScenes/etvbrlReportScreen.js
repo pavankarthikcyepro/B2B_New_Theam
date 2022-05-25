@@ -115,10 +115,12 @@ const etvbrlReportScreen = () => {
         console.log("download Url", URL.DOWNLOAD_REPORT())
         const response = await client.post(URL.DOWNLOAD_REPORT(), payload);
         const report = await response.json();
+        console.log("REPORT:", JSON.stringify(report));
         const { config, fs } = RNFetchBlob;
         let downloadDir = Platform.select({ ios: fs.dirs.DocumentDir, android: fs.dirs.DownloadDir });
         let date = new Date();
         let file_ext = getFileExtention(report.downloadUrl);
+        console.log("FiLE: ", file_ext);
         file_ext = '.' + file_ext[0];
         console.log({file_ext})
         let options = {}

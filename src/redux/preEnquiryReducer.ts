@@ -54,7 +54,6 @@ export const preEnquirySlice = createSlice({
         state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
         state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
         state.pre_enquiry_list = dmsEntityObj.leadDtoPage.content;
-        // console.log("first--------------", dmsEntityObj.leadDtoPage.content[0])
 
       }
       state.isLoading = false;

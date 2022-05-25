@@ -95,7 +95,8 @@ const MainParamScreen = ({ route, navigation }) => {
             let ownDataArray = [];
             if (selector.targetType === 'MONTHLY'){
                 ownDataArray = selector.targetMapping.filter((item) => {
-                    return Number(item.employeeId) === Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate
+                    // return Number(item.employeeId) === Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate
+                    return Number(item.employeeId) === Number(loggedInEmpDetails?.empId)
                 })
             }
             else{
@@ -189,7 +190,8 @@ const MainParamScreen = ({ route, navigation }) => {
                     "startDate": selector.startDate,
                     // "teamLeadId": otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead')[0].value.value : '',
                     "targetType": selector.targetType,
-                    "targetName": selector.targetType === 'MONTHLY' ? selector.selectedMonth.value : selector.selectedSpecial.keyId
+                    // "targetName": selector.targetType === 'MONTHLY' ? selector.selectedMonth.value : selector.selectedSpecial.keyId
+                    "targetName": "SPECIAL1"
                 }
                 console.log("PAYLOAD:", payload);
                 Promise.all([
@@ -233,9 +235,10 @@ const MainParamScreen = ({ route, navigation }) => {
                     "startDate": selector.startDate,
                     // "teamLeadId": otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead')[0].value.value : '',
                     "targetType": selector.targetType,
-                    "targetName": selector.targetType === 'MONTHLY' ? selector.selectedMonth.value : selector.selectedSpecial.keyId
+                    // "targetName": selector.targetType === 'MONTHLY' ? selector.selectedMonth.value : selector.selectedSpecial.keyId
+                    "targetName": "SPECIAL1"
                 }
-                console.log("PAYLOAD:", payload);
+                console.log("PAYLOAD EDIT:", payload);
                 Promise.all([
                     dispatch(editTargetMapping(payload))
                 ]).then(() => {

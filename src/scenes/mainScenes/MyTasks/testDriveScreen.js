@@ -626,9 +626,11 @@ const TestDriveScreen = ({ route, navigation }) => {
 
     // Handle Update Test Drive Task response
     useEffect(() => {
-        if (selector.test_drive_update_task_response === "success") {
+        if (selector.test_drive_update_task_response === "success" && taskStatusAndName.status === 'SENT_FOR_APPROVAL') {
             showAlertMsg(true);
-        } else if (selector.test_drive_update_task_response === "failed") {
+        } else if (selector.test_drive_update_task_response === "success" && taskStatusAndName.status === 'CANCELLED') {
+            showCancelAlertMsg();
+        }else if (selector.test_drive_update_task_response === "failed") {
             showAlertMsg(false);
         }
     }, [selector.test_drive_update_task_response]);
@@ -637,6 +639,24 @@ const TestDriveScreen = ({ route, navigation }) => {
         let message = isSucess
             ? "TestDrive Appointment has sent for approval"
             : "TestDrive Appointment has failed";
+        Alert.alert(
+            "",
+            message,
+            [
+                {
+                    text: "OK",
+                    onPress: () => {
+                        dispatch(clearState());
+                        navigation.goBack();
+                    },
+                },
+            ],
+            { cancelable: false }
+        );
+    };
+
+    const showCancelAlertMsg = () => {
+        let message = "TestDrive Appointment has cancelled";
         Alert.alert(
             "",
             message,
