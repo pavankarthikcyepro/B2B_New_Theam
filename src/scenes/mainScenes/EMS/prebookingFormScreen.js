@@ -973,14 +973,19 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             showToast("Please fill the martial status");
             return;
         }
-        if (
-            selector.form_or_pan.length == 0 ||
-            selector.adhaar_number.length == 0 ||
-            // selector.relationship_proof.length == 0 ||
-            selector.customer_type_category.length == 0
-        ) {
-            showToast("please enter document upload section");
-        }
+        if (selector.form_or_pan.length == 0 ||
+            selector.adhaar_number.length == 0
+            ) {
+            showToast("Please upload document section")
+            }
+        // if (
+        //     selector.form_or_pan.length == 0 ||
+        //     selector.adhaar_number.length == 0 ||
+        //     // selector.relationship_proof.length == 0 ||
+        //     selector.customer_type_category.length == 0
+        // ) {
+        //     showToast("please enter document upload section");
+        // }
 
         // if (
         //   selector.adhaar_number.length > 0 &&
@@ -994,6 +999,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             if (selector.pan_number.length == 0) {
                 showToast("please enter pan card number");
             }
+            
         }
 
         if ((selector.enquiry_segment.toLowerCase() === "company" && selector.customer_type.toLowerCase() === "institution") && (selector.customer_type_category == "B2B" ||
@@ -1032,7 +1038,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             selector.customer_preferred_date.length === 0 ||
             selector.tentative_delivery_date.length === 0
         ) {
-            showToast("Please enter commitment details");
+            showToast("Please enter DOD details");
             return;
         }
 
