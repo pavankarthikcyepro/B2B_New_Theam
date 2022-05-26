@@ -643,7 +643,9 @@ const TargetScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text style={{ fontSize: 12, fontWeight: "600" }}>
-                            {Math.abs(Number(item.shortfall)) >= 100000 ? Math.abs(Number(item.shortfall)) / 100000 + 'L' : Math.abs(Number(item.shortfall))}
+                            {Math.abs(Number(item.shortfall)) >= 100000
+                              ? Math.abs(Number(item.shortfall)) / 100000 + "L"
+                              : Math.abs(Number(item.shortfall))}
                           </Text>
                         </View>
                         <View
@@ -657,8 +659,11 @@ const TargetScreen = ({ route, navigation }) => {
                         >
                           <Text style={{ fontSize: 12, fontWeight: "600" }}>
                             {dateDiff > 0 && parseInt(item.shortfall) !== 0
-                              ? Math.abs(Math.round(parseInt(item.shortfall) /
-                                dateDiff))
+                              ? Math.abs(
+                                  Math.round(
+                                    parseInt(item.shortfall) / dateDiff
+                                  )
+                                )
                               : 0}
                           </Text>
                         </View>
@@ -809,7 +814,14 @@ const TargetScreen = ({ route, navigation }) => {
                                         fontWeight: "600",
                                       }}
                                     >
-                                      {Math.abs(Number(innerItem.shortfall)) >= 100000 ? Math.abs(Number(innerItem.shortfall)) / 100000 + 'L' : Math.abs(Number(innerItem.shortfall))}
+                                      {Math.abs(Number(innerItem.shortfall)) >=
+                                      100000
+                                        ? Math.abs(
+                                            Number(innerItem.shortfall)
+                                          ) /
+                                            100000 +
+                                          "L"
+                                        : Math.abs(Number(innerItem.shortfall))}
                                     </Text>
                                   </View>
                                   <View
@@ -828,13 +840,17 @@ const TargetScreen = ({ route, navigation }) => {
                                       }}
                                     >
                                       {dateDiff > 0 &&
-                                      parseInt(innerItem.shortfall) !== 0 ?
-                                        // ? (
-                                        //     parseInt(innerItem.shortfall) /
-                                        //     dateDiff
-                                        //   ).toFixed(1)
-                                        Math.abs(Math.round(parseInt(innerItem.shortfall) /
-                                          dateDiff))
+                                      parseInt(innerItem.shortfall) !== 0
+                                        ? // ? (
+                                          //     parseInt(innerItem.shortfall) /
+                                          //     dateDiff
+                                          //   ).toFixed(1)
+                                          Math.abs(
+                                            Math.round(
+                                              parseInt(innerItem.shortfall) /
+                                                dateDiff
+                                            )
+                                          )
                                         : 0}
                                     </Text>
                                   </View>
@@ -887,8 +903,8 @@ const TargetScreen = ({ route, navigation }) => {
                       height: 20,
                       justifyContent: "center",
                       alignItems: "center",
-                      borderTopLeftRadius: 12,
-                      borderBottomLeftRadius: 12,
+                      borderTopLeftRadius: 3,
+                      borderBottomLeftRadius: 3,
                     }}
                   >
                     <Text style={{ color: "#fff" }}>{item.achievment}</Text>
@@ -921,8 +937,8 @@ const TargetScreen = ({ route, navigation }) => {
                       color={color[index % color.length]}
                       style={{
                         height: 20,
-                        borderTopRightRadius: 12,
-                        borderBottomRightRadius: 12,
+                        borderTopRightRadius: 3,
+                        borderBottomRightRadius: 3,
                         backgroundColor: "#eeeeee",
                       }}
                     />
@@ -1013,11 +1029,16 @@ const TargetScreen = ({ route, navigation }) => {
                         height: 25,
                         borderColor: color[index % color.length],
                         borderWidth: 1,
+                        borderRadius:8,
                         justifyContent: "center",
                         alignItems: "center",
                       }}
                     >
-                      <Text>{Math.abs(Number(item.shortfall)) >= 100000 ? Math.abs(Number(item.shortfall)) / 100000 + 'L' : Math.abs(item.shortfall)}</Text>
+                      <Text>
+                        {Math.abs(Number(item.shortfall)) >= 100000
+                          ? Math.abs(Number(item.shortfall)) / 100000 + "L"
+                          : Math.abs(item.shortfall)}
+                      </Text>
                     </View>
                     <View
                       style={{
@@ -1025,6 +1046,7 @@ const TargetScreen = ({ route, navigation }) => {
                         height: 25,
                         borderColor: color[index % color.length],
                         borderWidth: 1,
+                        borderRadius:8,
                         justifyContent: "center",
                         alignItems: "center",
                         marginLeft: 20,
@@ -1033,8 +1055,9 @@ const TargetScreen = ({ route, navigation }) => {
                     >
                       <Text>
                         {dateDiff > 0 && parseInt(item.shortfall) !== 0
-                          ? Math.abs(Math.round(parseInt(item.shortfall) /
-                            dateDiff))
+                          ? Math.abs(
+                              Math.round(parseInt(item.shortfall) / dateDiff)
+                            )
                           : 0}
                       </Text>
                     </View>
@@ -1043,19 +1066,20 @@ const TargetScreen = ({ route, navigation }) => {
               );
             })}
             <View
-              style={{ width: "100%", flexDirection: "row", marginTop: 10 }}
+              style={{ width: "100%", flexDirection: "row", marginTop: 20 }}
             >
-              <View style={{ width: "98%" }}>
+              <View style={{ width: "50%" }}>
                 <View style={styles.statWrap}>
                   <Text
                     style={{
-                      marginRight: "50%",
-                      fontSize: 14,
+                        marginRight: "60%",
+                      marginLeft:10,
+                      fontSize: 16,
                       fontWeight: "600",
                       flexDirection: "row",
                     }}
                   >
-                    Enquiry to Booking (%)
+                    E2B
                   </Text>
                   {bookingData !== null && enqData !== null && (
                     <Text
@@ -1087,12 +1111,13 @@ const TargetScreen = ({ route, navigation }) => {
                 <View style={styles.statWrap}>
                   <Text
                     style={{
-                      marginRight: "55%",
-                      fontSize: 14,
+                        marginRight: "60%",
+                      marginLeft:10,
+                      fontSize: 16,
                       fontWeight: "600",
                     }}
                   >
-                    Enquiry to Retail (%)
+                    E2R
                   </Text>
                   {retailData !== null && enqData !== null && (
                     <Text
@@ -1124,20 +1149,21 @@ const TargetScreen = ({ route, navigation }) => {
                 <View style={styles.statWrap}>
                   <Text
                     style={{
-                      marginRight: "47%",
-                      fontSize: 14,
+                        marginRight: "60%",
+                      marginLeft:10,
+                      fontSize: 16,
                       fontWeight: "600",
                     }}
                   >
-                    Enquiry to Test drive (%)
+                    E2V
                   </Text>
-                  {TDData !== null && enqData !== null && (
+                  {bookingData !== null && visitData !== null && (
                     <Text
                       style={{
                         color:
                           Math.floor(
-                            (parseInt(TDData?.achievment) /
-                              parseInt(enqData?.achievment)) *
+                            (parseInt(visitData?.achievment) /
+                              parseInt(bookingData?.achievment)) *
                               100
                           ) > 40
                             ? "#14ce40"
@@ -1145,39 +1171,33 @@ const TargetScreen = ({ route, navigation }) => {
                         fontSize: 12,
                       }}
                     >
-                      {parseInt(TDData?.achievment) === 0 ||
-                      parseInt(enqData?.achievment) === 0
+                      {parseInt(bookingData?.achievment) === 0 ||
+                      parseInt(visitData?.achievment) === 0
                         ? 0
                         : Math.floor(
-                            (parseInt(TDData?.achievment) /
-                              parseInt(enqData?.achievment)) *
+                            (parseInt(visitData?.achievment) /
+                              parseInt(bookingData?.achievment)) *
                               100
                           )}
                       %
                     </Text>
                   )}
                 </View>
+              </View>
 
-                <View style={{ height: 5 }}></View>
-                {/* <View
-                style={{
-                  width: "1%",
-                  borderRightColor: Colors.GRAY,
-                  height: 60,
-                  borderRightWidth: 1,
-                }}
-              ></View> */}
+              {/* <View style={{ height: 5 }}></View> */}
 
-                {/* <View style={{ width: "49%" }}> */}
+              <View style={{ width: "45%" }}>
                 <View style={styles.statWrap}>
                   <Text
                     style={{
-                      marginRight: "54%",
-                      fontSize: 14,
+                        marginRight: "50%",
+                      marginLeft:10,
+                      fontSize: 16,
                       fontWeight: "600",
                     }}
                   >
-                    Booking to Retail (%)
+                    B2R
                   </Text>
                   {bookingData !== null && retailData !== null && (
                     <Text
@@ -1208,21 +1228,22 @@ const TargetScreen = ({ route, navigation }) => {
                 <View style={{ height: 5 }}></View>
                 <View style={styles.statWrap}>
                   <Text
-                    style={{
-                      marginRight: "56%",
-                      fontSize: 14,
+                      style={{
+                        marginRight: "45%",
+                        marginLeft:10,
+                      fontSize: 16,
                       fontWeight: "600",
                     }}
                   >
-                    Booking to Visit (%)
+                    E2TD
                   </Text>
-                  {bookingData !== null && visitData !== null && (
+                  {TDData !== null && enqData !== null && (
                     <Text
                       style={{
                         color:
                           Math.floor(
-                            (parseInt(visitData?.achievment) /
-                              parseInt(bookingData?.achievment)) *
+                            (parseInt(TDData?.achievment) /
+                              parseInt(enqData?.achievment)) *
                               100
                           ) > 40
                             ? "#14ce40"
@@ -1230,21 +1251,21 @@ const TargetScreen = ({ route, navigation }) => {
                         fontSize: 12,
                       }}
                     >
-                      {parseInt(bookingData?.achievment) === 0 ||
-                      parseInt(visitData?.achievment) === 0
+                      {parseInt(TDData?.achievment) === 0 ||
+                      parseInt(enqData?.achievment) === 0
                         ? 0
                         : Math.floor(
-                            (parseInt(visitData?.achievment) /
-                              parseInt(bookingData?.achievment)) *
+                            (parseInt(TDData?.achievment) /
+                              parseInt(enqData?.achievment)) *
                               100
                           )}
                       %
                     </Text>
                   )}
                 </View>
-                <View style={{ height: 15 }}></View>
               </View>
             </View>
+            <View style={{ height: 20 }}></View>
           </>
         )}
 
@@ -1428,7 +1449,7 @@ const styles = StyleSheet.create({
     },
   statWrap: {
      flexDirection: 'row',
-    justifyContent: 'flex-start', alignItems: 'center', height: 20, marginLeft: 10,backgroundColor:"#F5F5F5"
+    justifyContent: 'flex-start', alignItems: 'center', height: 30, marginLeft: 10,backgroundColor:"#F5F5F5"
   },
 
     

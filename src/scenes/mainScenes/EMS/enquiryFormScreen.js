@@ -973,8 +973,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
     //Customer Profile
 
-    if (selector.designation.length == 0 || selector.buyer_type.length == 0) {
-      showToast("Please fill required designation field in Customer Profile");
+    if (selector.designation.length == 0) {
+      showToast("Please fill designation");
+      return;
+     }
+      if(selector.buyer_type.length == 0) {
+      showToast("Please fill  Buyer type");
       return;
     }
     if (!isValidateAlphabetics(selector.occupation)) {
@@ -1070,10 +1074,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
 
     //Customer Customer need Analysis
-    if (selector.c_voice_of_customer_remarks == 0) {
-      showToast("Please fill required remarks field in Customer need Analysis");
-      return;
-    }
+    // if (selector.c_voice_of_customer_remarks == 0) {
+    //   showToast("Please fill required remarks field in Customer need Analysis");
+    //   return;
+    // }
 
     if (selector.buyer_type === "Additional Buyer") {
       if (
