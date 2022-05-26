@@ -6,7 +6,7 @@ import { Colors, GlobalStyle } from '../../../styles';
 import { TextinputComp } from '../../../components/textinputComp';
 import { DropDownComponant } from '../../../components/dropDownComp';
 import { convertTimeStampToDateString, GetDropList } from '../../../utils/helperFunctions';
-import { clearState, getPreEnquiryDetails, noThanksApi, getaAllTasks, assignTaskApi, changeEnquiryStatusApi, getEmployeesListApi, updateEmployeeApi, customerLeadRef } from '../../../redux/confirmedPreEnquiryReducer';
+import { clearState, getPreEnquiryDetails, noThanksApi, getaAllTasks, assignTaskApi, changeEnquiryStatusApi, getEmployeesListApi, updateEmployeeApi, customerLeadRef, updateRef } from '../../../redux/confirmedPreEnquiryReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppNavigator } from '../../../navigations';
 import * as AsyncStore from "../../../asyncStore";
@@ -384,6 +384,18 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                     }
                     console.log("PAYLOAD:", payload);
                     dispatch(customerLeadRef(payload))
+                    // Promise.all([
+                    //     dispatch(customerLeadRef(payload))
+                    // ]).then(async (data) => {
+                    //     console.log("$$$$$", JSON.stringify(data));
+                    //     const payload1 = {
+                    //         "refNo": data[0].payload.dmsEntity.leadCustomerReference.referencenumber,
+                    //         "orgId": jsonObj.orgId,
+                    //         "stageCompleted": "ENQUIRY"
+                    //     }
+                    //     console.log("PAYLOAD:", payload1);
+                    //     dispatch(updateRef(payload1))
+                    // })
                 }
             });
         }

@@ -973,11 +973,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             showToast("Please fill the martial status");
             return;
         }
-        if (selector.form_or_pan.length == 0 ||
-            selector.adhaar_number.length == 0
-            ) {
-            showToast("Please upload document section")
-            }
+        // if (selector.form_or_pan.length == 0 ||
+        //     selector.adhaar_number.length == 0
+        //     ) {
+        //     showToast("Please upload document section")
+        //     }
         // if (
         //     selector.form_or_pan.length == 0 ||
         //     selector.adhaar_number.length == 0 ||

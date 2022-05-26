@@ -14,7 +14,8 @@ export const getEnquiryDetailsApi = createAsyncThunk(
   async (universalId, { rejectWithValue }) => {
     const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
     const json = await response.json();
-
+    console.log("ENQ DATA:", JSON.stringify(json));
+    
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -1118,8 +1119,8 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.c_color = dataObj.color ? dataObj.color : "";
       state.c_fuel_type = dataObj.fuel ? dataObj.fuel : "";
       // TODO:- Need to check transmission type in response
-      state.c_transmission_type = dataObj.transmission
-        ? dataObj.transmission
+      state.c_transmission_type = dataObj.transmissionType
+        ? dataObj.transmissionType
         : "";
       state.c_price_range = dataObj.priceRange ? dataObj.priceRange : "";
       state.c_on_road_price = dataObj.onRoadPriceanyDifference
@@ -1307,10 +1308,10 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(updateEnquiryDetailsApi.rejected, (state, action) => {
-      console.log(
-        "F updateEnquiryDetailsApi: ",
-        JSON.stringify(action.payload)
-      );
+      // console.log(
+      //   "F updateEnquiryDetailsApi: ",
+      //   JSON.stringify(action.payload)
+      // );
       if (action.payload["message"] != undefined) {
         showToastRedAlert(action.payload["message"]);
       }

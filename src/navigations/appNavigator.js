@@ -209,7 +209,7 @@ export const TabStackIdentifiers = {
     home: "HOME_SCREEN",
     ems: "EMS_TAB",
     myTask: "MY_TASK_TAB",
-    planning: "MONTHLY_TARGET"
+    // planning: "MONTHLY_TARGET"
 };
 
 export const HomeStackIdentifiers = {
@@ -601,7 +601,7 @@ const TabNavigator = (props) => {
                 component={MyTaskStackNavigator}
                 options={{ title: "My Tasks" }}
             />
-            {
+            {/* {
                 routeName.name === "MONTHLY_TARGET" && (
                     <Tab.Screen
                         name={TabStackIdentifiers.planning}
@@ -609,20 +609,20 @@ const TabNavigator = (props) => {
                         options={{ title: "Planning" }}
                     />
                 )
-            }
+            } */}
         </Tab.Navigator>
     );
 };
 
-const fun = () => {
-    return (
-        <Tab.Screen
-            name={TabStackIdentifiers.planning}
-            component={MonthlyTargetStackNavigator}
-            options={{ title: "Planning" }}
-        />
-    )
-}
+// const fun = () => {
+//     return (
+//         <Tab.Screen
+//             name={TabStackIdentifiers.planning}
+//             component={MonthlyTargetStackNavigator}
+//             options={{ title: "Planning" }}
+//         />
+//     )
+// }
 const ComplaintStack = createStackNavigator();
 
 const ComplaintStackNavigator = ({ navigation }) => {
@@ -910,10 +910,10 @@ const MainStackDrawerNavigator = () => {
                 name={DrawerStackIdentifiers.helpdesk}
                 component={HelpDeskStackNavigator}
             />
-            <MainDrawerNavigator.Screen
+            {/* <MainDrawerNavigator.Screen
                 name={DrawerStackIdentifiers.monthlyTarget}
                 component={TabNavigator}
-            />
+            /> */}
             <MainDrawerNavigator.Screen
                 name={DrawerStackIdentifiers.taskManagement}
                 component={TaskManagementStackNavigator}
@@ -931,6 +931,11 @@ const MainStackDrawerNavigator = () => {
             <MainDrawerNavigator.Screen
                 name={DrawerStackIdentifiers.evtbrlReport}
                 component={EvtbrlReportStackNavigator}
+            />
+
+            <MainDrawerNavigator.Screen
+                name={DrawerStackIdentifiers.monthlyTarget}
+                component={MonthlyTargetStackNavigator}
             />
 
             {/* <MainDrawerNavigator.Screen
