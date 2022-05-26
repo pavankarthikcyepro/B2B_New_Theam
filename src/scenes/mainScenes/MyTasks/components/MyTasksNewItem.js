@@ -28,11 +28,11 @@ const statusBgColors = {
 const IconComp = ({ iconName, onPress }) => {
     return (
         <TouchableOpacity onPress={onPress}>
-            <View style={{ width: 40, height: 40, justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: "#002C5F", borderRadius: 3 }}>
+            <View style={{ width: 35, height: 35, justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: "#002C5F", borderRadius: 5 }}>
                 <IconButton
                     icon={iconName}
                     color={Colors.GREEN}
-                    size={20}
+                    size={18}
                 />
             </View>
         </TouchableOpacity>
@@ -56,16 +56,18 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", name, status, created, dmsLea
     }
 
     return (
-        <TouchableOpacity onPress={onItemPress}>
-            <View style={{ flex: 1, padding: 5, justifyContent: "space-between", flexDirection: "row", backgroundColor: Colors.WHITE }}>
+        <TouchableOpacity onPress={onItemPress} style={styles.section}>
+            <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
                 <View style={{ width: "70%" }}>
                     <Text style={styles.text1}>{name}</Text>
                     <Text style={styles.text2}>{source + " - " + dmsLead}</Text>
                     <Text style={styles.text3}>{date}</Text>
                 </View>
                 <View style={{ width: "30%", alignItems: "center" }}>
-                    <Text style={styles.text4}>{model}</Text>
-                    <View style={{ height: 8 }}></View>
+                    <View style={styles.modal}>
+                        <Text style={styles.text4}>{model}</Text>
+                    </View>
+                    {/* <View style={{ height: 8 }}></View> */}
                     <View style={{ flexDirection: "row", width: "100%", justifyContent: "space-evenly" }}>
                         <IconComp
                             iconName={'format-list-bulleted-square'}
@@ -101,14 +103,30 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     text4: {
-        backgroundColor: Colors.LIGHT_GRAY2,
         color: Colors.WHITE,
-        fontSize: 12,
-        fontWeight: "700",
+        fontSize: 11,
+        fontWeight: "bold",
+        // textAlign: "center",
+        // paddingHorizontal: 5
+    },
+    section: { 
+        // flex: 1, 
+        // padding: 5, 
+        backgroundColor: Colors.WHITE,
+        paddingHorizontal: 10,
+        paddingVertical: 10,
+        borderRadius: 8,
+        elevation: 3,
+        marginHorizontal: 5,
+        marginVertical: 6
+    },
+    modal: {
+        backgroundColor: Colors.RED,
         borderRadius: 4,
-        width: "75%",
-        height: 20,
-        textAlign: "center",
-        paddingHorizontal: 5
+        width: "85%",
+        height: 21,
+        justifyContent: "center",
+        alignItems: "center",
+        marginBottom: 10
     }
 })

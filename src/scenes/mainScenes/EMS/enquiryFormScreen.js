@@ -228,7 +228,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   //   }
   // }, [autoSave, selector])
 
-/*
+
   useEffect(() => {
     let interval;
     navigation.addListener('focus', () => {
@@ -241,18 +241,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       clearInterval(interval)
     })
   }, [navigation]);
-*/
+
   useEffect(() => {
     const interval = setInterval(() => {
-      if (enqDetails?.leadStage === "ENQUIRY" && enqDetails?.leadStatus === null) {
         autoSave()
-      }
     }, 10000);
     return () => {
       console.log("CLEAR");
       clearInterval(interval)
     }
-  }, [autoSave, selector])
+  }, [selector])
+
+  
 
   // useEffect(() => {
   //   let autoSaveInterval;
@@ -495,7 +495,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
   };
 
-  console.log(selector)
+
+  // let dmsEntity = selector.enquiry_details_response;
+  // console.log({ dmsEntity })
 
   const autoSave = async () => {
     //Personal Intro
@@ -504,7 +506,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     let dmsLeadDto = {};
     let formData;
 
-    const dmsEntity = selector.enquiry_details_response;
+    let dmsEntity = selector.enquiry_details_response;
+    console.log({ dmsEntity })
+
+    if (dmsEntity) {
     if (dmsEntity.hasOwnProperty("dmsContactDto"))
       dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsContactDto);
     else if (dmsEntity.hasOwnProperty("dmsAccountDto"))
@@ -518,7 +523,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         let tempAttachments = [];
-        console.log("GDGHDGDGDGDGD", JSON.stringify(dmsLeadDto.dmsAttachments));
+        // console.log("GDGHDGDGDGDGD", JSON.stringify(dmsLeadDto.dmsAttachments));
         if (selector.pan_number) {
           tempAttachments.push({
             branchId: jsonObj.branchs[0]?.branchId,
@@ -658,11 +663,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
     AsyncStore.storeJsonData(AsyncStore.Keys.ENQ_PAYLOAD, payload);
 
+
     Promise.all([
       dispatch(updateEnquiryDetailsApiAutoSave(payload)),
     ]).then(async () => {
       console.log("REF NO");
     });
+  }
   };
 
   const updateEnquiry = async () => {
@@ -973,8 +980,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
     //Customer Profile
 
-    if (selector.designation.length == 0 || selector.buyer_type.length == 0) {
-      showToast("Please fill required designation field in Customer Profile");
+    if (selector.designation.length == 0) {
+      showToast("Please fill designation");
+      return;
+     }
+      if(selector.buyer_type.length == 0) {
+      showToast("Please fill  Buyer type");
       return;
     }
     if (!isValidateAlphabetics(selector.occupation)) {
@@ -1070,10 +1081,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
 
     //Customer Customer need Analysis
-    if (selector.c_voice_of_customer_remarks == 0) {
-      showToast("Please fill required remarks field in Customer need Analysis");
-      return;
-    }
+    // if (selector.c_voice_of_customer_remarks == 0) {
+    //   showToast("Please fill required remarks field in Customer need Analysis");
+    //   return;
+    // }
 
     if (selector.buyer_type === "Additional Buyer") {
       if (
@@ -1188,7 +1199,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         let tempAttachments = [];
-        console.log("GDGHDGDGDGDGD", JSON.stringify(dmsLeadDto.dmsAttachments));
+        // console.log("GDGHDGDGDGDGD", JSON.stringify(dmsLeadDto.dmsAttachments));
         if (selector.pan_number || dmsLeadDto.dmsAttachments.filter((item) => {
           return item.documentType === "pan";
         })) {
@@ -1407,7 +1418,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         dispatch(updateEnquiryDetailsApi(formData)),
         dispatch(customerLeadRef(refPayload)),
       ]).then(async (res) => {
-        console.log("REF NO:", JSON.stringify(res));
+        // console.log("REF NO:", JSON.stringify(res));
         const payload = {
           refNo: res[1].payload.dmsEntity.leadCustomerReference.referencenumber,
           orgId: jsonObj.orgId,
@@ -1656,7 +1667,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const mapDmsAttachments = (prevDmsAttachments) => {
     let dmsAttachments = [...prevDmsAttachments];
-    console.log("TRTRTRTRTR:", JSON.stringify(dmsAttachments));
+    // console.log("TRTRTRTRTR:", JSON.stringify(dmsAttachments));
     if (dmsAttachments.length > 0) {
       dmsAttachments.forEach((obj, index) => {
         const item = uploadedImagesDataObj[obj.documentType];
@@ -2066,7 +2077,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         modelsData = item.models;
       }
     });
-    console.log("modelsData: ", modelsData);
+    // console.log("modelsData: ", modelsData);
     switch (dropDownKey) {
       case "C_MAKE":
         return set_c_model_types([...modelsData]);
@@ -2090,7 +2101,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       .split(".");
     // const fileName = fileNameArry.length > 0 ? fileNameArry[0] : "None";
     const fileName = uuid.v4();
-    console.log("uuid: ", fileName);
+    // console.log("uuid: ", fileName);
     formData.append("file", {
       name: `${fileName}-.${fileType}`,
       type: `image/${fileType}`,
@@ -2228,7 +2239,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     PincodeDetails(pincode).then(
       (resolve) => {
         // dispatch an action to update address
-        console.log("£££££", JSON.stringify(resolve));
+        // console.log("£££££", JSON.stringify(resolve));
         dispatch(updateAddressByPincode(resolve));
       },
       (rejected) => {
@@ -2256,7 +2267,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         visible={selector.showImagePicker}
         keyId={selector.imagePickerKeyId}
         selectedImage={(data, keyId) => {
-          console.log("imageObj: ", data, keyId);
+          // console.log("imageObj: ", data, keyId);
           uploadSelectedImage(data, keyId);
         }}
         onDismiss={() => dispatch(setImagePicker(""))}

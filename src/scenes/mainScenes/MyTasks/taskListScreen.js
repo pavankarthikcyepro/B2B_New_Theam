@@ -90,14 +90,13 @@ const TaskListScreen = ({ route, navigation }) => {
                     keyExtractor={(item, index) => index.toString()}
                     showsVerticalScrollIndicator={false}
                     onEndReachedThreshold={0}
-                    ItemSeparatorComponent={() => {
-                        return <View style={styles.separator}></View>;
-                    }}
+                    // ItemSeparatorComponent={() => {
+                    //     return <View style={styles.separator}></View>;
+                    // }}
                     renderItem={({ item, index }) => {
                         return (
-                            <View style={{ flex: 1, width: "100%" }}>
-                                <View style={[styles.listBgVw]}>
-                                    <MyTaskNewItem
+                            <View style={{marginHorizontal: 10}}>
+                                <MyTaskNewItem
                                         name={item.customerName}
                                         status={item.taskStatus}
                                         created={item.createdOn}
@@ -106,9 +105,8 @@ const TaskListScreen = ({ route, navigation }) => {
                                         source={item.sourceType}
                                         model={item.model}
                                         onDocPress={() => itemClicked(item)}
-                                    />
-                                </View>
-                                <Text style={GlobalStyle.underline}></Text>
+                                />
+                                {/* <Text style={GlobalStyle.underline}></Text> */}
                             </View>
                         );
                     }}
@@ -126,18 +124,20 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.LIGHT_GRAY,
     },
     view1: {
-        paddingHorizontal: 15,
-        marginTop: 10,
+        // paddingHorizontal: 15,
+        marginTop: 20,
     },
     listBgVw: {
-        width: "100%",
-        backgroundColor: Colors.WHITE,
-        paddingHorizontal: 10,
-        paddingVertical: 5,
+        // width: "100%",
+        // backgroundColor: Colors.WHITE,
+        // paddingHorizontal: 10,
+        // paddingVertical: 5,
+        // borderRadius: 8,
+        // elevation: 3
     },
-    separator: {
-        height: 10,
-    },
+    // separator: {
+        // height: 9,
+    // },
     footer: {
         padding: 10,
         justifyContent: 'center',

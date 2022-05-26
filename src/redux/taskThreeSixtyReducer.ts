@@ -56,7 +56,7 @@ const taskThreeSixtySlice = createSlice({
             state.isLoading = false;
         })
         builder.addCase(getWorkFlow.rejected, (state, action) => {
-            console.log("F getWorkFlow: ", JSON.stringify(action.payload));
+            // console.log("F getWorkFlow: ", JSON.stringify(action.payload));
             state.wrokflow_response = [];
             state.wrokflow_response_status = "failed";
             state.isLoading = false;

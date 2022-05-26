@@ -5,12 +5,13 @@ import PieChart from 'react-native-pie-chart';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { useSelector } from "react-redux";
 import { MyTasksStackIdentifiers } from "../../../../navigations/appNavigator";
+import { EmptyListView } from "../../../../pureComponents";
 
 
 const screenWidth = Dimensions.get("window").width;
 const item1Width = screenWidth - 10;
 const item2Width = (item1Width - 10);
-const baseItemWidth = item2Width / 3;
+const baseItemWidth = item2Width / 3.4;
 const itemWidth = baseItemWidth - 10;
 
 const series = [60, 40]
@@ -24,7 +25,7 @@ const NoDataFound = () => {
     )
 }
 
-const taskNames = ["testdrive", "testdriveapproval", "proceedtoprebooking", "proceedtobooking", "homevisit", "enquiryfollowup", "preenquiryfollowup", "prebookingfollowup", "createenquiry"]
+const taskNames = ["testdrive", "testdriveapproval", "homevisit", "enquiryfollowup", "preenquiryfollowup", "prebookingfollowup"]
 
 
 const ListComponent = ({ route, navigation }) => {
@@ -34,8 +35,8 @@ const ListComponent = ({ route, navigation }) => {
     const homeSelector = useSelector((state) => state.homeReducer);
 
     useEffect(() => {
-        console.log('data: ', selector.mytasksLisResponse);
-        console.log("role: ", selector.role);
+        // console.log('data: ', selector.mytasksLisResponse);
+        // console.log("role: ", selector.role);
 
         if (selector.myTasksListResponseStatus === "success") {
             if (route.params.from === "TODAY") {
@@ -43,7 +44,7 @@ const ListComponent = ({ route, navigation }) => {
                 const filteredData = todaysData.tasksList.filter(element => {
                     const trimName = element.taskName.toLowerCase().trim();
                     const finalTaskName = trimName.replace(/ /g, "");
-                    return taskNames.includes(finalTaskName);
+                        return taskNames.includes(finalTaskName);
                 });
 
                 setMyTasksData(filteredData);
@@ -66,6 +67,15 @@ const ListComponent = ({ route, navigation }) => {
                 });
                 setMyTasksData(filteredData);
             }
+            else if (route.params.from === "RESCHEDULE") {
+                const todaysData = selector.mytasksLisResponse.pendingData[0];
+                const filteredData = todaysData.tasksList.filter(element => {
+                    const trimName = element.taskName.toLowerCase().trim();
+                    const finalTaskName = trimName.replace(/ /g, "");
+                    return taskNames.includes(finalTaskName);
+                });
+                setMyTasksData(filteredData);
+            }
         }
     }, [selector.myTasksListResponseStatus, selector.mytasksLisResponse])
 
@@ -76,7 +86,7 @@ const ListComponent = ({ route, navigation }) => {
     return (
 
         <View style={{ flex: 1, backgroundColor: Colors.LIGHT_GRAY, padding: 5, }}>
-            <View style={{ flexDirection: "row", justifyContent: "center", paddingTop: 15, paddingBottom: 25 }}>
+            <View style={{ flexDirection: "row", justifyContent: "center", paddingVertical: 10 }}>
                 {/* <View style={{ width: "75%" }}>
                     <SegmentedControl
                         values={['My Tasks', 'Team Tasks']}
@@ -145,45 +155,44 @@ const ListComponent = ({ route, navigation }) => {
                 <FlatList
                     data={myTasksData}
                     style={{ flex: 1 }}
-                    // horizontal={true}
                     numColumns={3}
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={({ item, index }) => {
                         const chartHeight = (itemWidth - 20);
                         const overlayViewHeight = chartHeight - 10;
-                        return (
-                            <View style={[{ height: 185, width: baseItemWidth, paddingBottom: 5, backgroundColor: Colors.LIGHT_GRAY, justifyContent: "center", alignItems: "center", borderRadius: 10 }, GlobalStyle.shadow]}>
-                                <TouchableOpacity onPress={() => itemClicked(item)}>
-                                    <View style={[{ height: 180, width: itemWidth, backgroundColor: Colors.WHITE, flexDirection: "column", alignItems: "center", paddingBottom: 10, borderRadius: 5 },]}>
-                                        {/* // pie chart */}
-                                        <View style={{ width: itemWidth - 10, height: 120, justifyContent: "center", alignItems: "center" }}>
+                            return (
+                                <View style={styles.list}> 
+                                    <TouchableOpacity onPress={() => itemClicked(item)}>
+                                        <View style={[{ height: 180, width: itemWidth, backgroundColor: Colors.WHITE, flexDirection: "column", alignItems: "center", paddingBottom: 10, borderRadius: 5 },]}>
+                                            {/* // pie chart */}
+                                            <View style={{ width: itemWidth - 10, height: 120, justifyContent: "center", alignItems: "center" }}>
 
-                                            <PieChart
-                                                widthAndHeight={chartHeight}
-                                                series={series}
-                                                sliceColor={sliceColor}
-                                            />
-                                            {/* <PIEICON width={chartHeight} height={chartHeight} /> */}
-                                            {/* // Overlay View */}
-                                            <View style={{ position: "absolute", width: overlayViewHeight, height: overlayViewHeight, borderRadius: overlayViewHeight / 2, backgroundColor: Colors.WHITE, alignItems: "center", justifyContent: "center" }}>
-                                                <Text style={{ fontSize: 20, fontWeight: "700", textAlign: "center" }}>{item.taskCnt}</Text>
-                                                <Text style={{ fontSize: 12, fontWeight: "400", textAlign: "center" }}>{"follow up"}</Text>
+                                                <PieChart
+                                                    widthAndHeight={chartHeight}
+                                                    series={series}
+                                                    sliceColor={sliceColor}
+                                                />
+                                                {/* <PIEICON width={chartHeight} height={chartHeight} /> */}
+                                                {/* // Overlay View */}
+                                                <View style={{ position: "absolute", width: overlayViewHeight, height: overlayViewHeight, borderRadius: overlayViewHeight / 2, backgroundColor: Colors.WHITE, alignItems: "center", justifyContent: "center" }}>
+                                                    <Text style={{ fontSize: 17, fontWeight: "700", textAlign: "center" }}>{item.taskCnt}</Text>
+                                                    <Text style={{ fontSize: 11, fontWeight: "400", textAlign: "center" }}>{"follow up"}</Text>
+                                                </View>
+                                            </View>
+                                            <View style={{ width: "100%", justifyContent: "center", alignItems: "center" }}>
+                                                <View style={{ width: "75%", backgroundColor: Colors.DARK_GRAY, height: 2, marginBottom: 13 }}></View>
+                                                <Text style={{ fontSize: 12, fontWeight: "700", textAlign: "center" }} numberOfLines={2}>{item.taskName}</Text>
                                             </View>
                                         </View>
-                                        <View style={{ width: "100%", justifyContent: "center", alignItems: "center" }}>
-                                            <View style={{ width: "75%", backgroundColor: Colors.DARK_GRAY, height: 2, marginBottom: 5 }}></View>
-                                            <Text style={{ fontSize: 14, fontWeight: "700", textAlign: "center" }} numberOfLines={2}>{item.taskName}</Text>
-                                        </View>
-                                    </View>
-                                </TouchableOpacity>
-
-                            </View>
-                        )
+                                    </TouchableOpacity>
+                                </View>
+                            )
                     }}
                 />
             )}
             {(index === 0 && myTasksData.length == 0) && (
-                <NoDataFound />
+                // <NoDataFound />
+                <EmptyListView title={'No Data Found'} isLoading={selector.isLoading} />
             )}
             {index === 1 && (
                 <NoDataFound />
@@ -201,5 +210,26 @@ const styles = StyleSheet.create({
         padding: 5,
         backgroundColor: Colors.LIGHT_GRAY
     },
-    selfBtnWrap: { flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, marginTop: 10, justifyContent: 'center', width: '80%', },
+    selfBtnWrap: { 
+        flexDirection: 'row', 
+        borderColor: Colors.RED, 
+        borderWidth: 1, 
+        borderRadius: 5, 
+        height: 41, 
+        marginTop: 10, 
+        justifyContent: 'center', 
+        width: '80%', 
+    },
+    list: { 
+        height: 185, 
+        width: baseItemWidth, 
+        paddingBottom: 5, 
+        backgroundColor: Colors.WHITE, 
+        justifyContent: "center", 
+        alignItems: "center", 
+        borderRadius: 10,
+        marginVertical: 7,
+        marginHorizontal: 7,
+        elevation: 5
+    }
 })

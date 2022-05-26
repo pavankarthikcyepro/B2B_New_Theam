@@ -3,6 +3,7 @@ import { View, Linking, Modal, TextInput, Text, TouchableOpacity } from "react-n
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { IconButton, Searchbar } from "react-native-paper";
 import { useRoute } from '@react-navigation/native';
 import VectorImage from "react-native-vector-image";
@@ -209,7 +210,8 @@ export const TabStackIdentifiers = {
     home: "HOME_SCREEN",
     ems: "EMS_TAB",
     myTask: "MY_TASK_TAB",
-    // planning: "MONTHLY_TARGET"
+    planning: "MONTHLY_TARGET",
+    etvbrl: "EVTBRL_REPORT"
 };
 
 export const HomeStackIdentifiers = {
@@ -550,13 +552,17 @@ const PriceStackNavigator = ({ navigation }) => {
 
 const Tab = createBottomTabNavigator();
 
-const TabNavigator = (props) => {
-    const routeName = useRoute();
-    // console.log("-----------props", routeName)
+const TabNavigator = ({navigation, route}) => {
+    const nav = useRoute();
+    // let routeName = getFocusedRouteNameFromRoute(route);
+    let routeName = nav.params.screen;
+
+    // console.log("---navigation props", nav)
     // console.log("-----------condation", routeName.name === "MONTHLY_TARGET")
     return (
         <Tab.Navigator
-            initialRouteName={routeName.name === "MONTHLY_TARGET" ? TabStackIdentifiers.planning : TabStackIdentifiers.home}
+            // initialRouteName={routeName.name === "MONTHLY_TARGET" ? TabStackIdentifiers.planning : TabStackIdentifiers.home}
+            initialRouteName={routeName}
             screenOptions={({ route }) => ({
                 tabBarIcon: ({ focused, color, size }) => {
 
@@ -566,8 +572,9 @@ const TabNavigator = (props) => {
                         return focused ? <EMS_LINE width={size} height={size} fill={color} /> : <EMS_LINE width={size} height={size} fill={color} />;
                     } else if (route.name === TabStackIdentifiers.myTask) {
                         return focused ? <SCHEDULE_LINE width={size} height={size} fill={color} /> : <SCHEDULE_LINE width={size} height={size} fill={color} />;
-                    }
-                    else if (route.name === TabStackIdentifiers.planning) {
+                    } else if (route.name === TabStackIdentifiers.planning) {
+                        return focused ? <PRICE width={size} height={size} fill={color} /> : <PRICE width={size} height={size} fill={color} />;
+                    } else if (route.name === TabStackIdentifiers.etvbrl) {
                         return focused ? <PRICE width={size} height={size} fill={color} /> : <PRICE width={size} height={size} fill={color} />;
                     }
 
@@ -601,15 +608,24 @@ const TabNavigator = (props) => {
                 component={MyTaskStackNavigator}
                 options={{ title: "My Tasks" }}
             />
-            {/* {
-                routeName.name === "MONTHLY_TARGET" && (
+            {
+                routeName === "MONTHLY_TARGET" && (
                     <Tab.Screen
                         name={TabStackIdentifiers.planning}
                         component={MonthlyTargetStackNavigator}
                         options={{ title: "Planning" }}
                     />
                 )
-            } */}
+            }
+            {
+                routeName === "EVTBRL_REPORT" && (
+                    <Tab.Screen
+                        name={TabStackIdentifiers.etvbrl}
+                        component={EvtbrlReportStackNavigator}
+                        options={{ title: "ETVBRL" }}
+                    />
+                ) 
+            } 
         </Tab.Navigator>
     );
 };
@@ -889,6 +905,7 @@ const MainStackDrawerNavigator = () => {
             <MainDrawerNavigator.Screen
                 name={DrawerStackIdentifiers.home}
                 component={TabNavigator}
+                initialParams={{ screen: DrawerStackIdentifiers.home }}
             />
             <MainDrawerNavigator.Screen
                 name={DrawerStackIdentifiers.upcomingDeliveries}
@@ -910,10 +927,11 @@ const MainStackDrawerNavigator = () => {
                 name={DrawerStackIdentifiers.helpdesk}
                 component={HelpDeskStackNavigator}
             />
-            {/* <MainDrawerNavigator.Screen
+            <MainDrawerNavigator.Screen
                 name={DrawerStackIdentifiers.monthlyTarget}
                 component={TabNavigator}
-            /> */}
+                initialParams={{ screen: DrawerStackIdentifiers.monthlyTarget }}
+            />
             <MainDrawerNavigator.Screen
                 name={DrawerStackIdentifiers.taskManagement}
                 component={TaskManagementStackNavigator}
@@ -930,12 +948,8 @@ const MainStackDrawerNavigator = () => {
 
             <MainDrawerNavigator.Screen
                 name={DrawerStackIdentifiers.evtbrlReport}
-                component={EvtbrlReportStackNavigator}
-            />
-
-            <MainDrawerNavigator.Screen
-                name={DrawerStackIdentifiers.monthlyTarget}
-                component={MonthlyTargetStackNavigator}
+                component={TabNavigator}
+                initialParams={{ screen: "EVTBRL_REPORT" }}
             />
 
             {/* <MainDrawerNavigator.Screen

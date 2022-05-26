@@ -46,6 +46,9 @@ const PreEnquiryScreen = ({ navigation }) => {
 
     const orgIdStateRef = React.useRef(orgId);
     const empIdStateRef = React.useRef(employeeId);
+    const fromDateRef = React.useRef(selectedFromDate);
+    const toDateRef = React.useRef(selectedToDate);
+
 
     const setMyState = data => {
         empIdStateRef.current = data.empId;
@@ -54,15 +57,24 @@ const PreEnquiryScreen = ({ navigation }) => {
         setOrgId(data.orgId);
     };
 
-    console.log({employeeId, orgId})
+    const setFromDateState = date => {
+        fromDateRef.current = date;
+        setSelectedFromDate(date);
+    }
+
+    const setToDateState = date => {
+        toDateRef.current = date;
+        setSelectedToDate(date);
+    }
+
 
     useEffect(() => {
 
         // Get Data From Server
         let isMounted = true;
-        setSelectedFromDate(lastMonthFirstDate);
+        setFromDateState(lastMonthFirstDate);
         const tomorrowDate = moment().add(1, "day").format(dateFormat)
-        setSelectedToDate(currentDate);
+        setToDateState(currentDate);
         getAsyncData().then(data => {
             if (isMounted) {
                 setMyState(data);
@@ -86,7 +98,8 @@ const PreEnquiryScreen = ({ navigation }) => {
             // getAsyncData(lastMonthFirstDate, currentDate).then(data => {
             //     console.log(data)
             // });
-            getPreEnquiryListFromServer(empIdStateRef.current, lastMonthFirstDate, currentDate);
+            console.log(fromDateRef.current, toDateRef.current)
+            getPreEnquiryListFromServer(empIdStateRef.current, fromDateRef.current, toDateRef.current);
         });
 
         return () => {
@@ -130,7 +143,8 @@ const PreEnquiryScreen = ({ navigation }) => {
     }
 
     const getPreEnquiryListFromServer = (empId, startDate, endDate) => {
-        const payload = getPayloadData(empId, startDate, endDate, 0)
+        const payload = getPayloadData(empId, startDate, endDate, 0);
+        console.log("payload called")
         dispatch(getPreEnquiryData(payload));
     }
 
@@ -169,11 +183,11 @@ const PreEnquiryScreen = ({ navigation }) => {
         const formatDate = moment(date).format(dateFormat);
         switch (key) {
             case "FROM_DATE":
-                setSelectedFromDate(formatDate);
+                setFromDateState(formatDate);
                 getPreEnquiryListFromServer(employeeId, formatDate, selectedToDate);
                 break;
             case "TO_DATE":
-                setSelectedToDate(formatDate);
+                setToDateState(formatDate);
                 getPreEnquiryListFromServer(employeeId, selectedFromDate, formatDate);
                 break;
         }
@@ -219,6 +233,7 @@ const PreEnquiryScreen = ({ navigation }) => {
         setCategoryList([...categoryFilters])
         setVehicleModelList([...modelData]);
         setSourceList([...sourceData]);
+        
 
         // Make Server call
         const payload2 = getPayloadData(employeeId, selectedFromDate, selectedToDate, 0, modelFilters, categoryFilters, sourceFilters)
@@ -226,12 +241,7 @@ const PreEnquiryScreen = ({ navigation }) => {
         dispatch(getPreEnquiryData(payload2));
     }
 
-    // let obj = {
-    //     "a": 1,
-    //     "c": 2,
-    //     "b": 3
-    // }
-    // console.log(JSON.stringify(obj))
+    // console.log({vehicleModelList})
 
     const renderFooter = () => {
         if (!selector.isLoadingExtraData) { return null }
@@ -275,7 +285,7 @@ const PreEnquiryScreen = ({ navigation }) => {
 
             <SortAndFilterComp
                 visible={sortAndFilterVisible}
-                categoryList={categoryList}
+                // categoryList={categoryList}
                 modelList={vehicleModelList}
                 sourceList={sourceList}
                 submitCallback={(payload) => {
@@ -338,7 +348,7 @@ const PreEnquiryScreen = ({ navigation }) => {
 
                                 return (
                                     <>
-                                        <View style={{paddingVertical: 5}}>
+                                        <View>
                                             <MyTaskNewItem
                                                 from='PRE_ENQUIRY'
                                                 name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
@@ -348,7 +358,10 @@ const PreEnquiryScreen = ({ navigation }) => {
                                                 phone={item.phone}
                                                 source={item.enquirySource}
                                                 model={item.model}
-                                                onItemPress={() => {}}
+                                                onItemPress={() => {
+                                                    console.log("ENQ: ", JSON.stringify(item));
+                                                    navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId })
+                                                }}
                                                 onDocPress={() => {
                                                     console.log("ITEM:", JSON.stringify(item));
                                                     navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq, { itemData: item, fromCreatePreEnquiry: false })
@@ -386,11 +399,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 5,
+        marginVertical: 5,
         paddingHorizontal: 5,
         borderWidth: 1,
         borderColor: Colors.LIGHT_GRAY,
-        backgroundColor: Colors.WHITE
+        backgroundColor: Colors.WHITE,
     },
     text1: {
         fontSize: 16,

@@ -101,13 +101,13 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
         );
         setLocalSourceOfEnquiryList([...updatedSourceList]);
 
-          const updatedFirstName = localFirstNameList.map(
-            (item, index) => {
-              let newObj = { ...item };
-              newObj.isChecked = false;
-              return newObj;
-            }
-          );
+          // const updatedFirstName = localFirstNameList.map(
+          //   (item, index) => {
+          //     let newObj = { ...item };
+          //     newObj.isChecked = false;
+          //     return newObj;
+          //   }
+          // );
           
     }
 
@@ -203,7 +203,7 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
                       backgroundColor: Colors.WHITE,
                     }}
                   >
-                    {selectedIndex === 0 && (
+                    {selectedIndex === 0 && localCategoryList.length > 0 && (
                       <View>
                         <FlatList
                           key={"CATEGORY_LIST"}

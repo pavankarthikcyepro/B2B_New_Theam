@@ -33,12 +33,12 @@ import { updateTAB, updateIsSearch } from '../../../redux/appReducer';
 
 
 const dateFormat = "YYYY-MM-DD";
+const currentDate = moment().add(0, "day").format(dateFormat)
+const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
 
 const BookingScreen = ({ navigation }) => {
     const selector = useSelector((state) => state.bookingReducer);
     const appSelector = useSelector(state => state.appReducer);
-
-
 
 
     const { vehicle_model_list_for_filters, source_of_enquiry_list } =
@@ -59,6 +59,16 @@ const BookingScreen = ({ navigation }) => {
     const [sortAndFilterVisible, setSortAndFilterVisible] = useState(false);
     const [searchedData, setSearchedData] = useState([]);
     const [orgId, setOrgId] = useState("");
+
+    const orgIdStateRef = React.useRef(orgId);
+    const empIdStateRef = React.useRef(employeeId);
+
+    const setMyState = data => {
+        empIdStateRef.current = data.empId;
+        orgIdStateRef.current = data.orgId;
+        setEmployeeId(data.empId);
+        setOrgId(data.orgId);
+    };
 
 
     useEffect(() => {
@@ -86,28 +96,38 @@ const BookingScreen = ({ navigation }) => {
     }, [appSelector.isSearch])
 
     useEffect(() => {
-        // Get Data From Server
-        const currentDate = moment().add(0, "day").format(dateFormat);
-        const lastMonthFirstDate = moment(currentDate, dateFormat)
-            .subtract(0, "months")
-            .startOf("month")
-            .format(dateFormat);
-        setSelectedFromDate(lastMonthFirstDate);
-        const tomorrowDate = moment().add(1, "day").format(dateFormat);
-        setSelectedToDate(currentDate);
-        getAsyncData(lastMonthFirstDate, currentDate);
-    }, []);
 
-    const getAsyncData = async (startDate, endDate) => {
+        // Get Data From Server
+        let isMounted = true;
+        setSelectedFromDate(lastMonthFirstDate);
+        const tomorrowDate = moment().add(1, "day").format(dateFormat)
+        setSelectedToDate(currentDate);
+        getAsyncData().then(data => {
+            if (isMounted) {
+                setMyState(data);
+                getBookingListFromServer(empIdStateRef.current, lastMonthFirstDate, currentDate);
+            }
+        });
+
+        return () => { isMounted = false };
+    }, [])
+
+    // Navigation Listner to Auto Referesh
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            getBookingListFromServer(empIdStateRef.current, lastMonthFirstDate, currentDate);
+        });
+
+        return () => {
+            unsubscribe;
+        };
+    }, [navigation]);
+
+    const getAsyncData = async () => {
         let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
         let orgId = await AsyncStore.getData(AsyncStore.Keys.ORG_ID);
-
-        if (empId) {
-            getBookingListFromServer(empId, startDate, endDate);
-            setEmployeeId(empId);
-            setOrgId(orgId);
-        }
-    };
+        return { empId, orgId };
+    }
 
     const getBookingListFromServer = (empId, startDate, endDate) => {
         const payload = getPayloadData(empId, startDate, endDate, 0);
@@ -338,7 +358,7 @@ const BookingScreen = ({ navigation }) => {
 
                             return (
                                 <>
-                                    <View style={{ paddingVertical: 5 }}>
+                                    <View>
                                         <MyTaskNewItem
                                             from="BOOKING"
                                             name={item.firstName + " " + item.lastName}

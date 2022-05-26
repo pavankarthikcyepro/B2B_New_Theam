@@ -34,6 +34,10 @@ const TaskThreeSixtyScreen = ({ route, navigation}) => {
         dispatch(getEnquiryDetails(universalId));
     }, [])
 
+    // console.log({ dataForSectionList })
+    // console.log("dataForSectionList", dataForSectionList[1].data)
+
+
     // Handle enquiry Details response
     useEffect(() => {
         if (selector.enquiry_leadDto_response_status === "success") {
@@ -47,6 +51,7 @@ const TaskThreeSixtyScreen = ({ route, navigation}) => {
         if (selector.wrokflow_response_status === "success") {
             const plannedData = [];
             const closedData = [];
+            const data = [];
             if (selector.wrokflow_response.length > 0) {
                 selector.wrokflow_response.forEach(element => {
                     if ((element.taskStatus != 'CLOSED' && selector.enquiry_leadDto_response.leadStage === element.taskCategory.taskCategory) || (element.taskCategory.taskCategory === 'APPROVAL' && element.taskStatus === 'ASSIGNED')) {
@@ -57,18 +62,15 @@ const TaskThreeSixtyScreen = ({ route, navigation}) => {
                     } 
                 });
             }
-            // console.log("planned: ", )
-            setPlannedTasks(plannedData)
-            const data = [
-                {
-                    title:"Planned Tasks",
-                    data: plannedData
-                },
-                {
-                    title: "Closed Tasks",
-                    data: closedData
-                }
-            ]
+
+            setPlannedTasks(plannedData);
+
+            if (plannedData.length > 0)
+                data.push({ title: "Planned Tasks", data: plannedData });
+            
+            if (closedData.length > 0)
+                data.push({ title: "Closed Tasks", data: closedData });
+
             setDataForSectionList(data)
         }
     }, [selector.wrokflow_response_status, selector.wrokflow_response])
@@ -79,7 +81,7 @@ const TaskThreeSixtyScreen = ({ route, navigation}) => {
         const taskId = item.taskId;
         const universalId = item.universalId;
         const taskStatus = item.taskStatus;
-        const mobileNumber = item.assignee.mobile ? item.assignee.mobile : "";
+        const mobileNumber = item.assignee?.mobile ? item.assignee?.mobile : "";
 
         if (item.taskStatus == 'CLOSED') {
             showToast(item.taskName + " task has closed");
@@ -169,7 +171,7 @@ const TaskThreeSixtyScreen = ({ route, navigation}) => {
                                         <TouchableOpacity onPress={() => itemClicked(item)}>
                                             <View style={[{ paddingVertical: 5, paddingLeft: 10, backgroundColor: Colors.WHITE },]}>
                                                 <Text style={{ fontSize: 16, fontWeight: "700", marginBottom: 5 }}>{item.taskName}</Text>
-                                                <Text style={{ fontSize: 14, fontWeight: "400" }}>{"Assignee: " + item.assignee.empName}</Text>
+                                                <Text style={{ fontSize: 14, fontWeight: "400" }}>{"Assignee: " + item.assignee?.empName}</Text>
                                                 <Text style={{ fontSize: 14, fontWeight: "400", color: Colors.GRAY }}>{"Remarks: " + (item.employeeRemarks ? item.employeeRemarks : "")}</Text>
                                             </View>
                                         </TouchableOpacity>

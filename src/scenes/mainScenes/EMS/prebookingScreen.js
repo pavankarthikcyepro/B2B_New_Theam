@@ -15,6 +15,8 @@ import { MyTaskNewItem } from '../MyTasks/components/MyTasksNewItem';
 import { updateTAB, updateIsSearch } from '../../../redux/appReducer';
 
 const dateFormat = "YYYY-MM-DD";
+const currentDate = moment().add(0, "day").format(dateFormat)
+const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
 
 const PreBookingScreen = ({ navigation }) => {
 
@@ -33,6 +35,16 @@ const PreBookingScreen = ({ navigation }) => {
     const [sortAndFilterVisible, setSortAndFilterVisible] = useState(false);
     const [searchedData, setSearchedData] = useState([]);
     const [orgId, setOrgId] = useState("");
+
+    const orgIdStateRef = React.useRef(orgId);
+    const empIdStateRef = React.useRef(employeeId);
+
+    const setMyState = data => {
+        empIdStateRef.current = data.empId;
+        orgIdStateRef.current = data.orgId;
+        setEmployeeId(data.empId);
+        setOrgId(data.orgId);
+    };
 
     useEffect(() => {
         if (selector.pre_booking_list.length > 0) {
@@ -61,23 +73,35 @@ const PreBookingScreen = ({ navigation }) => {
     useEffect(() => {
 
         // Get Data From Server
-        const currentDate = moment().add(0, "day").format(dateFormat)
-        const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+        let isMounted = true;
         setSelectedFromDate(lastMonthFirstDate);
         const tomorrowDate = moment().add(1, "day").format(dateFormat)
         setSelectedToDate(currentDate);
-        getAsyncData(lastMonthFirstDate, currentDate);
+        getAsyncData().then(data => {
+            if (isMounted) {
+                setMyState(data);
+                getPreBookingListFromServer(empIdStateRef.current, lastMonthFirstDate, currentDate);
+            }
+        });
+
+        return () => { isMounted = false };
     }, [])
 
-    const getAsyncData = async (startDate, endDate) => {
+    // Navigation Listner to Auto Referesh
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            getPreBookingListFromServer(empIdStateRef.current, lastMonthFirstDate, currentDate);
+        });
+
+        return () => {
+            unsubscribe;
+        };
+    }, [navigation]);
+
+    const getAsyncData = async () => {
         let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
         let orgId = await AsyncStore.getData(AsyncStore.Keys.ORG_ID);
-
-        if (empId) {
-            getPreBookingListFromServer(empId, startDate, endDate);
-            setEmployeeId(empId);
-            setOrgId(orgId);
-        }
+        return { empId, orgId };
     }
 
     const getPreBookingListFromServer = (empId, startDate, endDate) => {
@@ -270,7 +294,7 @@ const PreBookingScreen = ({ navigation }) => {
 
                             return (
                                 <>
-                                    <View style={{ paddingVertical: 5 }}>
+                                    <View>
                                         <MyTaskNewItem
                                             from='PRE_BOOKING'
                                             name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}

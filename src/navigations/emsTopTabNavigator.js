@@ -8,7 +8,7 @@ import BookingScreen from "../scenes/mainScenes/EMS/bookingScreen";
 import { Colors } from "../styles";
 import * as AsyncStore from "../asyncStore";
 
-const EmsTopTabNavigatorIdentifiers = {
+export const EmsTopTabNavigatorIdentifiers = {
   preEnquiry: "PRE_ENQUIRY",
   enquiry: "ENQUIRY",
   preBooking: "PRE_BOOKING",
@@ -45,7 +45,7 @@ const EMSTopTabNavigatorOne = () => {
   );
 };
 
-const EMSTopTabNavigatorTwo = () => {
+const EMSTopTabNavigatorTwo = () => { 
 
   return (
     <EMSTopTab.Navigator

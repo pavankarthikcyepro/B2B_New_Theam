@@ -16,6 +16,8 @@ import { MyTaskNewItem } from '../MyTasks/components/MyTasksNewItem';
 import { updateTAB, updateIsSearch } from '../../../redux/appReducer';
 
 const dateFormat = "YYYY-MM-DD";
+const currentDate = moment().add(0, "day").format(dateFormat)
+const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
 
 const EnquiryScreen = ({ navigation }) => {
 
@@ -34,6 +36,16 @@ const EnquiryScreen = ({ navigation }) => {
     const [sortAndFilterVisible, setSortAndFilterVisible] = useState(false);
     const [searchedData, setSearchedData] = useState([]);
     const [orgId, setOrgId] = useState("");
+
+    const orgIdStateRef = React.useRef(orgId);
+    const empIdStateRef = React.useRef(employeeId);
+
+    const setMyState = data => {
+        empIdStateRef.current = data.empId;
+        orgIdStateRef.current = data.orgId;
+        setEmployeeId(data.empId);
+        setOrgId(data.orgId);
+    };
 
     useEffect(() => {
         if (selector.enquiry_list.length > 0) {
@@ -59,26 +71,38 @@ const EnquiryScreen = ({ navigation }) => {
         }
     }, [appSelector.isSearch])
 
-    useEffect(() => { 
+    useEffect(() => {
 
         // Get Data From Server
-        const currentDate = moment().add(0, "day").format(dateFormat)
-        const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+        let isMounted = true;
         setSelectedFromDate(lastMonthFirstDate);
         const tomorrowDate = moment().add(1, "day").format(dateFormat)
         setSelectedToDate(currentDate);
-        getAsyncData(lastMonthFirstDate, currentDate);
-    }, []);
+        getAsyncData().then(data => {
+            if (isMounted) {
+                setMyState(data);
+                getEnquiryListFromServer(empIdStateRef.current, lastMonthFirstDate, currentDate);
+            }
+        });
 
-    const getAsyncData = async (startDate, endDate) => {
+        return () => { isMounted = false };
+    }, [])
+
+    // Navigation Listner to Auto Referesh
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            getEnquiryListFromServer(empIdStateRef.current, lastMonthFirstDate, currentDate);
+        });
+
+        return () => {
+            unsubscribe;
+        };
+    }, [navigation]);
+
+    const getAsyncData = async () => {
         let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
         let orgId = await AsyncStore.getData(AsyncStore.Keys.ORG_ID);
-
-        if (empId) {
-            getEnquiryListFromServer(empId, startDate, endDate);
-            setEmployeeId(empId);
-            setOrgId(orgId);
-        }
+        return { empId, orgId };
     }
 
     const getEnquiryListFromServer = (empId, startDate, endDate) => {
@@ -271,18 +295,18 @@ const EnquiryScreen = ({ navigation }) => {
 
                             return (
                                 <>
-                                    <View style={{ paddingVertical: 5 }}>
+                                    <View>
                                         <MyTaskNewItem
                                             from='PRE_ENQUIRY'
                                             name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
                                             status={""}
                                             created={item.createdDate}
                                             dmsLead={item.createdBy}
-                                            phone={item.phone}
+                                            phone={item.phone} 
                                             source={item.enquirySource}
                                             model={item.model}
                                             onItemPress={() => {
-                                                console.log("ENQ: ", JSON.stringify(item));
+                                                // console.log("ENQ: ", JSON.stringify(item));
                                                 navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId })
                                             }}
                                             onDocPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.detailsOverview, { universalId: item.universalId, enqDetails: item })}
