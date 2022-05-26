@@ -2549,6 +2549,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                             <DisplaySelectedImage
                                                 fileName={uploadedImagesDataObj.pan.fileName}
                                                 from={"PAN"}
+                                                disabled={true}
                                             />
                                         ) : null}
                                         <Text style={GlobalStyle.underline}></Text>
@@ -2560,6 +2561,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         <View style={styles.select_image_bck_vw}>
                                             <ImageSelectItem
                                                 name={"Form60"}
+                                                disabled={true}
                                                 onPress={() =>
                                                     dispatch(setImagePicker("UPLOAD_FORM60"))
                                                 }
@@ -2595,6 +2597,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         <View style={styles.select_image_bck_vw}>
                                             <ImageSelectItem
                                                 name={"Upload Adhar"}
+                                                disabled={true}
                                                 onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
                                             />
                                             {uploadedImagesDataObj.aadhar?.fileName ? (
@@ -2653,7 +2656,8 @@ const BookingFormScreen = ({ route, navigation }) => {
                                     <View>
                                         <View style={styles.select_image_bck_vw}>
                                             <ImageSelectItem
-                                                name={"Last 3 months payslip"}
+                                                    name={"Last 3 months payslip"}
+                                                    disabled={true}
                                                 onPress={() =>
                                                     dispatch(setImagePicker("UPLOAD_3_MONTHS_PAYSLIP"))
                                                 }
@@ -2674,7 +2678,8 @@ const BookingFormScreen = ({ route, navigation }) => {
                                     <View>
                                         <View style={styles.select_image_bck_vw}>
                                             <ImageSelectItem
-                                                name={"Patta Pass Book"}
+                                                    name={"Patta Pass Book"}
+                                                    disabled={true}
                                                 onPress={() =>
                                                     dispatch(setImagePicker("UPLOAD_PATTA_PASS_BOOK"))
                                                 }
@@ -2695,7 +2700,8 @@ const BookingFormScreen = ({ route, navigation }) => {
                                     <View>
                                         <View style={styles.select_image_bck_vw}>
                                             <ImageSelectItem
-                                                name={"Pension Letter"}
+                                                    name={"Pension Letter"}
+                                                    disabled={true}
                                                 onPress={() =>
                                                     dispatch(setImagePicker("UPLOAD_PENSION_LETTER"))
                                                 }
@@ -2716,7 +2722,8 @@ const BookingFormScreen = ({ route, navigation }) => {
                                     <View>
                                         <View style={styles.select_image_bck_vw}>
                                             <ImageSelectItem
-                                                name={"IMA Certificate"}
+                                                    name={"IMA Certificate"}
+                                                    disabled={true}
                                                 onPress={() =>
                                                     dispatch(setImagePicker("UPLOAD_IMA_CERTIFICATE"))
                                                 }
@@ -2737,7 +2744,8 @@ const BookingFormScreen = ({ route, navigation }) => {
                                     <View>
                                         <View style={styles.select_image_bck_vw}>
                                             <ImageSelectItem
-                                                name={"Leasing Confirmation"}
+                                                    name={"Leasing Confirmation"}
+                                                    disabled={true}
                                                 onPress={() =>
                                                     dispatch(
                                                         setImagePicker("UPLOAD_LEASING_CONFIRMATION")
@@ -2760,7 +2768,8 @@ const BookingFormScreen = ({ route, navigation }) => {
                                     <View>
                                         <View style={styles.select_image_bck_vw}>
                                             <ImageSelectItem
-                                                name={"Address Proof"}
+                                                    name={"Address Proof"}
+                                                    disabled={true}
                                                 onPress={() =>
                                                     dispatch(setImagePicker("UPLOAD_ADDRESS_PROOF"))
                                                 }
@@ -2839,6 +2848,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                     <View style={styles.select_image_bck_vw}>
                                         <ImageSelectItem
                                             name={"Others"}
+                                            disabled={true}
                                             onPress={() =>
                                                 dispatch(setImagePicker("UPLOAD_RELATION_PROOF"))
                                             }
@@ -2891,6 +2901,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                     <Checkbox.Android
                                         style={{ margin: 0, padding: 0 }}
                                         uncheckedColor={Colors.GRAY}
+                                        disabled={true}
                                         color={Colors.RED}
                                         status={
                                             selector.vechicle_registration ? "checked" : "unchecked"
@@ -2957,6 +2968,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                             value={taxPercent}
                                             style={[{ fontSize: 14, fontWeight: "400", }]}
                                             keyboardType={"number-pad"}
+                                            disabled={true}
                                             onChangeText={(text) => {
                                                 setTaxPercent(text);
                                                 if (text !== '') {
@@ -3061,6 +3073,7 @@ const BookingFormScreen = ({ route, navigation }) => {
 
                                 <CheckboxTextAndAmountComp
                                     title={"Handling Charges:"}
+                                    disabled={true}
                                     amount={priceInfomationData.handling_charges.toFixed(2)}
                                     // amount={handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : "0.00"}
                                     isChecked={handlingChargSlctd}
@@ -3077,6 +3090,7 @@ const BookingFormScreen = ({ route, navigation }) => {
 
                                 <CheckboxTextAndAmountComp
                                     title={"Essential Kit:"}
+                                    disabled={true}
                                     amount={priceInfomationData.essential_kit.toFixed(2)}
                                     // amount={essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : "0.00"}
                                     isChecked={essentialKitSlctd}
@@ -3137,6 +3151,7 @@ const BookingFormScreen = ({ route, navigation }) => {
 
                                 <CheckboxTextAndAmountComp
                                     title={"Fast Tag:"}
+                                    disabled={true}
                                     amount={priceInfomationData.fast_tag.toFixed(2)}
                                     // amount={fastTagSlctd ? priceInfomationData.fast_tag.toFixed(2) : "0.00"}
                                     isChecked={fastTagSlctd}
@@ -3157,6 +3172,7 @@ const BookingFormScreen = ({ route, navigation }) => {
 
                                 <TextAndAmountComp
                                     title={"On Road Price:"}
+                                    disabled={true}
                                     amount={totalOnRoadPrice.toFixed(2)}
                                     titleStyle={{ fontSize: 18, fontWeight: "800" }}
                                     amoutStyle={{ fontSize: 18, fontWeight: "800" }}
@@ -3304,6 +3320,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 <TextinputComp
                                     style={styles.offerPriceTextInput}
                                     label={"Insurance Discount:"}
+                                    disabled={true}
                                     value={selector.insurance_discount}
                                     showLeftAffixText={true}
                                     keyboardType="number-pad"
@@ -3320,6 +3337,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                     label={"Accessories Discount:"}
                                     value={selector.accessories_discount}
                                     showLeftAffixText={true}
+                                    disabled={true}
                                     keyboardType="number-pad"
                                     leftAffixText={rupeeSymbol}
                                     onChangeText={(text) => dispatch(
@@ -3330,33 +3348,6 @@ const BookingFormScreen = ({ route, navigation }) => {
                                     )}/>
                                   <Text style={GlobalStyle.underline}></Text>  
                                 
-
-                                {/* <View style={styles.textAndAmountView}>
-                                    <Text style={{ fontSize: 16, fontWeight: '400', color: Colors.GRAY }}>{"Insurance Discount:"}</Text>
-                                    <View style={{ width: 80, height: 30, justifyContent: 'center', paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#d1d1d1' }}>
-                                        <TextInput
-                                            value={insuranceDiscount}
-                                            style={[{ fontSize: 14, fontWeight: "400", }]}
-                                            keyboardType={"number-pad"}
-                                            onChangeText={(text) => {
-                                                setInsuranceDiscount(text)
-                                            }}
-                                        />
-                                    </View>
-                                </View> */}
-                                {/* <View style={styles.textAndAmountView}>
-                                    <Text style={{ fontSize: 16, fontWeight: '400', color: Colors.GRAY }}>{"Accessories Discount:"}</Text>
-                                    <View style={{ width: 80, height: 30, justifyContent: 'center', paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#d1d1d1' }}>
-                                        <TextInput
-                                            value={accDiscount}
-                                            style={[{ fontSize: 14, fontWeight: "400", }]}
-                                            keyboardType={"number-pad"}
-                                            onChangeText={(text) => {
-                                                setAccDiscount(text)
-                                            }}
-                                        />
-                                    </View>
-                                </View> */}
                                 <TextinputComp
                                     style={styles.offerPriceTextInput}
                                     label={"Additional Offer 1:"}
