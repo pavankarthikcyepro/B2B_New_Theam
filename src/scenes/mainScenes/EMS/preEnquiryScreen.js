@@ -46,6 +46,9 @@ const PreEnquiryScreen = ({ navigation }) => {
 
     const orgIdStateRef = React.useRef(orgId);
     const empIdStateRef = React.useRef(employeeId);
+    const fromDateRef = React.useRef(selectedFromDate);
+    const toDateRef = React.useRef(selectedToDate);
+
 
     const setMyState = data => {
         empIdStateRef.current = data.empId;
@@ -54,14 +57,24 @@ const PreEnquiryScreen = ({ navigation }) => {
         setOrgId(data.orgId);
     };
 
+    const setFromDateState = date => {
+        fromDateRef.current = date;
+        setSelectedFromDate(date);
+    }
+
+    const setToDateState = date => {
+        toDateRef.current = date;
+        setSelectedToDate(date);
+    }
+
 
     useEffect(() => {
 
         // Get Data From Server
         let isMounted = true;
-        setSelectedFromDate(lastMonthFirstDate);
+        setFromDateState(lastMonthFirstDate);
         const tomorrowDate = moment().add(1, "day").format(dateFormat)
-        setSelectedToDate(currentDate);
+        setToDateState(currentDate);
         getAsyncData().then(data => {
             if (isMounted) {
                 setMyState(data);
@@ -85,7 +98,8 @@ const PreEnquiryScreen = ({ navigation }) => {
             // getAsyncData(lastMonthFirstDate, currentDate).then(data => {
             //     console.log(data)
             // });
-            getPreEnquiryListFromServer(empIdStateRef.current, lastMonthFirstDate, currentDate);
+            console.log(fromDateRef.current, toDateRef.current)
+            getPreEnquiryListFromServer(empIdStateRef.current, fromDateRef.current, toDateRef.current);
         });
 
         return () => {
@@ -129,7 +143,8 @@ const PreEnquiryScreen = ({ navigation }) => {
     }
 
     const getPreEnquiryListFromServer = (empId, startDate, endDate) => {
-        const payload = getPayloadData(empId, startDate, endDate, 0)
+        const payload = getPayloadData(empId, startDate, endDate, 0);
+        console.log("payload called")
         dispatch(getPreEnquiryData(payload));
     }
 
@@ -168,11 +183,11 @@ const PreEnquiryScreen = ({ navigation }) => {
         const formatDate = moment(date).format(dateFormat);
         switch (key) {
             case "FROM_DATE":
-                setSelectedFromDate(formatDate);
+                setFromDateState(formatDate);
                 getPreEnquiryListFromServer(employeeId, formatDate, selectedToDate);
                 break;
             case "TO_DATE":
-                setSelectedToDate(formatDate);
+                setToDateState(formatDate);
                 getPreEnquiryListFromServer(employeeId, selectedFromDate, formatDate);
                 break;
         }
@@ -270,7 +285,7 @@ const PreEnquiryScreen = ({ navigation }) => {
 
             <SortAndFilterComp
                 visible={sortAndFilterVisible}
-                categoryList={categoryList}
+                // categoryList={categoryList}
                 modelList={vehicleModelList}
                 sourceList={sourceList}
                 submitCallback={(payload) => {

@@ -52,7 +52,7 @@ export const updateEnquiryDetailsApiAutoSave = createAsyncThunk(
     
     const response = await client.post(URL.AUTO_SAVE(), payload);
     const json = await response.json();
-    console.log("SUCCESS:", json);
+    console.log("SUCCESS:");
     
     if (!response.ok) {
       return rejectWithValue(json);
@@ -1265,11 +1265,14 @@ const enquiryDetailsOverViewSlice = createSlice({
     },
     updateAddressByPincode: (state, action) => {
 
-      state.village = state.village ? state.village : action.payload.Block || ""
-      state.mandal = state.mandal ? state.mandal : action.payload.Mandal || ""
-      state.city = state.city ? state.city : action.payload.Region || ""
-      state.district = state.district ? state.district : action.payload.District || ""
-      state.state = state.state ? state.state : action.payload.State || ""
+      console.log("pincode action", action)
+
+      state.village = action.payload.Block || ""
+      // state.mandal = state.mandal ? state.mandal : action.payload.Mandal || ""
+      state.mandal = action.payload.Block || ""
+      state.city = action.payload.Region || ""
+      state.district = action.payload.District || ""
+      state.state =  action.payload.State || ""
       state.isAddressSet = true
     },
     updateRefNo: (state, action) => {
@@ -1282,9 +1285,10 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.enquiry_details_response = null;
     });
     builder.addCase(getEnquiryDetailsApi.fulfilled, (state, action) => {
-      if (action.payload.dmsEntity) {
+      // if (action.payload.dmsEntity) {
         state.enquiry_details_response = action.payload.dmsEntity;
-      }
+      // console.log("From reducer dmsEntity", state.enquiry_details_response)
+      // }
       state.isLoading = false;
     });
     builder.addCase(getEnquiryDetailsApi.rejected, (state, action) => {
