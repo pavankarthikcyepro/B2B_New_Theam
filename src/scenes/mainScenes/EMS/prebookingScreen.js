@@ -50,6 +50,9 @@ const PreBookingScreen = ({ navigation }) => {
         if (selector.pre_booking_list.length > 0) {
             setSearchedData(selector.pre_booking_list)
         }
+        else{
+            setSearchedData([])
+        }
     }, [selector.pre_booking_list])
 
     useEffect(() => {

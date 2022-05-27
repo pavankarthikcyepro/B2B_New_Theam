@@ -1536,7 +1536,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         payload.transferToMobile = selector.transfer_to_mobile;
         payload.typeUpi = selector.type_of_upi;
         payload.utrNo = selector.utr_no;
-        console.log("BEFORE");
+        console.log("BEFORE CALLED preBookingPaymentApi");
         dispatch(preBookingPaymentApi(payload));
     };
 
@@ -1585,6 +1585,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     useEffect(() => {
         if (selector.booking_amount_response_status === "success") {
             // Get Assigned tasks
+            console.log("CALLED getAssignedTasksApi");
             dispatch(getAssignedTasksApi(universalId));
         } else if (selector.booking_amount_response_status === "failed") {
             showToastRedAlert("Something went wrong");

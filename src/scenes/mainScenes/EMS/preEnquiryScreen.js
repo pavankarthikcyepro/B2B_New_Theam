@@ -89,7 +89,9 @@ const PreEnquiryScreen = ({ navigation }) => {
         if (selector.pre_enquiry_list.length > 0){
             setSearchedData(selector.pre_enquiry_list)
             // console.log("PreEnquiryAfterScreen:", selector.pre_enquiry_list[0])
-
+        }
+        else{
+            setSearchedData([])
         }
     }, [selector.pre_enquiry_list]);
 

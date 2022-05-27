@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { AuthNavigator, AppNavigator } from './navigations';
 import { AuthStackNavigator } from './navigations/authNavigator';
-import { MainStackDrawerNavigator } from './navigations/appNavigator';
+import { MainStackDrawerNavigator, MainStackNavigator } from './navigations/appNavigator';
 import { Provider } from 'react-redux';
 import reduxStore from './redux/reduxStore';
 import * as AsyncStore from './asyncStore';
@@ -69,7 +69,7 @@ const AppScreen = () => {
         <AuthContext.Provider value={authContext}>
             <Provider store={reduxStore}>
                 <NavigationContainer>
-                    {state.userToken ? <MainStackDrawerNavigator /> : <AuthStackNavigator />}
+                    {state.userToken ? <MainStackNavigator /> : <AuthStackNavigator />}
                 </NavigationContainer>
             </Provider>
         </AuthContext.Provider>

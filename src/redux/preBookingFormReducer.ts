@@ -213,7 +213,7 @@ export const postBookingAmountApi = createAsyncThunk("PREBOONING_FORMS_SLICE/pos
 })
 
 export const getPaymentDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getPaymentDetailsApi", async (leadId, { rejectWithValue }) => {
-  console.log("LEAD ID:", leadId);
+  console.log("LEAD ID:", leadId, URL.GET_PRE_BOOKING_PAYMENT_DETAILS(leadId));
   const response = await client.get(URL.GET_PRE_BOOKING_PAYMENT_DETAILS(leadId));
   try {
     const json = await response.json();

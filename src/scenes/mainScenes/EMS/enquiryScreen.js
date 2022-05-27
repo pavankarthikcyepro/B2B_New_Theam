@@ -51,6 +51,9 @@ const EnquiryScreen = ({ navigation }) => {
         if (selector.enquiry_list.length > 0) {
             setSearchedData(selector.enquiry_list)
         }
+        else{
+            setSearchedData([])
+        }
     }, [selector.enquiry_list])
 
     useEffect(() => {

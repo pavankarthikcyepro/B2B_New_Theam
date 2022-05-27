@@ -66,10 +66,10 @@ export const updateRef = createAsyncThunk("ENQUIRY_FORM_SLICE/updateRef",
   async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.UPDATE_REF(), payload);
     try {
-      console.log("PPPP", payload);
+      console.log("PPPP", payload, URL.UPDATE_REF());
 
       // const json = await response.json();
-      console.log("UPDATE REF");
+      console.log("UPDATE REF", response);
 
       if (!response.ok) {
         return rejectWithValue(response);

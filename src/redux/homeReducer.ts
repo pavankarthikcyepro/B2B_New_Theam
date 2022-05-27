@@ -57,7 +57,7 @@ export const getOrganaizationHirarchyList = createAsyncThunk("HOME/getOrganaizat
     const response = await client.get(URL.ORG_HIRARCHY(payload.orgId, payload.branchId))
     const json = await response.json()
     // console.log("$$$$ DATA $$$$$:", JSON.stringify(json));
-    
+
     if (!response.ok) {
         return rejectWithValue(json);
     }
@@ -130,7 +130,7 @@ export const getTaskTableList = createAsyncThunk("HOME/getTaskTableList", async 
     const json = await response.json()
     if (!response.ok) {
         return rejectWithValue(json);
-    } 
+    }
     return json;
 })
 
@@ -146,7 +146,7 @@ export const getLostDropChartData = createAsyncThunk("HOME/getLostDropChartData"
 
 export const getTargetParametersData = createAsyncThunk("HOME/getTargetParametersData", async (payload: any, { rejectWithValue }) => {
     // console.log("PAYLOAD:", payload);
-    
+
     const response = await client.post(URL.GET_TARGET_PARAMS(), payload)
     const json = await response.json()
     // console.log("homeReducer", payload);
@@ -157,7 +157,7 @@ export const getTargetParametersData = createAsyncThunk("HOME/getTargetParameter
         return rejectWithValue(json);
     }
     return json;
-}) 
+})
 
 export const getTargetParametersAllData = createAsyncThunk("HOME/getTargetParametersAllData", async (payload: any, { rejectWithValue }) => {
     // console.log("PAYLOAD:", payload);
@@ -216,7 +216,7 @@ export const getEmployeesDropDownData = createAsyncThunk("HOME/getEmployeesDropD
 
     const response = await client.post(URL.GET_EMPLOYEES_DROP_DOWN_DATA(payload.orgId, payload.empId), payload.selectedIds)
     const json = await response.json()
-    
+
     if (!response.ok) {
         return rejectWithValue(json);
     }
@@ -245,11 +245,11 @@ export const getSalesComparisonData = createAsyncThunk("HOME/getSalesComparisonD
 
 export const getBranchIds = createAsyncThunk("HOME/getBranchIds", async (payload: any, { rejectWithValue }) => {
     // console.log("CALLED");
-    
+
     const response = await client.get(URL.GET_BRANCH())
     const json = await response.json()
     // console.log("SUCCESS:", json);
-    
+
     if (!response.ok) {
         return rejectWithValue(json);
     }
@@ -261,7 +261,7 @@ export const downloadFile = createAsyncThunk("HOME/downloadFile", async (payload
     const response = await client.post(URL.DOWNLOAD_FILE(), payload)
     const json = await response.json()
     // console.log("DOWNLOAD: ", json);
-    
+
     if (!response.ok) {
         return rejectWithValue(json);
     }
@@ -271,7 +271,7 @@ export const downloadFile = createAsyncThunk("HOME/downloadFile", async (payload
 
 export const updateIsTeam = createAsyncThunk("HOME/updateIsTeam", async (payload: any) => {
     // console.log("PPP", payload);
-    
+
     return payload;
 })
 
@@ -337,6 +337,39 @@ export const homeSlice = createSlice({
         updateIsDSE: (state, action) => {
             state.isDSE = action.payload;
         },
+        clearState: (state, action) => {
+            state.serchtext = ""
+            state.employeeId = ""
+            state.tableData = data
+            state.datesData = dates
+            state.menuList = []
+            state.vehicle_model_list_for_filters = []
+            state.customer_type_list = []
+            state.source_of_enquiry_list = []
+            state.dateSelectedIndex = 0
+            state.login_employee_details = {}
+            state.filter_drop_down_data = []
+            state.lead_source_table_data = []
+            state.vehicle_model_table_data = []
+            state.events_table_data = []
+            state.task_table_data = {}
+            state.lost_drop_chart_data = {}
+            state.employees_drop_down_data = {}
+            state.target_parameters_data = []
+            state.all_target_parameters_data = []
+            state.all_emp_parameters_data = []
+            state.org_is_loading = false
+            state.emp_is_loading = false
+            state.sales_data = {}
+            state.sales_comparison_data = []
+            state.branchesList = []
+            state.allGroupDealerData = []
+            state.allDealerData = []
+            state.isTeam = false
+            state.isTeamPresent = false
+            state.isMD = false
+            state.isDSE = false
+        },
     },
     extraReducers: (builder) => {
 
@@ -373,7 +406,7 @@ export const homeSlice = createSlice({
             })
             .addCase(updateIsTeam.fulfilled, (state, action) => {
                 // console.log("TEAM: ", action.payload);
-                
+
                 state.isTeam = action.payload;
             })
             .addCase(getCustomerTypeList.fulfilled, (state, action) => {
@@ -524,7 +557,7 @@ export const homeSlice = createSlice({
             .addCase(getTargetParametersAllData.fulfilled, (state, action) => {
                 if (action.payload) {
                     // console.log("^%$%&*^&*^&*&*& SET %&&&*%^$%&*&^%", JSON.stringify(action.payload.overallTargetAchivements));
-                    
+
                     state.all_target_parameters_data = [];
                     state.all_emp_parameters_data = [];
                     // console.log(action.payload.employeeTargetAchievements, "dashboard")
@@ -602,7 +635,7 @@ export const homeSlice = createSlice({
     }
 });
 
-export const { dateSelected, updateFilterDropDownData, updateIsTeamPresent, updateIsMD, updateIsDSE } = homeSlice.actions;
+export const { dateSelected, updateFilterDropDownData, updateIsTeamPresent, updateIsMD, updateIsDSE, clearState } = homeSlice.actions;
 export default homeSlice.reducer;
 
 

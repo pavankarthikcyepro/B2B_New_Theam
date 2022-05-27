@@ -5,6 +5,8 @@ import URL from "../networking/endpoints";
 export const getPreEnquiryData = createAsyncThunk('PRE_ENQUIRY/getPreEnquiryData', async (payload, { rejectWithValue }) => {
   const response = await client.post(URL.LEADS_LIST_API_FILTER(), payload);
   const json = await response.json()
+  console.log("DATA:",JSON.stringify(json));
+  
   if (!response.ok) {
     return rejectWithValue(json);
   }
@@ -44,21 +46,29 @@ export const preEnquirySlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(getPreEnquiryData.pending, (state) => {
+      state.totalPages = 1
+      state.pageNumber = 0
+      state.pre_enquiry_list = [];
       state.isLoading = true;
     })
     builder.addCase(getPreEnquiryData.fulfilled, (state, action) => {
-      
+      state.totalPages = 1
+      state.pageNumber = 0
+      state.pre_enquiry_list = [];
       const dmsEntityObj = action.payload?.dmsEntity;
       if (dmsEntityObj) {
         // console.log('$$$$res: ', JSON.stringify(dmsEntityObj.leadDtoPage.content));
         state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
         state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
-        state.pre_enquiry_list = dmsEntityObj.leadDtoPage.content;
+        state.pre_enquiry_list = dmsEntityObj.leadDtoPage.content.length > 0 ? dmsEntityObj.leadDtoPage.content : [];
 
       }
       state.isLoading = false;
     })
     builder.addCase(getPreEnquiryData.rejected, (state) => {
+      state.totalPages = 1
+      state.pageNumber = 0
+      state.pre_enquiry_list = [];
       state.isLoading = false;
     })
     builder.addCase(getMorePreEnquiryData.pending, (state) => {

@@ -261,7 +261,7 @@ const TestDriveScreen = ({ route, navigation }) => {
     }, [selector.task_details_response]);
 
     const getTestDriveAppointmentDetailsFromServer = async () => {
-        if (selector.task_details_response.entityId) {
+        if (selector.task_details_response.entityModuleId) {
             const employeeData = await AsyncStore.getData(
                 AsyncStore.Keys.LOGIN_EMPLOYEE
             );
@@ -270,7 +270,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 const payload = {
                     barnchId: selectedBranchId,
                     orgId: jsonObj.orgId,
-                    entityModuleId: selector.task_details_response.entityId,
+                    entityModuleId: selector.task_details_response.entityModuleId,
                 };
                 dispatch(getTestDriveAppointmentDetailsApi(payload));
             }
@@ -331,6 +331,18 @@ const TestDriveScreen = ({ route, navigation }) => {
             updateTaskDetails(selector.task_details_response);
         }
     }, [selector.task_details_response]);
+
+    useEffect(() => {
+        if (selector.drivers_list.length > 0 && selector.driverId !== '') {
+            let tempDriver = [];
+            tempDriver = selector.drivers_list.filter((item) => {
+                return Number(item.id) === Number(selector.driverId)
+            })
+            if(tempDriver.length > 0){
+                setSelectedDriverDetails({ name: tempDriver[0].name, id: tempDriver[0].id });
+            }
+        }
+    }, [selector.drivers_list, selector.driverId]);
 
     const updateTaskDetails = (taskDetailsObj) => {
         console.log("taskDetailsObj: ", taskDetailsObj);
@@ -600,6 +612,7 @@ const TestDriveScreen = ({ route, navigation }) => {
         const payload = {
             appointment: appointmentObj,
         };
+        console.log("TD PAYLOAD:", JSON.stringify(payload));
         dispatch(bookTestDriveAppointmentApi(payload));
     };
 
@@ -627,6 +640,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 expectedStarttime: startTime,
                 expectedEndTime: endTime,
             };
+            console.log("UPDATE PAYLOAD:", JSON.stringify(payload));
             dispatch(updateTestDriveTaskApi(payload));
         }
     }, [selector.book_test_drive_appointment_response]);

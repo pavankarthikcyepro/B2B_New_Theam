@@ -37,6 +37,7 @@ import QR_CODE from "../../assets/images/qr-code.svg";
 import GROUP from "../../assets/images/Group.svg";
 import TRANSFER from "../../assets/images/Transfer.svg";
 import { BOOKING_TRACKER_STR, CUSTOMER_RELATIONSHIP_STR, DOCUMENT_WALLET_STR, EVENT_MANAGEMENT_STR, HOME_LINE_STR, QR_CODE_STR, GROUP_STR, TRANSFER_STR } from "../../redux/sideMenuReducer";
+import { clearState } from "../../redux/homeReducer";
 
 const screenWidth = Dimensions.get("window").width;
 const profileWidth = screenWidth / 6;
@@ -66,6 +67,8 @@ const SideMenuScreen = ({ navigation }) => {
 
     const selector = useSelector((state) => state.sideMenuReducer);
     const homeSelector = useSelector((state) => state.loginReducer);
+    const homeSelectorNew = useSelector((state) => state.homeReducer);
+    const dispatch = useDispatch();
     // const isFocused = useIsFocused();
 
 
@@ -215,6 +218,7 @@ const SideMenuScreen = ({ navigation }) => {
         AsyncStore.storeData(AsyncStore.Keys.IS_LOGIN, 'false');
         navigation.closeDrawer()
         //realm.close();
+        dispatch(clearState());
         signOut();
     }
 

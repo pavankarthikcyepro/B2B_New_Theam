@@ -35,9 +35,15 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(getPreBookingData.pending, (state) => {
+      state.totalPages = 1
+      state.pageNumber = 0
+      state.pre_booking_list = []
       state.isLoading = true;
     })
     builder.addCase(getPreBookingData.fulfilled, (state, action) => {
+      state.totalPages = 1
+      state.pageNumber = 0
+      state.pre_booking_list = []
       const dmsEntityObj = action.payload?.dmsEntity;
       if (dmsEntityObj) {
         state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
@@ -48,6 +54,9 @@ const slice = createSlice({
       state.status = "success";
     })
     builder.addCase(getPreBookingData.rejected, (state, action) => {
+      state.totalPages = 1
+      state.pageNumber = 0
+      state.pre_booking_list = []
       state.isLoading = false;
       state.status = "failed";
     })

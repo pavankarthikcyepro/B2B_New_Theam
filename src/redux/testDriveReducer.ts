@@ -129,7 +129,8 @@ const testDriveSlice = createSlice({
     customer_preferred_date: "",
     customer_preferred_time: "",
     actual_start_time: "",
-    actual_end_time: ""
+    actual_end_time: "",
+    driverId: "",
   },
   reducers: {
     clearState: (state, action) => {
@@ -204,7 +205,7 @@ const testDriveSlice = createSlice({
           if (startTimeAry.length > 1) {
             state.actual_start_time = startTimeAry[1];
           }
-
+          state.driverId = testDrivesInfo.driverId;
           const endTime = testDrivesInfo.endTime ? testDrivesInfo.endTime : "";
           const endTimeAry = endTime.split(" ");
           if (endTimeAry.length > 1) {
