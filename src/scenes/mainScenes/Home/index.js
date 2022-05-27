@@ -139,7 +139,6 @@ const HomeScreen = ({ route, navigation }) => {
             const jsonObj = JSON.parse(employeeData);
             if (selector.allDealerData.length > 0) {
                 let tempArr = [], allArray = selector.allDealerData;
-                console.log("DELAER IN HOME:", JSON.stringify(selector.allDealerData));
                 setDealerCount(selector.allDealerData.length)
                 tempArr = allArray.filter((item) => {
                     return item.empId === jsonObj.empId
@@ -365,8 +364,8 @@ const HomeScreen = ({ route, navigation }) => {
 
             if (jsonObj?.hrmsRole.toLowerCase().includes('md') || jsonObj?.hrmsRole.toLowerCase().includes("admin prod")) {
                 // dispatch(updateData(sidemenuSelector.managerData))
-                // dispatch(updateIsTeam(true))
-                // dispatch(acctionCreator.updateIsTeam(true))
+                dispatch(updateIsTeam(true))
+                dispatch(acctionCreator.updateIsTeam(true))
                 dispatch(updateIsMD(true))
             }
             else {
@@ -774,77 +773,76 @@ const HomeScreen = ({ route, navigation }) => {
                                             </TouchableOpacity>
                                         </View>
                                     }
-                                    {!selector.isMD &&
-                                        <>
-                                        <View style={styles.rankView}>
-                                            <View style={styles.rankBox}>
-                                                {/* <Text style={styles.rankHeadingText}>Group Dealer Ranking</Text> */}
-                                                <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
-                                                <View style={{
-                                                    flexDirection: 'row'
-                                                }}>
-                                                    <View style={styles.rankIconBox}>
-                                                        {/* <VectorImage
+                                    <View style={styles.rankView}>
+
+                                        <View style={styles.rankBox}>
+                                            {/* <Text style={styles.rankHeadingText}>Group Dealer Ranking</Text> */}
+                                            <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
+                                            <View style={{
+                                                flexDirection: 'row'
+                                            }}>
+                                                <View style={styles.rankIconBox}>
+                                                    {/* <VectorImage
                                                     width={25}
                                                     height={16}
                                                     source={SPEED}
                                                 // style={{ tintColor: Colors.DARK_GRAY }}
                                                 /> */}
-                                                        <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
-                                                    </View>
-                                                    <View style={{
-                                                        marginTop: 5,
-                                                        marginLeft: 3
-                                                    }}>
-                                                        {groupDealerRank !== null &&
-                                                            <Text style={styles.rankText}>{groupDealerRank}/{groupDealerCount}</Text>
-                                                        }
-                                                        {/* <View style={{
+                                                    <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
+                                                </View>
+                                                <View style={{
+                                                    marginTop: 5,
+                                                    marginLeft: 3
+                                                }}>
+                                                    {groupDealerRank !== null &&
+                                                        <Text style={styles.rankText}>{groupDealerRank}/{groupDealerCount}</Text>
+                                                    }
+                                                    {/* <View style={{
                                                     marginTop: 5
                                                 }}>
                                                     <Text style={styles.baseText}>Based on city</Text>
                                                 </View> */}
-                                                    </View>
                                                 </View>
                                             </View>
+                                        </View>
 
-                                            <View style={styles.rankBox}>
-                                                {/* <Text style={styles.rankHeadingText}>Dealer Ranking</Text> */}
-                                                <Text style={styles.rankHeadingText}>Branch Ranking</Text>
-                                                <View style={{
-                                                    flexDirection: 'row'
-                                                }}>
-                                                    <View style={styles.rankIconBox}>
-                                                        {/* <VectorImage
+                                        <View style={styles.rankBox}>
+                                            {/* <Text style={styles.rankHeadingText}>Dealer Ranking</Text> */}
+                                            <Text style={styles.rankHeadingText}>Branch Ranking</Text>
+                                            <View style={{
+                                                flexDirection: 'row'
+                                            }}>
+                                                <View style={styles.rankIconBox}>
+                                                    {/* <VectorImage
                                                     width={25}
                                                     height={16}
                                                     source={SPEED}
                                                 // style={{ tintColor: Colors.DARK_GRAY }}
                                                 /> */}
-                                                        <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
-                                                    </View>
-                                                    <View style={{
-                                                        marginTop: 5,
-                                                        marginLeft: 3,
-                                                        // justifyContent: 'center'
-                                                    }}>
-                                                        {/* <Text style={styles.rankText}>14/50</Text> */}
-                                                        {dealerRank !== null &&
-                                                            <View style={{ flexDirection: 'row' }}>
-                                                                <Text style={[styles.rankText]}>{dealerRank}</Text>
-                                                                <Text style={[styles.rankText]}>/{dealerCount}</Text>
-                                                            </View>
-                                                        }
-                                                        {/* <View style={{
+                                                    <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
+                                                </View>
+                                                <View style={{
+                                                    marginTop: 5,
+                                                    marginLeft: 3,
+                                                    // justifyContent: 'center'
+                                                }}>
+                                                    {/* <Text style={styles.rankText}>14/50</Text> */}
+                                                    {dealerRank !== null &&
+                                                        <View style={{ flexDirection: 'row' }}>
+                                                            <Text style={[styles.rankText]}>{dealerRank}</Text>
+                                                            <Text style={[styles.rankText]}>/{dealerCount}</Text>
+                                                        </View>
+                                                    }
+                                                    {/* <View style={{
                                                     marginTop: 5
                                                 }}>
                                                     <Text style={styles.baseText}>Based on city</Text>
                                                 </View> */}
-                                                    </View>
                                                 </View>
                                             </View>
+                                        </View>
 
-                                            {/* <View style={styles.retailBox}>
+                                        {/* <View style={styles.retailBox}>
                                         <View style={{
                                             flexDirection: 'row',
                                             marginBottom: 5
@@ -862,47 +860,45 @@ const HomeScreen = ({ route, navigation }) => {
                                         </View>
                                     </View> */}
 
-                                            <View style={styles.rankBox}>
-                                                <Text style={styles.rankHeadingText}>Retails</Text>
-                                                <View style={{
-                                                    flexDirection: 'row'
-                                                }}>
-                                                    <View style={styles.rankIconBox}>
-                                                        {/* <VectorImage
+                                        <View style={styles.rankBox}>
+                                            <Text style={styles.rankHeadingText}>Retails</Text>
+                                            <View style={{
+                                                flexDirection: 'row'
+                                            }}>
+                                                <View style={styles.rankIconBox}>
+                                                    {/* <VectorImage
                                                     width={25}
                                                     height={16}
                                                     source={SPEED}
                                                 // style={{ tintColor: Colors.DARK_GRAY }}
                                                 /> */}
-                                                        <Image style={styles.rankIcon} source={require("../../../assets/images/retail.png")} />
+                                                    <Image style={styles.rankIcon} source={require("../../../assets/images/retail.png")} />
+                                                </View>
+                                                <View style={{
+                                                    marginTop: 5,
+                                                    marginLeft: 5,
+                                                }}>
+                                                    <View style={{ flexDirection: 'row' }}>
+                                                        <Text style={[styles.rankText, { color: 'red' }]}>{retailData?.achievment} </Text>
+                                                        <Text style={styles.rankText}>/{retailData?.target}</Text>
                                                     </View>
                                                     <View style={{
-                                                        marginTop: 5,
-                                                        marginLeft: 5,
+                                                        marginTop: 5
                                                     }}>
-                                                        <View style={{ flexDirection: 'row' }}>
-                                                            <Text style={[styles.rankText, { color: 'red' }]}>{retailData?.achievment} </Text>
-                                                            <Text style={styles.rankText}>/{retailData?.target}</Text>
-                                                        </View>
-                                                        <View style={{
-                                                            marginTop: 5
-                                                        }}>
-                                                            <Text style={styles.baseText}>Ach v/s Tar</Text>
-                                                        </View>
+                                                        <Text style={styles.baseText}>Ach v/s Tar</Text>
                                                     </View>
                                                 </View>
                                             </View>
+                                        </View>
 
-                                            {/* <TouchableOpacity style={{ position: 'absolute', top: -10, right: -10 }}
+                                        {/* <TouchableOpacity style={{ position: 'absolute', top: -10, right: -10 }}
                                             onPress={() => navigation.navigate(HomeStackIdentifiers.filter)}>
                                             <View style={{ flexDirection: 'row', alignItems: 'center' }}> */}
-                                            {/* <Text style={[styles.text1, { color: Colors.RED }]}>{'Filters'}</Text> */}
-                                            {/* <IconButton icon={'filter-outline'} size={25} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
+                                        {/* <Text style={[styles.text1, { color: Colors.RED }]}>{'Filters'}</Text> */}
+                                        {/* <IconButton icon={'filter-outline'} size={25} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
                                             </View>
                                         </TouchableOpacity> */}
-                                        </View>
-                                        </>
-                                    }
+                                    </View>
                                 </>
                             )
                         }
@@ -933,7 +929,7 @@ const HomeScreen = ({ route, navigation }) => {
                                         }
                                     </View> */}
 
-                                    {isTeamPresent && !selector.isDSE &&
+                                    {isTeamPresent && !selector.isDSE && !selector.isMD &&
                                         <View style={{ flexDirection: 'row', marginBottom: 20, justifyContent: 'center', alignItems: 'center' }}>
                                             <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, marginTop: 10, justifyContent: 'center', width: '80%' }}>
 
@@ -965,7 +961,7 @@ const HomeScreen = ({ route, navigation }) => {
                                             </View>
                                         </View>
                                     }
-                                    {/* {selector.isMD &&
+                                    {selector.isMD &&
                                         <View style={{ flexDirection: 'row', marginBottom: 20, justifyContent: 'center', alignItems: 'center' }}>
                                             <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, marginTop: 10, justifyContent: 'center', width: '80%' }}>
                                                 <TouchableOpacity onPress={() => {
@@ -976,7 +972,7 @@ const HomeScreen = ({ route, navigation }) => {
                                                 </TouchableOpacity>
                                             </View>
                                         </View>
-                                    } */}
+                                    }
                                 </>
                             )
                         }

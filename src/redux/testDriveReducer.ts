@@ -90,8 +90,7 @@ export const updateTestDriveTaskApi = createAsyncThunk("TEST_DRIVE_SLICE/updateT
 })
 
 export const getTestDriveAppointmentDetailsApi = createAsyncThunk("TEST_DRIVE_SLICE/getAppointmentDetailsApi", async (payload, { rejectWithValue }) => {
-  console.log("URL ", URL.GET_TEST_DRIVE_APPOINTMENT_DETAILS(payload["entityModuleId"], payload["barnchId"], payload["orgId"]));
-  
+
   const response = await client.get(URL.GET_TEST_DRIVE_APPOINTMENT_DETAILS(payload["entityModuleId"], payload["barnchId"], payload["orgId"]));
   const json = await response.json()
   if (!response.ok) {
@@ -311,9 +310,6 @@ const testDriveSlice = createSlice({
     builder.addCase(updateTestDriveTaskApi.fulfilled, (state, action) => {
       if (action.payload.success === true) {
         state.test_drive_update_task_response = "success";
-      }
-      else{
-        state.test_drive_update_task_response = action.payload.errorMessage;
       }
       state.isLoading = false;
     })

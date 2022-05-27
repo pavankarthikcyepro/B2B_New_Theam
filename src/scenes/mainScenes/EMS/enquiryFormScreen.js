@@ -1585,7 +1585,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.variant = selector.c_variant;
     dataObj.color = selector.c_color;
     dataObj.fuel = selector.c_fuel_type;
-    dataObj.transmissionType = selector.c_transmission_type;
     dataObj.priceRange = selector.c_price_range;
     dataObj.onRoadPriceanyDifference = selector.c_on_road_price;
     dataObj.dealershipName = selector.c_dealership_name;

@@ -237,12 +237,12 @@ const LoginScreen = ({ navigation }) => {
             source={require("../../assets/images/loginCar.jpg")}
             style={styles.loginImage}
           />
-          {/* <Pressable
+          <Pressable
             style={styles.signUpButton}
             // onPress={loginClicked()}
           >
             <Text style={styles.signUpText}>Don't have an account? <Text style={styles.signUpSubtext}>Sign Up</Text></Text>
-          </Pressable> */}
+          </Pressable>
           {/* <ButtonComp
             title={"Login to Account"}
             width={ScreenWidth - 40}

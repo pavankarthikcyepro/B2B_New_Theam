@@ -121,7 +121,7 @@ const ListComponent = ({ route, navigation }) => {
                         </View>
                     )
                 } */}
-                {homeSelector.isTeamPresent && !homeSelector.isDSE &&
+                {homeSelector.isTeamPresent && !homeSelector.isMD && !homeSelector.isDSE &&
                     <View style={styles.selfBtnWrap}>
                         <TouchableOpacity onPress={() => {
                             setIndex(0)
@@ -142,13 +142,13 @@ const ListComponent = ({ route, navigation }) => {
                         </View>
                     </View>
                 }
-                {/* {homeSelector.isMD &&
+                {homeSelector.isMD &&
                     <View style={styles.selfBtnWrap}>
                         <TouchableOpacity style={{ width: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.RED, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
                             <Text style={{ fontSize: 16, color: Colors.WHITE, fontWeight: '600' }}>Teams</Text>
                         </TouchableOpacity>
                     </View>
-                } */}
+                }
             </View>
 
             {(index === 0 && myTasksData.length > 0) && (

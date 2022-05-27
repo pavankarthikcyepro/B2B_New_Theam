@@ -130,7 +130,6 @@ const CheckboxTextAndAmountComp = ({
                     color={Colors.BLUE}
                     uncheckedColor={Colors.GRAY}
                     onPress={onPress}
-                    disabled={true}
                 />
                 <Text
                     style={[
@@ -2967,8 +2966,6 @@ const BookingFormScreen = ({ route, navigation }) => {
                                     }}>
                                         <TextInput
                                             value={taxPercent}
-                                            disabled={true}
-                                            editable={false}
                                             style={[{ fontSize: 14, fontWeight: "400", }]}
                                             keyboardType={"number-pad"}
                                             disabled={true}
