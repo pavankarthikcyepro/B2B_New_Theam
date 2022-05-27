@@ -50,6 +50,7 @@ const MainParamScreen = ({ route, navigation }) => {
     const [ownData, setOwnData] = useState(null);
     const [isNoTargetAvailable, setIsNoTargetAvailable] = useState(false);
     const [addOrEdit, setAddOrEdit] = useState('');
+    const [defaultBranch, setDefaultBranch] = useState(null);
 
     // const dropdownData = [
     //     { label: 'Item 1', value: '1' },
@@ -93,13 +94,13 @@ const MainParamScreen = ({ route, navigation }) => {
     useEffect(async () => {
         if (selector.targetMapping.length > 0 && loggedInEmpDetails !== null && selector.isDataLoaded) {
             let ownDataArray = [];
-            if (selector.targetType === 'MONTHLY'){
+            if (selector.targetType === 'MONTHLY') {
                 ownDataArray = selector.targetMapping.filter((item) => {
                     // return Number(item.employeeId) === Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate
                     return Number(item.employeeId) === Number(loggedInEmpDetails?.empId)
                 })
             }
-            else{
+            else {
                 ownDataArray = selector.targetMapping.filter((item) => {
                     return Number(item.employeeId) === Number(loggedInEmpDetails?.empId)
                 })
@@ -129,7 +130,7 @@ const MainParamScreen = ({ route, navigation }) => {
                 })
             }
         }
-        if (selector.isDataLoaded && selector.targetMapping.length === 0){
+        if (selector.isDataLoaded && selector.targetMapping.length === 0) {
             setIsNoTargetAvailable(true)
             setOwnData({
                 "retailTarget": null,
@@ -392,6 +393,10 @@ const MainParamScreen = ({ route, navigation }) => {
                                         <>
                                             {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
                                                 <TouchableOpacity style={styles.textBox} onPress={() => {
+                                                    if (item.retailTarget !== null) {
+                                                        setSelectedBranch({ label: item.branchName, value: item.branch })
+                                                        setDefaultBranch(Number(item.branch))
+                                                    }
                                                     setRetail(item.retailTarget !== null ? item.retailTarget : 0)
                                                     setSelectedUser(item)
                                                     setAddOrEdit('E')
@@ -615,58 +620,62 @@ const MainParamScreen = ({ route, navigation }) => {
                             else {
                                 setAddOrEdit('E')
                             }
+                            if (ownData.retailTarget !== null) {
+                                setSelectedBranch({ label: ownData.branchName, value: ownData.branch })
+                                setDefaultBranch(Number(ownData.branch))
+                            }
                             ownData.retailTarget !== null ? setRetail(ownData.retailTarget.toString()) : setRetail('')
                             setOpenRetail(true)
                         }}>
-                            <Text style={styles.textInput}>{ownData.retailTarget !== null ? ownData.retailTarget : 0}</Text>
+                            <Text style={styles.textInput}>{ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.retailTarget : 0}</Text>
                         </TouchableOpacity>
                     </View>
 
                     <View style={styles.textBoxWrap}>
                         <View style={styles.textBox2}>
-                            <Text style={styles.textInput}>{ownData.enquiry !== null ? ownData.enquiry : 0}</Text>
+                            <Text style={styles.textInput}>{ownData.enquiry !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.enquiry : 0}</Text>
                         </View>
                     </View>
 
                     <View style={styles.textBoxWrap}>
                         <View style={styles.textBox2}>
-                            <Text style={styles.textInput}>{ownData.booking !== null ? ownData.booking : 0}</Text>
+                            <Text style={styles.textInput}>{ownData.booking !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.booking : 0}</Text>
                         </View>
                     </View>
 
                     <View style={styles.textBoxWrap}>
                         <View style={styles.textBox2}>
-                            <Text style={styles.textInput}>{ownData.testDrive !== null ? ownData.testDrive : 0}</Text>
+                            <Text style={styles.textInput}>{ownData.testDrive !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.testDrive : 0}</Text>
                         </View>
                     </View>
 
                     <View style={styles.textBoxWrap}>
                         <View style={styles.textBox2}>
-                            <Text style={styles.textInput}>{ownData.homeVisit !== null ? ownData.homeVisit : 0}</Text>
+                            <Text style={styles.textInput}>{ownData.homeVisit !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.homeVisit : 0}</Text>
                         </View>
                     </View>
 
                     <View style={styles.textBoxWrap}>
                         <View style={styles.textBox2}>
-                            <Text style={styles.textInput}>{ownData.finance !== null ? ownData.finance : 0}</Text>
+                            <Text style={styles.textInput}>{ownData.finance !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.finance : 0}</Text>
                         </View>
                     </View>
 
                     <View style={styles.textBoxWrap}>
                         <View style={styles.textBox2}>
-                            <Text style={styles.textInput}>{ownData.insurance !== null ? ownData.insurance : 0}</Text>
+                            <Text style={styles.textInput}>{ownData.insurance !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.insurance : 0}</Text>
                         </View>
                     </View>
 
                     <View style={styles.textBoxWrap}>
                         <View style={styles.textBox2}>
-                            <Text style={styles.textInput}>{ownData.accessories !== null ? ownData.accessories : 0}</Text>
+                            <Text style={styles.textInput}>{ownData.accessories !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.accessories : 0}</Text>
                         </View>
                     </View>
 
                     <View style={styles.textBoxWrap}>
                         <View style={styles.textBox2}>
-                            <Text style={styles.textInput}>{ownData.exchange !== null ? ownData.exchange : 0}</Text>
+                            <Text style={styles.textInput}>{ownData.exchange !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.exchange : 0}</Text>
                         </View>
                     </View>
                 </ScrollView>
@@ -725,60 +734,65 @@ const MainParamScreen = ({ route, navigation }) => {
                                 else {
                                     setAddOrEdit('E')
                                 }
+                                if (ownData.retailTarget !== null) {
+                                    setSelectedBranch({ label: ownData.branchName, value: ownData.branch })
+                                    setDefaultBranch(Number(ownData.branch))
+                                }
                                 setSelectedUser(loggedInEmpDetails)
-                                console.log(ownData, ownData.retailTarget !== null);
+                                console.log("OWN DATA", ownData, ownData.retailTarget !== null);
                                 ownData.retailTarget !== null ? setRetail(ownData.retailTarget.toString()) : setRetail('')
+
                                 setOpenRetail(true)
                             }}>
-                                <Text style={styles.textInput}>{ownData.retailTarget !== null ? ownData.retailTarget : 0}</Text>
+                                <Text style={styles.textInput}>{ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.retailTarget : 0}</Text>
                             </TouchableOpacity>
                         </View>
 
                         <View style={styles.textBoxWrap}>
                             <View style={styles.textBox2}>
-                                <Text style={styles.textInput}>{ownData.enquiry !== null ? ownData.enquiry : 0}</Text>
+                                <Text style={styles.textInput}>{ownData.enquiry !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.enquiry : 0}</Text>
                             </View>
                         </View>
 
                         <View style={styles.textBoxWrap}>
                             <View style={styles.textBox2}>
-                                <Text style={styles.textInput}>{ownData.booking !== null ? ownData.booking : 0}</Text>
+                                <Text style={styles.textInput}>{ownData.booking !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.booking : 0}</Text>
                             </View>
                         </View>
 
                         <View style={styles.textBoxWrap}>
                             <View style={styles.textBox2}>
-                                <Text style={styles.textInput}>{ownData.testDrive !== null ? ownData.testDrive : 0}</Text>
+                                <Text style={styles.textInput}>{ownData.testDrive !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.testDrive : 0}</Text>
                             </View>
                         </View>
 
                         <View style={styles.textBoxWrap}>
                             <View style={styles.textBox2}>
-                                <Text style={styles.textInput}>{ownData.homeVisit !== null ? ownData.homeVisit : 0}</Text>
+                                <Text style={styles.textInput}>{ownData.homeVisit !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.homeVisit : 0}</Text>
                             </View>
                         </View>
 
                         <View style={styles.textBoxWrap}>
                             <View style={styles.textBox2}>
-                                <Text style={styles.textInput}>{ownData.finance !== null ? ownData.finance : 0}</Text>
+                                <Text style={styles.textInput}>{ownData.finance !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.finance : 0}</Text>
                             </View>
                         </View>
 
                         <View style={styles.textBoxWrap}>
                             <View style={styles.textBox2}>
-                                <Text style={styles.textInput}>{ownData.insurance !== null ? ownData.insurance : 0}</Text>
+                                <Text style={styles.textInput}>{ownData.insurance !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.insurance : 0}</Text>
                             </View>
                         </View>
 
                         <View style={styles.textBoxWrap}>
                             <View style={styles.textBox2}>
-                                <Text style={styles.textInput}>{ownData.accessories !== null ? ownData.accessories : 0}</Text>
+                                <Text style={styles.textInput}>{ownData.accessories !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.accessories : 0}</Text>
                             </View>
                         </View>
 
                         <View style={styles.textBoxWrap}>
                             <View style={styles.textBox2}>
-                                <Text style={styles.textInput}>{ownData.exchange !== null ? ownData.exchange : 0}</Text>
+                                <Text style={styles.textInput}>{ownData.exchange !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.exchange : 0}</Text>
                             </View>
                         </View>
                     </ScrollView>
@@ -812,7 +826,8 @@ const MainParamScreen = ({ route, navigation }) => {
                                 valueField="value"
                                 placeholder={'Select branch'}
                                 searchPlaceholder="Search..."
-                                // value={value}
+                                value={defaultBranch}
+                                disable={defaultBranch !== null}
                                 // onFocus={() => setIsFocus(true)}
                                 // onBlur={() => setIsFocus(false)}
                                 onChange={async (item) => {
@@ -894,7 +909,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                 if (addOrEdit === 'A') {
                                     addTargetData()
                                 }
-                                else{
+                                else {
                                     editTargetData()
                                 }
                             }}>

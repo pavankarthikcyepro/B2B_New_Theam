@@ -140,7 +140,7 @@ const theme = {
     ...DefaultTheme.colors,
     background: Colors.WHITE,
   },
-}; 
+};
 
 const DetailsOverviewScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
@@ -244,7 +244,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-        autoSave()
+      autoSave()
     }, 10000);
     return () => {
       console.log("CLEAR");
@@ -252,7 +252,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
   }, [selector])
 
-  
+
 
   // useEffect(() => {
   //   let autoSaveInterval;
@@ -510,166 +510,166 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     console.log({ dmsEntity })
 
     if (dmsEntity) {
-    if (dmsEntity.hasOwnProperty("dmsContactDto"))
-      dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsContactDto);
-    else if (dmsEntity.hasOwnProperty("dmsAccountDto"))
-      dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsAccountDto);
+      if (dmsEntity.hasOwnProperty("dmsContactDto"))
+        dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsContactDto);
+      else if (dmsEntity.hasOwnProperty("dmsAccountDto"))
+        dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsAccountDto);
 
-    if (dmsEntity.hasOwnProperty("dmsLeadDto")) {
-      dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
-      const employeeData = await AsyncStore.getData(
-        AsyncStore.Keys.LOGIN_EMPLOYEE
-      );
-      if (employeeData) {
-        const jsonObj = JSON.parse(employeeData);
-        let tempAttachments = [];
-        // console.log("GDGHDGDGDGDGD", JSON.stringify(dmsLeadDto.dmsAttachments));
-        if (selector.pan_number) {
-          tempAttachments.push({
-            branchId: jsonObj.branchs[0]?.branchId,
-            contentSize: 0,
-            createdBy: new Date().getSeconds(),
-            description: "",
-            documentNumber: selector.pan_number,
-            documentPath:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0].documentPath
-                : "",
-            documentType: "pan",
-            documentVersion: 0,
-            fileName:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0].fileName
-                : "",
-            gstNumber: "",
-            id: 0,
-            isActive: 0,
-            isPrivate: 0,
-            keyName:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0].keyName
-                : "",
-            modifiedBy: jsonObj.empName,
-            orgId: jsonObj.orgId,
-            ownerId: "",
-            ownerName: jsonObj.empName,
-            parentId: "",
-            tinNumber: "",
-          });
+      if (dmsEntity.hasOwnProperty("dmsLeadDto")) {
+        dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
+        const employeeData = await AsyncStore.getData(
+          AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        if (employeeData) {
+          const jsonObj = JSON.parse(employeeData);
+          let tempAttachments = [];
+          // console.log("GDGHDGDGDGDGD", JSON.stringify(dmsLeadDto.dmsAttachments));
+          if (selector.pan_number) {
+            tempAttachments.push({
+              branchId: jsonObj.branchs[0]?.branchId,
+              contentSize: 0,
+              createdBy: new Date().getSeconds(),
+              description: "",
+              documentNumber: selector.pan_number,
+              documentPath:
+                dmsLeadDto.dmsAttachments.length > 0
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "pan";
+                  })[0].documentPath
+                  : "",
+              documentType: "pan",
+              documentVersion: 0,
+              fileName:
+                dmsLeadDto.dmsAttachments.length > 0
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "pan";
+                  })[0].fileName
+                  : "",
+              gstNumber: "",
+              id: 0,
+              isActive: 0,
+              isPrivate: 0,
+              keyName:
+                dmsLeadDto.dmsAttachments.length > 0
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "pan";
+                  })[0].keyName
+                  : "",
+              modifiedBy: jsonObj.empName,
+              orgId: jsonObj.orgId,
+              ownerId: "",
+              ownerName: jsonObj.empName,
+              parentId: "",
+              tinNumber: "",
+            });
+          }
+          if (selector.adhaar_number) {
+            tempAttachments.push({
+              branchId: jsonObj.branchs[0]?.branchId,
+              contentSize: 0,
+              createdBy: new Date().getSeconds(),
+              description: "",
+              documentNumber: selector.adhaar_number,
+              documentPath:
+                dmsLeadDto.dmsAttachments.length > 0
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "aadhar";
+                  })[0].documentPath
+                  : "",
+              documentType: "aadhar",
+              documentVersion: 0,
+              fileName:
+                dmsLeadDto.dmsAttachments.length > 0
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "aadhar";
+                  })[0].fileName
+                  : "",
+              gstNumber: "",
+              id: 0,
+              isActive: 0,
+              isPrivate: 0,
+              keyName:
+                dmsLeadDto.dmsAttachments.length > 0
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "aadhar";
+                  })[0].keyName
+                  : "",
+              modifiedBy: jsonObj.empName,
+              orgId: jsonObj.orgId,
+              ownerId: "",
+              ownerName: jsonObj.empName,
+              parentId: "",
+              tinNumber: "",
+            });
+          }
+          if (selector.employee_id) {
+            tempAttachments.push({
+              branchId: jsonObj.branchs[0]?.branchId,
+              contentSize: 0,
+              createdBy: new Date().getSeconds(),
+              description: "",
+              documentNumber: selector.employee_id,
+              documentPath:
+                dmsLeadDto.dmsAttachments.length > 0
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "empId";
+                  })[0].documentPath
+                  : "",
+              documentType: "empId",
+              documentVersion: 0,
+              fileName:
+                dmsLeadDto.dmsAttachments.length > 0
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "empId";
+                  })[0].fileName
+                  : "",
+              gstNumber: "",
+              id: 0,
+              isActive: 0,
+              isPrivate: 0,
+              keyName:
+                dmsLeadDto.dmsAttachments.length > 0
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "empId";
+                  })[0].keyName
+                  : "",
+              modifiedBy: jsonObj.empName,
+              orgId: jsonObj.orgId,
+              ownerId: "",
+              ownerName: jsonObj.empName,
+              parentId: "",
+              tinNumber: "",
+            });
+          }
+          dmsLeadDto.dmsAttachments = tempAttachments;
         }
-        if (selector.adhaar_number) {
-          tempAttachments.push({
-            branchId: jsonObj.branchs[0]?.branchId,
-            contentSize: 0,
-            createdBy: new Date().getSeconds(),
-            description: "",
-            documentNumber: selector.adhaar_number,
-            documentPath:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0].documentPath
-                : "",
-            documentType: "aadhar",
-            documentVersion: 0,
-            fileName:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0].fileName
-                : "",
-            gstNumber: "",
-            id: 0,
-            isActive: 0,
-            isPrivate: 0,
-            keyName:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0].keyName
-                : "",
-            modifiedBy: jsonObj.empName,
-            orgId: jsonObj.orgId,
-            ownerId: "",
-            ownerName: jsonObj.empName,
-            parentId: "",
-            tinNumber: "",
-          });
-        }
-        if (selector.employee_id) {
-          tempAttachments.push({
-            branchId: jsonObj.branchs[0]?.branchId,
-            contentSize: 0,
-            createdBy: new Date().getSeconds(),
-            description: "",
-            documentNumber: selector.employee_id,
-            documentPath:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "empId";
-                })[0].documentPath
-                : "",
-            documentType: "empId",
-            documentVersion: 0,
-            fileName:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "empId";
-                })[0].fileName
-                : "",
-            gstNumber: "",
-            id: 0,
-            isActive: 0,
-            isPrivate: 0,
-            keyName:
-              dmsLeadDto.dmsAttachments.length > 0
-                ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "empId";
-                })[0].keyName
-                : "",
-            modifiedBy: jsonObj.empName,
-            orgId: jsonObj.orgId,
-            ownerId: "",
-            ownerName: jsonObj.empName,
-            parentId: "",
-            tinNumber: "",
-          });
-        }
-        dmsLeadDto.dmsAttachments = tempAttachments;
       }
-    }
 
-    if (selector.enquiry_details_response.hasOwnProperty("dmsContactDto")) {
-      formData = {
-        dmsContactDto: dmsContactOrAccountDto,
-        dmsLeadDto: dmsLeadDto,
-      };
-    } else {
-      formData = {
-        dmsAccountDto: dmsContactOrAccountDto,
-        dmsLeadDto: dmsLeadDto,
-      };
-    }
-    let payload = {
-      data: formData,
-      status: "Active",
-      universalId: universalId
-    }
-    AsyncStore.storeJsonData(AsyncStore.Keys.ENQ_PAYLOAD, payload);
+      if (selector.enquiry_details_response.hasOwnProperty("dmsContactDto")) {
+        formData = {
+          dmsContactDto: dmsContactOrAccountDto,
+          dmsLeadDto: dmsLeadDto,
+        };
+      } else {
+        formData = {
+          dmsAccountDto: dmsContactOrAccountDto,
+          dmsLeadDto: dmsLeadDto,
+        };
+      }
+      let payload = {
+        data: formData,
+        status: "Active",
+        universalId: universalId
+      }
+      AsyncStore.storeJsonData(AsyncStore.Keys.ENQ_PAYLOAD, payload);
 
 
-    Promise.all([
-      dispatch(updateEnquiryDetailsApiAutoSave(payload)),
-    ]).then(async () => {
-      console.log("REF NO");
-    });
-  }
+      Promise.all([
+        dispatch(updateEnquiryDetailsApiAutoSave(payload)),
+      ]).then(async () => {
+        console.log("REF NO");
+      });
+    }
   };
 
   const updateEnquiry = async () => {
@@ -983,8 +983,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (selector.designation.length == 0) {
       showToast("Please fill designation");
       return;
-     }
-      if(selector.buyer_type.length == 0) {
+    }
+    if (selector.buyer_type.length == 0) {
       showToast("Please fill  Buyer type");
       return;
     }
@@ -1026,7 +1026,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       selector.district.length == 0) {
       showToast("Please fill district ");
       return;
-      }
+    }
     // Model Selection
     if (
       selector.model.length == 0) {
@@ -1053,7 +1053,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         return;
       }
       if (
-         selector.loan_of_tenure.length == 0
+        selector.loan_of_tenure.length == 0
       ) {
         showToast("Please fill loan of tenure");
         return;
@@ -1065,13 +1065,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       if (selector.approx_annual_income.length == 0) {
         showToast("Please fill approx annual income");
         return;
-       }
+      }
       if (selector.bank_or_finance.length == 0) {
         showToast("Please fill bank/Finance");
         return;
       }
     }
-    
+
     // Leashing
     if (selector.retail_finance == "Leasing") {
       if (selector.leashing_name.length == 0) {
@@ -1115,14 +1115,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           return;
         }
       }
-       if (selector.r_reg_no.length == 0) {
-         showToast("Please fill reg no is mandatory");
-         return;
-       }
-       if (!isValidateAlphabetics(selector.r_model_other_name)) {
-         showToast("Please enter proper model other name");
-         return;
-       }
+      if (selector.r_reg_no.length == 0) {
+        showToast("Please fill reg no is mandatory");
+        return;
+      }
+      if (!isValidateAlphabetics(selector.r_model_other_name)) {
+        showToast("Please enter proper model other name");
+        return;
+      }
 
       // if (selector.r_insurence_company_name.length == 0) {
       //   showToast("Please select the insurance company name");
@@ -1585,6 +1585,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.variant = selector.c_variant;
     dataObj.color = selector.c_color;
     dataObj.fuel = selector.c_fuel_type;
+    dataObj.transmissionType = selector.c_transmission_type;
     dataObj.priceRange = selector.c_price_range;
     dataObj.onRoadPriceanyDifference = selector.c_on_road_price;
     dataObj.dealershipName = selector.c_dealership_name;
@@ -3672,19 +3673,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         }
                       />
                     </View>
-                      {uploadedImagesDataObj?.payslips ? (
+                    {uploadedImagesDataObj?.payslips ? (
 
                       <View style={{ flexDirection: 'row' }}>
                         <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                            if (uploadedImagesDataObj?.payslips?.documentPath) {
-                              setImagePath(uploadedImagesDataObj.payslips?.documentPath)
+                          if (uploadedImagesDataObj?.payslips?.documentPath) {
+                            setImagePath(uploadedImagesDataObj.payslips?.documentPath)
                           }
                         }}>
                           <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: '80%' }}>
                           <DisplaySelectedImage
-                              fileName={uploadedImagesDataObj?.payslips.fileName}
+                            fileName={uploadedImagesDataObj?.payslips.fileName}
                             from={"3_MONTHS_PAYSLIP"}
                           />
                         </View>

@@ -91,7 +91,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
             initialTask()
-            
+
         });
         return unsubscribe;
     }, [navigation]);
@@ -179,7 +179,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                 console.log('SUCCESS');
             });
 
-            
+
         }
     }
 
@@ -230,7 +230,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                     console.log("ITEM:", item);
                     setShowDropDownModel(false);
                     setDropDownData({ key: dropDownKey, value: item.name, id: item.id })
-                    if (selector.targetType === "MONTHLY"){
+                    if (selector.targetType === "MONTHLY") {
                         dispatch(updateMonth({ key: dropDownKey, value: item.name, id: item.id }))
 
                         const dateFormat = "YYYY-MM-DD";
@@ -274,7 +274,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                 title={"Target Planning"}
                 // branchName={selectedBranchName}
                 menuClicked={() => navigation.openDrawer()}
-                // branchClicked={() => moveToSelectBranch()}
+            // branchClicked={() => moveToSelectBranch()}
             />
             <View style={{ flex: 1, padding: 10 }}>
                 <FlatList
@@ -287,20 +287,20 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                         if (index === 0) {
                             return (
                                 <>
-                                    {homeSelector.isTeamPresent && !homeSelector.isMD && !homeSelector.isDSE &&
+                                    {homeSelector.isTeamPresent && !homeSelector.isDSE &&
                                         <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                                             <View style={{ width: '50%', justifyContent: 'center', flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, marginTop: 10, }}>
                                                 <TouchableOpacity onPress={() => {
                                                     // setIsTeam(true)
                                                     dispatch(updateIsTeam(false))
                                                 }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: selector.isTeam ? Colors.WHITE : Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
-                                                <Text style={{ fontSize: 16, color: selector.isTeam ? Colors.BLACK : Colors.WHITE, fontWeight: '600' }}>Self</Text>
+                                                    <Text style={{ fontSize: 16, color: selector.isTeam ? Colors.BLACK : Colors.WHITE, fontWeight: '600' }}>Self</Text>
                                                 </TouchableOpacity>
                                                 <TouchableOpacity onPress={() => {
                                                     // setIsTeam(false)
                                                     dispatch(updateIsTeam(true))
                                                 }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: selector.isTeam ? Colors.RED : Colors.WHITE, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
-                                                <Text style={{ fontSize: 16, color: selector.isTeam ? Colors.WHITE : Colors.BLACK, fontWeight: '600' }}>Teams</Text>
+                                                    <Text style={{ fontSize: 16, color: selector.isTeam ? Colors.WHITE : Colors.BLACK, fontWeight: '600' }}>Teams</Text>
                                                 </TouchableOpacity>
                                             </View>
                                         </View>
@@ -317,7 +317,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                                             </View>
                                         </View>
                                     }
-                                    {homeSelector.isMD &&
+                                    {/* {homeSelector.isMD &&
                                         <View style={{ flexDirection: 'row', marginBottom: 20, justifyContent: 'center', alignItems: 'center' }}>
                                             <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, marginTop: 10, justifyContent: 'center', width: '80%' }}>
                                                 <TouchableOpacity onPress={() => {
@@ -328,7 +328,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                                                 </TouchableOpacity>
                                             </View>
                                         </View>
-                                    }
+                                    } */}
                                 </>
                             )
                         }
@@ -366,7 +366,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                                                 onPress={() => {
                                                     setCurrentMonthDate().then(() => {
                                                         dispatch(updateTargetType("MONTHLY"))
-                                                    })                                                    
+                                                    })
                                                 }}
                                             />
                                             <RadioTextItem
@@ -385,7 +385,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                                             // value={selector.selectedMonth && selector.targetType === "MONTHLY" ? selector.selectedMonth.value : ''}
                                             value={(selector.selectedMonth && selector.targetType === "MONTHLY") ? selector.selectedMonth.value : (selector.selectedSpecial && selector.targetType === "SPECIAL" ? selector.selectedSpecial.value : '')}
                                             onPress={() => {
-                                                if (selector.targetType === "SPECIAL"){
+                                                if (selector.targetType === "SPECIAL") {
                                                     showDropDownModelMethod("SPECIAL_MODEL", "Select Target")
                                                 }
                                                 else if (selector.targetType === "MONTHLY") {
@@ -422,7 +422,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                     }}
                 />
             </View>
-            
+
         </SafeAreaView>
     );
 };
