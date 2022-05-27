@@ -630,15 +630,15 @@ const TabNavigator = ({navigation, route}) => {
     );
 };
 
-const fun = () => {
-    return (
-        <Tab.Screen
-            name={TabStackIdentifiers.planning}
-            component={MonthlyTargetStackNavigator}
-            options={{ title: "Planning" }}
-        />
-    )
-}
+// const fun = () => {
+//     return (
+//         <Tab.Screen
+//             name={TabStackIdentifiers.planning}
+//             component={MonthlyTargetStackNavigator}
+//             options={{ title: "Planning" }}
+//         />
+//     )
+// }
 const ComplaintStack = createStackNavigator();
 
 const ComplaintStackNavigator = ({ navigation }) => {

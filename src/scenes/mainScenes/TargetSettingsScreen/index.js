@@ -287,7 +287,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                         if (index === 0) {
                             return (
                                 <>
-                                    {homeSelector.isTeamPresent && !homeSelector.isMD && !homeSelector.isDSE &&
+                                    {homeSelector.isTeamPresent && !homeSelector.isDSE &&
                                         <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                                             <View style={{ width: '50%', justifyContent: 'center', flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, marginTop: 10, }}>
                                                 <TouchableOpacity onPress={() => {
@@ -317,7 +317,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                                             </View>
                                         </View>
                                     }
-                                    {homeSelector.isMD &&
+                                    {/* {homeSelector.isMD &&
                                         <View style={{ flexDirection: 'row', marginBottom: 20, justifyContent: 'center', alignItems: 'center' }}>
                                             <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, marginTop: 10, justifyContent: 'center', width: '80%' }}>
                                                 <TouchableOpacity onPress={() => {
@@ -328,7 +328,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                                                 </TouchableOpacity>
                                             </View>
                                         </View>
-                                    }
+                                    } */}
                                 </>
                             )
                         }

@@ -23,6 +23,26 @@ export const customerLeadRef = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/customerL
     return json;
 })
 
+export const updateRef = createAsyncThunk("ENQUIRY_FORM_SLICE/updateRef",
+    async (payload, { rejectWithValue }) => {
+        const response = await client.post(URL.UPDATE_REF(), payload);
+        try {
+            console.log("PPPP", payload);
+
+            // const json = await response.json();
+            console.log("UPDATE REF");
+
+            if (!response.ok) {
+                return rejectWithValue(response);
+            }
+            return response;
+        } catch (error) {
+            console.error("getPrebookingDetailsApi JSON parse error: ", error + " : " + JSON.stringify(response));
+            return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
+        }
+    }
+);
+
 export const noThanksApi = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/noThanksApi", async (leadId, { rejectWithValue }) => {
     const response = await client.get(URL.NO_THANKS(leadId))
     const json = await response.json()
