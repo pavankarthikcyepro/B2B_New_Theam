@@ -788,8 +788,9 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     }, [selector.eventStartDate, selector.eventEndDate]);
 
     updateSubSourceData = (item) => {
-        console.log("item: ", item);
+        console.log("item: ", JSON.stringify(item));
         if (item.subsource && item.subsource.length > 0) {
+            console.log("INSIDE IF");
             const updatedData = [];
             item.subsource.forEach((subItem, index) => {
                 const newItem = { ...subItem };
@@ -798,8 +799,10 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                     updatedData.push(newItem);
                 }
             });
+            console.log("DATA: ", JSON.stringify(updatedData));
             setSubSourceData(updatedData);
         } else {
+            console.log("INSIDE ELSE");
             setSubSourceData([]);
         }
     };

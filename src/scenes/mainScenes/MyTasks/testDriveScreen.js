@@ -208,7 +208,7 @@ const TestDriveScreen = ({ route, navigation }) => {
         })
             .then(json => json.json())
             .then(resp => {
-                // console.log("$$$$resp: ", JSON.stringify(resp))
+                console.log("$$$$resp: ", JSON.stringify(resp))
                 if (resp.dmsEntity?.dmsLeadDto) {
 
                     const leadDtoObj = resp.dmsEntity?.dmsLeadDto;
@@ -260,14 +260,21 @@ const TestDriveScreen = ({ route, navigation }) => {
         }
     }, [selector.task_details_response]);
 
-    const getTestDriveAppointmentDetailsFromServer = () => {
+    const getTestDriveAppointmentDetailsFromServer = async () => {
         if (selector.task_details_response.entityId) {
-            const payload = {
-                barnchId: selectedBranchId,
-                orgId: userData.orgId,
-                entityModuleId: selector.task_details_response.entityId,
-            };
-            dispatch(getTestDriveAppointmentDetailsApi(payload));
+            const employeeData = await AsyncStore.getData(
+                AsyncStore.Keys.LOGIN_EMPLOYEE
+            );
+            if (employeeData) {
+                const jsonObj = JSON.parse(employeeData);
+                const payload = {
+                    barnchId: selectedBranchId,
+                    orgId: jsonObj.orgId,
+                    entityModuleId: selector.task_details_response.entityId,
+                };
+                dispatch(getTestDriveAppointmentDetailsApi(payload));
+            }
+            
         }
     };
 
@@ -632,6 +639,22 @@ const TestDriveScreen = ({ route, navigation }) => {
             showCancelAlertMsg();
         }else if (selector.test_drive_update_task_response === "failed") {
             showAlertMsg(false);
+        }
+        else if (selector.test_drive_update_task_response !== null){
+            Alert.alert(
+                "",
+                selector.test_drive_update_task_response,
+                [
+                    {
+                        text: "OK",
+                        onPress: () => {
+                            dispatch(clearState());
+                            navigation.goBack();
+                        },
+                    },
+                ],
+                { cancelable: false }
+            );
         }
     }, [selector.test_drive_update_task_response]);
 
