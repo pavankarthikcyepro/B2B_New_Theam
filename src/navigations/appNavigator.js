@@ -964,4 +964,30 @@ const MainStackDrawerNavigator = () => {
     );
 };
 
-export { MainStackDrawerNavigator };
+// const MainStackNavigator = createStackNavigator();
+
+// const MainStackNavigator = ({ navigation }) => {
+//     return (
+
+//     )
+// }
+const MainStack = createStackNavigator();
+
+const MainStackNavigator = ({ navigation }) => {
+    return (
+        <MainStack.Navigator
+            initialRouteName={"MAIN_SCREEN"}
+            screenOptions={screeOptionStyle}
+        >
+            <MainStack.Screen
+                name={"MAIN_SCREEN"}
+                component={MainStackDrawerNavigator}
+                options={{
+                    headerShown: false,
+                }}
+            />
+        </MainStack.Navigator>
+    );
+};
+
+export { MainStackDrawerNavigator, MainStackNavigator };
