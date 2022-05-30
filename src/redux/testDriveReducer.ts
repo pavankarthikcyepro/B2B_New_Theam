@@ -67,7 +67,7 @@ export const bookTestDriveAppointmentApi = createAsyncThunk("TEST_DRIVE_SLICE/bo
 
 export const updateTestDriveTaskApi = createAsyncThunk("TEST_DRIVE_SLICE/updateTestDriveTaskApi", async (payload, { rejectWithValue }) => {
   console.log("PAY:", JSON.stringify(payload));
-  
+
   const response = await client.post(URL.UPDATE_TEST_DRIVE_TASK(), payload);
 
   try {
@@ -90,6 +90,7 @@ export const updateTestDriveTaskApi = createAsyncThunk("TEST_DRIVE_SLICE/updateT
 })
 
 export const getTestDriveAppointmentDetailsApi = createAsyncThunk("TEST_DRIVE_SLICE/getAppointmentDetailsApi", async (payload, { rejectWithValue }) => {
+  console.log("URL ", URL.GET_TEST_DRIVE_APPOINTMENT_DETAILS(payload["entityModuleId"], payload["barnchId"], payload["orgId"]));
 
   const response = await client.get(URL.GET_TEST_DRIVE_APPOINTMENT_DETAILS(payload["entityModuleId"], payload["barnchId"], payload["orgId"]));
   const json = await response.json()
@@ -128,7 +129,8 @@ const testDriveSlice = createSlice({
     customer_preferred_date: "",
     customer_preferred_time: "",
     actual_start_time: "",
-    actual_end_time: ""
+    actual_end_time: "",
+    driverId: "",
   },
   reducers: {
     clearState: (state, action) => {
@@ -203,7 +205,7 @@ const testDriveSlice = createSlice({
           if (startTimeAry.length > 1) {
             state.actual_start_time = startTimeAry[1];
           }
-
+          state.driverId = testDrivesInfo.driverId;
           const endTime = testDrivesInfo.endTime ? testDrivesInfo.endTime : "";
           const endTimeAry = endTime.split(" ");
           if (endTimeAry.length > 1) {
@@ -310,6 +312,9 @@ const testDriveSlice = createSlice({
     builder.addCase(updateTestDriveTaskApi.fulfilled, (state, action) => {
       if (action.payload.success === true) {
         state.test_drive_update_task_response = "success";
+      }
+      else {
+        state.test_drive_update_task_response = action.payload.errorMessage;
       }
       state.isLoading = false;
     })

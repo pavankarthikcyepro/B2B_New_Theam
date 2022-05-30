@@ -45,7 +45,7 @@ const ListComponent = ({ route, navigation }) => {
                 const filteredData = todaysData.tasksList.filter(element => {
                     const trimName = element.taskName.toLowerCase().trim();
                     const finalTaskName = trimName.replace(/ /g, "");
-                        return taskNames.includes(finalTaskName);
+                    return taskNames.includes(finalTaskName);
                 });
 
                 setMyTasksData(filteredData);
@@ -140,7 +140,7 @@ const ListComponent = ({ route, navigation }) => {
                         </View>
                     )
                 } */}
-                {homeSelector.isTeamPresent && !homeSelector.isMD && !homeSelector.isDSE &&
+                {homeSelector.isTeamPresent && !homeSelector.isDSE &&
                     <View style={styles.selfBtnWrap}>
                         <TouchableOpacity onPress={() => {
                             setIndex(0);
@@ -163,13 +163,13 @@ const ListComponent = ({ route, navigation }) => {
                         </View>
                     </View>
                 }
-                {homeSelector.isMD &&
+                {/* {homeSelector.isMD &&
                     <View style={styles.selfBtnWrap}>
                         <TouchableOpacity style={{ width: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.RED, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
                             <Text style={{ fontSize: 16, color: Colors.WHITE, fontWeight: '600' }}>Teams</Text>
                         </TouchableOpacity>
                     </View>
-                }
+                } */}
             </View>
 
             {(index === 0 && myTasksData.length > 0) && (
@@ -181,33 +181,33 @@ const ListComponent = ({ route, navigation }) => {
                     renderItem={({ item, index }) => {
                         const chartHeight = (itemWidth - 20);
                         const overlayViewHeight = chartHeight - 10;
-                            return (
-                                <View style={styles.list}> 
-                                    <TouchableOpacity onPress={() => itemClicked(item)}>
-                                        <View style={[{ height: 180, width: itemWidth, backgroundColor: Colors.WHITE, flexDirection: "column", alignItems: "center", paddingBottom: 10, borderRadius: 5 },]}>
-                                            {/* // pie chart */}
-                                            <View style={{ width: itemWidth - 10, height: 120, justifyContent: "center", alignItems: "center" }}>
+                        return (
+                            <View style={styles.list}>
+                                <TouchableOpacity onPress={() => itemClicked(item)}>
+                                    <View style={[{ height: 180, width: itemWidth, backgroundColor: Colors.WHITE, flexDirection: "column", alignItems: "center", paddingBottom: 10, borderRadius: 5 },]}>
+                                        {/* // pie chart */}
+                                        <View style={{ width: itemWidth - 10, height: 120, justifyContent: "center", alignItems: "center" }}>
 
-                                                <PieChart
-                                                    widthAndHeight={chartHeight}
-                                                    series={series}
-                                                    sliceColor={sliceColor}
-                                                />
-                                                {/* <PIEICON width={chartHeight} height={chartHeight} /> */}
-                                                {/* // Overlay View */}
-                                                <View style={{ position: "absolute", width: overlayViewHeight, height: overlayViewHeight, borderRadius: overlayViewHeight / 2, backgroundColor: Colors.WHITE, alignItems: "center", justifyContent: "center" }}>
-                                                    <Text style={{ fontSize: 17, fontWeight: "700", textAlign: "center" }}>{item.taskCnt}</Text>
-                                                    <Text style={{ fontSize: 11, fontWeight: "400", textAlign: "center" }}>{"follow up"}</Text>
-                                                </View>
-                                            </View>
-                                            <View style={{ width: "100%", justifyContent: "center", alignItems: "center" }}>
-                                                <View style={{ width: "75%", backgroundColor: Colors.DARK_GRAY, height: 2, marginBottom: 13 }}></View>
-                                                <Text style={{ fontSize: 12, fontWeight: "700", textAlign: "center" }} numberOfLines={2}>{item.taskName}</Text>
+                                            <PieChart
+                                                widthAndHeight={chartHeight}
+                                                series={series}
+                                                sliceColor={sliceColor}
+                                            />
+                                            {/* <PIEICON width={chartHeight} height={chartHeight} /> */}
+                                            {/* // Overlay View */}
+                                            <View style={{ position: "absolute", width: overlayViewHeight, height: overlayViewHeight, borderRadius: overlayViewHeight / 2, backgroundColor: Colors.WHITE, alignItems: "center", justifyContent: "center" }}>
+                                                <Text style={{ fontSize: 17, fontWeight: "700", textAlign: "center" }}>{item.taskCnt}</Text>
+                                                <Text style={{ fontSize: 11, fontWeight: "400", textAlign: "center" }}>{"follow up"}</Text>
                                             </View>
                                         </View>
-                                    </TouchableOpacity>
-                                </View>
-                            )
+                                        <View style={{ width: "100%", justifyContent: "center", alignItems: "center" }}>
+                                            <View style={{ width: "75%", backgroundColor: Colors.DARK_GRAY, height: 2, marginBottom: 13 }}></View>
+                                            <Text style={{ fontSize: 12, fontWeight: "700", textAlign: "center" }} numberOfLines={2}>{item.taskName}</Text>
+                                        </View>
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
+                        )
                     }}
                 />
             )}
@@ -231,23 +231,23 @@ const styles = StyleSheet.create({
         padding: 5,
         backgroundColor: Colors.LIGHT_GRAY
     },
-    selfBtnWrap: { 
-        flexDirection: 'row', 
-        borderColor: Colors.RED, 
-        borderWidth: 1, 
-        borderRadius: 5, 
-        height: 41, 
-        marginTop: 10, 
-        justifyContent: 'center', 
-        width: '80%', 
+    selfBtnWrap: {
+        flexDirection: 'row',
+        borderColor: Colors.RED,
+        borderWidth: 1,
+        borderRadius: 5,
+        height: 41,
+        marginTop: 10,
+        justifyContent: 'center',
+        width: '80%',
     },
-    list: { 
-        height: 185, 
-        width: baseItemWidth, 
-        paddingBottom: 5, 
-        backgroundColor: Colors.WHITE, 
-        justifyContent: "center", 
-        alignItems: "center", 
+    list: {
+        height: 185,
+        width: baseItemWidth,
+        paddingBottom: 5,
+        backgroundColor: Colors.WHITE,
+        justifyContent: "center",
+        alignItems: "center",
         borderRadius: 10,
         marginVertical: 7,
         marginHorizontal: 7,

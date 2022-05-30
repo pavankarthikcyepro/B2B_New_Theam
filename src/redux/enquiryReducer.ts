@@ -35,11 +35,17 @@ const enquirySlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(getEnquiryList.pending, (state) => {
+      state.totalPages = 1
+      state.pageNumber = 0
+      state.enquiry_list = []
       state.isLoading = true;
     })
     builder.addCase(getEnquiryList.fulfilled, (state, action) => {
       console.log('res: ', action.payload);
       const dmsEntityObj = action.payload?.dmsEntity;
+      state.totalPages = 1
+      state.pageNumber = 0
+      state.enquiry_list = []
       if (dmsEntityObj) {
         state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
         state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
@@ -49,6 +55,9 @@ const enquirySlice = createSlice({
       state.status = "sucess";
     })
     builder.addCase(getEnquiryList.rejected, (state, action) => {
+      state.totalPages = 1
+      state.pageNumber = 0
+      state.enquiry_list = []
       state.isLoading = false;
       state.status = "failed";
     })

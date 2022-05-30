@@ -14,6 +14,7 @@ export const getEnquiryDetailsApi = createAsyncThunk(
   async (universalId, { rejectWithValue }) => {
     const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
     const json = await response.json();
+    console.log("ENQ DATA:", JSON.stringify(json));
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -28,7 +29,7 @@ export const updateEnquiryDetailsApi = createAsyncThunk(
     const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
     const json = await response.json();
     console.log("UPDATE ENQ:", JSON.stringify(json));
-    
+
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -49,11 +50,11 @@ export const customerLeadRef = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/customerL
 export const updateEnquiryDetailsApiAutoSave = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/updateEnquiryDetailsApiAutoSave",
   async (payload, { rejectWithValue }) => {
-    
+
     const response = await client.post(URL.AUTO_SAVE(), payload);
     const json = await response.json();
     console.log("SUCCESS:");
-    
+
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -65,10 +66,10 @@ export const updateRef = createAsyncThunk("ENQUIRY_FORM_SLICE/updateRef",
   async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.UPDATE_REF(), payload);
     try {
-      console.log("PPPP", payload);
-      
+      console.log("PPPP", payload, URL.UPDATE_REF());
+
       // const json = await response.json();
-      console.log("UPDATE REF");
+      console.log("UPDATE REF", response);
 
       if (!response.ok) {
         return rejectWithValue(response);
@@ -339,7 +340,7 @@ const enquiryDetailsOverViewSlice = createSlice({
           break;
         case "SALUTATION":
           if (state.salutation !== value) {
-            
+
             const genderData = Gender_Data_Obj[value.toLowerCase()];
             state.gender = genderData.length > 0 ? genderData[0].name : "";
             state.relation = "";
@@ -1051,7 +1052,7 @@ const enquiryDetailsOverViewSlice = createSlice({
         dataObj = { ...dmsLeadProducts[0] };
       }
       state.lead_product_id = dataObj.id ? dataObj.id : 0;
-      if (dataObj.model){
+      if (dataObj.model) {
         state.model = dataObj.model;
       }
       state.varient = dataObj.variant ? dataObj.variant : "";
@@ -1118,8 +1119,8 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.c_color = dataObj.color ? dataObj.color : "";
       state.c_fuel_type = dataObj.fuel ? dataObj.fuel : "";
       // TODO:- Need to check transmission type in response
-      state.c_transmission_type = dataObj.transmission
-        ? dataObj.transmission
+      state.c_transmission_type = dataObj.transmissionType
+        ? dataObj.transmissionType
         : "";
       state.c_price_range = dataObj.priceRange ? dataObj.priceRange : "";
       state.c_on_road_price = dataObj.onRoadPriceanyDifference
@@ -1162,7 +1163,7 @@ const enquiryDetailsOverViewSlice = createSlice({
           ? dataObj.transmission
           : "";
         console.log("TRAN TYPE:", state.r_transmission_type);
-          
+
         const yearOfManfac = dataObj.yearofManufacture
           ? dataObj.yearofManufacture
           : "";
@@ -1172,7 +1173,7 @@ const enquiryDetailsOverViewSlice = createSlice({
           "MM/DD/YYYY"
         );
         console.log("DATE:", state.r_mfg_year, dataObj.yearofManufacture);
-          
+
         state.r_kms_driven_or_odometer_reading = dataObj.kiloMeters
           ? dataObj.kiloMeters
           : "";
@@ -1272,7 +1273,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       // state.mandal = action.payload.Block || ""
       state.city = action.payload.District || ""
       state.district = action.payload.District || ""
-      state.state =  action.payload.State || ""
+      state.state = action.payload.State || ""
       state.isAddressSet = true
     },
     updateRefNo: (state, action) => {
@@ -1286,7 +1287,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     });
     builder.addCase(getEnquiryDetailsApi.fulfilled, (state, action) => {
       // if (action.payload.dmsEntity) {
-        state.enquiry_details_response = action.payload.dmsEntity;
+      state.enquiry_details_response = action.payload.dmsEntity;
       // console.log("From reducer dmsEntity", state.enquiry_details_response)
       // }
       state.isLoading = false;
@@ -1311,10 +1312,10 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(updateEnquiryDetailsApi.rejected, (state, action) => {
-      console.log(
-        "F updateEnquiryDetailsApi: ",
-        JSON.stringify(action.payload)
-      );
+      // console.log(
+      //   "F updateEnquiryDetailsApi: ",
+      //   JSON.stringify(action.payload)
+      // );
       if (action.payload["message"] != undefined) {
         showToastRedAlert(action.payload["message"]);
       }
