@@ -51,6 +51,7 @@ const MainParamScreen = ({ route, navigation }) => {
     const [isNoTargetAvailable, setIsNoTargetAvailable] = useState(false);
     const [addOrEdit, setAddOrEdit] = useState('');
     const [defaultBranch, setDefaultBranch] = useState(null);
+    const [allOwnData, setAllOwnData] = useState(null);
 
     // const dropdownData = [
     //     { label: 'Item 1', value: '1' },
@@ -107,6 +108,101 @@ const MainParamScreen = ({ route, navigation }) => {
             }
             console.log("TTT: ", JSON.stringify(ownDataArray));
             if (ownDataArray.length > 0) {
+                setAllOwnData(ownDataArray)
+                let ownDataArray2 = []
+                if (selector.targetType === 'MONTHLY') {
+                    ownDataArray2 = ownDataArray.filter((item) => {
+                        return selector.endDate === item.endDate && selector.startDate === item.startDate
+                    })
+                }
+                else {
+                    ownDataArray2 = ownDataArray.filter((item) => {
+                        return selector.endDate === item.endDate && selector.startDate === item.startDate
+                    })
+                }
+                console.log("TTT: ", JSON.stringify(ownDataArray2));
+                if (ownDataArray2.length > 0) {
+                    setOwnData(ownDataArray2[0])
+                }
+                else {
+                    setIsNoTargetAvailable(true)
+                    setOwnData({
+                        "retailTarget": null,
+                        "enquiry": null,
+                        "testDrive": null,
+                        "homeVisit": null,
+                        "booking": null,
+                        "exchange": null,
+                        "finance": null,
+                        "insurance": null,
+                        "exWarranty": null,
+                        "accessories": null,
+                        "events": "10",
+                        "startDate": selector.startDate,
+                        "endDate": selector.endDate,
+                        "empName": loggedInEmpDetails?.empName,
+                        "employeeId": loggedInEmpDetails?.empId,
+                    })
+                }
+            }
+            // else {
+            //     setIsNoTargetAvailable(true)
+            //     setOwnData({
+            //         "retailTarget": null,
+            //         "enquiry": null,
+            //         "testDrive": null,
+            //         "homeVisit": null,
+            //         "booking": null,
+            //         "exchange": null,
+            //         "finance": null,
+            //         "insurance": null,
+            //         "exWarranty": null,
+            //         "accessories": null,
+            //         "events": "10",
+            //         "startDate": selector.startDate,
+            //         "endDate": selector.endDate,
+            //         "empName": loggedInEmpDetails?.empName,
+            //         "employeeId": loggedInEmpDetails?.empId,
+            //     })
+            // }
+        }
+        if (selector.isDataLoaded && selector.targetMapping.length === 0) {
+            setIsNoTargetAvailable(true)
+            setOwnData({
+                "retailTarget": null,
+                "enquiry": null,
+                "testDrive": null,
+                "homeVisit": null,
+                "booking": null,
+                "exchange": null,
+                "finance": null,
+                "insurance": null,
+                "exWarranty": null,
+                "accessories": null,
+                "events": "10",
+                "startDate": selector.startDate,
+                "endDate": selector.endDate,
+                "empName": loggedInEmpDetails?.empName,
+                "employeeId": loggedInEmpDetails?.empId,
+            })
+        }
+    }, [selector.targetMapping, loggedInEmpDetails, selector.isDataLoaded])
+
+    useEffect(async () => {
+        if (allOwnData) {
+            let ownDataArray = [];
+            if (selector.targetType === 'MONTHLY') {
+                ownDataArray = allOwnData.filter((item) => {
+                    return selector.endDate === item.endDate && selector.startDate === item.startDate
+                })
+            }
+            else {
+                ownDataArray = allOwnData.filter((item) => {
+                    return selector.endDate === item.endDate && selector.startDate === item.startDate
+                })
+            }
+            console.log("TTT: ", JSON.stringify(ownDataArray));
+            if (ownDataArray.length > 0) {
                 setOwnData(ownDataArray[0])
             }
             else {
@@ -130,27 +226,8 @@ const MainParamScreen = ({ route, navigation }) => {
                 })
             }
         }
-        if (selector.isDataLoaded && selector.targetMapping.length === 0) {
-            setIsNoTargetAvailable(true)
-            setOwnData({
-                "retailTarget": null,
-                "enquiry": null,
-                "testDrive": null,
-                "homeVisit": null,
-                "booking": null,
-                "exchange": null,
-                "finance": null,
-                "insurance": null,
-                "exWarranty": null,
-                "accessories": null,
-                "events": "10",
-                "startDate": selector.startDate,
-                "endDate": selector.endDate,
-                "empName": loggedInEmpDetails?.empName,
-                "employeeId": loggedInEmpDetails?.empId,
-            })
-        }
-    }, [selector.targetMapping, loggedInEmpDetails, selector.isDataLoaded])
+        
+    }, [selector.selectedMonth])
 
     useEffect(async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -201,6 +278,8 @@ const MainParamScreen = ({ route, navigation }) => {
                     console.log('I did everything!');
                     setSelectedUser(null)
                     setRetail('')
+                    setSelectedBranch(null)
+                    setDefaultBranch(null)
                     const payload2 = {
                         "empId": jsonObj.empId,
                         "pageNo": 1,
@@ -245,6 +324,8 @@ const MainParamScreen = ({ route, navigation }) => {
                 ]).then(() => {
                     setSelectedUser(null)
                     setRetail('')
+                    setSelectedBranch(null)
+                    setDefaultBranch(null)
                     console.log('I did everything!');
                     const payload2 = {
                         "empId": jsonObj.empId,
@@ -261,7 +342,8 @@ const MainParamScreen = ({ route, navigation }) => {
     const getTotal = (key) => {
         let total = 0;
         for (let i = 0; i < selector.targetMapping.length; i++) {
-            if (selector.targetMapping[i][key] !== null) {
+            // console.log("RTRTRTRTRTR:", selector.targetMapping[i], selector.endDate, selector.startDate, selector.targetType);
+            if (selector.targetMapping[i][key] !== null && selector.endDate === selector.targetMapping[i].endDate && selector.startDate === selector.targetMapping[i].startDate && selector.targetMapping[i].targetType === selector.targetType) {
                 total += parseInt(selector.targetMapping[i][key])
             }
             if (i === selector.targetMapping.length - 1) {
@@ -333,6 +415,9 @@ const MainParamScreen = ({ route, navigation }) => {
                         <View style={styles.paramBox}>
                             <Text style={[styles.text,]}>Exchange</Text>
                         </View>
+                    <View style={styles.paramBox}>
+                        <Text style={[styles.text,]}>Extended Warranty</Text>
+                    </View>
                         {/* <View style={styles.paramBox}>
                             <Text style={[styles.text, { color: '#00b1ff' }]}>Enquiry</Text>
                         </View>
@@ -393,16 +478,20 @@ const MainParamScreen = ({ route, navigation }) => {
                                         <>
                                             {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
                                                 <TouchableOpacity style={styles.textBox} onPress={() => {
-                                                    if (item.retailTarget !== null) {
+                                                    if (item.retailTarget !== null && selector.endDate === item.endDate && selector.startDate === item.startDate) {
                                                         setSelectedBranch({ label: item.branchName, value: item.branch })
                                                         setDefaultBranch(Number(item.branch))
+                                                        setAddOrEdit('E')
                                                     }
-                                                    setRetail(item.retailTarget !== null ? item.retailTarget : 0)
+                                                    else{
+                                                        setAddOrEdit('A')
+                                                    }
+                                                    setRetail((item.retailTarget !== null && selector.endDate === item.endDate && selector.startDate === item.startDate) ? item.retailTarget : 0)
                                                     setSelectedUser(item)
-                                                    setAddOrEdit('E')
+                                                    
                                                     setOpenRetail(true)
                                                 }}>
-                                                    <Text style={styles.textInput}>{item.retailTarget !== null ? item.retailTarget : 0}</Text>
+                                                <Text style={styles.textInput}>{item.retailTarget !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.retailTarget : 0}</Text>
                                                 </TouchableOpacity>
                                             }
                                         </>
@@ -421,7 +510,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                         <>
                                             {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
                                                 <View style={styles.textBox2}>
-                                                    <Text style={styles.textInput}>{item.enquiry !== null ? item.enquiry : 0}</Text>
+                                                <Text style={styles.textInput}>{item.enquiry !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.enquiry : 0}</Text>
                                                 </View>
                                             }
                                         </>
@@ -440,7 +529,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                         <>
                                             {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
                                                 <View style={styles.textBox2}>
-                                                    <Text style={styles.textInput}>{item.booking !== null ? item.booking : 0}</Text>
+                                                <Text style={styles.textInput}>{item.booking !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.booking : 0}</Text>
                                                 </View>
                                             }
                                         </>
@@ -459,7 +548,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                         <>
                                             {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
                                                 <View style={styles.textBox2}>
-                                                    <Text style={styles.textInput}>{item.testDrive !== null ? item.testDrive : 0}</Text>
+                                                <Text style={styles.textInput}>{item.testDrive !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.testDrive : 0}</Text>
                                                 </View>
                                             }
                                         </>
@@ -480,7 +569,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                         <>
                                             {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
                                                 <View style={styles.textBox2}>
-                                                    <Text style={styles.textInput}>{item.homeVisit !== null ? item.homeVisit : 0}</Text>
+                                                <Text style={styles.textInput}>{item.homeVisit !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.homeVisit : 0}</Text>
                                                 </View>
                                             }
                                         </>
@@ -499,7 +588,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                         <>
                                             {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
                                                 <View style={styles.textBox2}>
-                                                    <Text style={styles.textInput}>{item.finance !== null ? item.finance : 0}</Text>
+                                                <Text style={styles.textInput}>{item.finance !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.finance : 0}</Text>
                                                 </View>
                                             }
                                         </>
@@ -518,7 +607,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                         <>
                                             {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
                                                 <View style={styles.textBox2}>
-                                                    <Text style={styles.textInput}>{item.insurance !== null ? item.insurance : 0}</Text>
+                                                <Text style={styles.textInput}>{item.insurance !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.insurance : 0}</Text>
                                                 </View>
                                             }
                                         </>
@@ -537,7 +626,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                         <>
                                             {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
                                                 <View style={styles.textBox2}>
-                                                    <Text style={styles.textInput}>{item.accessories !== null ? item.accessories : 0}</Text>
+                                                <Text style={styles.textInput}>{item.accessories !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.accessories : 0}</Text>
                                                 </View>
                                             }
                                         </>
@@ -556,7 +645,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                         <>
                                             {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
                                                 <View style={styles.textBox2}>
-                                                    <Text style={styles.textInput}>{item.exchange !== null ? item.exchange : 0}</Text>
+                                                <Text style={styles.textInput}>{item.exchange !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.exchange : 0}</Text>
                                                 </View>
                                             }
                                         </>
@@ -564,6 +653,25 @@ const MainParamScreen = ({ route, navigation }) => {
                                 })
                             }
                         </View>
+
+                    <View style={styles.textBoxWrap}>
+                        <View style={styles.textBox2}>
+                            <Text style={styles.textInput}>{getTotal('exWarranty')}</Text>
+                        </View>
+                        {
+                            selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
+                                return (
+                                    <>
+                                        {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
+                                            <View style={styles.textBox2}>
+                                            <Text style={styles.textInput}>{item.exWarranty !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.exWarranty : 0}</Text>
+                                            </View>
+                                        }
+                                    </>
+                                )
+                            })
+                        }
+                    </View>
                     </ScrollView>
                 </View>
             }
@@ -602,6 +710,9 @@ const MainParamScreen = ({ route, navigation }) => {
                     <View style={styles.paramBox}>
                         <Text style={[styles.text,]}>Exchange</Text>
                     </View>
+                    <View style={styles.paramBox}>
+                        <Text style={[styles.text,]}>Extended Warranty</Text>
+                    </View>
                 </View>
                 <ScrollView style={{ width: '100%' }} contentContainerStyle={{ flexDirection: 'column' }} showsVerticalScrollIndicator={false}
                     showsHorizontalScrollIndicator={false} horizontal={true}>
@@ -614,17 +725,21 @@ const MainParamScreen = ({ route, navigation }) => {
                     <View style={styles.textBoxWrap}>
                         <TouchableOpacity style={styles.textBox} onPress={() => {
                             setSelectedUser(loggedInEmpDetails)
-                            if (isNoTargetAvailable) {
-                                setAddOrEdit('A')
-                            }
-                            else {
-                                setAddOrEdit('E')
-                            }
-                            if (ownData.retailTarget !== null) {
+                            // if (isNoTargetAvailable) {
+                            //     setAddOrEdit('A')
+                            // }
+                            // else {
+                            //     setAddOrEdit('E')
+                            // }
+                            if (ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate) {
                                 setSelectedBranch({ label: ownData.branchName, value: ownData.branch })
                                 setDefaultBranch(Number(ownData.branch))
+                                setAddOrEdit('E')
                             }
-                            ownData.retailTarget !== null ? setRetail(ownData.retailTarget.toString()) : setRetail('')
+                            else{
+                                setAddOrEdit('A')
+                            }
+                            (ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate) ? setRetail(ownData.retailTarget.toString()) : setRetail('')
                             setOpenRetail(true)
                         }}>
                             <Text style={styles.textInput}>{ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.retailTarget : 0}</Text>
@@ -678,6 +793,12 @@ const MainParamScreen = ({ route, navigation }) => {
                             <Text style={styles.textInput}>{ownData.exchange !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.exchange : 0}</Text>
                         </View>
                     </View>
+
+                    <View style={styles.textBoxWrap}>
+                        <View style={styles.textBox2}>
+                            <Text style={styles.textInput}>{ownData.exWarranty !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.exWarranty : 0}</Text>
+                        </View>
+                    </View>
                 </ScrollView>
             </View>
             }
@@ -716,6 +837,9 @@ const MainParamScreen = ({ route, navigation }) => {
                         <View style={styles.paramBox}>
                             <Text style={[styles.text,]}>Exchange</Text>
                         </View>
+                    <View style={styles.paramBox}>
+                        <Text style={[styles.text,]}>Extended Warranty</Text>
+                    </View>
                     </View>
                     <ScrollView style={{ width: '100%' }} contentContainerStyle={{ flexDirection: 'column' }} showsVerticalScrollIndicator={false}
                         showsHorizontalScrollIndicator={false} horizontal={true}>
@@ -728,19 +852,23 @@ const MainParamScreen = ({ route, navigation }) => {
 
                         <View style={styles.textBoxWrap}>
                             <TouchableOpacity style={styles.textBox} onPress={() => {
-                                if (isNoTargetAvailable) {
-                                    setAddOrEdit('A')
-                                }
-                                else {
-                                    setAddOrEdit('E')
-                                }
-                                if (ownData.retailTarget !== null) {
+                                // if (isNoTargetAvailable) {
+                                //     setAddOrEdit('A')
+                                // }
+                                // else {
+                                //     setAddOrEdit('E')
+                                // }
+                                if (ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate) {
                                     setSelectedBranch({ label: ownData.branchName, value: ownData.branch })
                                     setDefaultBranch(Number(ownData.branch))
+                                    setAddOrEdit('E')
+                                }
+                                else{
+                                    setAddOrEdit('A')
                                 }
                                 setSelectedUser(loggedInEmpDetails)
                                 console.log("OWN DATA", ownData, ownData.retailTarget !== null);
-                                ownData.retailTarget !== null ? setRetail(ownData.retailTarget.toString()) : setRetail('')
+                                (ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate) ? setRetail(ownData.retailTarget.toString()) : setRetail('')
 
                                 setOpenRetail(true)
                             }}>
@@ -792,9 +920,15 @@ const MainParamScreen = ({ route, navigation }) => {
 
                         <View style={styles.textBoxWrap}>
                             <View style={styles.textBox2}>
-                                <Text style={styles.textInput}>{ownData.exchange !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.exchange : 0}</Text>
+                                <Text style={styles.textInput}>{ownData.exchange !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.exWarranty : 0}</Text>
                             </View>
                         </View>
+
+                    <View style={styles.textBoxWrap}>
+                        <View style={styles.textBox2}>
+                            <Text style={styles.textInput}>{ownData.exWarranty !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.exWarranty : 0}</Text>
+                        </View>
+                    </View>
                     </ScrollView>
                 </View>
             }
@@ -912,6 +1046,12 @@ const MainParamScreen = ({ route, navigation }) => {
                                 else {
                                     editTargetData()
                                 }
+                                // if (selectedBranch) {
+                                //     editTargetData()
+                                // }
+                                // else {
+                                //     addTargetData()
+                                // }
                             }}>
                                 <Text style={{ fontSize: 14, color: '#fff', fontWeight: '600' }}>Submit</Text>
                             </TouchableOpacity>

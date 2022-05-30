@@ -879,7 +879,7 @@ const TargetScreen = ({ route, navigation }) => {
                 <Text style={{ fontSize: 14, fontWeight: "600" }}>AR/Day</Text>
               </View>
             </View>
-            {selector.target_parameters_data.map((item, index) => {
+              {selector.self_target_parameters_data.map((item, index) => {
               return (
                 <View
                   style={{ flexDirection: "row", marginLeft: 8 }}
