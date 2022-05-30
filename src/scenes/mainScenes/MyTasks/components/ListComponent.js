@@ -6,6 +6,7 @@ import SegmentedControl from '@react-native-segmented-control/segmented-control'
 import { useSelector } from "react-redux";
 import { MyTasksStackIdentifiers } from "../../../../navigations/appNavigator";
 import { EmptyListView } from "../../../../pureComponents";
+import * as AsyncStore from "../../../../asyncStore";
 
 
 const screenWidth = Dimensions.get("window").width;
@@ -79,6 +80,24 @@ const ListComponent = ({ route, navigation }) => {
         }
     }, [selector.myTasksListResponseStatus, selector.mytasksLisResponse])
 
+    const changeTab = async (index) => {
+        const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        const jsonObj = JSON.parse(employeeData);
+        let payload = {};
+        if (index == 0) {
+             payload = {
+                "loggedInEmpId": jsonObj.empId,
+                "onlyForEmp": false
+            }
+        } else {
+            payload = {
+                "loggedInEmpId": jsonObj.empId,
+                "onlyForEmp": true
+            }
+        }
+        dispatch(getMyTasksListApi(payload));
+    }
+
     const itemClicked = (item) => {
         navigation.navigate(MyTasksStackIdentifiers.tasksListScreen, { data: item.myTaskList })
     }
@@ -124,12 +143,14 @@ const ListComponent = ({ route, navigation }) => {
                 {homeSelector.isTeamPresent && !homeSelector.isMD && !homeSelector.isDSE &&
                     <View style={styles.selfBtnWrap}>
                         <TouchableOpacity onPress={() => {
-                            setIndex(0)
+                            setIndex(0);
+                            changeTab(0);
                         }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: index ? Colors.WHITE : Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
                             <Text style={{ fontSize: 16, color: index ? Colors.BLACK : Colors.WHITE, fontWeight: '600' }}>Self</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => {
-                            setIndex(1)
+                            setIndex(1);
+                            changeTab(1);
                         }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: index ? Colors.RED : Colors.WHITE, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
                             <Text style={{ fontSize: 16, color: index ? Colors.WHITE : Colors.BLACK, fontWeight: '600' }}>Teams</Text>
                         </TouchableOpacity>

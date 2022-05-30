@@ -81,8 +81,12 @@ const MyTasksScreen = ({ navigation }) => {
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       // const payload = { empId: jsonObj.empId, role: jsonObj.hrmsRole}
-      dispatch(getMyTasksListApi(jsonObj.empId));
-      dispatch(role(jsonObj.hrmsRole));
+      const payload = {
+        "loggedInEmpId": jsonObj.empId,
+        "onlyForEmp": false
+      }
+      dispatch(getMyTasksListApi(payload));
+      dispatch(role(jsonObj.hrmsRole)); 
 
       // AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
       //   getTableDataFromServer(jsonObj.empId, token);

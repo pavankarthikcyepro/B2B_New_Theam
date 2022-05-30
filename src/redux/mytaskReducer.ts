@@ -48,12 +48,12 @@ export const getMorePendingTasksListApi = createAsyncThunk("MY_TASKS/getMorePend
   return json;
 })
 
-export const getMyTasksListApi = createAsyncThunk("MY_TASKS/getMyTasksListApi", async (userId, { rejectWithValue }) => {
+export const getMyTasksListApi = createAsyncThunk("MY_TASKS/getMyTasksListApi", async (payload, { rejectWithValue }) => {
 
-  const payload = {
-    "loggedInEmpId": userId,
-    "onlyForEmp": true
-  }
+  // const payload = {
+  //   "loggedInEmpId": userId,
+  //   "onlyForEmp": true
+  // }
 
   const url = URL.GET_MY_TASKS_NEW_DATA();
   const response = await client.post(url, payload);

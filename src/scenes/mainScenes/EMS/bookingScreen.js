@@ -217,7 +217,7 @@ const BookingScreen = ({ navigation }) => {
             if (element.isChecked) {
                 modelFilters.push({
                     id: element.id,
-                    name: element.name,
+                    name: element.value,
                 });
             }
         });

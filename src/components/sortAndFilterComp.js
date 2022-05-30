@@ -26,6 +26,20 @@ const dummyData = [
    
 ]
 
+const listSideMenu = [
+  {
+    id: 1,
+    title: "Model",
+    subtitle: ""
+  },
+  {
+    id: 2,
+    title: "Source of Enquiry",
+    subtitle: ""
+  },
+
+]
+
 const radioDummyData = [
     {
         id: '1',
@@ -170,7 +184,8 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
                       data={dummyData}
                       keyExtractor={(item, index) => index.toString()}
                       renderItem={({ item, index }) => {
-                        return (
+                       return item.title == "Category Type" && localCategoryList.length < 1 ? null :
+                         (
                           <Pressable onPress={() => setSelectedIndex(index)}>
                             <View
                               style={[
@@ -191,7 +206,8 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
                               ) : null}
                             </View>
                           </Pressable>
-                        );
+                        )
+                         
                       }}
                     />
                   </View>
@@ -203,7 +219,7 @@ const SortAndFilterComp = ({ visible = false, categoryList = [], modelList = [],
                       backgroundColor: Colors.WHITE,
                     }}
                   >
-                    {selectedIndex === 0 && localCategoryList.length > 0 && (
+                    {selectedIndex === 0 && (
                       <View>
                         <FlatList
                           key={"CATEGORY_LIST"}

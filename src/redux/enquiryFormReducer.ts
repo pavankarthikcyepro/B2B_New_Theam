@@ -1268,9 +1268,9 @@ const enquiryDetailsOverViewSlice = createSlice({
       console.log("pincode action", action)
 
       state.village = action.payload.Block || ""
-      // state.mandal = state.mandal ? state.mandal : action.payload.Mandal || ""
-      state.mandal = action.payload.Block || ""
-      state.city = action.payload.Region || ""
+      state.mandal = state.mandal ? state.mandal : action.payload.Mandal || ""
+      // state.mandal = action.payload.Block || ""
+      state.city = action.payload.District || ""
       state.district = action.payload.District || ""
       state.state =  action.payload.State || ""
       state.isAddressSet = true
