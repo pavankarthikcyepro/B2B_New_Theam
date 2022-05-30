@@ -48,17 +48,36 @@ export const getMorePendingTasksListApi = createAsyncThunk("MY_TASKS/getMorePend
   return json;
 })
 
-export const getMyTasksListApi = createAsyncThunk("MY_TASKS/getMyTasksListApi", async (payload, { rejectWithValue }) => {
+export const getMyTasksListApi = createAsyncThunk("MY_TASKS/getMyTasksListApi", async (userId, { rejectWithValue }) => {
 
-  // const payload = {
-  //   "loggedInEmpId": userId,
-  //   "onlyForEmp": true
-  // }
+  const payload = {
+    "loggedInEmpId": userId,
+    "onlyForEmp": true
+  }
 
   const url = URL.GET_MY_TASKS_NEW_DATA();
   const response = await client.post(url, payload);
   const json = await response.json()
-  console.log(json)
+  console.log(json, "url")
+  // console.log(json)
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getMyTeamsTasksListApi = createAsyncThunk("MY_Teams_TASKS/getMyTeamsTasksListApi", async (userId, { rejectWithValue }) => {
+
+  const payload = {
+    "loggedInEmpId": userId,
+    "onlyForEmp": false
+  }
+
+  const url = URL.GET_MY_TASKS_NEW_DATA();
+  const response = await client.post(url, payload);
+  const json = await response.json()
+  console.log(json, "url")
+  // console.log(json)
   if (!response.ok) {
     return rejectWithValue(json);
   }
@@ -86,8 +105,11 @@ export const mytaskSlice = createSlice({
     isLoadingExtraDataForPendingTask: false,
     mytasksLisResponse: {},
     myTasksListResponseStatus: "",
+    myTeamstasksListResponse: {},
+    myTeamsTasksListResponseStatus: "",
     role: "",
     isLoading: true,
+    isTeamsTaskLoading: true,
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -168,6 +190,22 @@ export const mytaskSlice = createSlice({
       state.mytasksLisResponse = action.payload;
       state.myTasksListResponseStatus = "failed";
       state.isLoading = false;
+    })
+    // Get My Teams Tasks List
+    builder.addCase(getMyTeamsTasksListApi.pending, (state) => {
+      state.myTeamstasksListResponse = {};
+      state.myTeamsTasksListResponseStatus = "pending";
+      state.isTeamsTaskLoading = true;
+    })
+    builder.addCase(getMyTeamsTasksListApi.fulfilled, (state, action) => {
+      state.myTeamstasksListResponse = action.payload;
+      state.myTeamsTasksListResponseStatus = "success";
+      state.isTeamsTaskLoading = false;
+    })
+    builder.addCase(getMyTeamsTasksListApi.rejected, (state, action) => {
+      state.myTeamstasksListResponse = action.payload;
+      state.myTeamsTasksListResponseStatus = "failed";
+      state.isTeamsTaskLoading = false;
     })
     // Store Role
     builder.addCase(role.fulfilled, (state: any, action) => {

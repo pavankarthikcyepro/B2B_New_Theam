@@ -6,7 +6,7 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import ListComponent from "./components/ListComponent";
 import URL from "../../../networking/endpoints";
 import * as AsyncStore from "../../../asyncStore";
-import { getMyTasksListApi, role } from "../../../redux/mytaskReducer";
+import { getMyTasksListApi, getMyTeamsTasksListApi, role } from "../../../redux/mytaskReducer";
 import { useDispatch } from "react-redux";
 
 
@@ -83,9 +83,10 @@ const MyTasksScreen = ({ navigation }) => {
       // const payload = { empId: jsonObj.empId, role: jsonObj.hrmsRole}
       const payload = {
         "loggedInEmpId": jsonObj.empId,
-        "onlyForEmp": false
+        "onlyForEmp": true
       }
-      dispatch(getMyTasksListApi(payload));
+      dispatch(getMyTasksListApi(jsonObj.empId));
+      dispatch(getMyTeamsTasksListApi(jsonObj.empId));
       dispatch(role(jsonObj.hrmsRole)); 
 
       // AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {

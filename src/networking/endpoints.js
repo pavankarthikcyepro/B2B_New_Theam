@@ -74,6 +74,9 @@ const URL = {
     ENQUIRY_DETAILS: (universalId) => {
         return sales_url + "/enquiry/lead/id/" + `${universalId}`;
     },
+    ENQUIRY_DETAILS_BY_AUTOSAVE: (universalId) => {
+        return downloadFile + "/autosave-get-uid/" + `${universalId}`;
+    },
     UPDATE_ENQUIRY_DETAILS: () => sales_url + "/enquiry/lead",
     GET_CUSTOMER_TYPES: () => sales_url + "/master-data/customertype",
     DROP_ENQUIRY: () => sales_url + "/lead-drop",

@@ -7,6 +7,8 @@ import { useSelector } from "react-redux";
 import { MyTasksStackIdentifiers } from "../../../../navigations/appNavigator";
 import { EmptyListView } from "../../../../pureComponents";
 import * as AsyncStore from "../../../../asyncStore";
+import { useDispatch } from "react-redux";
+import { getMyTasksListApi } from "../../../../redux/mytaskReducer";
 
 
 const screenWidth = Dimensions.get("window").width;
@@ -32,70 +34,99 @@ const taskNames = ["testdrive", "testdriveapproval", "homevisit", "enquiryfollow
 const ListComponent = ({ route, navigation }) => {
     const [index, setIndex] = useState(0);
     const [myTasksData, setMyTasksData] = useState([]);
+    const [myTeamsData, setMyTeamsData] = useState([]);
     const selector = useSelector((state) => state.mytaskReducer);
     const homeSelector = useSelector((state) => state.homeReducer);
+
 
     useEffect(() => {
         // console.log('data: ', selector.mytasksLisResponse);
         // console.log("role: ", selector.role);
+        let data = "";
+        let status = "";
+        if (index === 0) {
+            status = selector.myTasksListResponseStatus;
+            data = selector.mytasksLisResponse;
+        } else if (index === 1) {
+            status = selector.myTeamsTasksListResponseStatus;
+            data = selector.myTeamstasksListResponse;
+        }
 
-        if (selector.myTasksListResponseStatus === "success") {
+
+        if (status === "success") {
+            console.log("called List Componet")
             if (route.params.from === "TODAY") {
-                const todaysData = selector.mytasksLisResponse.todaysData[0];
+                const todaysData = data.todaysData[0];
                 const filteredData = todaysData.tasksList.filter(element => {
                     const trimName = element.taskName.toLowerCase().trim();
                     const finalTaskName = trimName.replace(/ /g, "");
                     return taskNames.includes(finalTaskName);
                 });
 
-                setMyTasksData(filteredData);
+                if (index === 0)
+                    setMyTasksData(filteredData);
+                else if (index === 1)
+                    setMyTeamsData(filteredData);
             }
             else if (route.params.from === "UPCOMING") {
-                const todaysData = selector.mytasksLisResponse.upcomingData[0];
+                const todaysData = data.upcomingData[0];
                 const filteredData = todaysData.tasksList.filter(element => {
                     const trimName = element.taskName.toLowerCase().trim();
                     const finalTaskName = trimName.replace(/ /g, "");
                     return taskNames.includes(finalTaskName);
                 });
-                setMyTasksData(filteredData);
+                if (index === 0)
+                    setMyTasksData(filteredData);
+                else if (index === 1)
+                    setMyTeamsData(filteredData);            
             }
             else if (route.params.from === "PENDING") {
-                const todaysData = selector.mytasksLisResponse.pendingData[0];
+                const todaysData = data.pendingData[0];
                 const filteredData = todaysData.tasksList.filter(element => {
                     const trimName = element.taskName.toLowerCase().trim();
                     const finalTaskName = trimName.replace(/ /g, "");
                     return taskNames.includes(finalTaskName);
                 });
-                setMyTasksData(filteredData);
+                if (index === 0)
+                    setMyTasksData(filteredData);
+                else if (index === 1)
+                    setMyTeamsData(filteredData);            
             }
             else if (route.params.from === "RESCHEDULE") {
-                const todaysData = selector.mytasksLisResponse.pendingData[0];
+                const todaysData = data.rescheduledData[0];
                 const filteredData = todaysData.tasksList.filter(element => {
                     const trimName = element.taskName.toLowerCase().trim();
                     const finalTaskName = trimName.replace(/ /g, "");
                     return taskNames.includes(finalTaskName);
                 });
-                setMyTasksData(filteredData);
+                if (index === 0)
+                    setMyTasksData(filteredData);
+                else if (index === 1)
+                    setMyTeamsData(filteredData);            
             }
         }
-    }, [selector.myTasksListResponseStatus, selector.mytasksLisResponse])
+    }, [
+        selector.myTasksListResponseStatus, selector.mytasksLisResponse, 
+        selector.myTeamsTasksListResponseStatus, selector.myTeamstasksListResponse, index
+    ])
+
 
     const changeTab = async (index) => {
-        const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        const jsonObj = JSON.parse(employeeData);
-        let payload = {};
-        if (index == 0) {
-             payload = {
-                "loggedInEmpId": jsonObj.empId,
-                "onlyForEmp": false
-            }
-        } else {
-            payload = {
-                "loggedInEmpId": jsonObj.empId,
-                "onlyForEmp": true
-            }
-        }
-        dispatch(getMyTasksListApi(payload));
+        // const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        // const jsonObj = JSON.parse(employeeData);
+        // let payload = {};
+        // if (index === 0) {
+        //      payload = {
+        //         "loggedInEmpId": jsonObj.empId,
+        //         "onlyForEmp": true
+        //     }
+        // } else if (index === 1) {
+        //     payload = {
+        //         "loggedInEmpId": jsonObj.empId,
+        //         "onlyForEmp": false
+        //     }
+        // }
+        // dispatch(getMyTasksListApi(payload));
     }
 
     const itemClicked = (item) => {
@@ -211,12 +242,53 @@ const ListComponent = ({ route, navigation }) => {
                     }}
                 />
             )}
+
+            {(index === 1 && myTeamsData.length > 0) && (
+                <FlatList
+                    data={myTeamsData}
+                    style={{ flex: 1 }}
+                    numColumns={3}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({ item, index }) => {
+                        const chartHeight = (itemWidth - 20);
+                        const overlayViewHeight = chartHeight - 10;
+                        return (
+                            <View style={styles.list}>
+                                <TouchableOpacity onPress={() => itemClicked(item)}>
+                                    <View style={[{ height: 180, width: itemWidth, backgroundColor: Colors.WHITE, flexDirection: "column", alignItems: "center", paddingBottom: 10, borderRadius: 5 },]}>
+                                        {/* // pie chart */}
+                                        <View style={{ width: itemWidth - 10, height: 120, justifyContent: "center", alignItems: "center" }}>
+
+                                            <PieChart
+                                                widthAndHeight={chartHeight}
+                                                series={series}
+                                                sliceColor={sliceColor}
+                                            />
+                                            {/* <PIEICON width={chartHeight} height={chartHeight} /> */}
+                                            {/* // Overlay View */}
+                                            <View style={{ position: "absolute", width: overlayViewHeight, height: overlayViewHeight, borderRadius: overlayViewHeight / 2, backgroundColor: Colors.WHITE, alignItems: "center", justifyContent: "center" }}>
+                                                <Text style={{ fontSize: 17, fontWeight: "700", textAlign: "center" }}>{item.taskCnt}</Text>
+                                                <Text style={{ fontSize: 11, fontWeight: "400", textAlign: "center" }}>{"follow up"}</Text>
+                                            </View>
+                                        </View>
+                                        <View style={{ width: "100%", justifyContent: "center", alignItems: "center" }}>
+                                            <View style={{ width: "75%", backgroundColor: Colors.DARK_GRAY, height: 2, marginBottom: 13 }}></View>
+                                            <Text style={{ fontSize: 12, fontWeight: "700", textAlign: "center" }} numberOfLines={2}>{item.taskName}</Text>
+                                        </View>
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
+                        )
+                    }}
+                />
+            )}
+
             {(index === 0 && myTasksData.length == 0) && (
                 // <NoDataFound />
                 <EmptyListView title={'No Data Found'} isLoading={selector.isLoading} />
             )}
-            {index === 1 && (
-                <NoDataFound />
+            {(index === 1 && myTeamsData.length == 0) && (
+                <EmptyListView title={'No Data Found'} isLoading={selector.isTeamsTaskLoading} />
             )}
         </View>
     )
@@ -254,3 +326,56 @@ const styles = StyleSheet.create({
         elevation: 5
     }
 })
+
+// if (selector.myTasksListResponseStatus === "success") {
+//     console.log("called List Componet")
+//     if (route.params.from === "TODAY") {
+//         const todaysData = selector.mytasksLisResponse.todaysData[0];
+//         const filteredData = todaysData.tasksList.filter(element => {
+//             const trimName = element.taskName.toLowerCase().trim();
+//             const finalTaskName = trimName.replace(/ /g, "");
+//             return taskNames.includes(finalTaskName);
+//         });
+
+//         if (index === 0)
+//             setMyTasksData(filteredData);
+//         else if (index === 1)
+//             setMyTeamsData(filteredData);
+//     }
+//     else if (route.params.from === "UPCOMING") {
+//         const todaysData = selector.mytasksLisResponse.upcomingData[0];
+//         const filteredData = todaysData.tasksList.filter(element => {
+//             const trimName = element.taskName.toLowerCase().trim();
+//             const finalTaskName = trimName.replace(/ /g, "");
+//             return taskNames.includes(finalTaskName);
+//         });
+//         if (index === 0)
+//             setMyTasksData(filteredData);
+//         else if (index === 1)
+//             setMyTeamsData(filteredData);
+//     }
+//     else if (route.params.from === "PENDING") {
+//         const todaysData = selector.mytasksLisResponse.pendingData[0];
+//         const filteredData = todaysData.tasksList.filter(element => {
+//             const trimName = element.taskName.toLowerCase().trim();
+//             const finalTaskName = trimName.replace(/ /g, "");
+//             return taskNames.includes(finalTaskName);
+//         });
+//         if (index === 0)
+//             setMyTasksData(filteredData);
+//         else if (index === 1)
+//             setMyTeamsData(filteredData);
+//     }
+//     else if (route.params.from === "RESCHEDULE") {
+//         const todaysData = selector.mytasksLisResponse.pendingData[0];
+//         const filteredData = todaysData.tasksList.filter(element => {
+//             const trimName = element.taskName.toLowerCase().trim();
+//             const finalTaskName = trimName.replace(/ /g, "");
+//             return taskNames.includes(finalTaskName);
+//         });
+//         if (index === 0)
+//             setMyTasksData(filteredData);
+//         else if (index === 1)
+//             setMyTeamsData(filteredData);
+//     }
+// }
