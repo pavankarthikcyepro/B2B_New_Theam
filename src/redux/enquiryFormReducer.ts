@@ -12,9 +12,9 @@ import { showToastRedAlert } from "../utils/toast";
 export const getEnquiryDetailsApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/getEnquiryDetailsApi",
   async (universalId, { rejectWithValue }) => {
-    const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
+    const response = await client.get(URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
     const json = await response.json();
-    console.log("ENQ DATA:", JSON.stringify(json));
+    // console.log("ENQ DATA:", json);
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -50,7 +50,7 @@ export const customerLeadRef = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/customerL
 export const updateEnquiryDetailsApiAutoSave = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/updateEnquiryDetailsApiAutoSave",
   async (payload, { rejectWithValue }) => {
-
+    console.log("form payload", payload)
     const response = await client.post(URL.AUTO_SAVE(), payload);
     const json = await response.json();
     console.log("SUCCESS:");
@@ -1287,7 +1287,11 @@ const enquiryDetailsOverViewSlice = createSlice({
     });
     builder.addCase(getEnquiryDetailsApi.fulfilled, (state, action) => {
       // if (action.payload.dmsEntity) {
-      state.enquiry_details_response = action.payload.dmsEntity;
+      let payload = {
+        dmsEntity: action.payload
+      }
+      // state.enquiry_details_response = action.payload.dmsEntity;
+      state.enquiry_details_response = action.payload;
       // console.log("From reducer dmsEntity", state.enquiry_details_response)
       // }
       state.isLoading = false;

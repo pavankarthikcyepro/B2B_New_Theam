@@ -191,7 +191,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [dropRemarks, setDropRemarks] = useState("");
   const [imagePath, setImagePath] = useState('');
 
-  // console.log(selector, "gender")
+  // console.log("gender", selector.enquiry_details_response)
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -1810,10 +1810,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   ]);
 
   const proceedToPreBookingClicked = () => {
-    if (universalId) {
-      const endUrl = universalId + "?" + "stage=Enquiry";
-      dispatch(getPendingTasksApi(endUrl));
-    }
+    // if (selector.enquiry_details_response.dmsLeadDto.assignee.empId == employeeId) {
+      if (universalId) {
+        const endUrl = universalId + "?" + "stage=Enquiry";
+        dispatch(getPendingTasksApi(endUrl));
+      }
+    // } else {
+
+    //   Alert("Permission Denied");
+
+    // }
+      console.log(selector.enquiry_details_response.dmsLeadDto, "Proceed to prebooking")
   };
 
   // useEffect(() => {

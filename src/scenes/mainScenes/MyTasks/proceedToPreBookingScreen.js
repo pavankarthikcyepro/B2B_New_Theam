@@ -21,6 +21,7 @@ import {
 import { showToast, showToastRedAlert, showToastSucess } from "../../../utils/toast";
 import { getCurrentTasksListApi, getPendingTasksListApi } from "../../../redux/mytaskReducer";
 import URL from "../../../networking/endpoints";
+import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
 
 
 const FirstDependencyArray = ["Lost To Competition", "Lost To Used Car", "Lost to Used Cars from Co-Dealer"];
@@ -174,7 +175,7 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
                 "stage": "PREBOOKING",
                 "status": "PREBOOKING",
             }
-        }
+        } 
 
         dispatch(dropEnquiryApi(payload));
     }
@@ -190,7 +191,6 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
     }, [selector.enquiry_drop_response_status])
 
     const proceedToPreBookingClicked = () => {
-
         setTypeOfActionDispatched("PROCEED_TO_PREBOOKING");
         if (selector.task_details_response?.taskId !== taskId) {
             return
@@ -320,8 +320,12 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
     const goToParentScreen = () => {
         if (identifier === "PROCEED_TO_PRE_BOOKING") {
             getMyTasksListFromServer();
-        }
-        navigation.popToTop();
+            // navigation.navigate(EmsTopTabNavigatorIdentifiers.preBooking)
+        } 
+        // else 
+        // {
+            navigation.popToTop();
+        // }
         dispatch(clearState());
     }
 
