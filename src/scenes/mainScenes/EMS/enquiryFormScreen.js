@@ -304,7 +304,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       const jsonObj = JSON.parse(employeeData);
       setUserData({
         orgId: jsonObj.orgId,
-        employeeId: jsonObj.empId,
+        employeeId: jsonObj.employeeId,
         employeeName: jsonObj.empName,
       });
       getCarModelListFromServer(jsonObj.orgId);
@@ -612,15 +612,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               documentPath:
                 dmsLeadDto.dmsAttachments.length > 0
                   ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "empId";
+                    return item.documentType === "employeeId";
                   })[0].documentPath
                   : "",
-              documentType: "empId",
+              documentType: "employeeId",
               documentVersion: 0,
               fileName:
                 dmsLeadDto.dmsAttachments.length > 0
                   ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "empId";
+                    return item.documentType === "employeeId";
                   })[0].fileName
                   : "",
               gstNumber: "",
@@ -630,7 +630,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               keyName:
                 dmsLeadDto.dmsAttachments.length > 0
                   ? dmsLeadDto.dmsAttachments.filter((item) => {
-                    return item.documentType === "empId";
+                    return item.documentType === "employeeId";
                   })[0].keyName
                   : "",
               modifiedBy: jsonObj.empName,
@@ -893,15 +893,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           "createdBy": new Date().getSeconds(),
           "description": "",
           "documentNumber": selector.employee_id,
-          "documentPath": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'empId' })[0].documentPath : '',
-          "documentType": "empId",
+          "documentPath": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'employeeId' })[0].documentPath : '',
+          "documentType": "employeeId",
           "documentVersion": 0,
-          "fileName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'empId' })[0].fileName : '',
+          "fileName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'employeeId' })[0].fileName : '',
           "gstNumber": "",
           "id": 0,
           "isActive": 0,
           "isPrivate": 0,
-          "keyName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'empId' })[0].keyName : '',
+          "keyName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'employeeId' })[0].keyName : '',
           "modifiedBy": jsonObj.empName,
           "orgId": jsonObj.orgId,
           "ownerId": "",
@@ -1295,7 +1295,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           });
         }
         if (selector.employee_id || dmsLeadDto.dmsAttachments.filter((item) => {
-          return item.documentType === "empId";
+          return item.documentType === "employeeId";
         })) {
           tempAttachments.push({
             branchId: jsonObj.branchs[0]?.branchId,
@@ -1306,19 +1306,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             documentPath:
               dmsLeadDto.dmsAttachments.length > 0
                 ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "empId";
+                  return item.documentType === "employeeId";
                 })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "empId";
+                  return item.documentType === "employeeId";
                 })[0]?.documentPath : '')
                 : "",
-            documentType: "empId",
+            documentType: "employeeId",
             documentVersion: 0,
             fileName:
               dmsLeadDto.dmsAttachments.length > 0
                 ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "empId";
+                  return item.documentType === "employeeId";
                 })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "empId";
+                  return item.documentType === "employeeId";
                 })[0]?.fileName : '')
                 : "",
             gstNumber: "",
@@ -1328,9 +1328,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             keyName:
               dmsLeadDto.dmsAttachments.length > 0
                 ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "empId";
+                  return item.documentType === "employeeId";
                 })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "empId";
+                  return item.documentType === "employeeId";
                 })[0]?.keyName : '')
                 : "",
             modifiedBy: jsonObj.empName,
@@ -1341,53 +1341,54 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             tinNumber: "",
           });
         }
-        // if (dmsLeadDto.dmsAttachments.filter((item) => {
-        //   return item.documentType === "payslips";
-        // })) {
-        //   tempAttachments.push({
-        //     branchId: jsonObj.branchs[0]?.branchId,
-        //     contentSize: 0,
-        //     createdBy: new Date().getSeconds(),
-        //     description: "",
-        //     documentNumber: '',
-        //     documentPath:
-        //       dmsLeadDto.dmsAttachments.length > 0
-        //         ? (dmsLeadDto.dmsAttachments.filter((item) => {
-        //           return item.documentType === "payslips";
-        //         })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
-        //           return item.documentType === "payslips";
-        //         })[0]?.documentPath : '')
-        //         : "",
-        //     documentType: "empId",
-        //     documentVersion: 0,
-        //     fileName:
-        //       dmsLeadDto.dmsAttachments.length > 0
-        //         ? (dmsLeadDto.dmsAttachments.filter((item) => {
-        //           return item.documentType === "payslips";
-        //         })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
-        //           return item.documentType === "payslips";
-        //         })[0]?.fileName : '')
-        //         : "",
-        //     gstNumber: "",
-        //     id: 0,
-        //     isActive: 0,
-        //     isPrivate: 0,
-        //     keyName:
-        //       dmsLeadDto.dmsAttachments.length > 0
-        //         ? (dmsLeadDto.dmsAttachments.filter((item) => {
-        //           return item.documentType === "payslips";
-        //         })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
-        //           return item.documentType === "payslips";
-        //         })[0]?.keyName : '')
-        //         : "",
-        //     modifiedBy: jsonObj.empName,
-        //     orgId: jsonObj.orgId,
-        //     ownerId: "",
-        //     ownerName: jsonObj.empName,
-        //     parentId: "",
-        //     tinNumber: "",
-        //   });
-        // }
+        if (uploadedImagesDataObj.filter((item) => {
+          return item.documentType === "payslips";
+        })) {
+          tempAttachments.push({
+            branchId: jsonObj.branchs[0]?.branchId,
+            contentSize: 0,
+            createdBy: new Date().getSeconds(),
+            description: "",
+            documentNumber: '',
+            documentPath:
+              uploadedImagesDataObj.length > 0
+                ? (uploadedImagesDataObj.filter((item) => {
+                  return item.documentType === "payslips";
+                })[0]?.documentPath ? uploadedImagesDataObj.filter((item) => {
+                  return item.documentType === "payslips";
+                })[0]?.documentPath : '')
+                : "",
+            documentType: "empId",
+            documentVersion: 0,
+            fileName:
+              uploadedImagesDataObj.length > 0
+                ? (uploadedImagesDataObj.filter((item) => {
+                  return item.documentType === "payslips";
+                })[0]?.fileName ? uploadedImagesDataObj.filter((item) => {
+                  return item.documentType === "payslips";
+                })[0]?.fileName : '')
+                : "",
+            gstNumber: "",
+            id: 0,
+            isActive: 0,
+            isPrivate: 0,
+            keyName:
+              uploadedImagesDataObj.length > 0
+                ? (uploadedImagesDataObj.filter((item) => {
+                  return item.documentType === "payslips";
+                })[0]?.keyName ? uploadedImagesDataObj.filter((item) => {
+                  return item.documentType === "payslips";
+                })[0]?.keyName : '')
+                : "",
+            modifiedBy: jsonObj.empName,
+            orgId: jsonObj.orgId,
+            ownerId: "",
+            ownerName: jsonObj.empName,
+            parentId: "",
+            tinNumber: "",
+          });
+        }
+        console.log("TEMP ATT:", JSON.stringify(tempAttachments));
         dmsLeadDto.dmsAttachments = tempAttachments;
       }
     }
@@ -1403,7 +1404,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         dmsLeadDto: dmsLeadDto,
       };
     }
-
+    console.log("PPPP", JSON.stringify(formData));
     setTypeOfActionDispatched("UPDATE_ENQUIRY");
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
@@ -1795,7 +1796,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         }
         if (
           element.taskName === "Proceed to Pre Booking" &&
-          element.assignee.empId === userData.employeeId &&
+          element.assignee.employeeId === userData.employeeId &&
           element.universalId === universalId
         ) {
           pendingTaskNames.push("Proceed to Pre Booking");
@@ -2130,7 +2131,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         formData.append("documentType", "insurance");
         break;
       case "UPLOAD_EMPLOYEE_ID":
-        formData.append("documentType", "empId");
+        formData.append("documentType", "employeeId");
         break;
       case "UPLOAD_3_MONTHS_PAYSLIP":
         formData.append("documentType", "payslips");
@@ -2195,10 +2196,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         delete imagesDataObj.insurance;
         break;
       case "EMPLOYEE_ID":
-        delete imagesDataObj.empId;
+        delete imagesDataObj.employeeId;
         break;
       case "3_MONTHS_PAYSLIP":
-        delete imagesDataObj.payslip;
+        delete imagesDataObj.payslips;
         break;
       case "PATTA_PASS_BOOK":
         delete imagesDataObj.passbook;
@@ -3646,19 +3647,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         }
                       />
                     </View>
-                    {uploadedImagesDataObj?.empId?.fileName ? (
+                      {uploadedImagesDataObj?.employeeId?.fileName ? (
 
                       <View style={{ flexDirection: 'row' }}>
                         <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                          if (uploadedImagesDataObj.empId?.documentPath) {
-                            setImagePath(uploadedImagesDataObj.empId?.documentPath)
+                            if (uploadedImagesDataObj.employeeId?.documentPath) {
+                              setImagePath(uploadedImagesDataObj.employeeId?.documentPath)
                           }
                         }}>
                           <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: '80%' }}>
                           <DisplaySelectedImage
-                            fileName={uploadedImagesDataObj.empId.fileName}
+                              fileName={uploadedImagesDataObj.employeeId.fileName}
                             from={"EMPLOYEE_ID"}
                           />
                         </View>

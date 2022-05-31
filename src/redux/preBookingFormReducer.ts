@@ -1007,7 +1007,8 @@ const prebookingFormSlice = createSlice({
       state.customer_type = dms_C_Or_A_Dto.customerType ? dms_C_Or_A_Dto.customerType : "";
     },
     updateDmsLeadDtoData: (state, action) => {
-
+      console.log("updateDmsLeadDtoData: ", JSON.stringify(action.payload));
+      
       const dmsLeadDto = action.payload;
       state.enquiry_segment = dmsLeadDto.enquirySegment ? dmsLeadDto.enquirySegment : "";
       if (state.customer_types_response && state.enquiry_segment) {
@@ -1141,7 +1142,7 @@ const prebookingFormSlice = createSlice({
           else if (item.documentType === "aadhar") {
             state.adhaar_number = item.documentNumber;
           }
-          else if (item.documentType === "empId" || item.documentType === "employeeId") {
+          else if (item.documentType === "employeeId" || item.documentType === "employeeId") {
             state.employee_id = item.documentNumber;
           }
         })

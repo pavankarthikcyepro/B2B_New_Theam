@@ -889,6 +889,8 @@ const enquiryDetailsOverViewSlice = createSlice({
     },
     updateDmsContactOrAccountDtoData: (state, action) => {
       // dmsContactOrAccountDto
+      console.log("dmsContactOrAccountDto", JSON.stringify(action.payload));
+      
       const dms_C_Or_A_Dto = action.payload;
       state.email = dms_C_Or_A_Dto.email ? dms_C_Or_A_Dto.email : "";
       state.firstName = dms_C_Or_A_Dto.firstName
@@ -1253,7 +1255,7 @@ const enquiryDetailsOverViewSlice = createSlice({
             case "aadhar":
               state.adhaar_number = item.documentNumber;
               break;
-            case "empId":
+            case "employeeId":
               state.employee_id = item.documentNumber;
               break;
           }

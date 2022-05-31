@@ -149,7 +149,7 @@ export const getTargetParametersData = createAsyncThunk("HOME/getTargetParameter
 
     const response = await client.post(URL.GET_TARGET_PARAMS(), payload)
     const json = await response.json()
-    // console.log("homeReducer", payload);
+    console.log("homeReducer", payload, URL.GET_TARGET_PARAMS());
 
     console.log("&&&&&& TARGET DATA:", JSON.stringify(json));
 
@@ -179,7 +179,7 @@ export const getTargetParametersEmpData = createAsyncThunk("HOME/getTargetParame
     const response = await client.post(URL.GET_TARGET_PARAMS_EMP(), payload)
     const json = await response.json()
 
-    // console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
+    console.log("&&&&&& DATA SELF $$$$$$$:", JSON.stringify(json));
 
     if (!response.ok) {
         return rejectWithValue(json);
@@ -320,6 +320,7 @@ export const homeSlice = createSlice({
         isTeamPresent: false,
         isMD: false,
         isDSE: false,
+        self_target_parameters_data: [],
     },
     reducers: {
         dateSelected: (state, action) => {
@@ -631,6 +632,18 @@ export const homeSlice = createSlice({
             })
             .addCase(getSalesComparisonData.rejected, (state, action) => {
                 state.sales_comparison_data = [];
+            })
+            .addCase(getTargetParametersEmpData.pending, (state, action) => {
+                state.self_target_parameters_data = [];
+            })
+            .addCase(getTargetParametersEmpData.fulfilled, (state, action) => {
+                //console.log("S getSalesComparisonData: ", JSON.stringify(action.payload));
+                if (action.payload) {
+                    state.self_target_parameters_data = action.payload;
+                }
+            })
+            .addCase(getTargetParametersEmpData.rejected, (state, action) => {
+                state.self_target_parameters_data = [];
             })
     }
 });
