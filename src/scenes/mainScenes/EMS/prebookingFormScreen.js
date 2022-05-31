@@ -424,7 +424,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             }
             setUserData({
                 orgId: jsonObj.orgId,
-                employeeId: jsonObj.empId,
+                employeeId: jsonObj.employeeId,
                 employeeName: jsonObj.empName,
                 isManager: isManager,
                 editEnable: editEnable,
@@ -549,15 +549,25 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             dispatch(updateDmsAttachments(dmsLeadDto.dmsAttachments));
 
             // Update Paid Accesories
+            console.log("PAID ACC:", JSON.stringify(dmsLeadDto.dmsAccessories));
             if (dmsLeadDto.dmsAccessories.length > 0) {
                 let initialValue = 0;
-                const totalPrice = dmsLeadDto.dmsAccessories.reduce(
-                    (preValue, currentValue) => preValue + currentValue.amount,
-                    initialValue
-                );
-                setSelectedPaidAccessoriesPrice(totalPrice);
+                let totalPrice = 0
+                // const totalPrice = dmsLeadDto.dmsAccessories.reduce(
+                //     (preValue, currentValue) => preValue + currentValue.amount,
+                //     initialValue
+                // );
+                for (let i = 0; i < dmsLeadDto.dmsAccessories.length; i++){
+                    if (dmsLeadDto.dmsAccessories[i].dmsAccessoriesType !== "FOC"){
+                        totalPrice += dmsLeadDto.dmsAccessories[i].amount;
+                    }
+                    if (i === dmsLeadDto.dmsAccessories.length - 1){
+                        setSelectedPaidAccessoriesPrice(totalPrice);
+                    }
+                }
+                
             }
-            setSelectedPaidAccessoriesList([...dmsLeadDto.dmsAccessories]);
+            setSelectedPaidAccessoriesList([...dmsLeadDto.dmsAccessories.filter((item) => item.dmsAccessoriesType !== "FOC")]);
         }
     }, [selector.pre_booking_details_response]);
 
@@ -590,7 +600,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const getPreBookingListFromServer = async () => {
         if (userData.employeeId) {
             let endUrl =
-                "?limit=10&offset=" + "0" + "&status=PREBOOKING&empId=" + empId;
+                "?limit=10&offset=" + "0" + "&status=PREBOOKING&empId=" + userData.employeeId;
             dispatch(getPreBookingData(endUrl));
         }
     };
@@ -973,11 +983,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             showToast("Please fill the martial status");
             return;
         }
-        if (selector.form_or_pan.length == 0 ||
-            selector.adhaar_number.length == 0
-            ) {
-            showToast("Please upload document section")
-            }
+        // if (selector.form_or_pan.length == 0 ||
+        //     selector.adhaar_number.length == 0
+        //     ) {
+        //     showToast("Please upload document section")
+        //     }
         // if (
         //     selector.form_or_pan.length == 0 ||
         //     selector.adhaar_number.length == 0 ||
@@ -1626,9 +1636,18 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }, [selector.assigned_tasks_list_status]);
 
     const updatePaidAccessroies = (tableData) => {
-        console.log("coming here");
         let totalPrice = 0, totFoc = 0, totMrp = 0;
-        let newFormatSelectedAccessories = [];
+        let newFormatSelectedAccessories = [...selectedPaidAccessoriesList];
+        selectedPaidAccessoriesList.forEach((item) => {
+            totalPrice += Number(item.amount);
+            if (item.dmsAccessoriesType === 'FOC') {
+                totFoc += Number(item.amount);
+                // totMrp += item.cost
+            }
+            if (item.dmsAccessoriesType === 'MRP') {
+                totMrp += Number(item.amount);
+            }
+        });
         tableData.forEach((item) => {
             if (item.selected) {
                 totalPrice += item.cost;
@@ -1638,15 +1657,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 }
                 if (item.item === 'MRP') {
                     totMrp += item.cost
+                    newFormatSelectedAccessories.push({
+                        id: item.id,
+                        amount: item.cost,
+                        partName: item.partName,
+                        accessoriesName: item.partNo,
+                        leadId: selector.pre_booking_details_response.dmsLeadDto.id,
+                        allotmentStatus: null,
+                    });
                 }
-                newFormatSelectedAccessories.push({
-                    id: item.id,
-                    amount: item.cost,
-                    partName: item.partName,
-                    accessoriesName: item.partNo,
-                    leadId: selector.pre_booking_details_response.dmsLeadDto.id,
-                    allotmentStatus: null,
-                });
             }
         });
         setSelectedPaidAccessoriesPrice(totalPrice);
@@ -1741,7 +1760,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 formData.append("documentType", "receipt");
                 break;
             case "UPLOAD_EMPLOYEE_ID":
-                formData.append("documentType", "empId");
+                formData.append("documentType", "employeeId");
                 break;
             case "UPLOAD_3_MONTHS_PAYSLIP":
                 formData.append("documentType", "payslip");
@@ -1809,7 +1828,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 delete imagesDataObj.receipt;
                 break;
             case "EMPLOYEE_ID":
-                delete imagesDataObj.empId;
+                delete imagesDataObj.employeeId;
                 break;
             case "3_MONTHS_PAYSLIP":
                 delete imagesDataObj.payslip;
@@ -2699,19 +2718,19 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                                 onPress={() => dispatch(setImagePicker("UPLOAD_EMPLOYEE_ID"))}
                                             />
                                         </View>
-                                        {uploadedImagesDataObj.empId?.fileName ? (
+                                        {uploadedImagesDataObj.employeeId?.fileName ? (
 
                                             <View style={{ flexDirection: 'row' }}>
                                                 <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                                                    if (uploadedImagesDataObj.empId?.documentPath) {
-                                                        setImagePath(uploadedImagesDataObj.empId?.documentPath)
+                                                    if (uploadedImagesDataObj.employeeId?.documentPath) {
+                                                        setImagePath(uploadedImagesDataObj.employeeId?.documentPath)
                                                     }
                                                 }}>
                                                     <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
                                                 </TouchableOpacity>
                                                 <View style={{ width: '80%' }}>
                                                     <DisplaySelectedImage
-                                                        fileName={uploadedImagesDataObj.empId.fileName}
+                                                        fileName={uploadedImagesDataObj.employeeId.fileName}
                                                         from={"EMPLOYEE_ID"}
                                                     />
                                                 </View>
@@ -3235,7 +3254,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         {selectedPaidAccessoriesList.map((item, index) => {
                                             return (
                                                 <Text style={styles.accessoriText} key={"ACC" + index}>
-                                                    {item.partName + " - " + item.amount}
+                                                    {item.accessoriesName + " - " + item.amount}
                                                 </Text>
                                             );
                                         })}

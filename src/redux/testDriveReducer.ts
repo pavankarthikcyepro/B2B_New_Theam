@@ -58,6 +58,8 @@ export const getTestDriveVehicleListApi = createAsyncThunk("TEST_DRIVE_SLICE/get
 export const bookTestDriveAppointmentApi = createAsyncThunk("TEST_DRIVE_SLICE/bookTestDriveAppointmentApi", async (payload, { rejectWithValue }) => {
 
   const response = await client.post(URL.BOOK_TEST_DRIVE_APPOINTMENT(), payload);
+  console.log("TD URL: ", URL.BOOK_TEST_DRIVE_APPOINTMENT());
+  
   const json = await response.json()
   if (!response.ok) {
     return rejectWithValue(json);
