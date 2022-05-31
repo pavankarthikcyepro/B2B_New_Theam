@@ -68,7 +68,7 @@ export const bookTestDriveAppointmentApi = createAsyncThunk("TEST_DRIVE_SLICE/bo
 })
 
 export const updateTestDriveTaskApi = createAsyncThunk("TEST_DRIVE_SLICE/updateTestDriveTaskApi", async (payload, { rejectWithValue }) => {
-  console.log("PAY:", JSON.stringify(payload));
+  console.log("UPDATE URL:", URL.UPDATE_TEST_DRIVE_TASK());
 
   const response = await client.post(URL.UPDATE_TEST_DRIVE_TASK(), payload);
 
@@ -145,6 +145,12 @@ const testDriveSlice = createSlice({
       state.task_details_response = null;
       state.test_drive_appointment_details_response = null;
       state.test_drive_date_validate_response = null;
+      state.test_drive_varients_obj_for_drop_down = {}
+      state.test_drive_vehicle_list_for_drop_down = []
+      state.test_drive_vehicle_list = []
+      state.drivers_list = []
+      state.employees_list = []
+      state.driverId = ''
     },
     updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;

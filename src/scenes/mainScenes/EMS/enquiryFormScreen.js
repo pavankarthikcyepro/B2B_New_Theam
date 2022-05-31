@@ -910,7 +910,40 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           "tinNumber": ""
         })
       }
-      dmsLeadDto.dmsAttachments = tempAttachments;
+      if (Object.keys(uploadedImagesDataObj).length > 0) {
+        let tempImages = Object.entries(uploadedImagesDataObj).map((e) => ({ name: e[0], value: e[1] }));
+        for (let i = 0; i < tempImages.length; i++) {
+          tempAttachments.push({
+            branchId: jsonObj.branchs[0]?.branchId,
+            contentSize: 0,
+            createdBy: new Date().getSeconds(),
+            description: "",
+            documentNumber: '',
+            documentPath: tempImages[i].value.documentPath,
+            documentType: tempImages[i].name,
+            documentVersion: 0,
+            fileName: tempImages[i].value.fileName,
+            gstNumber: "",
+            id: 0,
+            isActive: 0,
+            isPrivate: 0,
+            keyName: tempImages[i].value.keyName,
+            modifiedBy: jsonObj.empName,
+            orgId: jsonObj.orgId,
+            ownerId: "",
+            ownerName: jsonObj.empName,
+            parentId: "",
+            tinNumber: "",
+          });
+
+          if (i === tempImages.length - 1) {
+            dmsLeadDto.dmsAttachments = tempAttachments;
+          }
+        }
+      }
+      else {
+        dmsLeadDto.dmsAttachments = tempAttachments;
+      }
     }
 
     if (selector.enquiry_details_response.hasOwnProperty("dmsContactDto")) {
@@ -1341,55 +1374,42 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             tinNumber: "",
           });
         }
-        if (uploadedImagesDataObj.filter((item) => {
-          return item.documentType === "payslips";
-        })) {
-          tempAttachments.push({
-            branchId: jsonObj.branchs[0]?.branchId,
-            contentSize: 0,
-            createdBy: new Date().getSeconds(),
-            description: "",
-            documentNumber: '',
-            documentPath:
-              uploadedImagesDataObj.length > 0
-                ? (uploadedImagesDataObj.filter((item) => {
-                  return item.documentType === "payslips";
-                })[0]?.documentPath ? uploadedImagesDataObj.filter((item) => {
-                  return item.documentType === "payslips";
-                })[0]?.documentPath : '')
-                : "",
-            documentType: "empId",
-            documentVersion: 0,
-            fileName:
-              uploadedImagesDataObj.length > 0
-                ? (uploadedImagesDataObj.filter((item) => {
-                  return item.documentType === "payslips";
-                })[0]?.fileName ? uploadedImagesDataObj.filter((item) => {
-                  return item.documentType === "payslips";
-                })[0]?.fileName : '')
-                : "",
-            gstNumber: "",
-            id: 0,
-            isActive: 0,
-            isPrivate: 0,
-            keyName:
-              uploadedImagesDataObj.length > 0
-                ? (uploadedImagesDataObj.filter((item) => {
-                  return item.documentType === "payslips";
-                })[0]?.keyName ? uploadedImagesDataObj.filter((item) => {
-                  return item.documentType === "payslips";
-                })[0]?.keyName : '')
-                : "",
-            modifiedBy: jsonObj.empName,
-            orgId: jsonObj.orgId,
-            ownerId: "",
-            ownerName: jsonObj.empName,
-            parentId: "",
-            tinNumber: "",
-          });
+        if (Object.keys(uploadedImagesDataObj).length > 0){
+          let tempImages = Object.entries(uploadedImagesDataObj).map((e) => ({ name: e[0], value: e[1] }));
+          for(let i = 0; i < tempImages.length; i++){
+            tempAttachments.push({
+              branchId: jsonObj.branchs[0]?.branchId,
+              contentSize: 0,
+              createdBy: new Date().getSeconds(),
+              description: "",
+              documentNumber: '',
+              documentPath: tempImages[i].value.documentPath,
+              documentType: tempImages[i].name,
+              documentVersion: 0,
+              fileName: tempImages[i].value.fileName,
+              gstNumber: "",
+              id: 0,
+              isActive: 0,
+              isPrivate: 0,
+              keyName: tempImages[i].value.keyName,
+              modifiedBy: jsonObj.empName,
+              orgId: jsonObj.orgId,
+              ownerId: "",
+              ownerName: jsonObj.empName,
+              parentId: "",
+              tinNumber: "",
+            });
+
+            if (i === tempImages.length - 1){
+              dmsLeadDto.dmsAttachments = tempAttachments;
+            }
+          }
+        }
+        else{
+          dmsLeadDto.dmsAttachments = tempAttachments;
         }
         console.log("TEMP ATT:", JSON.stringify(tempAttachments));
-        dmsLeadDto.dmsAttachments = tempAttachments;
+        
       }
     }
 
@@ -1478,6 +1498,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.enquirySource = selector.source_of_enquiry;
     dataObj.eventCode = selector.event_code;
     dataObj.subSource = selector.sub_source_of_enquiry;
+    dataObj.gstNumber = selector.gstin_number;
     dataObj.dmsExpectedDeliveryDate =
       convertDateStringToMillisecondsUsingMoment(
         selector.expected_delivery_date
@@ -2161,6 +2182,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         //console.log('response', response);
         if (response) {
           const dataObj = { ...uploadedImagesDataObj };
+          console.log("UPLOADED IMAGES: ", JSON.stringify(dataObj));
           dataObj[response.documentType] = response;
           setUploadedImagesDataObj({ ...dataObj });
         }
@@ -4021,14 +4043,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       label={"Fuel Type"}
                       value={selector.c_fuel_type}
                       onPress={() =>
-                        showDropDownModelMethod("C_FUEL_TYPE", "Variant")
+                        showDropDownModelMethod("C_FUEL_TYPE", "Fuel Type")
                       }
                     />
                     <DropDownSelectionItem
                       label={"Transmission Type"}
                       value={selector.c_transmission_type}
                       onPress={() =>
-                        showDropDownModelMethod("C_TRANSMISSION_TYPE", "Color")
+                        showDropDownModelMethod("C_TRANSMISSION_TYPE", "Transmission Type")
                       }
                     />
 

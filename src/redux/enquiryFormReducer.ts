@@ -993,6 +993,9 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.sub_source_of_enquiry = dmsLeadDto.subSource
         ? dmsLeadDto.subSource
         : "";
+      state.gstin_number = dmsLeadDto.gstNumber
+        ? dmsLeadDto.gstNumber
+        : "";
       state.event_code = dmsLeadDto.eventCode ? dmsLeadDto.eventCode : "";
       const deliveryDate = dmsLeadDto.dmsExpectedDeliveryDate
         ? dmsLeadDto.dmsExpectedDeliveryDate
