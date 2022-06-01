@@ -243,15 +243,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     })
   }, [navigation]);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      autoSave()
-    }, 10000);
-    return () => {
-      console.log("CLEAR");
-      clearInterval(interval)
-    }
-  }, [selector])
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     autoSave()
+  //   }, 10000);
+  //   return () => {
+  //     console.log("CLEAR");
+  //     clearInterval(interval)
+  //   }
+  // }, [selector])
 
 
 
@@ -848,78 +848,146 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       const jsonObj = JSON.parse(employeeData);
       let tempAttachments = [];
       // console.log("GDGHDGDGDGDGD", JSON.stringify(dmsLeadDto.dmsAttachments));
-      if (selector.pan_number) {
+      if (selector.pan_number || dmsLeadDto.dmsAttachments.filter((item) => {
+        return item.documentType === "pan";
+      })) {
         tempAttachments.push({
-
-          "branchId": jsonObj.branchs[0]?.branchId,
-          "contentSize": 0,
-          "createdBy": new Date().getSeconds(),
-          "description": "",
-          "documentNumber": selector.pan_number,
-          "documentPath": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'pan' })[0].documentPath : '',
-          "documentType": "pan",
-          "documentVersion": 0,
-          "fileName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'pan' })[0].fileName : '',
-          "gstNumber": "",
-          "id": 0,
-          "isActive": 0,
-          "isPrivate": 0,
-          "keyName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'pan' })[0].keyName : '',
-          "modifiedBy": jsonObj.empName,
-          "orgId": jsonObj.orgId,
-          "ownerId": "",
-          "ownerName": jsonObj.empName,
-          "parentId": "",
-          "tinNumber": ""
-        })
+          branchId: jsonObj.branchs[0]?.branchId,
+          contentSize: 0,
+          createdBy: new Date().getSeconds(),
+          description: "",
+          documentNumber: selector.pan_number,
+          documentPath:
+            dmsLeadDto.dmsAttachments.length > 0
+              ? (dmsLeadDto.dmsAttachments.filter((item) => {
+                return item.documentType === "pan";
+              })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
+                return item.documentType === "pan";
+              })[0]?.documentPath : '')
+              : "",
+          documentType: "pan",
+          documentVersion: 0,
+          fileName:
+            dmsLeadDto.dmsAttachments.length > 0
+              ? (dmsLeadDto.dmsAttachments.filter((item) => {
+                return item.documentType === "pan";
+              })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
+                return item.documentType === "pan";
+              })[0]?.fileName : '')
+              : "",
+          gstNumber: "",
+          id: 0,
+          isActive: 0,
+          isPrivate: 0,
+          keyName:
+            dmsLeadDto.dmsAttachments.length > 0
+              ? (dmsLeadDto.dmsAttachments.filter((item) => {
+                return item.documentType === "pan";
+              })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
+                return item.documentType === "pan";
+              })[0]?.keyName : '')
+              : "",
+          modifiedBy: jsonObj.empName,
+          orgId: jsonObj.orgId,
+          ownerId: "",
+          ownerName: jsonObj.empName,
+          parentId: "",
+          tinNumber: "",
+        });
       }
-      if (selector.adhaar_number) {
+      if (selector.adhaar_number || dmsLeadDto.dmsAttachments.filter((item) => {
+        return item.documentType === "aadhar";
+      })) {
         tempAttachments.push({
-          "branchId": jsonObj.branchs[0]?.branchId,
-          "contentSize": 0,
-          "createdBy": new Date().getSeconds(),
-          "description": "",
-          "documentNumber": selector.adhaar_number,
-          "documentPath": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'aadhar' })[0].documentPath : '',
-          "documentType": "aadhar",
-          "documentVersion": 0,
-          "fileName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'aadhar' })[0].fileName : '',
-          "gstNumber": "",
-          "id": 0,
-          "isActive": 0,
-          "isPrivate": 0,
-          "keyName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'aadhar' })[0].keyName : '',
-          "modifiedBy": jsonObj.empName,
-          "orgId": jsonObj.orgId,
-          "ownerId": "",
-          "ownerName": jsonObj.empName,
-          "parentId": "",
-          "tinNumber": ""
-        })
+          branchId: jsonObj.branchs[0]?.branchId,
+          contentSize: 0,
+          createdBy: new Date().getSeconds(),
+          description: "",
+          documentNumber: selector.adhaar_number,
+          documentPath:
+            dmsLeadDto.dmsAttachments.length > 0
+              ? (dmsLeadDto.dmsAttachments.filter((item) => {
+                return item.documentType === "aadhar";
+              })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
+                return item.documentType === "aadhar";
+              })[0]?.documentPath : '')
+              : "",
+          documentType: "aadhar",
+          documentVersion: 0,
+          fileName:
+            dmsLeadDto.dmsAttachments.length > 0
+              ? (dmsLeadDto.dmsAttachments.filter((item) => {
+                return item.documentType === "aadhar";
+              })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
+                return item.documentType === "aadhar";
+              })[0]?.fileName : '')
+              : "",
+          gstNumber: "",
+          id: 0,
+          isActive: 0,
+          isPrivate: 0,
+          keyName:
+            dmsLeadDto.dmsAttachments.length > 0
+              ? (dmsLeadDto.dmsAttachments.filter((item) => {
+                return item.documentType === "aadhar";
+              })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
+                return item.documentType === "aadhar";
+              })[0]?.keyName : '')
+              : "",
+          modifiedBy: jsonObj.empName,
+          orgId: jsonObj.orgId,
+          ownerId: "",
+          ownerName: jsonObj.empName,
+          parentId: "",
+          tinNumber: "",
+        });
       }
-      if (selector.employee_id) {
+      if (selector.employee_id || dmsLeadDto.dmsAttachments.filter((item) => {
+        return item.documentType === "employeeId";
+      })) {
         tempAttachments.push({
-          "branchId": jsonObj.branchs[0]?.branchId,
-          "contentSize": 0,
-          "createdBy": new Date().getSeconds(),
-          "description": "",
-          "documentNumber": selector.employee_id,
-          "documentPath": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'employeeId' })[0].documentPath : '',
-          "documentType": "employeeId",
-          "documentVersion": 0,
-          "fileName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'employeeId' })[0].fileName : '',
-          "gstNumber": "",
-          "id": 0,
-          "isActive": 0,
-          "isPrivate": 0,
-          "keyName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'employeeId' })[0].keyName : '',
-          "modifiedBy": jsonObj.empName,
-          "orgId": jsonObj.orgId,
-          "ownerId": "",
-          "ownerName": jsonObj.empName,
-          "parentId": "",
-          "tinNumber": ""
-        })
+          branchId: jsonObj.branchs[0]?.branchId,
+          contentSize: 0,
+          createdBy: new Date().getSeconds(),
+          description: "",
+          documentNumber: selector.employee_id,
+          documentPath:
+            dmsLeadDto.dmsAttachments.length > 0
+              ? (dmsLeadDto.dmsAttachments.filter((item) => {
+                return item.documentType === "employeeId";
+              })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
+                return item.documentType === "employeeId";
+              })[0]?.documentPath : '')
+              : "",
+          documentType: "employeeId",
+          documentVersion: 0,
+          fileName:
+            dmsLeadDto.dmsAttachments.length > 0
+              ? (dmsLeadDto.dmsAttachments.filter((item) => {
+                return item.documentType === "employeeId";
+              })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
+                return item.documentType === "employeeId";
+              })[0]?.fileName : '')
+              : "",
+          gstNumber: "",
+          id: 0,
+          isActive: 0,
+          isPrivate: 0,
+          keyName:
+            dmsLeadDto.dmsAttachments.length > 0
+              ? (dmsLeadDto.dmsAttachments.filter((item) => {
+                return item.documentType === "employeeId";
+              })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
+                return item.documentType === "employeeId";
+              })[0]?.keyName : '')
+              : "",
+          modifiedBy: jsonObj.empName,
+          orgId: jsonObj.orgId,
+          ownerId: "",
+          ownerName: jsonObj.empName,
+          parentId: "",
+          tinNumber: "",
+        });
       }
       if (Object.keys(uploadedImagesDataObj).length > 0) {
         let tempImages = Object.entries(uploadedImagesDataObj).map((e) => ({ name: e[0], value: e[1] }));
