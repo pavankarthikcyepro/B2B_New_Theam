@@ -1139,13 +1139,19 @@ const prebookingFormSlice = createSlice({
       if (attachments.length > 0) {
         attachments.forEach((item, index) => {
           if (item.documentType === "pan") {
-            state.pan_number = item.documentNumber;
+            if (item.documentNumber){
+              state.pan_number = item.documentNumber;
+            }
           }
           else if (item.documentType === "aadhar") {
-            state.adhaar_number = item.documentNumber;
+            if (item.documentNumber){
+              state.adhaar_number = item.documentNumber;
+            }
           }
           else if (item.documentType === "employeeId" || item.documentType === "employeeId") {
-            state.employee_id = item.documentNumber;
+            if (item.documentNumber){
+              state.employee_id = item.documentNumber;
+            }
           }
         })
       }
