@@ -76,6 +76,27 @@ export const callNumber = (phone) => {
     .catch((err) => console.log(err));
 };
 
+sendWhatsApp = (phone) => {
+  let msg = 'Say Something';
+  let phoneWithCountryCode = '+91'+phone;
+
+  let mobile = Platform.OS == 'ios' ? phoneWithCountryCode : '+' + phoneWithCountryCode;
+  if (mobile) {
+    if (msg) {
+      let url = 'whatsapp://send?text=' + msg + '&phone=' + mobile;
+      Linking.openURL(url).then((data) => {
+        console.log('WhatsApp Opened');
+      }).catch(() => {
+        alert('Make sure WhatsApp installed on your device');
+      });
+    } else {
+      alert('Please insert message to send');
+    }
+  } else {
+    alert('Please insert mobile no');
+  }
+}
+
 export async function sendEmail(to, subject, body, options = {}) {
   const { cc, bcc } = options;
 

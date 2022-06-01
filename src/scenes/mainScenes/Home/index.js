@@ -235,6 +235,7 @@ const HomeScreen = ({ route, navigation }) => {
         
         const unsubscribe = navigation.addListener('focus', () => {
             updateBranchNameInHeader()
+            getLoginEmployeeDetailsFromAsyn();
         });
 
         return unsubscribe;
@@ -493,7 +494,8 @@ const HomeScreen = ({ route, navigation }) => {
             "size": 5
         }
         Promise.all([
-            dispatch(getTargetParametersData(payload1))
+            dispatch(getTargetParametersData(payload1)),
+            dispatch(getTargetParametersEmpData(payload1))
         ]).then(() => {
             console.log('I did everything!');
         });

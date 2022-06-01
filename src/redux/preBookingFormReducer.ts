@@ -202,6 +202,8 @@ export const postBookingAmountApi = createAsyncThunk("PREBOONING_FORMS_SLICE/pos
   const response = await client.post(URL.BOOKING_AMOUNT(), payload);
   try {
     const json = await response.json();
+    console.log("postBookingAmountApi", JSON.stringify(json));
+    
     if (response.status != 200) {
       return rejectWithValue(json);
     }

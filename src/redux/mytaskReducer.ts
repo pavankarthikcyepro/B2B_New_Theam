@@ -84,6 +84,103 @@ export const getMyTeamsTasksListApi = createAsyncThunk("MY_Teams_TASKS/getMyTeam
   return json;
 })
 
+export const getTodayMyTasksListApi = createAsyncThunk("MY_TASKS/getTodayMyTasksListApi", async (payload, { rejectWithValue }) => {
+  const url = URL.GET_MY_TASKS_NEW_DATA();
+  const response = await client.post(url, payload);
+  const json = await response.json()
+  console.log(json, "url")
+  // console.log(json)
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getUpcomingMyTasksListApi = createAsyncThunk("MY_TASKS/getUpcomingMyTasksListApi", async (payload, { rejectWithValue }) => {
+  const url = URL.GET_MY_TASKS_NEW_DATA();
+  const response = await client.post(url, payload);
+  const json = await response.json()
+  console.log(json, "url")
+  // console.log(json)
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getPendingMyTasksListApi = createAsyncThunk("MY_TASKS/getPendingMyTasksListApi", async (payload, { rejectWithValue }) => {
+  const url = URL.GET_MY_TASKS_NEW_DATA();
+  const response = await client.post(url, payload);
+  const json = await response.json()
+  console.log(json, "url")
+  // console.log(json)
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getRescheduleMyTasksListApi = createAsyncThunk("MY_TASKS/getRescheduleMyTasksListApi", async (payload, { rejectWithValue }) => {
+  const url = URL.GET_MY_TASKS_NEW_DATA();
+  const response = await client.post(url, payload);
+  const json = await response.json()
+  console.log(json, "url")
+  // console.log(json)
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getTodayTeamTasksListApi = createAsyncThunk("MY_TASKS/getTodayTeamTasksListApi", async (payload, { rejectWithValue }) => {
+  const url = URL.GET_MY_TASKS_NEW_DATA();
+  const response = await client.post(url, payload);
+  const json = await response.json()
+  console.log(json, "url")
+  // console.log(json)
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getUpcomingTeamTasksListApi = createAsyncThunk("MY_TASKS/getUpcomingTeamTasksListApi", async (payload, { rejectWithValue }) => {
+  const url = URL.GET_MY_TASKS_NEW_DATA();
+  const response = await client.post(url, payload);
+  const json = await response.json()
+  console.log(json, "url")
+  // console.log(json)
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getPendingTeamTasksListApi = createAsyncThunk("MY_TASKS/getPendingTeamTasksListApi", async (payload, { rejectWithValue }) => {
+  const url = URL.GET_MY_TASKS_NEW_DATA();
+  const response = await client.post(url, payload);
+  const json = await response.json()
+  console.log(json, "url")
+  // console.log(json)
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const getRescheduleTeamTasksListApi = createAsyncThunk("MY_TASKS/getRescheduleTeamTasksListApi", async (payload, { rejectWithValue }) => {
+  const url = URL.GET_MY_TASKS_NEW_DATA();
+  const response = await client.post(url, payload);
+  const json = await response.json()
+  console.log(json, "url")
+  // console.log(json)
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+
 export const role = createAsyncThunk("MY-_TASKS/role", (role) => {
   return role;
 })
@@ -110,6 +207,14 @@ export const mytaskSlice = createSlice({
     role: "",
     isLoading: true,
     isTeamsTaskLoading: true,
+    myTodayData: [],
+    myUpcomingData: [],
+    myPendingData: [],
+    myReData: [],
+    teamTodayData: [],
+    teamUpcomingData: [],
+    teamPendingData: [],
+    teamReData: [],
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -210,6 +315,110 @@ export const mytaskSlice = createSlice({
     // Store Role
     builder.addCase(role.fulfilled, (state: any, action) => {
       state.role = action.payload;
+    })
+
+    builder.addCase(getTodayMyTasksListApi.pending, (state) => {
+      state.myTodayData = [];
+      state.isLoading = true;
+    })
+    builder.addCase(getTodayMyTasksListApi.fulfilled, (state, action) => {
+      state.myTodayData = action.payload.todaysData;
+      state.isLoading = false;
+    })
+    builder.addCase(getTodayMyTasksListApi.rejected, (state, action) => {
+      state.myTodayData = [];
+      state.isLoading = false;
+    })
+
+    builder.addCase(getUpcomingMyTasksListApi.pending, (state) => {
+      state.myUpcomingData = [];
+      state.isLoading = true;
+    })
+    builder.addCase(getUpcomingMyTasksListApi.fulfilled, (state, action) => {
+      state.myUpcomingData = action.payload.upcomingData;
+      state.isLoading = false;
+    })
+    builder.addCase(getUpcomingMyTasksListApi.rejected, (state, action) => {
+      state.myUpcomingData = [];
+      state.isLoading = false;
+    })
+
+    builder.addCase(getPendingMyTasksListApi.pending, (state) => {
+      state.myPendingData = [];
+      state.isLoading = true;
+    })
+    builder.addCase(getPendingMyTasksListApi.fulfilled, (state, action) => {
+      state.myPendingData = action.payload.pendingData;
+      state.isLoading = false;
+    })
+    builder.addCase(getPendingMyTasksListApi.rejected, (state, action) => {
+      state.myPendingData = [];
+      state.isLoading = false;
+    })
+
+    builder.addCase(getRescheduleMyTasksListApi.pending, (state) => {
+      state.myReData = [];
+      state.isLoading = true;
+    })
+    builder.addCase(getRescheduleMyTasksListApi.fulfilled, (state, action) => {
+      state.myReData = action.payload.rescheduledData;
+      state.isLoading = false;
+    })
+    builder.addCase(getRescheduleMyTasksListApi.rejected, (state, action) => {
+      state.myReData = [];
+      state.isLoading = false;
+    })
+
+    builder.addCase(getTodayTeamTasksListApi.pending, (state) => {
+      state.teamTodayData = [];
+      state.isTeamsTaskLoading = true;
+    })
+    builder.addCase(getTodayTeamTasksListApi.fulfilled, (state, action) => {
+      state.teamTodayData = action.payload.todaysData;
+      state.isTeamsTaskLoading = false;
+    })
+    builder.addCase(getTodayTeamTasksListApi.rejected, (state, action) => {
+      state.teamTodayData = [];
+      state.isTeamsTaskLoading = false;
+    })
+
+    builder.addCase(getUpcomingTeamTasksListApi.pending, (state) => {
+      state.teamUpcomingData = [];
+      state.isTeamsTaskLoading = true;
+    })
+    builder.addCase(getUpcomingTeamTasksListApi.fulfilled, (state, action) => {
+      state.teamUpcomingData = action.payload.upcomingData;
+      state.isTeamsTaskLoading = false;
+    })
+    builder.addCase(getUpcomingTeamTasksListApi.rejected, (state, action) => {
+      state.teamUpcomingData = [];
+      state.isTeamsTaskLoading = false;
+    })
+
+    builder.addCase(getPendingTeamTasksListApi.pending, (state) => {
+      state.teamPendingData = [];
+      state.isTeamsTaskLoading = true;
+    })
+    builder.addCase(getPendingTeamTasksListApi.fulfilled, (state, action) => {
+      state.teamPendingData = action.payload.pendingData;
+      state.isTeamsTaskLoading = false;
+    })
+    builder.addCase(getPendingTeamTasksListApi.rejected, (state, action) => {
+      state.teamPendingData = [];
+      state.isTeamsTaskLoading = false;
+    })
+
+    builder.addCase(getRescheduleTeamTasksListApi.pending, (state) => {
+      state.teamReData = [];
+      state.isTeamsTaskLoading = false;
+    })
+    builder.addCase(getRescheduleTeamTasksListApi.fulfilled, (state, action) => {
+      state.teamReData = action.payload.rescheduledData;
+      state.isTeamsTaskLoading = false;
+    })
+    builder.addCase(getRescheduleTeamTasksListApi.rejected, (state, action) => {
+      state.teamReData = [];
+      state.isTeamsTaskLoading = false;
     })
   }
 });

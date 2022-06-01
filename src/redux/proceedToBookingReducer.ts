@@ -47,12 +47,23 @@ export const getTaskDetailsApi = createAsyncThunk(
 export const updateTaskApi = createAsyncThunk(
   "PROCEED_TO_BOOKING_SLICE/updateTaskApi",
   async (body, { rejectWithValue }) => {
+    console.log("PPPPP", JSON.stringify(body), URL.ASSIGN_TASK());
+    
     const response = await client.put(URL.ASSIGN_TASK(), body);
-    const json = await response.json();
-    if (!response.ok) {
-      return rejectWithValue(json);
+
+    // const response = await client.post(URL.DROP_ENQUIRY(), payload);
+    try {
+      const json = await response.json()
+      console.log("DATA $$$$$$$", JSON.stringify(json));
+
+      if (!response.ok) {
+        return rejectWithValue(json);
+      }
+      return json;
+    } catch (error) {
+      console.error("BookingPaymentApi JSON parse error: ", error + " : " + JSON.stringify(response));
+      return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
     }
-    return json;
   }
 );
 
