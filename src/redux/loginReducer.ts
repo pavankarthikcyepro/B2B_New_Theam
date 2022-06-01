@@ -148,7 +148,7 @@ export const loginSlice = createSlice({
       let password = action.payload;
       if (password.length < 4) {
         state.showPasswordErr = true;
-        state.passwordErrMessage = "Password max length is 6 chars";
+        state.passwordErrMessage = "Password must be minimum of 6 characters";
       } else {
         state.showPasswordErr = false;
         state.passwordErrMessage = "";
