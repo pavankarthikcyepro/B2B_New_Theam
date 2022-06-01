@@ -17,12 +17,13 @@ const ChildComp = ({ route, navigation, }) => {
     const myContext = useContext(AccessoriesContext);
 
     useEffect(() => {
-        console.log("AA: ", accessorylist);
+        // console.log("AA: ", accessorylist, key);
         setTableData([...accessorylist]);
         setSearchedData([...accessorylist]);
     }, [])
 
-    const updatedItem = (index) => {
+    const updatedItem = (index, item) => {
+        console.log("ITEM:", index, item);
         const data = [...tableData];
         const selectedItem = data[index];
         const isSelected = selectedItem.selected;
@@ -67,23 +68,23 @@ const ChildComp = ({ route, navigation, }) => {
     return (
         <View style={{ flex: 1, padding: 5, }}>
             {searchedData.length === 0 ? <EmptyListView title={"No Data Found"} /> : <View style={{ flex: 1 }}>
-                {/* <View style={{alignItems: 'center', marginVertical: 10}}>
+                <View style={{alignItems: 'center', marginVertical: 10}}>
                     <View style={{ width: '90%', height: 40, borderRadius: 5, borderColor: '#d1d1d1', borderWidth: 1, justifyContent: 'center', paddingHorizontal: 10 }}>
-                        <TextInput 
+                        {/* <TextInput 
                             value={}
-                            onChangeText={() => {
-
+                            onChangeText={(text) => {
+                                console.log(text);
                             }}
-                        />
+                        /> */}
                     </View>
-                </View> */}
+                </View>
                 <FlatList
                     data={tableData}
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={({ item, index }) => {
                         return (
                             <View style={{ padding: 10, paddingBottom: 0, backgroundColor: Colors.WHITE }}>
-                                <Pressable onPress={() => updatedItem(index)}>
+                                <Pressable onPress={() => updatedItem(index, item)}>
                                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingBottom: 2 }}>
                                         <View style={{ maxWidth: "70%" }}>
                                             <Text style={styles.text2}>{item.partName}</Text>
