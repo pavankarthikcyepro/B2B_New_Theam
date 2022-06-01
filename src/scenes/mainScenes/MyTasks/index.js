@@ -17,8 +17,8 @@ const tabBarOptions = {
     backgroundColor: Colors.RED,
   },
   labelStyle: {
-    fontSize: 12,
-    fontWeight: "600",
+    fontSize: 9,
+    fontWeight: "900",
   },
   style: {
     elevation: 0,

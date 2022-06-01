@@ -1920,7 +1920,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 id={"1"}
                                 title={"Customer Details"}
                                 titleStyle={{
-                                    color: openAccordian === "1" ? Colors.WHITE : Colors.WHITE,
+                                    color: openAccordian === "1" ? Colors.BLACK : Colors.BLACK,
                                     fontSize: 16,
                                     fontWeight: "600",
                                 }}
@@ -1929,7 +1929,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         backgroundColor:
                                             openAccordian === "1"
                                                 ? Colors.RED
-                                                : Colors.LIGHT_GRAY2,
+                                                : Colors.WHITE,
                                     },
                                     styles.accordianBorder,
                                 ]}
@@ -2064,7 +2064,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 id={"2"}
                                 title={"Communication Address"}
                                 titleStyle={{
-                                    color: openAccordian === "2" ? Colors.WHITE : Colors.WHITE,
+                                    color: openAccordian === "2" ? Colors.BLACK: Colors.BLACK,
                                     fontSize: 16,
                                     fontWeight: "600",
                                 }}
@@ -2073,7 +2073,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         backgroundColor:
                                             openAccordian === "2"
                                                 ? Colors.RED
-                                                : Colors.LIGHT_GRAY2,
+                                                : Colors.WHITE,
                                     },
                                     styles.accordianBorder,
                                 ]}
@@ -2441,7 +2441,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 id={"3"}
                                 title={"Model Selection"}
                                 titleStyle={{
-                                    color: openAccordian === "3" ? Colors.WHITE : Colors.WHITE,
+                                    color: openAccordian === "3" ? Colors.BLACK : Colors.BLACK,
                                     fontSize: 16,
                                     fontWeight: "600",
                                 }}
@@ -2450,7 +2450,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         backgroundColor:
                                             openAccordian === "3"
                                                 ? Colors.RED
-                                                : Colors.LIGHT_GRAY2,
+                                                : Colors.WHITE,
                                     },
                                     styles.accordianBorder,
                                 ]}
@@ -2497,7 +2497,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 id={"4"}
                                 title={"Document Upload"}
                                 titleStyle={{
-                                    color: openAccordian === "4" ? Colors.WHITE : Colors.WHITE,
+                                    color: openAccordian === "4" ? Colors.BLACK : Colors.BLACK,
                                     fontSize: 16,
                                     fontWeight: "600",
                                 }}
@@ -2506,7 +2506,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         backgroundColor:
                                             openAccordian === "4"
                                                 ? Colors.RED
-                                                : Colors.LIGHT_GRAY2,
+                                                : Colors.WHITE,
                                     },
                                     styles.accordianBorder,
                                 ]}
@@ -2874,12 +2874,12 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 title={"Price Confirmation"}
                                 description={rupeeSymbol + " " + totalOnRoadPrice.toFixed(2)}
                                 titleStyle={{
-                                    color: openAccordian === "5" ? Colors.WHITE : Colors.WHITE,
+                                    color: openAccordian === "5" ? Colors.BLACK : Colors.BLACK,
                                     fontSize: 16,
                                     fontWeight: "600",
                                 }}
                                 descriptionStyle={{
-                                    color: openAccordian === "5" ? Colors.WHITE : Colors.WHITE,
+                                    color: openAccordian === "5" ? Colors.BLACK : Colors.BLACK,
                                     paddingTop: 5,
                                     fontSize: 16,
                                     fontWeight: "600",
@@ -2889,7 +2889,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         backgroundColor:
                                             openAccordian === "5"
                                                 ? Colors.RED
-                                                : Colors.LIGHT_GRAY2,
+                                                : Colors.WHITE,
                                     },
                                     styles.accordianBorder,
                                 ]}
@@ -2971,7 +2971,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                             editable={false}
                                             style={[{ fontSize: 14, fontWeight: "400", }]}
                                             keyboardType={"number-pad"}
-                                            disabled={true}
+                                           
                                             onChangeText={(text) => {
                                                 setTaxPercent(text);
                                                 if (text !== '') {
@@ -3192,12 +3192,12 @@ const BookingFormScreen = ({ route, navigation }) => {
                                     rupeeSymbol + " " + totalOnRoadPriceAfterDiscount.toFixed(2)
                                 }
                                 titleStyle={{
-                                    color: openAccordian === "6" ? Colors.WHITE : Colors.WHITE,
+                                    color: openAccordian === "6" ? Colors.BLACK : Colors.BLACK,
                                     fontSize: 16,
                                     fontWeight: "600",
                                 }}
                                 descriptionStyle={{
-                                    color: openAccordian === "6" ? Colors.WHITE : Colors.WHITE,
+                                    color: openAccordian === "6" ? Colors.BLACK : Colors.BLACK,
                                     paddingTop: 5,
                                     fontSize: 16,
                                     fontWeight: "600",
@@ -3207,7 +3207,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         backgroundColor:
                                             openAccordian === "6"
                                                 ? Colors.RED
-                                                : Colors.LIGHT_GRAY2,
+                                                : Colors.WHITE,
                                     },
                                     styles.accordianBorder,
                                 ]}
@@ -3403,7 +3403,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 id={"7"}
                                 title={"Finance Details"}
                                 titleStyle={{
-                                    color: openAccordian === "7" ? Colors.WHITE : Colors.WHITE,
+                                    color: openAccordian === "7" ? Colors.BLACK : Colors.BLACK,
                                     fontSize: 16,
                                     fontWeight: "600",
                                 }}
@@ -3412,7 +3412,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         backgroundColor:
                                             openAccordian === "7"
                                                 ? Colors.RED
-                                                : Colors.LIGHT_GRAY2,
+                                                : Colors.WHITE,
                                     },
                                     styles.accordianBorder,
                                 ]}
@@ -3653,7 +3653,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 id={"8"}
                                 title={"Booking Payment Mode"}
                                 titleStyle={{
-                                    color: openAccordian === "8" ? Colors.WHITE : Colors.WHITE,
+                                    color: openAccordian === "8" ? Colors.BLACK : Colors.BLACK,
                                     fontSize: 16,
                                     fontWeight: "600",
                                 }}
@@ -3662,7 +3662,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         backgroundColor:
                                             openAccordian === "8"
                                                 ? Colors.RED
-                                                : Colors.LIGHT_GRAY2,
+                                                : Colors.WHITE,
                                     },
                                     styles.accordianBorder,
                                 ]}
@@ -3713,7 +3713,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 id={"9"}
                                 title={"DOD Confirmation"}
                                 titleStyle={{
-                                    color: openAccordian === "9" ? Colors.WHITE : Colors.WHITE,
+                                    color: openAccordian === "9" ? Colors.BLACK : Colors.BLACK,
                                     fontSize: 16,
                                     fontWeight: "600",
                                 }}
@@ -3722,7 +3722,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         backgroundColor:
                                             openAccordian === "9"
                                                 ? Colors.RED
-                                                : Colors.LIGHT_GRAY2,
+                                                : Colors.WHITE,
                                     },
                                     styles.accordianBorder,
                                 ]}
@@ -3781,7 +3781,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                     id={"10"}
                                     title={"PreBooking Drop Section"}
                                     titleStyle={{
-                                        color: openAccordian === "10" ? Colors.WHITE : Colors.WHITE,
+                                        color: openAccordian === "10" ? Colors.BLACK : Colors.BLACK,
                                         fontSize: 16,
                                         fontWeight: "600",
                                     }}
@@ -3790,7 +3790,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                             backgroundColor:
                                                 openAccordian === "10"
                                                     ? Colors.RED
-                                                    : Colors.LIGHT_GRAY2,
+                                                    : Colors.WHITE,
                                         },
                                         styles.accordianBorder,
                                     ]}
@@ -3824,7 +3824,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                     id={"11"}
                                     title={"Manager Reject Remarks"}
                                     titleStyle={{
-                                        color: openAccordian === "11" ? Colors.WHITE : Colors.WHITE,
+                                        color: openAccordian === "11" ? Colors.BLACK : Colors.BLACK,
                                         fontSize: 16,
                                         fontWeight: "600",
                                     }}
@@ -3833,7 +3833,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                             backgroundColor:
                                                 openAccordian === "11"
                                                     ? Colors.RED
-                                                    : Colors.LIGHT_GRAY2,
+                                                    : Colors.WHITE,
                                         },
                                         styles.accordianBorder,
                                     ]}
@@ -3864,7 +3864,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                     id={"12"}
                                     title={"PreBooking Payment Details"}
                                     titleStyle={{
-                                        color: openAccordian === "12" ? Colors.WHITE : Colors.WHITE,
+                                        color: openAccordian === "12" ? Colors.BLACK : Colors.BLACK,
                                         fontSize: 16,
                                         fontWeight: "600",
                                     }}
@@ -3873,7 +3873,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                             backgroundColor:
                                                 openAccordian === "12"
                                                     ? Colors.RED
-                                                    : Colors.LIGHT_GRAY2,
+                                                    : Colors.WHITE,
                                         },
                                         styles.accordianBorder,
                                     ]}
