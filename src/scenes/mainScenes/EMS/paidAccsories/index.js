@@ -51,16 +51,24 @@ const TopTabNavigator = ({ titles, data }) => {
 
 const PaidAccessoriesScreen = ({ route, navigation }) => {
 
-    const { accessorylist, selectedAccessoryList } = route.params;
+    const { accessorylist, selectedAccessoryList, selectedFOCAccessoryList } = route.params;
     const [accessoriesData, setAccessoriesData] = useState({ names: [], data: {} });
     const [defaultContext, setDefaultContext] = useState({});
 
     useEffect(() => {
-        console.log("accessorylist: ", accessorylist)
+        console.log("accessorylist: ", selectedAccessoryList, selectedFOCAccessoryList)
         const titleNames = [];
         const dataObj = {};
         accessorylist.forEach((item) => {
-            const newItem = { ...item, selected: false };
+            let isSelected = false;
+            let find = [];
+            find = selectedAccessoryList.filter((innerItem) => {
+                return innerItem.accessoriesName === item.partName && Number(innerItem.amount) === Number(item.cost)
+            })
+            if (find.length > 0) {
+                isSelected = true;
+            }
+            const newItem = { ...item, selected: isSelected };
             if (titleNames.includes(item.item)) {
                 const oldData = dataObj[item.item];
                 const newData = [...oldData, newItem];

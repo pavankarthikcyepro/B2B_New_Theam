@@ -643,9 +643,9 @@ const TargetScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text style={{ fontSize: 12, fontWeight: "600" }}>
-                            {Math.abs(Number(item.shortfall)) >= 100000
+                            {Number(item.achievment) > Number(item.target) ? 0 : (Math.abs(Number(item.shortfall)) >= 100000
                               ? Math.abs(Number(item.shortfall)) / 100000 + "L"
-                              : Math.abs(Number(item.shortfall))}
+                              : Math.abs(Number(item.shortfall)))}
                           </Text>
                         </View>
                         <View
@@ -658,13 +658,13 @@ const TargetScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text style={{ fontSize: 12, fontWeight: "600" }}>
-                            {dateDiff > 0 && parseInt(item.shortfall) !== 0
+                            {Number(item.achievment) > Number(item.target) ? 0 : (dateDiff > 0 && parseInt(item.shortfall) !== 0
                               ? Math.abs(
                                   Math.round(
                                     parseInt(item.shortfall) / dateDiff
                                   )
                                 )
-                              : 0}
+                              : 0)}
                           </Text>
                         </View>
                       </View>
@@ -814,14 +814,14 @@ const TargetScreen = ({ route, navigation }) => {
                                         fontWeight: "600",
                                       }}
                                     >
-                                      {Math.abs(Number(innerItem.shortfall)) >=
+                                      {Number(innerItem.achievment) > Number(innerItem.target) ? 0 : (Math.abs(Number(innerItem.shortfall)) >=
                                       100000
                                         ? Math.abs(
                                             Number(innerItem.shortfall)
                                           ) /
                                             100000 +
                                           "L"
-                                        : Math.abs(Number(innerItem.shortfall))}
+                                        : Math.abs(Number(innerItem.shortfall)))}
                                     </Text>
                                   </View>
                                   <View
@@ -839,7 +839,7 @@ const TargetScreen = ({ route, navigation }) => {
                                         fontWeight: "600",
                                       }}
                                     >
-                                      {dateDiff > 0 &&
+                                      {Number(innerItem.achievment) > Number(innerItem.target) ? 0 : (dateDiff > 0 &&
                                       parseInt(innerItem.shortfall) !== 0
                                         ? // ? (
                                           //     parseInt(innerItem.shortfall) /
@@ -851,7 +851,7 @@ const TargetScreen = ({ route, navigation }) => {
                                                 dateDiff
                                             )
                                           )
-                                        : 0}
+                                        : 0)}
                                     </Text>
                                   </View>
                                 </View>
@@ -1025,7 +1025,7 @@ const TargetScreen = ({ route, navigation }) => {
                   >
                     <View
                       style={{
-                        width: 35,
+                        width: 45,
                         height: 25,
                         borderColor: color[index % color.length],
                         borderWidth: 1,
@@ -1035,9 +1035,9 @@ const TargetScreen = ({ route, navigation }) => {
                       }}
                     >
                       <Text>
-                        {Math.abs(Number(item.shortfall)) >= 100000
+                        {Number(item.achievment) > Number(item.target) ? 0 : (Math.abs(Number(item.shortfall)) >= 100000
                           ? Math.abs(Number(item.shortfall)) / 100000 + "L"
-                          : Math.abs(item.shortfall)}
+                          : Math.abs(item.shortfall))}
                       </Text>
                     </View>
                     <View
@@ -1054,11 +1054,11 @@ const TargetScreen = ({ route, navigation }) => {
                       }}
                     >
                       <Text>
-                        {dateDiff > 0 && parseInt(item.shortfall) !== 0
+                        {parseInt(item.achievment) > parseInt(item.target) ? 0 : (dateDiff > 0 && parseInt(item.shortfall) !== 0
                           ? Math.abs(
-                              Math.round(parseInt(item.shortfall) / dateDiff)
-                            )
-                          : 0}
+                            Math.round(parseInt(item.shortfall) / dateDiff)
+                          )
+                          : 0)}
                       </Text>
                     </View>
                   </View>
