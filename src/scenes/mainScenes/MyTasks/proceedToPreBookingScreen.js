@@ -320,12 +320,12 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
     const goToParentScreen = () => {
         if (identifier === "PROCEED_TO_PRE_BOOKING") {
             getMyTasksListFromServer();
-            // navigation.navigate(EmsTopTabNavigatorIdentifiers.preBooking)
+            navigation.navigate(EmsTopTabNavigatorIdentifiers.preBooking)
         } 
-        // else 
-        // {
+        else 
+        {
             navigation.popToTop();
-        // }
+        }
         dispatch(clearState());
     }
 

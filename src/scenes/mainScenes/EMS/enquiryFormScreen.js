@@ -1821,7 +1821,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   Alert("Permission Denied");
 
     // }
-      console.log(selector.enquiry_details_response.dmsLeadDto, "Proceed to prebooking")
+      // console.log(selector.enquiry_details_response.dmsLeadDto, "Proceed to prebooking")
   };
 
   // useEffect(() => {
