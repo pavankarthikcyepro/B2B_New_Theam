@@ -39,6 +39,8 @@ const EnquiryScreen = ({ navigation }) => {
 
     const orgIdStateRef = React.useRef(orgId);
     const empIdStateRef = React.useRef(employeeId);
+    const fromDateRef = React.useRef(selectedFromDate);
+    const toDateRef = React.useRef(selectedToDate);
 
     const setMyState = data => {
         empIdStateRef.current = data.empId;
@@ -46,6 +48,16 @@ const EnquiryScreen = ({ navigation }) => {
         setEmployeeId(data.empId);
         setOrgId(data.orgId);
     };
+ 
+    const setFromDateState = date => {
+        fromDateRef.current = date;
+        setSelectedFromDate(date);
+    }
+
+    const setToDateState = date => {
+        toDateRef.current = date;
+        setSelectedToDate(date);
+    }
 
     useEffect(() => {
         if (selector.enquiry_list.length > 0) {
@@ -78,9 +90,9 @@ const EnquiryScreen = ({ navigation }) => {
 
         // Get Data From Server
         let isMounted = true;
-        setSelectedFromDate(lastMonthFirstDate);
+        setFromDateState(lastMonthFirstDate);
         const tomorrowDate = moment().add(1, "day").format(dateFormat)
-        setSelectedToDate(currentDate);
+        setToDateState(currentDate);
         getAsyncData().then(data => {
             if (isMounted) {
                 setMyState(data);
@@ -94,7 +106,8 @@ const EnquiryScreen = ({ navigation }) => {
     // Navigation Listner to Auto Referesh
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
-            getEnquiryListFromServer(empIdStateRef.current, lastMonthFirstDate, currentDate);
+            getEnquiryListFromServer(empIdStateRef.current, fromDateRef.current, toDateRef.current);
+            console.log(fromDateRef.current, toDateRef.current, "seteed date")
         });
 
         return () => {
@@ -146,11 +159,11 @@ const EnquiryScreen = ({ navigation }) => {
         const formatDate = moment(date).format(dateFormat);
         switch (key) {
             case "FROM_DATE":
-                setSelectedFromDate(formatDate);
+                setFromDateState(formatDate);
                 getEnquiryListFromServer(employeeId, formatDate, selectedToDate);
                 break;
             case "TO_DATE":
-                setSelectedToDate(formatDate);
+                setToDateState(formatDate);
                 getEnquiryListFromServer(employeeId, selectedFromDate, formatDate);
                 break;
         }

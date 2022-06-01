@@ -62,6 +62,8 @@ const BookingScreen = ({ navigation }) => {
 
     const orgIdStateRef = React.useRef(orgId);
     const empIdStateRef = React.useRef(employeeId);
+    const fromDateRef = React.useRef(selectedFromDate);
+    const toDateRef = React.useRef(selectedToDate);
 
     const setMyState = data => {
         empIdStateRef.current = data.empId;
@@ -69,6 +71,16 @@ const BookingScreen = ({ navigation }) => {
         setEmployeeId(data.empId);
         setOrgId(data.orgId);
     };
+
+    const setFromDateState = date => {
+        fromDateRef.current = date;
+        setSelectedFromDate(date);
+    }
+
+    const setToDateState = date => {
+        toDateRef.current = date;
+        setSelectedToDate(date);
+    }
 
 
     useEffect(() => {
@@ -99,9 +111,9 @@ const BookingScreen = ({ navigation }) => {
 
         // Get Data From Server
         let isMounted = true;
-        setSelectedFromDate(lastMonthFirstDate);
+        setFromDateState(lastMonthFirstDate);
         const tomorrowDate = moment().add(1, "day").format(dateFormat)
-        setSelectedToDate(currentDate);
+        setToDateState(currentDate);
         getAsyncData().then(data => {
             if (isMounted) {
                 setMyState(data);
@@ -115,7 +127,7 @@ const BookingScreen = ({ navigation }) => {
     // Navigation Listner to Auto Referesh
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
-            getBookingListFromServer(empIdStateRef.current, lastMonthFirstDate, currentDate);
+            getBookingListFromServer(empIdStateRef.current, fromDateRef.current, toDateRef.current);
         });
 
         return () => {
@@ -186,11 +198,11 @@ const BookingScreen = ({ navigation }) => {
         const formatDate = moment(date).format(dateFormat);
         switch (key) {
             case "FROM_DATE":
-                setSelectedFromDate(formatDate);
+                setFromDateState(formatDate);
                 getPreBookingListFromServer(employeeId, formatDate, selectedToDate);
                 break;
             case "TO_DATE":
-                setSelectedToDate(formatDate);
+                setToDateState(formatDate);
                 getPreBookingListFromServer(employeeId, selectedFromDate, formatDate);
                 break;
         }
