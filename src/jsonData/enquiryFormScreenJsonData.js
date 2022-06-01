@@ -164,6 +164,12 @@ export const Relation_Data_Obj = {
       name: "D/O",
     },
   ],
+  'm/s': [
+    {
+      id: "1",
+      name: "D/O",
+    },
+  ],
 };
 
 export const Marital_Status_Types = [
