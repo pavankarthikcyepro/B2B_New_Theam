@@ -32,7 +32,7 @@ const IconComp = ({ iconName, onPress }) => {
                 <IconButton
                     icon={iconName}
                     color={Colors.GREEN}
-                    size={18}
+                    size={17}
                 />
             </View>
         </TouchableOpacity>
@@ -76,6 +76,11 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", name, status, created, dmsLea
                         <IconComp
                             iconName={'phone-outline'}
                             onPress={() => callNumber(phone)}
+                        />
+
+                        <IconComp
+                            iconName={'whatsapp'}
+                            onPress={() => sendWhatsApp(phone)}
                         />
                     </View>
                 </View>
