@@ -12,9 +12,43 @@ import { showToastRedAlert } from "../utils/toast";
 export const getEnquiryDetailsApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/getEnquiryDetailsApi",
   async (universalId, { rejectWithValue }) => {
+    const autoSaveResponse = await client.get(URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
+    const autoSavejson = await autoSaveResponse.json();
+    const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
+    const json = await response.json();
+    // console.log("enquirey lead", json);
+    // console.log("autoSavejson", autoSavejson);
+
+    if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
+      console.log("autoSavejson is true")
+    }
+
+    // if (json.success) {
+    //   console.log("came here")
+    //    autoSaveResponse = await client.get(URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
+    //     autoSavejson = await autoSaveResponse.json();
+    //     // console.log("autoSavejson", autoSavejson);
+    // }
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+
+    if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
+      return autoSavejson;
+    } else {
+      return json.dmsEntity
+    }
+    // return json
+  }
+);
+
+export const getAutoSaveEnquiryDetailsApi = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/getAutoSaveEnquiryDetailsApi",
+  async (universalId, { rejectWithValue }) => {
     const response = await client.get(URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
     const json = await response.json();
-    // console.log("ENQ DATA:", json);
+    console.log("auto save details", json);
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -295,6 +329,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     update_enquiry_details_response: null,
     customer_types_response: null,
     isAddressSet: false,
+    isOpened: false,
     refNo: '',
     rmfgYear: null,
   },
@@ -1292,16 +1327,32 @@ const enquiryDetailsOverViewSlice = createSlice({
     });
     builder.addCase(getEnquiryDetailsApi.fulfilled, (state, action) => {
       // if (action.payload.dmsEntity) {
-      let payload = {
-        dmsEntity: action.payload
-      }
-      // state.enquiry_details_response = action.payload.dmsEntity;
-      state.enquiry_details_response = action.payload;
-      // console.log("From reducer dmsEntity", state.enquiry_details_response)
+      //  state.enquiry_details_response = action.payload.dmsEntity;
+        console.log("action.payload", action.payload)
+        state.enquiry_details_response = action.payload;
+       state.isOpened = true
       // }
       state.isLoading = false;
     });
     builder.addCase(getEnquiryDetailsApi.rejected, (state, action) => {
+      state.isLoading = false;
+    });
+    // Update Enquiry Details
+    builder.addCase(getAutoSaveEnquiryDetailsApi.pending, (state, action) => {
+      state.isLoading = true;
+      state.enquiry_details_response = null;
+    });
+    builder.addCase(getAutoSaveEnquiryDetailsApi.fulfilled, (state, action) => {
+      // console.log("form reducers data", action.payload)
+      if (action.payload) {
+        // console.log("came here in enquiry form reducers", action.payload)
+        state.enquiry_details_response = action.payload;
+      }
+
+      // console.log("state", state)
+      state.isLoading = false;
+    });
+    builder.addCase(getAutoSaveEnquiryDetailsApi.rejected, (state, action) => {
       state.isLoading = false;
     });
     // Update Enquiry Details

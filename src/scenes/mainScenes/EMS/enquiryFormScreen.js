@@ -49,6 +49,7 @@ import {
   setReplacementBuyerDetails,
   setEnquiryDropDetails,
   getEnquiryDetailsApi,
+  getAutoSaveEnquiryDetailsApi,
   updateDmsContactOrAccountDtoData,
   updateDmsLeadDtoData,
   updateDmsAddressData,
@@ -431,6 +432,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         setShowPreBookingBtn(true);
       }
 
+        // console.log("dmsLeadDto.leadStage", dmsLeadDto.leadStage);
+        // console.log("dmsLeadDto.leadStatus", dmsLeadDto.leadStatus);
+        // if (dmsLeadDto.leadStage == "ENQUIRY" && dmsLeadDto.leadStatus == null) {
+        //   console.log("called here in enquiryFormScreen for autoSave call lineNo: 492")
+        //   dispatch(getAutoSaveEnquiryDetailsApi(universalId));
+        // }
+
       // Update dmsContactOrAccountDto
       dispatch(updateDmsContactOrAccountDtoData(dmsContactOrAccountDto));
       // Update updateDmsLeadDtoData
@@ -482,7 +490,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const getEnquiryDetailsFromServer = () => {
     if (universalId) {
-      dispatch(getEnquiryDetailsApi(universalId));
+      // if (selector.isOpened) {
+        // dispatch(getAutoSaveEnquiryDetailsApi(universalId));
+        dispatch(getEnquiryDetailsApi(universalId));
+      // } else {
     }
   };
 
@@ -495,7 +506,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
   };
 
-
+// console.log(selector, "Redux Data")
   // let dmsEntity = selector.enquiry_details_response;
   // console.log({ dmsEntity })
 
