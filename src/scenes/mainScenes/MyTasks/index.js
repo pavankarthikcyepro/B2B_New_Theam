@@ -6,8 +6,8 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import ListComponent from "./components/ListComponent";
 import URL from "../../../networking/endpoints";
 import * as AsyncStore from "../../../asyncStore";
-import { getMyTasksListApi, getMyTeamsTasksListApi, role } from "../../../redux/mytaskReducer";
-import { useDispatch } from "react-redux";
+import { getMyTasksListApi, getMyTeamsTasksListApi, role, getPendingMyTasksListApi, getRescheduleMyTasksListApi, getUpcomingMyTasksListApi, getTodayMyTasksListApi, getTodayTeamTasksListApi, getUpcomingTeamTasksListApi, getPendingTeamTasksListApi, getRescheduleTeamTasksListApi } from "../../../redux/mytaskReducer";
+import { useDispatch, useSelector } from "react-redux";
 
 
 const tabBarOptions = {
@@ -67,13 +67,18 @@ const SecondTopTabNavigator = ({ todaysData = [], upcomingData = [], pendingData
 const MyTasksScreen = ({ navigation }) => {
 
   const [response, setResponse] = useState({});
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
   const dispatch = useDispatch();
+  const selector = useSelector((state) => state.mytaskReducer);
+  const homeSelector = useSelector((state) => state.homeReducer);
 
 
   useEffect(() => {
-
-    getAsyncstoreData();
-  }, [])
+    navigation.addListener('focus', () => {
+      setIsDataLoaded(false)
+      getAsyncstoreData();
+    });
+  }, [navigation])
 
   const getAsyncstoreData = async () => {
     const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -85,9 +90,84 @@ const MyTasksScreen = ({ navigation }) => {
         "loggedInEmpId": jsonObj.empId,
         "onlyForEmp": true
       }
-      dispatch(getMyTasksListApi(jsonObj.empId));
-      dispatch(getMyTeamsTasksListApi(jsonObj.empId));
-      dispatch(role(jsonObj.hrmsRole)); 
+      // dispatch(getMyTasksListApi(jsonObj.empId));
+      // dispatch(getMyTeamsTasksListApi(jsonObj.empId));
+      dispatch(role(jsonObj.hrmsRole));
+
+      // if (homeSelector.isTeamPresent){
+      //   Promise.all([
+      //     dispatch(getPendingMyTasksListApi({
+      //       "loggedInEmpId": jsonObj.empId,
+      //       "onlyForEmp": true,
+      //       "dataType": "pendingData"
+      //     })),
+      //     dispatch(getRescheduleMyTasksListApi({
+      //       "loggedInEmpId": jsonObj.empId,
+      //       "onlyForEmp": true,
+      //       "dataType": "rescheduledData"
+      //     })),
+      //     dispatch(getUpcomingMyTasksListApi({
+      //       "loggedInEmpId": jsonObj.empId,
+      //       "onlyForEmp": true,
+      //       "dataType": "upcomingData"
+      //     })),
+      //     dispatch(getTodayMyTasksListApi({
+      //       "loggedInEmpId": jsonObj.empId,
+      //       "onlyForEmp": true,
+      //       "dataType": "todaysData"
+      //     })),
+      //     dispatch(getPendingTeamTasksListApi({
+      //       "loggedInEmpId": jsonObj.empId,
+      //       "onlyForEmp": false,
+      //       "dataType": "pendingData"
+      //     })),
+      //     dispatch(getRescheduleTeamTasksListApi({
+      //       "loggedInEmpId": jsonObj.empId,
+      //       "onlyForEmp": false,
+      //       "dataType": "rescheduledData"
+      //     })),
+      //     dispatch(getUpcomingTeamTasksListApi({
+      //       "loggedInEmpId": jsonObj.empId,
+      //       "onlyForEmp": false,
+      //       "dataType": "upcomingData"
+      //     })),
+      //     dispatch(getTodayTeamTasksListApi({
+      //       "loggedInEmpId": jsonObj.empId,
+      //       "onlyForEmp": false,
+      //       "dataType": "todaysData"
+      //     }))
+      //   ]).then(() => {
+      //     console.log('I did everything!');
+      //     setIsDataLoaded(true)
+      //   });
+      // }
+      // else{
+      //   Promise.all([
+      //     dispatch(getPendingMyTasksListApi({
+      //       "loggedInEmpId": jsonObj.empId,
+      //       "onlyForEmp": true,
+      //       "dataType": "pendingData"
+      //     })),
+      //     dispatch(getRescheduleMyTasksListApi({
+      //       "loggedInEmpId": jsonObj.empId,
+      //       "onlyForEmp": true,
+      //       "dataType": "rescheduledData"
+      //     })),
+      //     dispatch(getUpcomingMyTasksListApi({
+      //       "loggedInEmpId": jsonObj.empId,
+      //       "onlyForEmp": true,
+      //       "dataType": "upcomingData"
+      //     })),
+      //     dispatch(getTodayMyTasksListApi({
+      //       "loggedInEmpId": jsonObj.empId,
+      //       "onlyForEmp": true,
+      //       "dataType": "todaysData"
+      //     }))
+      //   ]).then(() => {
+      //     console.log('I did everything!');
+      //     setIsDataLoaded(true)
+      //   });
+      // }
 
       // AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
       //   getTableDataFromServer(jsonObj.empId, token);
@@ -126,11 +206,9 @@ const MyTasksScreen = ({ navigation }) => {
 
       <View style={[{ flex: 1, backgroundColor: Colors.WHITE }, GlobalStyle.shadow]}>
         <View style={[{ flex: 1, backgroundColor: Colors.WHITE }]}>
-          <SecondTopTabNavigator
-            todaysData={response.todaysData}
-            upcomingData={response.upcomingData}
-            pendingData={response.pendingData}
-          />
+          {/* {isDataLoaded && */}
+            <SecondTopTabNavigator />
+          {/* } */}
         </View>
       </View>
     </SafeAreaView>

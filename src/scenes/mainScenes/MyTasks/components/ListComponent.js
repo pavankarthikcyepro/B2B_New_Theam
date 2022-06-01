@@ -8,7 +8,7 @@ import { MyTasksStackIdentifiers } from "../../../../navigations/appNavigator";
 import { EmptyListView } from "../../../../pureComponents";
 import * as AsyncStore from "../../../../asyncStore";
 import { useDispatch } from "react-redux";
-import { getMyTasksListApi } from "../../../../redux/mytaskReducer";
+import { getMyTasksListApi, getMyTeamsTasksListApi, role, getPendingMyTasksListApi, getRescheduleMyTasksListApi, getUpcomingMyTasksListApi, getTodayMyTasksListApi, getTodayTeamTasksListApi, getUpcomingTeamTasksListApi, getPendingTeamTasksListApi, getRescheduleTeamTasksListApi } from "../../../../redux/mytaskReducer";
 
 
 const screenWidth = Dimensions.get("window").width;
@@ -35,79 +35,303 @@ const ListComponent = ({ route, navigation }) => {
     const [index, setIndex] = useState(0);
     const [myTasksData, setMyTasksData] = useState([]);
     const [myTeamsData, setMyTeamsData] = useState([]);
+    const dispatch = useDispatch();
     const selector = useSelector((state) => state.mytaskReducer);
     const homeSelector = useSelector((state) => state.homeReducer);
 
 
     useEffect(() => {
-        // console.log('data: ', selector.mytasksLisResponse);
-        // console.log("role: ", selector.role);
-        let data = "";
-        let status = "";
-        if (index === 0) {
-            status = selector.myTasksListResponseStatus;
-            data = selector.mytasksLisResponse;
-        } else if (index === 1) {
-            status = selector.myTeamsTasksListResponseStatus;
-            data = selector.myTeamstasksListResponse;
-        }
+        navigation.addListener('focus', () => {
+            initialTask()
+        });
+    }, [navigation])
 
+    useEffect(() => {
+        initialTask()
+    }, [index])
 
-        if (status === "success") {
-            console.log("called List Componet")
+    const initialTask = async () => {
+        const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        setMyTasksData([]);
+        setMyTeamsData([])
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            console.log("called List Componet", route.params.from)
             if (route.params.from === "TODAY") {
-                const todaysData = data.todaysData[0];
-                const filteredData = todaysData.tasksList.filter(element => {
-                    const trimName = element.taskName.toLowerCase().trim();
-                    const finalTaskName = trimName.replace(/ /g, "");
-                    return taskNames.includes(finalTaskName);
-                });
-
-                if (index === 0)
-                    setMyTasksData(filteredData);
-                else if (index === 1)
-                    setMyTeamsData(filteredData);
+                if (index === 0) {
+                    Promise.all([
+                        dispatch(getTodayMyTasksListApi({
+                            "loggedInEmpId": jsonObj.empId,
+                            "onlyForEmp": true,
+                            "dataType": "todaysData"
+                        })),
+                    ]).then((res) => {
+                        const todaysData = res[0].payload.todaysData[0];
+                        const filteredData = todaysData.tasksList.filter(element => {
+                            const trimName = element.taskName.toLowerCase().trim();
+                            const finalTaskName = trimName.replace(/ /g, "");
+                            return taskNames.includes(finalTaskName);
+                        });
+                        setMyTasksData(filteredData);
+                    });
+                }
+                else if (index === 1) {
+                    Promise.all([
+                        dispatch(getTodayTeamTasksListApi({
+                            "loggedInEmpId": jsonObj.empId,
+                            "onlyForEmp": false,
+                            "dataType": "todaysData"
+                        })),
+                    ]).then((res) => {
+                        const todaysData = res[0].payload.todaysData[0];
+                        const filteredData = todaysData.tasksList.filter(element => {
+                            const trimName = element.taskName.toLowerCase().trim();
+                            const finalTaskName = trimName.replace(/ /g, "");
+                            return taskNames.includes(finalTaskName);
+                        });
+                        setMyTeamsData(filteredData);
+                    });
+                }
             }
             else if (route.params.from === "UPCOMING") {
-                const todaysData = data.upcomingData[0];
-                const filteredData = todaysData.tasksList.filter(element => {
-                    const trimName = element.taskName.toLowerCase().trim();
-                    const finalTaskName = trimName.replace(/ /g, "");
-                    return taskNames.includes(finalTaskName);
-                });
-                if (index === 0)
-                    setMyTasksData(filteredData);
-                else if (index === 1)
-                    setMyTeamsData(filteredData);            
+                if (index === 0) {
+                    Promise.all([
+                        dispatch(getUpcomingMyTasksListApi({
+                            "loggedInEmpId": jsonObj.empId,
+                            "onlyForEmp": true,
+                            "dataType": "upcomingData"
+                        })),
+                    ]).then((res) => {
+                        const todaysData = res[0].payload.upcomingData[0];
+                        const filteredData = todaysData.tasksList.filter(element => {
+                            const trimName = element.taskName.toLowerCase().trim();
+                            const finalTaskName = trimName.replace(/ /g, "");
+                            return taskNames.includes(finalTaskName);
+                        });
+                        setMyTasksData(filteredData);
+                    });
+                }
+                else if (index === 1) {
+                    Promise.all([
+                        dispatch(getUpcomingTeamTasksListApi({
+                            "loggedInEmpId": jsonObj.empId,
+                            "onlyForEmp": false,
+                            "dataType": "upcomingData"
+                        })),
+                    ]).then((res) => {
+                        const todaysData = res[0].payload.upcomingData[0];
+                        const filteredData = todaysData.tasksList.filter(element => {
+                            const trimName = element.taskName.toLowerCase().trim();
+                            const finalTaskName = trimName.replace(/ /g, "");
+                            return taskNames.includes(finalTaskName);
+                        });
+                        setMyTeamsData(filteredData);
+                    });
+                }
             }
             else if (route.params.from === "PENDING") {
-                const todaysData = data.pendingData[0];
-                const filteredData = todaysData.tasksList.filter(element => {
-                    const trimName = element.taskName.toLowerCase().trim();
-                    const finalTaskName = trimName.replace(/ /g, "");
-                    return taskNames.includes(finalTaskName);
-                });
-                if (index === 0)
-                    setMyTasksData(filteredData);
-                else if (index === 1)
-                    setMyTeamsData(filteredData);            
+                if (index === 0) {
+                    Promise.all([
+                        dispatch(getPendingMyTasksListApi({
+                            "loggedInEmpId": jsonObj.empId,
+                            "onlyForEmp": true,
+                            "dataType": "pendingData"
+                        })),
+                    ]).then((res) => {
+                        const todaysData = res[0].payload.pendingData[0];
+                        const filteredData = todaysData.tasksList.filter(element => {
+                            const trimName = element.taskName.toLowerCase().trim();
+                            const finalTaskName = trimName.replace(/ /g, "");
+                            return taskNames.includes(finalTaskName);
+                        });
+                        setMyTasksData(filteredData);
+                    });
+                }
+                else if (index === 1) {
+                    Promise.all([
+                        dispatch(getPendingTeamTasksListApi({
+                            "loggedInEmpId": jsonObj.empId,
+                            "onlyForEmp": false,
+                            "dataType": "pendingData"
+                        })),
+                    ]).then((res) => {
+                        const todaysData = res[0].payload.pendingData[0];
+                        const filteredData = todaysData.tasksList.filter(element => {
+                            const trimName = element.taskName.toLowerCase().trim();
+                            const finalTaskName = trimName.replace(/ /g, "");
+                            return taskNames.includes(finalTaskName);
+                        });
+                        setMyTeamsData(filteredData);
+                    });
+                }
             }
             else if (route.params.from === "RESCHEDULE") {
-                const todaysData = data.rescheduledData[0];
-                const filteredData = todaysData.tasksList.filter(element => {
-                    const trimName = element.taskName.toLowerCase().trim();
-                    const finalTaskName = trimName.replace(/ /g, "");
-                    return taskNames.includes(finalTaskName);
-                });
-                if (index === 0)
-                    setMyTasksData(filteredData);
-                else if (index === 1)
-                    setMyTeamsData(filteredData);            
+                if (index === 0) {
+                    Promise.all([
+                        dispatch(getRescheduleMyTasksListApi({
+                            "loggedInEmpId": jsonObj.empId,
+                            "onlyForEmp": true,
+                            "dataType": "rescheduledData"
+                        })),
+                    ]).then((res) => {
+                        const todaysData = res[0].payload.rescheduledData[0];
+                        const filteredData = todaysData.tasksList.filter(element => {
+                            const trimName = element.taskName.toLowerCase().trim();
+                            const finalTaskName = trimName.replace(/ /g, "");
+                            return taskNames.includes(finalTaskName);
+                        });
+                        setMyTasksData(filteredData);
+                    });
+                }
+                else if (index === 1) {
+                    Promise.all([
+                        dispatch(getRescheduleTeamTasksListApi({
+                            "loggedInEmpId": jsonObj.empId,
+                            "onlyForEmp": false,
+                            "dataType": "rescheduledData"
+                        })),
+                    ]).then((res) => {
+                        const todaysData = res[0].payload.rescheduledData[0];
+                        const filteredData = todaysData.tasksList.filter(element => {
+                            const trimName = element.taskName.toLowerCase().trim();
+                            const finalTaskName = trimName.replace(/ /g, "");
+                            return taskNames.includes(finalTaskName);
+                        });
+                        setMyTasksData(filteredData);
+                    });
+                }
             }
         }
+    }
+
+    useEffect(() => {
+        // console.log('data: ', selector.mytasksLisResponse);
+        // console.log("role: ", selector.role);
+        let data = {
+            // todaysData: selector.myTodayData,
+            // upcomingData: selector.myUpcomingData,
+            // pendingData: selector.myPendingData,
+            // rescheduledData: selector.myReData,
+            // todaysTeamData: selector.teamTodayData,
+            // upcomingTeamData: selector.teamUpcomingData,
+            // pendingTeamData: selector.teamPendingData,
+            // rescheduledTeamData: selector.teamReData,
+        };
+        let status = "";
+        // if (index === 0) {
+        //     data.todaysData = selector.myTodayData;
+        //     data.upcomingData = selector.myUpcomingData;
+        //     data.pendingData = selector.myPendingData;
+        //     data.rescheduledData = selector.myReData;
+        // } else if (index === 1) {
+        //     data.todaysData = selector.teamTodayData;
+        //     data.upcomingData = selector.teamUpcomingData;
+        //     data.pendingData = selector.teamPendingData;
+        //     data.rescheduledData = selector.teamReData;
+        // }
+
+
+        // if (status === "success") {
+        // console.log("called List Componet", route.params.from)
+        // if (route.params.from === "TODAY") {
+        //     const todaysData = data.todaysData[0];
+        //     const filteredData = todaysData.tasksList.filter(element => {
+        //         const trimName = element.taskName.toLowerCase().trim();
+        //         const finalTaskName = trimName.replace(/ /g, "");
+        //         return taskNames.includes(finalTaskName);
+        //     });
+
+        //     if (homeSelector.isTeamPresent) {
+        //         const todaysTeamData = data.todaysTeamData[0];
+        //         const filteredTeamData = todaysTeamData.tasksList.filter(element => {
+        //             const trimName = element.taskName.toLowerCase().trim();
+        //             const finalTaskName = trimName.replace(/ /g, "");
+        //             return taskNames.includes(finalTaskName);
+        //         });
+        //         setMyTeamsData(filteredTeamData);
+        //     }
+        //     setMyTasksData(filteredData);
+
+        //     // if (index === 0)
+        //     //     setMyTasksData(filteredData);
+        //     // else if (index === 1)
+        //     //     setMyTeamsData(filteredData);
+        // }
+        // else if (route.params.from === "UPCOMING") {
+        //     const todaysData = data.upcomingData[0];
+        //     const filteredData = todaysData.tasksList.filter(element => {
+        //         const trimName = element.taskName.toLowerCase().trim();
+        //         const finalTaskName = trimName.replace(/ /g, "");
+        //         return taskNames.includes(finalTaskName);
+        //     });
+
+
+        //     if (homeSelector.isTeamPresent) {
+        //         const todaysTeamData = data.upcomingTeamData[0];
+        //         const filteredTeamData = todaysTeamData.tasksList.filter(element => {
+        //             const trimName = element.taskName.toLowerCase().trim();
+        //             const finalTaskName = trimName.replace(/ /g, "");
+        //             return taskNames.includes(finalTaskName);
+        //         });
+        //         setMyTeamsData(filteredTeamData);
+        //     }
+        //     setMyTasksData(filteredData);
+
+        //     // if (index === 0)
+        //     //     setMyTasksData(filteredData);
+        //     // else if (index === 1)
+        //     //     setMyTeamsData(filteredData);
+        // }
+        // else if (route.params.from === "PENDING") {
+        //     const todaysData = data.pendingData[0];
+        //     const filteredData = todaysData.tasksList.filter(element => {
+        //         const trimName = element.taskName.toLowerCase().trim();
+        //         const finalTaskName = trimName.replace(/ /g, "");
+        //         return taskNames.includes(finalTaskName);
+        //     });
+
+
+        //     if (homeSelector.isTeamPresent) {
+        //         const todaysTeamData = data.pendingTeamData[0];
+        //         const filteredTeamData = todaysTeamData.tasksList.filter(element => {
+        //             const trimName = element.taskName.toLowerCase().trim();
+        //             const finalTaskName = trimName.replace(/ /g, "");
+        //             return taskNames.includes(finalTaskName);
+        //         });
+        //         setMyTeamsData(filteredTeamData);
+        //     }
+        //     setMyTasksData(filteredData);
+        //     // if (index === 0)
+        //     //     setMyTasksData(filteredData);
+        //     // else if (index === 1)
+        //     //     setMyTeamsData(filteredData);
+        // }
+        // else if (route.params.from === "RESCHEDULE") {
+        //     const todaysData = data.rescheduledData[0];
+        //     const filteredData = todaysData.tasksList.filter(element => {
+        //         const trimName = element.taskName.toLowerCase().trim();
+        //         const finalTaskName = trimName.replace(/ /g, "");
+        //         return taskNames.includes(finalTaskName);
+        //     });
+
+        //     if (homeSelector.isTeamPresent) {
+        //         const todaysTeamData = data.rescheduledTeamData[0];
+        //         const filteredTeamData = todaysTeamData.tasksList.filter(element => {
+        //             const trimName = element.taskName.toLowerCase().trim();
+        //             const finalTaskName = trimName.replace(/ /g, "");
+        //             return taskNames.includes(finalTaskName);
+        //         });
+        //         setMyTeamsData(filteredTeamData);
+        //     }
+        //     setMyTasksData(filteredData);
+        //     // if (index === 0)
+        //     //     setMyTasksData(filteredData);
+        //     // else if (index === 1)
+        //     //     setMyTeamsData(filteredData);
+        // }
+        // }
     }, [
-        selector.myTasksListResponseStatus, selector.mytasksLisResponse, 
-        selector.myTeamsTasksListResponseStatus, selector.myTeamstasksListResponse, index
+        selector.myTodayData, selector.myUpcomingData, selector.myPendingData, selector.myReData, selector.teamTodayData, selector.teamUpcomingData, selector.teamPendingData, selector.teamReData
     ])
 
 

@@ -126,9 +126,28 @@ const TestDriveScreen = ({ route, navigation }) => {
 
     useEffect(() => {
         //updateBasicDetails(taskData);
-        getAsyncstoreData();
-        getUserToken();
+        // getAsyncstoreData();
+        // getUserToken();
     }, []);
+
+    useEffect(() => {
+        navigation.addListener('focus', () => {
+            dispatch(clearState())
+            setSelectedDriverDetails({
+                name: "",
+                id: "",
+            })
+            getAsyncstoreData();
+            getUserToken();
+        });
+        navigation.addListener('blur', () => {
+            dispatch(clearState())
+            setSelectedDriverDetails({
+                name: "",
+                id: "",
+            })
+        });
+    }, [navigation])
 
     const getAsyncstoreData = async () => {
         const employeeData = await AsyncStore.getData(
@@ -239,7 +258,6 @@ const TestDriveScreen = ({ route, navigation }) => {
     // Handle Task Details Response
     useEffect(() => {
         if (selector.test_drive_vehicle_list_for_drop_down.length > 0 && selectedVehicleDetails?.varient !== '') {
-            console.log("VEHICLE INFO BEFORE:", JSON.stringify(selector.test_drive_vehicle_list_for_drop_down));
             let tempObj = {...selectedVehicleDetails};
             let findModel = [];
             findModel = selector.test_drive_vehicle_list_for_drop_down.filter((item) => {
@@ -249,7 +267,6 @@ const TestDriveScreen = ({ route, navigation }) => {
                 tempObj.vehicleId = findModel[0].vehicleId;
                 tempObj.varientId = findModel[0].varientId;
             }
-            console.log("VEHICLE INFO:", JSON.stringify(tempObj));
             setSelectedVehicleDetails(tempObj)
         }
     }, [selector.test_drive_vehicle_list_for_drop_down]);
@@ -272,6 +289,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                     orgId: jsonObj.orgId,
                     entityModuleId: selector.task_details_response.entityModuleId,
                 };
+                console.log("getTestDriveAppointmentDetailsApi PAYLOAD:", payload);
                 dispatch(getTestDriveAppointmentDetailsApi(payload));
             }
             
@@ -310,11 +328,13 @@ const TestDriveScreen = ({ route, navigation }) => {
             if (taskStatus === "SENT_FOR_APPROVAL" && taskName === "Test Drive") {
                 setHandleActionButtons(2);
             } else if ( 
-                taskStatus === "SENT_FOR_APPROVAL" &&
+                taskStatus === "ASSIGNED" &&
                 taskName === "Test Drive Approval"
             ) {
+                console.log("INSIDE A");
                 setHandleActionButtons(3);
             } else if (taskStatus === "APPROVED" && taskName === "Test Drive") {
+                console.log("INSIDE B");
                 setHandleActionButtons(4);
             } else if (taskStatus === "CANCELLED") {
                 setHandleActionButtons(5);
@@ -1141,12 +1161,12 @@ const TestDriveScreen = ({ route, navigation }) => {
                     {handleActionButtons === 4 && (
                         <View style={styles.view1}>
                             <LocalButtonComp
-                                title={"Reject"}
+                                title={"Close"}
                                 disabled={selector.isLoading}
                                 onPress={() => submitClicked("CLOSED", "Test Drive")}
                             />
                             <LocalButtonComp
-                                title={"Approve"}
+                                title={"Reschedule"}
                                 disabled={selector.isLoading}
                                 bgColor={Colors.GREEN}
                                 onPress={() => submitClicked("RESCHEDULED", "Test Drive")}

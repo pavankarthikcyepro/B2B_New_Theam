@@ -420,9 +420,9 @@ const TargetScreen = ({ route, navigation }) => {
         const currentDate = moment().format(dateFormat)
         const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
         setDateDiff((new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) / (1000 * 60 * 60 * 24));
-        if (selector.target_parameters_data.length > 0) {
+      if (selector.self_target_parameters_data.length > 0) {
             let tempRetail = [];
-            tempRetail = selector.target_parameters_data.filter((item) => {
+        tempRetail = selector.self_target_parameters_data.filter((item) => {
                 return item.paramName.toLowerCase() === 'invoice'
             })
             if (tempRetail.length > 0) {
@@ -430,7 +430,7 @@ const TargetScreen = ({ route, navigation }) => {
             }
 
             let tempBooking = [];
-            tempBooking = selector.target_parameters_data.filter((item) => {
+        tempBooking = selector.self_target_parameters_data.filter((item) => {
                 return item.paramName.toLowerCase() === 'booking'
             })
             // console.log("%%%TEMP BOOK", tempBooking);
@@ -439,7 +439,7 @@ const TargetScreen = ({ route, navigation }) => {
             }
 
             let tempEnq = [];
-            tempEnq = selector.target_parameters_data.filter((item) => {
+        tempEnq = selector.self_target_parameters_data.filter((item) => {
                 return item.paramName.toLowerCase() === 'enquiry'
             })
             if (tempEnq.length > 0) {
@@ -447,7 +447,7 @@ const TargetScreen = ({ route, navigation }) => {
             }
 
             let tempVisit = [];
-            tempVisit = selector.target_parameters_data.filter((item) => {
+        tempVisit = selector.self_target_parameters_data.filter((item) => {
                 return item.paramName.toLowerCase() === 'home visit'
             })
             if (tempVisit.length > 0) {
@@ -455,7 +455,7 @@ const TargetScreen = ({ route, navigation }) => {
             }
 
             let tempTD = [];
-            tempTD = selector.target_parameters_data.filter((item) => {
+        tempTD = selector.self_target_parameters_data.filter((item) => {
                 return item.paramName.toLowerCase() === 'test drive'
             })
             if (tempTD.length > 0) {
@@ -473,7 +473,7 @@ const TargetScreen = ({ route, navigation }) => {
 
         return unsubscribe;
 
-    }, [selector.target_parameters_data])
+    }, [selector.self_target_parameters_data])
 
     useEffect(async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { SafeAreaView, View, StyleSheet, Text, FlatList, Pressable } from "react-native";
+import { SafeAreaView, View, StyleSheet, Text, FlatList, Pressable, TextInput } from "react-native";
 import { EmptyListView } from "../../../../pureComponents";
 import { GlobalStyle, Colors } from "../../../../styles";
 import { Button, IconButton } from "react-native-paper";
@@ -11,16 +11,18 @@ const rupeeSymbol = "\u20B9";
 const ChildComp = ({ route, navigation, }) => {
 
     const [tableData, setTableData] = useState([]);
+    const [searchedData, setSearchedData] = useState([]);
+
     const { accessorylist, key } = route.params;
     const myContext = useContext(AccessoriesContext);
 
     useEffect(() => {
         console.log("AA: ", accessorylist);
         setTableData([...accessorylist]);
+        setSearchedData([...accessorylist]);
     }, [])
 
     const updatedItem = (index) => {
-
         const data = [...tableData];
         const selectedItem = data[index];
         const isSelected = selectedItem.selected;
@@ -64,7 +66,17 @@ const ChildComp = ({ route, navigation, }) => {
 
     return (
         <View style={{ flex: 1, padding: 5, }}>
-            {tableData.length === 0 ? <EmptyListView title={"No Data Found"} /> : <View style={{ flex: 1 }}>
+            {searchedData.length === 0 ? <EmptyListView title={"No Data Found"} /> : <View style={{ flex: 1 }}>
+                {/* <View style={{alignItems: 'center', marginVertical: 10}}>
+                    <View style={{ width: '90%', height: 40, borderRadius: 5, borderColor: '#d1d1d1', borderWidth: 1, justifyContent: 'center', paddingHorizontal: 10 }}>
+                        <TextInput 
+                            value={}
+                            onChangeText={() => {
+
+                            }}
+                        />
+                    </View>
+                </View> */}
                 <FlatList
                     data={tableData}
                     keyExtractor={(item, index) => index.toString()}
