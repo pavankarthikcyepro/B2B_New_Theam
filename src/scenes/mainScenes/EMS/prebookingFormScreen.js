@@ -237,6 +237,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const [selectedWarrentyPrice, setSelectedWarrentyPrice] = useState(0);
     const [selectedPaidAccessoriesPrice, setSelectedPaidAccessoriesPrice] =
         useState(0);
+    const [selectedFOCAccessoriesPrice, setSelectedFOCAccessoriesPrice] =
+        useState(0);
     const [totalOnRoadPrice, setTotalOnRoadPrice] = useState(0);
     const [totalOnRoadPriceAfterDiscount, setTotalOnRoadPriceAfterDiscount] =
         useState(0);
@@ -254,6 +256,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const [isDropSelected, setIsDropSelected] = useState(false);
     const [typeOfActionDispatched, setTypeOfActionDispatched] = useState("");
     const [selectedPaidAccessoriesList, setSelectedPaidAccessoriesList] =
+        useState([]);
+    const [paidAccessoriesListNew, setPaidAccessoriesListNew] =
+        useState([]);
+    const [selectedFOCAccessoriesList, setSelectedFOCAccessoriesList] =
         useState([]);
     const [selectedInsurenceAddons, setSelectedInsurenceAddons] = useState([]);
     const [showApproveRejectBtn, setShowApproveRejectBtn] = useState(false);
@@ -552,22 +558,28 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             console.log("PAID ACC:", JSON.stringify(dmsLeadDto.dmsAccessories));
             if (dmsLeadDto.dmsAccessories.length > 0) {
                 let initialValue = 0;
-                let totalPrice = 0
+                let totalPrice = 0, totalFOCPrice = 0
                 // const totalPrice = dmsLeadDto.dmsAccessories.reduce(
                 //     (preValue, currentValue) => preValue + currentValue.amount,
                 //     initialValue
                 // );
-                for (let i = 0; i < dmsLeadDto.dmsAccessories.length; i++){
-                    if (dmsLeadDto.dmsAccessories[i].dmsAccessoriesType !== "FOC"){
+                for (let i = 0; i < dmsLeadDto.dmsAccessories.length; i++) {
+                    if (dmsLeadDto.dmsAccessories[i].dmsAccessoriesType !== "FOC") {
                         totalPrice += dmsLeadDto.dmsAccessories[i].amount;
                     }
-                    if (i === dmsLeadDto.dmsAccessories.length - 1){
+                    else{
+                        totalFOCPrice += dmsLeadDto.dmsAccessories[i].amount;
+                    }
+                    if (i === dmsLeadDto.dmsAccessories.length - 1) {
                         setSelectedPaidAccessoriesPrice(totalPrice);
+                        setSelectedFOCAccessoriesPrice(totalFOCPrice)
                     }
                 }
-                
+
             }
-            setSelectedPaidAccessoriesList([...dmsLeadDto.dmsAccessories.filter((item) => item.dmsAccessoriesType !== "FOC")]);
+            setSelectedPaidAccessoriesList([...dmsLeadDto.dmsAccessories]);
+            setPaidAccessoriesListNew([...dmsLeadDto.dmsAccessories.filter((item) => item.dmsAccessoriesType !== "FOC")]);
+            // setSelectedFOCAccessoriesList([...dmsLeadDto.dmsAccessories.filter((item) => item.dmsAccessoriesType === "FOC")]);
         }
     }, [selector.pre_booking_details_response]);
 
@@ -939,12 +951,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         const tcsPrice = getTcsAmount();
         setTcsAmount(tcsPrice);
         totalPrice += tcsPrice;
-        totalPrice += selectedPaidAccessoriesPrice;
+        
         if (fastTagSelected) {
             totalPrice += priceInfomationData.fast_tag;
         }
+        setTotalOnRoadPriceAfterDiscount(totalPrice - selectedFOCAccessoriesPrice);
+        totalPrice += selectedPaidAccessoriesPrice;
         setTotalOnRoadPrice(totalPrice);
-        setTotalOnRoadPriceAfterDiscount(totalPrice);
+        // setTotalOnRoadPriceAfterDiscount(totalPrice);
     };
 
     const calculateOnRoadPriceAfterDiscount = () => {
@@ -1007,15 +1021,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
         if (selector.form_or_pan === "PAN") {
             if (selector.pan_number.length == 0) {
-                showToast("please enter pan card number");
+                // showToast("please enter pan card number");
             }
-            
+
         }
 
         if ((selector.enquiry_segment.toLowerCase() === "company" && selector.customer_type.toLowerCase() === "institution") && (selector.customer_type_category == "B2B" ||
             selector.customer_type_category == "B2C")) {
             if (selector.gstin_number.length == 0) {
-                showToast("please enter GSTIN number");
+                // showToast("please enter GSTIN number");
             }
         }
 
@@ -1122,7 +1136,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     };
 
     // Handle On Road Price Response
-    useEffect(() => {
+    useEffect(async () => {
         if (selector.send_onRoad_price_details_response) {
             if (!selector.pre_booking_details_response) {
                 return;
@@ -1144,62 +1158,47 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
             if (dmsEntity.hasOwnProperty("dmsLeadDto"))
                 dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
-            // const employeeData = await AsyncStore.getData(
-            //     AsyncStore.Keys.LOGIN_EMPLOYEE
-            // );
-            // if (employeeData) {
-            //     const jsonObj = JSON.parse(employeeData);
-            //     let tempAttachments = [];
-            //     if (selector.pan_number) {
-            //         tempAttachments.push({
-            //             "branchId": jsonObj.branchs[0]?.branchId,
-            //             "contentSize": 0,
-            //             "createdBy": new Date().getSeconds(),
-            //             "description": "",
-            //             "documentNumber": selector.pan_number,
-            //             "documentPath": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'pan' })[0].documentPath : '',
-            //             "documentType": "pan",
-            //             "documentVersion": 0,
-            //             "fileName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'pan' })[0].fileName : '',
-            //             "gstNumber": "",
-            //             "id": 0,
-            //             "isActive": 0,
-            //             "isPrivate": 0,
-            //             "keyName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'pan' })[0].keyName : '',
-            //             "modifiedBy": jsonObj.empName,
-            //             "orgId": jsonObj.orgId,
-            //             "ownerId": "",
-            //             "ownerName": jsonObj.empName,
-            //             "parentId": "",
-            //             "tinNumber": ""
-            //         })
-            //     }
-            //     if (selector.adhaar_number) {
-            //         tempAttachments.push({
-            //             "branchId": jsonObj.branchs[0]?.branchId,
-            //             "contentSize": 0,
-            //             "createdBy": new Date().getSeconds(),
-            //             "description": "",
-            //             "documentNumber": selector.adhaar_number,
-            //             "documentPath": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'aadhar' })[0].documentPath : '',
-            //             "documentType": "aadhar",
-            //             "documentVersion": 0,
-            //             "fileName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'aadhar' })[0].fileName : '',
-            //             "gstNumber": "",
-            //             "id": 0,
-            //             "isActive": 0,
-            //             "isPrivate": 0,
-            //             "keyName": dmsLeadDto.dmsAttachments.length > 0 ? dmsLeadDto.dmsAttachments.filter((item) => { return item.documentType === 'aadhar' })[0].keyName : '',
-            //             "modifiedBy": jsonObj.empName,
-            //             "orgId": jsonObj.orgId,
-            //             "ownerId": "",
-            //             "ownerName": jsonObj.empName,
-            //             "parentId": "",
-            //             "tinNumber": ""
-            //         })
-            //     }
-            //     dmsLeadDto.dmsAttachments = tempAttachments;
-            // }
+            const employeeData = await AsyncStore.getData(
+                AsyncStore.Keys.LOGIN_EMPLOYEE
+            );
+            if (employeeData) {
+                const jsonObj = JSON.parse(employeeData);
+                let tempAttachments = [];
+                if (Object.keys(uploadedImagesDataObj).length > 0) {
+                    let tempImages = Object.entries(uploadedImagesDataObj).map((e) => ({ name: e[0], value: e[1] }));
+                    for (let i = 0; i < tempImages.length; i++) {
+                        tempAttachments.push({
+                            branchId: jsonObj.branchs[0]?.branchId,
+                            contentSize: 0,
+                            createdBy: new Date().getSeconds(),
+                            description: "",
+                            documentNumber: '',
+                            documentPath: tempImages[i].value.documentPath,
+                            documentType: tempImages[i].name,
+                            documentVersion: 0,
+                            fileName: tempImages[i].value.fileName,
+                            gstNumber: "",
+                            id: 0,
+                            isActive: 0,
+                            isPrivate: 0,
+                            keyName: tempImages[i].value.keyName,
+                            modifiedBy: jsonObj.empName,
+                            orgId: jsonObj.orgId,
+                            ownerId: "",
+                            ownerName: jsonObj.empName,
+                            parentId: "",
+                            tinNumber: "",
+                        });
+
+                        if (i === tempImages.length - 1) {
+                            dmsLeadDto.dmsAttachments = tempAttachments;
+                        }
+                    }
+                }
+                else {
+                    dmsLeadDto.dmsAttachments = tempAttachments;
+                }
+            }
 
             if (
                 selector.pre_booking_details_response.hasOwnProperty("dmsContactDto")
@@ -1305,7 +1304,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         dataObj.dmsfinancedetails = mapDmsFinanceDetails(dataObj.dmsfinancedetails);
         dataObj.dmsBooking = mapDmsBookingDetails(dataObj.dmsBooking, dataObj.id);
         dataObj.dmsAttachments = mapDmsAttachments(dataObj.dmsAttachments);
-        dataObj.dmsAccessories = selectedPaidAccessoriesList;
+        dataObj.dmsAccessories = [...selectedPaidAccessoriesList, ...selectedFOCAccessoriesList];
         return dataObj;
     };
 
@@ -1638,40 +1637,80 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const updatePaidAccessroies = (tableData) => {
         let totalPrice = 0, totFoc = 0, totMrp = 0;
         let newFormatSelectedAccessories = [...selectedPaidAccessoriesList];
+        let newFormatSelectedFOCAccessories = [...selectedFOCAccessoriesList];
+        let tempPaidAcc = [...paidAccessoriesListNew];
         selectedPaidAccessoriesList.forEach((item) => {
             totalPrice += Number(item.amount);
             if (item.dmsAccessoriesType === 'FOC') {
                 totFoc += Number(item.amount);
                 // totMrp += item.cost
             }
-            if (item.dmsAccessoriesType === 'MRP') {
+            if (item.dmsAccessoriesType !== 'FOC') {
                 totMrp += Number(item.amount);
             }
         });
+        // selectedFOCAccessoriesList.forEach((item) => {
+        //     totalPrice += Number(item.amount);
+        //     if (item.dmsAccessoriesType === 'FOC') {
+        //         totFoc += Number(item.amount);
+        //         // totMrp += item.cost
+        //     }
+        //     // if (item.dmsAccessoriesType !== 'FOC') {
+        //     //     totMrp += Number(item.amount);
+        //     // }
+        // });
         tableData.forEach((item) => {
             if (item.selected) {
+                console.log("TYPE:", item.item);
                 totalPrice += item.cost;
                 if (item.item === 'FOC') {
                     totFoc += item.cost
                     // totMrp += item.cost
+                    newFormatSelectedAccessories.push({
+                        id: item.id,
+                        amount: item.cost,
+                        partName: item.partName,
+                        accessoriesName: item.partName,
+                        leadId: selector.pre_booking_details_response.dmsLeadDto.id,
+                        allotmentStatus: null,
+                        dmsAccessoriesType: item.item
+                    });
                 }
-                if (item.item === 'MRP') {
+                if (item.item !== 'FOC') {
                     totMrp += item.cost
                     newFormatSelectedAccessories.push({
                         id: item.id,
                         amount: item.cost,
                         partName: item.partName,
-                        accessoriesName: item.partNo,
+                        accessoriesName: item.partName,
                         leadId: selector.pre_booking_details_response.dmsLeadDto.id,
                         allotmentStatus: null,
+                        dmsAccessoriesType: item.item
+                    });
+                    tempPaidAcc.push({
+                        id: item.id,
+                        amount: item.cost,
+                        partName: item.partName,
+                        accessoriesName: item.partName,
+                        leadId: selector.pre_booking_details_response.dmsLeadDto.id,
+                        allotmentStatus: null,
+                        dmsAccessoriesType: item.item
                     });
                 }
             }
         });
-        setSelectedPaidAccessoriesPrice(totalPrice);
-        setFocPrice(totFoc)
-        setMrpPrice(totMrp)
+        setSelectedPaidAccessoriesPrice(totMrp);
+        // setSelectedFOCAccessoriesPrice(totFoc);
+        if (totFoc > 0){
+            setFocPrice(totFoc)
+        }
+        if (totMrp > 0){
+            setMrpPrice(totMrp)
+        }
+        console.log("PRICE: ", totMrp, totFoc);
         setSelectedPaidAccessoriesList([...newFormatSelectedAccessories]);
+        setPaidAccessoriesListNew([...tempPaidAcc]);
+        // setSelectedFOCAccessoriesList([...newFormatSelectedFOCAccessories]);
     };
 
     const getLifeTax = () => {
@@ -1763,7 +1802,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 formData.append("documentType", "employeeId");
                 break;
             case "UPLOAD_3_MONTHS_PAYSLIP":
-                formData.append("documentType", "payslip");
+                formData.append("documentType", "payslips");
                 break;
             case "UPLOAD_PATTA_PASS_BOOK":
                 formData.append("documentType", "passbook");
@@ -1831,7 +1870,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 delete imagesDataObj.employeeId;
                 break;
             case "3_MONTHS_PAYSLIP":
-                delete imagesDataObj.payslip;
+                delete imagesDataObj.payslips;
                 break;
             case "PATTA_PASS_BOOK":
                 delete imagesDataObj.passbook;
@@ -3233,6 +3272,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             {
                                                 accessorylist: paidAccessoriesList,
                                                 selectedAccessoryList: selectedPaidAccessoriesList,
+                                                selectedFOCAccessoryList: selectedFOCAccessoriesList,
                                             }
                                         )
                                     }
@@ -3243,7 +3283,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     />
                                 </Pressable>
                                 <Text style={GlobalStyle.underline}></Text>
-                                {selectedPaidAccessoriesList.length > 0 ? (
+                                {paidAccessoriesListNew.length > 0 ? (
                                     <View
                                         style={{
                                             backgroundColor: Colors.WHITE,
@@ -3251,7 +3291,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             paddingTop: 5,
                                         }}
                                     >
-                                        {selectedPaidAccessoriesList.map((item, index) => {
+                                        {paidAccessoriesListNew.map((item, index) => {
                                             return (
                                                 <Text style={styles.accessoriText} key={"ACC" + index}>
                                                     {item.accessoriesName + " - " + item.amount}
@@ -4151,23 +4191,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         </List.AccordionGroup>
 
                         {!isDropSelected && showSubmitDropBtn && !userData.isManager && !userData.isPreBookingApprover && (
-                        <View style={styles.actionBtnView}>
-                            <Button
-                                mode="contained"
-                                style={{ width: 120 }}
-                                color={Colors.BLACK}
-                                disabled={selector.isLoading}
-                                labelStyle={{ textTransform: "none" }}
-                                onPress={() => setIsDropSelected(true)}
-                            >Cancel</Button>
-                            <Button
-                                mode="contained"
-                                color={Colors.RED}
-                                disabled={selector.isLoading}
-                                labelStyle={{ textTransform: "none" }}
-                                onPress={submitClicked}
-                            >SUBMIT</Button>
-                        </View>
+                            <View style={styles.actionBtnView}>
+                                <Button
+                                    mode="contained"
+                                    style={{ width: 120 }}
+                                    color={Colors.BLACK}
+                                    disabled={selector.isLoading}
+                                    labelStyle={{ textTransform: "none" }}
+                                    onPress={() => setIsDropSelected(true)}
+                                >Cancel</Button>
+                                <Button
+                                    mode="contained"
+                                    color={Colors.RED}
+                                    disabled={selector.isLoading}
+                                    labelStyle={{ textTransform: "none" }}
+                                    onPress={submitClicked}
+                                >SUBMIT</Button>
+                            </View>
                         )}
 
                         {showApproveRejectBtn &&
