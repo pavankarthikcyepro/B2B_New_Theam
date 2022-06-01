@@ -62,26 +62,6 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
         accessorylist.forEach((item) => {
             let isSelected = false;
             let find = [];
-            // if (item.item === 'FOC'){
-            //     if (selectedFOCAccessoryList.length > 0) {
-            //         find = selectedFOCAccessoryList.filter((innerItem) => {
-            //             return innerItem.accessoriesName === item.partNo && Number(innerItem.amount) === Number(item.cost)
-            //         })
-            //         if (find.length > 0) {
-            //             isSelected = true;
-            //         }
-            //     }
-            // }
-            // else{
-            //     if (selectedAccessoryList.length > 0) {
-            //         find = selectedAccessoryList.filter((innerItem) => {
-            //             return innerItem.accessoriesName === item.partName && Number(innerItem.amount) === Number(item.cost)
-            //         })
-            //         if (find.length > 0) {
-            //             isSelected = true;
-            //         }
-            //     }
-            // }
             find = selectedAccessoryList.filter((innerItem) => {
                 return innerItem.accessoriesName === item.partName && Number(innerItem.amount) === Number(item.cost)
             })

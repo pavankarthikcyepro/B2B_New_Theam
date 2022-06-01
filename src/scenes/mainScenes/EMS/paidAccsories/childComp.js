@@ -12,6 +12,7 @@ const ChildComp = ({ route, navigation, }) => {
 
     const [tableData, setTableData] = useState([]);
     const [searchedData, setSearchedData] = useState([]);
+    const [searchKey, setSearchKey] = useState('');
 
     const { accessorylist, key } = route.params;
     const myContext = useContext(AccessoriesContext);
@@ -25,7 +26,13 @@ const ChildComp = ({ route, navigation, }) => {
     const updatedItem = (index, item) => {
         console.log("ITEM:", index, item);
         const data = [...tableData];
-        const selectedItem = data[index];
+        const searchData = [...searchedData];
+        const selectedItem = item;
+        console.log("SELECTED ITEM:", selectedItem);
+        let innerIndex = data.findIndex((innerItem) => {
+            return innerItem.id === item.id
+        })
+        console.log("INDEX", innerIndex);
         const isSelected = selectedItem.selected;
         if (isSelected) {
             removeItemInAsyncStorage(key, selectedItem)
@@ -33,8 +40,10 @@ const ChildComp = ({ route, navigation, }) => {
             addItemInAsyncStorage(key, selectedItem)
         }
         selectedItem.selected = !isSelected;
-        data[index] = selectedItem;
+        data[innerIndex] = selectedItem;
+        searchData[index] = selectedItem
         setTableData([...data]);
+        setSearchedData([...searchData]);
     }
 
     const addItemInAsyncStorage = async (key, item) => {
@@ -67,19 +76,36 @@ const ChildComp = ({ route, navigation, }) => {
 
     return (
         <View style={{ flex: 1, padding: 5, }}>
-            {searchedData.length === 0 ? <EmptyListView title={"No Data Found"} /> : <View style={{ flex: 1 }}>
-                <View style={{alignItems: 'center', marginVertical: 10}}>
-                    <View style={{ width: '90%', height: 40, borderRadius: 5, borderColor: '#d1d1d1', borderWidth: 1, justifyContent: 'center', paddingHorizontal: 10 }}>
-                        {/* <TextInput 
-                            value={}
-                            onChangeText={(text) => {
-                                console.log(text);
-                            }}
-                        /> */}
-                    </View>
+            <View style={{ alignItems: 'center', marginVertical: 10 }}>
+                <View style={{ width: '90%', height: 40, borderRadius: 5, borderColor: '#d1d1d1', borderWidth: 1, justifyContent: 'center', paddingHorizontal: 10 }}>
+                    <TextInput
+                        value={searchKey}
+                        placeholder={"Search"}
+                        onChangeText={(text) => {
+                            console.log(text);
+                            setSearchKey(text)
+                            if (text === '') {
+                                // setSearchedData([...tableData])
+                            }
+                            else {
+                                let tempData = [];
+                                tempData = tableData.filter((item) => {
+                                    return item.partName.toLowerCase().includes(text.toLowerCase())
+                                })
+                                if (tempData.length > 0) {
+                                    setSearchedData([...tempData])
+                                }
+                                else {
+                                    setSearchedData([])
+                                }
+                            }
+                        }}
+                    />
                 </View>
+            </View>
+            {searchedData.length === 0 ? <EmptyListView title={"No Data Found"} /> : <View style={{ flex: 1 }}>
                 <FlatList
-                    data={tableData}
+                    data={searchedData}
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={({ item, index }) => {
                         return (
