@@ -22,7 +22,7 @@ const mytasksIdentifires = {
 
 const TaskThreeSixtyScreen = ({ route, navigation}) => {
 
-    const { universalId } = route.params;
+    const { universalId, mobileNo } = route.params;
     const dispatch = useDispatch();
     const selector = useSelector(state => state.taskThreeSixtyReducer);
     const [plannedTasks, setPlannedTasks] = useState([]);
@@ -76,7 +76,7 @@ const TaskThreeSixtyScreen = ({ route, navigation}) => {
     }, [selector.wrokflow_response_status, selector.wrokflow_response])
 
     const itemClicked = (item) => {
-
+        console.log("ITEM: ", JSON.stringify(item));
         const taskName = item.taskName;
         const taskId = item.taskId;
         const universalId = item.universalId;
@@ -121,7 +121,7 @@ const TaskThreeSixtyScreen = ({ route, navigation}) => {
                 break;
         }
         if (!navigationId) { return }
-        navigation.navigate(navigationId, { identifier: mytasksIdentifires[finalTaskName], taskId, universalId, taskStatus, taskData: item, mobile: mobileNumber });
+        navigation.navigate(navigationId, { identifier: mytasksIdentifires[finalTaskName], taskId, universalId, taskStatus, taskData: item, mobile: mobileNo });
     };
 
     if (selector.isLoading) {

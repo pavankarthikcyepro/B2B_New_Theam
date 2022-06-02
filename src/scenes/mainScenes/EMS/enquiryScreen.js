@@ -61,6 +61,7 @@ const EnquiryScreen = ({ navigation }) => {
 
     useEffect(() => {
         if (selector.enquiry_list.length > 0) {
+            console.log("ENQ DATA: ", JSON.stringify(selector.enquiry_list[1]));
             setSearchedData(selector.enquiry_list)
         }
         else{
@@ -323,7 +324,7 @@ const EnquiryScreen = ({ navigation }) => {
                                             model={item.model}
                                             onItemPress={() => {
                                                 // console.log("ENQ: ", JSON.stringify(item));
-                                                navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId })
+                                                navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId, mobileNo: item.phone })
                                             }}
                                             onDocPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.detailsOverview, { universalId: item.universalId, enqDetails: item })}
                                         />

@@ -1288,13 +1288,19 @@ const enquiryDetailsOverViewSlice = createSlice({
         dmsAttachments.forEach((item, index) => {
           switch (item.documentType) {
             case "pan":
-              state.pan_number = item.documentNumber;
+              if (item.documentNumber){
+                state.pan_number = item.documentNumber;
+              }
               break;
             case "aadhar":
-              state.adhaar_number = item.documentNumber;
+              if (item.documentNumber){
+                state.adhaar_number = item.documentNumber;
+              }
               break;
             case "employeeId":
-              state.employee_id = item.documentNumber;
+              if (item.documentNumber) {
+                state.employee_id = item.documentNumber;
+              }
               break;
           }
         });

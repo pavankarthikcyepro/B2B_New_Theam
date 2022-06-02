@@ -42,6 +42,7 @@ const ListComponent = ({ route, navigation }) => {
 
     useEffect(() => {
         navigation.addListener('focus', () => {
+            setIndex(0)
             initialTask()
         });
     }, [navigation])
@@ -56,7 +57,7 @@ const ListComponent = ({ route, navigation }) => {
         setMyTeamsData([])
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
-            console.log("called List Componet", route.params.from)
+            console.log("called List Componet", route.params.from, index)
             if (route.params.from === "TODAY") {
                 if (index === 0) {
                     Promise.all([
@@ -83,13 +84,49 @@ const ListComponent = ({ route, navigation }) => {
                             "dataType": "todaysData"
                         })),
                     ]).then((res) => {
-                        const todaysData = res[0].payload.todaysData[0];
-                        const filteredData = todaysData.tasksList.filter(element => {
-                            const trimName = element.taskName.toLowerCase().trim();
-                            const finalTaskName = trimName.replace(/ /g, "");
-                            return taskNames.includes(finalTaskName);
-                        });
-                        setMyTeamsData(filteredData);
+                        let tempArr = [];
+                        let tempTaskName = ''
+                        let allData = res[0].payload.todaysData;
+                        if (allData.length > 0) {
+                            for (let nameIndex = 0; nameIndex < taskNames.length; nameIndex++) {
+                                let taskLists = []
+                                for (let index = 0; index < allData.length; index++) {
+                                    if (allData[index].tasksList.length > 0) {
+                                        let userWiseTasks = allData[index].tasksList;
+                                        for (let taskIndex = 0; taskIndex < userWiseTasks.length; taskIndex++) {
+                                            
+                                            let trimName = userWiseTasks[taskIndex].taskName.toLowerCase().trim();
+                                            let finalTaskName = trimName.replace(/ /g, "");
+                                            if (userWiseTasks[taskIndex].myTaskList.length > 0) {
+                                                let allTasks = userWiseTasks[taskIndex].myTaskList;
+                                                for (let innerIndex = 0; innerIndex < allTasks.length; innerIndex++) {
+                                                    if (finalTaskName === taskNames[nameIndex]) {
+                                                        tempTaskName = userWiseTasks[taskIndex].taskName;
+                                                        taskLists.push(allTasks[innerIndex])
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if (index === allData.length - 1) {
+                                        if (taskLists.length > 0){
+                                            tempArr.push({
+                                                "taskCnt": taskLists.length,
+                                                "taskName": tempTaskName,
+                                                "myTaskList": taskLists
+                                            })
+                                        }
+                                    }
+                                }
+                                if (nameIndex === taskNames.length - 1) {
+                                    setMyTeamsData(tempArr);
+                                }
+                            }
+                            
+                        }
+                        else {
+                            setMyTeamsData([]);
+                        }
                     });
                 }
             }
@@ -119,13 +156,56 @@ const ListComponent = ({ route, navigation }) => {
                             "dataType": "upcomingData"
                         })),
                     ]).then((res) => {
-                        const todaysData = res[0].payload.upcomingData[0];
-                        const filteredData = todaysData.tasksList.filter(element => {
-                            const trimName = element.taskName.toLowerCase().trim();
-                            const finalTaskName = trimName.replace(/ /g, "");
-                            return taskNames.includes(finalTaskName);
-                        });
-                        setMyTeamsData(filteredData);
+                        // const todaysData = res[0].payload.upcomingData[0];
+                        // const filteredData = todaysData.tasksList.filter(element => {
+                        //     const trimName = element.taskName.toLowerCase().trim();
+                        //     const finalTaskName = trimName.replace(/ /g, "");
+                        //     return taskNames.includes(finalTaskName);
+                        // });
+                        // setMyTeamsData(filteredData);
+                        let tempArr = [];
+                        let tempTaskName = ''
+                        let allData = res[0].payload.upcomingData;
+                        if (allData.length > 0) {
+                            for (let nameIndex = 0; nameIndex < taskNames.length; nameIndex++) {
+                                let taskLists = []
+                                for (let index = 0; index < allData.length; index++) {
+                                    if (allData[index].tasksList.length > 0) {
+                                        let userWiseTasks = allData[index].tasksList;
+                                        for (let taskIndex = 0; taskIndex < userWiseTasks.length; taskIndex++) {
+
+                                            let trimName = userWiseTasks[taskIndex].taskName.toLowerCase().trim();
+                                            let finalTaskName = trimName.replace(/ /g, "");
+                                            if (userWiseTasks[taskIndex].myTaskList.length > 0) {
+                                                let allTasks = userWiseTasks[taskIndex].myTaskList;
+                                                for (let innerIndex = 0; innerIndex < allTasks.length; innerIndex++) {
+                                                    if (finalTaskName === taskNames[nameIndex]) {
+                                                        tempTaskName = userWiseTasks[taskIndex].taskName;
+                                                        taskLists.push(allTasks[innerIndex])
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if (index === allData.length - 1) {
+                                        if (taskLists.length > 0) {
+                                            tempArr.push({
+                                                "taskCnt": taskLists.length,
+                                                "taskName": tempTaskName,
+                                                "myTaskList": taskLists
+                                            })
+                                        }
+                                    }
+                                }
+                                if (nameIndex === taskNames.length - 1) {
+                                    setMyTeamsData(tempArr);
+                                }
+                            }
+
+                        }
+                        else {
+                            setMyTeamsData([]);
+                        }
                     });
                 }
             }
@@ -155,13 +235,57 @@ const ListComponent = ({ route, navigation }) => {
                             "dataType": "pendingData"
                         })),
                     ]).then((res) => {
-                        const todaysData = res[0].payload.pendingData[0];
-                        const filteredData = todaysData.tasksList.filter(element => {
-                            const trimName = element.taskName.toLowerCase().trim();
-                            const finalTaskName = trimName.replace(/ /g, "");
-                            return taskNames.includes(finalTaskName);
-                        });
-                        setMyTeamsData(filteredData);
+                        // const todaysData = res[0].payload.pendingData[0];
+                        // const filteredData = todaysData.tasksList.filter(element => {
+                        //     const trimName = element.taskName.toLowerCase().trim();
+                        //     const finalTaskName = trimName.replace(/ /g, "");
+                        //     return taskNames.includes(finalTaskName);
+                        // });
+                        // setMyTeamsData(filteredData);
+
+                        let tempArr = [];
+                        let tempTaskName = ''
+                        let allData = res[0].payload.pendingData;
+                        if (allData.length > 0) {
+                            for (let nameIndex = 0; nameIndex < taskNames.length; nameIndex++) {
+                                let taskLists = []
+                                for (let index = 0; index < allData.length; index++) {
+                                    if (allData[index].tasksList.length > 0) {
+                                        let userWiseTasks = allData[index].tasksList;
+                                        for (let taskIndex = 0; taskIndex < userWiseTasks.length; taskIndex++) {
+
+                                            let trimName = userWiseTasks[taskIndex].taskName.toLowerCase().trim();
+                                            let finalTaskName = trimName.replace(/ /g, "");
+                                            if (userWiseTasks[taskIndex].myTaskList.length > 0) {
+                                                let allTasks = userWiseTasks[taskIndex].myTaskList;
+                                                for (let innerIndex = 0; innerIndex < allTasks.length; innerIndex++) {
+                                                    if (finalTaskName === taskNames[nameIndex]) {
+                                                        tempTaskName = userWiseTasks[taskIndex].taskName;
+                                                        taskLists.push(allTasks[innerIndex])
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if (index === allData.length - 1) {
+                                        if (taskLists.length > 0) {
+                                            tempArr.push({
+                                                "taskCnt": taskLists.length,
+                                                "taskName": tempTaskName,
+                                                "myTaskList": taskLists
+                                            })
+                                        }
+                                    }
+                                }
+                                if (nameIndex === taskNames.length - 1) {
+                                    setMyTeamsData(tempArr);
+                                }
+                            }
+
+                        }
+                        else {
+                            setMyTeamsData([]);
+                        }
                     });
                 }
             }
@@ -191,13 +315,57 @@ const ListComponent = ({ route, navigation }) => {
                             "dataType": "rescheduledData"
                         })),
                     ]).then((res) => {
-                        const todaysData = res[0].payload.rescheduledData[0];
-                        const filteredData = todaysData.tasksList.filter(element => {
-                            const trimName = element.taskName.toLowerCase().trim();
-                            const finalTaskName = trimName.replace(/ /g, "");
-                            return taskNames.includes(finalTaskName);
-                        });
-                        setMyTasksData(filteredData);
+                        // const todaysData = res[0].payload.rescheduledData[0];
+                        // const filteredData = todaysData.tasksList.filter(element => {
+                        //     const trimName = element.taskName.toLowerCase().trim();
+                        //     const finalTaskName = trimName.replace(/ /g, "");
+                        //     return taskNames.includes(finalTaskName);
+                        // });
+                        // setMyTasksData(filteredData);
+
+                        let tempArr = [];
+                        let tempTaskName = ''
+                        let allData = res[0].payload.rescheduledData;
+                        if (allData.length > 0) {
+                            for (let nameIndex = 0; nameIndex < taskNames.length; nameIndex++) {
+                                let taskLists = []
+                                for (let index = 0; index < allData.length; index++) {
+                                    if (allData[index].tasksList.length > 0) {
+                                        let userWiseTasks = allData[index].tasksList;
+                                        for (let taskIndex = 0; taskIndex < userWiseTasks.length; taskIndex++) {
+
+                                            let trimName = userWiseTasks[taskIndex].taskName.toLowerCase().trim();
+                                            let finalTaskName = trimName.replace(/ /g, "");
+                                            if (userWiseTasks[taskIndex].myTaskList.length > 0) {
+                                                let allTasks = userWiseTasks[taskIndex].myTaskList;
+                                                for (let innerIndex = 0; innerIndex < allTasks.length; innerIndex++) {
+                                                    if (finalTaskName === taskNames[nameIndex]) {
+                                                        tempTaskName = userWiseTasks[taskIndex].taskName;
+                                                        taskLists.push(allTasks[innerIndex])
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if (index === allData.length - 1) {
+                                        if (taskLists.length > 0) {
+                                            tempArr.push({
+                                                "taskCnt": taskLists.length,
+                                                "taskName": tempTaskName,
+                                                "myTaskList": taskLists
+                                            })
+                                        }
+                                    }
+                                }
+                                if (nameIndex === taskNames.length - 1) {
+                                    setMyTeamsData(tempArr);
+                                }
+                            }
+
+                        }
+                        else {
+                            setMyTeamsData([]);
+                        }
                     });
                 }
             }
@@ -354,6 +522,7 @@ const ListComponent = ({ route, navigation }) => {
     }
 
     const itemClicked = (item) => {
+        console.log("TASKS: ", JSON.stringify(item.myTaskList));
         navigation.navigate(MyTasksStackIdentifiers.tasksListScreen, { data: item.myTaskList })
     }
 

@@ -2,7 +2,7 @@ import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import moment from "moment";
 import { client } from "../networking/client";
 import URL from "../networking/endpoints";
-
+import { showToast, showToastRedAlert, showToastSucess } from "../utils/toast";
 
 interface CustomerDetailModel {
   key: string;
@@ -112,6 +112,29 @@ export const validateTestDriveApi = createAsyncThunk("TEST_DRIVE_SLICE/validateT
   return json;
 })
 
+export const generateOtpApi = createAsyncThunk("HOME_VISIT_SLICE/generateOtpApi", async (payload, { rejectWithValue }) => {
+
+  console.log("OTP PAYLOAD: ", URL.GENERATE_OTP(), payload);
+
+  const response = await client.post(URL.GENERATE_OTP(), payload);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
+export const validateOtpApi = createAsyncThunk("HOME_VISIT_SLICE/validateOtpApi", async (payload, { rejectWithValue }) => {
+  console.log("VERIFY PAY:", payload);
+  
+  const response = await client.post(URL.VALIDATE_OTP(), payload);
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 const testDriveSlice = createSlice({
   name: "TEST_DRIVE_SLICE",
   initialState: {
@@ -133,6 +156,9 @@ const testDriveSlice = createSlice({
     actual_start_time: "",
     actual_end_time: "",
     driverId: "",
+    generate_otp_response_status: "",
+    otp_session_key: "",
+    validate_otp_response_status: "",
   },
   reducers: {
     clearState: (state, action) => {
@@ -151,6 +177,9 @@ const testDriveSlice = createSlice({
       state.drivers_list = []
       state.employees_list = []
       state.driverId = ''
+      state.generate_otp_response_status = "";
+      state.otp_session_key = "";
+      state.validate_otp_response_status = "";
     },
     updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
@@ -169,6 +198,11 @@ const testDriveSlice = createSlice({
           state.actual_end_time = text;
           break;
       }
+    },
+    clearOTP: (state, action) => {
+      state.generate_otp_response_status = "";
+      state.otp_session_key = "";
+      state.validate_otp_response_status = "";
     },
   },
   extraReducers: (builder) => {
@@ -340,11 +374,61 @@ const testDriveSlice = createSlice({
     builder.addCase(validateTestDriveApi.rejected, (state, action) => {
       state.test_drive_date_validate_response = null;
     })
+
+    builder.addCase(generateOtpApi.pending, (state, action) => {
+      state.isLoading = true;
+      state.generate_otp_response_status = "";
+      state.otp_session_key = "";
+    })
+    builder.addCase(generateOtpApi.fulfilled, (state, action) => {
+      console.log("S generateOtpApi: ", JSON.stringify(action.payload));
+      const status = action.payload.reason ? action.payload.reason : "";
+      if (status === "Success") {
+        showToastSucess("Otp sent successfully");
+      }
+      state.isLoading = false;
+      state.generate_otp_response_status = "successs";
+      state.otp_session_key = action.payload.sessionKey ? action.payload.sessionKey : "";
+    })
+    builder.addCase(generateOtpApi.rejected, (state, action) => {
+      console.log("F generateOtpApi: ", JSON.stringify(action.payload));
+      if (action.payload["reason"]) {
+        showToastRedAlert(action.payload["reason"]);
+      }
+      state.isLoading = false;
+      state.generate_otp_response_status = "failed";
+      state.otp_session_key = "";
+    })
+    // Validate OTP
+    builder.addCase(validateOtpApi.pending, (state, action) => {
+      state.isLoading = true;
+      state.validate_otp_response_status = "pending";
+    })
+    builder.addCase(validateOtpApi.fulfilled, (state, action) => {
+      console.log("S validateOtpApi: ", JSON.stringify(action.payload));
+      if (action.payload.reason === "Success") {
+        state.validate_otp_response_status = "successs";
+      }
+      else if (action.payload["reason"]) {
+        showToastRedAlert(action.payload["reason"]);
+        state.validate_otp_response_status = "failed";
+      }
+      state.isLoading = false;
+    })
+    builder.addCase(validateOtpApi.rejected, (state, action) => {
+      console.log("F validateOtpApi: ", JSON.stringify(action.payload));
+      if (action.payload["reason"]) {
+        showToastRedAlert(action.payload["reason"]);
+      }
+      state.isLoading = false;
+      state.validate_otp_response_status = "failed";
+    })
   }
 });
 
 export const {
   clearState,
   updateSelectedDate,
+  clearOTP,
 } = testDriveSlice.actions;
 export default testDriveSlice.reducer;

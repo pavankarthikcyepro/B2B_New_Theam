@@ -136,7 +136,7 @@ export const getTodayTeamTasksListApi = createAsyncThunk("MY_TASKS/getTodayTeamT
   const url = URL.GET_MY_TASKS_NEW_DATA();
   const response = await client.post(url, payload);
   const json = await response.json()
-  console.log(json, "url")
+  console.log(JSON.stringify(json), "url")
   // console.log(json)
   if (!response.ok) {
     return rejectWithValue(json);
@@ -215,8 +215,13 @@ export const mytaskSlice = createSlice({
     teamUpcomingData: [],
     teamPendingData: [],
     teamReData: [],
+    index : 0,
   },
-  reducers: {},
+  reducers: {
+    updateIndex: (state, action) => {
+      state.index = action.payload
+    }
+  },
   extraReducers: (builder) => {
     // Get Current Task List
     builder.addCase(getCurrentTasksListApi.pending, (state) => {
@@ -423,5 +428,5 @@ export const mytaskSlice = createSlice({
   }
 });
 
-export const { } = mytaskSlice.actions;
+export const { updateIndex } = mytaskSlice.actions;
 export default mytaskSlice.reducer;

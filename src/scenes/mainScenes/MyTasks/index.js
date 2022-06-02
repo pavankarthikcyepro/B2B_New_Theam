@@ -6,7 +6,7 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import ListComponent from "./components/ListComponent";
 import URL from "../../../networking/endpoints";
 import * as AsyncStore from "../../../asyncStore";
-import { getMyTasksListApi, getMyTeamsTasksListApi, role, getPendingMyTasksListApi, getRescheduleMyTasksListApi, getUpcomingMyTasksListApi, getTodayMyTasksListApi, getTodayTeamTasksListApi, getUpcomingTeamTasksListApi, getPendingTeamTasksListApi, getRescheduleTeamTasksListApi } from "../../../redux/mytaskReducer";
+import { getMyTasksListApi, getMyTeamsTasksListApi, role, getPendingMyTasksListApi, getRescheduleMyTasksListApi, getUpcomingMyTasksListApi, getTodayMyTasksListApi, getTodayTeamTasksListApi, getUpcomingTeamTasksListApi, getPendingTeamTasksListApi, getRescheduleTeamTasksListApi, updateIndex } from "../../../redux/mytaskReducer";
 import { useDispatch, useSelector } from "react-redux";
 
 
@@ -77,6 +77,7 @@ const MyTasksScreen = ({ navigation }) => {
     navigation.addListener('focus', () => {
       setIsDataLoaded(false)
       getAsyncstoreData();
+      dispatch(updateIndex(0))
     });
   }, [navigation])
 

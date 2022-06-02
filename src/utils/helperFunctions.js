@@ -238,6 +238,24 @@ export const PincodeDetails = async (pincode) => {
   });
 };
 
+export const PincodeDetailsNew = async (pincode) => {
+  return await new Promise((resolve, reject) => {
+    fetch(`https://api.postalpincode.in/pincode/${pincode}`, {
+      method: "GET",
+    })
+      .then((json) => json.json())
+      .then((res) => {
+        console.log("PINCODE:", JSON.stringify(res));
+        if (res != undefined && res.length > 0) {
+          resolve(res[0].PostOffice)
+        } else {
+          reject({});
+        }
+      })
+      .catch((err) => reject(err));
+  });
+};
+
 export const GetCarModelList = async (orgId, token = "") => {
   return await new Promise((resolve, reject) => {
     const url = URL.VEHICLE_MODELS(orgId);

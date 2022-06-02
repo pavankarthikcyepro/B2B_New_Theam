@@ -563,6 +563,10 @@ const prebookingFormSlice = createSlice({
       state.dd_number = "";
       state.dd_date = "";
     },
+    updateStatus: (state, action) => {
+      state.pre_booking_payment_response_status = "";
+      state.booking_amount_response_status = ''
+    },
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
       const { key, value, id } = action.payload;
       switch (key) {
@@ -1548,6 +1552,7 @@ export const {
   updateBookingPaymentData,
   updateDmsAttachments,
   updateAddressByPincode,
-  updateResponseStatus
+  updateResponseStatus,
+  updateStatus
 } = prebookingFormSlice.actions;
 export default prebookingFormSlice.reducer;
