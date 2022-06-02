@@ -77,7 +77,8 @@ import {
   DateSelectItem,
 } from "../../../pureComponents";
 import { ImagePickerComponent } from "../../../components";
-import { Dropdown } from "sharingan-rn-modal-dropdown";
+// import { Dropdown } from "sharingan-rn-modal-dropdown";
+import { Dropdown } from 'react-native-element-dropdown';
 import {
   Salutation_Types,
   Enquiry_Segment_Data,
@@ -114,6 +115,7 @@ import {
   GetDropList,
   GetFinanceBanksList,
   PincodeDetails,
+  PincodeDetailsNew
 } from "../../../utils/helperFunctions";
 
 import CREATE_NEW from "../../../assets/images/create_new.svg";
@@ -191,6 +193,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [dropPriceDifference, setDropPriceDifference] = useState("");
   const [dropRemarks, setDropRemarks] = useState("");
   const [imagePath, setImagePath] = useState('');
+  const [addressData, setAddressData] = useState([]);
+  const [defaultAddress, setDefaultAddress] = useState(null);
 
   // console.log("gender", selector.enquiry_details_response)
 
@@ -402,11 +406,23 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       if (selector.pincode.length != 6) {
         return;
       }
-      PincodeDetails(selector.pincode).then(
-        (resolve) => {
+      PincodeDetailsNew(selector.pincode).then(
+        (res) => {
           // dispatch an action to update address
-          console.log("£££££", JSON.stringify(resolve));
-          dispatch(updateAddressByPincode(resolve));
+          console.log("PINCODE DETAILS 2", selector.village);
+          let tempAddr = []
+          if (res.length > 0) {
+            for (let i = 0; i < res.length; i++) {
+              if (res[i].Block === selector.village){
+                setDefaultAddress(res[i])
+              }
+              tempAddr.push({ label: res[i].Name, value: res[i] })
+              if (i === res.length - 1) {
+                setAddressData([...tempAddr])
+              }
+            }
+          }
+          // dispatch(updateAddressByPincode(resolve));
         },
         (rejected) => {
           console.log("rejected...: ", rejected);
@@ -432,12 +448,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         setShowPreBookingBtn(true);
       }
 
-        // console.log("dmsLeadDto.leadStage", dmsLeadDto.leadStage);
-        // console.log("dmsLeadDto.leadStatus", dmsLeadDto.leadStatus);
-        // if (dmsLeadDto.leadStage == "ENQUIRY" && dmsLeadDto.leadStatus == null) {
-        //   console.log("called here in enquiryFormScreen for autoSave call lineNo: 492")
-        //   dispatch(getAutoSaveEnquiryDetailsApi(universalId));
-        // }
+      // console.log("dmsLeadDto.leadStage", dmsLeadDto.leadStage);
+      // console.log("dmsLeadDto.leadStatus", dmsLeadDto.leadStatus);
+      // if (dmsLeadDto.leadStage == "ENQUIRY" && dmsLeadDto.leadStatus == null) {
+      //   console.log("called here in enquiryFormScreen for autoSave call lineNo: 492")
+      //   dispatch(getAutoSaveEnquiryDetailsApi(universalId));
+      // }
 
       // Update dmsContactOrAccountDto
       dispatch(updateDmsContactOrAccountDtoData(dmsContactOrAccountDto));
@@ -491,8 +507,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const getEnquiryDetailsFromServer = () => {
     if (universalId) {
       // if (selector.isOpened) {
-        // dispatch(getAutoSaveEnquiryDetailsApi(universalId));
-        dispatch(getEnquiryDetailsApi(universalId));
+      // dispatch(getAutoSaveEnquiryDetailsApi(universalId));
+      dispatch(getEnquiryDetailsApi(universalId));
       // } else {
     }
   };
@@ -506,7 +522,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
   };
 
-// console.log(selector, "Redux Data")
+  // console.log(selector, "Redux Data")
   // let dmsEntity = selector.enquiry_details_response;
   // console.log({ dmsEntity })
 
@@ -1453,9 +1469,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             tinNumber: "",
           });
         }
-        if (Object.keys(uploadedImagesDataObj).length > 0){
+        if (Object.keys(uploadedImagesDataObj).length > 0) {
           let tempImages = Object.entries(uploadedImagesDataObj).map((e) => ({ name: e[0], value: e[1] }));
-          for(let i = 0; i < tempImages.length; i++){
+          for (let i = 0; i < tempImages.length; i++) {
             tempAttachments.push({
               branchId: jsonObj.branchs[0]?.branchId,
               contentSize: 0,
@@ -1479,16 +1495,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               tinNumber: "",
             });
 
-            if (i === tempImages.length - 1){
+            if (i === tempImages.length - 1) {
               dmsLeadDto.dmsAttachments = tempAttachments;
             }
           }
         }
-        else{
+        else {
           dmsLeadDto.dmsAttachments = tempAttachments;
         }
         console.log("TEMP ATT:", JSON.stringify(tempAttachments));
-        
+
       }
     }
 
@@ -1912,16 +1928,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const proceedToPreBookingClicked = () => {
     // if (selector.enquiry_details_response.dmsLeadDto.assignee.empId == employeeId) {
-      if (universalId) {
-        const endUrl = universalId + "?" + "stage=Enquiry";
-        dispatch(getPendingTasksApi(endUrl));
-      }
+    if (universalId) {
+      const endUrl = universalId + "?" + "stage=Enquiry";
+      dispatch(getPendingTasksApi(endUrl));
+    }
     // } else {
 
     //   Alert("Permission Denied");
 
     // }
-      // console.log(selector.enquiry_details_response.dmsLeadDto, "Proceed to prebooking")
+    // console.log(selector.enquiry_details_response.dmsLeadDto, "Proceed to prebooking")
   };
 
   // useEffect(() => {
@@ -2345,11 +2361,22 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
 
-    PincodeDetails(pincode).then(
-      (resolve) => {
+    PincodeDetailsNew(selector.pincode).then(
+      (res) => {
         // dispatch an action to update address
-        // console.log("£££££", JSON.stringify(resolve));
-        dispatch(updateAddressByPincode(resolve));
+        console.log("PINCODE DETAILS 1", JSON.stringify(res));
+        let tempAddr = []
+        if(res){
+          if (res.length > 0) {
+            for (let i = 0; i < res.length; i++) {
+              tempAddr.push({ label: res[i].Name, value: res[i] })
+              if (i === res.length - 1) {
+                setAddressData([...tempAddr])
+              }
+            }
+          }
+        }
+        // dispatch(updateAddressByPincode(resolve));
       },
       (rejected) => {
         console.log("rejected...: ", rejected);
@@ -2967,8 +2994,37 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     dispatch(
                       setCommunicationAddress({ key: "PINCODE", text: text })
                     );
+                    setDefaultAddress(null)
                   }}
                 />
+
+
+                {addressData.length > 0 &&
+                  <>
+                    <Text style={GlobalStyle.underline}></Text>
+                    <Dropdown
+                      style={[styles.dropdownContainer,]}
+                      placeholderStyle={styles.placeholderStyle}
+                      selectedTextStyle={styles.selectedTextStyle}
+                      inputSearchStyle={styles.inputSearchStyle}
+                      iconStyle={styles.iconStyle}
+                      data={addressData}
+                      search
+                      maxHeight={300}
+                      labelField="label"
+                      valueField="value"
+                      placeholder={'Select address'}
+                      searchPlaceholder="Search..."
+                      value={defaultAddress}
+                      // onFocus={() => setIsFocus(true)}
+                      // onBlur={() => setIsFocus(false)}
+                      onChange={val => {
+                        console.log("ADDR: ", val);
+                        dispatch(updateAddressByPincode(val.value));
+                      }}
+                    />
+                  </>
+                }
                 <Text style={GlobalStyle.underline}></Text>
                 <View style={styles.radioGroupBcVw}>
                   <RadioTextItem
@@ -3748,19 +3804,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         }
                       />
                     </View>
-                      {uploadedImagesDataObj?.employeeId?.fileName ? (
+                    {uploadedImagesDataObj?.employeeId?.fileName ? (
 
                       <View style={{ flexDirection: 'row' }}>
                         <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                            if (uploadedImagesDataObj.employeeId?.documentPath) {
-                              setImagePath(uploadedImagesDataObj.employeeId?.documentPath)
+                          if (uploadedImagesDataObj.employeeId?.documentPath) {
+                            setImagePath(uploadedImagesDataObj.employeeId?.documentPath)
                           }
                         }}>
                           <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
                         </TouchableOpacity>
                         <View style={{ width: '80%' }}>
                           <DisplaySelectedImage
-                              fileName={uploadedImagesDataObj.employeeId.fileName}
+                            fileName={uploadedImagesDataObj.employeeId.fileName}
                             from={"EMPLOYEE_ID"}
                           />
                         </View>
@@ -5018,5 +5074,46 @@ const styles = StyleSheet.create({
     bottom: 10,
     right: 10,
     backgroundColor: "white",
+  },
+  dropdownContainer: {
+    backgroundColor: '#fff',
+    padding: 16,
+    // borderWidth: 1,
+    width: '100%',
+    height: 50,
+    borderRadius: 5
+  },
+  dropdown: {
+    height: 50,
+    borderColor: 'gray',
+    borderWidth: 0.5,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+  },
+  icon: {
+    marginRight: 5,
+  },
+  label: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    left: 22,
+    top: 8,
+    zIndex: 999,
+    paddingHorizontal: 8,
+    fontSize: 14,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
   },
 });

@@ -9,6 +9,7 @@ import {
     Keyboard,
     Platform,
     Alert,
+    Dimensions
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,6 +30,9 @@ import {
     getTaskDetailsApi,
     getTestDriveAppointmentDetailsApi,
     validateTestDriveApi,
+    generateOtpApi,
+    validateOtpApi,
+    clearOTP
 } from "../../../redux/testDriveReducer";
 import {
     DateSelectItem,
@@ -47,6 +51,12 @@ import {
 } from "../../../utils/toast";
 import URL from "../../../networking/endpoints";
 import moment from "moment";
+import {
+    CodeField,
+    Cursor,
+    useBlurOnFulfill,
+    useClearByFocusCell,
+} from 'react-native-confirmation-code-field';
 
 const LocalButtonComp = ({
     title,
@@ -124,6 +134,20 @@ const TestDriveScreen = ({ route, navigation }) => {
     const [customerAddress, setCustomerAddress] = useState("");
     const [varientListForDropDown, setVarientListForDropDown] = useState([]);
 
+    const CELL_COUNT = 4;
+    const screenWidth = Dimensions.get("window").width;
+    const otpViewHorizontalPadding = (screenWidth - (160 + 80)) / 2;
+
+    const [isCloseSelected, setIsCloseSelected] = useState(false);
+
+    const [otpValue, setOtpValue] = useState('');
+    const ref = useBlurOnFulfill({ otpValue, cellCount: CELL_COUNT });
+    const [props, getCellOnLayoutHandler] = useClearByFocusCell({
+        value: otpValue,
+        setValue: setOtpValue,
+    });
+    
+
     useEffect(() => {
         //updateBasicDetails(taskData);
         // getAsyncstoreData();
@@ -132,6 +156,7 @@ const TestDriveScreen = ({ route, navigation }) => {
 
     useEffect(() => {
         navigation.addListener('focus', () => {
+            setIsCloseSelected(false)
             dispatch(clearState())
             setSelectedDriverDetails({
                 name: "",
@@ -258,7 +283,7 @@ const TestDriveScreen = ({ route, navigation }) => {
     // Handle Task Details Response
     useEffect(() => {
         if (selector.test_drive_vehicle_list_for_drop_down.length > 0 && selectedVehicleDetails?.varient !== '') {
-            let tempObj = {...selectedVehicleDetails};
+            let tempObj = { ...selectedVehicleDetails };
             let findModel = [];
             findModel = selector.test_drive_vehicle_list_for_drop_down.filter((item) => {
                 return item.varientName === selectedVehicleDetails.varient || item.model === selectedVehicleDetails.model
@@ -292,7 +317,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 console.log("getTestDriveAppointmentDetailsApi PAYLOAD:", payload);
                 dispatch(getTestDriveAppointmentDetailsApi(payload));
             }
-            
+
         }
     };
 
@@ -327,7 +352,7 @@ const TestDriveScreen = ({ route, navigation }) => {
             console.log("TASK STATUS:", taskStatus, taskName);
             if (taskStatus === "SENT_FOR_APPROVAL" && taskName === "Test Drive") {
                 setHandleActionButtons(2);
-            } else if ( 
+            } else if (
                 taskStatus === "ASSIGNED" &&
                 taskName === "Test Drive Approval"
             ) {
@@ -358,7 +383,7 @@ const TestDriveScreen = ({ route, navigation }) => {
             tempDriver = selector.drivers_list.filter((item) => {
                 return Number(item.id) === Number(selector.driverId)
             })
-            if(tempDriver.length > 0){
+            if (tempDriver.length > 0) {
                 setSelectedDriverDetails({ name: tempDriver[0].name, id: tempDriver[0].id });
             }
         }
@@ -636,6 +661,74 @@ const TestDriveScreen = ({ route, navigation }) => {
         dispatch(bookTestDriveAppointmentApi(payload));
     };
 
+    const closeTask = () => {
+        if (selectedVehicleDetails.model.length === 0) {
+            showToast("Please select model");
+            return;
+        }
+
+        if (selectedDriverDetails.name.length === 0) {
+            showToast("Please select driver");
+            return;
+        }
+
+        if (selector.customer_preferred_date.length === 0) {
+            showToast("Please select customer preffered date");
+            return;
+        }
+
+        if (addressType === 0) {
+            showToast("Please select address type");
+            return;
+        }
+
+        if (customerHavingDrivingLicense === 0) {
+            showToast("Please select customer having driving license");
+            return;
+        }
+
+        if (
+            selector.customer_preferred_time.length === 0 ||
+            selector.actual_start_time.length === 0 ||
+            selector.actual_end_time.length === 0
+        ) {
+            showToast("Please select time");
+            return;
+        }
+
+        if (
+            selectedVehicleDetails.vehicleId == 0 ||
+            selectedVehicleDetails.varientId == 0
+        ) {
+            showToast("Please select model & varient");
+            return;
+        }
+
+        let varientId = selectedVehicleDetails.vehicleId;
+        let vehicleId = selectedVehicleDetails.varientId;
+        // selector.test_drive_vehicle_list.forEach(element => {
+        //   if (element.vehicleInfo.vehicleId == selectedVehicleDetails.vehicleId && element.vehicleInfo.varientId == selectedVehicleDetails.varientId) {
+        //     varientId = element.vehicleInfo.varientId;
+        //     vehicleId = selectedVehicleDetails.vehicleId;
+        //   }
+        // });
+        if (!varientId || !vehicleId) return;
+
+        const location = addressType === 1 ? "showroom" : "customer";
+
+        if (customerHavingDrivingLicense === 1) {
+            if (
+                !uploadedImagesDataObj.dlFrontUrl ||
+                !uploadedImagesDataObj.dlBackUrl
+            ) {
+                showToast("Please upload driving license front & back");
+                return;
+            }
+        }
+        generateOtpToCloseTask();
+        setIsCloseSelected(true)
+    };
+
     // Handle Book Test drive appointment response
     useEffect(() => {
         if (selector.book_test_drive_appointment_response) {
@@ -671,10 +764,10 @@ const TestDriveScreen = ({ route, navigation }) => {
             showAlertMsg(true);
         } else if (selector.test_drive_update_task_response === "success" && taskStatusAndName.status === 'CANCELLED') {
             showCancelAlertMsg();
-        }else if (selector.test_drive_update_task_response === "failed") {
+        } else if (selector.test_drive_update_task_response === "failed") {
             showAlertMsg(false);
         }
-        else if (selector.test_drive_update_task_response !== null){
+        else if (selector.test_drive_update_task_response !== null) {
             Alert.alert(
                 "",
                 selector.test_drive_update_task_response,
@@ -796,6 +889,52 @@ const TestDriveScreen = ({ route, navigation }) => {
             </View>
         );
     };
+
+    const generateOtpToCloseTask = () => {
+
+        if (!mobileNumber) {
+            showToastRedAlert("No mobile found");
+            return
+        }
+
+        const payload = {
+            mobileNo: "91" + mobileNumber,
+            message: null
+        }
+        dispatch(generateOtpApi(payload));
+    }
+
+    const resendClicked = () => {
+
+        generateOtpToCloseTask();
+    }
+
+    const verifyClicked = async () => {
+
+        if (otpValue.length != 4) {
+            showToastRedAlert("Please enter valid OTP")
+            return;
+        }
+
+        if (!mobileNumber) {
+            showToastRedAlert("No mobile found");
+            return
+        }
+
+        const payload = {
+            mobileNo: "91" + mobileNumber,
+            sessionKey: selector.otp_session_key,
+            otp: otpValue
+        }
+        dispatch(validateOtpApi(payload));
+    }
+
+    useEffect(() => {
+        if (selector.validate_otp_response_status === "successs") {
+            dispatch(clearOTP())
+            submitClicked("CLOSED", "Test Drive")
+        }
+    }, [selector.validate_otp_response_status])
 
     return (
         <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
@@ -1083,27 +1222,27 @@ const TestDriveScreen = ({ route, navigation }) => {
                             />
                             {/* <View style={{ flexDirection: "row" }}>
                                 <View style={{ width: "50%" }}> */}
-                                    <DateSelectItem
-                                        label={"Actual start Time"}
-                                        value={selector.actual_start_time}
-                                        // disabled={!isRecordEditable}
-                                        disabled={false}
-                                        onPress={() =>
-                                            showDatePickerModelMethod("ACTUAL_START_TIME", "time")
-                                        }
-                                    />
-                                {/* </View>
+                            <DateSelectItem
+                                label={"Actual start Time"}
+                                value={selector.actual_start_time}
+                                // disabled={!isRecordEditable}
+                                disabled={false}
+                                onPress={() =>
+                                    showDatePickerModelMethod("ACTUAL_START_TIME", "time")
+                                }
+                            />
+                            {/* </View>
                                 <View style={{ width: "50%" }}> */}
-                                    <DateSelectItem
-                                        label={"Actual End Time"}
-                                        value={selector.actual_end_time}
-                                        disabled={false}
-                                        // disabled={!isRecordEditable}
-                                        onPress={() =>
-                                            showDatePickerModelMethod("ACTUAL_END_TIME", "time")
-                                        }
-                                    />
-                                {/* </View> */}
+                            <DateSelectItem
+                                label={"Actual End Time"}
+                                value={selector.actual_end_time}
+                                disabled={false}
+                                // disabled={!isRecordEditable}
+                                onPress={() =>
+                                    showDatePickerModelMethod("ACTUAL_END_TIME", "time")
+                                }
+                            />
+                            {/* </View> */}
                             {/* </View> */}
 
                             {/* <View style={styles.space}></View> */}
@@ -1163,7 +1302,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                             <LocalButtonComp
                                 title={"Close"}
                                 disabled={selector.isLoading}
-                                onPress={() => submitClicked("CLOSED", "Test Drive")}
+                                onPress={() => closeTask()}
                             />
                             <LocalButtonComp
                                 title={"Reschedule"}
@@ -1178,6 +1317,58 @@ const TestDriveScreen = ({ route, navigation }) => {
                             <Text style={styles.cancelText}>{"This task has cancelled"}</Text>
                         </View>
                     )}
+
+                    {isCloseSelected ? (
+                        <View style={{ marginTop: 20, paddingHorizontal: otpViewHorizontalPadding }}>
+                            <View style={{ height: 60, justifyContent: 'center', alignItems: "center" }}>
+                                <Text style={{ textAlign: "center" }}>{"We have sent an OTP to mobile number, please verify"}</Text>
+                            </View>
+                            <CodeField
+                                ref={ref}
+                                {...props}
+                                caretHidden={false} // when users can't paste a text value, because context menu doesn't appear
+                                value={otpValue}
+                                onChangeText={setOtpValue}
+                                cellCount={CELL_COUNT}
+                                rootStyle={otpStyles.codeFieldRoot}
+                                keyboardType="number-pad"
+                                textContentType="oneTimeCode"
+                                renderCell={({ index, symbol, isFocused }) => (
+                                    <Text
+                                        key={index}
+                                        style={[otpStyles.cell, isFocused && otpStyles.focusCell]}
+                                        onLayout={getCellOnLayoutHandler(index)}>
+                                        {symbol || (isFocused ? <Cursor /> : null)}
+                                    </Text>
+                                )}
+                            />
+                        </View>
+                    ) : null}
+
+                    {isCloseSelected ? (
+                        <View style={[styles.view1, { marginTop: 30 }]}>
+                            <Button
+                                mode="contained"
+                                style={{ width: 120 }}
+                                color={Colors.GREEN}
+                                // disabled={selector.is_loading_for_task_update}
+                                labelStyle={{ textTransform: "none" }}
+                                onPress={verifyClicked}
+                            >
+                                Verify
+            </Button>
+                            <Button
+                                mode="contained"
+                                style={{ width: 120 }}
+                                color={Colors.RED}
+                                // disabled={selector.is_loading_for_task_update}
+                                labelStyle={{ textTransform: "none" }}
+                                onPress={resendClicked}
+                            >
+                                Resend
+            </Button>
+                        </View>
+                    ) : null}
                 </ScrollView>
             </KeyboardAvoidingView>
         </SafeAreaView>
@@ -1251,5 +1442,33 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: "400",
         color: Colors.RED,
+    },
+    textInputStyle: {
+        height: 65,
+        width: "100%",
+    },
+    view1: {
+        marginTop: 10,
+        flexDirection: "row",
+        justifyContent: "space-evenly",
+        alignItems: "center",
+    },
+});
+
+const otpStyles = StyleSheet.create({
+    root: { flex: 1, padding: 20 },
+    title: { textAlign: 'center', fontSize: 30, fontWeight: "400" },
+    codeFieldRoot: { marginTop: 20 },
+    cell: {
+        width: 40,
+        height: 40,
+        lineHeight: 38,
+        fontSize: 24,
+        borderWidth: 1,
+        borderColor: '#00000030',
+        textAlign: 'center',
+    },
+    focusCell: {
+        borderColor: '#000',
     },
 });
