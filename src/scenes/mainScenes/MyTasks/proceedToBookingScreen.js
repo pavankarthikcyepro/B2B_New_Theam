@@ -27,6 +27,9 @@ import {
   getDropSubReasonDataApi,
 } from "../../../redux/proceedToBookingReducer";
 import {
+  updateStatus
+} from "../../../redux/preBookingFormReducer";
+import {
   showToast,
   showToastRedAlert,
   showToastSucess,
@@ -111,6 +114,9 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
       getAsyncstoreData();
       
       getPreBookingDetailsFromServer();
+    })
+    navigation.addListener('blur', () => {
+      dispatch(updateStatus())
     })
   }, [navigation]);
 
