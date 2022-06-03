@@ -298,6 +298,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const [insuranceDiscount, setInsuranceDiscount] = useState('');
     const [accDiscount, setAccDiscount] = useState('');
     const [imagePath, setImagePath] = useState('');
+    const [initialTotalAmt, setInitialTotalAmt] = useState(0);
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -387,7 +388,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }, [focPrice]);
 
     useEffect(() => {
-        setTotalOnRoadPrice(totalOnRoadPrice + mrpPrice)
+        if (mrpPrice > 0){
+            setTotalOnRoadPrice(totalOnRoadPrice + mrpPrice)
+        }
+        else{
+            setTotalOnRoadPrice(initialTotalAmt)
+        }
     }, [mrpPrice]);
 
     useEffect(() => {
@@ -964,6 +970,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setTotalOnRoadPriceAfterDiscount(totalPrice - selectedFOCAccessoriesPrice);
         totalPrice += selectedPaidAccessoriesPrice;
         setTotalOnRoadPrice(totalPrice);
+        setInitialTotalAmt(totalPrice)
         // setTotalOnRoadPriceAfterDiscount(totalPrice);
     };
 
@@ -1816,19 +1823,19 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     const updatePaidAccessroies = (tableData) => {
         let totalPrice = 0, totFoc = 0, totMrp = 0;
-        let newFormatSelectedAccessories = [...selectedPaidAccessoriesList];
-        let newFormatSelectedFOCAccessories = [...selectedFOCAccessoriesList];
-        let tempPaidAcc = [...paidAccessoriesListNew];
-        selectedPaidAccessoriesList.forEach((item) => {
-            totalPrice += Number(item.amount);
-            if (item.dmsAccessoriesType === 'FOC') {
-                totFoc += Number(item.amount);
-                // totMrp += item.cost
-            }
-            if (item.dmsAccessoriesType !== 'FOC') {
-                totMrp += Number(item.amount);
-            }
-        });
+        let newFormatSelectedAccessories = [];
+        let newFormatSelectedFOCAccessories = [];
+        let tempPaidAcc = [];
+        // selectedPaidAccessoriesList.forEach((item) => {
+        //     totalPrice += Number(item.amount);
+        //     if (item.dmsAccessoriesType === 'FOC') {
+        //         totFoc += Number(item.amount);
+        //         // totMrp += item.cost
+        //     }
+        //     if (item.dmsAccessoriesType !== 'FOC') {
+        //         totMrp += Number(item.amount);
+        //     }
+        // });
         // selectedFOCAccessoriesList.forEach((item) => {
         //     totalPrice += Number(item.amount);
         //     if (item.dmsAccessoriesType === 'FOC') {
@@ -1884,9 +1891,18 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         if (totFoc > 0){
             setFocPrice(totFoc)
         }
-        if (totMrp > 0){
-            setMrpPrice(totMrp)
+        else {
+            dispatch(
+                setOfferPriceDetails({
+                    key: "FOR_ACCESSORIES",
+                    text: '',
+                })
+            )
         }
+        // if (totMrp > 0){
+        //     setMrpPrice(totMrp)
+        // }
+        setMrpPrice(totMrp)
         console.log("PRICE: ", totMrp, totFoc);
         setSelectedPaidAccessoriesList([...newFormatSelectedAccessories]);
         setPaidAccessoriesListNew([...tempPaidAcc]);

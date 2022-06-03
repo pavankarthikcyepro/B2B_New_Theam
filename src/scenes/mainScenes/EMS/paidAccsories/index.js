@@ -67,6 +67,7 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
             })
             if (find.length > 0) {
                 isSelected = true;
+                addItemInAsyncStorage(find[0].dmsAccessoriesType, find[0])
             }
             const newItem = { ...item, selected: isSelected };
             if (titleNames.includes(item.item)) {
@@ -85,6 +86,19 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
 
     const removeExistingKeysFromAsync = async (keys) => {
         await AsyncStorage.multiRemove(keys);
+    }
+
+    const addItemInAsyncStorage = async (key, item) => {
+
+        const existingData = await AsyncStorage.getData(key);
+        console.log("exis: ", existingData);
+        let data = [];
+        if (!existingData) {
+            data = [item];
+        } else {
+            data = [...JSON.parse(existingData), item];
+        }
+        await AsyncStorage.storeData(key, JSON.stringify(data))
     }
 
     const addSelected = async () => {
