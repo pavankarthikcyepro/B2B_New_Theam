@@ -18,6 +18,9 @@ import {
     getDropDataApi,
     getDropSubReasonDataApi
 } from "../../../redux/proceedToPreBookingReducer";
+import {
+    updateStatus
+} from "../../../redux/enquiryFormReducer";
 import { showToast, showToastRedAlert, showToastSucess } from "../../../utils/toast";
 import { getCurrentTasksListApi, getPendingTasksListApi } from "../../../redux/mytaskReducer";
 import URL from "../../../networking/endpoints";
@@ -84,6 +87,12 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
         dispatch(getTaskDetailsApi(taskId));
         getPreBookingDetailsFromServer();
     }, []);
+
+    useEffect(() => {
+        navigation.addListener('blur', () => {
+            dispatch(updateStatus())
+        })
+    }, [navigation]);
 
     const getAsyncstoreData = async () => {
         const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);

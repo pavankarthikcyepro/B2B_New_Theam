@@ -14,7 +14,7 @@ import { TextinputComp } from "../../../components";
 import { Button } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
 import { DropDownSelectionItem } from "../../../pureComponents/dropDownSelectionItem";
-import { DropDownComponant, DatePickerComponent } from "../../../components";
+import { DropDownComponant, DatePickerComponent, LoaderComponent } from "../../../components";
 import {
   clearState,
   setDatePicker,
@@ -22,7 +22,8 @@ import {
   updateSelectedDate,
   getTaskDetailsApi,
   updateTaskApi,
-  getEnquiryDetailsApi
+  getEnquiryDetailsApi,
+  getReasonList
 } from "../../../redux/enquiryFollowUpReducer";
 import { DateSelectItem } from "../../../pureComponents";
 import { convertDateStringToMillisecondsUsingMoment, GetCarModelList } from "../../../utils/helperFunctions";
@@ -38,6 +39,7 @@ import {
 } from "../../../redux/mytaskReducer";
 import * as AsyncStorage from "../../../asyncStore";
 import { isValidateAlphabetics } from "../../../utils/helperFunctions";
+import { Dropdown } from 'react-native-element-dropdown';
 
 const ScreenWidth = Dimensions.get("window").width;
 
@@ -57,7 +59,7 @@ const LocalButtonComp = ({ title, onPress, disabled }) => {
 };
 
 const EnquiryFollowUpScreen = ({ route, navigation }) => {
-  const { taskId, identifier, universalId } = route.params;
+  const { taskId, identifier, universalId, reasonTaskName } = route.params;
   const selector = useSelector((state) => state.enquiryFollowUpReducer);
   const dispatch = useDispatch();
   const [showDropDownModel, setShowDropDownModel] = useState(false);
@@ -68,6 +70,8 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
   const [modelVarientsData, setModelVarientsData] = useState([]);
   const [actionType, setActionType] = useState("");
   const [empId, setEmpId] = useState("");
+  const [reasonList, setReasonList] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useLayoutEffect(() => {
     let title = "Enquiry Follow Up";
@@ -90,6 +94,47 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     dispatch(getTaskDetailsApi(taskId));
     getEnquiryDetailsFromServer();
   }, []);
+
+  useEffect(() => {
+    navigation.addListener('focus', () => {
+      console.log("TYPE:", reasonTaskName);
+      getReasonListData(reasonTaskName)
+    })
+  }, [navigation]);
+
+  const getReasonListData = async (taskName) => {
+    setLoading(true)
+    const employeeData = await AsyncStorage.getData(AsyncStorage.Keys.LOGIN_EMPLOYEE);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      let payload = {
+        orgId: jsonObj.orgId,
+        taskName: taskName
+      }
+      Promise.all([
+        dispatch(getReasonList(payload))
+      ]).then((res) => {
+        console.log("all done", JSON.stringify(res));
+        let tempReasonList = [];
+        let allReasons = res[0].payload;
+        if (allReasons.length > 0) {
+          for (let i = 0; i < allReasons.length; i++) {
+            allReasons[i].label = allReasons[i].reason;
+            allReasons[i].value = allReasons[i].reason;
+            if (i === allReasons.length - 1) {
+              setReasonList(allReasons)
+              setLoading(false)
+            }
+          }
+        }
+        else {
+          setLoading(false)
+        }
+      }).catch(() => {
+        setLoading(false)
+      })
+    }
+  };
 
   const getAsyncStorageData = async () => {
     const employeeData = await AsyncStorage.getData(AsyncStorage.Keys.LOGIN_EMPLOYEE);
@@ -207,17 +252,21 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (selector.employee_remarks.length === 0) {
-      showToast("Please enter required fields");
+    if (selector.reason.length === 0) {
+      showToast("Please select reason");
       return;
     }
-
-    if (!isValidateAlphabetics(selector.reason)) {
-      showToast("Please enter alphabetics only in reason");
+    if (selector.customer_remarks == 0) {
+      showToast("Please enter customer remarks");
       return;
     }
     if (!isValidateAlphabetics(selector.customer_remarks)) {
-      showToast("Please enter alphabetics only in customer reason");
+      showToast("Please enter alphabetics only in customer remarks");
+      return;
+    }
+
+    if (selector.employee_remarks.length === 0) {
+      showToast("Please enter employee remarks");
       return;
     }
 
@@ -339,7 +388,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
                 </View>
               )}
 
-            <TextinputComp
+            {/* <TextinputComp
               style={styles.textInputStyle}
               label={"Reason*"}
               value={selector.reason}
@@ -349,6 +398,27 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
                 dispatch(
                   setEnquiryFollowUpDetails({ key: "REASON", text: text })
                 );
+              }}
+            /> */}
+            <Dropdown
+              style={[styles.dropdownContainer,]}
+              placeholderStyle={styles.placeholderStyle}
+              selectedTextStyle={styles.selectedTextStyle}
+              inputSearchStyle={styles.inputSearchStyle}
+              iconStyle={styles.iconStyle}
+              data={reasonList}
+              search
+              maxHeight={300}
+              labelField="label"
+              valueField="value"
+              placeholder={"Reason*"}
+              searchPlaceholder="Search..."
+              // value={value}
+              // onFocus={() => setIsFocus(true)}
+              // onBlur={() => setIsFocus(false)}
+              onChange={val => {
+                console.log("£££", val);
+                dispatch(setEnquiryFollowUpDetails({ key: "REASON", text: val.reason }));
               }}
             />
             <Text style={GlobalStyle.underline}></Text>
@@ -440,6 +510,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
           )}
         </ScrollView>
       </KeyboardAvoidingView>
+      <LoaderComponent visible={loading} />
     </SafeAreaView>
   );
 };
@@ -476,5 +547,47 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "400",
     color: Colors.RED,
+  },
+  dropdownContainer: {
+    backgroundColor: 'white',
+    padding: 16,
+    // borderWidth: 1,
+    width: '100%',
+    height: 60,
+    // borderRadius: 5
+  },
+  dropdown: {
+    height: 50,
+    borderColor: 'gray',
+    borderWidth: 0.5,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+  },
+  icon: {
+    marginRight: 5,
+  },
+  label: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    left: 22,
+    top: 8,
+    zIndex: 999,
+    paddingHorizontal: 8,
+    fontSize: 14,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+    color: Colors.GRAY
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
   },
 });

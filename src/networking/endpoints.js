@@ -246,6 +246,9 @@ const URL = {
     AUTO_SAVE: () => {
         return downloadFile + `/autosave`;
     },
+    REASON_LIST: (orgId, taskName) => {
+        return `${downloadFile}/get-followup/${orgId}/${taskName}`;
+    },
 }
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason

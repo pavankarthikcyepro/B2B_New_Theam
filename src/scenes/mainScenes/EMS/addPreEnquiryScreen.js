@@ -381,7 +381,8 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             selector.lastName.length == 0 ||
             selector.mobile.length == 0 ||
             selector.carModel.length == 0 ||
-            selector.sourceOfEnquiry.length == 0
+            selector.sourceOfEnquiry.length == 0 ||
+            selector.subSourceOfEnquiry.length == 0
         ) {
             showToastRedAlert("Please fill required fields");
             return;
@@ -1072,7 +1073,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                             }
                         />
 
-                        {subSourceData.length > 0 && (
+                        {/* {subSourceData.length > 0 && ( */}
                             <DropDownSelectionItem
                                 label={"Sub Source of Lead*"}
                                 value={selector.subSourceOfEnquiry}
@@ -1084,7 +1085,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                                     )
                                 }
                             />
-                        )}
+                        {/* )} */}
 
                         {selector.sourceOfEnquiry === "Other" ? (
                             <View>

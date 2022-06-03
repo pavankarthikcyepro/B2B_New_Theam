@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import {
     SafeAreaView,
     StyleSheet,
@@ -110,6 +110,7 @@ import {
     GetFinanceBanksList,
     GetPaidAccessoriesList,
     GetDropList,
+    isEmail
 } from "../../../utils/helperFunctions";
 import URL from "../../../networking/endpoints";
 import uuid from "react-native-uuid";
@@ -204,6 +205,7 @@ const PaidAccessoriesTextAndAmountComp = ({
 const PrebookingFormScreen = ({ route, navigation }) => {
     const dispatch = useDispatch();
     const selector = useSelector((state) => state.preBookingFormReducer);
+    let scrollRef = useRef(null)
     const { universalId, accessoriesList } = route.params;
     const [openAccordian, setOpenAccordian] = useState(0);
     const [componentAppear, setComponentAppear] = useState(false);
@@ -341,6 +343,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         goParentScreen();
         return true;
     };
+
+    const scrollToPos = (itemIndex) => {
+        scrollRef.current.scrollTo({ y: itemIndex * 70 })
+    }
 
     useEffect(() => {
         calculateOnRoadPrice(handlingChargSlctd, essentialKitSlctd, fastTagSlctd);
@@ -986,17 +992,33 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         Keyboard.dismiss();
 
         if (!isValidate(selector.first_name)) {
+            scrollToPos(0)
+            setOpenAccordian('1')
             showToast("please enter alphabetics only in firstname");
             return;
         }
         if (!isValidate(selector.last_name)) {
+            scrollToPos(0)
+            setOpenAccordian('1')
             showToast("please enter alphabetics only in lastname");
             return;
         }
-        if (selector.enquiry_segment.toLowerCase() === "personal" && selector.marital_status.length == 0) {
-            showToast("Please fill the martial status");
+        if (selector.email.length === 0) {
+            scrollToPos(0)
+            setOpenAccordian('1')
+            showToast("please enter email");
             return;
         }
+        if (!isEmail(selector.email)) {
+            scrollToPos(0)
+            setOpenAccordian('1')
+            showToast("please enter valid email");
+            return;
+        }
+        // if (selector.enquiry_segment.toLowerCase() === "personal" && selector.marital_status.length == 0) {
+        //     showToast("Please fill the martial status");
+        //     return;
+        // }
         // if (selector.form_or_pan.length == 0 ||
         //     selector.adhaar_number.length == 0
         //     ) {
@@ -1021,9 +1043,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
         if (selector.form_or_pan === "PAN") {
             if (selector.pan_number.length == 0) {
-                // showToast("please enter pan card number");
+                scrollToPos(4)
+                setOpenAccordian("4")
+                showToast("please enter pan card number");
+                return;
             }
-
         }
 
         if ((selector.enquiry_segment.toLowerCase() === "company" && selector.customer_type.toLowerCase() === "institution") && (selector.customer_type_category == "B2B" ||
@@ -1032,20 +1056,31 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 // showToast("please enter GSTIN number");
             }
         }
-
-        if (selector.retail_finance == "Leasing") {
-            if (selector.leashing_name.length == 0) {
-                showToast("Please fill required fields in leasing name");
-                return;
-            }
-            if (!isValidateAlphabetics(selector.leashing_name)) {
-                showToast("Please enter proper leasing name");
-                return;
-            }
-        }
+        // if (selector.retail_finance.length === 0) {
+        //     scrollToPos(7)
+        //     setOpenAccordian('7')
+        //     showToast("Please select retail finance");
+        //     return;
+        // }
+        // if (selector.retail_finance == "Leasing") {
+        //     if (selector.leashing_name.length == 0) {
+        //         scrollToPos(7)
+        //         setOpenAccordian('7')
+        //         showToast("Please fill required fields in leasing name");
+        //         return;
+        //     }
+        //     if (!isValidateAlphabetics(selector.leashing_name)) {
+        //         showToast("Please enter proper leasing name");
+        //         scrollToPos(7)
+        //         setOpenAccordian('7')
+        //         return;
+        //     }
+        // }
 
         const bookingAmount = parseInt(selector.booking_amount);
         if (bookingAmount < 5000) {
+            scrollToPos(8)
+            setOpenAccordian('8')
             showToast("please enter booking amount minimum 5000");
             return;
         }
@@ -1054,6 +1089,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             selector.payment_at.length === 0 ||
             selector.booking_payment_mode.length === 0
         ) {
+            scrollToPos(8)
+            setOpenAccordian('8')
             showToast("Please enter booking details");
             return;
         }
@@ -1063,6 +1100,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             selector.tentative_delivery_date.length === 0
         ) {
             showToast("Please enter DOD details");
+            scrollToPos(9)
+            setOpenAccordian('9')
             return;
         }
 
@@ -2187,6 +2226,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     contentContainerStyle={{ paddingVertical: 10, paddingHorizontal: 5 }}
                     keyboardShouldPersistTaps={"handled"}
                     style={{ flex: 1 }}
+                    ref={scrollRef}
                 >
                     <View style={styles.baseVw}>
                         <List.AccordionGroup
@@ -3801,7 +3841,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     <View>
                                         <TextinputComp
                                             style={{ height: 65, width: "100%" }}
-                                            label={"Down Payment*"}
+                                            label={"Down Payment"}
                                             value={selector.down_payment}
                                             keyboardType={"number-pad"}
                                             onChangeText={(text) => {
@@ -3841,7 +3881,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         <View>
                                             <TextinputComp
                                                 style={{ height: 65, width: "100%" }}
-                                                label={"Loan Amount*"}
+                                                label={"Loan Amount"}
                                                 keyboardType={"number-pad"}
                                                 value={selector.loan_amount}
                                                 onChangeText={(text) => {
@@ -3862,7 +3902,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             <Text style={GlobalStyle.underline}></Text>
                                             <TextinputComp
                                                 style={{ height: 65, width: "100%" }}
-                                                label={"Rate of Interest*"}
+                                                label={"Rate of Interest"}
                                                 keyboardType={"number-pad"}
                                                 value={selector.rate_of_interest}
                                                 onChangeText={(text) => {
@@ -3918,7 +3958,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                                         <TextinputComp
                                             style={{ height: 65, width: "100%" }}
-                                            label={"EMI*"}
+                                            label={"EMI"}
                                             value={selector.emi}
                                             keyboardType={"number-pad"}
                                             onChangeText={(text) =>
@@ -3981,7 +4021,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 <Text style={GlobalStyle.underline}></Text>
 
                                 <DropDownSelectionItem
-                                    label={"Payment At"}
+                                    label={"Payment At*"}
                                     value={selector.payment_at}
                                     onPress={() =>
                                         showDropDownModelMethod("PAYMENT_AT", "Payment At")
@@ -3989,7 +4029,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 />
 
                                 <DropDownSelectionItem
-                                    label={"Booking Payment Mode"}
+                                    label={"Booking Payment Mode*"}
                                     value={selector.booking_payment_mode}
                                     onPress={() =>
                                         showDropDownModelMethod(
@@ -4029,7 +4069,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 />
                                 <TextinputComp
                                     style={{ height: 65, width: "100%" }}
-                                    label={"Occasion*"}
+                                    label={"Occasion"}
                                     value={selector.occasion}
                                     maxLength={50}
                                     onChangeText={(text) =>
@@ -4048,7 +4088,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 />
                                 <TextinputComp
                                     style={{ height: 65, width: "100%" }}
-                                    label={"Delivery Location*"}
+                                    label={"Delivery Location"}
                                     maxLength={50}
                                     value={selector.delivery_location}
                                     onChangeText={(text) =>

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { SafeAreaView, View, Text, StyleSheet, Keyboard, Dimensions, KeyboardAvoidingView } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
-import { TextinputComp } from "../../../components";
+import { TextinputComp, LoaderComponent } from "../../../components";
 import { Button } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
+import { Dropdown } from 'react-native-element-dropdown';
 import {
   clearState,
   setHomeVisitDetails,
@@ -31,6 +32,10 @@ import {
 } from 'react-native-confirmation-code-field';
 import URL from "../../../networking/endpoints";
 
+import {
+  getReasonList
+} from "../../../redux/enquiryFollowUpReducer";
+
 const otpStyles = StyleSheet.create({
   root: { flex: 1, padding: 20 },
   title: { textAlign: 'center', fontSize: 30, fontWeight: "400" },
@@ -54,12 +59,13 @@ const screenWidth = Dimensions.get("window").width;
 const otpViewHorizontalPadding = (screenWidth - (160 + 80)) / 2;
 
 const HomeVisitScreen = ({ route, navigation }) => {
-  const { taskId, identifier, mobile } = route.params;
+  const { taskId, identifier, mobile, reasonTaskName } = route.params;
   const selector = useSelector((state) => state.homeVisitReducer);
   const dispatch = useDispatch();
   const [actionType, setActionType] = useState("");
   const [empId, setEmpId] = useState("");
   const [isCloseSelected, setIsCloseSelected] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [otpValue, setOtpValue] = useState('');
   const ref = useBlurOnFulfill({ otpValue, cellCount: CELL_COUNT });
@@ -67,11 +73,53 @@ const HomeVisitScreen = ({ route, navigation }) => {
     value: otpValue,
     setValue: setOtpValue,
   });
+  const [reasonList, setReasonList] = useState([]);
 
   useEffect(() => {
     getAsyncStorageData();
     dispatch(getTaskDetailsApi(taskId));
   }, []);
+
+  useEffect(() => {
+    navigation.addListener('focus', () => {
+      console.log("TYPE:", reasonTaskName);
+      getReasonListData(reasonTaskName)
+    })
+  }, [navigation]);
+
+  const getReasonListData = async (taskName) => {
+    setLoading(true)
+    const employeeData = await AsyncStorage.getData(AsyncStorage.Keys.LOGIN_EMPLOYEE);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      let payload = {
+        orgId: jsonObj.orgId,
+        taskName: taskName
+      }
+      Promise.all([
+        dispatch(getReasonList(payload))
+      ]).then((res) => {
+        console.log("all done", JSON.stringify(res));
+        let tempReasonList = [];
+        let allReasons = res[0].payload;
+        if(allReasons.length > 0){
+          for(let i = 0; i < allReasons.length; i++){
+            allReasons[i].label = allReasons[i].reason;
+            allReasons[i].value = allReasons[i].reason;
+            if(i === allReasons.length - 1){
+              setReasonList(allReasons)
+              setLoading(false)
+            }
+          }
+        }
+        else{
+          setLoading(false)
+        }
+      }).catch(() => {
+        setLoading(false)
+      })
+    }
+  };
 
   const getAsyncStorageData = async () => {
     const employeeId = await AsyncStorage.getData(AsyncStorage.Keys.EMP_ID);
@@ -109,7 +157,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
   const closeTask = () => {
 
     if (selector.reason.length === 0) {
-      showToast("Please Enter Reason");
+      showToast("Please Select Reason");
       return;
     }
 
@@ -135,7 +183,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
     }
 
     if (selector.reason.length === 0) {
-      showToast("Please Enter Reason");
+      showToast("Please Select Reason");
       return;
     }
 
@@ -217,7 +265,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
 
         <View style={{ padding: 15 }}>
           <View style={[GlobalStyle.shadow, { backgroundColor: Colors.WHITE }]}>
-            <TextinputComp
+            {/* <TextinputComp
               style={styles.textInputStyle}
               label={"Reason"}
               value={selector.reason}
@@ -225,11 +273,32 @@ const HomeVisitScreen = ({ route, navigation }) => {
               onChangeText={(text) => {
                 dispatch(setHomeVisitDetails({ key: "REASON", text: text }));
               }}
+            /> */}
+            <Dropdown
+              style={[styles.dropdownContainer,]}
+              placeholderStyle={styles.placeholderStyle}
+              selectedTextStyle={styles.selectedTextStyle}
+              inputSearchStyle={styles.inputSearchStyle}
+              iconStyle={styles.iconStyle}
+              data={reasonList}
+              search
+              maxHeight={300}
+              labelField="label"
+              valueField="value"
+              placeholder={"Reason*"}
+              searchPlaceholder="Search..."
+              // value={value}
+              // onFocus={() => setIsFocus(true)}
+              // onBlur={() => setIsFocus(false)}
+              onChange={val => {
+                console.log("£££", val);
+                dispatch(setHomeVisitDetails({ key: "REASON", text: val.reason }));
+              }}
             />
             <Text style={GlobalStyle.underline}></Text>
             <TextinputComp
               style={styles.textInputStyle}
-              label={"Customer Remarks"}
+              label={"Customer Remarks*"}
               maxLength={50}
               value={selector.customer_remarks}
               onChangeText={(text) =>
@@ -241,7 +310,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
             <Text style={GlobalStyle.underline}></Text>
             <TextinputComp
               style={styles.textInputStyle}
-              label={"Employee Remarks"}
+              label={"Employee Remarks*"}
               maxLength={50}
               value={selector.employee_remarks}
               onChangeText={(text) =>
@@ -332,6 +401,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
           </View>
         ) : null}
       </SafeAreaView>
+      <LoaderComponent visible={loading} />
     </KeyboardAvoidingView>
   );
 };
@@ -351,5 +421,47 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-evenly",
     alignItems: "center",
+  },
+  dropdownContainer: {
+    backgroundColor: 'white',
+    padding: 16,
+    // borderWidth: 1,
+    width: '100%',
+    height: 50,
+    borderRadius: 5
+  },
+  dropdown: {
+    height: 50,
+    borderColor: 'gray',
+    borderWidth: 0.5,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+  },
+  icon: {
+    marginRight: 5,
+  },
+  label: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    left: 22,
+    top: 8,
+    zIndex: 999,
+    paddingHorizontal: 8,
+    fontSize: 14,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+    color: Colors.GRAY
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
   },
 });

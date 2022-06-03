@@ -120,27 +120,33 @@ const DropDownComponant = ({ visible = false, multiple = false, headerTitle = "S
                                         </Pressable>
                                     )
                                 }}
-                            /> : <FlatList
-                                style={{ height: faltListHeight }}
-                                data={data}
-                                keyExtractor={(item, index) => index.toString()}
-                                renderItem={({ item, index }) => {
-                                    return (
-                                        <Pressable onPress={() => closeModalWithSelectedItem(item)}>
-                                            <View>
-                                                <List.Item
-                                                    titleStyle={{ fontSize: 16, fontWeight: '400' }}
-                                                    title={item.name}
-                                                    titleNumberOfLines={1}
-                                                    descriptionEllipsizeMode={'tail'}
-                                                    description={""}
-                                                />
-                                                <View style={GlobalStyle.underline}></View>
-                                            </View>
-                                        </Pressable>
-                                    )
-                                }}
-                            />}
+                            /> : (data.length > 0 ?
+                                    <FlatList
+                                        style={{ height: faltListHeight }}
+                                        data={data}
+                                        keyExtractor={(item, index) => index.toString()}
+                                        renderItem={({ item, index }) => {
+                                            return (
+                                                <Pressable onPress={() => closeModalWithSelectedItem(item)}>
+                                                    <View>
+                                                        <List.Item
+                                                            titleStyle={{ fontSize: 16, fontWeight: '400' }}
+                                                            title={item.name}
+                                                            titleNumberOfLines={1}
+                                                            descriptionEllipsizeMode={'tail'}
+                                                            description={""}
+                                                        />
+                                                        <View style={GlobalStyle.underline}></View>
+                                                    </View>
+                                                </Pressable>
+                                            )
+                                        }}
+                                    />
+                                    :
+                                    <View style={{marginTop: 10, marginLeft: 10}}>
+                                        <Text style={{ fontSize: 16, fontWeight: '400' }}>No data found</Text>
+                                    </View>
+                                )}
                         </View>
                     </SafeAreaView>
                 </View>

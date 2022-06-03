@@ -43,7 +43,7 @@ import {
 import { Dropdown } from "sharingan-rn-modal-dropdown";
 import { Button, IconButton, RadioButton } from "react-native-paper";
 import * as AsyncStore from "../../../asyncStore";
-import { convertToDate, convertToTime } from "../../../utils/helperFunctions";
+import { convertToDate, convertToTime, isEmail } from "../../../utils/helperFunctions";
 import {
     showToast,
     showToastRedAlert,
@@ -536,15 +536,35 @@ const TestDriveScreen = ({ route, navigation }) => {
     };
 
     const submitClicked = (status, taskName) => {
+        if (email.length === 0) {
+            showToast("Please enter email");
+            return;
+        }
+        if (!isEmail(email)) {
+            showToast("Please enter valid email");
+            return;
+        }
         if (selectedVehicleDetails.model.length === 0) {
             showToast("Please select model");
             return;
         }
 
-        if (selectedDriverDetails.name.length === 0) {
-            showToast("Please select driver");
+        if (selectedVehicleDetails.varient.length === 0) {
+            showToast("Please select model");
             return;
         }
+
+        if (
+            selectedVehicleDetails.vehicleId == 0 ||
+            selectedVehicleDetails.varientId == 0
+        ) {
+            showToast("Please select model & varient");
+            return;
+        }
+        // if (selectedDriverDetails.name.length === 0) {
+        //     showToast("Please select driver");
+        //     return;
+        // }
 
         if (selector.customer_preferred_date.length === 0) {
             showToast("Please select customer preffered date");
@@ -667,10 +687,10 @@ const TestDriveScreen = ({ route, navigation }) => {
             return;
         }
 
-        if (selectedDriverDetails.name.length === 0) {
-            showToast("Please select driver");
-            return;
-        }
+        // if (selectedDriverDetails.name.length === 0) {
+        //     showToast("Please select driver");
+        //     return;
+        // }
 
         if (selector.customer_preferred_date.length === 0) {
             showToast("Please select customer preffered date");
@@ -845,6 +865,7 @@ const TestDriveScreen = ({ route, navigation }) => {
 
     const updateSelectedVehicleDetails = (vehicleInfo, fromVarient) => {
         //Update Varient List
+        console.log("VEHICLE INFO: ", JSON.stringify(vehicleInfo));
         if (selector.test_drive_varients_obj_for_drop_down[vehicleInfo.model]) {
             const varientsData =
                 selector.test_drive_varients_obj_for_drop_down[vehicleInfo.model];
@@ -852,11 +873,11 @@ const TestDriveScreen = ({ route, navigation }) => {
         }
         setSelectedVehicleDetails({
             model: vehicleInfo.model,
-            varient: fromVarient ? vehicleInfo.varientName : "",
+            varient: vehicleInfo.varientName,
             fuelType: fromVarient ? vehicleInfo.fuelType : "",
             transType: fromVarient ? vehicleInfo.transmission_type : "",
             vehicleId: vehicleInfo.vehicleId,
-            varientId: fromVarient ? vehicleInfo.varientId : 0,
+            varientId: vehicleInfo.varientId,
         });
     };
 
@@ -1062,19 +1083,19 @@ const TestDriveScreen = ({ route, navigation }) => {
                             <Text style={GlobalStyle.underline}></Text>
 
                             <DropDownSelectionItem
-                                label={"Model"}
-                                value={selectedVehicleDetails.model}
+                                label={"Model*"}
+                                value={selectedVehicleDetails.vehicleId ? selectedVehicleDetails.model : ''}
                                 // disabled={!isRecordEditable}
                                 disabled={false}
                                 onPress={() => showDropDownModelMethod("MODEL", "Model")}
                             />
 
                             <DropDownSelectionItem
-                                label={"Varient"}
-                                value={selectedVehicleDetails.varient}
+                                label={"Varient*"}
+                                value={selectedVehicleDetails.varientId ? selectedVehicleDetails.varient : ''}
                                 // disabled={!isRecordEditable}
                                 disabled={false}
-                                onPress={() => showDropDownModelMethod("VARIENT", "Model")}
+                                onPress={() => showDropDownModelMethod("VARIENT", "Varient")}
                             />
 
                             <TextinputComp
