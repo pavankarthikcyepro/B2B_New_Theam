@@ -49,37 +49,47 @@ const TaskListScreen = ({ route, navigation }) => {
         const trimName = taskName.toLowerCase().trim();
         const finalTaskName = trimName.replace(/ /g, "");
         let navigationId = ""
+        let taskNameNew = ''
         switch (finalTaskName) {
             case "testdrive":
                 navigationId = AppNavigator.MyTasksStackIdentifiers.testDrive;
+                taskNameNew = 'Test Drive'
                 break;
             case "testdriveapproval":
                 navigationId = AppNavigator.MyTasksStackIdentifiers.testDrive;
+                taskNameNew = 'Test Drive'
                 break;
             case "proceedtoprebooking":
                 navigationId = AppNavigator.MyTasksStackIdentifiers.proceedToPreBooking;
+                taskNameNew = ''
                 break;
             case "proceedtobooking":
                 navigationId = AppNavigator.MyTasksStackIdentifiers.proceedToPreBooking;
+                taskNameNew = ''
                 break;
             case "homevisit":
                 navigationId = AppNavigator.MyTasksStackIdentifiers.homeVisit;
+                taskNameNew = 'Home Visit'
                 break;
             case "enquiryfollowup":
                 navigationId = AppNavigator.MyTasksStackIdentifiers.enquiryFollowUp;
+                taskNameNew = 'Enquiry Followup'
                 break;
             case "preenquiryfollowup":
                 navigationId = AppNavigator.MyTasksStackIdentifiers.enquiryFollowUp;
+                taskNameNew = 'Pre Enquiry Followup'
                 break;
             case "prebookingfollowup":
                 navigationId = AppNavigator.MyTasksStackIdentifiers.enquiryFollowUp;
+                taskNameNew = 'Prebooking Followup'
                 break;
             case "createenquiry":
                 navigationId = AppNavigator.MyTasksStackIdentifiers.createEnquiry;
+                taskNameNew = ''
                 break;
         }
         if (!navigationId) { return }
-        navigation.navigate(navigationId, { identifier: mytasksIdentifires[finalTaskName], taskId, universalId, taskStatus, taskData: item, mobile: mobileNumber });
+        navigation.navigate(navigationId, { identifier: mytasksIdentifires[finalTaskName], taskId, universalId, taskStatus, taskData: item, mobile: mobileNumber, reasonTaskName: taskNameNew });
     };
 
     return (

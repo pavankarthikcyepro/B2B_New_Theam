@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -148,6 +148,7 @@ const theme = {
 const DetailsOverviewScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const headNavigation = useNavigation();
+  let scrollRef = useRef(null)
   const selector = useSelector((state) => state.enquiryFormReducer);
   const [openAccordian, setOpenAccordian] = useState("0");
   const [componentAppear, setComponentAppear] = useState(false);
@@ -294,6 +295,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       console.log("branch id:", branchId)
       setSelectedBranchId(branchId);
     });
+  }
+
+  const scrollToPos = (itemIndex) => {
+    scrollRef.current.scrollTo({ y: itemIndex * 70 })
   }
 
   const handleBackButtonClick = () => {
@@ -716,15 +721,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (selector.enquiry_segment.toLowerCase() == "personal") {
-      if (
-        selector.dateOfBirth.length == 0
-        // ||
-        // selector.anniversaryDate.length == 0
-      ) {
-        return;
-      }
-    }
+    // if (selector.enquiry_segment.toLowerCase() == "personal") {
+    //   if (
+    //     selector.dateOfBirth.length == 0
+    //     // ||
+    //     // selector.anniversaryDate.length == 0
+    //   ) {
+    //     return;
+    //   }
+    // }
     if (!isValidate(selector.firstName)) {
       return;
     }
@@ -757,17 +762,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (selector.retail_finance === "In House") {
-      if (
-        selector.finance_category.length == 0 ||
-        selector.loan_of_tenure.length == 0 ||
-        selector.emi.length == 0 ||
-        selector.approx_annual_income.length == 0 ||
-        selector.bank_or_finance.length == 0
-      ) {
-        return;
-      }
-    }
+    // if (selector.retail_finance === "In House") {
+    //   if (
+    //     selector.finance_category.length == 0 ||
+    //     selector.loan_of_tenure.length == 0 ||
+    //     selector.emi.length == 0 ||
+    //     selector.approx_annual_income.length == 0 ||
+    //     selector.bank_or_finance.length == 0
+    //   ) {
+    //     return;
+    //   }
+    // }
 
     // Leashing
     if (selector.retail_finance == "Leasing") {
@@ -1075,138 +1080,180 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const submitClicked = async () => {
     //Personal Intro
     if (selector.salutation.length == 0) {
+      scrollToPos(0)
+      setOpenAccordian('2')
       showToast("Please fill required salutation field in Personal Intro");
       return;
     }
 
-    if (selector.enquiry_segment.toLowerCase() == "personal") {
-      if (
-        selector.dateOfBirth.length == 0
-        // ||
-        // selector.anniversaryDate.length == 0
-      ) {
-        showToast("Please fill required fields in Personal Intro");
-        return;
-      }
-    }
+    // if (selector.enquiry_segment.toLowerCase() == "personal") {
+    //   if (
+    //     selector.dateOfBirth.length == 0
+    //     // ||
+    //     // selector.anniversaryDate.length == 0
+    //   ) {
+    //     showToast("Please fill required fields in Personal Intro");
+    //     return;
+    //   }
+    // }
 
     if (!isValidate(selector.firstName)) {
+      scrollToPos(0)
+      setOpenAccordian('2')
       showToast("please enter alphabetics only in firstname");
       return;
     }
     if (!isValidate(selector.lastName)) {
+      scrollToPos(0)
+      setOpenAccordian('2')
       showToast("please enter alphabetics only in lastname");
       return;
     }
     if (!isValidateAlphabetics(selector.relationName)) {
+      scrollToPos(0)
+      setOpenAccordian('2')
       showToast("please enter alphabetics only in relationname");
       return;
     }
     if (!isValidateAlphabetics(selector.streetName)) {
+      scrollToPos(3)
+      setOpenAccordian('3')
       showToast("Please enter alphabetics only in street name");
       return;
     }
     //Customer Profile
 
     if (selector.designation.length == 0) {
+      scrollToPos(2)
+      setOpenAccordian('1')
       showToast("Please fill designation");
       return;
     }
+    // if (selector.expected_delivery_date.length == 0) {
+    //   showToast("Please select expected delivery date");
+    //   return;
+    // }
     if (selector.buyer_type.length == 0) {
+      scrollToPos(2)
+      setOpenAccordian('1')
       showToast("Please fill  Buyer type");
       return;
     }
-    if (!isValidateAlphabetics(selector.occupation)) {
-      showToast("Please enter alphabetics only in occupation");
-      return;
-    }
+    // if (!isValidateAlphabetics(selector.occupation)) {
+    //   showToast("Please enter alphabetics only in occupation");
+    //   return;
+    // }
 
     if (!isValidateAlphabetics(selector.designation)) {
+      scrollToPos(2)
+      setOpenAccordian('1')
       showToast("Please enter alphabetics only in designation");
       return;
     }
     //communication Address
     if (selector.houseNum.length == 0) {
+      scrollToPos(3)
+      setOpenAccordian('3')
       showToast("Please fill H.No ");
       return;
     }
     if (selector.streetName.length == 0) {
+      scrollToPos(3)
+      setOpenAccordian('3')
       showToast("Please fill Street Name ");
       return;
     }
     if (selector.village.length == 0) {
+      scrollToPos(3)
+      setOpenAccordian('3')
       showToast("Please fill village ");
       return;
     }
     if (selector.mandal.length == 0) {
+      scrollToPos(3)
+      setOpenAccordian('3')
       showToast("Please fill mandal");
       return;
     }
     if (selector.city.length == 0) {
+      scrollToPos(3)
+      setOpenAccordian('3')
       showToast("Please fill city ");
       return;
     }
     if (selector.state.length == 0) {
+      scrollToPos(3)
+      setOpenAccordian('3')
       showToast("Please fill state ");
       return;
     }
     if (
       selector.district.length == 0) {
+      scrollToPos(3)
+      setOpenAccordian('3')
       showToast("Please fill district ");
       return;
     }
     // Model Selection
     if (
       selector.model.length == 0) {
+      scrollToPos(4)
+      setOpenAccordian('4')
       showToast("Please fill model");
       return;
     }
     if (selector.varient.length == 0) {
+      scrollToPos(4)
+      setOpenAccordian('4')
       showToast("Please fill Varient");
       return;
     }
     if (selector.color.length == 0) {
+      scrollToPos(4)
+      setOpenAccordian('4')
       showToast("Please fill color");
       return;
     }
     //Finance Details
     if (selector.retail_finance.length == 0) {
+      scrollToPos(5)
+      setOpenAccordian('5')
       showToast("Please fill required fields in Finance Details");
       return;
     }
-    if (selector.retail_finance === "In House") {
-      if (
-        selector.finance_category.length == 0) {
-        showToast("Please fill finance category");
-        return;
-      }
-      if (
-        selector.loan_of_tenure.length == 0
-      ) {
-        showToast("Please fill loan of tenure");
-        return;
-      }
-      if (selector.emi.length == 0) {
-        showToast("Please fill emi");
-        return;
-      }
-      if (selector.approx_annual_income.length == 0) {
-        showToast("Please fill approx annual income");
-        return;
-      }
-      if (selector.bank_or_finance.length == 0) {
-        showToast("Please fill bank/Finance");
-        return;
-      }
-    }
+    // if (selector.retail_finance === "In House") {
+    //   if (
+    //     selector.finance_category.length == 0) {
+    //     showToast("Please fill finance category");
+    //     return;
+    //   }
+    //   if (
+    //     selector.loan_of_tenure.length == 0
+    //   ) {
+    //     showToast("Please fill loan of tenure");
+    //     return;
+    //   }
+    //   if (selector.emi.length == 0) {
+    //     showToast("Please fill emi");
+    //     return;
+    //   }
+    //   if (selector.approx_annual_income.length == 0) {
+    //     showToast("Please fill approx annual income");
+    //     return;
+    //   }
+    //   if (selector.bank_or_finance.length == 0) {
+    //     showToast("Please fill bank/Finance");
+    //     return;
+    //   }
+    // }
 
     // Leashing
-    if (selector.retail_finance == "Leasing") {
-      if (selector.leashing_name.length == 0) {
-        showToast("Please fill required fields in leasing name");
-        return;
-      }
-    }
+    // if (selector.retail_finance == "Leasing") {
+    //   if (selector.leashing_name.length == 0) {
+    //     showToast("Please fill required fields in leasing name");
+    //     return;
+    //   }
+    // }
 
     //Customer Customer need Analysis
     // if (selector.c_voice_of_customer_remarks == 0) {
@@ -1222,14 +1269,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         selector.a_color == 0 ||
         selector.a_reg_no == 0
       ) {
+        scrollToPos(8)
+        setOpenAccordian('8')
         showToast("Please fill required fields in Addtional buyer ");
         return;
       }
       if (!isValidateAlphabetics(selector.a_varient)) {
+        scrollToPos(8)
+        setOpenAccordian('8')
         showToast("Please enter alphabetics only in varient ");
         return;
       }
       if (!isValidateAlphabetics(selector.a_color)) {
+        scrollToPos(8)
+        setOpenAccordian('8')
         showToast("Please enter alphabetics only in color ");
         return;
       }
@@ -1239,15 +1292,21 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (selector.buyer_type === "Replacement Buyer") {
       if (selector.r_color.length > 0) {
         if (!isValidateAlphabetics(selector.r_color)) {
+          scrollToPos(9)
+          setOpenAccordian('9')
           showToast("Please enter alphabetics only in color ");
           return;
         }
       }
       if (selector.r_reg_no.length == 0) {
+        scrollToPos(9)
+        setOpenAccordian('9')
         showToast("Please fill reg no is mandatory");
         return;
       }
       if (!isValidateAlphabetics(selector.r_model_other_name)) {
+        scrollToPos(9)
+        setOpenAccordian('9')
         showToast("Please enter proper model other name");
         return;
       }
@@ -1260,12 +1319,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       if (selector.r_hypothication_checked === true) {
         if (selector.r_hypothication_name.length > 0) {
           if (!isValidateAlphabetics(selector.r_hypothication_name)) {
+            scrollToPos(9)
+            setOpenAccordian('9')
             showToast("Please enter the proper Hypothication name");
             return;
           }
         }
         if (selector.r_hypothication_branch.length > 0) {
           if (!isValidateAlphabetics(selector.r_hypothication_branch)) {
+            scrollToPos(9)
+            setOpenAccordian('9')
             showToast("Please enter the proper Hypothication branch");
             return;
           }
@@ -1276,24 +1339,28 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (selector.c_looking_for_any_other_brand_checked === true) {
       if (selector.c_dealership_name.length > 0) {
         if (!isValidateAlphabetics(selector.c_dealership_name)) {
+          scrollToPos(7)
+          setOpenAccordian('7')
           showToast("please enter the validate Dealership name");
           return;
         }
       }
     }
 
-    if (
-      selector.leashing_name.length > 0 &&
-      !isValidateAlphabetics(selector.leashing_name)
-    ) {
-      showToast("Please enter proper leasing name");
-      return;
-    }
+    // if (
+    //   selector.leashing_name.length > 0 &&
+    //   !isValidateAlphabetics(selector.leashing_name)
+    // ) {
+    //   showToast("Please enter proper leasing name");
+    //   return;
+    // }
 
     if (
       selector.pan_number.length > 0 &&
       !isValidateAplhaNumeric(selector.pan_number)
     ) {
+      scrollToPos(6)
+      setOpenAccordian('6')
       showToast("Please enter proper PAN number");
       return;
     }
@@ -1301,6 +1368,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       selector.gstin_number.length > 0 &&
       !isValidateAplhaNumeric(selector.gstin_number)
     ) {
+      scrollToPos(6)
+      setOpenAccordian('6')
       showToast("Please enter proper gstin number");
       return;
     }
@@ -1549,9 +1618,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const mapContactOrAccountDto = (prevData) => {
     console.log("first", selector.salutation)
     let dataObj = { ...prevData };
-    dataObj.dateOfBirth = convertDateStringToMillisecondsUsingMoment(
-      selector.dateOfBirth
-    );
+    if (selector.dateOfBirth){
+      dataObj.dateOfBirth = convertDateStringToMillisecondsUsingMoment(
+        selector.dateOfBirth
+      );
+    }
+    else{
+      dataObj.dateOfBirth = ''
+    }
     dataObj.email = selector.email;
     dataObj.firstName = selector.firstName;
     dataObj.lastName = selector.lastName;
@@ -2517,6 +2591,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           }}
           keyboardShouldPersistTaps={"handled"}
           style={{ flex: 1 }}
+          ref={scrollRef}
         >
           <View style={styles.baseVw}>
             <List.AccordionGroup
@@ -2891,7 +2966,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 )}
 
                 <DateSelectItem
-                  label={"Expected Delivery Date"}
+                  label={"Expected Delivery Date*"}
                   value={selector.expected_delivery_date.length == 0 ? moment().format("DD/MM/YYYY") : selector.expected_delivery_date}
                   onPress={() =>
                     dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
@@ -3536,7 +3611,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {selector.retail_finance === "In House" && (
                   <DropDownSelectionItem
-                    label={"Finance Category*"}
+                    label={"Finance Category"}
                     value={selector.finance_category}
                     onPress={() =>
                       showDropDownModelMethod(
@@ -3551,7 +3626,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <View>
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
-                      label={"Down Payment*"}
+                      label={"Down Payment"}
                       maxLength={10}
                       keyboardType={"numeric"}
                       value={selector.down_payment}
@@ -3573,7 +3648,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <View>
                       <TextinputComp
                         style={{ height: 65, width: "100%" }}
-                        label={"Loan Amount*"}
+                        label={"Loan Amount"}
                         keyboardType={"numeric"}
                         maxLength={10}
                         value={selector.loan_amount}
@@ -3594,7 +3669,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       <Text style={GlobalStyle.underline}></Text>
                       <TextinputComp
                         style={{ height: 65, width: "100%" }}
-                        label={"Rate of Interest*"}
+                        label={"Rate of Interest"}
                         keyboardType={"numeric"}
                         maxLength={10}
                         value={selector.rate_of_interest}
@@ -3650,7 +3725,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
-                      label={"EMI*"}
+                      label={"EMI"}
                       keyboardType={"default"}
                       value={selector.emi}
                       onChangeText={(text) =>
@@ -4324,7 +4399,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   ]}
                 >
                   <DropDownSelectionItem
-                    label={"Make"}
+                    label={"Make*"}
                     value={selector.a_make}
                     onPress={() => showDropDownModelMethod("A_MAKE", "Make")}
                   />
@@ -4349,7 +4424,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     </View>
                   )}
                   <DropDownSelectionItem
-                    label={"Model"}
+                    label={"Model*"}
                     value={selector.a_model}
                     onPress={() => showDropDownModelMethod("A_MODEL", "Model")}
                   />
@@ -4377,7 +4452,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.a_varient}
-                    label={"Varient"}
+                    label={"Varient*"}
                     maxLength={50}
                     onChangeText={(text) =>
                       dispatch(
@@ -4392,7 +4467,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.a_color}
-                    label={"Color"}
+                    label={"Color*"}
                     maxLength={50}
                     onChangeText={(text) =>
                       dispatch(
@@ -4407,7 +4482,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.a_reg_no}
-                    label={"Reg. No."}
+                    label={"Reg. No.*"}
                     maxLength={50}
                     keyboardType={"default"}
                     autoCapitalize={"characters"}

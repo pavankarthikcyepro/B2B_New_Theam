@@ -102,6 +102,8 @@ export const dropPreBooingApi = createAsyncThunk("PREBOONING_FORMS_SLICE/dropPre
 
 export const sendOnRoadPriceDetails = createAsyncThunk("PREBOONING_FORMS_SLICE/sendOnRoadPriceDetails", async (payload, { rejectWithValue }) => {
 
+  console.log("PPPTTT:", URL.SEND_ON_ROAD_PRICE_DETAILS(), JSON.stringify(payload));
+  
   const response = await client.post(URL.SEND_ON_ROAD_PRICE_DETAILS(), payload);
   try {
     const json = await response.json();

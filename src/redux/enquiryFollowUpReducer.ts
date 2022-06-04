@@ -52,6 +52,18 @@ export const getEnquiryDetailsApi = createAsyncThunk("ENQUIRY_FOLLOW_UP_SLICE/ge
   return json;
 })
 
+export const getReasonList = createAsyncThunk("ENQUIRY_FOLLOW_UP_SLICE/getReasonList", async (payload: any, { rejectWithValue }) => {
+
+  const response = await client.get(URL.REASON_LIST(payload.orgId, payload.taskName));
+  const json = await response.json()
+  console.log("REASON: ", JSON.stringify(json));
+  
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 const slice = createSlice({
   name: "ENQUIRY_FOLLOW_UP_SLICE",
   initialState: {

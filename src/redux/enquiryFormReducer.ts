@@ -350,6 +350,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.customer_types_response = null;
       state.employee_id = "";
       state.gstin_number = "";
+      state.expected_delivery_date = ''
     },
     setEditable: (state, action) => {
       console.log("pressed");
@@ -1310,6 +1311,10 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.fuel_type = action.payload.fuelType;
       state.transmission_type = action.payload.transmissionType;
     },
+    updateStatus: (state, action) => {
+      state.get_pending_tasks_response_status = "";
+      state.get_pending_tasks_response_list = [];
+    },
     updateAddressByPincode: (state, action) => {
 
       console.log("pincode action", action)
@@ -1504,6 +1509,7 @@ export const {
   updateAdditionalOrReplacementBuyerData,
   updateDmsAttachmentDetails,
   updateAddressByPincode,
-  updateRefNo
+  updateRefNo,
+  updateStatus
 } = enquiryDetailsOverViewSlice.actions;
 export default enquiryDetailsOverViewSlice.reducer;
