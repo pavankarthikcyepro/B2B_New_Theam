@@ -35,7 +35,8 @@ const dropDownData = [
 ];
 
 export const getPrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getPrebookingDetailsApi", async (universalId, { rejectWithValue }) => {
-
+  console.log("%$%$%$%$:", URL.ENQUIRY_DETAILS(universalId));
+  
   const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
   try {
     const json = await response.json();
@@ -1047,9 +1048,21 @@ const prebookingFormSlice = createSlice({
 
       const dmsAddresses = action.payload;
       if (dmsAddresses.length == 2) {
+        if (dmsAddresses[0].pincode !== dmsAddresses[1].pincode ||
+          dmsAddresses[0].houseNo !== dmsAddresses[1].houseNo ||
+          dmsAddresses[0].street !== dmsAddresses[1].street ||
+          dmsAddresses[0].village !== dmsAddresses[1].village ||
+          dmsAddresses[0].mandal !== dmsAddresses[1].mandal ||
+          dmsAddresses[0].city !== dmsAddresses[1].city ||
+          dmsAddresses[0].district !== dmsAddresses[1].district ||
+          dmsAddresses[0].state !== dmsAddresses[1].state){
+          state.is_permanent_address_same = "NO"
+          }
+          else{
+          state.is_permanent_address_same = "YES"
+          }
         dmsAddresses.forEach((address) => {
           if (address.addressType === 'Communication') {
-
             state.pincode = address.pincode ? address.pincode : "";
             state.house_number = address.houseNo ? address.houseNo : "";
             state.street_name = address.street ? address.street : "";
@@ -1087,6 +1100,17 @@ const prebookingFormSlice = createSlice({
           }
         });
       }
+    },
+    clearPermanentAddr: (state, action) => {
+      state.p_pincode = "";
+      state.p_houseNum = "";
+      state.p_streetName = "";
+      state.p_village = "";
+      state.p_mandal = "";
+      state.p_city = "";
+      state.p_district = "";
+      state.p_state = "";
+      state.p_urban_or_rural = 0
     },
     updateModelSelectionData: (state, action) => {
 
@@ -1232,12 +1256,12 @@ const prebookingFormSlice = createSlice({
         state.vehicle_on_road_price_insurence_details_response = action.payload;
         if (action.payload.insuranceAddOn.length > 0){
           let addOnNames = "", price = 0;
-          action.payload.insuranceAddOn.forEach((element, index) => {
-            addOnNames += element.add_on_price[0].document_name + ((index + 1) < action.payload.insuranceAddOn.length ? ", " : "");
-            price += Number(element.add_on_price[0].cost)
-          });
-          state.add_on_insurance = addOnNames;
-          state.addOnPrice = price;
+          // action.payload.insuranceAddOn.forEach((element, index) => {
+          //   addOnNames += element.add_on_price[0].document_name + ((index + 1) < action.payload.insuranceAddOn.length ? ", " : "");
+          //   price += Number(element.add_on_price[0].cost)
+          // });
+          // state.add_on_insurance = addOnNames;
+          // state.addOnPrice = price;
         }
       }
       state.isLoading = false;
@@ -1555,6 +1579,7 @@ export const {
   updateDmsAttachments,
   updateAddressByPincode,
   updateResponseStatus,
-  updateStatus
+  updateStatus,
+  clearPermanentAddr
 } = prebookingFormSlice.actions;
 export default prebookingFormSlice.reducer;

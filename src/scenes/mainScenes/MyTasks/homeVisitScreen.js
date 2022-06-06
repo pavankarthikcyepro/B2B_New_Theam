@@ -274,6 +274,12 @@ const HomeVisitScreen = ({ route, navigation }) => {
                 dispatch(setHomeVisitDetails({ key: "REASON", text: text }));
               }}
             /> */}
+            <View style={{ position: 'relative' }}>
+            {selector.reason !== '' &&
+              <View style={{ position: 'absolute', top: 0, left: 10, zIndex: 99 }}>
+                <Text style={{ fontSize: 13, color: Colors.GRAY }}>Reason*</Text>
+              </View>
+            }
             <Dropdown
               style={[styles.dropdownContainer,]}
               placeholderStyle={styles.placeholderStyle}
@@ -295,6 +301,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
                 dispatch(setHomeVisitDetails({ key: "REASON", text: val.reason }));
               }}
             />
+            </View>
             <Text style={GlobalStyle.underline}></Text>
             <TextinputComp
               style={styles.textInputStyle}
@@ -424,7 +431,7 @@ const styles = StyleSheet.create({
   },
   dropdownContainer: {
     backgroundColor: 'white',
-    padding: 16,
+    padding: 12,
     // borderWidth: 1,
     width: '100%',
     height: 50,

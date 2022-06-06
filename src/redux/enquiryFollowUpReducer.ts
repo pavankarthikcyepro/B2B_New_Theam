@@ -23,6 +23,8 @@ export const getTaskDetailsApi = createAsyncThunk(
   async (taskId, { rejectWithValue }) => {
     const response = await client.get(URL.GET_TASK_DETAILS(taskId));
     const json = await response.json();
+    console.log("TASK DTLS:", JSON.stringify(json));
+    
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -86,6 +88,7 @@ const slice = createSlice({
     actual_start_time: "",
     actual_end_time: "",
     enquiry_details_response: null,
+    isReasonUpdate: false,
   },
   reducers: {
     clearState: (state, action) => {
@@ -155,6 +158,9 @@ const slice = createSlice({
       if (action.payload.success === true && action.payload.dmsEntity) {
         const taskObj = action.payload.dmsEntity.task;
         state.reason = taskObj.reason ? taskObj.reason : "";
+        if(taskObj.reason){
+          state.isReasonUpdate = true;
+        }
         state.customer_remarks = taskObj.customerRemarks
           ? taskObj.customerRemarks
           : "";

@@ -69,6 +69,7 @@ import {
   updateRef,
   customerLeadRef,
   updateEnquiryDetailsApiAutoSave,
+  clearPermanentAddr
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
@@ -736,9 +737,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (!isValidate(selector.lastName)) {
       return;
     }
-    if (!isValidateAlphabetics(selector.relationName)) {
-      return;
-    }
+    // if (!isValidateAlphabetics(selector.relationName)) {
+    //   return;
+    // }
     if (!isValidateAlphabetics(selector.streetName)) {
       return;
     }
@@ -1109,12 +1110,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("please enter alphabetics only in lastname");
       return;
     }
-    if (!isValidateAlphabetics(selector.relationName)) {
-      scrollToPos(0)
-      setOpenAccordian('2')
-      showToast("please enter alphabetics only in relationname");
-      return;
-    }
+    // if (!isValidateAlphabetics(selector.relationName)) {
+    //   scrollToPos(0)
+    //   setOpenAccordian('2')
+    //   showToast("please enter alphabetics only in relationname");
+    //   return;
+    // }
     if (!isValidateAlphabetics(selector.streetName)) {
       scrollToPos(3)
       setOpenAccordian('3')
@@ -2671,7 +2672,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.relationName}
-                  label={"Relation Name*"}
+                  label={"Relation Name"}
                   autoCapitalize="words"
                   keyboardType={"default"}
                   maxLength={50}
@@ -3284,14 +3285,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     status={
                       selector.is_permanent_address_same === "NO" ? true : false
                     }
-                    onPress={() =>
+                    onPress={() => {
                       dispatch(
                         setCommunicationAddress({
                           key: "PERMANENT_ADDRESS",
                           text: "false",
                         })
                       )
-                    }
+                      dispatch(clearPermanentAddr())
+                    }}
                   />
                 </View>
                 <Text style={GlobalStyle.underline}></Text>

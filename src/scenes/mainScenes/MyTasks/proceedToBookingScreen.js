@@ -39,6 +39,7 @@ import {
   getPendingTasksListApi,
 } from "../../../redux/mytaskReducer";
 import URL from "../../../networking/endpoints";
+import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
 
 const FirstDependencyArray = [
   "Lost To Competition",
@@ -399,7 +400,13 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
     if (identifier === "PROCEED_TO_PRE_BOOKING") {
       getMyTasksListFromServer();
     }
-    navigation.popToTop();
+    else if (identifier === "PROCEED_TO_BOOKING") {
+      console.log("INSIDE ", identifier);
+      navigation.navigate(EmsTopTabNavigatorIdentifiers.booking)
+    }
+    else{
+      navigation.popToTop();
+    }
     dispatch(clearState());
   };
 
@@ -549,7 +556,7 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
               mode="contained"
               color={Colors.RED}
               labelStyle={{ textTransform: "none" }}
-              disabled={selector.isLoading}
+              // disabled={selector.isLoading}
               onPress={() => setIsDropSelected(true)}
             >
               Drop
@@ -558,7 +565,7 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
               mode="contained"
               color={Colors.RED}
               labelStyle={{ textTransform: "none" }}
-              disabled={selector.isLoading}
+              // disabled={selector.isLoading}
               onPress={proceedToPreBookingClicked}
             >
               {identifier === "PROCEED_TO_BOOKING"
@@ -573,7 +580,7 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
               mode="contained"
               color={Colors.RED}
               labelStyle={{ textTransform: "none" }}
-              disabled={selector.isLoading}
+              // disabled={selector.isLoading}
               onPress={proceedToCancellation}
             >
               Proceed To Cancellation

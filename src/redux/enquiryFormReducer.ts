@@ -1086,6 +1086,17 @@ const enquiryDetailsOverViewSlice = createSlice({
         });
       }
     },
+    clearPermanentAddr: (state, action) => {
+      state.p_pincode = "";
+      state.p_houseNum = "";
+      state.p_streetName = "";
+      state.p_village = "";
+      state.p_mandal = "";
+      state.p_city = "";
+      state.p_district = "";
+      state.p_state = "";
+      state.p_urban_or_rural = 0
+    },
     updateModelSelectionData: (state, action) => {
       const dmsLeadProducts = action.payload;
       let dataObj: any = {};
@@ -1510,6 +1521,7 @@ export const {
   updateDmsAttachmentDetails,
   updateAddressByPincode,
   updateRefNo,
-  updateStatus
+  updateStatus,
+  clearPermanentAddr
 } = enquiryDetailsOverViewSlice.actions;
 export default enquiryDetailsOverViewSlice.reducer;

@@ -11,7 +11,7 @@ import CREATE_NEW from '../../../assets/images/create_new.svg';
 import { AppNavigator } from '../../../navigations';
 import { CallUserComponent, SortAndFilterComp, DateRangeComp, DatePickerComponent } from '../../../components';
 import { callPressed, getPreEnquiryData, setPreEnquiryList, getMorePreEnquiryData } from '../../../redux/preEnquiryReducer';
-import { updateTAB, updateIsSearch } from '../../../redux/appReducer';
+import { updateTAB, updateIsSearch, updateSearchKey } from '../../../redux/appReducer';
 import * as AsyncStore from '../../../asyncStore';
 import realm from '../../../database/realm';
 import { callNumber } from '../../../utils/helperFunctions';
@@ -119,6 +119,7 @@ const PreEnquiryScreen = ({ navigation }) => {
                 })
                 setSearchedData([]);
                 setSearchedData(tempData);
+                dispatch(updateSearchKey(''))
             }
             else{
                 setSearchedData([]);

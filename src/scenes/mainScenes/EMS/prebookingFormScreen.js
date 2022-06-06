@@ -14,7 +14,7 @@ import {
     TextInput,
     Image,
     TouchableOpacity,
-    Modal
+    Modal,
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { useDispatch, useSelector } from "react-redux";
@@ -63,7 +63,8 @@ import {
     getAssignedTasksApi,
     updateAddressByPincode,
     updateRef,
-    updateResponseStatus
+    updateResponseStatus,
+    clearPermanentAddr
 } from "../../../redux/preBookingFormReducer";
 import {
     RadioTextItem,
@@ -356,9 +357,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         selectedInsurencePrice,
         selectedAddOnsPrice,
         selectedWarrentyPrice,
-        // selectedPaidAccessoriesPrice,
+        selectedPaidAccessoriesPrice,
         selector.vechicle_registration,
-        taxPercent
+        taxPercent,
     ]);
 
     useEffect(() => {
@@ -378,7 +379,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     ]);
 
     useEffect(() => {
-        setTotalOnRoadPriceAfterDiscount(totalOnRoadPriceAfterDiscount - focPrice)
+        // setTotalOnRoadPriceAfterDiscount(totalOnRoadPriceAfterDiscount - focPrice)
         dispatch(
             setOfferPriceDetails({
                 key: "FOR_ACCESSORIES",
@@ -387,14 +388,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         )
     }, [focPrice]);
 
-    useEffect(() => {
-        if (mrpPrice > 0){
-            setTotalOnRoadPrice(totalOnRoadPrice + mrpPrice)
-        }
-        else{
-            setTotalOnRoadPrice(initialTotalAmt)
-        }
-    }, [mrpPrice]);
+    // useEffect(() => {
+    //     if (mrpPrice > 0){
+    //         setTotalOnRoadPrice(totalOnRoadPrice + mrpPrice)
+    //     }
+    //     else{
+    //         setTotalOnRoadPrice(initialTotalAmt)
+    //     }
+    // }, [mrpPrice]);
 
     useEffect(() => {
         calculateOnRoadPriceAfterDiscount();
@@ -410,6 +411,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         selector.accessories_discount,
         selector.additional_offer_1,
         selector.additional_offer_2,
+        totalOnRoadPrice
     ]);
 
     const getBranchId = () => {
@@ -537,7 +539,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             }
             const dmsLeadDto = selector.pre_booking_details_response.dmsLeadDto;
             dispatch(getOnRoadPriceDtoListApi(dmsLeadDto.id));
-            if (dmsLeadDto.leadStatus === "ENQUIRYCOMPLETED" || dmsLeadDto.leadStatus === "SENTFORAPPROVAL") {
+            if (dmsLeadDto.leadStatus === "ENQUIRYCOMPLETED" || dmsLeadDto.leadStatus === "SENTFORAPPROVAL" || dmsLeadDto.leadStatus === "REJECTED") {
                 setShowSubmitDropBtn(true);
             }
             if (dmsLeadDto.leadStatus === "SENTFORAPPROVAL") {
@@ -549,7 +551,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 dispatch(getPaymentDetailsApi(dmsLeadDto.id));
                 dispatch(getBookingAmountDetailsApi(dmsLeadDto.id));
             }
-
+            if (dmsLeadDto.leadStatus === "REJECTED"){
+                setIsRejectSelected(true)
+            }
             // Update dmsContactOrAccountDto
             dispatch(updateDmsContactOrAccountDtoData(dmsContactOrAccountDto));
             // Update updateDmsLeadDtoData
@@ -674,7 +678,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 // setSelectedAddOnsPrice(addOnPrice);
             }
             if (dmsOnRoadPriceDtoObj.lifeTaxPercentage) {
-                setTaxPercent((Number(dmsOnRoadPriceDtoObj.lifeTaxPercentage) * 100).toString())
+                setTaxPercent(Math.round(Number(dmsOnRoadPriceDtoObj.lifeTaxPercentage) * 100).toString())
+                console.log("TAX PERCENT: ", (parseFloat(dmsOnRoadPriceDtoObj.lifeTaxPercentage) * 100));
                 setLifeTaxAmount(getLifeTaxNew(Number(dmsOnRoadPriceDtoObj.lifeTaxPercentage) * 100))
             }
             if (dmsOnRoadPriceDtoObj.insuranceDiscount) {
@@ -696,6 +701,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     useEffect(() => {
         if (selector.vehicle_on_road_price_insurence_details_response) {
+            console.log("ON ROAD PRICE INFO:", JSON.stringify(selector.vehicle_on_road_price_insurence_details_response));
             const varientTypes =
                 selector.vehicle_on_road_price_insurence_details_response
                     .insurance_vareint_mapping || [];
@@ -944,6 +950,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         essentialSelected,
         fastTagSelected
     ) => {
+        console.log("CALLED");
         let totalPrice = 0;
         totalPrice += priceInfomationData.ex_showroom_price;
         // const lifeTax = getLifeTax();
@@ -952,7 +959,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         totalPrice += lifeTax;
         totalPrice += priceInfomationData.registration_charges;
         totalPrice += selectedInsurencePrice;
-        totalPrice += selectedAddOnsPrice;
+        if (selector.insurance_type !== ''){
+            totalPrice += selectedAddOnsPrice;
+        }        
         totalPrice += selectedWarrentyPrice;
         if (handleSelected) {
             totalPrice += priceInfomationData.handling_charges;
@@ -967,7 +976,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         if (fastTagSelected) {
             totalPrice += priceInfomationData.fast_tag;
         }
-        setTotalOnRoadPriceAfterDiscount(totalPrice - selectedFOCAccessoriesPrice);
+        console.log("LIFE TAX PRICE: ", lifeTax, priceInfomationData.registration_charges, selectedInsurencePrice, selectedAddOnsPrice, selectedWarrentyPrice, handleSelected, priceInfomationData.handling_charges, essentialSelected, priceInfomationData.essential_kit, tcsPrice, fastTagSelected, priceInfomationData.fast_tag, selectedPaidAccessoriesPrice);
+        // setTotalOnRoadPriceAfterDiscount(totalPrice - selectedFOCAccessoriesPrice);
         totalPrice += selectedPaidAccessoriesPrice;
         setTotalOnRoadPrice(totalPrice);
         setInitialTotalAmt(totalPrice)
@@ -986,18 +996,20 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         totalPrice -= Number(selector.accessories_discount);
         totalPrice -= Number(selector.additional_offer_1);
         totalPrice -= Number(selector.additional_offer_2);
-        if (accDiscount !== '') {
-            totalPrice -= Number(accDiscount);
-        }
-        if (insuranceDiscount !== '') {
-            totalPrice -= Number(insuranceDiscount);
-        }
+        // if (accDiscount !== '') {
+        //     totalPrice -= Number(accDiscount);
+        // }
+        // if (insuranceDiscount !== '') {
+        //     totalPrice -= Number(insuranceDiscount);
+        // }
+        console.log("OFFER DISCOUNT: ", totalOnRoadPrice, selector.consumer_offer, selector.exchange_offer, selector.corporate_offer, selector.promotional_offer, selector.cash_discount, selector.for_accessories, selector.insurance_discount, selector.accessories_discount, selector.additional_offer_1, selector.additional_offer_2, accDiscount, insuranceDiscount);
         setTotalOnRoadPriceAfterDiscount(totalPrice);
     };
 
     const submitClicked = () => {
         Keyboard.dismiss();
-
+        // console.log("ATTCH", JSON.stringify(uploadedImagesDataObj));
+        // console.log("FOUND: ", uploadedImagesDataObj.hasOwnProperty('receipt'));
         if (!isValidate(selector.first_name)) {
             scrollToPos(0)
             setOpenAccordian('1')
@@ -1020,6 +1032,28 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             scrollToPos(0)
             setOpenAccordian('1')
             showToast("please enter valid email");
+            return;
+        }
+        if (selector.pincode.length === 0 ||
+            selector.house_number.length === 0 ||
+            selector.street_name.length === 0 ||
+            selector.village.length === 0 ||
+            selector.mandal.length === 0 ||
+            selector.city.length === 0 ||
+            selector.district.length === 0 ||
+            selector.state.length === 0 ||
+            selector.p_pincode.length === 0 ||
+            selector.p_houseNum.length === 0 ||
+            selector.p_streetName.length === 0 ||
+            selector.p_village.length === 0 ||
+            selector.p_mandal.length === 0 ||
+            selector.p_city.length === 0 ||
+            selector.p_district.length === 0 ||
+            selector.p_state.length === 0 ||
+            selector.p_urban_or_rural == 0) {
+            scrollToPos(2)
+            setOpenAccordian('2')
+            showToast("please enter address");
             return;
         }
         // if (selector.enquiry_segment.toLowerCase() === "personal" && selector.marital_status.length == 0) {
@@ -1053,6 +1087,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 scrollToPos(4)
                 setOpenAccordian("4")
                 showToast("please enter pan card number");
+                return;
+            }
+        }
+
+        if (selector.enquiry_segment.toLowerCase() === "personal"){
+            if (selector.adhaar_number.length == 0) {
+                scrollToPos(4)
+                setOpenAccordian("4")
+                showToast("please enter aadhar number");
                 return;
             }
         }
@@ -1162,7 +1205,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         postOnRoadPriceTable.form_or_pan = selector.form_or_pan;
 
         console.log("PAYLOAD:", JSON.stringify(postOnRoadPriceTable));
-        // dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable));
         Promise.all([
             dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable))
         ]).then(async (res) => {
@@ -1699,6 +1741,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             return;
         }
 
+        if (!uploadedImagesDataObj.hasOwnProperty('receipt')) {
+            scrollToPos(12)
+            setOpenAccordian('12')
+            showToast("Please upload receipt doc");
+            return;
+        }
+
         const paymentMode = selector.booking_payment_mode.replace(/\s/g, "");
         let paymentDate = "";
         if (paymentMode === "InternetBanking") {
@@ -1846,6 +1895,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         //     //     totMrp += Number(item.amount);
         //     // }
         // });
+        console.log("TABLE DATA:", JSON.stringify(tableData));
         tableData.forEach((item) => {
             if (item.selected) {
                 console.log("TYPE:", item.item);
@@ -1886,9 +1936,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 }
             }
         });
+        console.log("TOTAL MRP:", totMrp);
         setSelectedPaidAccessoriesPrice(totMrp);
         // setSelectedFOCAccessoriesPrice(totFoc);
         if (totFoc > 0){
+            console.log("FOC PRICE:", totFoc);
             setFocPrice(totFoc)
         }
         else {
@@ -2570,14 +2622,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         status={
                                             selector.is_permanent_address_same === "NO" ? true : false
                                         }
-                                        onPress={() =>
+                                        onPress={() => {
                                             dispatch(
                                                 setCommunicationAddress({
                                                     key: "PERMANENT_ADDRESS",
                                                     text: "false",
                                                 })
                                             )
-                                        }
+                                            dispatch(clearPermanentAddr())
+                                        }}
                                     />
                                 </View>
                                 <Text style={GlobalStyle.underline}></Text>
@@ -3388,7 +3441,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         <DropDownSelectionItem
                                             label={"Add-on Insurance"}
                                             value={selector.insurance_type !== '' ? selector.add_on_insurance : ''}
-                                            disabled={true}
+                                            disabled={!selector.insurance_type}
                                             onPress={() =>
                                                 showDropDownModelMethod(
                                                     "INSURENCE_ADD_ONS",
@@ -4393,14 +4446,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     mode="contained"
                                     style={{ width: 120 }}
                                     color={Colors.BLACK}
-                                    disabled={selector.isLoading}
+                                    // disabled={selector.isLoading}
                                     labelStyle={{ textTransform: "none" }}
                                     onPress={() => setIsDropSelected(true)}
                                 >Cancel</Button>
                                 <Button
                                     mode="contained"
                                     color={Colors.RED}
-                                    disabled={selector.isLoading}
+                                    // disabled={selector.isLoading}
                                     labelStyle={{ textTransform: "none" }}
                                     onPress={submitClicked}
                                 >SUBMIT</Button>
@@ -4415,7 +4468,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         mode="contained"
                                         style={{ width: 120 }}
                                         color={Colors.GREEN}
-                                        disabled={selector.isLoading}
+                                        // disabled={selector.isLoading}
                                         labelStyle={{ textTransform: "none" }}
                                         onPress={() => approveOrRejectMethod("APPROVE")}
                                     >
@@ -4424,7 +4477,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     <Button
                                         mode="contained"
                                         color={Colors.RED}
-                                        disabled={selector.isLoading}
+                                        // disabled={selector.isLoading}
                                         labelStyle={{ textTransform: "none" }}
                                         onPress={() =>
                                             isRejectSelected
@@ -4445,7 +4498,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         mode="contained"
                                         style={{ width: 120 }}
                                         color={Colors.BLACK}
-                                        disabled={selector.isLoading}
+                                        // disabled={selector.isLoading}
                                         labelStyle={{ textTransform: "none" }}
                                         onPress={() => setIsDropSelected(true)}
                                     >
@@ -4474,7 +4527,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 <Button
                                     mode="contained"
                                     color={Colors.RED}
-                                    disabled={selector.isLoading}
+                                    // disabled={selector.isLoading}
                                     labelStyle={{ textTransform: "none" }}
                                     onPress={proceedToCancelPreBooking}
                                 >
