@@ -294,6 +294,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             itemData.enquirySegment = dms.enquirySegment;
             itemData.createdDate = dms.createddatetime;
             itemData.enquirySource = dms.enquirySource;
+            itemData.subSource = dms.subSource;
             itemData.pincode = dms.dmsAddresses ? dms.dmsAddresses[0].pincode : "";
             itemData.leadStage = dms.leadStage;
             itemData.universalId = dms.crmUniversalId;
@@ -328,9 +329,11 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             organizationId: organizationId,
             phone: selector.mobile,
             sourceOfEnquiry: selector.sourceOfEnquiryId,
+            subSourceOfEnquiry: selector.subSourceOfEnquiryId,
             eventCode: "",
             email: selector.email,
             referencenumber: "",
+            pincode: selector.pincode,
             dmsAddresses: [
                 {
                     addressType: "Communication",
@@ -374,17 +377,49 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     const submitClicked = async () => {
         Keyboard.dismiss();
 
-        if (
-            selector.enquiryType.length == 0 ||
-            selector.customerType.length == 0 ||
-            selector.firstName.length == 0 ||
-            selector.lastName.length == 0 ||
-            selector.mobile.length == 0 ||
-            selector.carModel.length == 0 ||
-            selector.sourceOfEnquiry.length == 0 ||
-            selector.subSourceOfEnquiry.length == 0
-        ) {
-            showToastRedAlert("Please fill required fields");
+        // if (
+        //     selector.enquiryType.length == 0 ||
+        //     selector.customerType.length == 0 ||
+        //     selector.firstName.length == 0 ||
+        //     selector.lastName.length == 0 ||
+        //     selector.mobile.length == 0 ||
+        //     selector.carModel.length == 0 ||
+        //     selector.sourceOfEnquiry.length == 0 ||
+        //     selector.subSourceOfEnquiry.length == 0
+        // ) {
+        //     showToastRedAlert("Please fill required fields");
+        //     return;
+        // }
+        if (selector.enquiryType.length == 0){
+            showToastRedAlert("Please select enquery segment");
+            return;
+        }
+        if (selector.customerType.length == 0) {
+            showToastRedAlert("Please select customer type");
+            return;
+        }
+        if (selector.firstName.length == 0) {
+            showToastRedAlert("Please enter first name");
+            return;
+        }
+        if (selector.lastName.length == 0) {
+            showToastRedAlert("Please enter last name");
+            return;
+        }
+        if (selector.mobile.length == 0) {
+            showToastRedAlert("Please enter mobile number");
+            return;
+        }
+        if (selector.carModel.length == 0) {
+            showToastRedAlert("Please select model");
+            return;
+        }
+        if (selector.sourceOfEnquiry.length == 0) {
+            showToastRedAlert("Please select source of lead");
+            return;
+        }
+        if (selector.subSourceOfEnquiry.length == 0) {
+            showToastRedAlert("Please select sub source of lead");
             return;
         }
         if (selector.enquiryType === "Personal") {
@@ -540,9 +575,11 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             company: selector.companyName,
             email: selector.email,
             enquirySource: selector.sourceOfEnquiryId,
+            subSource: selector.subSourceOfEnquiryId,
             ownerName: employeeName,
             secondaryPhone: selector.alterMobile,
             status: "PREENQUIRY",
+            pincode: selector.pincode,
         };
 
         const dmsLeadDtoObj = {
@@ -557,8 +594,10 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             phone: selector.mobile,
             model: selector.carModel,
             sourceOfEnquiry: selector.sourceOfEnquiryId,
+            subSourceOfEnquiry: selector.subSourceOfEnquiryId,
             eventCode: selector.eventName,
             referencenumber: refNumber,
+            pincode: selector.pincode,
             dmsAddresses: [
                 {
                     addressType: "Communication",
@@ -1064,7 +1103,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                         <DropDownSelectionItem
                             label={"Source of Lead*"}
                             value={selector.sourceOfEnquiry}
-                            disabled={fromEdit}
+                            // disabled={fromEdit}
                             onPress={() =>
                                 showDropDownModelMethod(
                                     "SOURCE_OF_ENQUIRY",
@@ -1077,7 +1116,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                             <DropDownSelectionItem
                                 label={"Sub Source of Lead*"}
                                 value={selector.subSourceOfEnquiry}
-                                disabled={fromEdit}
+                                // disabled={fromEdit}
                                 onPress={() =>
                                     showDropDownModelMethod(
                                         "SUB_SOURCE_OF_ENQUIRY",
@@ -1155,7 +1194,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
 
                     <View style={styles.view2}>
                         <ButtonComp
-                            disabled={selector.isLoading}
+                            // disabled={selector.isLoading}
                             title={fromEdit ? "UPDATE" : "SUBMIT"}
                             width={screenWidth - 40}
                             onPress={submitClicked}

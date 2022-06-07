@@ -1282,12 +1282,12 @@ const TestDriveScreen = ({ route, navigation }) => {
                         <View style={styles.view1}>
                             <LocalButtonComp
                                 title={"Close"}
-                                disabled={selector.isLoading}
+                                // disabled={selector.isLoading}
                                 onPress={() => navigation.goBack()}
                             />
                             <LocalButtonComp
                                 title={"Submit"}
-                                disabled={selector.isLoading}
+                                // disabled={selector.isLoading}
                                 onPress={() => submitClicked("SENT_FOR_APPROVAL", "Test Drive")}
                             />
                         </View>
@@ -1296,7 +1296,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                         <View style={styles.view1}>
                             <LocalButtonComp
                                 title={"Cancel"}
-                                disabled={selector.isLoading}
+                                // disabled={selector.isLoading}
                                 onPress={() => submitClicked("CANCELLED", "Test Drive")}
                             />
                         </View>
@@ -1305,14 +1305,14 @@ const TestDriveScreen = ({ route, navigation }) => {
                         <View style={styles.view1}>
                             <LocalButtonComp
                                 title={"Reject"}
-                                disabled={selector.isLoading}
+                                // disabled={selector.isLoading}
                                 onPress={() =>
                                     submitClicked("CANCELLED", "Test Drive Approval")
                                 }
                             />
                             <LocalButtonComp
                                 title={"Approve"}
-                                disabled={selector.isLoading}
+                                // disabled={selector.isLoading}
                                 bgColor={Colors.GREEN}
                                 onPress={() => submitClicked("APPROVED", "Test Drive Approval")}
                             />
@@ -1322,12 +1322,12 @@ const TestDriveScreen = ({ route, navigation }) => {
                         <View style={styles.view1}>
                             <LocalButtonComp
                                 title={"Close"}
-                                disabled={selector.isLoading}
+                                // disabled={selector.isLoading}
                                 onPress={() => closeTask()}
                             />
                             <LocalButtonComp
                                 title={"Reschedule"}
-                                disabled={selector.isLoading}
+                                // disabled={selector.isLoading}
                                 bgColor={Colors.GREEN}
                                 onPress={() => submitClicked("RESCHEDULED", "Test Drive")}
                             />

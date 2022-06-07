@@ -174,6 +174,7 @@ const PaidAccessoriesTextAndAmountComp = ({
     amount,
     titleStyle = {},
     amoutStyle = {},
+    disabled = false
 }) => {
     return (
         <View style={styles.textAndAmountView}>
@@ -182,10 +183,10 @@ const PaidAccessoriesTextAndAmountComp = ({
                     styles.leftLabel,
                     titleStyle,
                     {
-                        color: Colors.BLUE,
+                        color: disabled ? Colors.GRAY : Colors.BLUE,
                         textDecorationLine: "underline",
                         textDecorationStyle: "solid",
-                        textDecorationColor: Colors.BLUE,
+                        textDecorationColor: disabled ? Colors.GRAY : Colors.BLUE,
                     },
                 ]}
             >
@@ -1759,10 +1760,11 @@ const BookingFormScreen = ({ route, navigation }) => {
     const DisplaySelectedImage = ({ fileName, from }) => {
         return (
             <View style={styles.selectedImageBckVw}>
-                <Text style={styles.selectedImageTextStyle} numberOfLines={1}>
+                <Text style={styles.selectedImageTextStyle} disabled={true} numberOfLines={1}>
                     {fileName}
                 </Text>
                 <IconButton
+                    disabled={true}
                     icon="close-circle-outline"
                     color={Colors.RED}
                     style={{ padding: 0, margin: 0 }}
@@ -2102,28 +2104,28 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         value={"urban"}
                                         disabled={true}
                                         status={selector.urban_or_rural === 1 ? true : false}
-                                        onPress={() =>
-                                            dispatch(
-                                                setCommunicationAddress({
-                                                    key: "RURAL_URBAN",
-                                                    text: "1",
-                                                })
-                                            )
-                                        }
+                                        // onPress={() =>
+                                        //     dispatch(
+                                        //         setCommunicationAddress({
+                                        //             key: "RURAL_URBAN",
+                                        //             text: "1",
+                                        //         })
+                                        //     )
+                                        // }
                                     />
                                     <RadioTextItem
                                         label={"Rural"}
                                         value={"rural"}
                                         disabled={true}
                                         status={selector.urban_or_rural === 2 ? true : false}
-                                        onPress={() =>
-                                            dispatch(
-                                                setCommunicationAddress({
-                                                    key: "RURAL_URBAN",
-                                                    text: "2",
-                                                })
-                                            )
-                                        }
+                                        // onPress={() =>
+                                        //     dispatch(
+                                        //         setCommunicationAddress({
+                                        //             key: "RURAL_URBAN",
+                                        //             text: "2",
+                                        //         })
+                                        //     )
+                                        // }
                                     />
                                 </View>
                                 <Text style={GlobalStyle.underline}></Text>
@@ -2244,14 +2246,14 @@ const BookingFormScreen = ({ route, navigation }) => {
                                                 ? true
                                                 : false
                                         }
-                                        onPress={() =>
-                                            dispatch(
-                                                setCommunicationAddress({
-                                                    key: "PERMANENT_ADDRESS",
-                                                    text: "true",
-                                                })
-                                            )
-                                        }
+                                        // onPress={() =>
+                                        //     dispatch(
+                                        //         setCommunicationAddress({
+                                        //             key: "PERMANENT_ADDRESS",
+                                        //             text: "true",
+                                        //         })
+                                        //     )
+                                        // }
                                     />
                                     <RadioTextItem
                                         label={"No"}
@@ -2260,14 +2262,14 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         status={
                                             selector.is_permanent_address_same === "NO" ? true : false
                                         }
-                                        onPress={() =>
-                                            dispatch(
-                                                setCommunicationAddress({
-                                                    key: "PERMANENT_ADDRESS",
-                                                    text: "false",
-                                                })
-                                            )
-                                        }
+                                        // onPress={() =>
+                                        //     dispatch(
+                                        //         setCommunicationAddress({
+                                        //             key: "PERMANENT_ADDRESS",
+                                        //             text: "false",
+                                        //         })
+                                        //     )
+                                        // }
                                     />
                                 </View>
                                 <Text style={GlobalStyle.underline}></Text>
@@ -2297,28 +2299,28 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         value={"urban"}
                                         disabled={true}
                                         status={selector.p_urban_or_rural === 1 ? true : false}
-                                        onPress={() =>
-                                            dispatch(
-                                                setCommunicationAddress({
-                                                    key: "P_RURAL_URBAN",
-                                                    text: "1",
-                                                })
-                                            )
-                                        }
+                                        // onPress={() =>
+                                        //     dispatch(
+                                        //         setCommunicationAddress({
+                                        //             key: "P_RURAL_URBAN",
+                                        //             text: "1",
+                                        //         })
+                                        //     )
+                                        // }
                                     />
                                     <RadioTextItem
                                         label={"Rural"}
                                         value={"rural"}
                                         disabled={true}
                                         status={selector.p_urban_or_rural === 2 ? true : false}
-                                        onPress={() =>
-                                            dispatch(
-                                                setCommunicationAddress({
-                                                    key: "P_RURAL_URBAN",
-                                                    text: "2",
-                                                })
-                                            )
-                                        }
+                                        // onPress={() =>
+                                        //     dispatch(
+                                        //         setCommunicationAddress({
+                                        //             key: "P_RURAL_URBAN",
+                                        //             text: "2",
+                                        //         })
+                                        //     )
+                                        // }
                                     />
                                 </View>
                                 <Text style={GlobalStyle.underline}></Text>
@@ -2636,6 +2638,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         <View style={styles.select_image_bck_vw}>
                                             <ImageSelectItem
                                                 name={"Employee ID"}
+                                                    disabled={true}
                                                 onPress={() =>
                                                     dispatch(setImagePicker("UPLOAD_EMPLOYEE_ID"))
                                                 }
@@ -3115,6 +3118,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 <Text style={GlobalStyle.underline}></Text>
 
                                 <Pressable
+                                    disabled={true}
                                     onPress={() =>
                                         navigation.navigate(
                                             AppNavigator.EmsStackIdentifiers.paidAccessories,
@@ -3127,6 +3131,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 >
                                     <PaidAccessoriesTextAndAmountComp
                                         title={"Paid Accessories:"}
+                                        disabled={true}
                                         amount={selectedPaidAccessoriesPrice.toFixed(2)}
                                     />
                                 </Pressable>

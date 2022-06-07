@@ -536,7 +536,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                       mode="contained"
                       style={{ width: 120 }}
                       color={Colors.GRAY}
-                      disabled={selector.isLoading}
+                    //   disabled={selector.isLoading}
                       labelStyle={{
                         textTransform: "none",
                         color: Colors.WHITE,

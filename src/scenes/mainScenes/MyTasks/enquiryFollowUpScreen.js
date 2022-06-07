@@ -72,6 +72,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
   const [empId, setEmpId] = useState("");
   const [reasonList, setReasonList] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [defaultReasonIndex, setDefaultReasonIndex] = useState(null);
 
   useLayoutEffect(() => {
     let title = "Enquiry Follow Up";
@@ -101,6 +102,18 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       getReasonListData(reasonTaskName)
     })
   }, [navigation]);
+
+  useEffect(() => {
+    if(selector.isReasonUpdate && reasonList.length > 0){
+      let findIndex = reasonList.findIndex((item) => {
+        return item.value === selector.reason
+      })
+      console.log("DEFAULT INDEX:", findIndex);
+      if(findIndex !== -1){
+        setDefaultReasonIndex(reasonList[findIndex].value)
+      }
+    }
+  }, [selector.isReasonUpdate, reasonList]);
 
   const getReasonListData = async (taskName) => {
     setLoading(true)
@@ -400,27 +413,34 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
                 );
               }}
             /> */}
-            <Dropdown
-              style={[styles.dropdownContainer,]}
-              placeholderStyle={styles.placeholderStyle}
-              selectedTextStyle={styles.selectedTextStyle}
-              inputSearchStyle={styles.inputSearchStyle}
-              iconStyle={styles.iconStyle}
-              data={reasonList}
-              search
-              maxHeight={300}
-              labelField="label"
-              valueField="value"
-              placeholder={"Reason*"}
-              searchPlaceholder="Search..."
-              // value={value}
-              // onFocus={() => setIsFocus(true)}
-              // onBlur={() => setIsFocus(false)}
-              onChange={val => {
-                console.log("£££", val);
-                dispatch(setEnquiryFollowUpDetails({ key: "REASON", text: val.reason }));
-              }}
-            />
+            <View style={{position: 'relative'}}>
+              {selector.reason !== '' &&
+                <View style={{ position: 'absolute', top: 0, left: 10, zIndex: 99 }}>
+                  <Text style={{ fontSize: 13, color: Colors.GRAY }}>Reason*</Text>
+                </View>
+              }
+              <Dropdown
+                style={[styles.dropdownContainer,]}
+                placeholderStyle={styles.placeholderStyle}
+                selectedTextStyle={styles.selectedTextStyle}
+                inputSearchStyle={styles.inputSearchStyle}
+                iconStyle={styles.iconStyle}
+                data={reasonList}
+                search
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                placeholder={"Reason*"}
+                searchPlaceholder="Search..."
+                value={defaultReasonIndex}
+                // onFocus={() => setIsFocus(true)}
+                // onBlur={() => setIsFocus(false)}
+                onChange={val => {
+                  console.log("£££", val);
+                  dispatch(setEnquiryFollowUpDetails({ key: "REASON", text: val.reason }));
+                }}
+              />
+            </View>
             <Text style={GlobalStyle.underline}></Text>
 
             <TextinputComp
@@ -550,7 +570,7 @@ const styles = StyleSheet.create({
   },
   dropdownContainer: {
     backgroundColor: 'white',
-    padding: 16,
+    padding: 12,
     // borderWidth: 1,
     width: '100%',
     height: 60,

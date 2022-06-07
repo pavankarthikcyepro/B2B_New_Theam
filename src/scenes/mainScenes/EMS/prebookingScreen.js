@@ -12,7 +12,7 @@ import { callNumber } from "../../../utils/helperFunctions";
 import moment from "moment";
 import { Category_Type_List_For_Filter } from '../../../jsonData/enquiryFormScreenJsonData';
 import { MyTaskNewItem } from '../MyTasks/components/MyTasksNewItem';
-import { updateTAB, updateIsSearch } from '../../../redux/appReducer';
+import { updateTAB, updateIsSearch, updateSearchKey } from '../../../redux/appReducer';
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").format(dateFormat)
@@ -77,6 +77,7 @@ const PreBookingScreen = ({ navigation }) => {
                 })
                 setSearchedData([]);
                 setSearchedData(tempData);
+                dispatch(updateSearchKey(''))
             }
             else {
                 setSearchedData([]);
