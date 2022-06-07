@@ -136,6 +136,10 @@ export const loginSlice = createSlice({
       state.menuListStatus = "";
       state.branchesList = [];
     },
+    clearUserNameAndPass: (state, action) => {
+      state.employeeId = "";
+      state.password = "";
+    },
     updateEmployeeId: (state, action: PayloadAction<string>) => {
       let employeeId = action.payload;
       if (employeeId.length < 4) {
@@ -183,6 +187,8 @@ export const loginSlice = createSlice({
           state.authToken = dataObj.idToken;
           state.userName = dataObj.userName;
           state.userData = dataObj;
+          // state.employeeId = "";
+          // state.password = "";
           AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, dataObj.idToken);
           AsyncStore.storeData(AsyncStore.Keys.IS_LOGIN, 'true');
         } else if (dataObj.reason) {
@@ -291,6 +297,7 @@ export const {
   updatePassword,
   updateSecurePassword,
   showErrorMessage,
+  clearUserNameAndPass
 } = loginSlice.actions;
 
 export default loginSlice.reducer;

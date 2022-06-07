@@ -69,7 +69,8 @@ import {
   updateRef,
   customerLeadRef,
   updateEnquiryDetailsApiAutoSave,
-  clearPermanentAddr
+  clearPermanentAddr,
+  updateAddressByPincode2
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
@@ -196,6 +197,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [dropRemarks, setDropRemarks] = useState("");
   const [imagePath, setImagePath] = useState('');
   const [addressData, setAddressData] = useState([]);
+  const [addressData2, setAddressData2] = useState([]);
   const [defaultAddress, setDefaultAddress] = useState(null);
 
   // console.log("gender", selector.enquiry_details_response)
@@ -2436,7 +2438,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
 
-    PincodeDetailsNew(selector.pincode).then(
+    PincodeDetailsNew(pincode).then(
       (res) => {
         // dispatch an action to update address
         console.log("PINCODE DETAILS 1", JSON.stringify(res));
@@ -2447,6 +2449,34 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               tempAddr.push({ label: res[i].Name, value: res[i] })
               if (i === res.length - 1) {
                 setAddressData([...tempAddr])
+              }
+            }
+          }
+        }
+        // dispatch(updateAddressByPincode(resolve));
+      },
+      (rejected) => {
+        console.log("rejected...: ", rejected);
+      }
+    );
+  };
+
+  const updateAddressDetails2 = (pincode) => {
+    if (pincode.length != 6) {
+      return;
+    }
+
+    PincodeDetailsNew(pincode).then(
+      (res) => {
+        // dispatch an action to update address
+        console.log("PINCODE DETAILS 1", JSON.stringify(res));
+        let tempAddr = []
+        if (res) {
+          if (res.length > 0) {
+            for (let i = 0; i < res.length; i++) {
+              tempAddr.push({ label: res[i].Name, value: res[i] })
+              if (i === res.length - 1) {
+                setAddressData2([...tempAddr])
               }
             }
           }
@@ -3136,7 +3166,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   value={selector.houseNum}
                   label={"H.No*"}
                   maxLength={50}
-                  keyboardType={"default"}
+                  keyboardType={"number-pad"}
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({ key: "HOUSE_NO", text: text })
@@ -3161,7 +3191,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   }
                 />
                 <Text style={GlobalStyle.underline}></Text>
-                {selector.isAddressSet && (
+                {/* {selector.isAddressSet && ( */}
                   <>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -3248,7 +3278,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     />
                     <Text style={GlobalStyle.underline}></Text>
                   </>
-                )}
+                {/* )} */}
                 <View
                   style={{ height: 20, backgroundColor: Colors.WHITE }}
                 ></View>
@@ -3306,16 +3336,48 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       label={"Pincode*"}
                       maxLength={6}
                       keyboardType={"phone-pad"}
-                      onChangeText={(text) =>
+                      onChangeText={(text) => {
+                        if (text.length === 6) {
+                          updateAddressDetails2(text);
+                        }
                         dispatch(
-                          setCommunicationAddress({
-                            key: "P_PINCODE",
-                            text: text,
-                          })
-                        )
-                      }
+                          dispatch(
+                            setCommunicationAddress({
+                              key: "P_PINCODE",
+                              text: text,
+                            })
+                          )
+                        );
+                      }}
                     />
                     <Text style={GlobalStyle.underline}></Text>
+
+                    {addressData2.length > 0 &&
+                      <>
+                        <Text style={GlobalStyle.underline}></Text>
+                        <Dropdown
+                          style={[styles.dropdownContainer,]}
+                          placeholderStyle={styles.placeholderStyle}
+                          selectedTextStyle={styles.selectedTextStyle}
+                          inputSearchStyle={styles.inputSearchStyle}
+                          iconStyle={styles.iconStyle}
+                          data={addressData2}
+                          search
+                          maxHeight={300}
+                          labelField="label"
+                          valueField="value"
+                          placeholder={'Select address'}
+                          searchPlaceholder="Search..."
+                          // value={defaultAddress}
+                          // onFocus={() => setIsFocus(true)}
+                          // onBlur={() => setIsFocus(false)}
+                          onChange={val => {
+                            console.log("ADDR: ", val);
+                            dispatch(updateAddressByPincode2(val.value));
+                          }}
+                        />
+                      </>
+                    }
 
                     <View style={styles.radioGroupBcVw}>
                       <RadioTextItem
@@ -3350,7 +3412,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <TextinputComp
                       style={styles.textInputStyle}
                       label={"H.No*"}
-                      keyboardType={"default"}
+                      keyboardType={"number-pad"}
                       maxLength={50}
                       value={selector.p_houseNum}
                       onChangeText={(text) =>
@@ -3780,7 +3842,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   maxLength={10}
                   autoCapitalize={"characters"}
                   onChangeText={(text) => {
-                    dispatch(setUploadDocuments({ key: "PAN", text: text }));
+                    dispatch(setUploadDocuments({ key: "PAN", text: text.replace(/[^a-zA-Z0-9]/g, "") }));
                   }}
                 />
                 <Text style={GlobalStyle.underline}></Text>

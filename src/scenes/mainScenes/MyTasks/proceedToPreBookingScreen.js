@@ -25,7 +25,7 @@ import { showToast, showToastRedAlert, showToastSucess } from "../../../utils/to
 import { getCurrentTasksListApi, getPendingTasksListApi } from "../../../redux/mytaskReducer";
 import URL from "../../../networking/endpoints";
 import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
-
+import Geolocation from '@react-native-community/geolocation';
 
 const FirstDependencyArray = ["Lost To Competition", "Lost To Used Car", "Lost to Used Cars from Co-Dealer"];
 const SecondDependencyArray = ["Lost to Competitor", "Lost To Co-Dealer", "Lost To Competition", "Lost To Used Car"];
@@ -50,6 +50,7 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
     const [userData, setUserData] = useState({ branchId: "", orgId: "", employeeId: "", employeeName: "" });
     const [typeOfActionDispatched, setTypeOfActionDispatched] = useState("");
     const [authToken, setAuthToken] = useState("");
+    const [currentLocation, setCurrentLocation] = useState(null);
 
     useLayoutEffect(() => {
 
@@ -90,9 +91,20 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
 
     useEffect(() => {
         navigation.addListener('blur', () => {
+            getCurrentLocation()
             dispatch(updateStatus())
         })
     }, [navigation]);
+
+    const getCurrentLocation = () => {
+        Geolocation.getCurrentPosition(info => {
+            console.log(info)
+            setCurrentLocation({
+                lat: info.coords.latitude,
+                long: info.coords.longitude
+            })
+        });
+    }
 
     const getAsyncstoreData = async () => {
         const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -207,6 +219,8 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
 
         const newTaskObj = { ...selector.task_details_response };
         newTaskObj.taskStatus = "CLOSED";
+        newTaskObj.lat = currentLocation ? currentLocation.lat.toString() : null;
+        newTaskObj.lon = currentLocation ? currentLocation.long.toString() : null;
         dispatch(updateTaskApi(newTaskObj));
     }
 

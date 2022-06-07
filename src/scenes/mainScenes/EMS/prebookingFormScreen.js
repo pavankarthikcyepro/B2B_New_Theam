@@ -64,7 +64,8 @@ import {
     updateAddressByPincode,
     updateRef,
     updateResponseStatus,
-    clearPermanentAddr
+    clearPermanentAddr,
+    updateAddressByPincode2
 } from "../../../redux/preBookingFormReducer";
 import {
     RadioTextItem,
@@ -79,6 +80,7 @@ import {
 } from "../../../components";
 import { Checkbox, List, Button, IconButton } from "react-native-paper";
 import * as AsyncStore from "../../../asyncStore";
+import { Dropdown } from 'react-native-element-dropdown';
 import {
     Salutation_Types,
     Enquiry_Segment_Data,
@@ -111,7 +113,8 @@ import {
     GetFinanceBanksList,
     GetPaidAccessoriesList,
     GetDropList,
-    isEmail
+    isEmail,
+    PincodeDetailsNew
 } from "../../../utils/helperFunctions";
 import URL from "../../../networking/endpoints";
 import uuid from "react-native-uuid";
@@ -300,6 +303,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const [accDiscount, setAccDiscount] = useState('');
     const [imagePath, setImagePath] = useState('');
     const [initialTotalAmt, setInitialTotalAmt] = useState(0);
+    const [addressData, setAddressData] = useState([]);
+    const [addressData2, setAddressData2] = useState([]);
+    const [defaultAddress, setDefaultAddress] = useState(null);
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -387,6 +393,37 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             })
         )
     }, [focPrice]);
+
+    useEffect(() => {
+        console.log("$%$%^^^%&^&*^&&&*&", selector.pincode);
+        if (selector.pincode) {
+            if (selector.pincode.length != 6) {
+                return;
+            }
+            PincodeDetailsNew(selector.pincode).then(
+                (res) => {
+                    // dispatch an action to update address
+                    console.log("PINCODE DETAILS 2", selector.village);
+                    let tempAddr = []
+                    if (res.length > 0) {
+                        for (let i = 0; i < res.length; i++) {
+                            if (res[i].Block === selector.village) {
+                                setDefaultAddress(res[i])
+                            }
+                            tempAddr.push({ label: res[i].Name, value: res[i] })
+                            if (i === res.length - 1) {
+                                setAddressData([...tempAddr])
+                            }
+                        }
+                    }
+                    // dispatch(updateAddressByPincode(resolve));
+                },
+                (rejected) => {
+                    console.log("rejected...: ", rejected);
+                }
+            );
+        }
+    }, [selector.pincode]);
 
     // useEffect(() => {
     //     if (mrpPrice > 0){
@@ -678,8 +715,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 // setSelectedAddOnsPrice(addOnPrice);
             }
             if (dmsOnRoadPriceDtoObj.lifeTaxPercentage) {
-                setTaxPercent(Math.round(Number(dmsOnRoadPriceDtoObj.lifeTaxPercentage) * 100).toString())
-                console.log("TAX PERCENT: ", (parseFloat(dmsOnRoadPriceDtoObj.lifeTaxPercentage) * 100));
+                setTaxPercent(((Number(dmsOnRoadPriceDtoObj.lifeTaxPercentage) * 1000) / 10).toString())
                 setLifeTaxAmount(getLifeTaxNew(Number(dmsOnRoadPriceDtoObj.lifeTaxPercentage) * 100))
             }
             if (dmsOnRoadPriceDtoObj.insuranceDiscount) {
@@ -1781,7 +1817,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         payload.transferToMobile = selector.transfer_to_mobile;
         payload.typeUpi = selector.type_of_upi;
         payload.utrNo = selector.utr_no;
-        console.log("BEFORE CALLED preBookingPaymentApi");
+        console.log("BEFORE CALLED preBookingPaymentApi", payload);
         dispatch(preBookingPaymentApi(payload));
     };
 
@@ -2168,10 +2204,50 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             return;
         }
 
-        PincodeDetails(pincode).then(
-            (resolve) => {
+        PincodeDetailsNew(pincode).then(
+            (res) => {
                 // dispatch an action to update address
-                dispatch(updateAddressByPincode(resolve));
+                console.log("PINCODE DETAILS 1", JSON.stringify(res));
+                let tempAddr = []
+                if (res) {
+                    if (res.length > 0) {
+                        for (let i = 0; i < res.length; i++) {
+                            tempAddr.push({ label: res[i].Name, value: res[i] })
+                            if (i === res.length - 1) {
+                                setAddressData([...tempAddr])
+                            }
+                        }
+                    }
+                }
+                // dispatch(updateAddressByPincode(resolve));
+            },
+            (rejected) => {
+                console.log("rejected...: ", rejected);
+            }
+        );
+    };
+
+    const updateAddressDetails2 = (pincode) => {
+        if (pincode.length != 6) {
+            return;
+        }
+
+        PincodeDetailsNew(pincode).then(
+            (res) => {
+                // dispatch an action to update address
+                console.log("PINCODE DETAILS 1", JSON.stringify(res));
+                let tempAddr = []
+                if (res) {
+                    if (res.length > 0) {
+                        for (let i = 0; i < res.length; i++) {
+                            tempAddr.push({ label: res[i].Name, value: res[i] })
+                            if (i === res.length - 1) {
+                                setAddressData2([...tempAddr])
+                            }
+                        }
+                    }
+                }
+                // dispatch(updateAddressByPincode(resolve));
             },
             (rejected) => {
                 console.log("rejected...: ", rejected);
@@ -2466,8 +2542,36 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         dispatch(
                                             setCommunicationAddress({ key: "PINCODE", text: text })
                                         );
+                                        setDefaultAddress(null)
                                     }}
                                 />
+
+                                {addressData.length > 0 &&
+                                    <>
+                                        <Text style={GlobalStyle.underline}></Text>
+                                        <Dropdown
+                                            style={[styles.dropdownContainer,]}
+                                            placeholderStyle={styles.placeholderStyle}
+                                            selectedTextStyle={styles.selectedTextStyle}
+                                            inputSearchStyle={styles.inputSearchStyle}
+                                            iconStyle={styles.iconStyle}
+                                            data={addressData}
+                                            search
+                                            maxHeight={300}
+                                            labelField="label"
+                                            valueField="value"
+                                            placeholder={'Select address'}
+                                            searchPlaceholder="Search..."
+                                            value={defaultAddress}
+                                            // onFocus={() => setIsFocus(true)}
+                                            // onBlur={() => setIsFocus(false)}
+                                            onChange={val => {
+                                                console.log("ADDR: ", val);
+                                                dispatch(updateAddressByPincode(val.value));
+                                            }}
+                                        />
+                                    </>
+                                }
                                 <Text style={GlobalStyle.underline}></Text>
                                 <View style={styles.radioGroupBcVw}>
                                     <RadioTextItem
@@ -2644,7 +2748,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     onChangeText={(text) => {
                                         // get addreess by pincode
                                         if (text.length === 6) {
-                                            updateAddressDetails(text);
+                                            updateAddressDetails2(text);
                                         }
                                         dispatch(
                                             setCommunicationAddress({ key: "P_PINCODE", text: text })
@@ -2652,6 +2756,34 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     }}
                                 />
                                 <Text style={GlobalStyle.underline}></Text>
+
+                                {addressData2.length > 0 &&
+                                    <>
+                                        <Text style={GlobalStyle.underline}></Text>
+                                        <Dropdown
+                                            style={[styles.dropdownContainer,]}
+                                            placeholderStyle={styles.placeholderStyle}
+                                            selectedTextStyle={styles.selectedTextStyle}
+                                            inputSearchStyle={styles.inputSearchStyle}
+                                            iconStyle={styles.iconStyle}
+                                            data={addressData2}
+                                            search
+                                            maxHeight={300}
+                                            labelField="label"
+                                            valueField="value"
+                                            placeholder={'Select address'}
+                                            searchPlaceholder="Search..."
+                                            // value={defaultAddress}
+                                            // onFocus={() => setIsFocus(true)}
+                                            // onBlur={() => setIsFocus(false)}
+                                            onChange={val => {
+                                                console.log("ADDR: ", val);
+                                                dispatch(updateAddressByPincode2(val.value));
+                                            }}
+                                        />
+                                    <Text style={GlobalStyle.underline}></Text>
+                                    </>
+                                }
 
                                 <View style={styles.radioGroupBcVw}>
                                     <RadioTextItem
@@ -2881,7 +3013,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                                 dispatch(
                                                     setDocumentUploadDetails({
                                                         key: "PAN_NUMBER",
-                                                        text: text,
+                                                        text: text.replace(/[^a-zA-Z0-9]/g, ""),
                                                     })
                                                 );
                                             }}
@@ -2952,7 +3084,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             style={styles.textInputStyle}
                                             value={selector.adhaar_number}
                                             label={"Aadhaar Number*"}
-                                            keyboardType="number-pad"
+                                            keyboardType={"phone-pad"}
                                             maxLength={12}
                                             onChangeText={(text) =>
                                                 dispatch(
@@ -4721,5 +4853,46 @@ const styles = StyleSheet.create({
         fontWeight: "400",
         maxWidth: "70%",
         color: Colors.GRAY,
+    },
+    dropdownContainer: {
+        backgroundColor: '#fff',
+        padding: 16,
+        // borderWidth: 1,
+        width: '100%',
+        height: 50,
+        borderRadius: 5
+    },
+    dropdown: {
+        height: 50,
+        borderColor: 'gray',
+        borderWidth: 0.5,
+        borderRadius: 8,
+        paddingHorizontal: 8,
+    },
+    icon: {
+        marginRight: 5,
+    },
+    label: {
+        position: 'absolute',
+        backgroundColor: 'white',
+        left: 22,
+        top: 8,
+        zIndex: 999,
+        paddingHorizontal: 8,
+        fontSize: 14,
+    },
+    placeholderStyle: {
+        fontSize: 16,
+    },
+    selectedTextStyle: {
+        fontSize: 16,
+    },
+    iconStyle: {
+        width: 20,
+        height: 20,
+    },
+    inputSearchStyle: {
+        height: 40,
+        fontSize: 16,
     },
 });
