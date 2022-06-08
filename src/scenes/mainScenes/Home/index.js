@@ -285,7 +285,7 @@ const HomeScreen = ({ route, navigation }) => {
             const jsonObj = JSON.parse(employeeData);
             const payload = {
                 orgId: jsonObj.orgId,
-                branchId: jsonObj.branchId
+                branchId: jsonObj.empId
             }
             setHeaderText(jsonObj.empName)
             const dateFormat = "YYYY-MM-DD";

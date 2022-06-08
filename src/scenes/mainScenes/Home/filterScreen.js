@@ -20,7 +20,9 @@ import {
     getTargetParametersData,
     getEmployeesDropDownData,
     getSalesData,
-    getSalesComparisonData
+    getSalesComparisonData,
+    getTargetParametersEmpData,
+    getTargetParametersAllData
 } from '../../../redux/homeReducer';
 import { showAlertMessage, showToast } from '../../../utils/toast';
 
@@ -69,6 +71,18 @@ const FilterScreen = ({ navigation }) => {
     }
 
     useEffect(() => {
+        if (nameKeyList.length > 0 && totalDataObj.length > 0){
+            console.log("CALLED");
+            let findIndex = nameKeyList.findIndex(item => item === 'Dealer Code');
+            let arr = [];
+            arr = totalDataObj['Dealer Code'].sublevels.filter((item) => item.disabled === 'N')
+            if (findIndex !== -1 && arr.length > 0) {
+                updateSelectedItems(arr, findIndex);
+            }
+        }
+    }, [nameKeyList, totalDataObj])
+
+    useEffect(() => {
         if (selector.filter_drop_down_data) {
             let names = [];
             for (let key in selector.filter_drop_down_data) {
@@ -77,7 +91,7 @@ const FilterScreen = ({ navigation }) => {
             setNameKeyList(names);
             setTotalDataObj(selector.filter_drop_down_data);
         }
-
+        
         const currentDate = moment().format(dateFormat)
         const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
         const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
@@ -86,10 +100,10 @@ const FilterScreen = ({ navigation }) => {
     }, [selector.filter_drop_down_data])
 
     const dropDownItemClicked = (index) => {
-
+        console.log("INDEX: ", index, nameKeyList[index - 1], nameKeyList[index]);
         const topRowSelectedIds = [];
         if (index > 0) {
-            const topRowData = totalDataObj[nameKeyList[index - 1]].sublevels;
+            const topRowData = nameKeyList[index - 1] === 'Dealer Code' ? totalDataObj[nameKeyList[index - 1]].sublevels.filter((item) => item.disabled === 'N') : totalDataObj[nameKeyList[index - 1]].sublevels;
             topRowData.forEach((item) => {
                 if (item.selected != undefined && item.selected === true) {
                     topRowSelectedIds.push(Number(item.id));
@@ -99,7 +113,8 @@ const FilterScreen = ({ navigation }) => {
 
         let data = [];
         if (topRowSelectedIds.length > 0) {
-            const subLevels = totalDataObj[nameKeyList[index]].sublevels;
+            const subLevels = nameKeyList[index] === 'Dealer Code' ? totalDataObj[nameKeyList[index]].sublevels.filter((item) => item.disabled === 'N') : totalDataObj[nameKeyList[index]].sublevels;
+            console.log("SUB: ", subLevels, totalDataObj[nameKeyList[index]].sublevels.filter((item) => item.disabled === 'N'));
             subLevels.forEach((subItem) => {
                 const obj = { ...subItem };
                 obj.selected = false;
@@ -109,7 +124,7 @@ const FilterScreen = ({ navigation }) => {
             })
         }
         else {
-            data = totalDataObj[nameKeyList[index]].sublevels
+            data = nameKeyList[index] === 'Dealer Code' ? totalDataObj[nameKeyList[index]].sublevels.filter((item) => item.disabled === 'N') : totalDataObj[nameKeyList[index]].sublevels
         }
 
         setDropDownData([...data])
@@ -142,6 +157,7 @@ const FilterScreen = ({ navigation }) => {
         // console.log("index: ", index)
 
         const totalDataObjLocal = { ...totalDataObj };
+        console.log("LOCAL OBJ:", totalDataObjLocal);
 
         if (index > 0) {
             let selectedParendIds = [];
@@ -250,18 +266,31 @@ const FilterScreen = ({ navigation }) => {
 
         let i = 0;
         const selectedIds = [];
-        for (i; i < nameKeyList.length; i++) {
-            let key = nameKeyList[i];
-            const dataArray = totalDataObj[key].sublevels;
-            if (dataArray.length > 0) {
-                dataArray.forEach((item, index) => {
-                    if (item.selected != undefined && item.selected == true) {
-                        selectedIds.push(item.id)
-                    }
-                })
-            }
+        // console.log("NAME KEY:", nameKeyList);
+        // for (i; i < nameKeyList.length; i++) {
+        //     let key = nameKeyList[i];
+        //     const dataArray = totalDataObj[key].sublevels;
+        //     if (dataArray.length > 0) {
+        //         console.log("IDS: ", JSON.stringify(dataArray));
+        //         dataArray.forEach((item, index) => {
+        //             if (item.hasOwnProperty('selected') && item?.selected == true) {
+        //                 console.log("ITEM STAT: ", item.hasOwnProperty('selected'), item);
+        //                 selectedIds.push(item.id)
+        //             }
+        //         })
+        //     }
+        // }
+        const dataArray = totalDataObj['Dealer Code'].sublevels;
+        if (dataArray.length > 0) {
+            console.log("IDS: ", JSON.stringify(dataArray));
+            dataArray.forEach((item, index) => {
+                if (item.hasOwnProperty('selected') && item?.selected == true) {
+                    console.log("ITEM STAT: ", item.hasOwnProperty('selected'), item);
+                    selectedIds.push(item.id)
+                }
+            })
         }
-        // console.log("selectedIds: ", selectedIds);
+        console.log("selectedIds: ", selectedIds);
         if (selectedIds.length > 0) {
             setIsLoading(true);
             getDashboadTableDataFromServer(selectedIds, "LEVEL");
@@ -311,7 +340,9 @@ const FilterScreen = ({ navigation }) => {
                 dispatch(getSalesData(payload2)),
                 dispatch(getSalesComparisonData(payload2)),
                 // // Target Params Data
-                dispatch(getTargetParametersData(payload2))
+                dispatch(getTargetParametersData(payload2)),
+                dispatch(getTargetParametersAllData(payload2)),
+                dispatch(getTargetParametersEmpData(payload2))
             ]).then(() => {
                 console.log("SUCCESS");
             }).catch(() => {
@@ -419,6 +450,7 @@ const FilterScreen = ({ navigation }) => {
                 data={dropDownData}
                 onRequestClose={() => setShowDropDownModel(false)}
                 selectedItems={(item) => {
+                    console.log("SELECTED",item, selectedItemIndex);
                     if (dropDownFrom === "ORG_TABLE") {
                         updateSelectedItems(item, selectedItemIndex);
                     } else {
@@ -485,6 +517,7 @@ const FilterScreen = ({ navigation }) => {
                                             renderItem={({ item, index }) => {
 
                                                 const data = totalDataObj[item].sublevels;
+                                                let isDataAvalable = totalDataObj[item].sublevels.filter((item) => item.disabled === 'N').length > 0 ? true : false;
                                                 let selectedNames = "";
                                                 data.forEach((obj, index) => {
                                                     if (obj.selected != undefined && obj.selected == true) {
@@ -503,6 +536,7 @@ const FilterScreen = ({ navigation }) => {
                                                             value={selectedNames}
                                                             onPress={() => dropDownItemClicked(index)}
                                                             takeMinHeight={true}
+                                                            disabled={!isDataAvalable}
                                                         />
                                                     </View>
                                                 )

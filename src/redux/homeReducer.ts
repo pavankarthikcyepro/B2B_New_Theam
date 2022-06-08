@@ -56,7 +56,7 @@ export const getOrganaizationHirarchyList = createAsyncThunk("HOME/getOrganaizat
 
     const response = await client.get(URL.ORG_HIRARCHY(payload.orgId, payload.branchId))
     const json = await response.json()
-    // console.log("$$$$ DATA $$$$$:", JSON.stringify(json));
+    console.log("$$$$ DATA $$$$$:", JSON.stringify(json));
 
     if (!response.ok) {
         return rejectWithValue(json);
@@ -149,9 +149,9 @@ export const getTargetParametersData = createAsyncThunk("HOME/getTargetParameter
 
     const response = await client.post(URL.GET_TARGET_PARAMS(), payload)
     const json = await response.json()
-    console.log("homeReducer", payload, URL.GET_TARGET_PARAMS());
+    // console.log("homeReducer", payload, URL.GET_TARGET_PARAMS());
 
-    console.log("&&&&&& TARGET DATA:", JSON.stringify(json));
+    // console.log("&&&&&& TARGET DATA:", JSON.stringify(json));
 
     if (!response.ok) {
         return rejectWithValue(json);
@@ -174,12 +174,12 @@ export const getTargetParametersAllData = createAsyncThunk("HOME/getTargetParame
 })
 
 export const getTargetParametersEmpData = createAsyncThunk("HOME/getTargetParametersEmpData", async (payload: any, { rejectWithValue }) => {
-    console.log("PAYLOAD:", URL.GET_TARGET_PARAMS_EMP(), payload);
+    // console.log("PAYLOAD:", URL.GET_TARGET_PARAMS_EMP(), payload);
 
     const response = await client.post(URL.GET_TARGET_PARAMS_EMP(), payload)
     const json = await response.json()
 
-    console.log("&&&&&& DATA SELF $$$$$$$:", JSON.stringify(json));
+    // console.log("&&&&&& DATA SELF $$$$$$$:", JSON.stringify(json));
 
     if (!response.ok) {
         return rejectWithValue(json);
