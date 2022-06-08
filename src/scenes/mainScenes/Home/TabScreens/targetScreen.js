@@ -1081,7 +1081,7 @@ const TargetScreen = ({ route, navigation }) => {
                   >
                     E2B
                   </Text>
-                  {bookingData !== null && enqData !== null && (
+                  {bookingData !== null && enqData !== null ? (
                     <Text
                       style={{
                         color:
@@ -1105,7 +1105,16 @@ const TargetScreen = ({ route, navigation }) => {
                           )}
                       %
                     </Text>
-                  )}
+                    ) : (
+                      <Text
+                        style={{
+                          color:"#ff0000",
+                          fontSize: 12,
+                        }}
+                      >
+                        0%
+                      </Text>
+                    )}
                 </View>
                 <View style={{ height: 5 }}></View>
                 <View style={styles.statWrap}>
@@ -1157,7 +1166,7 @@ const TargetScreen = ({ route, navigation }) => {
                   >
                     E2V
                   </Text>
-                  {bookingData !== null && visitData !== null && (
+                  {bookingData !== null && visitData !== null ? (
                     <Text
                       style={{
                         color:
@@ -1181,7 +1190,16 @@ const TargetScreen = ({ route, navigation }) => {
                           )}
                       %
                     </Text>
-                  )}
+                    ) : (
+                      <Text
+                        style={{
+                          color: "#ff0000",
+                          fontSize: 12,
+                        }}
+                      >
+                        0%
+                      </Text>
+                    )}
                 </View>
               </View>
 

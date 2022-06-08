@@ -32,7 +32,8 @@ import {
     getBranchIds,
     downloadFile,
     updateIsMD,
-    updateIsDSE
+    updateIsDSE,
+    updateTargetData
 } from '../../../redux/homeReducer';
 import {
     updateData,
@@ -51,6 +52,10 @@ import { TargetAchivementComp } from './targetAchivementComp';
 import { HeaderComp, DropDownComponant, LoaderComponent } from '../../../components';
 import { TargetDropdown } from "../../../pureComponents";
 import RNFetchBlob from 'rn-fetch-blob'
+
+import empData from '../../../get_target_params_for_emp.json'
+import allData from '../../../get_target_params_for_all_emps.json'
+import targetData from '../../../get_target_params.json'
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 30) / 2;
@@ -118,7 +123,55 @@ const HomeScreen = ({ route, navigation }) => {
         //     ),
         //   });
         // }
+        // setInterval(() => {
+        //     console.log("CALLED INTERVAL");
+        //     getHomeData()
+        // }, 10000);
+        navigation.addListener('focus', () => {
+            setTargetData()
+        })
+
     }, [navigation]);
+
+    // useEffect(() => {
+    //     setTargetData()
+    // }, [])
+
+    const setTargetData = async () => {
+        // let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        // if (employeeData) {
+        //     const jsonObj = JSON.parse(employeeData);
+        //     if (await AsyncStore.getData('TARGET_EMP_ID') && Number(jsonObj.empId) === Number(await AsyncStore.getData('TARGET_EMP_ID'))){
+        //         console.log("INSIDE IF", await AsyncStore.getData('TARGET_EMP_ID'), jsonObj.empId);
+        //         let obj = {
+        //             empData: JSON.parse(await AsyncStore.getData('TARGET_EMP')),
+        //             allEmpData: JSON.parse(await AsyncStore.getData('TARGET_EMP_ALL')),
+        //             allTargetData: JSON.parse(await AsyncStore.getData('TARGET_ALL')),
+        //             targetData: JSON.parse(await AsyncStore.getData('TARGET_DATA')),
+        //         }
+        //         dispatch(updateTargetData(obj))
+        //     }
+        //     else{
+        //         AsyncStore.storeData('TARGET_EMP_ID', jsonObj.empId.toString())
+        //         let obj = {
+        //             empData: empData,
+        //             allEmpData: allData.employeeTargetAchievements,
+        //             allTargetData: allData.overallTargetAchivements,
+        //             targetData: targetData,
+        //         }
+        //         dispatch(updateTargetData(obj))
+        //     }
+        // }
+
+        console.log("TTTTT CALLED: ", await AsyncStore.getData('TARGET_EMP'));
+        let obj = {
+            empData: await AsyncStore.getData('TARGET_EMP') ? JSON.parse(await AsyncStore.getData('TARGET_EMP')) : empData,
+            allEmpData: await AsyncStore.getData('TARGET_EMP_ALL') ? JSON.parse(await AsyncStore.getData('TARGET_EMP_ALL')) : allData.employeeTargetAchievements,
+            allTargetData: await AsyncStore.getData('TARGET_ALL') ? JSON.parse(await AsyncStore.getData('TARGET_ALL')) : allData.overallTargetAchivements,
+            targetData: await AsyncStore.getData('TARGET_DATA') ? JSON.parse(await AsyncStore.getData('TARGET_DATA')) : targetData,
+        }
+        dispatch(updateTargetData(obj))
+    }
 
     useEffect(() => {
         if (selector.target_parameters_data.length > 0) {
@@ -139,7 +192,6 @@ const HomeScreen = ({ route, navigation }) => {
             const jsonObj = JSON.parse(employeeData);
             if (selector.allDealerData.length > 0) {
                 let tempArr = [], allArray = selector.allDealerData;
-                console.log("DELAER IN HOME:", JSON.stringify(selector.allDealerData));
                 setDealerCount(selector.allDealerData.length)
                 tempArr = allArray.filter((item) => {
                     return item.empId === jsonObj.empId
@@ -442,6 +494,36 @@ const HomeScreen = ({ route, navigation }) => {
                 }
             }
             getDashboadTableDataFromServer(jsonObj.empId);
+        }
+    }
+
+    const getHomeData = async() => {
+        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        // console.log("$$$$$ LOGIN EMP:", employeeData);
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            const dateFormat = "YYYY-MM-DD";
+            const currentDate = moment().format(dateFormat)
+            const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+            const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+            const payload = {
+                "endDate": monthLastDate,
+                "loggedInEmpId": jsonObj.empId,
+                "startDate": monthFirstDate,
+                "levelSelected": null,
+                "empId": jsonObj.empId
+            }
+            if(isTeamPresent){
+                dispatch(getTargetParametersData({
+                    ...payload,
+                    "pageNo": 0,
+                    "size": 5
+                })),
+                getAllTargetParametersDataFromServer(payload);
+            }
+            else{
+                getTargetParametersDataFromServer(payload);
+            }
         }
     }
 

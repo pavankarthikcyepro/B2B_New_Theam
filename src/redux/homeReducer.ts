@@ -2,6 +2,9 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { client } from "../networking/client";
 import URL from "../networking/endpoints";
 import * as AsyncStore from '../asyncStore';
+import empData from '../get_target_params_for_emp.json'
+import allData from '../get_target_params_for_all_emps.json'
+import targetData from '../get_target_params.json'
 
 const data = [
     {
@@ -151,7 +154,7 @@ export const getTargetParametersData = createAsyncThunk("HOME/getTargetParameter
     const json = await response.json()
     console.log("homeReducer", payload, URL.GET_TARGET_PARAMS());
 
-    console.log("&&&&&& TARGET DATA:", JSON.stringify(json));
+    // console.log("&&&&&& TARGET DATA:", JSON.stringify(json));
 
     if (!response.ok) {
         return rejectWithValue(json);
@@ -174,12 +177,12 @@ export const getTargetParametersAllData = createAsyncThunk("HOME/getTargetParame
 })
 
 export const getTargetParametersEmpData = createAsyncThunk("HOME/getTargetParametersEmpData", async (payload: any, { rejectWithValue }) => {
-    console.log("PAYLOAD:", URL.GET_TARGET_PARAMS_EMP(), payload);
+    // console.log("PAYLOAD:", URL.GET_TARGET_PARAMS_EMP(), payload);
 
     const response = await client.post(URL.GET_TARGET_PARAMS_EMP(), payload)
     const json = await response.json()
 
-    console.log("&&&&&& DATA SELF $$$$$$$:", JSON.stringify(json));
+    // console.log("&&&&&& DATA SELF $$$$$$$:", JSON.stringify(json));
 
     if (!response.ok) {
         return rejectWithValue(json);
@@ -306,9 +309,9 @@ export const homeSlice = createSlice({
         task_table_data: {},
         lost_drop_chart_data: {},
         employees_drop_down_data: {},
-        target_parameters_data: [],
-        all_target_parameters_data: [],
-        all_emp_parameters_data: [],
+        target_parameters_data: targetData,
+        all_target_parameters_data: allData.overallTargetAchivements,
+        all_emp_parameters_data: allData.employeeTargetAchievements,
         org_is_loading: false,
         emp_is_loading: false,
         sales_data: {},
@@ -320,7 +323,7 @@ export const homeSlice = createSlice({
         isTeamPresent: false,
         isMD: false,
         isDSE: false,
-        self_target_parameters_data: [],
+        self_target_parameters_data: empData,
     },
     reducers: {
         dateSelected: (state, action) => {
@@ -337,6 +340,14 @@ export const homeSlice = createSlice({
         },
         updateIsDSE: (state, action) => {
             state.isDSE = action.payload;
+        },
+        updateTargetData: (state, action) => {
+            console.log("CALLED REDUX:", action.payload);
+            
+            state.target_parameters_data = action.payload.targetData;
+            state.all_target_parameters_data = action.payload.allTargetData;
+            state.all_emp_parameters_data = action.payload.allEmpData;
+            state.self_target_parameters_data = action.payload.empData;
         },
         clearState: (state, action) => {
             state.serchtext = ""
@@ -356,9 +367,9 @@ export const homeSlice = createSlice({
             state.task_table_data = {}
             state.lost_drop_chart_data = {}
             state.employees_drop_down_data = {}
-            state.target_parameters_data = []
-            state.all_target_parameters_data = []
-            state.all_emp_parameters_data = []
+            state.target_parameters_data = targetData
+            state.all_target_parameters_data = allData.overallTargetAchivements
+            state.all_emp_parameters_data = allData.employeeTargetAchievements
             state.org_is_loading = false
             state.emp_is_loading = false
             state.sales_data = {}
@@ -539,37 +550,40 @@ export const homeSlice = createSlice({
             })
             // Get Target Parameters Data
             .addCase(getTargetParametersData.pending, (state, action) => {
-                state.target_parameters_data = [];
+                // state.target_parameters_data = [];
             })
             .addCase(getTargetParametersData.fulfilled, (state, action) => {
                 if (action.payload) {
-                    state.target_parameters_data = [];
+                    // state.target_parameters_data = [];
                     // console.log(action.payload, "action:")
                     state.target_parameters_data = action.payload;
+                    AsyncStore.storeData('TARGET_DATA', JSON.stringify(action.payload))
                 }
             })
             .addCase(getTargetParametersData.rejected, (state, action) => {
-                state.target_parameters_data = [];
+                // state.target_parameters_data = [];
             })
             .addCase(getTargetParametersAllData.pending, (state, action) => {
-                state.all_target_parameters_data = [];
-                state.all_emp_parameters_data = [];
+                // state.all_target_parameters_data = [];
+                // state.all_emp_parameters_data = [];
             })
             .addCase(getTargetParametersAllData.fulfilled, (state, action) => {
                 if (action.payload) {
                     // console.log("^%$%&*^&*^&*&*& SET %&&&*%^$%&*&^%", JSON.stringify(action.payload.overallTargetAchivements));
 
-                    state.all_target_parameters_data = [];
-                    state.all_emp_parameters_data = [];
+                    // state.all_target_parameters_data = [];
+                    // state.all_emp_parameters_data = [];
                     // console.log(action.payload.employeeTargetAchievements, "dashboard")
                     state.isTeamPresent = action.payload.employeeTargetAchievements.length > 1;
                     state.all_target_parameters_data = action.payload.overallTargetAchivements;
                     state.all_emp_parameters_data = action.payload.employeeTargetAchievements;
+                    AsyncStore.storeData('TARGET_ALL', JSON.stringify(action.payload.overallTargetAchivements))
+                    AsyncStore.storeData('TARGET_EMP_ALL', JSON.stringify(action.payload.employeeTargetAchievements))
                 }
             })
             .addCase(getTargetParametersAllData.rejected, (state, action) => {
-                state.all_target_parameters_data = [];
-                state.all_emp_parameters_data = [];
+                // state.all_target_parameters_data = [];
+                // state.all_emp_parameters_data = [];
             })
             .addCase(getGroupDealerRanking.pending, (state, action) => {
                 state.allGroupDealerData = [];
@@ -634,21 +648,22 @@ export const homeSlice = createSlice({
                 state.sales_comparison_data = [];
             })
             .addCase(getTargetParametersEmpData.pending, (state, action) => {
-                state.self_target_parameters_data = [];
+                // state.self_target_parameters_data = [];
             })
             .addCase(getTargetParametersEmpData.fulfilled, (state, action) => {
                 //console.log("S getSalesComparisonData: ", JSON.stringify(action.payload));
                 if (action.payload) {
                     state.self_target_parameters_data = action.payload;
+                    AsyncStore.storeData('TARGET_EMP', JSON.stringify(action.payload))
                 }
             })
             .addCase(getTargetParametersEmpData.rejected, (state, action) => {
-                state.self_target_parameters_data = [];
+                // state.self_target_parameters_data = [];
             })
     }
 });
 
-export const { dateSelected, updateFilterDropDownData, updateIsTeamPresent, updateIsMD, updateIsDSE, clearState } = homeSlice.actions;
+export const { dateSelected, updateFilterDropDownData, updateIsTeamPresent, updateIsMD, updateIsDSE, clearState, updateTargetData } = homeSlice.actions;
 export default homeSlice.reducer;
 
 
