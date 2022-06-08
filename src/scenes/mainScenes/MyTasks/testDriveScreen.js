@@ -536,14 +536,14 @@ const TestDriveScreen = ({ route, navigation }) => {
     };
 
     const submitClicked = (status, taskName) => {
-        if (email.length === 0) {
-            showToast("Please enter email");
-            return;
-        }
-        if (!isEmail(email)) {
-            showToast("Please enter valid email");
-            return;
-        }
+        // if (email.length === 0) {
+        //     showToast("Please enter email");
+        //     return;
+        // }
+        // if (!isEmail(email)) {
+        //     showToast("Please enter valid email");
+        //     return;
+        // }
         if (selectedVehicleDetails.model.length === 0) {
             showToast("Please select model");
             return;
@@ -1063,7 +1063,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                             <TextinputComp
                                 style={{ height: 65, width: "100%" }}
                                 value={email}
-                                label={"Email ID*"}
+                                label={"Email ID"}
                                 keyboardType={"email-address"}
                                 editable={true}
                                 disabled={false}

@@ -40,12 +40,12 @@ const SecondTopTabNavigator = ({ todaysData = [], upcomingData = [], pendingData
         initialParams={{ data: todaysData, from: "TODAY" }}
         options={{ title: "TODAY" }}
       />
-      <SecondTopTab.Screen
+      {/* <SecondTopTab.Screen
         name={"NEW_UPCOMING"}
         component={ListComponent}
         initialParams={{ data: upcomingData, from: "UPCOMING" }}
         options={{ title: "UPCOMING" }}
-      />
+      /> */}
       <SecondTopTab.Screen
         name={"NEW_PENDING"}
         component={ListComponent}
