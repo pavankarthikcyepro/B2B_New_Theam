@@ -1338,6 +1338,16 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.state = action.payload.State || ""
       state.isAddressSet = true
     },
+    updateAddressByPincode2: (state, action) => {
+
+      state.p_village = action.payload.Block || ""
+      state.p_mandal = state.p_mandal ? state.p_mandal : action.payload.Mandal || ""
+      // state.mandal = action.payload.Block || ""
+      state.p_city = action.payload.District || ""
+      state.p_district = action.payload.District || ""
+      state.p_state = action.payload.State || ""
+      // state.isAddressSet = true
+    },
     updateRefNo: (state, action) => {
       state.refNo = action.payload;
     },
@@ -1522,6 +1532,7 @@ export const {
   updateAddressByPincode,
   updateRefNo,
   updateStatus,
-  clearPermanentAddr
+  clearPermanentAddr,
+  updateAddressByPincode2
 } = enquiryDetailsOverViewSlice.actions;
 export default enquiryDetailsOverViewSlice.reducer;

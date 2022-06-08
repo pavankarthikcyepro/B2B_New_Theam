@@ -513,7 +513,9 @@ const bookingFormSlice = createSlice({
     dd_number: "",
     dd_date: "",
     isDataLoaded: false,
-    addOnPrice: 0
+    addOnPrice: 0,
+    accessories_discount: '',
+    insurance_discount: ''
   },
   reducers: {
     clearState: (state, action) => {
@@ -961,6 +963,12 @@ const bookingFormSlice = createSlice({
         case "ADDITIONAL_OFFER_2":
           state.additional_offer_2 = text;
           break;
+        case "ACCESSORIES_DISCOUNT":
+          state.accessories_discount = text;
+          break;
+        case "INSURANCE_DISCOUNT":
+          state.insurance_discount = text;
+          break;
       }
     },
     setBookingPaymentDetails: (
@@ -1129,6 +1137,19 @@ const bookingFormSlice = createSlice({
     updateDmsAddressData: (state, action) => {
       const dmsAddresses = action.payload;
       if (dmsAddresses.length == 2) {
+        if (dmsAddresses[0].pincode !== dmsAddresses[1].pincode ||
+          dmsAddresses[0].houseNo !== dmsAddresses[1].houseNo ||
+          dmsAddresses[0].street !== dmsAddresses[1].street ||
+          dmsAddresses[0].village !== dmsAddresses[1].village ||
+          dmsAddresses[0].mandal !== dmsAddresses[1].mandal ||
+          dmsAddresses[0].city !== dmsAddresses[1].city ||
+          dmsAddresses[0].district !== dmsAddresses[1].district ||
+          dmsAddresses[0].state !== dmsAddresses[1].state) {
+          state.is_permanent_address_same = "NO"
+        }
+        else {
+          state.is_permanent_address_same = "YES"
+        }
         dmsAddresses.forEach((address) => {
           if (address.addressType === "Communication") {
             state.pincode = address.pincode ? address.pincode : "";
@@ -1249,12 +1270,19 @@ const bookingFormSlice = createSlice({
       if (attachments.length > 0) {
         attachments.forEach((item, index) => {
           if (item.documentType === "pan") {
-            state.pan_number = item.documentNumber;
-          } else if (item.documentType === "aadhar") {
-            state.adhaar_number = item.documentNumber;
+            if (item.documentNumber) {
+              state.pan_number = item.documentNumber;
+            }
           }
-          else if (item.documentType === "empId") {
-            state.employee_id = item.documentNumber;
+          else if (item.documentType === "aadhar") {
+            if (item.documentNumber) {
+              state.adhaar_number = item.documentNumber;
+            }
+          }
+          else if (item.documentType === "employeeId" || item.documentType === "employeeId") {
+            if (item.documentNumber) {
+              state.employee_id = item.documentNumber;
+            }
           }
         });
       }
@@ -1340,8 +1368,10 @@ const bookingFormSlice = createSlice({
               addOnNames += element.add_on_price[0].document_name + ((index + 1) < action.payload.insuranceAddOn.length ? ", " : "");
               price += Number(element.add_on_price[0].cost)
             });
-            state.add_on_insurance = addOnNames;
-            state.addOnPrice = price;
+            // state.add_on_insurance = addOnNames;
+            if (state.insurance_type !== '' && state.add_on_insurance) {
+              state.addOnPrice = price;
+            }
           }
         }
         state.isLoading = false;
@@ -1422,30 +1452,40 @@ const bookingFormSlice = createSlice({
             state.add_on_insurance = addOnNames;
           }
 
-          state.consumer_offer = dataObj.specialScheme
-            ? dataObj.specialScheme.toString()
-            : "";
-          state.exchange_offer = dataObj.exchangeOffers
-            ? dataObj.exchangeOffers.toString()
-            : "";
-          state.corporate_offer = dataObj.corporateOffer
-            ? dataObj.corporateOffer.toString()
-            : "";
-          state.promotional_offer = dataObj.promotionalOffers
-            ? dataObj.promotionalOffers.toString()
-            : "";
-          state.cash_discount = dataObj.cashDiscount
-            ? dataObj.cashDiscount.toString()
-            : "";
-          state.for_accessories = dataObj.focAccessories
-            ? dataObj.focAccessories.toString()
-            : "";
-          state.additional_offer_1 = dataObj.additionalOffer1
-            ? dataObj.additionalOffer1.toString()
-            : "";
-          state.additional_offer_2 = dataObj.additionalOffer2
-            ? dataObj.additionalOffer2.toString()
-            : "";
+          // state.consumer_offer = dataObj.specialScheme
+          //   ? dataObj.specialScheme.toString()
+          //   : "";
+          // state.exchange_offer = dataObj.exchangeOffers
+          //   ? dataObj.exchangeOffers.toString()
+          //   : "";
+          // state.corporate_offer = dataObj.corporateOffer
+          //   ? dataObj.corporateOffer.toString()
+          //   : "";
+          // state.promotional_offer = dataObj.promotionalOffers
+          //   ? dataObj.promotionalOffers.toString()
+          //   : "";
+          // state.cash_discount = dataObj.cashDiscount
+          //   ? dataObj.cashDiscount.toString()
+          //   : "";
+          // state.for_accessories = dataObj.focAccessories
+          //   ? dataObj.focAccessories.toString()
+          //   : "";
+          // state.additional_offer_1 = dataObj.additionalOffer1
+          //   ? dataObj.additionalOffer1.toString()
+          //   : "";
+          // state.additional_offer_2 = dataObj.additionalOffer2
+          //   ? dataObj.additionalOffer2.toString()
+          //   : "";
+          state.consumer_offer = dataObj.specialScheme ? dataObj.specialScheme.toString() : "";
+          state.exchange_offer = dataObj.exchangeOffers ? dataObj.exchangeOffers.toString() : "";
+          state.corporate_offer = dataObj.corporateOffer ? dataObj.corporateOffer.toString() : "";
+          state.promotional_offer = dataObj.promotionalOffers ? dataObj.promotionalOffers.toString() : "";
+          state.cash_discount = dataObj.cashDiscount ? dataObj.cashDiscount.toString() : "";
+          state.for_accessories = dataObj.focAccessories ? dataObj.focAccessories.toString() : "";
+          state.additional_offer_1 = dataObj.additionalOffer1 ? dataObj.additionalOffer1.toString() : "";
+          state.additional_offer_2 = dataObj.additionalOffer2 ? dataObj.additionalOffer2.toString() : "";
+          state.insurance_discount = dataObj.insuranceDiscount ? dataObj.insuranceDiscount.toString() : "";
+          state.accessories_discount = dataObj.accessoriesDiscount ? dataObj.accessoriesDiscount.toString() : "";
         }
       }
       state.isLoading = false;

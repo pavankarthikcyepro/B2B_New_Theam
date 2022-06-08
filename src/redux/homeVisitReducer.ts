@@ -62,6 +62,7 @@ const slice = createSlice({
         generate_otp_response_status: "",
         otp_session_key: "",
         validate_otp_response_status: "",
+        isReasonUpdate: false,
     },
     reducers: {
         clearState: (state, action) => {
@@ -93,6 +94,9 @@ const slice = createSlice({
         builder.addCase(getTaskDetailsApi.fulfilled, (state, action) => {
             if (action.payload.success === true && action.payload.dmsEntity) {
                 const taskObj = action.payload.dmsEntity.task;
+                if (taskObj.reason) {
+                    state.isReasonUpdate = true;
+                }
                 state.reason = taskObj.reason ? taskObj.reason : "";
                 state.customer_remarks = taskObj.customerRemarks ? taskObj.customerRemarks : "";
                 state.employee_remarks = taskObj.employeeRemarks ? taskObj.employeeRemarks : "";

@@ -23,6 +23,7 @@ import { resolvePath } from 'react-native-reanimated/src/reanimated2/animation/s
 import { isRejected } from '@reduxjs/toolkit';
 import { DropComponent } from './components/dropComp';
 import URL from '../../../networking/endpoints';
+import Geolocation from '@react-native-community/geolocation';
 
 const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
@@ -54,6 +55,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     const [dropModel, setDropModel] = useState("");
     const [dropPriceDifference, setDropPriceDifference] = useState("");
     const [dropRemarks, setDropRemarks] = useState("");
+    const [currentLocation, setCurrentLocation] = useState(null);
 
 
     React.useLayoutEffect(() => {
@@ -207,6 +209,12 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         }
     }, []);
 
+    useEffect(() => {
+        navigation.addListener('focus', () => {
+            getCurrentLocation()
+        })
+    }, [navigation]);
+
     const getBranchId = () => {
 
         AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then((branchId) => {
@@ -247,6 +255,16 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         })
     }
 
+    const getCurrentLocation = () => {
+        Geolocation.getCurrentPosition(info => {
+            console.log(info)
+            setCurrentLocation({
+                lat: info.coords.latitude,
+                long: info.coords.longitude
+            })
+        });
+    }
+
     // Handle Employees List Response
     useEffect(() => {
 
@@ -285,6 +303,8 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
             let filteredObj = arrTemp.length > 0 ? { ...arrTemp[0] } : undefined;
             if (filteredObj !== undefined) {
                 filteredObj.taskStatus = "CLOSED";
+                filteredObj.lat = currentLocation ? currentLocation.lat.toString() : null;
+                filteredObj.lon = currentLocation ? currentLocation.long.toString() : null;
                 // console.log("filteredObj: ", filteredObj);
                 dispatch(assignTaskApi(filteredObj));
             }

@@ -287,6 +287,7 @@ const BookingFormScreen = ({ route, navigation }) => {
     const [taxPercent, setTaxPercent] = useState('');
     const [insuranceDiscount, setInsuranceDiscount] = useState('');
     const [accDiscount, setAccDiscount] = useState('');
+    const [initialTotalAmt, setInitialTotalAmt] = useState(0);
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -334,6 +335,16 @@ const BookingFormScreen = ({ route, navigation }) => {
     };
 
     useEffect(() => {
+        // setTotalOnRoadPriceAfterDiscount(totalOnRoadPriceAfterDiscount - focPrice)
+        dispatch(
+            setOfferPriceDetails({
+                key: "FOR_ACCESSORIES",
+                text: focPrice.toString(),
+            })
+        )
+    }, [focPrice]);
+
+    useEffect(() => {
         calculateOnRoadPrice(handlingChargSlctd, essentialKitSlctd, fastTagSlctd);
     }, [
         priceInfomationData,
@@ -358,6 +369,7 @@ const BookingFormScreen = ({ route, navigation }) => {
         selector.accessories_discount,
         selector.additional_offer_1,
         selector.additional_offer_2,
+        totalOnRoadPrice
     ]);
 
     const getBranchId = () => {
@@ -644,7 +656,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                 setSelectedAddOnsPrice(addOnPrice);
             }
             if (dmsOnRoadPriceDtoObj.lifeTaxPercentage) {
-                setTaxPercent((Number(dmsOnRoadPriceDtoObj.lifeTaxPercentage) * 100).toString())
+                setTaxPercent(((Number(dmsOnRoadPriceDtoObj.lifeTaxPercentage) * 1000) / 10).toString())
                 setLifeTaxAmount(getLifeTaxNew(Number(dmsOnRoadPriceDtoObj.lifeTaxPercentage) * 100))
             }
             if (dmsOnRoadPriceDtoObj.insuranceDiscount) {
@@ -915,15 +927,18 @@ const BookingFormScreen = ({ route, navigation }) => {
         essentialSelected,
         fastTagSelected
     ) => {
+        console.log("CALLED");
         let totalPrice = 0;
         totalPrice += priceInfomationData.ex_showroom_price;
         // const lifeTax = getLifeTax();
-        const lifeTax = taxPercent !== '' ? getLifeTaxNew(Number(taxPercent)) : 0;
+        let lifeTax = taxPercent !== '' ? getLifeTaxNew(Number(taxPercent)) : 0;
         setLifeTaxAmount(lifeTax);
         totalPrice += lifeTax;
         totalPrice += priceInfomationData.registration_charges;
         totalPrice += selectedInsurencePrice;
-        totalPrice += selectedAddOnsPrice;
+        if (selector.insurance_type !== '') {
+            totalPrice += selectedAddOnsPrice;
+        }
         totalPrice += selectedWarrentyPrice;
         if (handleSelected) {
             totalPrice += priceInfomationData.handling_charges;
@@ -934,12 +949,16 @@ const BookingFormScreen = ({ route, navigation }) => {
         const tcsPrice = getTcsAmount();
         setTcsAmount(tcsPrice);
         totalPrice += tcsPrice;
-        totalPrice += selectedPaidAccessoriesPrice;
+
         if (fastTagSelected) {
             totalPrice += priceInfomationData.fast_tag;
         }
+        console.log("LIFE TAX PRICE: ", lifeTax, priceInfomationData.registration_charges, selectedInsurencePrice, selectedAddOnsPrice, selectedWarrentyPrice, handleSelected, priceInfomationData.handling_charges, essentialSelected, priceInfomationData.essential_kit, tcsPrice, fastTagSelected, priceInfomationData.fast_tag, selectedPaidAccessoriesPrice);
+        // setTotalOnRoadPriceAfterDiscount(totalPrice - selectedFOCAccessoriesPrice);
+        totalPrice += selectedPaidAccessoriesPrice;
         setTotalOnRoadPrice(totalPrice);
-        setTotalOnRoadPriceAfterDiscount(totalPrice);
+        // setInitialTotalAmt(totalPrice)
+        // setTotalOnRoadPriceAfterDiscount(totalPrice);
     };
 
     const calculateOnRoadPriceAfterDiscount = () => {
@@ -954,12 +973,13 @@ const BookingFormScreen = ({ route, navigation }) => {
         totalPrice -= Number(selector.accessories_discount);
         totalPrice -= Number(selector.additional_offer_1);
         totalPrice -= Number(selector.additional_offer_2);
-        if (accDiscount !== '') {
-            totalPrice -= Number(accDiscount);
-        }
-        if (insuranceDiscount !== '') {
-            totalPrice -= Number(insuranceDiscount);
-        }
+        // if (accDiscount !== '') {
+        //     totalPrice -= Number(accDiscount);
+        // }
+        // if (insuranceDiscount !== '') {
+        //     totalPrice -= Number(insuranceDiscount);
+        // }
+        console.log("OFFER DISCOUNT: ", totalOnRoadPrice, selector.consumer_offer, selector.exchange_offer, selector.corporate_offer, selector.promotional_offer, selector.cash_discount, selector.for_accessories, selector.insurance_discount, selector.accessories_discount, selector.additional_offer_1, selector.additional_offer_2, accDiscount, insuranceDiscount);
         setTotalOnRoadPriceAfterDiscount(totalPrice);
     };
 
@@ -2987,7 +3007,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         />
 
                                     </View>
-                                    <Text style={{ fontSize: 14, fontWeight: "400", }}>{rupeeSymbol + " " + lifeTaxAmount}</Text>
+                                    <Text style={{ fontSize: 14, fontWeight: "400", }}>{rupeeSymbol + " " + lifeTaxAmount.toFixed(2)}</Text>
                                 </View>
 
                                 <Text style={GlobalStyle.underline}></Text>
@@ -3147,7 +3167,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         {selectedPaidAccessoriesList.map((item, index) => {
                                             return (
                                                 <Text style={styles.accessoriText} key={"ACC" + index}>
-                                                    {item.partName + " - " + item.amount}
+                                                    {item.accessoriesName + " - " + item.amount}
                                                 </Text>
                                             );
                                         })}

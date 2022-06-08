@@ -27,7 +27,8 @@ import {
   getPreEnquiryData,
   getMenuList,
   getCustomerTypeList,
-  getCarModalList
+  getCarModalList,
+  clearUserNameAndPass
 } from "../../redux/loginReducer";
 import { AuthNavigator } from "../../navigations";
 import { IconButton } from "react-native-paper";
@@ -117,6 +118,7 @@ const LoginScreen = ({ navigation }) => {
         // signIn(selector.authToken);
         // dispatch(clearState());
       });
+      dispatch(clearUserNameAndPass())
     } else {
     }
   }, [selector.status])

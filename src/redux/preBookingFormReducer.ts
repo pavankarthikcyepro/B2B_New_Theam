@@ -442,7 +442,8 @@ const prebookingFormSlice = createSlice({
     addOnPrice: 0,
     refNo: '',
     accessories_discount: '',
-    insurance_discount: ''
+    insurance_discount: '',
+    isAddressSet: false
   },
   reducers: {
     clearState: (state, action) => {
@@ -1189,11 +1190,23 @@ const prebookingFormSlice = createSlice({
     updateAddressByPincode: (state, action) => {
 
       state.village = action.payload.Block || ""
-      
-      state.city = action.payload.Region || ""
+      state.mandal = state.mandal ? state.mandal : action.payload.Mandal || ""
+      // state.mandal = action.payload.Block || ""
+      state.city = action.payload.District || ""
       state.district = action.payload.District || ""
       state.state = action.payload.State || ""
-    }
+      state.isAddressSet = true
+    },
+    updateAddressByPincode2: (state, action) => {
+
+      state.p_village = action.payload.Block || ""
+      state.p_mandal = state.p_mandal ? state.p_mandal : action.payload.Mandal || ""
+      // state.mandal = action.payload.Block || ""
+      state.p_city = action.payload.District || ""
+      state.p_district = action.payload.District || ""
+      state.p_state = action.payload.State || ""
+      // state.isAddressSet = true
+    },
   },
   extraReducers: (builder) => {
     // Get PreBooking Details
@@ -1256,12 +1269,15 @@ const prebookingFormSlice = createSlice({
         state.vehicle_on_road_price_insurence_details_response = action.payload;
         if (action.payload.insuranceAddOn.length > 0){
           let addOnNames = "", price = 0;
-          // action.payload.insuranceAddOn.forEach((element, index) => {
-          //   addOnNames += element.add_on_price[0].document_name + ((index + 1) < action.payload.insuranceAddOn.length ? ", " : "");
-          //   price += Number(element.add_on_price[0].cost)
-          // });
+          action.payload.insuranceAddOn.forEach((element, index) => {
+            addOnNames += element.add_on_price[0].document_name + ((index + 1) < action.payload.insuranceAddOn.length ? ", " : "");
+            price += Number(element.add_on_price[0].cost)
+          });
           // state.add_on_insurance = addOnNames;
-          // state.addOnPrice = price;
+          if (state.insurance_type !== '' && state.add_on_insurance){
+            state.addOnPrice = price;
+          }
+          
         }
       }
       state.isLoading = false;
@@ -1580,6 +1596,7 @@ export const {
   updateAddressByPincode,
   updateResponseStatus,
   updateStatus,
-  clearPermanentAddr
+  clearPermanentAddr,
+  updateAddressByPincode2
 } = prebookingFormSlice.actions;
 export default prebookingFormSlice.reducer;

@@ -13,13 +13,14 @@
     "clean-android": "cd android && ./gradlew clean && ./gradlew cleanBuildCache && cd .. && npx jetify",
     "android-dev-bundle": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res",
     "debug-apk": "cd android && ./gradlew assembleDebug && cd ..",
-    "release-apk" : "cd android && ./gradlew assembleRelease && cd.."
+    "release-apk": "cd android && ./gradlew assembleRelease && cd.."
   },
   "dependencies": {
     "@klarna/react-native-vector-drawable": "^0.3.0",
     "@react-native-async-storage/async-storage": "^1.15.5",
     "@react-native-community/art": "^1.2.0",
     "@react-native-community/datetimepicker": "^3.5.2",
+    "@react-native-community/geolocation": "^2.1.0",
     "@react-native-community/masked-view": "^0.1.11",
     "@react-native-segmented-control/segmented-control": "^2.4.0",
     "@react-navigation/bottom-tabs": "^5.11.11",
