@@ -27,6 +27,7 @@ import taskThreeSixtyReducer from "./taskThreeSixtyReducer";
 import bookingReducer from "./bookingReducer";
 import bookingFormReducer from "./bookingFormReducer";
 import proceedToBookingReducer from "./proceedToBookingReducer";
+import raiseTicketReducer from "./raiseTicketReducer";
 import appReducer from "./appReducer";
 
 const reducer = combineReducers({
@@ -53,7 +54,7 @@ const reducer = combineReducers({
   upcomingDeliveriesReducer,
   targetSettingsReducer,
   taskThreeSixtyReducer,
-  bookingReducer, bookingFormReducer, proceedToBookingReducer, appReducer
+  bookingReducer, bookingFormReducer, proceedToBookingReducer, appReducer,raiseTicketReducer
 });
 
 const createDebugger = require("redux-flipper").default;

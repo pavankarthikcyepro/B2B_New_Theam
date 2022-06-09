@@ -32,7 +32,7 @@ import MyTasksScreen from "../scenes/mainScenes/MyTasks";
 
 import DigitalPaymentScreen from "../scenes/mainScenes/digitalPaymentScreen";
 import MonthlyTargetScreen from "../scenes/mainScenes/monthlyTargetScreen";
-import HelpDeskScreen from "../scenes/mainScenes/helpDeskScreen";
+import HelpDeskScreen from "../scenes/mainScenes/HelpDesk/helpDeskScreen";
 import taskManagementScreen from "../scenes/mainScenes/taskManagementScreen";
 import TaskTranferScreen from "../scenes/mainScenes/taskTransferScreen";
 
@@ -66,6 +66,7 @@ import ChangePasswordScreen from "../scenes/mainScenes/changePasswordScreen";
 import BookingScreen from "../scenes/mainScenes/EMS/bookingScreen";
 import BookingFormScreen from "../scenes/mainScenes/EMS/bookingFormScreen";
 import ProceedToBookingScreen from "../scenes/mainScenes/MyTasks/proceedToBookingScreen";
+import TicketFormScreen from "../scenes/mainScenes/HelpDesk/ticketForm"
 
 import { useSelector, useDispatch } from 'react-redux';
 import { updateModal, updateSearchKey, updateIsSearch } from '../redux/appReducer';
@@ -273,6 +274,12 @@ export const MyTasksStackIdentifiers = {
     proceedToBooking: "PROCEED_TO_BOOKING",
     createEnquiry: "CREATE_ENQUIRY",
     tasksListScreen: "TASKS_LIST_SCREEN"
+};
+
+export const MyHelpDesk = {
+    helpDesk: "HELP_DESK_SCREEN",
+    raiseTicket: "TICKET_FORM"
+  
 };
 
 export const PriceStackIdentifiers = {
@@ -770,13 +777,22 @@ const HelpDeskStackNavigator = ({ navigation }) => {
     return (
         <HelpDeskStack.Navigator screenOptions={screeOptionStyle}>
             <HelpDeskStack.Screen
-                name={"HELP_DESK_SCREEN"}
+                name={MyHelpDesk.helpDesk}
                 component={HelpDeskScreen}
                 options={{
                     title: "Help Desk",
                     headerLeft: () => <MenuIcon navigation={navigation} />,
                 }}
             />
+                <HelpDeskStack.Screen
+                name={MyHelpDesk.raiseTicket}
+                component={TicketFormScreen}
+                options={{
+                    title: "Raise a ticket",
+                    // headerLeft: () => <MenuIcon navigation={navigation} />,
+                }}
+            />
+            
         </HelpDeskStack.Navigator>
     );
 };
