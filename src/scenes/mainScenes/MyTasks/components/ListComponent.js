@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, View, Text, StyleSheet, Dimensions, FlatList, TouchableOpacity, Image, Modal } from "react-native";
+import { SafeAreaView, View, Text, StyleSheet, Dimensions, FlatList, TouchableOpacity, Image, Modal, TurboModuleRegistry } from "react-native";
 import { GlobalStyle, Colors } from "../../../../styles";
 import PieChart from 'react-native-pie-chart';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
@@ -63,7 +63,7 @@ const ListComponent = ({ route, navigation }) => {
             const dateFormat = "YYYY-MM-DD";
             const currentDate = moment().format(dateFormat)
             let startDate, endDate;
-            if(selectedFilterLocal === 'TODAY'){
+            if (selectedFilterLocal === 'TODAY') {
                 startDate = currentDate;
                 endDate = currentDate;
             }
@@ -85,17 +85,17 @@ const ListComponent = ({ route, navigation }) => {
             if (route.params.from === "TODAY") {
                 if (index === 0) {
                     let payload = {};
-                    if(selectedFilterLocal !== 'ALL'){
+                    if (selectedFilterLocal !== 'ALL') {
                         payload = {
                             "orgId": jsonObj.orgId,
                             "loggedInEmpId": jsonObj.empId,
                             "onlyForEmp": true,
                             "dataType": "todaysData",
-                            "startDate": startDate,
-                            "endDate": endDate,
+                            // "startDate": startDate,
+                            // "endDate": endDate,
                         }
                     }
-                    else{
+                    else {
                         payload = {
                             "orgId": jsonObj.orgId,
                             "loggedInEmpId": jsonObj.empId,
@@ -124,8 +124,8 @@ const ListComponent = ({ route, navigation }) => {
                             "loggedInEmpId": jsonObj.empId,
                             "onlyForEmp": false,
                             "dataType": "todaysData",
-                            "startDate": startDate,
-                            "endDate": endDate,
+                            // "startDate": startDate,
+                            // "endDate": endDate,
                         }
                     }
                     else {
@@ -150,7 +150,7 @@ const ListComponent = ({ route, navigation }) => {
                                     if (allData[index].tasksList.length > 0) {
                                         let userWiseTasks = allData[index].tasksList;
                                         for (let taskIndex = 0; taskIndex < userWiseTasks.length; taskIndex++) {
-                                            
+
                                             let trimName = userWiseTasks[taskIndex].taskName.toLowerCase().trim();
                                             let finalTaskName = trimName.replace(/ /g, "");
                                             if (userWiseTasks[taskIndex].myTaskList.length > 0) {
@@ -165,7 +165,7 @@ const ListComponent = ({ route, navigation }) => {
                                         }
                                     }
                                     if (index === allData.length - 1) {
-                                        if (taskLists.length > 0){
+                                        if (taskLists.length > 0) {
                                             tempArr.push({
                                                 "taskCnt": taskLists.length,
                                                 "taskName": tempTaskName,
@@ -178,7 +178,7 @@ const ListComponent = ({ route, navigation }) => {
                                     setMyTeamsData(tempArr);
                                 }
                             }
-                            
+
                         }
                         else {
                             setMyTeamsData([]);
@@ -197,6 +197,7 @@ const ListComponent = ({ route, navigation }) => {
                             "dataType": "upcomingData",
                             "startDate": startDate,
                             "endDate": endDate,
+                            "ignoreDateFilter": false
                         }
                     }
                     else {
@@ -204,7 +205,8 @@ const ListComponent = ({ route, navigation }) => {
                             "orgId": jsonObj.orgId,
                             "loggedInEmpId": jsonObj.empId,
                             "onlyForEmp": true,
-                            "dataType": "upcomingData"
+                            "dataType": "upcomingData",
+                            "ignoreDateFilter": true
                         }
                     }
                     Promise.all([
@@ -229,6 +231,7 @@ const ListComponent = ({ route, navigation }) => {
                             "dataType": "upcomingData",
                             "startDate": startDate,
                             "endDate": endDate,
+                            "ignoreDateFilter": false
                         }
                     }
                     else {
@@ -236,7 +239,8 @@ const ListComponent = ({ route, navigation }) => {
                             "orgId": jsonObj.orgId,
                             "loggedInEmpId": jsonObj.empId,
                             "onlyForEmp": false,
-                            "dataType": "upcomingData"
+                            "dataType": "upcomingData",
+                            "ignoreDateFilter": true
                         }
                     }
                     Promise.all([
@@ -306,6 +310,7 @@ const ListComponent = ({ route, navigation }) => {
                             "dataType": "pendingData",
                             "startDate": startDate,
                             "endDate": endDate,
+                            "ignoreDateFilter": false
                         }
                     }
                     else {
@@ -313,7 +318,8 @@ const ListComponent = ({ route, navigation }) => {
                             "orgId": jsonObj.orgId,
                             "loggedInEmpId": jsonObj.empId,
                             "onlyForEmp": true,
-                            "dataType": "pendingData"
+                            "dataType": "pendingData",
+                            "ignoreDateFilter": true
                         }
                     }
                     console.log("PAYLOAD PENDING: ", payload);
@@ -339,6 +345,7 @@ const ListComponent = ({ route, navigation }) => {
                             "dataType": "pendingData",
                             "startDate": startDate,
                             "endDate": endDate,
+                            "ignoreDateFilter": false
                         }
                     }
                     else {
@@ -346,7 +353,8 @@ const ListComponent = ({ route, navigation }) => {
                             "orgId": jsonObj.orgId,
                             "loggedInEmpId": jsonObj.empId,
                             "onlyForEmp": false,
-                            "dataType": "pendingData"
+                            "dataType": "pendingData",
+                            "ignoreDateFilter": true
                         }
                     }
                     console.log("PAYLOAD PENDING TEAM: ", payload);
@@ -418,6 +426,7 @@ const ListComponent = ({ route, navigation }) => {
                             "dataType": "rescheduledData",
                             "startDate": startDate,
                             "endDate": endDate,
+                            "ignoreDateFilter": false
                         }
                     }
                     else {
@@ -425,7 +434,8 @@ const ListComponent = ({ route, navigation }) => {
                             "orgId": jsonObj.orgId,
                             "loggedInEmpId": jsonObj.empId,
                             "onlyForEmp": true,
-                            "dataType": "rescheduledData"
+                            "dataType": "rescheduledData",
+                            "ignoreDateFilter": true
                         }
                     }
                     console.log("PAYLOAD RESCHEDULE: ", payload);
@@ -451,6 +461,7 @@ const ListComponent = ({ route, navigation }) => {
                             "dataType": "rescheduledData",
                             "startDate": startDate,
                             "endDate": endDate,
+                            "ignoreDateFilter": false
                         }
                     }
                     else {
@@ -458,7 +469,8 @@ const ListComponent = ({ route, navigation }) => {
                             "orgId": jsonObj.orgId,
                             "loggedInEmpId": jsonObj.empId,
                             "onlyForEmp": false,
-                            "dataType": "rescheduledData"
+                            "dataType": "rescheduledData",
+                            "ignoreDateFilter": true
                         }
                     }
                     console.log("PAYLOAD RESCHEDULE TEAM: ", payload);
@@ -715,42 +727,82 @@ const ListComponent = ({ route, navigation }) => {
                     )
                 } */}
                 {homeSelector.isTeamPresent && !homeSelector.isDSE &&
-                    <View style={styles.selfBtnWrap}>
-                        <TouchableOpacity onPress={() => {
-                            setIndex(0);
-                            changeTab(0);
-                        }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: index ? Colors.WHITE : Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
-                            <Text style={{ fontSize: 16, color: index ? Colors.BLACK : Colors.WHITE, fontWeight: '600' }}>Self</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => {
-                            setIndex(1);
-                            changeTab(1);
-                        }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: index ? Colors.RED : Colors.WHITE, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
-                            <Text style={{ fontSize: 16, color: index ? Colors.WHITE : Colors.BLACK, fontWeight: '600' }}>Teams</Text>
-                        </TouchableOpacity>
-                    </View>
+                    (route.params.from !== "TODAY" ?
+                        <View style={{ flexDirection: 'row' }}>
+                            <View style={[styles.selfBtnWrap, { width: route.params.from !== "TODAY" ? '75%' : '100%' }]}>
+                                <TouchableOpacity onPress={() => {
+                                    setIndex(0);
+                                    changeTab(0);
+                                }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: index ? Colors.WHITE : Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
+                                    <Text style={{ fontSize: 16, color: index ? Colors.BLACK : Colors.WHITE, fontWeight: '600' }}>Self</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => {
+                                    setIndex(1);
+                                    changeTab(1);
+                                }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: index ? Colors.RED : Colors.WHITE, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
+                                    <Text style={{ fontSize: 16, color: index ? Colors.WHITE : Colors.BLACK, fontWeight: '600' }}>Teams</Text>
+                                </TouchableOpacity>
+                            </View>
+                            {route.params.from !== "TODAY" &&
+                                <View >
+                                    <TouchableOpacity style={{ width: 80, height: 40, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', backgroundColor: Colors.RED, borderRadius: 5, marginTop: 10, marginLeft: 10 }} onPress={() => setIsOpenFilter(true)}>
+                                        <Image style={{ height: 20, width: 10 }} source={require('../../../../assets/images/more_new.png')} />
+                                        <Text style={{ fontSize: 16, fontWeight: '600', color: '#fff', marginLeft: 10 }}>Filter</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            }
+                        </View> :
+
+                        <View style={styles.selfBtnWrap}>
+                            <TouchableOpacity onPress={() => {
+                                setIndex(0);
+                                changeTab(0);
+                            }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: index ? Colors.WHITE : Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
+                                <Text style={{ fontSize: 16, color: index ? Colors.BLACK : Colors.WHITE, fontWeight: '600' }}>Self</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => {
+                                setIndex(1);
+                                changeTab(1);
+                            }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: index ? Colors.RED : Colors.WHITE, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
+                                <Text style={{ fontSize: 16, color: index ? Colors.WHITE : Colors.BLACK, fontWeight: '600' }}>Teams</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )
                 }
                 {homeSelector.isDSE &&
-                    <View style={styles.selfBtnWrap}>
-                        <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
-                            <Text style={{ fontSize: 16, color: Colors.WHITE, fontWeight: '600' }}>Self</Text>
+                    (route.params.from !== "TODAY" ?
+                        <View style={{ flexDirection: 'row' }}>
+                            <View style={[styles.selfBtnWrap, { width: '75%' }]}>
+                                <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
+                                    <Text style={{ fontSize: 16, color: Colors.WHITE, fontWeight: '600' }}>Self</Text>
+                                </View>
+                            </View>
+                            {route.params.from !== "TODAY" &&
+                                <View >
+                                    <TouchableOpacity style={{ width: 80, height: 40, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', backgroundColor: Colors.RED, borderRadius: 5, marginTop: 10, marginLeft: 10 }} onPress={() => setIsOpenFilter(true)}>
+                                        <Image style={{ height: 20, width: 10 }} source={require('../../../../assets/images/more_new.png')} />
+                                        <Text style={{ fontSize: 16, fontWeight: '600', color: '#fff', marginLeft: 10 }}>Filter</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            }
+                        </View> :
+
+                        <View style={[styles.selfBtnWrap,]}>
+                            <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
+                                <Text style={{ fontSize: 16, color: Colors.WHITE, fontWeight: '600' }}>Self</Text>
+                            </View>
                         </View>
-                    </View>
+                    )
                 }
-                {/* {homeSelector.isMD &&
-                    <View style={styles.selfBtnWrap}>
-                        <TouchableOpacity style={{ width: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.RED, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
-                            <Text style={{ fontSize: 16, color: Colors.WHITE, fontWeight: '600' }}>Teams</Text>
-                        </TouchableOpacity>
-                    </View>
-                } */}
             </View>
+            {/* {route.params.from !== "TODAY" &&
             <View style={{alignItems: 'flex-end'}}>
-                <TouchableOpacity style={{width: 80, height: 40, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', backgroundColor: 'red', borderRadius: 5}} onPress={() => setIsOpenFilter(true)}>
+                <TouchableOpacity style={{ width: 80, height: 40, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', backgroundColor: Colors.RED, borderRadius: 5}} onPress={() => setIsOpenFilter(true)}>
                     <Image style={{height: 20, width: 10}} source={require('../../../../assets/images/more_new.png')} />
                     <Text style={{fontSize: 16, fontWeight: '600', color: '#fff', marginLeft: 10}}>Filter</Text>
                 </TouchableOpacity>
             </View>
+} */}
             {(index === 0 && myTasksData.length > 0) && (
                 <FlatList
                     data={myTasksData}
@@ -845,19 +897,19 @@ const ListComponent = ({ route, navigation }) => {
                 visible={isOpenFilter}
                 onRequestClose={() => setIsOpenFilter(false)}
             >
-                <TouchableOpacity style={{width: '100%', height: '100%'}} activeOpacity={1} onPress={() => {
+                <TouchableOpacity style={{ width: '100%', height: '100%' }} activeOpacity={1} onPress={() => {
                     console.log("CLICK");
                     setIsOpenFilter(false)
                 }}>
                     <View style={styles.modalContainer}>
-                        <TouchableOpacity style={[styles.btnWrap, {backgroundColor: selectedFilter === 'TODAY' ? Colors.RED : '#fff'}]} onPress={() => {
-                            if (selectedFilter !== 'TODAY'){
+                        <TouchableOpacity style={[styles.btnWrap, { backgroundColor: selectedFilter === 'TODAY' ? Colors.RED : '#fff' }]} onPress={() => {
+                            if (selectedFilter !== 'TODAY') {
                                 initialTask('TODAY')
                             }
                             setSelectedFilter('TODAY');
                             setIsOpenFilter(false);
                         }}>
-                            <Text style={[styles.textWrap, { color: selectedFilter === 'TODAY' ? '#fff' : '#333'}]}>Today</Text>
+                            <Text style={[styles.textWrap, { color: selectedFilter === 'TODAY' ? '#fff' : '#333' }]}>Today</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={[styles.btnWrap, { backgroundColor: selectedFilter === 'WEEK' ? Colors.RED : '#fff' }]} onPress={() => {
                             if (selectedFilter !== 'WEEK') {
@@ -924,11 +976,11 @@ const styles = StyleSheet.create({
         marginHorizontal: 7,
         elevation: 5
     },
-    modalContainer: { width: 120, height: 185, backgroundColor: Colors.GRAY, position: 'absolute', right: 10, top: 260, alignItems: 'center' },
+    modalContainer: { width: 120, height: 185, backgroundColor: Colors.GRAY, position: 'absolute', right: 10, top: '25%', alignItems: 'center' },
     textWrap: { fontSize: 14, color: '#333' },
     btnWrap: { width: '90%', height: 40, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', marginTop: 5 },
-    selectBtnWrap: {backgroundColor: Colors.RED},
-    selectText: {color: '#fff'}
+    selectBtnWrap: { backgroundColor: Colors.RED },
+    selectText: { color: '#fff' }
 })
 
 // if (selector.myTasksListResponseStatus === "success") {

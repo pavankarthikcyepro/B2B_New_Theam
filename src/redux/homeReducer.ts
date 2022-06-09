@@ -67,9 +67,9 @@ export const getOrganaizationHirarchyList = createAsyncThunk("HOME/getOrganaizat
     return json;
 })
 
-export const getCustomerTypeList = createAsyncThunk("HOME/getCustomerTypeList", async (data, { rejectWithValue }) => {
+export const getCustomerTypeList = createAsyncThunk("HOME/getCustomerTypeList", async (ordId, { rejectWithValue }) => {
 
-    const response = await client.get(URL.CUSTOMER_TYPE())
+    const response = await client.get(URL.CUSTOMER_TYPE(ordId))
     const json = await response.json()
     if (!response.ok) {
         return rejectWithValue(json);

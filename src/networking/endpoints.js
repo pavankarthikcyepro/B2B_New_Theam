@@ -55,7 +55,9 @@ const URL = {
     VEHICLE_MODELS: (orgId) => {
         return vehicleInfoService_url + "/api/vehicle_details/?organizationId=" + orgId;
     },
-    CUSTOMER_TYPE: () => sales_url + "/master-data/customertype",
+    CUSTOMER_TYPE: (orgId) => {
+        return sales_url + `/master-data/customertype/${orgId}`
+    },
     MY_TASKS: () => sales_url + "/workflow/assignedTasks?",
     CONTACT_DETAILS: (universalId) => {
         return sales_url + "/lead/id/" + universalId;
@@ -79,7 +81,9 @@ const URL = {
         return downloadFile + "/autosave-get-uid/" + `${universalId}`;
     },
     UPDATE_ENQUIRY_DETAILS: () => sales_url + "/enquiry/lead",
-    GET_CUSTOMER_TYPES: () => sales_url + "/master-data/customertype",
+    GET_CUSTOMER_TYPES: (orgId) => {
+        return sales_url + `/master-data/customertype/${orgId}`
+    },
     DROP_ENQUIRY: () => sales_url + "/lead-drop",
     UPLOAD_DOCUMENT: () => sales_url + "/documents",
     GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS: (varientId, vehicleId) => {
@@ -216,7 +220,7 @@ const URL = {
         return hrms_url + `/changepassword/${cognitoName}`;
     },
     UPDATE_REF: () => {
-        return sales_url + `/lead-customer-reference`;
+        return sales_url + `/lead-customer-reference/update`;
     },
     GET_BRANCH: () => {
         return getBranch + `/data-nodes?orgId=1&levelCode=Level5`;

@@ -311,7 +311,7 @@ const BookingFormScreen = ({ route, navigation }) => {
         setComponentAppear(true);
         getAsyncstoreData();
         getBranchId();
-        dispatch(getCustomerTypesApi());
+        getCustomerType();
 
         BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
         return () => {
@@ -321,6 +321,15 @@ const BookingFormScreen = ({ route, navigation }) => {
             );
         };
     }, [navigation]);
+
+    const getCustomerType = async() => {
+        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        // console.log("$$$$$ LOGIN EMP:", employeeData);
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            dispatch(getCustomerTypesApi(jsonObj.orgId));
+        }
+    }
 
     useEffect(() => {
         console.log("accessoriesList: ", accessoriesList);
@@ -3275,7 +3284,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 <Text style={GlobalStyle.underline}></Text>
                                 <TextinputComp
                                     style={styles.offerPriceTextInput}
-                                    label={"Coporate Offer:"}
+                                    label={"Corporate Offer:"}
                                     value={selector.corporate_offer}
                                     disabled={true}
                                     showLeftAffixText={true}

@@ -154,8 +154,8 @@ export const sendOnRoadPriceDetails = createAsyncThunk(
 
 export const getCustomerTypesApi = createAsyncThunk(
   "PREBOONING_FORMS_SLICE/getCustomerTypesApi",
-  async (universalId, { rejectWithValue }) => {
-    const response = await client.get(URL.GET_CUSTOMER_TYPES());
+  async (orgId, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_CUSTOMER_TYPES(orgId));
     try {
       const json = await response.json();
       console.log("SUCCESS");

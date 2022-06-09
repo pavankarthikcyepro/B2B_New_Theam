@@ -14,7 +14,7 @@ export const showToast = (title) => {
 
         });
     } else {
-        Toast.show(title, 3000);
+        Toast.show(title, 6000);
     }
 }
 
@@ -29,7 +29,7 @@ export const showToastSucess = (title) => {
             duration: Snackbar.LENGTH_LONG,
         });
     } else {
-        Toast.show(title, 4000);
+        Toast.show(title, 6000);
     }
 }
 
@@ -44,7 +44,7 @@ export const showToastRedAlert = (title) => {
             duration: Snackbar.LENGTH_LONG,
         });
     } else {
-        Toast.show(title, 3000);
+        Toast.show(title, 6000);
     }
 }
 

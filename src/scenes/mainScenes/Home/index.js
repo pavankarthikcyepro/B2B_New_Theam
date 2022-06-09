@@ -281,7 +281,7 @@ const HomeScreen = ({ route, navigation }) => {
             updateBranchNameInHeader()
             getMenuListFromServer();
             getLoginEmployeeDetailsFromAsyn();
-            dispatch(getCustomerTypeList());
+        getCustomerType()
             checkLoginUserAndEnableReportButton();
         // }
         
@@ -292,6 +292,15 @@ const HomeScreen = ({ route, navigation }) => {
 
         return unsubscribe;
     }, [navigation]);
+
+    const getCustomerType = async() => {
+        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        // console.log("$$$$$ LOGIN EMP:", employeeData);
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            dispatch(getCustomerTypeList(jsonObj.orgId));
+        }
+    }
 
     const updateBranchNameInHeader = async () => {
         await AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_NAME).then((branchName) => {
