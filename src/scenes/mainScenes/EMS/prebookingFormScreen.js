@@ -329,7 +329,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setComponentAppear(true);
         getAsyncstoreData();
         getBranchId();
-        dispatch(getCustomerTypesApi());
+        getCustomerType();
 
         BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
         return () => {
@@ -339,6 +339,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             );
         };
     }, [navigation]);
+
+    const getCustomerType = async () => {
+        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        // console.log("$$$$$ LOGIN EMP:", employeeData);
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            dispatch(getCustomerTypesApi(jsonObj.orgId));
+        }
+    }
 
     useEffect(() => {
         console.log("accessoriesList: ", accessoriesList);
@@ -1068,6 +1077,18 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             scrollToPos(0)
             setOpenAccordian('1')
             showToast("please enter valid email");
+            return;
+        }
+        if (selector.enquiry_segment.length == 0) {
+            scrollToPos(0)
+            setOpenAccordian('1')
+            showToast("Please select enquery segment");
+            return;
+        }
+        if (selector.customer_type.length == 0) {
+            scrollToPos(0)
+            setOpenAccordian('1')
+            showToast("Please select customer type");
             return;
         }
         if (selector.pincode.length === 0 ||
@@ -2308,6 +2329,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         let totalCost = 0;
                         let names = "";
                         let insurenceAddOns = [];
+                        console.log("ADD-ON ITEM:", JSON.stringify(item));
                         if (item.length > 0) {
                             item.forEach((obj, index) => {
                                 totalCost += Number(obj.cost);
@@ -2453,7 +2475,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 />
                                 <Text style={GlobalStyle.underline}></Text>
                                 <DropDownSelectionItem
-                                    label={"Enquiry Segment"}
+                                    label={"Enquiry Segment*"}
                                     value={selector.enquiry_segment}
                                     onPress={() =>
                                         showDropDownModelMethod(
@@ -2463,7 +2485,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     }
                                 />
                                 <DropDownSelectionItem
-                                    label={"Customer Type"}
+                                    label={"Customer Type*"}
                                     value={selector.customer_type}
                                     onPress={() =>
                                         showDropDownModelMethod("CUSTOMER_TYPE", "Customer Type")
@@ -3780,7 +3802,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 <Text style={GlobalStyle.underline}></Text>
                                 <TextinputComp
                                     style={styles.offerPriceTextInput}
-                                    label={"Coporate Offer:"}
+                                    label={"Corporate Offer:"}
                                     value={selector.corporate_offer}
                                     showLeftAffixText={true}
                                     leftAffixText={rupeeSymbol}
@@ -4886,6 +4908,8 @@ const styles = StyleSheet.create({
     },
     selectedTextStyle: {
         fontSize: 16,
+        color: '#000',
+        fontWeight: '400'
     },
     iconStyle: {
         width: 20,

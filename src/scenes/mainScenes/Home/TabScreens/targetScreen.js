@@ -630,7 +630,7 @@ const TargetScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text style={{ fontSize: 12, fontWeight: "600" }}>
-                            {item.achievment}/{item.target}
+                            {Number(item.achievment) >= 100000 ? Math.round(Number(item.achievment) / 100000) + "L" : (Number(item.achievment) >= 1000 ? Math.round(Number(item.achievment) / 1000) + "K" : item.achievment)}/{Number(item.target) >= 100000 ? Math.round(Number(item.target) / 100000) + "L" : (Number(item.target) >= 1000 ? Math.round(Number(item.target) / 1000) + "K" : item.target)}
                           </Text>
                         </View>
                         <View
@@ -644,8 +644,8 @@ const TargetScreen = ({ route, navigation }) => {
                         >
                           <Text style={{ fontSize: 12, fontWeight: "600" }}>
                             {Number(item.achievment) > Number(item.target) ? 0 : (Math.abs(Number(item.shortfall)) >= 100000
-                              ? Math.abs(Number(item.shortfall)) / 100000 + "L"
-                              : Math.abs(Number(item.shortfall)))}
+                              ? Math.round(Math.abs(Number(item.shortfall)) / 100000) + "L"
+                              : Math.round(Math.abs(Number(item.shortfall))))}
                           </Text>
                         </View>
                         <View
@@ -659,11 +659,14 @@ const TargetScreen = ({ route, navigation }) => {
                         >
                           <Text style={{ fontSize: 12, fontWeight: "600" }}>
                             {Number(item.achievment) > Number(item.target) ? 0 : (dateDiff > 0 && parseInt(item.shortfall) !== 0
-                              ? Math.abs(
-                                  Math.round(
-                                    parseInt(item.shortfall) / dateDiff
-                                  )
-                                )
+                              ? 
+                              (Math.round(
+                                parseInt(item.shortfall) / dateDiff
+                              ) >= 100000
+                                ? Math.round(parseInt(item.shortfall) / dateDiff / 100000) + "L"
+                                : (Math.round(
+                                  parseInt(item.shortfall) / dateDiff
+                                )))
                               : 0)}
                           </Text>
                         </View>
@@ -796,7 +799,8 @@ const TargetScreen = ({ route, navigation }) => {
                                         fontWeight: "600",
                                       }}
                                     >
-                                      {innerItem.achievment}/{innerItem.target}
+                                      {/* {innerItem.achievment}/{innerItem.target} */}
+                                      {Number(innerItem.achievment) >= 100000 ? Math.round(Number(innerItem.achievment) / 100000) + "L" : (Number(innerItem.achievment) >= 1000 ? Math.round(Number(innerItem.achievment) / 1000) + "K" : innerItem.achievment)}/{Number(innerItem.target) >= 100000 ? Math.round(Number(innerItem.target) / 100000) + "L" : (Number(innerItem.target) >= 1000 ? Math.round(Number(innerItem.target) / 1000) + "K" : innerItem.target)}
                                     </Text>
                                   </View>
                                   <View
@@ -816,12 +820,12 @@ const TargetScreen = ({ route, navigation }) => {
                                     >
                                       {Number(innerItem.achievment) > Number(innerItem.target) ? 0 : (Math.abs(Number(innerItem.shortfall)) >=
                                       100000
-                                        ? Math.abs(
-                                            Number(innerItem.shortfall)
-                                          ) /
-                                            100000 +
+                                        ? Math.round(Math.abs(
+                                          Number(innerItem.shortfall)
+                                        ) /
+                                          100000) +
                                           "L"
-                                        : Math.abs(Number(innerItem.shortfall)))}
+                                        : Math.round(Math.abs(Number(innerItem.shortfall))))}
                                     </Text>
                                   </View>
                                   <View
@@ -1081,7 +1085,7 @@ const TargetScreen = ({ route, navigation }) => {
                   >
                     E2B
                   </Text>
-                  {bookingData !== null && enqData !== null && (
+                  {bookingData !== null && enqData !== null ? (
                     <Text
                       style={{
                         color:
@@ -1105,7 +1109,16 @@ const TargetScreen = ({ route, navigation }) => {
                           )}
                       %
                     </Text>
-                  )}
+                    ) : (
+                      <Text
+                        style={{
+                          color:"#ff0000",
+                          fontSize: 12,
+                        }}
+                      >
+                        0%
+                      </Text>
+                    )}
                 </View>
                 <View style={{ height: 5 }}></View>
                 <View style={styles.statWrap}>
@@ -1157,7 +1170,7 @@ const TargetScreen = ({ route, navigation }) => {
                   >
                     E2V
                   </Text>
-                  {bookingData !== null && visitData !== null && (
+                  {bookingData !== null && visitData !== null ? (
                     <Text
                       style={{
                         color:
@@ -1181,7 +1194,16 @@ const TargetScreen = ({ route, navigation }) => {
                           )}
                       %
                     </Text>
-                  )}
+                    ) : (
+                      <Text
+                        style={{
+                          color: "#ff0000",
+                          fontSize: 12,
+                        }}
+                      >
+                        0%
+                      </Text>
+                    )}
                 </View>
               </View>
 

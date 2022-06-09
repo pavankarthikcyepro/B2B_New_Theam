@@ -486,7 +486,7 @@ const styles = StyleSheet.create({
   },
   dropdownContainer: {
     backgroundColor: 'white',
-    padding: 12,
+    padding: 8,
     // borderWidth: 1,
     width: '100%',
     height: 50,
@@ -517,6 +517,8 @@ const styles = StyleSheet.create({
   },
   selectedTextStyle: {
     fontSize: 16,
+    color: '#000',
+    fontWeight: '400'
   },
   iconStyle: {
     width: 20,

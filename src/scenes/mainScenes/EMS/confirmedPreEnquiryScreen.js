@@ -399,12 +399,12 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                 if (employeeData) {
                     const jsonObj = JSON.parse(employeeData);
                     const payload = {
-                        "branchid": branchId,
+                        "branchid": Number(branchId),
                         "leadstage": "ENQUIRY",
                         "orgid": jsonObj.orgId,
                         "universalId": itemData.universalId
                     }
-                    console.log("PAYLOAD:", payload);
+                    console.log("PAYLOAD LEAD REF:", payload);
                     dispatch(customerLeadRef(payload))
                 }
             });

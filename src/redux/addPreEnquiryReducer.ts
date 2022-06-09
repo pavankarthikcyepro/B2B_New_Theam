@@ -29,7 +29,7 @@ interface Item {
 export const createPreEnquiry = createAsyncThunk("ADD_PRE_ENQUIRY_SLICE/createPreEnquiry", async (data, { rejectWithValue }) => {
   console.log("first:", data)
   const response = await client.post(data["url"], data["body"]);
-  // console.log("PAYLOAD PRE ENQ:", JSON.stringify(data["body"]));
+  console.log("PAYLOAD PRE ENQ:", data["url"], JSON.stringify(data["body"]));
   
   // console.log("resp pre enq: ", JSON.stringify(response));
   try {
@@ -66,6 +66,8 @@ export const continueToCreatePreEnquiry = createAsyncThunk(
 export const updatePreEnquiry = createAsyncThunk(
   "ADD_PRE_ENQUIRY_SLICE/updatePreEnquiry",
   async (data, { rejectWithValue }) => {
+    console.log("PAY URL:", data["url"], JSON.stringify(data["body"]));
+    
     const response = await client.put(data["url"], data["body"]);
     try {
       const json = await response.json();

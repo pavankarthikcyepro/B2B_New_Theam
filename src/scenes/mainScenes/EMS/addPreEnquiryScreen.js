@@ -707,13 +707,18 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             url = url + "/account?allocateDse=" + selector.create_enquiry_checked;
             dmsAccountOrContactDto = { ...existingPreEnquiryDetails.dmsAccountDto };
         }
-
+        
         dmsAccountOrContactDto.firstName = selector.firstName;
         dmsAccountOrContactDto.lastName = selector.lastName;
         dmsAccountOrContactDto.email = selector.email;
         dmsAccountOrContactDto.phone = selector.mobile;
         dmsAccountOrContactDto.secondaryPhone = selector.alterMobile;
         dmsAccountOrContactDto.model = selector.carModel;
+
+        dmsAccountOrContactDto.customerType = selector.customerType;
+        dmsAccountOrContactDto.enquirySource = selector.sourceOfEnquiryId;
+        dmsAccountOrContactDto.subSource = selector.subSourceOfEnquiryId;
+        dmsAccountOrContactDto.pincode = selector.pincode;
 
         if (existingPreEnquiryDetails.hasOwnProperty("dmsLeadDto")) {
             dmsLeadDto = { ...existingPreEnquiryDetails.dmsLeadDto };
@@ -723,6 +728,13 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             dmsLeadDto.phone = selector.mobile;
             dmsLeadDto.secondaryPhone = selector.alterMobile;
             dmsLeadDto.model = selector.carModel;
+
+            dmsLeadDto.enquirySegment = selector.enquiryType;
+            dmsLeadDto.sourceOfEnquiry = selector.sourceOfEnquiryId;
+            dmsLeadDto.subSourceOfEnquiry = selector.subSourceOfEnquiryId;
+            dmsLeadDto.enquirySource = selector.sourceOfEnquiry;
+            dmsLeadDto.subSource = selector.subSourceOfEnquiry;
+            dmsLeadDto.pincode = selector.pincode;
         }
 
         let formData = {};
