@@ -281,7 +281,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     getAsyncstoreData();
     getBranchId();
     setComponentAppear(true);
-    dispatch(getCustomerTypesApi());
+    getCustomerType();
 
     BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
     return () => {
@@ -291,6 +291,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       );
     };
   }, []);
+
+  const getCustomerType = async() => {
+        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        // console.log("$$$$$ LOGIN EMP:", employeeData);
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            dispatch(getCustomerTypesApi(jsonObj.orgId));
+        }
+    }
 
   const getBranchId = () => {
 
@@ -1070,11 +1079,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         const payload = {
-          "refNo": res[0].payload.dmsEntity.dmsLeadDto.referencenumber,
-          "orgId": jsonObj.orgId,
-          "stageCompleted": "ENQUIRY"
+          refNo: res[0].payload.dmsEntity.dmsLeadDto.referencenumber,
+          orgId: jsonObj.orgId,
+          stageCompleted: "ENQUIRY"
         }
-        console.log("PAYLOAD:", payload);
+        console.log("PAYLOAD UPDATE REF:", payload);
         dispatch(updateRef(payload))
       }
     });
@@ -1136,6 +1145,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   showToast("Please select expected delivery date");
     //   return;
     // }
+    if (selector.enquiry_segment.length == 0) {
+      scrollToPos(2)
+      setOpenAccordian('1')
+      showToast("Please select enquery segment");
+      return;
+    }
+    if (selector.customer_type.length == 0) {
+      scrollToPos(2)
+      setOpenAccordian('1')
+      showToast("Please select customer type");
+      return;
+    }
     if (selector.buyer_type.length == 0) {
       scrollToPos(2)
       setOpenAccordian('1')
@@ -2831,7 +2852,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
 
                 <DropDownSelectionItem
-                  label={"Enquiry Segment"}
+                  label={"Enquiry Segment*"}
                   // disabled={!selector.enableEdit}
                   value={selector.enquiry_segment}
                   onPress={() =>
@@ -2843,7 +2864,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
 
                 <DropDownSelectionItem
-                  label={"Customer Type"}
+                  label={"Customer Type*"}
                   // disabled={!selector.enableEdit}
                   value={selector.customer_type}
                   onPress={() =>
@@ -5246,6 +5267,8 @@ const styles = StyleSheet.create({
   },
   selectedTextStyle: {
     fontSize: 16,
+    color: '#000',
+    fontWeight: '400'
   },
   iconStyle: {
     width: 20,

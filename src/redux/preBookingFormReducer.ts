@@ -69,7 +69,7 @@ export const updatePrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLI
 })
 
 export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getOnRoadPriceAndInsurenceDetailsApi", async (payload, { rejectWithValue }) => {
-  // console.log("PAYLOAD:", JSON.stringify(payload));
+  console.log("PAYLOAD:", URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(payload["varientId"], payload["orgId"]), JSON.stringify(payload));
   
   const response = await client.get(URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(payload["varientId"], payload["orgId"]));
   try {
@@ -120,9 +120,9 @@ export const sendOnRoadPriceDetails = createAsyncThunk("PREBOONING_FORMS_SLICE/s
   }
 })
 
-export const getCustomerTypesApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getCustomerTypesApi", async (universalId, { rejectWithValue }) => {
+export const getCustomerTypesApi = createAsyncThunk("PREBOONING_FORMS_SLICE/getCustomerTypesApi", async (orgId, { rejectWithValue }) => {
 
-  const response = await client.get(URL.GET_CUSTOMER_TYPES());
+  const response = await client.get(URL.GET_CUSTOMER_TYPES(orgId));
   try {
     const json = await response.json();
     if (response.status != 200) {
@@ -1269,6 +1269,8 @@ const prebookingFormSlice = createSlice({
         state.vehicle_on_road_price_insurence_details_response = action.payload;
         if (action.payload.insuranceAddOn.length > 0){
           let addOnNames = "", price = 0;
+          console.log('ADD-ONS: ', JSON.stringify(action.payload.insuranceAddOn));
+          
           action.payload.insuranceAddOn.forEach((element, index) => {
             addOnNames += element.add_on_price[0].document_name + ((index + 1) < action.payload.insuranceAddOn.length ? ", " : "");
             price += Number(element.add_on_price[0].cost)

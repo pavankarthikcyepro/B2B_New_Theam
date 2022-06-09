@@ -103,7 +103,7 @@ export const updateRef = createAsyncThunk("ENQUIRY_FORM_SLICE/updateRef",
       console.log("PPPP", payload, URL.UPDATE_REF());
 
       // const json = await response.json();
-      console.log("UPDATE REF", response);
+      console.log("UPDATE REF:", response);
 
       if (!response.ok) {
         return rejectWithValue(response);
@@ -130,8 +130,8 @@ export const dropEnquiryApi = createAsyncThunk(
 
 export const getCustomerTypesApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/getCustomerTypesApi",
-  async (universalId, { rejectWithValue }) => {
-    const response = await client.get(URL.GET_CUSTOMER_TYPES());
+  async (orgId, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_CUSTOMER_TYPES(orgId));
     const json = await response.json();
     if (!response.ok) {
       return rejectWithValue(json);
