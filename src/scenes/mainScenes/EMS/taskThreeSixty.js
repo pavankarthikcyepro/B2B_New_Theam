@@ -22,7 +22,7 @@ const mytasksIdentifires = {
 
 const TaskThreeSixtyScreen = ({ route, navigation}) => {
 
-    const { universalId, mobileNo } = route.params;
+    const { universalId, mobileNo, itemData } = route.params;
     const dispatch = useDispatch();
     const selector = useSelector(state => state.taskThreeSixtyReducer);
     const [plannedTasks, setPlannedTasks] = useState([]);
@@ -122,11 +122,17 @@ const TaskThreeSixtyScreen = ({ route, navigation}) => {
                 navigationId = AppNavigator.EmsStackIdentifiers.enquiryFollowUp;
                 break;
             case "createenquiry":
-                navigationId = AppNavigator.EmsStackIdentifiers.createEnquiry;
+                navigationId = AppNavigator.EmsStackIdentifiers.confirmedPreEnq;
                 break;
         }
         if (!navigationId) { return }
-        navigation.navigate(navigationId, { identifier: mytasksIdentifires[finalTaskName], taskId, universalId, taskStatus, taskData: item, mobile: mobileNo });
+        if (navigationId === AppNavigator.EmsStackIdentifiers.confirmedPreEnq){
+            console.log("ITEM DATA:", JSON.stringify(itemData));
+            navigation.navigate(navigationId, { itemData: itemData, fromCreatePreEnquiry: false })
+        }
+        else{
+            navigation.navigate(navigationId, { identifier: mytasksIdentifires[finalTaskName], taskId, universalId, taskStatus, taskData: item, mobile: mobileNo });
+        }
     };
 
     if (selector.isLoading) {

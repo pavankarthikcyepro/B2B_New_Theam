@@ -48,6 +48,9 @@ export const downloadFile1 = "http://liveautomate-345116193.ap-south-1.elb.amazo
 const URL = {
     LOGIN: () => hrms_url + "/emplogin",
     LEADS_LIST_API: () => sales_url + "/lead/all",
+    GET_LEADS_LIST: (stage, empId, offset) => {
+        return sales_url + `/lead/all?limit=500&offset=${offset}&status=${stage}&empId=${empId}`
+    },
     LEADS_LIST_API_FILTER: () => sales_url + "/lead/allByDate",
     MENULIST_API: (userName) => {
         return roleManagement_url + "/user/" + userName;

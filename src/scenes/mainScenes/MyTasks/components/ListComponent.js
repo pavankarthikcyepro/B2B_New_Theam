@@ -902,7 +902,7 @@ const ListComponent = ({ route, navigation }) => {
                     setIsOpenFilter(false)
                 }}>
                     <View style={styles.modalContainer}>
-                        <TouchableOpacity style={[styles.btnWrap, { backgroundColor: selectedFilter === 'TODAY' ? Colors.RED : '#fff' }]} onPress={() => {
+                        <TouchableOpacity style={[styles.btnWrap, { backgroundColor: selectedFilter === 'TODAY' ? Colors.RED : '#fff', borderTopLeftRadius: 15, borderTopRightRadius: 15, marginTop: 2}]} onPress={() => {
                             if (selectedFilter !== 'TODAY') {
                                 initialTask('TODAY')
                             }
@@ -976,9 +976,9 @@ const styles = StyleSheet.create({
         marginHorizontal: 7,
         elevation: 5
     },
-    modalContainer: { width: 120, height: 185, backgroundColor: Colors.GRAY, position: 'absolute', right: 10, top: '25%', alignItems: 'center' },
+    modalContainer: { width: '100%', height: 180, backgroundColor: Colors.RED, position: 'absolute', bottom: 0, alignItems: 'center', borderTopLeftRadius: 15, borderTopRightRadius: 15 },
     textWrap: { fontSize: 14, color: '#333' },
-    btnWrap: { width: '90%', height: 40, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', marginTop: 5 },
+    btnWrap: { width: '100%', height: 45, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', borderBottomColor: '#d1d1d1', borderBottomWidth: 1 },
     selectBtnWrap: { backgroundColor: Colors.RED },
     selectText: { color: '#fff' }
 })

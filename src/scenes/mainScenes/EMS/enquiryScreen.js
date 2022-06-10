@@ -61,7 +61,7 @@ const EnquiryScreen = ({ navigation }) => {
 
     useEffect(() => {
         if (selector.enquiry_list.length > 0) {
-            console.log("ENQ DATA: ", JSON.stringify(selector.enquiry_list[1]));
+            console.log("ENQ DATA: ", JSON.stringify(selector.enquiry_list));
             setSearchedData(selector.enquiry_list)
         }
         else{
@@ -138,7 +138,7 @@ const EnquiryScreen = ({ navigation }) => {
             "empId": empId,
             "status": "ENQUIRY",
             "offset": offSet,
-            "limit": 1000,
+            "limit": 10,
         }
         return payload;
     }

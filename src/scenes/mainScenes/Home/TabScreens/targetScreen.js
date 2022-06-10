@@ -1090,8 +1090,8 @@ const TargetScreen = ({ route, navigation }) => {
                       style={{
                         color:
                           Math.floor(
-                            (parseInt(bookingData?.achievment) /
-                              parseInt(enqData?.achievment)) *
+                            (parseInt(bookingData?.target) /
+                              parseInt(enqData?.target)) *
                               100
                           ) > 40
                             ? "#14ce40"
@@ -1099,12 +1099,12 @@ const TargetScreen = ({ route, navigation }) => {
                         fontSize: 12,
                       }}
                     >
-                      {parseInt(bookingData?.achievment) === 0 ||
-                      parseInt(enqData?.achievment) === 0
+                        {parseInt(bookingData?.target) === 0 ||
+                          parseInt(enqData?.target) === 0
                         ? 0
                         : Math.floor(
-                            (parseInt(bookingData?.achievment) /
-                              parseInt(enqData?.achievment)) *
+                          (parseInt(bookingData?.target) /
+                            parseInt(enqData?.target)) *
                               100
                           )}
                       %
@@ -1137,8 +1137,8 @@ const TargetScreen = ({ route, navigation }) => {
                       style={{
                         color:
                           Math.floor(
-                            (parseInt(retailData?.achievment) /
-                              parseInt(enqData?.achievment)) *
+                            (parseInt(retailData?.target) /
+                              parseInt(enqData?.target)) *
                               100
                           ) > 40
                             ? "#14ce40"
@@ -1146,12 +1146,12 @@ const TargetScreen = ({ route, navigation }) => {
                         fontSize: 12,
                       }}
                     >
-                      {parseInt(retailData?.achievment) === 0 ||
-                      parseInt(enqData?.achievment) === 0
+                        {parseInt(retailData?.target) === 0 ||
+                          parseInt(enqData?.target) === 0
                         ? 0
                         : Math.floor(
-                            (parseInt(retailData?.achievment) /
-                              parseInt(enqData?.achievment)) *
+                          (parseInt(retailData?.target) /
+                            parseInt(enqData?.target)) *
                               100
                           )}
                       %
@@ -1170,13 +1170,13 @@ const TargetScreen = ({ route, navigation }) => {
                   >
                     E2V
                   </Text>
-                  {bookingData !== null && visitData !== null ? (
+                    {enqData !== null && visitData !== null ? (
                     <Text
                       style={{
                         color:
                           Math.floor(
-                            (parseInt(visitData?.achievment) /
-                              parseInt(bookingData?.achievment)) *
+                            (parseInt(visitData?.target) /
+                              parseInt(enqData?.target)) *
                               100
                           ) > 40
                             ? "#14ce40"
@@ -1184,12 +1184,12 @@ const TargetScreen = ({ route, navigation }) => {
                         fontSize: 12,
                       }}
                     >
-                      {parseInt(bookingData?.achievment) === 0 ||
-                      parseInt(visitData?.achievment) === 0
+                        {parseInt(enqData?.target) === 0 ||
+                          parseInt(visitData?.target) === 0
                         ? 0
                         : Math.floor(
-                            (parseInt(visitData?.achievment) /
-                              parseInt(bookingData?.achievment)) *
+                          (parseInt(visitData?.target) /
+                            parseInt(enqData?.target)) *
                               100
                           )}
                       %
@@ -1226,8 +1226,8 @@ const TargetScreen = ({ route, navigation }) => {
                       style={{
                         color:
                           Math.floor(
-                            (parseInt(retailData?.achievment) /
-                              parseInt(bookingData?.achievment)) *
+                            (parseInt(retailData?.target) /
+                              parseInt(bookingData?.target)) *
                               100
                           ) > 40
                             ? "#14ce40"
@@ -1235,12 +1235,12 @@ const TargetScreen = ({ route, navigation }) => {
                         fontSize: 12,
                       }}
                     >
-                      {parseInt(bookingData?.achievment) === 0 ||
-                      parseInt(retailData?.achievment) === 0
+                        {parseInt(bookingData?.target) === 0 ||
+                          parseInt(retailData?.target) === 0
                         ? 0
                         : Math.floor(
-                            (parseInt(retailData?.achievment) /
-                              parseInt(bookingData?.achievment)) *
+                          (parseInt(retailData?.target) /
+                            parseInt(bookingData?.target)) *
                               100
                           )}
                       %
@@ -1264,8 +1264,8 @@ const TargetScreen = ({ route, navigation }) => {
                       style={{
                         color:
                           Math.floor(
-                            (parseInt(TDData?.achievment) /
-                              parseInt(enqData?.achievment)) *
+                            (parseInt(TDData?.target) /
+                              parseInt(enqData?.target)) *
                               100
                           ) > 40
                             ? "#14ce40"
@@ -1273,12 +1273,12 @@ const TargetScreen = ({ route, navigation }) => {
                         fontSize: 12,
                       }}
                     >
-                      {parseInt(TDData?.achievment) === 0 ||
-                      parseInt(enqData?.achievment) === 0
+                        {parseInt(TDData?.target) === 0 ||
+                          parseInt(enqData?.target) === 0
                         ? 0
                         : Math.floor(
-                            (parseInt(TDData?.achievment) /
-                              parseInt(enqData?.achievment)) *
+                          (parseInt(TDData?.target) /
+                            parseInt(enqData?.target)) *
                               100
                           )}
                       %

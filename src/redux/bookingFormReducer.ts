@@ -638,6 +638,10 @@ const bookingFormSlice = createSlice({
       state.cheque_date = "";
       state.dd_number = "";
       state.dd_date = "";
+      state.isDataLoaded = false
+        state.addOnPrice = 0
+        state.accessories_discount = ''
+        state.insurance_discount = ''
     },
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
       const { key, value, id } = action.payload;

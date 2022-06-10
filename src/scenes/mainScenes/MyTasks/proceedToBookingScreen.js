@@ -303,9 +303,11 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
       leadstage:
         identifier === "PROCEED_TO_PRE_BOOKING" ? "PREBOOKING" : "BOOKING",
       orgid: userData.orgId,
+      universalId: universalId
     };
     const url = URL.CUSTOMER_LEAD_REFERENCE();
 
+    console.log("PAYLOAD BOOKING: ", payload);
     await fetch(url, {
       headers: {
         "Content-Type": "application/json",
@@ -328,6 +330,7 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
   };
 
   const updateEnuiquiryDetails = (refNumber) => {
+    console.log("REF NUMBER:", refNumber);
     if (!selector.enquiry_details_response) {
       return;
     }
