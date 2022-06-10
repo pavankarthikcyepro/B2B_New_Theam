@@ -122,8 +122,8 @@ export const Gender_Data_Obj = {
   "m/s": [
     {
       id: "1",
-      name: "Rep by",
-    }
+      name: "Female",
+    },
   ]
 };
 
@@ -167,7 +167,7 @@ export const Relation_Data_Obj = {
   'm/s': [
     {
       id: "1",
-      name: "D/O",
+      name: "Rep by",
     },
   ],
 };

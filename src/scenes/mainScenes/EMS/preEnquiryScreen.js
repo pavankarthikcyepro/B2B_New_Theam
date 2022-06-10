@@ -363,7 +363,7 @@ const PreEnquiryScreen = ({ navigation }) => {
                                                 model={item.model}
                                                 onItemPress={() => {
                                                     console.log("ENQ: ", JSON.stringify(item));
-                                                    navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId })
+                                                    navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId, itemData: item })
                                                 }}
                                                 onDocPress={() => {
                                                     console.log("ITEM:", JSON.stringify(item));

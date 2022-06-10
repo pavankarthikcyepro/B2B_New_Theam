@@ -60,6 +60,8 @@ export const getAutoSaveEnquiryDetailsApi = createAsyncThunk(
 export const updateEnquiryDetailsApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/updateEnquiryDetailsApi",
   async (payload, { rejectWithValue }) => {
+    console.log("ENQ PAY:", URL.UPDATE_ENQUIRY_DETAILS(), JSON.stringify(payload));
+    
     const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
     const json = await response.json();
     console.log("UPDATE ENQ:", JSON.stringify(json));
@@ -515,9 +517,9 @@ const enquiryDetailsOverViewSlice = createSlice({
             console.log(new Date(state.dateOfBirth), new Date(Number(dobArr[2]), Number(dobArr[1]), Number(dobArr[0])));
             state.minDate = new Date(Number(dobArr[2]) + 1, Number(dobArr[1]), Number(dobArr[0]));
           } else {
-            state.minDate = new Date();
+            state.minDate = null;
           }
-          state.maxDate = null;
+          state.maxDate = new Date();
           break;
         case "R_MFG_YEAR":
           state.minDate = null;
@@ -592,7 +594,7 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.expected_delivery_date = selectedDate;
           break;
         case "R_MFG_YEAR":
-          state.r_mfg_year = selectedDate;
+          state.r_mfg_year = convertTimeStampToDateString(text, "MM-YYYY");
           break;
         case "R_REG_DATE":
           state.r_registration_date = selectedDate;
@@ -1220,10 +1222,16 @@ const enquiryDetailsOverViewSlice = createSlice({
           ? dataObj.yearofManufacture
           : "";
         state.rmfgYear = yearOfManfac;
-        state.r_mfg_year = convertTimeStampToDateString(
-          yearOfManfac,
-          "MM/DD/YYYY"
-        );
+        if (isNaN(yearOfManfac)){
+          state.r_mfg_year = yearOfManfac
+        }
+        else{
+          state.r_mfg_year = convertTimeStampToDateString(
+            yearOfManfac,
+            "MM-YYYY"
+          );
+        }
+        
         console.log("DATE:", state.r_mfg_year, dataObj.yearofManufacture);
 
         state.r_kms_driven_or_odometer_reading = dataObj.kiloMeters
@@ -1404,10 +1412,10 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(updateEnquiryDetailsApi.rejected, (state, action) => {
-      // console.log(
-      //   "F updateEnquiryDetailsApi: ",
-      //   JSON.stringify(action.payload)
-      // );
+      console.log(
+        "F updateEnquiryDetailsApi: ",
+        JSON.stringify(action.payload)
+      );
       if (action.payload["message"] != undefined) {
         showToastRedAlert(action.payload["message"]);
       }

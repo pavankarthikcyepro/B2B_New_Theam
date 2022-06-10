@@ -718,20 +718,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const updateEnquiry = async () => {
     console.log("CALLED AUTO UPDATE");
-    if (selector.designation.length == 0 || selector.buyer_type.length == 0) {
-      return;
-    }
-    if (!isValidateAlphabetics(selector.occupation)) {
-      return;
-    }
+    // if (selector.designation.length == 0 || selector.buyer_type.length == 0) {
+    //   return;
+    // }
+    // if (!isValidateAlphabetics(selector.occupation)) {
+    //   return;
+    // }
 
-    if (!isValidateAlphabetics(selector.designation)) {
-      return;
-    }
+    // if (!isValidateAlphabetics(selector.designation)) {
+    //   return;
+    // }
 
-    if (selector.salutation.length == 0) {
-      return;
-    }
+    // if (selector.salutation.length == 0) {
+    //   return;
+    // }
 
     // if (selector.enquiry_segment.toLowerCase() == "personal") {
     //   if (
@@ -742,37 +742,37 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //     return;
     //   }
     // }
-    if (!isValidate(selector.firstName)) {
-      return;
-    }
-    if (!isValidate(selector.lastName)) {
-      return;
-    }
+    // if (!isValidate(selector.firstName)) {
+    //   return;
+    // }
+    // if (!isValidate(selector.lastName)) {
+    //   return;
+    // }
     // if (!isValidateAlphabetics(selector.relationName)) {
     //   return;
     // }
-    if (!isValidateAlphabetics(selector.streetName)) {
-      return;
-    }
+    // if (!isValidateAlphabetics(selector.streetName)) {
+    //   return;
+    // }
     // Model Selection
-    if (selector.model.length == 0 || selector.varient.length == 0 || selector.color.length == 0) {
-      return;
-    }
+    // if (selector.model.length == 0 || selector.varient.length == 0 || selector.color.length == 0) {
+    //   return;
+    // }
 
-    if (
-      selector.houseNum.length == 0 ||
-      selector.streetName.length == 0 ||
-      selector.village.length == 0 ||
-      selector.city.length == 0 ||
-      selector.state.length == 0 ||
-      selector.district.length == 0
-    ) {
-      return;
-    }
+    // if (
+    //   selector.houseNum.length == 0 ||
+    //   selector.streetName.length == 0 ||
+    //   selector.village.length == 0 ||
+    //   selector.city.length == 0 ||
+    //   selector.state.length == 0 ||
+    //   selector.district.length == 0
+    // ) {
+    //   return;
+    // }
 
-    if (selector.retail_finance.length == 0) {
-      return;
-    }
+    // if (selector.retail_finance.length == 0) {
+    //   return;
+    // }
 
     // if (selector.retail_finance === "In House") {
     //   if (
@@ -787,80 +787,80 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     // }
 
     // Leashing
-    if (selector.retail_finance == "Leasing") {
-      if (selector.leashing_name.length == 0) {
-        return;
-      }
-    }
+    // if (selector.retail_finance == "Leasing") {
+    //   if (selector.leashing_name.length == 0) {
+    //     return;
+    //   }
+    // }
 
 
 
-    if (selector.buyer_type === "Additional Buyer") {
-      if (
-        selector.a_make == 0 ||
-        selector.a_model == 0 ||
-        selector.a_varient == 0 ||
-        selector.a_color == 0 ||
-        selector.a_reg_no == 0
-      ) {
-        return;
-      }
-      if (!isValidateAlphabetics(selector.a_varient)) {
+    // if (selector.buyer_type === "Additional Buyer") {
+    //   if (
+    //     selector.a_make == 0 ||
+    //     selector.a_model == 0 ||
+    //     selector.a_varient == 0 ||
+    //     selector.a_color == 0 ||
+    //     selector.a_reg_no == 0
+    //   ) {
+    //     return;
+    //   }
+    //   if (!isValidateAlphabetics(selector.a_varient)) {
 
-        return;
-      }
-      if (!isValidateAlphabetics(selector.a_color)) {
-        return;
-      }
+    //     return;
+    //   }
+    //   if (!isValidateAlphabetics(selector.a_color)) {
+    //     return;
+    //   }
 
-    }
+    // }
 
 
-    if (selector.buyer_type === "Replacement Buyer") {
-      if (selector.r_color.length > 0) {
-        if (!isValidateAlphabetics(selector.r_color)) {
-          return;
-        }
-      }
-      if (selector.r_insurence_company_name.length == 0) {
-        return;
-      }
-      if (!isValidateAlphabetics(selector.r_model_other_name)) {
-        return;
-      }
+    // if (selector.buyer_type === "Replacement Buyer") {
+    //   if (selector.r_color.length > 0) {
+    //     if (!isValidateAlphabetics(selector.r_color)) {
+    //       return;
+    //     }
+    //   }
+    //   if (selector.r_insurence_company_name.length == 0) {
+    //     return;
+    //   }
+    //   if (!isValidateAlphabetics(selector.r_model_other_name)) {
+    //     return;
+    //   }
 
-      if (selector.r_hypothication_checked === true) {
-        if (selector.r_hypothication_name.length > 0) {
-          if (!isValidateAlphabetics(selector.r_hypothication_name)) {
-            return;
-          }
-        }
-        if (selector.r_hypothication_branch.length > 0) {
-          if (!isValidateAlphabetics(selector.r_hypothication_branch)) {
-            return;
-          }
-        }
-      }
-    }
+    //   if (selector.r_hypothication_checked === true) {
+    //     if (selector.r_hypothication_name.length > 0) {
+    //       if (!isValidateAlphabetics(selector.r_hypothication_name)) {
+    //         return;
+    //       }
+    //     }
+    //     if (selector.r_hypothication_branch.length > 0) {
+    //       if (!isValidateAlphabetics(selector.r_hypothication_branch)) {
+    //         return;
+    //       }
+    //     }
+    //   }
+    // }
 
-    if (selector.c_looking_for_any_other_brand_checked === true) {
-      if (selector.c_dealership_name.length > 0) {
-        if (!isValidateAlphabetics(selector.c_dealership_name)) {
-          return;
-        }
-      }
-    }
+    // if (selector.c_looking_for_any_other_brand_checked === true) {
+    //   if (selector.c_dealership_name.length > 0) {
+    //     if (!isValidateAlphabetics(selector.c_dealership_name)) {
+    //       return;
+    //     }
+    //   }
+    // }
 
-    if (
-      selector.leashing_name.length > 0 &&
-      !isValidateAlphabetics(selector.leashing_name)
-    ) {
-      return;
-    }
+    // if (
+    //   selector.leashing_name.length > 0 &&
+    //   !isValidateAlphabetics(selector.leashing_name)
+    // ) {
+    //   return;
+    // }
 
-    if (!selector.enquiry_details_response) {
-      return;
-    }
+    // if (!selector.enquiry_details_response) {
+    //   return;
+    // }
 
     let dmsContactOrAccountDto = {};
     let dmsLeadDto = {};
@@ -874,6 +874,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
     if (dmsEntity.hasOwnProperty("dmsLeadDto"))
       dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
+    dmsLeadDto.firstName = selector.firstName;
+    dmsLeadDto.lastName = selector.lastName;
     const employeeData = await AsyncStore.getData(
       AsyncStore.Keys.LOGIN_EMPLOYEE
     );
@@ -1074,18 +1076,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     Promise.all([
       dispatch(updateEnquiryDetailsApi(formData))
     ]).then(async (res) => {
-      console.log("REF NO:", res[0].payload.dmsEntity.dmsLeadDto.referencenumber);
-      let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-      if (employeeData) {
-        const jsonObj = JSON.parse(employeeData);
-        const payload = {
-          refNo: res[0].payload.dmsEntity.dmsLeadDto.referencenumber,
-          orgId: jsonObj.orgId,
-          stageCompleted: "ENQUIRY"
-        }
-        console.log("PAYLOAD UPDATE REF:", payload);
-        dispatch(updateRef(payload))
-      }
+      // console.log("REF NO:", res[0].payload.dmsEntity.dmsLeadDto.referencenumber);
+      // let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+      // if (employeeData) {
+      //   const jsonObj = JSON.parse(employeeData);
+      //   const payload = {
+      //     refNo: res[0].payload.dmsEntity.dmsLeadDto.referencenumber,
+      //     orgId: jsonObj.orgId,
+      //     stageCompleted: "ENQUIRY"
+      //   }
+      //   console.log("PAYLOAD UPDATE REF:", payload);
+      //   dispatch(updateRef(payload))
+      // }
     });
   }
 
@@ -1414,6 +1416,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
     if (dmsEntity.hasOwnProperty("dmsLeadDto")) {
       dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
+      dmsLeadDto.firstName = selector.firstName;
+      dmsLeadDto.lastName = selector.lastName;
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
@@ -1842,9 +1846,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dataObj.fuelType = selector.r_fuel_type;
       dataObj.transmission = selector.r_transmission_type;
       // Pending
-      dataObj.yearofManufacture = convertDateStringToMillisecondsUsingMoment(
-        selector.r_mfg_year
-      );
+      // dataObj.yearofManufacture = convertDateStringToMillisecondsUsingMoment(
+      //   selector.r_mfg_year
+      // );
+      dataObj.yearofManufacture = selector.r_mfg_year
       dataObj.kiloMeters = selector.r_kms_driven_or_odometer_reading;
       dataObj.expectedPrice = selector.r_expected_price
         ? Number(selector.r_expected_price)
@@ -4754,6 +4759,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     value={selector.r_mfg_year}
                     onPress={() => dispatch(setDatePicker("R_MFG_YEAR"))}
                   />
+                  {/* <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.r_mfg_year}
+                    label={"Mth.Yr. of MFG"}
+                    // keyboardType={"number-pad"}
+                    // maxLength={7}
+                    onChangeText={(text) => {
+                      let regex = /[\d]{2} \/ [\d]{4}/;
+                      console.log("TTT:", regex.test(text));
+                      dispatch(updateSelectedDate({ key: "R_MFG_YEAR", text: text }))
+                    }}
+                  /> */}
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.r_kms_driven_or_odometer_reading}

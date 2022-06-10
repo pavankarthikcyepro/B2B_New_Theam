@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Linking, Modal, TextInput, Text, TouchableOpacity } from "react-native";
+import { View, Linking, Modal, TextInput, Text, TouchableOpacity, Image } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
@@ -164,8 +164,9 @@ const LeadAge = () => {
     const dispatch = useDispatch();
 
     return (
-        <View style={{ width: 80, height: 40, borderRadius: 5, backgroundColor: '#ff33ff', justifyContent: 'center', alignItems: 'center', marginRight: 5}}>
-            <Text style={{ fontSize: 15, fontWeight: '600', color: '#fff' }}>{`${selector.leadAge} ${selector.leadAge > 1 ? 'days' : 'day'}`}</Text>
+        <View style={{ width: 110, height: 30, borderRadius: 15, backgroundColor: '#ff33ff', justifyContent: 'center', alignItems: 'center', marginRight: 5, flexDirection: 'row'}}>
+            <Image source={require('../assets/images/calendar.png')} style={{width: 20, height: 20}} />
+            <Text style={{ fontSize: 15, fontWeight: '600', color: '#fff', marginLeft: 5 }}>{`${selector.leadAge} ${selector.leadAge > 1 ? 'days' : 'day'}`}</Text>
             {/* <Text style={{ fontSize: 15, fontWeight: '600', color: '#fff' }}>200 days</Text> */}
         </View>
     );

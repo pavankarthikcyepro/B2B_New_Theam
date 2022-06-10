@@ -289,6 +289,68 @@ const BookingFormScreen = ({ route, navigation }) => {
     const [accDiscount, setAccDiscount] = useState('');
     const [initialTotalAmt, setInitialTotalAmt] = useState(0);
 
+    const clearLocalData = () => {
+        setOpenAccordian(0);
+        setComponentAppear(false);
+        setUserData({
+            orgId: "",
+            employeeId: "",
+            employeeName: "",
+            isManager: false,
+            editEnable: false,
+            isPreBookingApprover: false,
+        });
+        setShowDropDownModel(false);
+        setShowMultipleDropDownData(false);
+        setDataForDropDown([]);
+        setDropDownKey("");
+        setDropDownTitle("Select Data");
+        setCarModelsData([]);
+        setSelectedCarVarientsData({
+            varientList: [],
+            varientListForDropDown: [],
+        });
+        setCarColorsData([]);
+        setSelectedModelId(0);
+        setSelectedVarientId(0);
+        setInsurenceVarientTypes([]);
+        setInsurenceAddOnTypes([]);
+        setWarrentyTypes([]);
+        setSelectedInsurencePrice(0);
+        setSelectedAddOnsPrice(0);
+        setSelectedWarrentyPrice(0);
+        setSelectedPaidAccessoriesPrice(0);
+        setTotalOnRoadPrice(0);
+        setTotalOnRoadPriceAfterDiscount(0);
+        setPriceInformationData({
+            ex_showroom_price: 0,
+            ex_showroom_price_csd: 0,
+            registration_charges: 0,
+            handling_charges: 0,
+            tcs_percentage: 0,
+            tcs_amount: 0,
+            essential_kit: 0,
+            fast_tag: 0,
+            vehicle_road_tax: 0,
+        });
+        setIsDropSelected(false);
+        setTypeOfActionDispatched("");
+        setSelectedPaidAccessoriesList([]);
+        setSelectedInsurenceAddons([]);
+        setShowApproveRejectBtn(false);
+        setShowPrebookingPaymentSection(false);
+        setShowSubmitDropBtn(false);
+        setUploadedImagesDataObj({});
+        setLifeTaxAmount(0);
+        setTcsAmount(0);
+        setFocPrice(0);
+        setMrpPrice(0);
+        setTaxPercent('');
+        setInsuranceDiscount('');
+        setAccDiscount('');
+        setInitialTotalAmt(0);
+    }
+
     useLayoutEffect(() => {
         navigation.setOptions({
             headerLeft: () => (
@@ -300,6 +362,16 @@ const BookingFormScreen = ({ route, navigation }) => {
                 />
             ),
         });
+    }, [navigation]);
+
+    useEffect(() => {
+        navigation.addListener('blur', () => {
+            console.log("CALLED BLUR");
+            setTotalOnRoadPriceAfterDiscount(0);
+            setTotalOnRoadPrice(0)
+            clearLocalData()
+            dispatch(clearState())
+        })
     }, [navigation]);
 
     const goParentScreen = () => {

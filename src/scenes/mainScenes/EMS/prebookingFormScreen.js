@@ -306,6 +306,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const [addressData, setAddressData] = useState([]);
     const [addressData2, setAddressData2] = useState([]);
     const [defaultAddress, setDefaultAddress] = useState(null);
+    const [isEdit, setIsEdit] = useState(false);
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -339,6 +340,78 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             );
         };
     }, [navigation]);
+
+    useEffect(() => {
+        navigation.addListener('blur', () => {
+            setTotalOnRoadPriceAfterDiscount(0);
+            setTotalOnRoadPrice(0)
+            clearLocalData()
+            dispatch(clearState())
+        })
+    }, [navigation]);
+
+    const clearLocalData = () => {
+        setOpenAccordian(0);
+        setComponentAppear(false);
+        setUserData({
+            orgId: "",
+            employeeId: "",
+            employeeName: "",
+            isManager: false,
+            editEnable: false,
+            isPreBookingApprover: false,
+        });
+        setShowDropDownModel(false);
+        setShowMultipleDropDownData(false);
+        setDataForDropDown([]);
+        setDropDownKey("");
+        setDropDownTitle("Select Data");
+        setCarModelsData([]);
+        setSelectedCarVarientsData({
+            varientList: [],
+            varientListForDropDown: [],
+        });
+        setCarColorsData([]);
+        setSelectedModelId(0);
+        setSelectedVarientId(0);
+        setInsurenceVarientTypes([]);
+        setInsurenceAddOnTypes([]);
+        setWarrentyTypes([]);
+        setSelectedInsurencePrice(0);
+        setSelectedAddOnsPrice(0);
+        setSelectedWarrentyPrice(0);
+        setSelectedPaidAccessoriesPrice(0);
+        setTotalOnRoadPrice(0);
+        setTotalOnRoadPriceAfterDiscount(0);
+        setPriceInformationData({
+            ex_showroom_price: 0,
+            ex_showroom_price_csd: 0,
+            registration_charges: 0,
+            handling_charges: 0,
+            tcs_percentage: 0,
+            tcs_amount: 0,
+            essential_kit: 0,
+            fast_tag: 0,
+            vehicle_road_tax: 0,
+        });
+        setIsDropSelected(false);
+        setTypeOfActionDispatched("");
+        setSelectedPaidAccessoriesList([]);
+        setSelectedInsurenceAddons([]);
+        setShowApproveRejectBtn(false);
+        setShowPrebookingPaymentSection(false);
+        setShowSubmitDropBtn(false);
+        setUploadedImagesDataObj({});
+        setLifeTaxAmount(0);
+        setTcsAmount(0);
+        setFocPrice(0);
+        setMrpPrice(0);
+        setTaxPercent('');
+        setInsuranceDiscount('');
+        setAccDiscount('');
+        setInitialTotalAmt(0);
+        setIsEdit(false)
+    }
 
     const getCustomerType = async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -597,7 +670,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 dispatch(getPaymentDetailsApi(dmsLeadDto.id));
                 dispatch(getBookingAmountDetailsApi(dmsLeadDto.id));
             }
-            if (dmsLeadDto.leadStatus === "REJECTED"){
+            if (dmsLeadDto.leadStatus === "REJECTED") {
                 setIsRejectSelected(true)
             }
             // Update dmsContactOrAccountDto
@@ -629,7 +702,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     if (dmsLeadDto.dmsAccessories[i].dmsAccessoriesType !== "FOC") {
                         totalPrice += dmsLeadDto.dmsAccessories[i].amount;
                     }
-                    else{
+                    else {
                         totalFOCPrice += dmsLeadDto.dmsAccessories[i].amount;
                     }
                     if (i === dmsLeadDto.dmsAccessories.length - 1) {
@@ -1004,9 +1077,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         totalPrice += lifeTax;
         totalPrice += priceInfomationData.registration_charges;
         totalPrice += selectedInsurencePrice;
-        if (selector.insurance_type !== ''){
+        if (selector.insurance_type !== '') {
             totalPrice += selectedAddOnsPrice;
-        }        
+        }
         totalPrice += selectedWarrentyPrice;
         if (handleSelected) {
             totalPrice += priceInfomationData.handling_charges;
@@ -1017,7 +1090,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         const tcsPrice = getTcsAmount();
         setTcsAmount(tcsPrice);
         totalPrice += tcsPrice;
-        
+
         if (fastTagSelected) {
             totalPrice += priceInfomationData.fast_tag;
         }
@@ -1148,7 +1221,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             }
         }
 
-        if (selector.enquiry_segment.toLowerCase() === "personal"){
+        if (selector.enquiry_segment.toLowerCase() === "personal") {
             if (selector.adhaar_number.length == 0) {
                 scrollToPos(4)
                 setOpenAccordian("4")
@@ -1996,7 +2069,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         console.log("TOTAL MRP:", totMrp);
         setSelectedPaidAccessoriesPrice(totMrp);
         // setSelectedFOCAccessoriesPrice(totFoc);
-        if (totFoc > 0){
+        if (totFoc > 0) {
             console.log("FOC PRICE:", totFoc);
             setFocPrice(totFoc)
         }
@@ -2803,7 +2876,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                                 dispatch(updateAddressByPincode2(val.value));
                                             }}
                                         />
-                                    <Text style={GlobalStyle.underline}></Text>
+                                        <Text style={GlobalStyle.underline}></Text>
                                     </>
                                 }
 
@@ -4647,33 +4720,63 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         {showPrebookingPaymentSection &&
                             !userData.isManager &&
                             !isDropSelected && (
-                                <View style={styles.actionBtnView}>
-                                    <Button
-                                        mode="contained"
-                                        style={{ width: 120 }}
-                                        color={Colors.BLACK}
-                                        // disabled={selector.isLoading}
-                                        labelStyle={{ textTransform: "none" }}
-                                        onPress={() => setIsDropSelected(true)}
-                                    >
-                                        Drop
+                                <>
+                                    {isEdit ?
+                                        <View style={styles.actionBtnView}>
+                                            <Button
+                                                mode="contained"
+                                                style={{ width: 120 }}
+                                                color={Colors.BLACK}
+                                                // disabled={selector.isLoading}
+                                                labelStyle={{ textTransform: "none" }}
+                                                onPress={() => setIsDropSelected(true)}
+                                            >Cancel</Button>
+                                            <Button
+                                                mode="contained"
+                                                color={Colors.RED}
+                                                // disabled={selector.isLoading}
+                                                labelStyle={{ textTransform: "none" }}
+                                                onPress={submitClicked}
+                                            >SUBMIT</Button>
+                                        </View> :
+                                        <View style={styles.actionBtnView}>
+                                            <Button
+                                                mode="contained"
+                                                color={Colors.RED}
+                                                // disabled={selector.isLoading}
+                                                labelStyle={{ textTransform: "none" }}
+                                                onPress={() => setIsEdit(true)}
+                                            >EDIT</Button>
+                                        </View>
+                                    }
+                                    <View style={styles.actionBtnView}>
+                                        <Button
+                                            mode="contained"
+                                            style={{ width: 120 }}
+                                            color={Colors.BLACK}
+                                            // disabled={selector.isLoading}
+                                            labelStyle={{ textTransform: "none" }}
+                                            onPress={() => setIsDropSelected(true)}
+                                        >
+                                            Drop
                   </Button>
-                                    <Button
-                                        mode="contained"
-                                        color={Colors.RED}
-                                        // disabled={
-                                        //     uploadedImagesDataObj.receipt
-                                        //         ? selector.isLoading == true
-                                        //             ? true
-                                        //             : false
-                                        //         : true
-                                        // }
-                                        labelStyle={{ textTransform: "none" }}
-                                        onPress={proceedToBookingClicked}
-                                    >
-                                        Proceed To Booking
+                                        <Button
+                                            mode="contained"
+                                            color={Colors.RED}
+                                            // disabled={
+                                            //     uploadedImagesDataObj.receipt
+                                            //         ? selector.isLoading == true
+                                            //             ? true
+                                            //             : false
+                                            //         : true
+                                            // }
+                                            labelStyle={{ textTransform: "none" }}
+                                            onPress={proceedToBookingClicked}
+                                        >
+                                            Proceed To Booking
                   </Button>
-                                </View>
+                                    </View>
+                                </>
                             )}
 
                         {isDropSelected && (

@@ -31,7 +31,8 @@ import {
     continueToCreatePreEnquiry,
     getEventListApi,
     updateSelectedDate,
-    updateEnqStatus
+    updateEnqStatus,
+    getPreEnquiryDetails
 } from "../../../redux/addPreEnquiryReducer";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -175,6 +176,12 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         if (route.params?.fromEdit != null && route.params.fromEdit === true) {
             const preEnquiryDetails = route.params.preEnquiryDetails;
             const fromEdit = route.params.fromEdit;
+            console.log("OLD DATA:", route.params.preEnquiryDetails);
+            // Promise.all([
+            //     dispatch(getPreEnquiryDetails(preEnquiryDetails.universalId))
+            // ]).then((res) => {
+            //     console.log("RES$$$$", JSON.stringify(res));
+            // })
             setExistingPreEnquiryDetails(preEnquiryDetails);
             setFromEdit(fromEdit);
             dispatch(setExistingDetails(preEnquiryDetails));
