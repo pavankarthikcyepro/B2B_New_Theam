@@ -15,6 +15,7 @@ import {
     Image,
     TouchableOpacity,
     Modal,
+    Alert,
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { useDispatch, useSelector } from "react-redux";
@@ -1376,6 +1377,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
             if (dmsEntity.hasOwnProperty("dmsLeadDto"))
                 dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
+            dmsLeadDto.firstName = selector.first_name;
+            dmsLeadDto.lastName = selector.last_name;
             const employeeData = await AsyncStore.getData(
                 AsyncStore.Keys.LOGIN_EMPLOYEE
             );
@@ -1857,62 +1860,82 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         dispatch(updatePrebookingDetailsApi(enquiryDetailsObj));
     };
 
-    const proceedToBookingClicked = () => {
-        let leadId = selector.pre_booking_details_response.dmsLeadDto.id;
-        if (!leadId) {
-            showToast("lead id not found");
-            return;
-        }
+    const proceedToBookingClicked = async () => {
+        const employeeData = await AsyncStore.getData(
+            AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            console.log("%%%%%", jsonObj, JSON.stringify(selector.pre_booking_details_response.dmsLeadDto));
+            if (selector.pre_booking_details_response.dmsLeadDto.salesConsultant == jsonObj.empName) {
+                let leadId = selector.pre_booking_details_response.dmsLeadDto.id;
+                if (!leadId) {
+                    showToast("lead id not found");
+                    return;
+                }
 
-        let bookingId =
-            selector.pre_booking_details_response.dmsLeadDto.dmsBooking.id;
-        if (!bookingId) {
-            showToast("lead id not found");
-            return;
-        }
+                let bookingId =
+                    selector.pre_booking_details_response.dmsLeadDto.dmsBooking.id;
+                if (!bookingId) {
+                    showToast("lead id not found");
+                    return;
+                }
 
-        if (!uploadedImagesDataObj.hasOwnProperty('receipt')) {
-            scrollToPos(12)
-            setOpenAccordian('12')
-            showToast("Please upload receipt doc");
-            return;
-        }
+                if (!uploadedImagesDataObj.hasOwnProperty('receipt')) {
+                    scrollToPos(12)
+                    setOpenAccordian('12')
+                    showToast("Please upload receipt doc");
+                    return;
+                }
 
-        const paymentMode = selector.booking_payment_mode.replace(/\s/g, "");
-        let paymentDate = "";
-        if (paymentMode === "InternetBanking") {
-            paymentDate = convertDateStringToMillisecondsUsingMoment(
-                selector.transaction_date
-            );
-        } else if (paymentMode === "Cheque") {
-            paymentDate = convertDateStringToMillisecondsUsingMoment(
-                selector.cheque_date
-            );
-        } else if (paymentMode === "DD") {
-            paymentDate = convertDateStringToMillisecondsUsingMoment(
-                selector.dd_date
-            );
-        }
+                const paymentMode = selector.booking_payment_mode.replace(/\s/g, "");
+                let paymentDate = "";
+                if (paymentMode === "InternetBanking") {
+                    paymentDate = convertDateStringToMillisecondsUsingMoment(
+                        selector.transaction_date
+                    );
+                } else if (paymentMode === "Cheque") {
+                    paymentDate = convertDateStringToMillisecondsUsingMoment(
+                        selector.cheque_date
+                    );
+                } else if (paymentMode === "DD") {
+                    paymentDate = convertDateStringToMillisecondsUsingMoment(
+                        selector.dd_date
+                    );
+                }
 
-        let payload = {};
-        if (selector.existing_payment_details_response) {
-            payload = { ...selector.existing_payment_details_response };
-        }
+                let payload = {};
+                if (selector.existing_payment_details_response) {
+                    payload = { ...selector.existing_payment_details_response };
+                }
 
-        payload.bankName = selector.comapany_bank_name;
-        payload.bookingId = bookingId;
-        payload.chequeNo = selector.cheque_number;
-        payload.date = paymentDate;
-        payload.ddNo = selector.dd_number;
-        payload.id = payload.id ? payload.id : 0;
-        payload.leadId = leadId;
-        payload.paymentMode = paymentMode;
-        payload.transferFromMobile = selector.transfer_from_mobile;
-        payload.transferToMobile = selector.transfer_to_mobile;
-        payload.typeUpi = selector.type_of_upi;
-        payload.utrNo = selector.utr_no;
-        console.log("BEFORE CALLED preBookingPaymentApi", payload);
-        dispatch(preBookingPaymentApi(payload));
+                payload.bankName = selector.comapany_bank_name;
+                payload.bookingId = bookingId;
+                payload.chequeNo = selector.cheque_number;
+                payload.date = paymentDate;
+                payload.ddNo = selector.dd_number;
+                payload.id = payload.id ? payload.id : 0;
+                payload.leadId = leadId;
+                payload.paymentMode = paymentMode;
+                payload.transferFromMobile = selector.transfer_from_mobile;
+                payload.transferToMobile = selector.transfer_to_mobile;
+                payload.typeUpi = selector.type_of_upi;
+                payload.utrNo = selector.utr_no;
+                console.log("BEFORE CALLED preBookingPaymentApi", payload);
+                dispatch(preBookingPaymentApi(payload));
+            }
+            else {
+                Alert.alert(
+                    'Permission Denied',
+                    [
+                        {
+                            text: 'OK',
+                        }
+                    ],
+                    { cancelable: false }
+                );
+            }
+        }
     };
 
     // 1. payment, lead, booking
@@ -2038,7 +2061,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         amount: item.cost,
                         partName: item.partName,
                         accessoriesName: item.partName,
-                        leadId: selector.pre_booking_details_response.dmsLeadDto.id,
+                        leadId: selector?.pre_booking_details_response?.dmsLeadDto?.id,
                         allotmentStatus: null,
                         dmsAccessoriesType: item.item
                     });
@@ -2050,7 +2073,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         amount: item.cost,
                         partName: item.partName,
                         accessoriesName: item.partName,
-                        leadId: selector.pre_booking_details_response.dmsLeadDto.id,
+                        leadId: selector?.pre_booking_details_response?.dmsLeadDto?.id,
                         allotmentStatus: null,
                         dmsAccessoriesType: item.item
                     });
@@ -2059,7 +2082,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         amount: item.cost,
                         partName: item.partName,
                         accessoriesName: item.partName,
-                        leadId: selector.pre_booking_details_response.dmsLeadDto.id,
+                        leadId: selector?.pre_booking_details_response?.dmsLeadDto?.id,
                         allotmentStatus: null,
                         dmsAccessoriesType: item.item
                     });
@@ -2532,6 +2555,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     value={selector.mobile}
                                     // editable={false}
                                     label={"Mobile Number*"}
+                                    maxLength={13}
                                     onChangeText={(text) =>
                                         dispatch(setCustomerDetails({ key: "MOBILE", text: text }))
                                     }

@@ -584,7 +584,7 @@ const HomeScreen = ({ route, navigation }) => {
             "pageNo": 0,
             "size": 5
         }
-        Promise.all([
+        Promise.allSettled([
             dispatch(getTargetParametersData(payload1)),
             dispatch(getTargetParametersEmpData(payload1))
         ]).then(() => {
@@ -599,7 +599,7 @@ const HomeScreen = ({ route, navigation }) => {
             "size": 5
         }
         // console.log("PAYLOAD:", payload1);
-        Promise.all([
+        Promise.allSettled([
             dispatch(getTargetParametersAllData(payload1)),
             dispatch(getTargetParametersEmpData(payload1))
         ]).then(() => {

@@ -81,6 +81,7 @@ export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk("PREBOONING
     }
     return json;
   } catch (error) {
+    showToastRedAlert(`Value not found for varient id: ${payload["varientId"]} and org id: ${payload["orgId"]}`)
     console.error("PRE-BOOKING getOnRoadPriceAndInsurenceDetailsApi JSON parse error: ", error + " : " + JSON.stringify(response));
     return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }

@@ -11,7 +11,8 @@ import {
   Image,
   Modal,
   TextInput,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  ScrollView
 } from "react-native";
 import { Colors } from "../../styles";
 import { TextinputComp } from "../../components/textinputComp";
@@ -172,13 +173,14 @@ const LoginScreen = ({ navigation }) => {
         visible={selector.isLoading}
         onRequestClose={() => { }}
       />
-
-      <KeyboardAvoidingView
+      <ScrollView contentContainerStyle={{ flex: 1 }} keyboardShouldPersistTaps="always">
+      {/* <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS == "ios" ? "padding" : "height"}
         enabled
         keyboardVerticalOffset={100}
-      >
+        keyboardShouldPersistTaps="always"
+      > */}
 
         <View style={{ flexDirection: 'column', backgroundColor: Colors.WHITE }}>
 
@@ -274,8 +276,8 @@ const LoginScreen = ({ navigation }) => {
             />
           </Animated.View> */}
         </View>
-      </KeyboardAvoidingView>
-
+      {/* </KeyboardAvoidingView> */}
+      </ScrollView>
     </SafeAreaView>
   );
 };

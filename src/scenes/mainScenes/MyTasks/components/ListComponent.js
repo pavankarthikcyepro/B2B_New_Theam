@@ -354,7 +354,7 @@ const ListComponent = ({ route, navigation }) => {
                             "loggedInEmpId": jsonObj.empId,
                             "onlyForEmp": false,
                             "dataType": "pendingData",
-                            "ignoreDateFilter": true
+                            "ignoreDateFilter": true,
                         }
                     }
                     console.log("PAYLOAD PENDING TEAM: ", payload);

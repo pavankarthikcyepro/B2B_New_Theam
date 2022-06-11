@@ -55,7 +55,8 @@ export const getEnquiryDetailsApi = createAsyncThunk("ENQUIRY_FOLLOW_UP_SLICE/ge
 })
 
 export const getReasonList = createAsyncThunk("ENQUIRY_FOLLOW_UP_SLICE/getReasonList", async (payload: any, { rejectWithValue }) => {
-
+  console.log("REASON URL:", URL.REASON_LIST(payload.orgId, payload.taskName));
+  
   const response = await client.get(URL.REASON_LIST(payload.orgId, payload.taskName));
   const json = await response.json()
   console.log("REASON: ", JSON.stringify(json));
