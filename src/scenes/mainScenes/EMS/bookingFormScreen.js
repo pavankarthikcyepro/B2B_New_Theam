@@ -375,23 +375,35 @@ const BookingFormScreen = ({ route, navigation }) => {
     }, [navigation]);
 
     const goParentScreen = () => {
+        console.log("CALLED BACK");
+        setTotalOnRoadPriceAfterDiscount(0);
+        setTotalOnRoadPrice(0)
+        clearLocalData()
         navigation.goBack();
         dispatch(clearState());
     };
 
     useEffect(() => {
-        setComponentAppear(true);
-        getAsyncstoreData();
-        getBranchId();
-        getCustomerType();
-
-        BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
-        return () => {
-            BackHandler.removeEventListener(
-                "hardwareBackPress",
-                handleBackButtonClick
-            );
-        };
+        navigation.addListener('focus', () => {
+            console.log("CALLED FOCUS");
+            setComponentAppear(true);
+            getAsyncstoreData();
+            getBranchId();
+            getCustomerType();
+        })
+        // return () => {
+        //     BackHandler.removeEventListener(
+        //         "hardwareBackPress",
+        //         handleBackButtonClick
+        //     );
+        // };
+        // BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
+        // navigation.addListener('blur', () => {
+        //     BackHandler.removeEventListener(
+        //         "hardwareBackPress",
+        //         handleBackButtonClick
+        //     );
+        // })
     }, [navigation]);
 
     const getCustomerType = async() => {
@@ -494,7 +506,9 @@ const BookingFormScreen = ({ route, navigation }) => {
         const employeeData = await AsyncStore.getData(
             AsyncStore.Keys.LOGIN_EMPLOYEE
         );
+        let tempToken = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
         if (employeeData) {
+            // console.log("EMP DATA:", employeeData);
             const jsonObj = JSON.parse(employeeData);
             let isManager = false,
                 editEnable = false;
@@ -510,14 +524,14 @@ const BookingFormScreen = ({ route, navigation }) => {
                 editEnable = true;
                 isPreBookingApprover = true;
             }
-            setUserData({
-                orgId: jsonObj.orgId,
-                employeeId: jsonObj.empId,
-                employeeName: jsonObj.empName,
-                isManager: isManager,
-                editEnable: editEnable,
-                isPreBookingApprover: isPreBookingApprover,
-            });
+            // setUserData({
+            //     orgId: jsonObj.orgId,
+            //     employeeId: jsonObj.empId,
+            //     employeeName: jsonObj.empName,
+            //     isManager: isManager,
+            //     editEnable: editEnable,
+            //     isPreBookingApprover: isPreBookingApprover,
+            // });
 
             const payload = {
                 bu: jsonObj.orgId,
@@ -526,19 +540,24 @@ const BookingFormScreen = ({ route, navigation }) => {
             };
 
             // Make Api calls in parallel
-            Promise.all([
-                dispatch(getDropDataApi(payload)),
-                getCarModelListFromServer(jsonObj.orgId),
-            ]).then(() => {
-                console.log("all done");
-            });
+            // Promise.all([
+            //     dispatch(getDropDataApi(payload)),
+            //     getCarModelListFromServer(jsonObj.orgId),
+            // ]).then(() => {
+            //     console.log("all done");
+            // });
+            dispatch(getDropDataApi(payload))
+            getCarModelListFromServer(jsonObj.orgId)
 
             // Get Token
-            AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
-                setUserToken(token);
-                getBanksListFromServer(jsonObj.orgId, token);
-                GetPreBookingDropReasons(jsonObj.orgId, token);
-            });
+            // AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
+            //     setUserToken(token);
+            //     getBanksListFromServer(jsonObj.orgId, token);
+            //     GetPreBookingDropReasons(jsonObj.orgId, token);
+            // });
+            // setUserToken(tempToken);
+            getBanksListFromServer(jsonObj.orgId, tempToken);
+            GetPreBookingDropReasons(jsonObj.orgId, tempToken);
         }
     };
 
@@ -685,11 +704,21 @@ const BookingFormScreen = ({ route, navigation }) => {
     }, [selector.model_drop_down_data_update_status]);
 
     const getPreBookingListFromServer = async () => {
-        if (userData.employeeId) {
+        const employeeData = await AsyncStore.getData(
+            AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        if (employeeData) {
+            console.log("EMP DATA:", employeeData);
+            const jsonObj = JSON.parse(employeeData);
             let endUrl =
-                "?limit=10&offset=" + "0" + "&status=PREBOOKING&empId=" + empId;
+                "?limit=10&offset=" + "0" + "&status=PREBOOKING&empId=" + jsonObj.empId;
             dispatch(getPreBookingData(endUrl));
         }
+        // if (userData.employeeId) {
+        //     let endUrl =
+        //         "?limit=10&offset=" + "0" + "&status=PREBOOKING&empId=" + empId;
+        //     dispatch(getPreBookingData(endUrl));
+        // }
     };
 
     // Handle getOnRoadPriceDtoListApi response
@@ -913,7 +942,7 @@ const BookingFormScreen = ({ route, navigation }) => {
         setShowDropDownModel(true);
     };
 
-    const updateVariantModelsData = (
+    const updateVariantModelsData = async(
         selectedModelName,
         fromInitialize,
         selectedVarientName
@@ -934,34 +963,42 @@ const BookingFormScreen = ({ route, navigation }) => {
             let newArray = [];
             let mArray = carModelObj.varients;
             setSelectedModelId(carModelObj.vehicleId);
-            GetPaidAccessoriesListFromServer(
-                carModelObj.vehicleId,
-                userData.orgId,
-                userToken
+            const employeeData = await AsyncStore.getData(
+                AsyncStore.Keys.LOGIN_EMPLOYEE
             );
-            if (mArray.length) {
-                mArray.forEach((item) => {
-                    newArray.push({
-                        id: item.id,
-                        name: item.name,
+            let tempToken = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
+            if (employeeData) {
+                const jsonObj = JSON.parse(employeeData);
+                GetPaidAccessoriesListFromServer(
+                    carModelObj.vehicleId,
+                    jsonObj.orgId,
+                    tempToken
+                );
+                if (mArray.length) {
+                    mArray.forEach((item) => {
+                        newArray.push({
+                            id: item.id,
+                            name: item.name,
+                        });
                     });
-                });
-                setSelectedCarVarientsData({
-                    varientList: [...mArray],
-                    varientListForDropDown: [...newArray],
-                });
-                if (fromInitialize) {
-                    updateColorsDataForSelectedVarient(
-                        selectedVarientName,
-                        [...mArray],
-                        carModelObj.vehicleId
-                    );
+                    setSelectedCarVarientsData({
+                        varientList: [...mArray],
+                        varientListForDropDown: [...newArray],
+                    });
+                    if (fromInitialize) {
+                        updateColorsDataForSelectedVarient(
+                            selectedVarientName,
+                            [...mArray],
+                            carModelObj.vehicleId
+                        );
+                    }
                 }
             }
+            
         }
     };
 
-    const updateColorsDataForSelectedVarient = (
+    const updateColorsDataForSelectedVarient = async (
         selectedVarientName,
         varientList,
         modelId
@@ -992,12 +1029,19 @@ const BookingFormScreen = ({ route, navigation }) => {
                     transmissionType: carModelObj.transmission_type,
                 };
                 dispatch(updateFuelAndTransmissionType(obj));
-                dispatch(
-                    getOnRoadPriceAndInsurenceDetailsApi({
-                        orgId: userData.orgId,
-                        varientId: varientId,
-                    })
+                const employeeData = await AsyncStore.getData(
+                    AsyncStore.Keys.LOGIN_EMPLOYEE
                 );
+                if (employeeData) {
+                    const jsonObj = JSON.parse(employeeData);
+                    dispatch(
+                        getOnRoadPriceAndInsurenceDetailsApi({
+                            orgId: jsonObj.orgId,
+                            varientId: varientId,
+                        })
+                    );
+                }
+                
                 setCarColorsData([...newArray]);
             }
         }
@@ -1196,47 +1240,47 @@ const BookingFormScreen = ({ route, navigation }) => {
     };
 
     // Handle On Road Price Response
-    useEffect(() => {
-        if (selector.send_onRoad_price_details_response) {
-            if (!selector.booking_details_response) {
-                return;
-            }
+    // useEffect(() => {
+    //     if (selector.send_onRoad_price_details_response) {
+    //         if (!selector.booking_details_response) {
+    //             return;
+    //         }
 
-            let dmsContactOrAccountDto = {};
-            let dmsLeadDto = {};
-            let formData;
+    //         let dmsContactOrAccountDto = {};
+    //         let dmsLeadDto = {};
+    //         let formData;
 
-            const dmsEntity = selector.booking_details_response;
-            if (dmsEntity.hasOwnProperty("dmsContactDto"))
-                dmsContactOrAccountDto = mapContactOrAccountDto(
-                    dmsEntity.dmsContactDto
-                );
-            else if (dmsEntity.hasOwnProperty("dmsAccountDto"))
-                dmsContactOrAccountDto = mapContactOrAccountDto(
-                    dmsEntity.dmsAccountDto
-                );
+    //         const dmsEntity = selector.booking_details_response;
+    //         if (dmsEntity.hasOwnProperty("dmsContactDto"))
+    //             dmsContactOrAccountDto = mapContactOrAccountDto(
+    //                 dmsEntity.dmsContactDto
+    //             );
+    //         else if (dmsEntity.hasOwnProperty("dmsAccountDto"))
+    //             dmsContactOrAccountDto = mapContactOrAccountDto(
+    //                 dmsEntity.dmsAccountDto
+    //             );
 
-            if (dmsEntity.hasOwnProperty("dmsLeadDto"))
-                dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
+    //         if (dmsEntity.hasOwnProperty("dmsLeadDto"))
+    //             dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
 
-            if (
-                selector.booking_details_response.hasOwnProperty("dmsContactDto")
-            ) {
-                formData = {
-                    dmsContactDto: dmsContactOrAccountDto,
-                    dmsLeadDto: dmsLeadDto,
-                };
-            } else {
-                formData = {
-                    dmsAccountDto: dmsContactOrAccountDto,
-                    dmsLeadDto: dmsLeadDto,
-                };
-            }
+    //         if (
+    //             selector.booking_details_response.hasOwnProperty("dmsContactDto")
+    //         ) {
+    //             formData = {
+    //                 dmsContactDto: dmsContactOrAccountDto,
+    //                 dmsLeadDto: dmsLeadDto,
+    //             };
+    //         } else {
+    //             formData = {
+    //                 dmsAccountDto: dmsContactOrAccountDto,
+    //                 dmsLeadDto: dmsLeadDto,
+    //             };
+    //         }
 
-            setTypeOfActionDispatched("UPDATE_PRE_BOOKING");
-            dispatch(updatePrebookingDetailsApi(formData));
-        }
-    }, [selector.send_onRoad_price_details_response]);
+    //         setTypeOfActionDispatched("UPDATE_PRE_BOOKING");
+    //         dispatch(updatePrebookingDetailsApi(formData));
+    //     }
+    // }, [selector.send_onRoad_price_details_response]);
 
     const approveOrRejectMethod = (type) => {
         if (!selector.booking_details_response) {
@@ -1262,22 +1306,22 @@ const BookingFormScreen = ({ route, navigation }) => {
     };
 
     // Handle Update Pre-Booking Details Response
-    useEffect(() => {
-        if (selector.update_pre_booking_details_response === "success") {
-            if (typeOfActionDispatched === "DROP_ENQUIRY") {
-                showToastSucess("Successfully Pre-Booking Dropped");
-                getPreBookingListFromServer();
-            } else if (typeOfActionDispatched === "UPDATE_PRE_BOOKING") {
-                showToastSucess("Successfully Sent for Manager Approval");
-            } else if (typeOfActionDispatched === "APPROVE") {
-                showToastSucess("Pre-Booking Approved");
-            } else if (typeOfActionDispatched === "REJECT") {
-                showToastSucess("Pre-Booking Rejected");
-            }
-            dispatch(clearState());
-            navigation.goBack();
-        }
-    }, [selector.update_pre_booking_details_response]);
+    // useEffect(() => {
+    //     if (selector.update_pre_booking_details_response === "success") {
+    //         if (typeOfActionDispatched === "DROP_ENQUIRY") {
+    //             showToastSucess("Successfully Pre-Booking Dropped");
+    //             getPreBookingListFromServer();
+    //         } else if (typeOfActionDispatched === "UPDATE_PRE_BOOKING") {
+    //             showToastSucess("Successfully Sent for Manager Approval");
+    //         } else if (typeOfActionDispatched === "APPROVE") {
+    //             showToastSucess("Pre-Booking Approved");
+    //         } else if (typeOfActionDispatched === "REJECT") {
+    //             showToastSucess("Pre-Booking Rejected");
+    //         }
+    //         dispatch(clearState());
+    //         navigation.goBack();
+    //     }
+    // }, [selector.update_pre_booking_details_response]);
 
     const mapContactOrAccountDto = (prevData) => {
         let dataObj = { ...prevData };
@@ -1443,34 +1487,41 @@ const BookingFormScreen = ({ route, navigation }) => {
         return dmsAttachments;
     };
 
-    const formatAttachment = (data, photoObj, index, typeOfDocument) => {
+    const formatAttachment = async (data, photoObj, index, typeOfDocument) => {
         let object = { ...data };
-        object.branchId = selectedBranchId;
-        object.ownerName = userData.employeeName;
-        object.orgId = userData.orgId;
-        object.documentType = photoObj.documentType;
-        object.documentPath = photoObj.documentPath;
-        object.keyName = photoObj.keyName;
-        object.fileName = photoObj.fileName;
-        object.createdBy = new Date().getTime();
-        object.id = `${index}`;
-        object.modifiedBy = userData.employeeName;
-        object.ownerId = userData.employeeId;
-        switch (typeOfDocument) {
-            case "pan":
-                object.documentNumber = selector.pan_number;
-                break;
-            case "aadhar":
-                object.documentNumber = selector.adhaar_number;
-                break;
-            case "REGDOC":
-                object.documentNumber = selector.r_reg_no;
-                break;
+        const employeeData = await AsyncStore.getData(
+            AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            object.branchId = selectedBranchId;
+            object.ownerName = jsonObj.empName;
+            object.orgId = jsonObj.orgId;
+            object.documentType = photoObj.documentType;
+            object.documentPath = photoObj.documentPath;
+            object.keyName = photoObj.keyName;
+            object.fileName = photoObj.fileName;
+            object.createdBy = new Date().getTime();
+            object.id = `${index}`;
+            object.modifiedBy = jsonObj.empName;
+            object.ownerId = jsonObj.empId;
+            switch (typeOfDocument) {
+                case "pan":
+                    object.documentNumber = selector.pan_number;
+                    break;
+                case "aadhar":
+                    object.documentNumber = selector.adhaar_number;
+                    break;
+                case "REGDOC":
+                    object.documentNumber = selector.r_reg_no;
+                    break;
+            }
+            return object;
         }
-        return object;
+        
     };
 
-    const proceedToCancelPreBooking = () => {
+    const proceedToCancelPreBooking = async () => {
         if (dropRemarks.length === 0 || dropReason.length === 0) {
             showToastRedAlert("Please enter details for drop");
             return;
@@ -1490,29 +1541,35 @@ const BookingFormScreen = ({ route, navigation }) => {
             showToast("lead id not found");
             return;
         }
-
-        const payload = {
-            dmsLeadDropInfo: {
-                additionalRemarks: dropRemarks,
-                branchId: selectedBranchId,
-                brandName: dropBrandName,
-                dealerName: dropDealerName,
-                location: dropLocation,
-                model: dropModel,
-                leadId: leadId,
-                crmUniversalId: universalId,
-                lostReason: dropReason,
-                organizationId: userData.orgId,
-                otherReason: "",
-                droppedBy: userData.employeeId,
-                lostSubReason: dropSubReason,
-                stage: "PREBOOKING",
-                status: "PREBOOKING",
-            },
-        };
-        setTypeOfActionDispatched("DROP_ENQUIRY");
-        dispatch(dropPreBooingApi(payload));
-        dispatch(updatePrebookingDetailsApi(enquiryDetailsObj));
+        const employeeData = await AsyncStore.getData(
+            AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            const payload = {
+                dmsLeadDropInfo: {
+                    additionalRemarks: dropRemarks,
+                    branchId: selectedBranchId,
+                    brandName: dropBrandName,
+                    dealerName: dropDealerName,
+                    location: dropLocation,
+                    model: dropModel,
+                    leadId: leadId,
+                    crmUniversalId: universalId,
+                    lostReason: dropReason,
+                    organizationId: jsonObj.orgId,
+                    otherReason: "",
+                    droppedBy: jsonObj.empId,
+                    lostSubReason: dropSubReason,
+                    stage: "PREBOOKING",
+                    status: "PREBOOKING",
+                },
+            };
+            setTypeOfActionDispatched("DROP_ENQUIRY");
+            dispatch(dropPreBooingApi(payload));
+            dispatch(updatePrebookingDetailsApi(enquiryDetailsObj));
+        }
+        
     };
 
     const proceedToBookingClicked = () => {
@@ -1618,37 +1675,37 @@ const BookingFormScreen = ({ route, navigation }) => {
     }, [selector.booking_amount_response_status]);
 
     // Handle Assigned Tasks Response
-    useEffect(() => {
-        if (
-            selector.assigned_tasks_list_status === "success" &&
-            selector.assigned_tasks_list
-        ) {
-            if (selector.assigned_tasks_list.length > 0) {
-                const filteredAry = selector.assigned_tasks_list.filter(
-                    (item) => item.taskName === "Proceed to Booking"
-                );
-                if (filteredAry.length == 0) {
-                    return;
-                }
-                const taskData = filteredAry[0];
-                const taskId = taskData.taskId;
-                const taskStatus = taskData.taskStatus;
-                navigation.navigate(
-                    AppNavigator.MyTasksStackIdentifiers.proceedToBooking,
-                    {
-                        identifier: "PROCEED_TO_BOOKING",
-                        taskId,
-                        universalId,
-                        taskStatus,
-                        taskData: taskData,
-                    }
-                );
-                dispatch(clearState());
-            }
-        } else if (selector.assigned_tasks_list_status === "failed") {
-            showToastRedAlert("Something went wrong");
-        }
-    }, [selector.assigned_tasks_list_status]);
+    // useEffect(() => {
+    //     if (
+    //         selector.assigned_tasks_list_status === "success" &&
+    //         selector.assigned_tasks_list
+    //     ) {
+    //         if (selector.assigned_tasks_list.length > 0) {
+    //             const filteredAry = selector.assigned_tasks_list.filter(
+    //                 (item) => item.taskName === "Proceed to Booking"
+    //             );
+    //             if (filteredAry.length == 0) {
+    //                 return;
+    //             }
+    //             const taskData = filteredAry[0];
+    //             const taskId = taskData.taskId;
+    //             const taskStatus = taskData.taskStatus;
+    //             navigation.navigate(
+    //                 AppNavigator.MyTasksStackIdentifiers.proceedToBooking,
+    //                 {
+    //                     identifier: "PROCEED_TO_BOOKING",
+    //                     taskId,
+    //                     universalId,
+    //                     taskStatus,
+    //                     taskData: taskData,
+    //                 }
+    //             );
+    //             dispatch(clearState());
+    //         }
+    //     } else if (selector.assigned_tasks_list_status === "failed") {
+    //         showToastRedAlert("Something went wrong");
+    //     }
+    // }, [selector.assigned_tasks_list_status]);
 
     const updatePaidAccessroies = (tableData) => {
         let totalPrice = 0, totFoc = 0, totMrp = 0;
@@ -1905,6 +1962,21 @@ const BookingFormScreen = ({ route, navigation }) => {
         );
     }
 
+    const calledDropReason = async (item) => {
+        const employeeData = await AsyncStore.getData(
+            AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            const payload = {
+                bu: jsonObj.orgId,
+                dropdownType: "PreBook_Lost_Com_Sub_Reas",
+                parentId: item.id,
+            };
+            dispatch(getDropSubReasonDataApi(payload));
+        }
+        
+    }
     return (
         <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
             <ImagePickerComponent
@@ -1940,12 +2012,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                     } else if (dropDownKey === "WARRANTY") {
                         setSelectedWarrentyPrice(Number(item.cost));
                     } else if (dropDownKey === "DROP_REASON") {
-                        const payload = {
-                            bu: userData.orgId,
-                            dropdownType: "PreBook_Lost_Com_Sub_Reas",
-                            parentId: item.id,
-                        };
-                        dispatch(getDropSubReasonDataApi(payload));
+                        calledDropReason(item)
                     } else if (dropDownKey === "INSURENCE_ADD_ONS") {
                         let totalCost = 0;
                         let names = "";

@@ -284,13 +284,26 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     getCustomerType();
 
     BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
-    return () => {
+    // return () => {
+    //   BackHandler.removeEventListener(
+    //     "hardwareBackPress",
+    //     handleBackButtonClick
+    //   );
+    // };
+  }, []);
+
+  useEffect(() => {
+    navigation.addListener('blur', () => {
       BackHandler.removeEventListener(
         "hardwareBackPress",
         handleBackButtonClick
       );
-    };
-  }, []);
+    });
+
+    // return () => {
+    //     unsubscribe;
+    // };
+  }, [navigation]);
 
   const getCustomerType = async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -450,6 +463,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     if (selector.enquiry_details_response) {
+      setShowPreBookingBtn(false)
       let dmsContactOrAccountDto;
       if (selector.enquiry_details_response.hasOwnProperty("dmsAccountDto")) {
         dmsContactOrAccountDto =
@@ -1432,6 +1446,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
       dmsLeadDto.firstName = selector.firstName;
       dmsLeadDto.lastName = selector.lastName;
+      dmsLeadDto.phone = selector.mobile;
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
@@ -2056,15 +2071,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           dispatch(getPendingTasksApi(endUrl));
         }
       } else {
-        Alert.alert(
-          'Permission Denied',
-          [
-            {
-              text: 'OK',
-            }
-          ],
-          { cancelable: false }
-        );
+        alert('Permission Denied')
+        // Alert.alert(
+        //   'Permission Denied',
+        //   [
+        //     {
+        //       text: 'OK',
+        //     }
+        //   ],
+        //   { cancelable: false }
+        // );
       }
     }
     
@@ -4957,11 +4973,29 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           }
                         />
                       </View>
-                      {uploadedImagesDataObj.insurance ? (
+                      {/* {uploadedImagesDataObj.insurance ? (
                         <DisplaySelectedImage
                           fileName={uploadedImagesDataObj.insurance.fileName}
                           from={"INSURENCE"}
                         />
+                      ) : null} */}
+                      {uploadedImagesDataObj.insurance ? (
+
+                        <View style={{ flexDirection: 'row' }}>
+                          <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                            if (uploadedImagesDataObj.insurance?.documentPath) {
+                              setImagePath(uploadedImagesDataObj.insurance?.documentPath)
+                            }
+                          }}>
+                            <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                          </TouchableOpacity>
+                          <View style={{ width: '80%' }}>
+                            <DisplaySelectedImage
+                              fileName={uploadedImagesDataObj.insurance.fileName}
+                              from={"INSURENCE"}
+                            />
+                          </View>
+                        </View>
                       ) : null}
                     </View>
                   )}

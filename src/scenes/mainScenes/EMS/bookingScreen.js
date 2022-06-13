@@ -111,30 +111,44 @@ const BookingScreen = ({ navigation }) => {
     useEffect(() => {
 
         // Get Data From Server
-        let isMounted = true;
+        // let isMounted = true;
         setFromDateState(lastMonthFirstDate);
         const tomorrowDate = moment().add(1, "day").format(dateFormat)
         setToDateState(currentDate);
-        getAsyncData().then(data => {
-            if (isMounted) {
-                setMyState(data);
-                getBookingListFromServer(empIdStateRef.current, lastMonthFirstDate, currentDate);
-            }
-        });
+        // getAsyncData().then(data => {
+        //     if (isMounted) {
+        //         setMyState(data);
+        //         getBookingListFromServer(empIdStateRef.current, lastMonthFirstDate, currentDate);
+        //     }
+        // });
 
-        return () => { isMounted = false };
+        // return () => { isMounted = false };
     }, [])
 
     // Navigation Listner to Auto Referesh
     useEffect(() => {
-        const unsubscribe = navigation.addListener('focus', () => {
-            getBookingListFromServer(empIdStateRef.current, fromDateRef.current, toDateRef.current);
+        navigation.addListener('focus', () => {
+            console.log("$$$$$$$$$$$$$ BOOKING SCREEN $$$$$$$$$$$$$$$");
+            getDataFromDB()
         });
 
-        return () => {
-            unsubscribe;
-        };
+        // return () => {
+        //     unsubscribe;
+        // };
     }, [navigation]);
+
+    const getDataFromDB = async () => {
+        const employeeData = await AsyncStore.getData(
+            AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        const dateFormat = "YYYY-MM-DD";
+        const currentDate = moment().add(0, "day").format(dateFormat)
+        const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            getBookingListFromServer(jsonObj.empId, lastMonthFirstDate, currentDate);
+        }
+    }
 
     const getAsyncData = async () => {
         let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
@@ -387,12 +401,16 @@ const BookingScreen = ({ navigation }) => {
                                                     { universalId: item.universalId }
                                                 )
                                             }
-                                            onDocPress={() =>
+                                            onDocPress={() => {
                                                 navigation.navigate(
                                                     AppNavigator.EmsStackIdentifiers.bookingForm,
                                                     { universalId: item.universalId }
                                                 )
-                                            }
+                                                // navigation.navigate(
+                                                //     AppNavigator.EmsStackIdentifiers.bookingForm                                            
+                                                // )
+                                                // alert(AppNavigator.EmsStackIdentifiers.bookingForm)
+                                            }}
                                         />
                                     </View>
                                 </>

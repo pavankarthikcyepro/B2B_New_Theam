@@ -193,10 +193,10 @@ const URL = {
     GET_SALES_DATA: () => dashboard + "/v2/get_sales_data",
     GET_SALES_COMPARISON_DATA: () => dashboard + "/v2/get_sales_comparsion_data",
     GET_TARGET_GROUP_RANKING: (orgId) => {
-        return `${dashboard}/v2/get_emp_target_ranking_scheduler/org/${orgId}`
+        return `${dashboard}/v2/get_emp_target_ranking/org/${orgId}`
     },
     GET_TARGET_RANKING: (orgId, branchId) => {
-        return `${dashboard}/v2/get_emp_target_ranking_scheduler/org/${orgId}/branch/${branchId}`
+        return `${dashboard}/v2/get_emp_target_ranking/org/${orgId}/branch/${branchId}`
     },
     GET_BANK_DETAILS: (orgId) => {
         return dfGetAll + `/${orgId}/"Active"/${orgId}/bankFinancier`;

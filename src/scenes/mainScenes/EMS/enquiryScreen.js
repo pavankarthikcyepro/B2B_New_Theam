@@ -95,27 +95,39 @@ const EnquiryScreen = ({ navigation }) => {
         setFromDateState(lastMonthFirstDate);
         const tomorrowDate = moment().add(1, "day").format(dateFormat)
         setToDateState(currentDate);
-        getAsyncData().then(data => {
-            if (isMounted) {
-                setMyState(data);
-                getEnquiryListFromServer(empIdStateRef.current, lastMonthFirstDate, currentDate);
-            }
-        });
+        // getAsyncData().then(data => {
+        //     if (isMounted) {
+        //         setMyState(data);
+        //         getEnquiryListFromServer(empIdStateRef.current, lastMonthFirstDate, currentDate);
+        //     }
+        // });
 
-        return () => { isMounted = false };
+        // return () => { isMounted = false };
     }, [])
 
     // Navigation Listner to Auto Referesh
     useEffect(() => {
-        const unsubscribe = navigation.addListener('focus', () => {
-            getEnquiryListFromServer(empIdStateRef.current, fromDateRef.current, toDateRef.current);
-            console.log(fromDateRef.current, toDateRef.current, "seteed date")
+        navigation.addListener('focus', () => {
+            getDataFromDB()
         });
 
-        return () => {
-            unsubscribe;
-        };
+        // return () => {
+        //     unsubscribe;
+        // };
     }, [navigation]);
+
+    const getDataFromDB = async () => {
+        const employeeData = await AsyncStore.getData(
+            AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        const dateFormat = "YYYY-MM-DD";
+        const currentDate = moment().add(0, "day").format(dateFormat)
+        const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            getEnquiryListFromServer(jsonObj.empId, lastMonthFirstDate, currentDate);
+        }
+    }
 
     const getAsyncData = async () => {
         let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
@@ -324,7 +336,7 @@ const EnquiryScreen = ({ navigation }) => {
                                             source={item.enquirySource}
                                             model={item.model}
                                             onItemPress={() => {
-                                                // console.log("ENQ: ", JSON.stringify(item));
+                                                console.log("ENQ: ", JSON.stringify(item));
                                                 navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId, mobileNo: item.phone })
                                             }}
                                             onDocPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.detailsOverview, { universalId: item.universalId, enqDetails: item })}
