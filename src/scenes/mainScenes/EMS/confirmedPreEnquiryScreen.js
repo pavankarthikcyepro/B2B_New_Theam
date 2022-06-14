@@ -204,14 +204,17 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
 
         // UnSubscribe Listeners
-        return () => {
-            BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
-        }
+        // return () => {
+        //     BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
+        // }
     }, []);
 
     useEffect(() => {
         navigation.addListener('focus', () => {
             getCurrentLocation()
+        })
+        navigation.addListener('blur', () => {
+            BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
         })
     }, [navigation]);
 

@@ -14,6 +14,8 @@ export const getEnquiryDetailsApi = createAsyncThunk(
   async (universalId, { rejectWithValue }) => {
     const autoSaveResponse = await client.get(URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
     const autoSavejson = await autoSaveResponse.json();
+    console.log("URL$$$: ", URL.ENQUIRY_DETAILS(universalId));
+    
     const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
     const json = await response.json();
     // console.log("enquirey lead", json);
@@ -657,30 +659,57 @@ const enquiryDetailsOverViewSlice = createSlice({
       switch (key) {
         case "PINCODE":
           state.pincode = text;
+          if (state.is_permanent_address_same == "YES"){
+            state.p_pincode = text;
+          }
           break;
         case "RURAL_URBAN":
           state.urban_or_rural = Number(text);
+          if (state.is_permanent_address_same == "YES") {
+            state.p_urban_or_rural = Number(text);
+          }
           break;
         case "HOUSE_NO":
           state.houseNum = text;
+          if (state.is_permanent_address_same == "YES") {
+            state.p_houseNum = text;
+          }
           break;
         case "STREET_NAME":
           state.streetName = text;
+          if (state.is_permanent_address_same == "YES") {
+            state.p_streetName = text;
+          }
           break;
         case "VILLAGE":
           state.village = text;
+          if (state.is_permanent_address_same == "YES") {
+            state.p_village = text;
+          }
           break;
         case "MANDAL":
           state.mandal = text;
+          if (state.is_permanent_address_same == "YES") {
+            state.p_mandal = text;
+          }
           break;
         case "CITY":
           state.city = text;
+          if (state.is_permanent_address_same == "YES") {
+            state.p_city = text;
+          }
           break;
         case "DISTRICT":
           state.district = text;
+          if (state.is_permanent_address_same == "YES") {
+            state.p_district = text;
+          }
           break;
         case "STATE":
           state.state = text;
+          if (state.is_permanent_address_same == "YES") {
+            state.p_state = text;
+          }
           break;
         case "PERMANENT_ADDRESS":
           if (text === "true") {
@@ -1339,12 +1368,21 @@ const enquiryDetailsOverViewSlice = createSlice({
       console.log("pincode action", action)
 
       state.village = action.payload.Block || ""
+      
       state.mandal = state.mandal ? state.mandal : action.payload.Mandal || ""
       // state.mandal = action.payload.Block || ""
       state.city = action.payload.District || ""
       state.district = action.payload.District || ""
       state.state = action.payload.State || ""
       state.isAddressSet = true
+      if (state.is_permanent_address_same === "YES") {
+        state.p_village = action.payload.Block || ""
+        state.p_mandal = state.mandal ? state.mandal : action.payload.Mandal || ""
+        // state.mandal = action.payload.Block || ""
+        state.p_city = action.payload.District || ""
+        state.p_district = action.payload.District || ""
+        state.p_state = action.payload.State || ""
+      }
     },
     updateAddressByPincode2: (state, action) => {
 

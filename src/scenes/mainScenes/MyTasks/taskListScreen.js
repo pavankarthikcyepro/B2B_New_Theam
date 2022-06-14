@@ -50,6 +50,7 @@ const TaskListScreen = ({ route, navigation }) => {
         const finalTaskName = trimName.replace(/ /g, "");
         let navigationId = ""
         let taskNameNew = ''
+        console.log("FINAL TASK NAME:", finalTaskName);
         switch (finalTaskName) {
             case "testdrive":
                 navigationId = AppNavigator.MyTasksStackIdentifiers.testDrive;

@@ -96,33 +96,43 @@ const TaskThreeSixtyScreen = ({ route, navigation}) => {
         const trimName = taskName.toLowerCase().trim();
         const finalTaskName = trimName.replace(/ /g, "");
         let navigationId = ""
+        let taskNameNew = ''
         switch (finalTaskName) {
             case "testdrive":
                 navigationId = AppNavigator.EmsStackIdentifiers.testDrive;
+                taskNameNew = 'Test Drive'
                 break;
             case "testdriveapproval":
                 navigationId = AppNavigator.EmsStackIdentifiers.testDrive;
+                taskNameNew = 'Test Drive'
                 break;
             case "proceedtoprebooking":
                 navigationId = AppNavigator.EmsStackIdentifiers.proceedToPreBooking;
+                taskNameNew = ''
                 break;
             case "proceedtobooking":
                 navigationId = AppNavigator.EmsStackIdentifiers.proceedToPreBooking;
+                taskNameNew = ''
                 break;
             case "homevisit":
                 navigationId = AppNavigator.EmsStackIdentifiers.homeVisit;
+                taskNameNew = 'Home Visit'
                 break;
             case "enquiryfollowup":
                 navigationId = AppNavigator.EmsStackIdentifiers.enquiryFollowUp;
+                taskNameNew = 'Enquiry Followup'
                 break;
             case "preenquiryfollowup":
                 navigationId = AppNavigator.EmsStackIdentifiers.enquiryFollowUp;
+                taskNameNew = 'Pre Enquiry Followup'
                 break;
             case "prebookingfollowup":
                 navigationId = AppNavigator.EmsStackIdentifiers.enquiryFollowUp;
+                taskNameNew = 'Prebooking Followup'
                 break;
             case "createenquiry":
                 navigationId = AppNavigator.EmsStackIdentifiers.confirmedPreEnq;
+                taskNameNew = ''
                 break;
         }
         if (!navigationId) { return }
@@ -131,7 +141,7 @@ const TaskThreeSixtyScreen = ({ route, navigation}) => {
             navigation.navigate(navigationId, { itemData: itemData, fromCreatePreEnquiry: false })
         }
         else{
-            navigation.navigate(navigationId, { identifier: mytasksIdentifires[finalTaskName], taskId, universalId, taskStatus, taskData: item, mobile: mobileNo });
+            navigation.navigate(navigationId, { identifier: mytasksIdentifires[finalTaskName], taskId, universalId, taskStatus, taskData: item, mobile: mobileNo, reasonTaskName: taskNameNew });
         }
     };
 

@@ -195,7 +195,7 @@ export const getGroupDealerRanking = createAsyncThunk("HOME/getGroupDealerRankin
 
     const response = await client.post(URL.GET_TARGET_GROUP_RANKING(payload.orgId), payload.payload)
     const json = await response.json()
-    // console.log("&&&&&& DATA:", json);
+    console.log("&&&&&& DATA:", json);
 
     if (!response.ok) {
         return rejectWithValue(json);
@@ -207,7 +207,7 @@ export const getDealerRanking = createAsyncThunk("HOME/getDealerRanking", async 
     // console.log("%%%DEALER", URL.GET_TARGET_RANKING(payload.orgId, payload.branchId), payload.payload);
     const response = await client.post(URL.GET_TARGET_RANKING(payload.orgId, payload.branchId), payload.payload)
     const json = await response.json()
-    // console.log("&&&&&& DATA GET_TARGET_RANKING:", json);
+    console.log("&&&&&& DATA GET_TARGET_RANKING:", json);
 
     if (!response.ok) {
         return rejectWithValue(json);

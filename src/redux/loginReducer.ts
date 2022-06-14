@@ -150,7 +150,7 @@ export const loginSlice = createSlice({
     },
     updatePassword: (state, action: PayloadAction<string>) => {
       let password = action.payload;
-      if (password.length < 4) {
+      if (password.length < 6) {
         state.showPasswordErr = true;
         state.passwordErrMessage = "Password must be minimum of 6 characters";
       } else {

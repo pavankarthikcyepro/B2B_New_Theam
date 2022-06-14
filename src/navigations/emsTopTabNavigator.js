@@ -7,12 +7,14 @@ import BookingScreen from "../scenes/mainScenes/EMS/bookingScreen";
 
 import { Colors } from "../styles";
 import * as AsyncStore from "../asyncStore";
+import ProceedToBookingScreen from "../scenes/mainScenes/MyTasks/proceedToBookingScreen";
 
 export const EmsTopTabNavigatorIdentifiers = {
   preEnquiry: "PRE_ENQUIRY",
   enquiry: "ENQUIRY",
   preBooking: "PRE_BOOKING",
   booking:"BOOKING",
+  proceedToBooking: 'PROCEED_BOOKING'
 };
 
 const EMSTopTab = createMaterialTopTabNavigator();
@@ -72,6 +74,12 @@ const EMSTopTabNavigatorTwo = () => {
         component={BookingScreen}
         options={{ title: "Booking" }}
       />
+      {/* <EMSTopTab.Screen
+        name={EmsTopTabNavigatorIdentifiers.proceedToBooking}
+        component={ProceedToBookingScreen}
+        initialParams={{ accessoriesList: [] }}
+        options={{ title: "Proceed To Booking" }}
+      /> */}
     </EMSTopTab.Navigator>
   );
 };

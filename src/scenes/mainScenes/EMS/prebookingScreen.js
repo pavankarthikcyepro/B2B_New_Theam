@@ -105,14 +105,29 @@ const PreBookingScreen = ({ navigation }) => {
 
     // Navigation Listner to Auto Referesh
     useEffect(() => {
-        const unsubscribe = navigation.addListener('focus', () => {
-            getPreBookingListFromServer(empIdStateRef.current, fromDateRef.current, toDateRef.current);
+        navigation.addListener('focus', () => {
+            console.log("$$$$$$$$$$$$$ PRE BOOKING SCREEN $$$$$$$$$$$$$$$");
+            // getPreBookingListFromServer(empIdStateRef.current, fromDateRef.current, toDateRef.current);
+            getDataFromDB()
         });
 
-        return () => {
-            unsubscribe;
-        };
+        // return () => {
+        //     unsubscribe;
+        // };
     }, [navigation]);
+
+    const getDataFromDB = async () => {
+        const employeeData = await AsyncStore.getData(
+            AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        const dateFormat = "YYYY-MM-DD";
+        const currentDate = moment().add(0, "day").format(dateFormat)
+        const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            getPreBookingListFromServer(jsonObj.empId, lastMonthFirstDate, currentDate);
+        }
+    }
 
     const getAsyncData = async () => {
         let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
@@ -320,7 +335,10 @@ const PreBookingScreen = ({ navigation }) => {
                                             phone={item.phone}
                                             source={item.enquirySource}
                                             model={item.model}
-                                            onItemPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId }) }
+                                            onItemPress={() =>  {
+                                                console.log("PBK: ", JSON.stringify(item));
+                                                navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId })
+                                            }}
                                             onDocPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.preBookingForm, { universalId: item.universalId })}
                                         />
                                     </View>

@@ -191,7 +191,6 @@ const HomeVisitScreen = ({ route, navigation }) => {
   };
 
   const closeTask = () => {
-
     if (selector.reason.length === 0) {
       showToast("Please Select Reason");
       return;

@@ -106,7 +106,7 @@ const MainParamScreen = ({ route, navigation }) => {
                     return Number(item.employeeId) === Number(loggedInEmpDetails?.empId)
                 })
             }
-            console.log("TTT: ", JSON.stringify(ownDataArray));
+            console.log("TTT 1: ", JSON.stringify(ownDataArray));
             if (ownDataArray.length > 0) {
                 setAllOwnData(ownDataArray)
                 let ownDataArray2 = []
@@ -120,7 +120,7 @@ const MainParamScreen = ({ route, navigation }) => {
                         return selector.endDate === item.endDate && selector.startDate === item.startDate
                     })
                 }
-                console.log("TTT: ", JSON.stringify(ownDataArray2));
+                console.log("TTT 2: ", JSON.stringify(ownDataArray2));
                 if (ownDataArray2.length > 0) {
                     setOwnData(ownDataArray2[0])
                 }
@@ -145,26 +145,26 @@ const MainParamScreen = ({ route, navigation }) => {
                     })
                 }
             }
-            // else {
-            //     setIsNoTargetAvailable(true)
-            //     setOwnData({
-            //         "retailTarget": null,
-            //         "enquiry": null,
-            //         "testDrive": null,
-            //         "homeVisit": null,
-            //         "booking": null,
-            //         "exchange": null,
-            //         "finance": null,
-            //         "insurance": null,
-            //         "exWarranty": null,
-            //         "accessories": null,
-            //         "events": "10",
-            //         "startDate": selector.startDate,
-            //         "endDate": selector.endDate,
-            //         "empName": loggedInEmpDetails?.empName,
-            //         "employeeId": loggedInEmpDetails?.empId,
-            //     })
-            // }
+            else {
+                setIsNoTargetAvailable(true)
+                setOwnData({
+                    "retailTarget": null,
+                    "enquiry": null,
+                    "testDrive": null,
+                    "homeVisit": null,
+                    "booking": null,
+                    "exchange": null,
+                    "finance": null,
+                    "insurance": null,
+                    "exWarranty": null,
+                    "accessories": null,
+                    "events": "10",
+                    "startDate": selector.startDate,
+                    "endDate": selector.endDate,
+                    "empName": loggedInEmpDetails?.empName,
+                    "employeeId": loggedInEmpDetails?.empId,
+                })
+            }
         }
         if (selector.isDataLoaded && selector.targetMapping.length === 0) {
             setIsNoTargetAvailable(true)
@@ -268,8 +268,8 @@ const MainParamScreen = ({ route, navigation }) => {
                     "startDate": selector.startDate,
                     // "teamLeadId": otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead')[0].value.value : '',
                     "targetType": selector.targetType,
-                    // "targetName": selector.targetType === 'MONTHLY' ? selector.selectedMonth.value : selector.selectedSpecial.keyId
-                    "targetName": "SPECIAL1"
+                    "targetName": selector.targetType === 'MONTHLY' ? selector.selectedMonth.value : selector.selectedSpecial.keyId
+                    // "targetName": "SPECIAL1"
                 }
                 console.log("PAYLOAD:", payload);
                 Promise.all([
@@ -315,8 +315,8 @@ const MainParamScreen = ({ route, navigation }) => {
                     "startDate": selector.startDate,
                     // "teamLeadId": otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead')[0].value.value : '',
                     "targetType": selector.targetType,
-                    // "targetName": selector.targetType === 'MONTHLY' ? selector.selectedMonth.value : selector.selectedSpecial.keyId
-                    "targetName": "SPECIAL1"
+                    "targetName": selector.targetType === 'MONTHLY' ? selector.selectedMonth.value : selector.selectedSpecial.keyId
+                    // "targetName": "SPECIAL1"
                 }
                 console.log("PAYLOAD EDIT:", payload);
                 Promise.all([

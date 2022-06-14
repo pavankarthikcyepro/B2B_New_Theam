@@ -15,6 +15,7 @@ import {
     Image,
     TouchableOpacity,
     Modal,
+    Alert,
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { useDispatch, useSelector } from "react-redux";
@@ -307,6 +308,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const [addressData2, setAddressData2] = useState([]);
     const [defaultAddress, setDefaultAddress] = useState(null);
     const [isEdit, setIsEdit] = useState(false);
+    const [isReciptDocUpload, setIsReciptDocUpload] = useState(false);
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -322,8 +324,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }, [navigation]);
 
     const goParentScreen = () => {
-        navigation.goBack();
         dispatch(clearState());
+        setTotalOnRoadPriceAfterDiscount(0);
+        setTotalOnRoadPrice(0)
+        clearLocalData()
+        navigation.goBack();
     };
 
     useEffect(() => {
@@ -333,24 +338,35 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         getCustomerType();
 
         BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
-        return () => {
-            BackHandler.removeEventListener(
-                "hardwareBackPress",
-                handleBackButtonClick
-            );
-        };
+        // return () => {
+        //     BackHandler.removeEventListener(
+        //         "hardwareBackPress",
+        //         handleBackButtonClick
+        //     );
+        // };
     }, [navigation]);
 
     useEffect(() => {
         navigation.addListener('blur', () => {
-            setTotalOnRoadPriceAfterDiscount(0);
-            setTotalOnRoadPrice(0)
-            clearLocalData()
-            dispatch(clearState())
+            BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
         })
     }, [navigation]);
 
+    // useEffect(() => {
+    //     navigation.addListener('blur', () => {
+    //         setTotalOnRoadPriceAfterDiscount(0);
+    //         setTotalOnRoadPrice(0)
+    //         clearLocalData()
+    //         dispatch(clearState())
+    //     })
+    // }, [navigation]);
+
     const clearLocalData = () => {
+        setShowPrebookingPaymentSection(false)
+        setShowApproveRejectBtn(false)
+        setShowSubmitDropBtn(false)
+        setIsEdit(false)
+        setIsReciptDocUpload(false)
         setOpenAccordian(0);
         setComponentAppear(false);
         setUserData({
@@ -643,6 +659,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     // Handle Pre-Booking Details Response
     useEffect(() => {
         if (selector.pre_booking_details_response) {
+            setShowPrebookingPaymentSection(false)
+            setShowApproveRejectBtn(false)
+            setShowSubmitDropBtn(false)
+            setIsEdit(false)
+            setIsReciptDocUpload(false)
             console.log("DDDDD", JSON.stringify(selector.pre_booking_details_response));
             let dmsContactOrAccountDto;
             if (
@@ -1375,7 +1396,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 );
 
             if (dmsEntity.hasOwnProperty("dmsLeadDto"))
+                console.log("MODEL: ", selector.model);
                 dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
+            dmsLeadDto.firstName = selector.first_name;
+            dmsLeadDto.lastName = selector.last_name;
+            dmsLeadDto.phone = selector.mobile;
+            dmsLeadDto.email = selector.email;
+            dmsLeadDto.model = selector.model;
             const employeeData = await AsyncStore.getData(
                 AsyncStore.Keys.LOGIN_EMPLOYEE
             );
@@ -1572,7 +1599,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     dmsLeadDto: dmsLeadDto,
                 };
             }
-
+            console.log("PBK PAYLOAD:", JSON.stringify(formData));
             setTypeOfActionDispatched("UPDATE_PRE_BOOKING");
             dispatch(updatePrebookingDetailsApi(formData));
         }
@@ -1616,6 +1643,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 showToastSucess("Pre-Booking Rejected");
             }
             dispatch(clearState());
+            clearLocalData();
             navigation.goBack();
         }
     }, [selector.update_pre_booking_details_response]);
@@ -1857,62 +1885,83 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         dispatch(updatePrebookingDetailsApi(enquiryDetailsObj));
     };
 
-    const proceedToBookingClicked = () => {
-        let leadId = selector.pre_booking_details_response.dmsLeadDto.id;
-        if (!leadId) {
-            showToast("lead id not found");
-            return;
-        }
+    const proceedToBookingClicked = async () => {
+        const employeeData = await AsyncStore.getData(
+            AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            console.log("%%%%%", jsonObj, JSON.stringify(selector.pre_booking_details_response.dmsLeadDto));
+            if (selector.pre_booking_details_response.dmsLeadDto.salesConsultant == jsonObj.empName) {
+                let leadId = selector.pre_booking_details_response.dmsLeadDto.id;
+                if (!leadId) {
+                    showToast("lead id not found");
+                    return;
+                }
 
-        let bookingId =
-            selector.pre_booking_details_response.dmsLeadDto.dmsBooking.id;
-        if (!bookingId) {
-            showToast("lead id not found");
-            return;
-        }
+                let bookingId =
+                    selector.pre_booking_details_response.dmsLeadDto.dmsBooking.id;
+                if (!bookingId) {
+                    showToast("lead id not found");
+                    return;
+                }
 
-        if (!uploadedImagesDataObj.hasOwnProperty('receipt')) {
-            scrollToPos(12)
-            setOpenAccordian('12')
-            showToast("Please upload receipt doc");
-            return;
-        }
+                if (!uploadedImagesDataObj.hasOwnProperty('receipt')) {
+                    scrollToPos(12)
+                    setOpenAccordian('12')
+                    showToast("Please upload receipt doc");
+                    return;
+                }
 
-        const paymentMode = selector.booking_payment_mode.replace(/\s/g, "");
-        let paymentDate = "";
-        if (paymentMode === "InternetBanking") {
-            paymentDate = convertDateStringToMillisecondsUsingMoment(
-                selector.transaction_date
-            );
-        } else if (paymentMode === "Cheque") {
-            paymentDate = convertDateStringToMillisecondsUsingMoment(
-                selector.cheque_date
-            );
-        } else if (paymentMode === "DD") {
-            paymentDate = convertDateStringToMillisecondsUsingMoment(
-                selector.dd_date
-            );
-        }
+                const paymentMode = selector.booking_payment_mode.replace(/\s/g, "");
+                let paymentDate = "";
+                if (paymentMode === "InternetBanking") {
+                    paymentDate = convertDateStringToMillisecondsUsingMoment(
+                        selector.transaction_date
+                    );
+                } else if (paymentMode === "Cheque") {
+                    paymentDate = convertDateStringToMillisecondsUsingMoment(
+                        selector.cheque_date
+                    );
+                } else if (paymentMode === "DD") {
+                    paymentDate = convertDateStringToMillisecondsUsingMoment(
+                        selector.dd_date
+                    );
+                }
 
-        let payload = {};
-        if (selector.existing_payment_details_response) {
-            payload = { ...selector.existing_payment_details_response };
-        }
+                let payload = {};
+                if (selector.existing_payment_details_response) {
+                    payload = { ...selector.existing_payment_details_response };
+                }
 
-        payload.bankName = selector.comapany_bank_name;
-        payload.bookingId = bookingId;
-        payload.chequeNo = selector.cheque_number;
-        payload.date = paymentDate;
-        payload.ddNo = selector.dd_number;
-        payload.id = payload.id ? payload.id : 0;
-        payload.leadId = leadId;
-        payload.paymentMode = paymentMode;
-        payload.transferFromMobile = selector.transfer_from_mobile;
-        payload.transferToMobile = selector.transfer_to_mobile;
-        payload.typeUpi = selector.type_of_upi;
-        payload.utrNo = selector.utr_no;
-        console.log("BEFORE CALLED preBookingPaymentApi", payload);
-        dispatch(preBookingPaymentApi(payload));
+                payload.bankName = selector.comapany_bank_name;
+                payload.bookingId = bookingId;
+                payload.chequeNo = selector.cheque_number;
+                payload.date = paymentDate;
+                payload.ddNo = selector.dd_number;
+                payload.id = payload.id ? payload.id : 0;
+                payload.leadId = leadId;
+                payload.paymentMode = paymentMode;
+                payload.transferFromMobile = selector.transfer_from_mobile;
+                payload.transferToMobile = selector.transfer_to_mobile;
+                payload.typeUpi = selector.type_of_upi;
+                payload.utrNo = selector.utr_no;
+                console.log("BEFORE CALLED preBookingPaymentApi", payload);
+                dispatch(preBookingPaymentApi(payload));
+            }
+            else {
+                alert('Permission Denied')
+                // Alert.alert(
+                //     'Permission Denied',
+                //     [
+                //         {
+                //             text: 'OK',
+                //         }
+                //     ],
+                //     { cancelable: false }
+                // );
+            }
+        }
     };
 
     // 1. payment, lead, booking
@@ -1983,6 +2032,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 const taskData = filteredAry[0];
                 const taskId = taskData.taskId;
                 const taskStatus = taskData.taskStatus;
+                dispatch(clearState());
+                clearLocalData()
                 navigation.navigate(
                     AppNavigator.EmsStackIdentifiers.proceedToBooking,
                     {
@@ -1993,7 +2044,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         taskData: taskData,
                     }
                 );
-                dispatch(clearState());
+                
             }
         } else if (selector.assigned_tasks_list_status === "failed") {
             showToastRedAlert("Something went wrong");
@@ -2038,7 +2089,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         amount: item.cost,
                         partName: item.partName,
                         accessoriesName: item.partName,
-                        leadId: selector.pre_booking_details_response.dmsLeadDto.id,
+                        leadId: selector?.pre_booking_details_response?.dmsLeadDto?.id,
                         allotmentStatus: null,
                         dmsAccessoriesType: item.item
                     });
@@ -2050,7 +2101,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         amount: item.cost,
                         partName: item.partName,
                         accessoriesName: item.partName,
-                        leadId: selector.pre_booking_details_response.dmsLeadDto.id,
+                        leadId: selector?.pre_booking_details_response?.dmsLeadDto?.id,
                         allotmentStatus: null,
                         dmsAccessoriesType: item.item
                     });
@@ -2059,7 +2110,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         amount: item.cost,
                         partName: item.partName,
                         accessoriesName: item.partName,
-                        leadId: selector.pre_booking_details_response.dmsLeadDto.id,
+                        leadId: selector?.pre_booking_details_response?.dmsLeadDto?.id,
                         allotmentStatus: null,
                         dmsAccessoriesType: item.item
                     });
@@ -2216,6 +2267,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     const dataObj = { ...uploadedImagesDataObj };
                     dataObj[response.documentType] = response;
                     setUploadedImagesDataObj({ ...dataObj });
+                    setIsReciptDocUpload(true)
                 }
             })
             .catch((error) => {
@@ -2532,6 +2584,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     value={selector.mobile}
                                     // editable={false}
                                     label={"Mobile Number*"}
+                                    maxLength={13}
                                     onChangeText={(text) =>
                                         dispatch(setCustomerDetails({ key: "MOBILE", text: text }))
                                     }
@@ -4667,7 +4720,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             ) : null}
                         </List.AccordionGroup>
 
-                        {!isDropSelected && showSubmitDropBtn && !userData.isManager && !userData.isPreBookingApprover && (
+                        {!isDropSelected && showSubmitDropBtn && !userData.isManager && !userData.isPreBookingApprover && selector.booking_amount !== '' && (
                             <View style={styles.actionBtnView}>
                                 <Button
                                     mode="contained"
@@ -4749,6 +4802,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             >EDIT</Button>
                                         </View>
                                     }
+                                    {isReciptDocUpload && 
                                     <View style={styles.actionBtnView}>
                                         <Button
                                             mode="contained"
@@ -4776,6 +4830,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             Proceed To Booking
                   </Button>
                                     </View>
+                                    }
                                 </>
                             )}
 

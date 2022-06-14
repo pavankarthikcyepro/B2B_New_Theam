@@ -38,7 +38,7 @@ export const getPrebookingDetailsApi = createAsyncThunk(
     const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
     try {
       const json = await response.json();
-      console.log("DETAILS:", JSON.stringify(json));
+      // console.log("DETAILS getPrebookingDetailsApi:", JSON.stringify(json));
       
       if (response.status != 200) {
         return rejectWithValue(json);
@@ -81,6 +81,7 @@ export const updatePrebookingDetailsApi = createAsyncThunk(
 export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk(
   "PREBOONING_FORMS_SLICE/getOnRoadPriceAndInsurenceDetailsApi",
   async (payload, { rejectWithValue }) => {
+    console.log("PAYLOAD VARIANT:", URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(payload["varientId"], payload["orgId"]), JSON.stringify(payload));
     const response = await client.get(
       URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(
         payload["varientId"],
@@ -94,6 +95,7 @@ export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk(
       }
       return json;
     } catch (error) {
+      showToastRedAlert(`Value not found for varient id: ${payload["varientId"]} and org id: ${payload["orgId"]}`)
       console.error(
         "BOOKING getOnRoadPriceAndInsurenceDetailsApi JSON parse error: ",
         error + " : " + JSON.stringify(response)
@@ -1418,11 +1420,12 @@ const bookingFormSlice = createSlice({
     builder.addCase(sendOnRoadPriceDetails.rejected, (state, action) => {
       state.send_onRoad_price_details_response = null;
       state.isLoading = false;
-      if (action.payload["errorMessage"]) {
-        showToastRedAlert(
-          action.payload["errorMessage"] || "Something went wrong"
-        );
-      }
+      console.log("6666", action.payload);
+      // if (action.payload["message"]) {
+      //   showToastRedAlert(
+      //     action.payload["message"] || "Something went wrong"
+      //   );
+      // }
     });
     // Get On Road Price Dto List
     builder.addCase(getOnRoadPriceDtoListApi.pending, (state, action) => {
@@ -1589,9 +1592,11 @@ const bookingFormSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(preBookingPaymentApi.rejected, (state, action) => {
-      if (action.payload["errorMessage"]) {
-        showToastRedAlert(action.payload["errorMessage"]);
-      }
+      console.log("1111", action.payload);
+      
+      // if (action.payload["message"]) {
+      //   showToastRedAlert(action.payload["message"]);
+      // }
       state.pre_booking_payment_response = null;
       state.pre_booking_payment_response_status = "failed";
       state.isLoading = false;
@@ -1611,9 +1616,10 @@ const bookingFormSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(postBookingAmountApi.rejected, (state, action) => {
-      if (action.payload["errorMessage"]) {
-        showToastRedAlert(action.payload["errorMessage"]);
-      }
+      console.log("2222", action.payload);
+      // if (action.payload["message"]) {
+      //   showToastRedAlert(action.payload["message"]);
+      // }
       state.booking_amount_response = null;
       state.booking_amount_response_status = "failed";
       state.isLoading = false;
@@ -1657,9 +1663,10 @@ const bookingFormSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(getPaymentDetailsApi.rejected, (state, action) => {
-      if (action.payload["errorMessage"]) {
-        showToastRedAlert(action.payload["errorMessage"]);
-      }
+      // console.log("3333", action.payload);
+      // if (action.payload["message"]) {
+      //   showToastRedAlert(action.payload["message"]);
+      // }
       state.existing_payment_details_response = null;
       state.existing_payment_details_status = "failed";
       state.isLoading = false;
@@ -1679,9 +1686,10 @@ const bookingFormSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(getBookingAmountDetailsApi.rejected, (state, action) => {
-      if (action.payload["errorMessage"]) {
-        showToastRedAlert(action.payload["errorMessage"]);
-      }
+      console.log("4444", action.payload);
+      // if (action.payload["message"]) {
+      //   showToastRedAlert(action.payload["message"]);
+      // }
       state.existing_booking_amount_response = null;
       state.existing_booking_amount_response_status = "failed";
       state.isLoading = false;
@@ -1700,9 +1708,10 @@ const bookingFormSlice = createSlice({
       state.assigned_tasks_list_status = "success";
     });
     builder.addCase(getAssignedTasksApi.rejected, (state, action) => {
-      if (action.payload["errorMessage"]) {
-        showToastRedAlert(action.payload["errorMessage"]);
-      }
+      console.log("5555", action.payload);
+      // if (action.payload["message"]) {
+      //   showToastRedAlert(action.payload["message"]);
+      // }
       state.assigned_tasks_list = [];
       state.assigned_tasks_list_status = "failed";
       state.isLoading = false;
