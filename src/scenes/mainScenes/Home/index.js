@@ -326,10 +326,11 @@ const HomeScreen = ({ route, navigation }) => {
 
     const checkLoginUserAndEnableReportButton = async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        // console.log("$$$$$ LOGIN EMP:", employeeData);
+         console.log("SSSSSSSSSSSSSSSSSSSSS$$$$$ LOGIN EMP:", employeeData);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             let findMdArr = [];
+            
             findMdArr = jsonObj.roles.filter((item) => {
                 return item === 'MD'
             })
@@ -388,10 +389,23 @@ const HomeScreen = ({ route, navigation }) => {
             ]).then(() => {
                 console.log('I did everything!');
             });
-            console.log("LOGIN DATA:", JSON.stringify(jsonObj));
-            if (jsonObj?.hrmsRole === "Admin Prod" || jsonObj?.hrmsRole === "App Admin" || jsonObj?.hrmsRole === "Manager" || jsonObj?.hrmsRole === "TL" || jsonObj?.hrmsRole === "General Manager" || jsonObj?.hrmsRole === "branch manager" || jsonObj?.hrmsRole  === "Testdrive_Manager"){
+            console.log("LOGIN DATA:>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify(jsonObj.hrmsRole));
+            if (jsonObj?.hrmsRole === "Admin Prod" || jsonObj?.hrmsRole === "App Admin" || jsonObj?.hrmsRole === "Manager" || jsonObj?.hrmsRole === "TL" || jsonObj?.hrmsRole === "General Manager" || jsonObj?.hrmsRole === "branch manager" || jsonObj?.hrmsRole === "Testdrive_Manager" || jsonObj?.hrmsRole === "MD"){
                 dispatch(updateIsTeamPresent(true))
                 setIsTeamPresent(true)
+                if (jsonObj?.hrmsRole === 'MD' || jsonObj?.hrmsRole === "App Admin" ) {
+                    // dispatch(updateData(sidemenuSelector.managerData))
+                    // dispatch(updateIsTeam(true))
+                    // dispatch(acctionCreator.updateIsTeam(true))
+                    dispatch(updateIsMD(true))
+                    if (jsonObj?.hrmsRole === 'MD') {
+                        setIsButtonPresent(true)
+                    }
+                }
+                else {
+                    // dispatch(updateData(sidemenuSelector.normalData))
+                    dispatch(updateIsMD(false))
+                }
                 // console.log("%%%%% TEAM:", rolesArr);
                 const dateFormat = "YYYY-MM-DD";
                 const currentDate = moment().format(dateFormat)
@@ -424,17 +438,9 @@ const HomeScreen = ({ route, navigation }) => {
                 // dispatch(updateData(sidemenuSelector.normalData))
                 dispatch(updateIsDSE(false))
             }
+            console.log("<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+jsonObj?.hrmsRole);
 
-            if (jsonObj?.hrmsRole.toLowerCase().includes('md') || jsonObj?.hrmsRole.toLowerCase().includes("admin prod")) {
-                // dispatch(updateData(sidemenuSelector.managerData))
-                // dispatch(updateIsTeam(true))
-                // dispatch(acctionCreator.updateIsTeam(true))
-                dispatch(updateIsMD(true))
-            }
-            else {
-                // dispatch(updateData(sidemenuSelector.normalData))
-                dispatch(updateIsMD(false))
-            }
+            
 
             if (jsonObj?.roles.length > 0) {
                 let rolesArr = [], mdArr = [], dseArr = [];
