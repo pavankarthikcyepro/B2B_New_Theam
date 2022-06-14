@@ -13,7 +13,7 @@
     "clean-android": "cd android && ./gradlew clean && ./gradlew cleanBuildCache && cd .. && npx jetify",
     "android-dev-bundle": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res",
     "debug-apk": "cd android && ./gradlew assembleDebug && cd ..",
-    "release-apk" : "cd android && ./gradlew assembleRelease && cd.."
+    "release-apk": "cd android && ./gradlew assembleRelease && cd.."
   },
   "dependencies": {
     "@klarna/react-native-vector-drawable": "^0.3.0",
@@ -52,6 +52,7 @@
     "react-native-snackbar": "^2.4.0",
     "react-native-svg": "^12.1.1",
     "react-native-svg-transformer": "^1.0.0",
+    "react-native-switch-audio-output": "^1.1.2",
     "react-native-tab-view": "^2.16.0",
     "react-native-uuid": "^2.0.1",
     "react-native-vector-icons": "^8.1.0",

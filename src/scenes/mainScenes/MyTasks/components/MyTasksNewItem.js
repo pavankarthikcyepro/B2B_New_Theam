@@ -1,9 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Colors } from '../../../../styles';
-import { convertTimeStampToDateString, callNumber } from '../../../../utils/helperFunctions';
+import { convertTimeStampToDateString, callNumber, navigatetoCallWebView } from '../../../../utils/helperFunctions';
 import { IconButton } from "react-native-paper";
 import moment from "moment";
+import { AppNavigator, AuthNavigator } from "../../../../navigations";
+
 
 
 const statusBgColors = {
@@ -39,7 +41,18 @@ const IconComp = ({ iconName, onPress }) => {
     )
 }
 
-export const MyTaskNewItem = ({ from = "MY_TASKS", name, status, created, dmsLead, phone, source, model, onItemPress, onDocPress }) => {
+ const callWebViewRecord = async({navigator,phone}) =>{
+
+    var granted = await navigatetoCallWebView();
+     console.log("granted status", granted)
+
+     if (granted)
+         navigator.navigate(AppNavigator.EmsStackIdentifiers.webViewComp)
+
+
+}
+
+export const MyTaskNewItem = ({ from = "MY_TASKS",navigator, name, status, created, dmsLead, phone, source, model, onItemPress, onDocPress }) => {
 
     let date = "";
     if (from =="MY_TASKS") {
@@ -75,7 +88,7 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", name, status, created, dmsLea
                         />
                         <IconComp
                             iconName={'phone-outline'}
-                            onPress={() => callNumber(phone)}
+                            onPress={() => callWebViewRecord({ navigator, phone})}
                         />
 
                         <IconComp
