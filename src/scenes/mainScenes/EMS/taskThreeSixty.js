@@ -1,8 +1,8 @@
 
 import React, {useEffect, useState} from "react";
-import { SafeAreaView, View, Text, StyleSheet, FlatList, SectionList, ActivityIndicator, TouchableOpacity } from "react-native";
+import { SafeAreaView, View, Text, StyleSheet, FlatList, SectionList, ActivityIndicator, TouchableOpacity, Image, Platform, Linking } from "react-native";
 import {useDispatch, useSelector} from "react-redux";
-import { getWorkFlow, getEnquiryDetails } from "../../../redux/taskThreeSixtyReducer";
+import { getWorkFlow, getEnquiryDetails, getLeadAge } from "../../../redux/taskThreeSixtyReducer";
 import { Colors,GlobalStyle } from "../../../styles"
 import moment from "moment";
 import { AppNavigator } from "../../../navigations";
@@ -22,7 +22,7 @@ const mytasksIdentifires = {
 
 const TaskThreeSixtyScreen = ({ route, navigation}) => {
 
-    const { universalId, mobileNo } = route.params;
+    const { universalId, mobileNo, itemData } = route.params;
     const dispatch = useDispatch();
     const selector = useSelector(state => state.taskThreeSixtyReducer);
     const [plannedTasks, setPlannedTasks] = useState([]);
@@ -30,9 +30,14 @@ const TaskThreeSixtyScreen = ({ route, navigation}) => {
     const [dataForSectionList, setDataForSectionList] = useState([]);
 
     useEffect(() => {
-        
         dispatch(getEnquiryDetails(universalId));
     }, [])
+
+    useEffect(() => {
+        navigation.addListener('focus', () => {
+            dispatch(getLeadAge(universalId));
+        })
+    }, [navigation])
 
     // console.log({ dataForSectionList })
     // console.log("dataForSectionList", dataForSectionList[1].data)
@@ -91,37 +96,53 @@ const TaskThreeSixtyScreen = ({ route, navigation}) => {
         const trimName = taskName.toLowerCase().trim();
         const finalTaskName = trimName.replace(/ /g, "");
         let navigationId = ""
+        let taskNameNew = ''
         switch (finalTaskName) {
             case "testdrive":
                 navigationId = AppNavigator.EmsStackIdentifiers.testDrive;
+                taskNameNew = 'Test Drive'
                 break;
             case "testdriveapproval":
                 navigationId = AppNavigator.EmsStackIdentifiers.testDrive;
+                taskNameNew = 'Test Drive'
                 break;
             case "proceedtoprebooking":
                 navigationId = AppNavigator.EmsStackIdentifiers.proceedToPreBooking;
+                taskNameNew = ''
                 break;
             case "proceedtobooking":
                 navigationId = AppNavigator.EmsStackIdentifiers.proceedToPreBooking;
+                taskNameNew = ''
                 break;
             case "homevisit":
                 navigationId = AppNavigator.EmsStackIdentifiers.homeVisit;
+                taskNameNew = 'Home Visit'
                 break;
             case "enquiryfollowup":
                 navigationId = AppNavigator.EmsStackIdentifiers.enquiryFollowUp;
+                taskNameNew = 'Enquiry Followup'
                 break;
             case "preenquiryfollowup":
                 navigationId = AppNavigator.EmsStackIdentifiers.enquiryFollowUp;
+                taskNameNew = 'Pre Enquiry Followup'
                 break;
             case "prebookingfollowup":
                 navigationId = AppNavigator.EmsStackIdentifiers.enquiryFollowUp;
+                taskNameNew = 'Prebooking Followup'
                 break;
             case "createenquiry":
-                navigationId = AppNavigator.EmsStackIdentifiers.createEnquiry;
+                navigationId = AppNavigator.EmsStackIdentifiers.confirmedPreEnq;
+                taskNameNew = ''
                 break;
         }
         if (!navigationId) { return }
-        navigation.navigate(navigationId, { identifier: mytasksIdentifires[finalTaskName], taskId, universalId, taskStatus, taskData: item, mobile: mobileNo });
+        if (navigationId === AppNavigator.EmsStackIdentifiers.confirmedPreEnq){
+            console.log("ITEM DATA:", JSON.stringify(itemData));
+            navigation.navigate(navigationId, { itemData: itemData, fromCreatePreEnquiry: false })
+        }
+        else{
+            navigation.navigate(navigationId, { identifier: mytasksIdentifires[finalTaskName], taskId, universalId, taskStatus, taskData: item, mobile: mobileNo, reasonTaskName: taskNameNew });
+        }
     };
 
     if (selector.isLoading) {
@@ -130,6 +151,37 @@ const TaskThreeSixtyScreen = ({ route, navigation}) => {
                 <ActivityIndicator size="small" color={Colors.RED} />
             </View>
         )
+    }
+
+    const openMap = (latitude, longitude) => {
+        // if(Platform.OS === 'ios'){
+        //     Linking.openURL(`maps://app?saddr=100+101&daddr=${latitude}+${longitude}`)
+        // }
+        // if (Platform.OS === 'android') {
+        //     Linking.openURL(`google.navigation:q=${latitude}+${longitude}`)
+        // }
+
+        // const latitude = "40.7127753";
+        // const longitude = "-74.0059728";
+        const label = "New York, NY, USA";
+
+        const url = Platform.select({
+            ios: "maps:" + latitude + "," + longitude,
+            android: "geo:" + latitude + "," + longitude
+        });
+
+        Linking.canOpenURL(url).then(supported => {
+            if (supported) {
+                return Linking.openURL(url);
+            } else {
+                const browser_url =
+                    "https://www.google.de/maps/@" +
+                    latitude +
+                    "," +
+                    longitude;
+                return Linking.openURL(browser_url);
+            }
+        });
     }
     
     return (
@@ -166,7 +218,7 @@ const TaskThreeSixtyScreen = ({ route, navigation}) => {
                                         </View>
                                     </View>
                                 </View>
-                                <View style={{ width: "75%", padding: 5 }}>
+                                <View style={{ width: "75%", padding: 5, }}>
                                     <View style={[{ backgroundColor: Colors.WHITE }, GlobalStyle.shadow]}>
                                         <TouchableOpacity onPress={() => itemClicked(item)}>
                                             <View style={[{ paddingVertical: 5, paddingLeft: 10, backgroundColor: Colors.WHITE },]}>
@@ -175,6 +227,13 @@ const TaskThreeSixtyScreen = ({ route, navigation}) => {
                                                 <Text style={{ fontSize: 14, fontWeight: "400", color: Colors.GRAY }}>{"Remarks: " + (item.employeeRemarks ? item.employeeRemarks : "")}</Text>
                                             </View>
                                         </TouchableOpacity>
+                                        {item.lat && item.lon &&
+                                            <TouchableOpacity style={{ position: 'absolute', top: 0, right: 0 }} onPress={() => openMap(item.lat, item.lon)}>
+                                                <View style={{ width: 35, height: 35, justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: "#d1d1d1", borderRadius: 5 }}>
+                                                    <Image style={{ height: 25, width: 15 }} source={require('../../../assets/images/location-pin.png')} />
+                                                </View>
+                                            </TouchableOpacity>
+                                        }
                                     </View>
                                 </View>
                             </View>

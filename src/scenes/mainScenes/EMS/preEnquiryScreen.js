@@ -75,15 +75,28 @@ const PreEnquiryScreen = ({ navigation }) => {
         setFromDateState(lastMonthFirstDate);
         const tomorrowDate = moment().add(1, "day").format(dateFormat)
         setToDateState(currentDate);
-        getAsyncData().then(data => {
-            if (isMounted) {
-                setMyState(data);
-                getPreEnquiryListFromServer(empIdStateRef.current, lastMonthFirstDate, currentDate);
-            }
-        });
+        // getAsyncData().then(data => {
+        //     if (isMounted) {
+        //         setMyState(data);
+        //         getPreEnquiryListFromServer(empIdStateRef.current, lastMonthFirstDate, currentDate);
+        //     }
+        // });
 
-        return () => { isMounted = false };
+        // return () => { isMounted = false };
     }, [])
+
+    const getDataFromDB = async () => {
+        const employeeData = await AsyncStore.getData(
+            AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        const dateFormat = "YYYY-MM-DD";
+        const currentDate = moment().add(0, "day").format(dateFormat)
+        const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            getPreEnquiryListFromServer(jsonObj.empId, lastMonthFirstDate, currentDate);
+        }
+    }
 
     useEffect(() => {
         if (selector.pre_enquiry_list.length > 0){
@@ -96,17 +109,17 @@ const PreEnquiryScreen = ({ navigation }) => {
     }, [selector.pre_enquiry_list]);
 
     useEffect(() => {
-        const unsubscribe = navigation.addListener('focus', () => {
+        navigation.addListener('focus', () => {
             // getAsyncData(lastMonthFirstDate, currentDate).then(data => {
             //     console.log(data)
             // });
             console.log(fromDateRef.current, toDateRef.current)
-            getPreEnquiryListFromServer(empIdStateRef.current, fromDateRef.current, toDateRef.current);
+            getDataFromDB()
         });
 
-        return () => {
-            unsubscribe;
-        };
+        // return () => {
+        //     unsubscribe;
+        // };
     }, [navigation]);
 
     useEffect(() => {
@@ -363,7 +376,7 @@ const PreEnquiryScreen = ({ navigation }) => {
                                                 model={item.model}
                                                 onItemPress={() => {
                                                     console.log("ENQ: ", JSON.stringify(item));
-                                                    navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId })
+                                                    navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId, itemData: item })
                                                 }}
                                                 onDocPress={() => {
                                                     console.log("ITEM:", JSON.stringify(item));

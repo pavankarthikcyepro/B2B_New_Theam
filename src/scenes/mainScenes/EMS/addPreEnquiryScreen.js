@@ -31,7 +31,8 @@ import {
     continueToCreatePreEnquiry,
     getEventListApi,
     updateSelectedDate,
-    updateEnqStatus
+    updateEnqStatus,
+    getPreEnquiryDetails
 } from "../../../redux/addPreEnquiryReducer";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -175,6 +176,12 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         if (route.params?.fromEdit != null && route.params.fromEdit === true) {
             const preEnquiryDetails = route.params.preEnquiryDetails;
             const fromEdit = route.params.fromEdit;
+            console.log("OLD DATA:", route.params.preEnquiryDetails);
+            // Promise.all([
+            //     dispatch(getPreEnquiryDetails(preEnquiryDetails.universalId))
+            // ]).then((res) => {
+            //     console.log("RES$$$$", JSON.stringify(res));
+            // })
             setExistingPreEnquiryDetails(preEnquiryDetails);
             setFromEdit(fromEdit);
             dispatch(setExistingDetails(preEnquiryDetails));
@@ -707,13 +714,18 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             url = url + "/account?allocateDse=" + selector.create_enquiry_checked;
             dmsAccountOrContactDto = { ...existingPreEnquiryDetails.dmsAccountDto };
         }
-
+        
         dmsAccountOrContactDto.firstName = selector.firstName;
         dmsAccountOrContactDto.lastName = selector.lastName;
         dmsAccountOrContactDto.email = selector.email;
         dmsAccountOrContactDto.phone = selector.mobile;
         dmsAccountOrContactDto.secondaryPhone = selector.alterMobile;
         dmsAccountOrContactDto.model = selector.carModel;
+
+        dmsAccountOrContactDto.customerType = selector.customerType;
+        dmsAccountOrContactDto.enquirySource = selector.sourceOfEnquiryId;
+        dmsAccountOrContactDto.subSource = selector.subSourceOfEnquiryId;
+        dmsAccountOrContactDto.pincode = selector.pincode;
 
         if (existingPreEnquiryDetails.hasOwnProperty("dmsLeadDto")) {
             dmsLeadDto = { ...existingPreEnquiryDetails.dmsLeadDto };
@@ -723,6 +735,13 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             dmsLeadDto.phone = selector.mobile;
             dmsLeadDto.secondaryPhone = selector.alterMobile;
             dmsLeadDto.model = selector.carModel;
+
+            dmsLeadDto.enquirySegment = selector.enquiryType;
+            dmsLeadDto.sourceOfEnquiry = selector.sourceOfEnquiryId;
+            dmsLeadDto.subSourceOfEnquiry = selector.subSourceOfEnquiryId;
+            dmsLeadDto.enquirySource = selector.sourceOfEnquiry;
+            dmsLeadDto.subSource = selector.subSourceOfEnquiry;
+            dmsLeadDto.pincode = selector.pincode;
         }
 
         let formData = {};

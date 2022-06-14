@@ -11,7 +11,8 @@ import {
   Image,
   Modal,
   TextInput,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  ScrollView
 } from "react-native";
 import { Colors } from "../../styles";
 import { TextinputComp } from "../../components/textinputComp";
@@ -27,7 +28,8 @@ import {
   getPreEnquiryData,
   getMenuList,
   getCustomerTypeList,
-  getCarModalList
+  getCarModalList,
+  clearUserNameAndPass
 } from "../../redux/loginReducer";
 import { AuthNavigator } from "../../navigations";
 import { IconButton } from "react-native-paper";
@@ -117,6 +119,7 @@ const LoginScreen = ({ navigation }) => {
         // signIn(selector.authToken);
         // dispatch(clearState());
       });
+      dispatch(clearUserNameAndPass())
     } else {
     }
   }, [selector.status])
@@ -170,13 +173,14 @@ const LoginScreen = ({ navigation }) => {
         visible={selector.isLoading}
         onRequestClose={() => { }}
       />
-
-      <KeyboardAvoidingView
+      <ScrollView contentContainerStyle={{ flex: 1 }} keyboardShouldPersistTaps="always">
+      {/* <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS == "ios" ? "padding" : "height"}
         enabled
         keyboardVerticalOffset={100}
-      >
+        keyboardShouldPersistTaps="always"
+      > */}
 
         <View style={{ flexDirection: 'column', backgroundColor: Colors.WHITE }}>
 
@@ -272,8 +276,8 @@ const LoginScreen = ({ navigation }) => {
             />
           </Animated.View> */}
         </View>
-      </KeyboardAvoidingView>
-
+      {/* </KeyboardAvoidingView> */}
+      </ScrollView>
     </SafeAreaView>
   );
 };

@@ -630,7 +630,7 @@ const TargetScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text style={{ fontSize: 12, fontWeight: "600" }}>
-                            {item.achievment}/{item.target}
+                            {Number(item.achievment) >= 100000 ? Math.round(Number(item.achievment) / 100000) + "L" : (Number(item.achievment) >= 1000 ? Math.round(Number(item.achievment) / 1000) + "K" : item.achievment)}/{Number(item.target) >= 100000 ? Math.round(Number(item.target) / 100000) + "L" : (Number(item.target) >= 1000 ? Math.round(Number(item.target) / 1000) + "K" : item.target)}
                           </Text>
                         </View>
                         <View
@@ -644,8 +644,8 @@ const TargetScreen = ({ route, navigation }) => {
                         >
                           <Text style={{ fontSize: 12, fontWeight: "600" }}>
                             {Number(item.achievment) > Number(item.target) ? 0 : (Math.abs(Number(item.shortfall)) >= 100000
-                              ? Math.abs(Number(item.shortfall)) / 100000 + "L"
-                              : Math.abs(Number(item.shortfall)))}
+                              ? Math.round(Math.abs(Number(item.shortfall)) / 100000) + "L"
+                              : Math.round(Math.abs(Number(item.shortfall))))}
                           </Text>
                         </View>
                         <View
@@ -659,11 +659,14 @@ const TargetScreen = ({ route, navigation }) => {
                         >
                           <Text style={{ fontSize: 12, fontWeight: "600" }}>
                             {Number(item.achievment) > Number(item.target) ? 0 : (dateDiff > 0 && parseInt(item.shortfall) !== 0
-                              ? Math.abs(
-                                  Math.round(
-                                    parseInt(item.shortfall) / dateDiff
-                                  )
-                                )
+                              ? 
+                              (Math.round(
+                                parseInt(item.shortfall) / dateDiff
+                              ) >= 100000
+                                ? Math.round(parseInt(item.shortfall) / dateDiff / 100000) + "L"
+                                : (Math.round(
+                                  parseInt(item.shortfall) / dateDiff
+                                )))
                               : 0)}
                           </Text>
                         </View>
@@ -796,7 +799,8 @@ const TargetScreen = ({ route, navigation }) => {
                                         fontWeight: "600",
                                       }}
                                     >
-                                      {innerItem.achievment}/{innerItem.target}
+                                      {/* {innerItem.achievment}/{innerItem.target} */}
+                                      {Number(innerItem.achievment) >= 100000 ? Math.round(Number(innerItem.achievment) / 100000) + "L" : (Number(innerItem.achievment) >= 1000 ? Math.round(Number(innerItem.achievment) / 1000) + "K" : innerItem.achievment)}/{Number(innerItem.target) >= 100000 ? Math.round(Number(innerItem.target) / 100000) + "L" : (Number(innerItem.target) >= 1000 ? Math.round(Number(innerItem.target) / 1000) + "K" : innerItem.target)}
                                     </Text>
                                   </View>
                                   <View
@@ -816,12 +820,12 @@ const TargetScreen = ({ route, navigation }) => {
                                     >
                                       {Number(innerItem.achievment) > Number(innerItem.target) ? 0 : (Math.abs(Number(innerItem.shortfall)) >=
                                       100000
-                                        ? Math.abs(
-                                            Number(innerItem.shortfall)
-                                          ) /
-                                            100000 +
+                                        ? Math.round(Math.abs(
+                                          Number(innerItem.shortfall)
+                                        ) /
+                                          100000) +
                                           "L"
-                                        : Math.abs(Number(innerItem.shortfall)))}
+                                        : Math.round(Math.abs(Number(innerItem.shortfall))))}
                                     </Text>
                                   </View>
                                   <View
@@ -1081,13 +1085,13 @@ const TargetScreen = ({ route, navigation }) => {
                   >
                     E2B
                   </Text>
-                  {bookingData !== null && enqData !== null && (
+                  {bookingData !== null && enqData !== null ? (
                     <Text
                       style={{
                         color:
                           Math.floor(
-                            (parseInt(bookingData?.achievment) /
-                              parseInt(enqData?.achievment)) *
+                            (parseInt(bookingData?.target) /
+                              parseInt(enqData?.target)) *
                               100
                           ) > 40
                             ? "#14ce40"
@@ -1095,17 +1099,26 @@ const TargetScreen = ({ route, navigation }) => {
                         fontSize: 12,
                       }}
                     >
-                      {parseInt(bookingData?.achievment) === 0 ||
-                      parseInt(enqData?.achievment) === 0
+                        {parseInt(bookingData?.target) === 0 ||
+                          parseInt(enqData?.target) === 0
                         ? 0
                         : Math.floor(
-                            (parseInt(bookingData?.achievment) /
-                              parseInt(enqData?.achievment)) *
+                          (parseInt(bookingData?.target) /
+                            parseInt(enqData?.target)) *
                               100
                           )}
                       %
                     </Text>
-                  )}
+                    ) : (
+                      <Text
+                        style={{
+                          color:"#ff0000",
+                          fontSize: 12,
+                        }}
+                      >
+                        0%
+                      </Text>
+                    )}
                 </View>
                 <View style={{ height: 5 }}></View>
                 <View style={styles.statWrap}>
@@ -1124,8 +1137,8 @@ const TargetScreen = ({ route, navigation }) => {
                       style={{
                         color:
                           Math.floor(
-                            (parseInt(retailData?.achievment) /
-                              parseInt(enqData?.achievment)) *
+                            (parseInt(retailData?.target) /
+                              parseInt(enqData?.target)) *
                               100
                           ) > 40
                             ? "#14ce40"
@@ -1133,12 +1146,12 @@ const TargetScreen = ({ route, navigation }) => {
                         fontSize: 12,
                       }}
                     >
-                      {parseInt(retailData?.achievment) === 0 ||
-                      parseInt(enqData?.achievment) === 0
+                        {parseInt(retailData?.target) === 0 ||
+                          parseInt(enqData?.target) === 0
                         ? 0
                         : Math.floor(
-                            (parseInt(retailData?.achievment) /
-                              parseInt(enqData?.achievment)) *
+                          (parseInt(retailData?.target) /
+                            parseInt(enqData?.target)) *
                               100
                           )}
                       %
@@ -1157,13 +1170,13 @@ const TargetScreen = ({ route, navigation }) => {
                   >
                     E2V
                   </Text>
-                  {bookingData !== null && visitData !== null && (
+                    {enqData !== null && visitData !== null ? (
                     <Text
                       style={{
                         color:
                           Math.floor(
-                            (parseInt(visitData?.achievment) /
-                              parseInt(bookingData?.achievment)) *
+                            (parseInt(visitData?.target) /
+                              parseInt(enqData?.target)) *
                               100
                           ) > 40
                             ? "#14ce40"
@@ -1171,17 +1184,26 @@ const TargetScreen = ({ route, navigation }) => {
                         fontSize: 12,
                       }}
                     >
-                      {parseInt(bookingData?.achievment) === 0 ||
-                      parseInt(visitData?.achievment) === 0
+                        {parseInt(enqData?.target) === 0 ||
+                          parseInt(visitData?.target) === 0
                         ? 0
                         : Math.floor(
-                            (parseInt(visitData?.achievment) /
-                              parseInt(bookingData?.achievment)) *
+                          (parseInt(visitData?.target) /
+                            parseInt(enqData?.target)) *
                               100
                           )}
                       %
                     </Text>
-                  )}
+                    ) : (
+                      <Text
+                        style={{
+                          color: "#ff0000",
+                          fontSize: 12,
+                        }}
+                      >
+                        0%
+                      </Text>
+                    )}
                 </View>
               </View>
 
@@ -1204,8 +1226,8 @@ const TargetScreen = ({ route, navigation }) => {
                       style={{
                         color:
                           Math.floor(
-                            (parseInt(retailData?.achievment) /
-                              parseInt(bookingData?.achievment)) *
+                            (parseInt(retailData?.target) /
+                              parseInt(bookingData?.target)) *
                               100
                           ) > 40
                             ? "#14ce40"
@@ -1213,12 +1235,12 @@ const TargetScreen = ({ route, navigation }) => {
                         fontSize: 12,
                       }}
                     >
-                      {parseInt(bookingData?.achievment) === 0 ||
-                      parseInt(retailData?.achievment) === 0
+                        {parseInt(bookingData?.target) === 0 ||
+                          parseInt(retailData?.target) === 0
                         ? 0
                         : Math.floor(
-                            (parseInt(retailData?.achievment) /
-                              parseInt(bookingData?.achievment)) *
+                          (parseInt(retailData?.target) /
+                            parseInt(bookingData?.target)) *
                               100
                           )}
                       %
@@ -1242,8 +1264,8 @@ const TargetScreen = ({ route, navigation }) => {
                       style={{
                         color:
                           Math.floor(
-                            (parseInt(TDData?.achievment) /
-                              parseInt(enqData?.achievment)) *
+                            (parseInt(TDData?.target) /
+                              parseInt(enqData?.target)) *
                               100
                           ) > 40
                             ? "#14ce40"
@@ -1251,12 +1273,12 @@ const TargetScreen = ({ route, navigation }) => {
                         fontSize: 12,
                       }}
                     >
-                      {parseInt(TDData?.achievment) === 0 ||
-                      parseInt(enqData?.achievment) === 0
+                        {parseInt(TDData?.target) === 0 ||
+                          parseInt(enqData?.target) === 0
                         ? 0
                         : Math.floor(
-                            (parseInt(TDData?.achievment) /
-                              parseInt(enqData?.achievment)) *
+                          (parseInt(TDData?.target) /
+                            parseInt(enqData?.target)) *
                               100
                           )}
                       %

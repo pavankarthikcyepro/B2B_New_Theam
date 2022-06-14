@@ -23,6 +23,16 @@ export const getEnquiryDetails = createAsyncThunk("TASK_360_SLICE/getEnquiryDeta
     return json;
 })
 
+export const getLeadAge = createAsyncThunk("TASK_360_SLICE/getLeadAge", async (universalId, { rejectWithValue }) => {
+
+    const response = await client.get(URL.GET_ASSIGNED_TASKS_AT_PRE_BOOKING(universalId));
+    const json = await response.json()
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
 const taskThreeSixtySlice = createSlice({
     name: "TASK_360_SLICE",
     initialState: {
@@ -31,11 +41,12 @@ const taskThreeSixtySlice = createSlice({
         wrokflow_response: {},
         wrokflow_response_status: "",
         enquiry_leadDto_response: {},
-        enquiry_leadDto_response_status: ""
+        enquiry_leadDto_response_status: "",
+        leadAge: 0
     },
     reducers: {
         clearState: (state, action) => {
-    
+            state.leadAge = 0
         },
     },
     extraReducers: (builder) => {
@@ -82,6 +93,20 @@ const taskThreeSixtySlice = createSlice({
             state.enquiry_leadDto_response = {};
             state.enquiry_leadDto_response_status = "failed";
             state.isLoading = false;
+        })
+
+        builder.addCase(getLeadAge.pending, (state, action) => {
+            state.leadAge = 0
+        })
+        builder.addCase(getLeadAge.fulfilled, (state, action) => {
+            console.log("S getLeadAge: ", JSON.stringify(action.payload));
+            if (action.payload?.leadAge) {
+                state.leadAge = action.payload?.leadAge
+            }
+        })
+        builder.addCase(getLeadAge.rejected, (state, action) => {
+            console.log("F getLeadAge: ", JSON.stringify(action.payload));
+            state.leadAge = 0
         })
     }
 });

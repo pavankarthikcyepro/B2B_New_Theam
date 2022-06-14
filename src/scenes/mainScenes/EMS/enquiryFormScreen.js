@@ -69,7 +69,8 @@ import {
   updateRef,
   customerLeadRef,
   updateEnquiryDetailsApiAutoSave,
-  clearPermanentAddr
+  clearPermanentAddr,
+  updateAddressByPincode2
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
@@ -196,6 +197,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [dropRemarks, setDropRemarks] = useState("");
   const [imagePath, setImagePath] = useState('');
   const [addressData, setAddressData] = useState([]);
+  const [addressData2, setAddressData2] = useState([]);
   const [defaultAddress, setDefaultAddress] = useState(null);
 
   // console.log("gender", selector.enquiry_details_response)
@@ -279,16 +281,38 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     getAsyncstoreData();
     getBranchId();
     setComponentAppear(true);
-    dispatch(getCustomerTypesApi());
+    getCustomerType();
 
     BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
-    return () => {
+    // return () => {
+    //   BackHandler.removeEventListener(
+    //     "hardwareBackPress",
+    //     handleBackButtonClick
+    //   );
+    // };
+  }, []);
+
+  useEffect(() => {
+    navigation.addListener('blur', () => {
       BackHandler.removeEventListener(
         "hardwareBackPress",
         handleBackButtonClick
       );
-    };
-  }, []);
+    });
+
+    // return () => {
+    //     unsubscribe;
+    // };
+  }, [navigation]);
+
+  const getCustomerType = async () => {
+    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    // console.log("$$$$$ LOGIN EMP:", employeeData);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      dispatch(getCustomerTypesApi(jsonObj.orgId));
+    }
+  }
 
   const getBranchId = () => {
 
@@ -419,7 +443,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           let tempAddr = []
           if (res.length > 0) {
             for (let i = 0; i < res.length; i++) {
-              if (res[i].Block === selector.village){
+              if (res[i].Block === selector.village) {
                 setDefaultAddress(res[i])
               }
               tempAddr.push({ label: res[i].Name, value: res[i] })
@@ -439,6 +463,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     if (selector.enquiry_details_response) {
+      setShowPreBookingBtn(false)
       let dmsContactOrAccountDto;
       if (selector.enquiry_details_response.hasOwnProperty("dmsAccountDto")) {
         dmsContactOrAccountDto =
@@ -707,20 +732,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const updateEnquiry = async () => {
     console.log("CALLED AUTO UPDATE");
-    if (selector.designation.length == 0 || selector.buyer_type.length == 0) {
-      return;
-    }
-    if (!isValidateAlphabetics(selector.occupation)) {
-      return;
-    }
+    // if (selector.designation.length == 0 || selector.buyer_type.length == 0) {
+    //   return;
+    // }
+    // if (!isValidateAlphabetics(selector.occupation)) {
+    //   return;
+    // }
 
-    if (!isValidateAlphabetics(selector.designation)) {
-      return;
-    }
+    // if (!isValidateAlphabetics(selector.designation)) {
+    //   return;
+    // }
 
-    if (selector.salutation.length == 0) {
-      return;
-    }
+    // if (selector.salutation.length == 0) {
+    //   return;
+    // }
 
     // if (selector.enquiry_segment.toLowerCase() == "personal") {
     //   if (
@@ -731,37 +756,37 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //     return;
     //   }
     // }
-    if (!isValidate(selector.firstName)) {
-      return;
-    }
-    if (!isValidate(selector.lastName)) {
-      return;
-    }
+    // if (!isValidate(selector.firstName)) {
+    //   return;
+    // }
+    // if (!isValidate(selector.lastName)) {
+    //   return;
+    // }
     // if (!isValidateAlphabetics(selector.relationName)) {
     //   return;
     // }
-    if (!isValidateAlphabetics(selector.streetName)) {
-      return;
-    }
+    // if (!isValidateAlphabetics(selector.streetName)) {
+    //   return;
+    // }
     // Model Selection
-    if (selector.model.length == 0 || selector.varient.length == 0 || selector.color.length == 0) {
-      return;
-    }
+    // if (selector.model.length == 0 || selector.varient.length == 0 || selector.color.length == 0) {
+    //   return;
+    // }
 
-    if (
-      selector.houseNum.length == 0 ||
-      selector.streetName.length == 0 ||
-      selector.village.length == 0 ||
-      selector.city.length == 0 ||
-      selector.state.length == 0 ||
-      selector.district.length == 0
-    ) {
-      return;
-    }
+    // if (
+    //   selector.houseNum.length == 0 ||
+    //   selector.streetName.length == 0 ||
+    //   selector.village.length == 0 ||
+    //   selector.city.length == 0 ||
+    //   selector.state.length == 0 ||
+    //   selector.district.length == 0
+    // ) {
+    //   return;
+    // }
 
-    if (selector.retail_finance.length == 0) {
-      return;
-    }
+    // if (selector.retail_finance.length == 0) {
+    //   return;
+    // }
 
     // if (selector.retail_finance === "In House") {
     //   if (
@@ -776,80 +801,80 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     // }
 
     // Leashing
-    if (selector.retail_finance == "Leasing") {
-      if (selector.leashing_name.length == 0) {
-        return;
-      }
-    }
+    // if (selector.retail_finance == "Leasing") {
+    //   if (selector.leashing_name.length == 0) {
+    //     return;
+    //   }
+    // }
 
 
 
-    if (selector.buyer_type === "Additional Buyer") {
-      if (
-        selector.a_make == 0 ||
-        selector.a_model == 0 ||
-        selector.a_varient == 0 ||
-        selector.a_color == 0 ||
-        selector.a_reg_no == 0
-      ) {
-        return;
-      }
-      if (!isValidateAlphabetics(selector.a_varient)) {
+    // if (selector.buyer_type === "Additional Buyer") {
+    //   if (
+    //     selector.a_make == 0 ||
+    //     selector.a_model == 0 ||
+    //     selector.a_varient == 0 ||
+    //     selector.a_color == 0 ||
+    //     selector.a_reg_no == 0
+    //   ) {
+    //     return;
+    //   }
+    //   if (!isValidateAlphabetics(selector.a_varient)) {
 
-        return;
-      }
-      if (!isValidateAlphabetics(selector.a_color)) {
-        return;
-      }
+    //     return;
+    //   }
+    //   if (!isValidateAlphabetics(selector.a_color)) {
+    //     return;
+    //   }
 
-    }
+    // }
 
 
-    if (selector.buyer_type === "Replacement Buyer") {
-      if (selector.r_color.length > 0) {
-        if (!isValidateAlphabetics(selector.r_color)) {
-          return;
-        }
-      }
-      if (selector.r_insurence_company_name.length == 0) {
-        return;
-      }
-      if (!isValidateAlphabetics(selector.r_model_other_name)) {
-        return;
-      }
+    // if (selector.buyer_type === "Replacement Buyer") {
+    //   if (selector.r_color.length > 0) {
+    //     if (!isValidateAlphabetics(selector.r_color)) {
+    //       return;
+    //     }
+    //   }
+    //   if (selector.r_insurence_company_name.length == 0) {
+    //     return;
+    //   }
+    //   if (!isValidateAlphabetics(selector.r_model_other_name)) {
+    //     return;
+    //   }
 
-      if (selector.r_hypothication_checked === true) {
-        if (selector.r_hypothication_name.length > 0) {
-          if (!isValidateAlphabetics(selector.r_hypothication_name)) {
-            return;
-          }
-        }
-        if (selector.r_hypothication_branch.length > 0) {
-          if (!isValidateAlphabetics(selector.r_hypothication_branch)) {
-            return;
-          }
-        }
-      }
-    }
+    //   if (selector.r_hypothication_checked === true) {
+    //     if (selector.r_hypothication_name.length > 0) {
+    //       if (!isValidateAlphabetics(selector.r_hypothication_name)) {
+    //         return;
+    //       }
+    //     }
+    //     if (selector.r_hypothication_branch.length > 0) {
+    //       if (!isValidateAlphabetics(selector.r_hypothication_branch)) {
+    //         return;
+    //       }
+    //     }
+    //   }
+    // }
 
-    if (selector.c_looking_for_any_other_brand_checked === true) {
-      if (selector.c_dealership_name.length > 0) {
-        if (!isValidateAlphabetics(selector.c_dealership_name)) {
-          return;
-        }
-      }
-    }
+    // if (selector.c_looking_for_any_other_brand_checked === true) {
+    //   if (selector.c_dealership_name.length > 0) {
+    //     if (!isValidateAlphabetics(selector.c_dealership_name)) {
+    //       return;
+    //     }
+    //   }
+    // }
 
-    if (
-      selector.leashing_name.length > 0 &&
-      !isValidateAlphabetics(selector.leashing_name)
-    ) {
-      return;
-    }
+    // if (
+    //   selector.leashing_name.length > 0 &&
+    //   !isValidateAlphabetics(selector.leashing_name)
+    // ) {
+    //   return;
+    // }
 
-    if (!selector.enquiry_details_response) {
-      return;
-    }
+    // if (!selector.enquiry_details_response) {
+    //   return;
+    // }
 
     let dmsContactOrAccountDto = {};
     let dmsLeadDto = {};
@@ -863,6 +888,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
     if (dmsEntity.hasOwnProperty("dmsLeadDto"))
       dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
+    dmsLeadDto.firstName = selector.firstName;
+    dmsLeadDto.lastName = selector.lastName;
     const employeeData = await AsyncStore.getData(
       AsyncStore.Keys.LOGIN_EMPLOYEE
     );
@@ -1063,18 +1090,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     Promise.all([
       dispatch(updateEnquiryDetailsApi(formData))
     ]).then(async (res) => {
-      console.log("REF NO:", res[0].payload.dmsEntity.dmsLeadDto.referencenumber);
-      let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-      if (employeeData) {
-        const jsonObj = JSON.parse(employeeData);
-        const payload = {
-          "refNo": res[0].payload.dmsEntity.dmsLeadDto.referencenumber,
-          "orgId": jsonObj.orgId,
-          "stageCompleted": "ENQUIRY"
-        }
-        console.log("PAYLOAD:", payload);
-        dispatch(updateRef(payload))
-      }
+      // console.log("REF NO:", res[0].payload.dmsEntity.dmsLeadDto.referencenumber);
+      // let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+      // if (employeeData) {
+      //   const jsonObj = JSON.parse(employeeData);
+      //   const payload = {
+      //     refNo: res[0].payload.dmsEntity.dmsLeadDto.referencenumber,
+      //     orgId: jsonObj.orgId,
+      //     stageCompleted: "ENQUIRY"
+      //   }
+      //   console.log("PAYLOAD UPDATE REF:", payload);
+      //   dispatch(updateRef(payload))
+      // }
     });
   }
 
@@ -1134,6 +1161,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   showToast("Please select expected delivery date");
     //   return;
     // }
+    if (selector.enquiry_segment.length == 0) {
+      scrollToPos(2)
+      setOpenAccordian('1')
+      showToast("Please select enquery segment");
+      return;
+    }
+    if (selector.customer_type.length == 0) {
+      scrollToPos(2)
+      setOpenAccordian('1')
+      showToast("Please select customer type");
+      return;
+    }
     if (selector.buyer_type.length == 0) {
       scrollToPos(2)
       setOpenAccordian('1')
@@ -1215,6 +1254,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("Please fill color");
       return;
     }
+    if (selector.p_pincode.length == 0 ||
+      selector.p_urban_or_rural.length == 0 ||
+      selector.p_houseNum.length == 0 ||
+      selector.p_streetName.length == 0 ||
+      selector.p_village.length == 0 ||
+      selector.p_mandal.length == 0 ||
+      selector.p_city.length == 0 ||
+      selector.p_district.length == 0 ||
+      selector.p_state.length == 0) {
+      scrollToPos(3)
+      setOpenAccordian('3')
+      showToast("Please fill permanet address ");
+      return;
+    }
     //Finance Details
     if (selector.retail_finance.length == 0) {
       scrollToPos(5)
@@ -1275,12 +1328,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         showToast("Please fill required fields in Addtional buyer ");
         return;
       }
-      if (!isValidateAlphabetics(selector.a_varient)) {
-        scrollToPos(8)
-        setOpenAccordian('8')
-        showToast("Please enter alphabetics only in varient ");
-        return;
-      }
+      // if (!isValidateAlphabetics(selector.a_varient)) {
+      //   scrollToPos(8)
+      //   setOpenAccordian('8')
+      //   showToast("Please enter alphabetics only in varient ");
+      //   return;
+      // }
       if (!isValidateAlphabetics(selector.a_color)) {
         scrollToPos(8)
         setOpenAccordian('8')
@@ -1391,6 +1444,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
     if (dmsEntity.hasOwnProperty("dmsLeadDto")) {
       dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
+      dmsLeadDto.firstName = selector.firstName;
+      dmsLeadDto.lastName = selector.lastName;
+      dmsLeadDto.phone = selector.mobile;
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
@@ -1619,12 +1675,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const mapContactOrAccountDto = (prevData) => {
     console.log("first", selector.salutation)
     let dataObj = { ...prevData };
-    if (selector.dateOfBirth){
+    if (selector.dateOfBirth) {
       dataObj.dateOfBirth = convertDateStringToMillisecondsUsingMoment(
         selector.dateOfBirth
       );
     }
-    else{
+    else {
       dataObj.dateOfBirth = ''
     }
     dataObj.email = selector.email;
@@ -1819,9 +1875,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dataObj.fuelType = selector.r_fuel_type;
       dataObj.transmission = selector.r_transmission_type;
       // Pending
-      dataObj.yearofManufacture = convertDateStringToMillisecondsUsingMoment(
-        selector.r_mfg_year
-      );
+      // dataObj.yearofManufacture = convertDateStringToMillisecondsUsingMoment(
+      //   selector.r_mfg_year
+      // );
+      dataObj.yearofManufacture = selector.r_mfg_year
       dataObj.kiloMeters = selector.r_kms_driven_or_odometer_reading;
       dataObj.expectedPrice = selector.r_expected_price
         ? Number(selector.r_expected_price)
@@ -2001,17 +2058,32 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     selector.get_pending_tasks_response_list,
   ]);
 
-  const proceedToPreBookingClicked = () => {
-    // if (selector.enquiry_details_response.dmsLeadDto.assignee.empId == employeeId) {
-    if (universalId) {
-      const endUrl = universalId + "?" + "stage=Enquiry";
-      dispatch(getPendingTasksApi(endUrl));
+  const proceedToPreBookingClicked = async () => {
+    const employeeData = await AsyncStore.getData(
+      AsyncStore.Keys.LOGIN_EMPLOYEE
+    );
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      console.log("%%%%%", jsonObj, JSON.stringify(selector.enquiry_details_response.dmsLeadDto));
+      if (selector.enquiry_details_response.dmsLeadDto.salesConsultant == jsonObj.empName) {
+        if (universalId) {
+          const endUrl = universalId + "?" + "stage=Enquiry";
+          dispatch(getPendingTasksApi(endUrl));
+        }
+      } else {
+        alert('Permission Denied')
+        // Alert.alert(
+        //   'Permission Denied',
+        //   [
+        //     {
+        //       text: 'OK',
+        //     }
+        //   ],
+        //   { cancelable: false }
+        // );
+      }
     }
-    // } else {
-
-    //   Alert("Permission Denied");
-
-    // }
+    
     // console.log(selector.enquiry_details_response.dmsLeadDto, "Proceed to prebooking")
   };
 
@@ -2436,17 +2508,45 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
 
-    PincodeDetailsNew(selector.pincode).then(
+    PincodeDetailsNew(pincode).then(
       (res) => {
         // dispatch an action to update address
         console.log("PINCODE DETAILS 1", JSON.stringify(res));
         let tempAddr = []
-        if(res){
+        if (res) {
           if (res.length > 0) {
             for (let i = 0; i < res.length; i++) {
               tempAddr.push({ label: res[i].Name, value: res[i] })
               if (i === res.length - 1) {
                 setAddressData([...tempAddr])
+              }
+            }
+          }
+        }
+        // dispatch(updateAddressByPincode(resolve));
+      },
+      (rejected) => {
+        console.log("rejected...: ", rejected);
+      }
+    );
+  };
+
+  const updateAddressDetails2 = (pincode) => {
+    if (pincode.length != 6) {
+      return;
+    }
+
+    PincodeDetailsNew(pincode).then(
+      (res) => {
+        // dispatch an action to update address
+        console.log("PINCODE DETAILS 1", JSON.stringify(res));
+        let tempAddr = []
+        if (res) {
+          if (res.length > 0) {
+            for (let i = 0; i < res.length; i++) {
+              tempAddr.push({ label: res[i].Name, value: res[i] })
+              if (i === res.length - 1) {
+                setAddressData2([...tempAddr])
               }
             }
           }
@@ -2687,7 +2787,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   value={selector.mobile}
                   label={"Mobile Number*"}
                   // editable={false}
-                  maxLength={10}
+                  maxLength={13}
                   keyboardType={"phone-pad"}
                   onChangeText={(text) =>
                     dispatch(setPersonalIntro({ key: "MOBILE", text: text }))
@@ -2700,7 +2800,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   label={"Alternate Mobile Number"}
                   editable={true}
                   keyboardType={"phone-pad"}
-                  maxLength={10}
+                  maxLength={13}
                   onChangeText={(text) =>
                     dispatch(
                       setPersonalIntro({ key: "ALTER_MOBILE", text: text })
@@ -2801,7 +2901,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
 
                 <DropDownSelectionItem
-                  label={"Enquiry Segment"}
+                  label={"Enquiry Segment*"}
                   // disabled={!selector.enableEdit}
                   value={selector.enquiry_segment}
                   onPress={() =>
@@ -2813,7 +2913,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
 
                 <DropDownSelectionItem
-                  label={"Customer Type"}
+                  label={"Customer Type*"}
                   // disabled={!selector.enableEdit}
                   value={selector.customer_type}
                   onPress={() =>
@@ -3136,7 +3236,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   value={selector.houseNum}
                   label={"H.No*"}
                   maxLength={50}
-                  keyboardType={"default"}
+                  keyboardType={"number-pad"}
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({ key: "HOUSE_NO", text: text })
@@ -3161,94 +3261,94 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   }
                 />
                 <Text style={GlobalStyle.underline}></Text>
-                {selector.isAddressSet && (
-                  <>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.village}
-                      label={"Village/Town*"}
-                      autoCapitalize="words"
-                      maxLength={50}
-                      keyboardType={"default"}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCommunicationAddress({
-                            key: "VILLAGE",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
+                {/* {selector.isAddressSet && ( */}
+                <>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.village}
+                    label={"Village/Town*"}
+                    autoCapitalize="words"
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "VILLAGE",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
 
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.mandal}
-                      label={"Mandal*"}
-                      autoCapitalize="words"
-                      maxLength={50}
-                      keyboardType={"default"}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCommunicationAddress({
-                            key: "MANDAL",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.mandal}
+                    label={"Mandal*"}
+                    autoCapitalize="words"
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "MANDAL",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
 
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.city}
-                      label={"City*"}
-                      autoCapitalize="words"
-                      maxLength={50}
-                      keyboardType={"default"}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCommunicationAddress({ key: "CITY", text: text })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.district}
-                      label={"District*"}
-                      autoCapitalize="words"
-                      maxLength={50}
-                      keyboardType={"default"}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCommunicationAddress({
-                            key: "DISTRICT",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.state}
-                      label={"State*"}
-                      autoCapitalize="words"
-                      maxLength={50}
-                      keyboardType={"default"}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCommunicationAddress({
-                            key: "STATE",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </>
-                )}
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.city}
+                    label={"City*"}
+                    autoCapitalize="words"
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({ key: "CITY", text: text })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.district}
+                    label={"District*"}
+                    autoCapitalize="words"
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "DISTRICT",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.state}
+                    label={"State*"}
+                    autoCapitalize="words"
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "STATE",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                </>
+                {/* )} */}
                 <View
                   style={{ height: 20, backgroundColor: Colors.WHITE }}
                 ></View>
@@ -3298,175 +3398,207 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 </View>
                 <Text style={GlobalStyle.underline}></Text>
 
-                {selector.is_permanent_address_same === "NO" ? (
-                  <View>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.p_pincode}
-                      label={"Pincode*"}
-                      maxLength={6}
-                      keyboardType={"phone-pad"}
-                      onChangeText={(text) =>
+                {/* {selector.is_permanent_address_same === "NO" ? ( */}
+                <View>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.p_pincode}
+                    label={"Pincode*"}
+                    maxLength={6}
+                    keyboardType={"phone-pad"}
+                    onChangeText={(text) => {
+                      if (text.length === 6) {
+                        updateAddressDetails2(text);
+                      }
+                      dispatch(
                         dispatch(
                           setCommunicationAddress({
                             key: "P_PINCODE",
                             text: text,
                           })
                         )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
+                      );
+                    }}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
 
-                    <View style={styles.radioGroupBcVw}>
-                      <RadioTextItem
-                        label={"Urban"}
-                        value={"urban"}
-                        status={selector.p_urban_or_rural === 1 ? true : false}
-                        onPress={() =>
-                          dispatch(
-                            setCommunicationAddress({
-                              key: "P_RURAL_URBAN",
-                              text: "1",
-                            })
-                          )
-                        }
+                  {addressData2.length > 0 &&
+                    <>
+                      <Text style={GlobalStyle.underline}></Text>
+                      <Dropdown
+                        style={[styles.dropdownContainer,]}
+                        placeholderStyle={styles.placeholderStyle}
+                        selectedTextStyle={styles.selectedTextStyle}
+                        inputSearchStyle={styles.inputSearchStyle}
+                        iconStyle={styles.iconStyle}
+                        data={addressData2}
+                        search
+                        maxHeight={300}
+                        labelField="label"
+                        valueField="value"
+                        placeholder={'Select address'}
+                        searchPlaceholder="Search..."
+                        // value={defaultAddress}
+                        // onFocus={() => setIsFocus(true)}
+                        // onBlur={() => setIsFocus(false)}
+                        onChange={val => {
+                          console.log("ADDR: ", val);
+                          dispatch(updateAddressByPincode2(val.value));
+                        }}
                       />
-                      <RadioTextItem
-                        label={"Rural"}
-                        value={"rural"}
-                        status={selector.p_urban_or_rural === 2 ? true : false}
-                        onPress={() =>
-                          dispatch(
-                            setCommunicationAddress({
-                              key: "P_RURAL_URBAN",
-                              text: "2",
-                            })
-                          )
-                        }
-                      />
-                    </View>
-                    <Text style={GlobalStyle.underline}></Text>
+                    </>
+                  }
 
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      label={"H.No*"}
-                      keyboardType={"default"}
-                      maxLength={50}
-                      value={selector.p_houseNum}
-                      onChangeText={(text) =>
+                  <View style={styles.radioGroupBcVw}>
+                    <RadioTextItem
+                      label={"Urban"}
+                      value={"urban"}
+                      status={selector.p_urban_or_rural === 1 ? true : false}
+                      onPress={() =>
                         dispatch(
                           setCommunicationAddress({
-                            key: "P_HOUSE_NO",
-                            text: text,
+                            key: "P_RURAL_URBAN",
+                            text: "1",
                           })
                         )
                       }
                     />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      label={"Street Name*"}
-                      autoCapitalize="words"
-                      keyboardType={"default"}
-                      maxLength={50}
-                      value={selector.p_streetName}
-                      onChangeText={(text) =>
+                    <RadioTextItem
+                      label={"Rural"}
+                      value={"rural"}
+                      status={selector.p_urban_or_rural === 2 ? true : false}
+                      onPress={() =>
                         dispatch(
                           setCommunicationAddress({
-                            key: "P_STREET_NAME",
-                            text: text,
+                            key: "P_RURAL_URBAN",
+                            text: "2",
                           })
                         )
                       }
                     />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.p_village}
-                      label={"Village/Town*"}
-                      autoCapitalize="words"
-                      maxLength={50}
-                      keyboardType={"default"}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCommunicationAddress({
-                            key: "P_VILLAGE",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.p_mandal}
-                      label={"Mandal*"}
-                      autoCapitalize="words"
-                      maxLength={50}
-                      keyboardType={"default"}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCommunicationAddress({
-                            key: "P_MANDAL",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.p_city}
-                      label={"City*"}
-                      autoCapitalize="words"
-                      maxLength={50}
-                      keyboardType={"default"}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCommunicationAddress({
-                            key: "P_CITY",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.p_district}
-                      label={"District*"}
-                      autoCapitalize="words"
-                      maxLength={50}
-                      keyboardType={"default"}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCommunicationAddress({
-                            key: "P_DISTRICT",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={styles.textInputStyle}
-                      value={selector.p_state}
-                      label={"State*"}
-                      autoCapitalize="words"
-                      maxLength={50}
-                      keyboardType={"default"}
-                      onChangeText={(text) =>
-                        dispatch(
-                          setCommunicationAddress({
-                            key: "P_STATE",
-                            text: text,
-                          })
-                        )
-                      }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
                   </View>
-                ) : null}
+                  <Text style={GlobalStyle.underline}></Text>
+
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    label={"H.No*"}
+                    keyboardType={"number-pad"}
+                    maxLength={50}
+                    value={selector.p_houseNum}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "P_HOUSE_NO",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    label={"Street Name*"}
+                    autoCapitalize="words"
+                    keyboardType={"default"}
+                    maxLength={50}
+                    value={selector.p_streetName}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "P_STREET_NAME",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.p_village}
+                    label={"Village/Town*"}
+                    autoCapitalize="words"
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "P_VILLAGE",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.p_mandal}
+                    label={"Mandal*"}
+                    autoCapitalize="words"
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "P_MANDAL",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.p_city}
+                    label={"City*"}
+                    autoCapitalize="words"
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "P_CITY",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.p_district}
+                    label={"District*"}
+                    autoCapitalize="words"
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "P_DISTRICT",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.p_state}
+                    label={"State*"}
+                    autoCapitalize="words"
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "P_STATE",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                </View>
+                {/* ) : null} */}
               </List.Accordion>
               <View style={styles.space}></View>
               {/* // 4.Model Selection */}
@@ -3780,7 +3912,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   maxLength={10}
                   autoCapitalize={"characters"}
                   onChangeText={(text) => {
-                    dispatch(setUploadDocuments({ key: "PAN", text: text }));
+                    dispatch(setUploadDocuments({ key: "PAN", text: text.replace(/[^a-zA-Z0-9]/g, "") }));
                   }}
                 />
                 <Text style={GlobalStyle.underline}></Text>
@@ -4671,6 +4803,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     value={selector.r_mfg_year}
                     onPress={() => dispatch(setDatePicker("R_MFG_YEAR"))}
                   />
+                  {/* <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.r_mfg_year}
+                    label={"Mth.Yr. of MFG"}
+                    // keyboardType={"number-pad"}
+                    // maxLength={7}
+                    onChangeText={(text) => {
+                      let regex = /[\d]{2} \/ [\d]{4}/;
+                      console.log("TTT:", regex.test(text));
+                      dispatch(updateSelectedDate({ key: "R_MFG_YEAR", text: text }))
+                    }}
+                  /> */}
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.r_kms_driven_or_odometer_reading}
@@ -4829,11 +4973,29 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           }
                         />
                       </View>
-                      {uploadedImagesDataObj.insurance ? (
+                      {/* {uploadedImagesDataObj.insurance ? (
                         <DisplaySelectedImage
                           fileName={uploadedImagesDataObj.insurance.fileName}
                           from={"INSURENCE"}
                         />
+                      ) : null} */}
+                      {uploadedImagesDataObj.insurance ? (
+
+                        <View style={{ flexDirection: 'row' }}>
+                          <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                            if (uploadedImagesDataObj.insurance?.documentPath) {
+                              setImagePath(uploadedImagesDataObj.insurance?.documentPath)
+                            }
+                          }}>
+                            <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                          </TouchableOpacity>
+                          <View style={{ width: '80%' }}>
+                            <DisplaySelectedImage
+                              fileName={uploadedImagesDataObj.insurance.fileName}
+                              from={"INSURENCE"}
+                            />
+                          </View>
+                        </View>
                       ) : null}
                     </View>
                   )}
@@ -5184,6 +5346,8 @@ const styles = StyleSheet.create({
   },
   selectedTextStyle: {
     fontSize: 16,
+    color: '#000',
+    fontWeight: '400'
   },
   iconStyle: {
     width: 20,

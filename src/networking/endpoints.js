@@ -48,6 +48,9 @@ export const downloadFile1 = "http://liveautomate-345116193.ap-south-1.elb.amazo
 const URL = {
     LOGIN: () => hrms_url + "/emplogin",
     LEADS_LIST_API: () => sales_url + "/lead/all",
+    GET_LEADS_LIST: (stage, empId, offset) => {
+        return sales_url + `/lead/all?limit=500&offset=${offset}&status=${stage}&empId=${empId}`
+    },
     LEADS_LIST_API_FILTER: () => sales_url + "/lead/allByDate",
     MENULIST_API: (userName) => {
         return roleManagement_url + "/user/" + userName;
@@ -55,7 +58,9 @@ const URL = {
     VEHICLE_MODELS: (orgId) => {
         return vehicleInfoService_url + "/api/vehicle_details/?organizationId=" + orgId;
     },
-    CUSTOMER_TYPE: () => sales_url + "/master-data/customertype",
+    CUSTOMER_TYPE: (orgId) => {
+        return sales_url + `/master-data/customertype/${orgId}`
+    },
     MY_TASKS: () => sales_url + "/workflow/assignedTasks?",
     CONTACT_DETAILS: (universalId) => {
         return sales_url + "/lead/id/" + universalId;
@@ -79,7 +84,9 @@ const URL = {
         return downloadFile + "/autosave-get-uid/" + `${universalId}`;
     },
     UPDATE_ENQUIRY_DETAILS: () => sales_url + "/enquiry/lead",
-    GET_CUSTOMER_TYPES: () => sales_url + "/master-data/customertype",
+    GET_CUSTOMER_TYPES: (orgId) => {
+        return sales_url + `/master-data/customertype/${orgId}`
+    },
     DROP_ENQUIRY: () => sales_url + "/lead-drop",
     UPLOAD_DOCUMENT: () => sales_url + "/documents",
     GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS: (varientId, vehicleId) => {
@@ -180,16 +187,16 @@ const URL = {
     ADD_TARGET_MAPPING: () => salesGap + `/add_targetmapping_role`,
     EDIT_TARGET_MAPPING: () => salesGap + `/edit_targetmapping_role`,
     GET_ALL_TARGET_MAPPING: () => salesGap + `/get_all_targetmapping_role`,
-    GET_TARGET_PARAMS: () => dashboard + "/v2/get_target_params_scheduler",
-    GET_TARGET_PARAMS_ALL: () => dashboard + "/v2/get_target_params_for_all_emps_scheduler",
-    GET_TARGET_PARAMS_EMP: () => dashboard + "/v2/get_target_params_for_emp_scheduler",
+    GET_TARGET_PARAMS: () => dashboard + "/v2/get_target_params",
+    GET_TARGET_PARAMS_ALL: () => dashboard + "/v2/get_target_params_for_all_emps",
+    GET_TARGET_PARAMS_EMP: () => dashboard + "/v2/get_target_params_for_emp",
     GET_SALES_DATA: () => dashboard + "/v2/get_sales_data",
     GET_SALES_COMPARISON_DATA: () => dashboard + "/v2/get_sales_comparsion_data",
     GET_TARGET_GROUP_RANKING: (orgId) => {
-        return `${dashboard}/v2/get_emp_target_ranking_scheduler/org/${orgId}`
+        return `${dashboard}/v2/get_emp_target_ranking/org/${orgId}`
     },
     GET_TARGET_RANKING: (orgId, branchId) => {
-        return `${dashboard}/v2/get_emp_target_ranking_scheduler/org/${orgId}/branch/${branchId}`
+        return `${dashboard}/v2/get_emp_target_ranking/org/${orgId}/branch/${branchId}`
     },
     GET_BANK_DETAILS: (orgId) => {
         return dfGetAll + `/${orgId}/"Active"/${orgId}/bankFinancier`;

@@ -4,8 +4,12 @@ import { client } from '../networking/client';
 
 export const getEnquiryList = createAsyncThunk("ENQUIRY/getEnquiryList", async (payload, { rejectWithValue }) => {
 
+  console.log("PAYLOAD EN: ", JSON.stringify(payload));
+  
   const response = await client.post(URL.LEADS_LIST_API_FILTER(), payload);
   const json = await response.json()
+  console.log("ENQ LIST:", JSON.stringify(json));
+  
   if (!response.ok) {
     return rejectWithValue(json);
   }

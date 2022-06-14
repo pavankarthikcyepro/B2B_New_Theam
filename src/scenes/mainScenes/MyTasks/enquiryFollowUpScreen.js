@@ -15,6 +15,7 @@ import { Button } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
 import { DropDownSelectionItem } from "../../../pureComponents/dropDownSelectionItem";
 import { DropDownComponant, DatePickerComponent, LoaderComponent } from "../../../components";
+import Geolocation from '@react-native-community/geolocation';
 import {
   clearState,
   setDatePicker,
@@ -70,9 +71,14 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
   const [modelVarientsData, setModelVarientsData] = useState([]);
   const [actionType, setActionType] = useState("");
   const [empId, setEmpId] = useState("");
-  const [reasonList, setReasonList] = useState([]);
+  const [reasonList, setReasonList] = useState([{
+    label: 'Other',
+    value: 'Other'
+  }]);
   const [loading, setLoading] = useState(false);
   const [defaultReasonIndex, setDefaultReasonIndex] = useState(null);
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const [otherReason, setOtherReason] = useState('');
 
   useLayoutEffect(() => {
     let title = "Enquiry Follow Up";
@@ -99,18 +105,34 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
   useEffect(() => {
     navigation.addListener('focus', () => {
       console.log("TYPE:", reasonTaskName);
+      getCurrentLocation()
       getReasonListData(reasonTaskName)
     })
   }, [navigation]);
 
+  const getCurrentLocation = () => {
+    Geolocation.getCurrentPosition(info => {
+      console.log(info)
+      setCurrentLocation({
+        lat: info.coords.latitude,
+        long: info.coords.longitude
+      })
+    });
+  }
   useEffect(() => {
     if(selector.isReasonUpdate && reasonList.length > 0){
+      let reason = selector.reason;
       let findIndex = reasonList.findIndex((item) => {
         return item.value === selector.reason
       })
       console.log("DEFAULT INDEX:", findIndex);
       if(findIndex !== -1){
         setDefaultReasonIndex(reasonList[findIndex].value)
+      }
+      else {
+        dispatch(setEnquiryFollowUpDetails({ key: "REASON", text: 'Other' }));
+        setDefaultReasonIndex('Other')
+        setOtherReason(reason)
       }
     }
   }, [selector.isReasonUpdate, reasonList]);
@@ -135,7 +157,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
             allReasons[i].label = allReasons[i].reason;
             allReasons[i].value = allReasons[i].reason;
             if (i === allReasons.length - 1) {
-              setReasonList(allReasons)
+              setReasonList([...allReasons, ...reasonList])
               setLoading(false)
             }
           }
@@ -269,6 +291,10 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       showToast("Please select reason");
       return;
     }
+    if (selector.reason === 'Other' && otherReason.length === 0) {
+      showToast("Please Enter Other Reason");
+      return;
+    }
     if (selector.customer_remarks == 0) {
       showToast("Please enter customer remarks");
       return;
@@ -288,12 +314,14 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       return;
     }
     const newTaskObj = { ...selector.task_details_response };
-    newTaskObj.reason = selector.reason;
+    newTaskObj.reason = selector.reason === 'Other' ? otherReason : selector.reason;
     newTaskObj.customerRemarks = selector.customer_remarks;
     newTaskObj.employeeRemarks = selector.employee_remarks;
     newTaskObj.taskActualStartTime = convertDateStringToMillisecondsUsingMoment(
       selector.actual_start_time
     );
+    newTaskObj.lat = currentLocation ? currentLocation.lat.toString() : null;
+    newTaskObj.lon = currentLocation ? currentLocation.long.toString() : null;
     // dataObj.dmsExpectedDeliveryDate = convertDateStringToMillisecondsUsingMoment(selector.expected_delivery_date);
     newTaskObj.taskActualEndTime = convertDateStringToMillisecondsUsingMoment(
       selector.actual_end_time
@@ -437,10 +465,21 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
                 // onBlur={() => setIsFocus(false)}
                 onChange={val => {
                   console.log("£££", val);
-                  dispatch(setEnquiryFollowUpDetails({ key: "REASON", text: val.reason }));
+                  dispatch(setEnquiryFollowUpDetails({ key: "REASON", text: val.value }));
                 }}
               />
             </View>
+            {selector.reason === 'Other' &&
+              <TextinputComp
+                style={styles.textInputStyle}
+                label={"Other reason"}
+                value={otherReason}
+                maxLength={50}
+                onChangeText={(text) => {
+                  setOtherReason(text)
+                }}
+              />
+            }
             <Text style={GlobalStyle.underline}></Text>
 
             <TextinputComp
@@ -570,7 +609,7 @@ const styles = StyleSheet.create({
   },
   dropdownContainer: {
     backgroundColor: 'white',
-    padding: 12,
+    padding: 8,
     // borderWidth: 1,
     width: '100%',
     height: 60,
@@ -601,6 +640,8 @@ const styles = StyleSheet.create({
   },
   selectedTextStyle: {
     fontSize: 16,
+    color: '#000',
+    fontWeight: '400'
   },
   iconStyle: {
     width: 20,

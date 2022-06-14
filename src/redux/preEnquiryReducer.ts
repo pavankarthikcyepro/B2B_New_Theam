@@ -3,6 +3,8 @@ import { client } from '../networking/client';
 import URL from "../networking/endpoints";
 
 export const getPreEnquiryData = createAsyncThunk('PRE_ENQUIRY/getPreEnquiryData', async (payload, { rejectWithValue }) => {
+  console.log("END: ", URL.LEADS_LIST_API_FILTER(), payload);
+  
   const response = await client.post(URL.LEADS_LIST_API_FILTER(), payload);
   const json = await response.json()
   console.log("DATA:",JSON.stringify(json));

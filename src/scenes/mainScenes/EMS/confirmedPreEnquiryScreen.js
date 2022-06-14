@@ -23,6 +23,7 @@ import { resolvePath } from 'react-native-reanimated/src/reanimated2/animation/s
 import { isRejected } from '@reduxjs/toolkit';
 import { DropComponent } from './components/dropComp';
 import URL from '../../../networking/endpoints';
+import Geolocation from '@react-native-community/geolocation';
 
 const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
@@ -54,6 +55,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     const [dropModel, setDropModel] = useState("");
     const [dropPriceDifference, setDropPriceDifference] = useState("");
     const [dropRemarks, setDropRemarks] = useState("");
+    const [currentLocation, setCurrentLocation] = useState(null);
 
 
     React.useLayoutEffect(() => {
@@ -202,10 +204,19 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         BackHandler.addEventListener('hardwareBackPress', handleBackButtonClick);
 
         // UnSubscribe Listeners
-        return () => {
-            BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
-        }
+        // return () => {
+        //     BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
+        // }
     }, []);
+
+    useEffect(() => {
+        navigation.addListener('focus', () => {
+            getCurrentLocation()
+        })
+        navigation.addListener('blur', () => {
+            BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
+        })
+    }, [navigation]);
 
     const getBranchId = () => {
 
@@ -247,6 +258,16 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         })
     }
 
+    const getCurrentLocation = () => {
+        Geolocation.getCurrentPosition(info => {
+            console.log(info)
+            setCurrentLocation({
+                lat: info.coords.latitude,
+                long: info.coords.longitude
+            })
+        });
+    }
+
     // Handle Employees List Response
     useEffect(() => {
 
@@ -285,6 +306,8 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
             let filteredObj = arrTemp.length > 0 ? { ...arrTemp[0] } : undefined;
             if (filteredObj !== undefined) {
                 filteredObj.taskStatus = "CLOSED";
+                filteredObj.lat = currentLocation ? currentLocation.lat.toString() : null;
+                filteredObj.lon = currentLocation ? currentLocation.long.toString() : null;
                 // console.log("filteredObj: ", filteredObj);
                 dispatch(assignTaskApi(filteredObj));
             }
@@ -379,12 +402,12 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                 if (employeeData) {
                     const jsonObj = JSON.parse(employeeData);
                     const payload = {
-                        "branchid": branchId,
+                        "branchid": Number(branchId),
                         "leadstage": "ENQUIRY",
                         "orgid": jsonObj.orgId,
                         "universalId": itemData.universalId
                     }
-                    console.log("PAYLOAD:", payload);
+                    console.log("PAYLOAD LEAD REF:", payload);
                     dispatch(customerLeadRef(payload))
                 }
             });

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, View, Text, StyleSheet, Dimensions, FlatList, TouchableOpacity } from "react-native";
+import { SafeAreaView, View, Text, StyleSheet, Dimensions, FlatList, TouchableOpacity, Image, Modal, TurboModuleRegistry } from "react-native";
 import { GlobalStyle, Colors } from "../../../../styles";
 import PieChart from 'react-native-pie-chart';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
@@ -9,7 +9,7 @@ import { EmptyListView } from "../../../../pureComponents";
 import * as AsyncStore from "../../../../asyncStore";
 import { useDispatch } from "react-redux";
 import { getMyTasksListApi, getMyTeamsTasksListApi, role, getPendingMyTasksListApi, getRescheduleMyTasksListApi, getUpcomingMyTasksListApi, getTodayMyTasksListApi, getTodayTeamTasksListApi, getUpcomingTeamTasksListApi, getPendingTeamTasksListApi, getRescheduleTeamTasksListApi } from "../../../../redux/mytaskReducer";
-
+import moment from 'moment';
 
 const screenWidth = Dimensions.get("window").width;
 const item1Width = screenWidth - 10;
@@ -35,6 +35,8 @@ const ListComponent = ({ route, navigation }) => {
     const [index, setIndex] = useState(0);
     const [myTasksData, setMyTasksData] = useState([]);
     const [myTeamsData, setMyTeamsData] = useState([]);
+    const [selectedFilter, setSelectedFilter] = useState('TODAY');
+    const [isOpenFilter, setIsOpenFilter] = useState(false);
     const dispatch = useDispatch();
     const selector = useSelector((state) => state.mytaskReducer);
     const homeSelector = useSelector((state) => state.homeReducer);
@@ -42,30 +44,68 @@ const ListComponent = ({ route, navigation }) => {
 
     useEffect(() => {
         navigation.addListener('focus', () => {
+            setSelectedFilter('TODAY')
             setIndex(0)
-            initialTask()
+            initialTask('TODAY')
         });
     }, [navigation])
 
     useEffect(() => {
-        initialTask()
+        initialTask(selectedFilter)
     }, [index])
 
-    const initialTask = async () => {
+    const initialTask = async (selectedFilterLocal) => {
         const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
         setMyTasksData([]);
         setMyTeamsData([])
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
+            const dateFormat = "YYYY-MM-DD";
+            const currentDate = moment().format(dateFormat)
+            let startDate, endDate;
+            if (selectedFilterLocal === 'TODAY') {
+                startDate = currentDate;
+                endDate = currentDate;
+            }
+            else if (selectedFilterLocal === 'MONTH') {
+                startDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                endDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+            }
+            else if (selectedFilterLocal === 'WEEK') {
+                var curr = new Date; // get current date
+                var first = curr.getDate() - curr.getDay(); // First day is the day of the month - the day of the week
+                var last = first + 6; // last day is the first day + 6
+                var firstday = new Date(curr.setDate(first)).toUTCString();
+                var lastday = new Date(curr.setDate(last)).toUTCString();
+                startDate = moment(firstday).format(dateFormat);
+                endDate = moment(lastday).format(dateFormat);
+                console.log("DATE: ", startDate, endDate);
+            }
             console.log("called List Componet", route.params.from, index)
             if (route.params.from === "TODAY") {
                 if (index === 0) {
-                    Promise.all([
-                        dispatch(getTodayMyTasksListApi({
+                    let payload = {};
+                    if (selectedFilterLocal !== 'ALL') {
+                        payload = {
+                            "orgId": jsonObj.orgId,
+                            "loggedInEmpId": jsonObj.empId,
+                            "onlyForEmp": true,
+                            "dataType": "todaysData",
+                            // "startDate": startDate,
+                            // "endDate": endDate,
+                        }
+                    }
+                    else {
+                        payload = {
+                            "orgId": jsonObj.orgId,
                             "loggedInEmpId": jsonObj.empId,
                             "onlyForEmp": true,
                             "dataType": "todaysData"
-                        })),
+                        }
+                    }
+                    console.log("PAYLOAD TODAY: ", payload);
+                    Promise.all([
+                        dispatch(getTodayMyTasksListApi(payload)),
                     ]).then((res) => {
                         const todaysData = res[0].payload.todaysData[0];
                         const filteredData = todaysData.tasksList.filter(element => {
@@ -77,12 +117,28 @@ const ListComponent = ({ route, navigation }) => {
                     });
                 }
                 else if (index === 1) {
-                    Promise.all([
-                        dispatch(getTodayTeamTasksListApi({
+                    let payload = {};
+                    if (selectedFilterLocal !== 'ALL') {
+                        payload = {
+                            "orgId": jsonObj.orgId,
+                            "loggedInEmpId": jsonObj.empId,
+                            "onlyForEmp": false,
+                            "dataType": "todaysData",
+                            // "startDate": startDate,
+                            // "endDate": endDate,
+                        }
+                    }
+                    else {
+                        payload = {
+                            "orgId": jsonObj.orgId,
                             "loggedInEmpId": jsonObj.empId,
                             "onlyForEmp": false,
                             "dataType": "todaysData"
-                        })),
+                        }
+                    }
+                    console.log("PAYLOAD TODAY TEAM: ", payload);
+                    Promise.all([
+                        dispatch(getTodayTeamTasksListApi(payload)),
                     ]).then((res) => {
                         let tempArr = [];
                         let tempTaskName = ''
@@ -94,7 +150,7 @@ const ListComponent = ({ route, navigation }) => {
                                     if (allData[index].tasksList.length > 0) {
                                         let userWiseTasks = allData[index].tasksList;
                                         for (let taskIndex = 0; taskIndex < userWiseTasks.length; taskIndex++) {
-                                            
+
                                             let trimName = userWiseTasks[taskIndex].taskName.toLowerCase().trim();
                                             let finalTaskName = trimName.replace(/ /g, "");
                                             if (userWiseTasks[taskIndex].myTaskList.length > 0) {
@@ -109,7 +165,7 @@ const ListComponent = ({ route, navigation }) => {
                                         }
                                     }
                                     if (index === allData.length - 1) {
-                                        if (taskLists.length > 0){
+                                        if (taskLists.length > 0) {
                                             tempArr.push({
                                                 "taskCnt": taskLists.length,
                                                 "taskName": tempTaskName,
@@ -122,7 +178,7 @@ const ListComponent = ({ route, navigation }) => {
                                     setMyTeamsData(tempArr);
                                 }
                             }
-                            
+
                         }
                         else {
                             setMyTeamsData([]);
@@ -132,12 +188,29 @@ const ListComponent = ({ route, navigation }) => {
             }
             else if (route.params.from === "UPCOMING") {
                 if (index === 0) {
-                    Promise.all([
-                        dispatch(getUpcomingMyTasksListApi({
+                    let payload = {};
+                    if (selectedFilterLocal !== 'ALL') {
+                        payload = {
+                            "orgId": jsonObj.orgId,
                             "loggedInEmpId": jsonObj.empId,
                             "onlyForEmp": true,
-                            "dataType": "upcomingData"
-                        })),
+                            "dataType": "upcomingData",
+                            "startDate": startDate,
+                            "endDate": endDate,
+                            "ignoreDateFilter": false
+                        }
+                    }
+                    else {
+                        payload = {
+                            "orgId": jsonObj.orgId,
+                            "loggedInEmpId": jsonObj.empId,
+                            "onlyForEmp": true,
+                            "dataType": "upcomingData",
+                            "ignoreDateFilter": true
+                        }
+                    }
+                    Promise.all([
+                        dispatch(getUpcomingMyTasksListApi(payload)),
                     ]).then((res) => {
                         const todaysData = res[0].payload.upcomingData[0];
                         const filteredData = todaysData.tasksList.filter(element => {
@@ -149,12 +222,29 @@ const ListComponent = ({ route, navigation }) => {
                     });
                 }
                 else if (index === 1) {
-                    Promise.all([
-                        dispatch(getUpcomingTeamTasksListApi({
+                    let payload = {};
+                    if (selectedFilterLocal !== 'ALL') {
+                        payload = {
+                            "orgId": jsonObj.orgId,
                             "loggedInEmpId": jsonObj.empId,
                             "onlyForEmp": false,
-                            "dataType": "upcomingData"
-                        })),
+                            "dataType": "upcomingData",
+                            "startDate": startDate,
+                            "endDate": endDate,
+                            "ignoreDateFilter": false
+                        }
+                    }
+                    else {
+                        payload = {
+                            "orgId": jsonObj.orgId,
+                            "loggedInEmpId": jsonObj.empId,
+                            "onlyForEmp": false,
+                            "dataType": "upcomingData",
+                            "ignoreDateFilter": true
+                        }
+                    }
+                    Promise.all([
+                        dispatch(getUpcomingTeamTasksListApi(payload)),
                     ]).then((res) => {
                         // const todaysData = res[0].payload.upcomingData[0];
                         // const filteredData = todaysData.tasksList.filter(element => {
@@ -211,12 +301,30 @@ const ListComponent = ({ route, navigation }) => {
             }
             else if (route.params.from === "PENDING") {
                 if (index === 0) {
-                    Promise.all([
-                        dispatch(getPendingMyTasksListApi({
+                    let payload = {};
+                    if (selectedFilterLocal !== 'ALL') {
+                        payload = {
+                            "orgId": jsonObj.orgId,
                             "loggedInEmpId": jsonObj.empId,
                             "onlyForEmp": true,
-                            "dataType": "pendingData"
-                        })),
+                            "dataType": "pendingData",
+                            "startDate": startDate,
+                            "endDate": endDate,
+                            "ignoreDateFilter": false
+                        }
+                    }
+                    else {
+                        payload = {
+                            "orgId": jsonObj.orgId,
+                            "loggedInEmpId": jsonObj.empId,
+                            "onlyForEmp": true,
+                            "dataType": "pendingData",
+                            "ignoreDateFilter": true
+                        }
+                    }
+                    console.log("PAYLOAD PENDING: ", payload);
+                    Promise.all([
+                        dispatch(getPendingMyTasksListApi(payload)),
                     ]).then((res) => {
                         const todaysData = res[0].payload.pendingData[0];
                         const filteredData = todaysData.tasksList.filter(element => {
@@ -228,12 +336,30 @@ const ListComponent = ({ route, navigation }) => {
                     });
                 }
                 else if (index === 1) {
-                    Promise.all([
-                        dispatch(getPendingTeamTasksListApi({
+                    let payload = {};
+                    if (selectedFilterLocal !== 'ALL') {
+                        payload = {
+                            "orgId": jsonObj.orgId,
                             "loggedInEmpId": jsonObj.empId,
                             "onlyForEmp": false,
-                            "dataType": "pendingData"
-                        })),
+                            "dataType": "pendingData",
+                            "startDate": startDate,
+                            "endDate": endDate,
+                            "ignoreDateFilter": false
+                        }
+                    }
+                    else {
+                        payload = {
+                            "orgId": jsonObj.orgId,
+                            "loggedInEmpId": jsonObj.empId,
+                            "onlyForEmp": false,
+                            "dataType": "pendingData",
+                            "ignoreDateFilter": true,
+                        }
+                    }
+                    console.log("PAYLOAD PENDING TEAM: ", payload);
+                    Promise.all([
+                        dispatch(getPendingTeamTasksListApi(payload)),
                     ]).then((res) => {
                         // const todaysData = res[0].payload.pendingData[0];
                         // const filteredData = todaysData.tasksList.filter(element => {
@@ -291,12 +417,30 @@ const ListComponent = ({ route, navigation }) => {
             }
             else if (route.params.from === "RESCHEDULE") {
                 if (index === 0) {
-                    Promise.all([
-                        dispatch(getRescheduleMyTasksListApi({
+                    let payload = {};
+                    if (selectedFilterLocal !== 'ALL') {
+                        payload = {
+                            "orgId": jsonObj.orgId,
                             "loggedInEmpId": jsonObj.empId,
                             "onlyForEmp": true,
-                            "dataType": "rescheduledData"
-                        })),
+                            "dataType": "rescheduledData",
+                            "startDate": startDate,
+                            "endDate": endDate,
+                            "ignoreDateFilter": false
+                        }
+                    }
+                    else {
+                        payload = {
+                            "orgId": jsonObj.orgId,
+                            "loggedInEmpId": jsonObj.empId,
+                            "onlyForEmp": true,
+                            "dataType": "rescheduledData",
+                            "ignoreDateFilter": true
+                        }
+                    }
+                    console.log("PAYLOAD RESCHEDULE: ", payload);
+                    Promise.all([
+                        dispatch(getRescheduleMyTasksListApi(payload)),
                     ]).then((res) => {
                         const todaysData = res[0].payload.rescheduledData[0];
                         const filteredData = todaysData.tasksList.filter(element => {
@@ -308,12 +452,30 @@ const ListComponent = ({ route, navigation }) => {
                     });
                 }
                 else if (index === 1) {
-                    Promise.all([
-                        dispatch(getRescheduleTeamTasksListApi({
+                    let payload = {};
+                    if (selectedFilterLocal !== 'ALL') {
+                        payload = {
+                            "orgId": jsonObj.orgId,
                             "loggedInEmpId": jsonObj.empId,
                             "onlyForEmp": false,
-                            "dataType": "rescheduledData"
-                        })),
+                            "dataType": "rescheduledData",
+                            "startDate": startDate,
+                            "endDate": endDate,
+                            "ignoreDateFilter": false
+                        }
+                    }
+                    else {
+                        payload = {
+                            "orgId": jsonObj.orgId,
+                            "loggedInEmpId": jsonObj.empId,
+                            "onlyForEmp": false,
+                            "dataType": "rescheduledData",
+                            "ignoreDateFilter": true
+                        }
+                    }
+                    console.log("PAYLOAD RESCHEDULE TEAM: ", payload);
+                    Promise.all([
+                        dispatch(getRescheduleTeamTasksListApi(payload)),
                     ]).then((res) => {
                         // const todaysData = res[0].payload.rescheduledData[0];
                         // const filteredData = todaysData.tasksList.filter(element => {
@@ -565,37 +727,82 @@ const ListComponent = ({ route, navigation }) => {
                     )
                 } */}
                 {homeSelector.isTeamPresent && !homeSelector.isDSE &&
-                    <View style={styles.selfBtnWrap}>
-                        <TouchableOpacity onPress={() => {
-                            setIndex(0);
-                            changeTab(0);
-                        }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: index ? Colors.WHITE : Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
-                            <Text style={{ fontSize: 16, color: index ? Colors.BLACK : Colors.WHITE, fontWeight: '600' }}>Self</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => {
-                            setIndex(1);
-                            changeTab(1);
-                        }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: index ? Colors.RED : Colors.WHITE, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
-                            <Text style={{ fontSize: 16, color: index ? Colors.WHITE : Colors.BLACK, fontWeight: '600' }}>Teams</Text>
-                        </TouchableOpacity>
-                    </View>
+                    (route.params.from !== "TODAY" ?
+                        <View style={{ flexDirection: 'row' }}>
+                            <View style={[styles.selfBtnWrap, { width: route.params.from !== "TODAY" ? '75%' : '100%' }]}>
+                                <TouchableOpacity onPress={() => {
+                                    setIndex(0);
+                                    changeTab(0);
+                                }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: index ? Colors.WHITE : Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
+                                    <Text style={{ fontSize: 16, color: index ? Colors.BLACK : Colors.WHITE, fontWeight: '600' }}>Self</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => {
+                                    setIndex(1);
+                                    changeTab(1);
+                                }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: index ? Colors.RED : Colors.WHITE, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
+                                    <Text style={{ fontSize: 16, color: index ? Colors.WHITE : Colors.BLACK, fontWeight: '600' }}>Teams</Text>
+                                </TouchableOpacity>
+                            </View>
+                            {route.params.from !== "TODAY" &&
+                                <View >
+                                    <TouchableOpacity style={{ width: 80, height: 40, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', backgroundColor: Colors.RED, borderRadius: 5, marginTop: 10, marginLeft: 10 }} onPress={() => setIsOpenFilter(true)}>
+                                        <Image style={{ height: 20, width: 10 }} source={require('../../../../assets/images/more_new.png')} />
+                                        <Text style={{ fontSize: 16, fontWeight: '600', color: '#fff', marginLeft: 10 }}>Filter</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            }
+                        </View> :
+
+                        <View style={styles.selfBtnWrap}>
+                            <TouchableOpacity onPress={() => {
+                                setIndex(0);
+                                changeTab(0);
+                            }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: index ? Colors.WHITE : Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
+                                <Text style={{ fontSize: 16, color: index ? Colors.BLACK : Colors.WHITE, fontWeight: '600' }}>Self</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => {
+                                setIndex(1);
+                                changeTab(1);
+                            }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: index ? Colors.RED : Colors.WHITE, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
+                                <Text style={{ fontSize: 16, color: index ? Colors.WHITE : Colors.BLACK, fontWeight: '600' }}>Teams</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )
                 }
                 {homeSelector.isDSE &&
-                    <View style={styles.selfBtnWrap}>
-                        <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
-                            <Text style={{ fontSize: 16, color: Colors.WHITE, fontWeight: '600' }}>Self</Text>
-                        </View>
-                    </View>
-                }
-                {/* {homeSelector.isMD &&
-                    <View style={styles.selfBtnWrap}>
-                        <TouchableOpacity style={{ width: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.RED, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
-                            <Text style={{ fontSize: 16, color: Colors.WHITE, fontWeight: '600' }}>Teams</Text>
-                        </TouchableOpacity>
-                    </View>
-                } */}
-            </View>
+                    (route.params.from !== "TODAY" ?
+                        <View style={{ flexDirection: 'row' }}>
+                            <View style={[styles.selfBtnWrap, { width: '75%' }]}>
+                                <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
+                                    <Text style={{ fontSize: 16, color: Colors.WHITE, fontWeight: '600' }}>Self</Text>
+                                </View>
+                            </View>
+                            {route.params.from !== "TODAY" &&
+                                <View >
+                                    <TouchableOpacity style={{ width: 80, height: 40, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', backgroundColor: Colors.RED, borderRadius: 5, marginTop: 10, marginLeft: 10 }} onPress={() => setIsOpenFilter(true)}>
+                                        <Image style={{ height: 20, width: 10 }} source={require('../../../../assets/images/more_new.png')} />
+                                        <Text style={{ fontSize: 16, fontWeight: '600', color: '#fff', marginLeft: 10 }}>Filter</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            }
+                        </View> :
 
+                        <View style={[styles.selfBtnWrap,]}>
+                            <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
+                                <Text style={{ fontSize: 16, color: Colors.WHITE, fontWeight: '600' }}>Self</Text>
+                            </View>
+                        </View>
+                    )
+                }
+            </View>
+            {/* {route.params.from !== "TODAY" &&
+            <View style={{alignItems: 'flex-end'}}>
+                <TouchableOpacity style={{ width: 80, height: 40, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', backgroundColor: Colors.RED, borderRadius: 5}} onPress={() => setIsOpenFilter(true)}>
+                    <Image style={{height: 20, width: 10}} source={require('../../../../assets/images/more_new.png')} />
+                    <Text style={{fontSize: 16, fontWeight: '600', color: '#fff', marginLeft: 10}}>Filter</Text>
+                </TouchableOpacity>
+            </View>
+} */}
             {(index === 0 && myTasksData.length > 0) && (
                 <FlatList
                     data={myTasksData}
@@ -683,6 +890,57 @@ const ListComponent = ({ route, navigation }) => {
             {(index === 1 && myTeamsData.length == 0) && (
                 <EmptyListView title={'No Data Found'} isLoading={selector.isTeamsTaskLoading} />
             )}
+
+            <Modal
+                // animationType={Platform.OS === "ios" ? 'slide' : 'fade'}
+                transparent={true}
+                visible={isOpenFilter}
+                onRequestClose={() => setIsOpenFilter(false)}
+            >
+                <TouchableOpacity style={{ width: '100%', height: '100%' }} activeOpacity={1} onPress={() => {
+                    console.log("CLICK");
+                    setIsOpenFilter(false)
+                }}>
+                    <View style={styles.modalContainer}>
+                        <TouchableOpacity style={[styles.btnWrap, { backgroundColor: selectedFilter === 'TODAY' ? Colors.RED : '#fff', borderTopLeftRadius: 15, borderTopRightRadius: 15, marginTop: 2}]} onPress={() => {
+                            if (selectedFilter !== 'TODAY') {
+                                initialTask('TODAY')
+                            }
+                            setSelectedFilter('TODAY');
+                            setIsOpenFilter(false);
+                        }}>
+                            <Text style={[styles.textWrap, { color: selectedFilter === 'TODAY' ? '#fff' : '#333' }]}>Today</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.btnWrap, { backgroundColor: selectedFilter === 'WEEK' ? Colors.RED : '#fff' }]} onPress={() => {
+                            if (selectedFilter !== 'WEEK') {
+                                initialTask('WEEK')
+                            }
+                            setSelectedFilter('WEEK');
+                            setIsOpenFilter(false);
+                        }}>
+                            <Text style={[styles.textWrap, { color: selectedFilter === 'WEEK' ? '#fff' : '#333' }]}>This week</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.btnWrap, { backgroundColor: selectedFilter === 'MONTH' ? Colors.RED : '#fff' }]} onPress={() => {
+                            if (selectedFilter !== 'MONTH') {
+                                initialTask('MONTH')
+                            }
+                            setSelectedFilter('MONTH');
+                            setIsOpenFilter(false);
+                        }}>
+                            <Text style={[styles.textWrap, { color: selectedFilter === 'MONTH' ? '#fff' : '#333' }]}>This month</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.btnWrap, { backgroundColor: selectedFilter === 'ALL' ? Colors.RED : '#fff' }]} onPress={() => {
+                            if (selectedFilter !== 'ALL') {
+                                initialTask('ALL')
+                            }
+                            setSelectedFilter('ALL');
+                            setIsOpenFilter(false);
+                        }}>
+                            <Text style={[styles.textWrap, { color: selectedFilter === 'ALL' ? '#fff' : '#333' }]}>All</Text>
+                        </TouchableOpacity>
+                    </View>
+                </TouchableOpacity>
+            </Modal>
         </View>
     )
 };
@@ -717,7 +975,12 @@ const styles = StyleSheet.create({
         marginVertical: 7,
         marginHorizontal: 7,
         elevation: 5
-    }
+    },
+    modalContainer: { width: '100%', height: 180, backgroundColor: Colors.RED, position: 'absolute', bottom: 0, alignItems: 'center', borderTopLeftRadius: 15, borderTopRightRadius: 15 },
+    textWrap: { fontSize: 14, color: '#333' },
+    btnWrap: { width: '100%', height: 45, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', borderBottomColor: '#d1d1d1', borderBottomWidth: 1 },
+    selectBtnWrap: { backgroundColor: Colors.RED },
+    selectText: { color: '#fff' }
 })
 
 // if (selector.myTasksListResponseStatus === "success") {

@@ -26,10 +26,21 @@ interface Item {
   id: string;
 }
 
+export const getPreEnquiryDetails = createAsyncThunk("ADD_PRE_ENQUIRY_SLICE/getPreEnquiryDetails", async (universalId, { rejectWithValue }) => {
+  console.log("PAYLOAD EDIT ENQ: ", URL.CONTACT_DETAILS(universalId));
+  
+  const response = await client.get(URL.CONTACT_DETAILS(universalId))
+  const json = await response.json()
+  if (!response.ok) {
+    return rejectWithValue(json);
+  }
+  return json;
+})
+
 export const createPreEnquiry = createAsyncThunk("ADD_PRE_ENQUIRY_SLICE/createPreEnquiry", async (data, { rejectWithValue }) => {
   console.log("first:", data)
   const response = await client.post(data["url"], data["body"]);
-  // console.log("PAYLOAD PRE ENQ:", JSON.stringify(data["body"]));
+  console.log("PAYLOAD PRE ENQ:", data["url"], JSON.stringify(data["body"]));
   
   // console.log("resp pre enq: ", JSON.stringify(response));
   try {
@@ -66,6 +77,8 @@ export const continueToCreatePreEnquiry = createAsyncThunk(
 export const updatePreEnquiry = createAsyncThunk(
   "ADD_PRE_ENQUIRY_SLICE/updatePreEnquiry",
   async (data, { rejectWithValue }) => {
+    console.log("PAY URL:", data["url"], JSON.stringify(data["body"]));
+    
     const response = await client.put(data["url"], data["body"]);
     try {
       const json = await response.json();
@@ -283,7 +296,7 @@ export const addPreEnquirySlice = createSlice({
       state.email = preEnquiryDetails.email;
       console.log("PINCODE:", JSON.stringify(preEnquiryDetails));
       
-      state.pincode = preEnquiryDetails.pincode;
+      state.pincode = action.payload.dmsAddressList.length > 0 ? action.payload.dmsAddressList[0].pincode : '';
       state.carModel = preEnquiryDetails.model;
       state.enquiryType = preEnquiryDetails.enquirySegment;
       state.customer_type_list = CustomerTypesObj[preEnquiryDetails.enquirySegment.toLowerCase()];
@@ -291,6 +304,8 @@ export const addPreEnquirySlice = createSlice({
       state.customerType = dmsAccountOrContactObj["customerType"] || "";
       state.sourceOfEnquiry = preEnquiryDetails.enquirySource;
       state.sourceOfEnquiryId = preEnquiryDetails.sourceOfEnquiry;
+      state.subSourceOfEnquiry = preEnquiryDetails.subSource;
+      state.subSourceOfEnquiryId = preEnquiryDetails.subSourceOfEnquiry;
       state.companyName = dmsAccountOrContactObj["company"] || "";
       state.other = "";
     },
@@ -361,6 +376,15 @@ export const addPreEnquirySlice = createSlice({
         console.log("F getEventListApi: ", JSON.stringify(action.payload));
         state.event_list_response_status = "failed";
         state.isLoading = false;
+      })
+      .addCase(getPreEnquiryDetails.pending, (state, action) => {
+        
+      })
+      .addCase(getPreEnquiryDetails.fulfilled, (state, action) => {
+        
+      })
+      .addCase(getPreEnquiryDetails.rejected, (state, action) => {
+        
       });
   },
 });

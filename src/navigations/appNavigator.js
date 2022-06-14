@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Linking, Modal, TextInput, Text, TouchableOpacity } from "react-native";
+import { View, Linking, Modal, TextInput, Text, TouchableOpacity, Image } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
@@ -124,7 +124,7 @@ const SearchIcon = () => {
                     alignItems: 'center',
                     backgroundColor: 'rgba(0,0,0,0.7)',
                 }}>
-                    <View style={{height: 170, width: '90%', backgroundColor: '#fff', borderRadius: 5, alignItems: 'center'}}>
+                    <View style={{ height: 170, width: '90%', backgroundColor: '#fff', borderRadius: 5, alignItems: 'center' }}>
                         <View style={{ width: '90%', height: 40, borderWidth: 1, borderColor: '#333', borderRadius: 5, justifyContent: 'center', paddingHorizontal: 15, marginBottom: 20, marginTop: 40 }}>
                             <TextInput
                                 style={{ color: '#333', fontSize: 15, fontWeight: '500' }}
@@ -136,12 +136,12 @@ const SearchIcon = () => {
                                 }}
                             />
                         </View>
-                        <View style={{flexDirection: 'row', width: '90%', alignItems: 'center'}}>
+                        <View style={{ flexDirection: 'row', width: '90%', alignItems: 'center' }}>
                             <TouchableOpacity style={{ width: '48%', backgroundColor: Colors.RED, borderRadius: 5, marginRight: 10, justifyContent: 'center', alignItems: 'center', height: 40 }} onPress={() => {
                                 dispatch(updateIsSearch(true))
                                 dispatch(updateModal(false))
                             }}>
-                                <Text style={{fontSize: 14, fontWeight: '600', color: '#fff'}}>Submit</Text>
+                                <Text style={{ fontSize: 14, fontWeight: '600', color: '#fff' }}>Submit</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={{ width: '48%', backgroundColor: Colors.GRAY, borderRadius: 5, justifyContent: 'center', alignItems: 'center', height: 40 }} onPress={() => {
                                 dispatch(updateSearchKey(''))
@@ -155,6 +155,20 @@ const SearchIcon = () => {
                 </View>
             </Modal>
         </>
+    );
+};
+
+const LeadAge = () => {
+    const [searchQuery, setSearchQuery] = useState("");
+    const selector = useSelector(state => state.taskThreeSixtyReducer);
+    const dispatch = useDispatch();
+
+    return (
+        <View style={{ width: 110, height: 30, borderRadius: 15, backgroundColor: '#ff33ff', justifyContent: 'center', alignItems: 'center', marginRight: 5, flexDirection: 'row'}}>
+            <Image source={require('../assets/images/calendar.png')} style={{width: 20, height: 20}} />
+            <Text style={{ fontSize: 15, fontWeight: '600', color: '#fff', marginLeft: 5 }}>{`${selector.leadAge} ${selector.leadAge > 1 ? 'days' : 'day'}`}</Text>
+            {/* <Text style={{ fontSize: 15, fontWeight: '600', color: '#fff' }}>200 days</Text> */}
+        </View>
     );
 };
 
@@ -285,7 +299,7 @@ const HomeStackNavigator = ({ navigation }) => {
                     headerRight: () => {
                         return (
                             <View style={{ flexDirection: "row" }}>
-                                
+
                                 {/* <NotficationIcon
                   navigation={navigation}
                   identifier={"NOTIF_1"}
@@ -324,121 +338,128 @@ const EmsStack = createStackNavigator();
 
 const EmsStackNavigator = ({ navigation }) => {
     return (
-      <EmsStack.Navigator
-        initialRouteName={"EMS"}
-        screenOptions={screeOptionStyle}
-      >
-        <EmsStack.Screen
-          name="EMS"
-          component={EMSScreen}
-          options={{
-            title: "EMS",
-            headerLeft: () => <MenuIcon navigation={navigation} />,
-            headerRight: () => {
-              return (
-                <View style={{ flexDirection: "row" }}>
-                  <SearchIcon />
-                  {/* <RefreshIcon /> */}
-                  {/* <MapIcon /> */}
-                  <NotficationIcon
-                    navigation={navigation}
-                    identifier={"NOTIF_2"}
-                  />
-                </View>
-              );
-            },
-          }}
-        />
+        <EmsStack.Navigator
+            initialRouteName={"EMS"}
+            screenOptions={screeOptionStyle}
+        >
+            <EmsStack.Screen
+                name="EMS"
+                component={EMSScreen}
+                options={{
+                    title: "EMS",
+                    headerLeft: () => <MenuIcon navigation={navigation} />,
+                    headerRight: () => {
+                        return (
+                            <View style={{ flexDirection: "row" }}>
+                                <SearchIcon />
+                                {/* <RefreshIcon /> */}
+                                {/* <MapIcon /> */}
+                                <NotficationIcon
+                                    navigation={navigation}
+                                    identifier={"NOTIF_2"}
+                                />
+                            </View>
+                        );
+                    },
+                }}
+            />
 
-        <EmsStack.Screen
-          name={"NOTIF_2"}
-          component={NotificationScreen}
-          options={{ title: "Notifications" }}
-        />
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.addPreEnq}
-          component={AddPreEnquiryScreen}
-          options={{ title: "Pre-Enquiry" }}
-        />
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.confirmedPreEnq}
-          component={ConfirmedPreEnquiryScreen}
-          options={{ title: "Pre-Enquiry" }}
-        />
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.detailsOverview}
-          component={EnquiryFormScreen}
-          options={{ title: "Enquiry Form" }}
-        />
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.preBookingForm}
-          component={PreBookingFormScreen}
-          initialParams={{ accessoriesList: [] }}
-          options={{ title: "Pre-Booking Form" }}
-        />
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.bookingForm}
-          component={BookingFormScreen}
-          initialParams={{ accessoriesList: [] }}
-          options={{ title: "Booking Form" }}
-        />
+            <EmsStack.Screen
+                name={"NOTIF_2"}
+                component={NotificationScreen}
+                options={{ title: "Notifications" }}
+            />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.addPreEnq}
+                component={AddPreEnquiryScreen}
+                options={{ title: "Pre-Enquiry" }}
+            />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.confirmedPreEnq}
+                component={ConfirmedPreEnquiryScreen}
+                options={{ title: "Pre-Enquiry" }}
+            />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.detailsOverview}
+                component={EnquiryFormScreen}
+                options={{ title: "Enquiry Form" }}
+            />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.preBookingForm}
+                component={PreBookingFormScreen}
+                initialParams={{ accessoriesList: [] }}
+                options={{ title: "Pre-Booking Form" }}
+            />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.bookingForm}
+                component={BookingFormScreen}
+                initialParams={{ accessoriesList: [] }}
+                options={{ title: "Booking Form" }}
+            />
 
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.paidAccessories}
-          component={PaidAccessoriesScreen}
-          options={{
-            title: "Paid Accessories",
-              headerRight: () => {
-                  return (
-                      <View style={{flexDirection:"row"}}>
-                          <SearchIcon />
-                      </View>
-                  );
-              },
-          }}
-        />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.paidAccessories}
+                component={PaidAccessoriesScreen}
+                options={{
+                    title: "Paid Accessories",
+                    headerRight: () => {
+                        return (
+                            <View style={{ flexDirection: "row" }}>
+                                <SearchIcon />
+                            </View>
+                        );
+                    },
+                }}
+            />
 
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.proceedToPreBooking}
-          component={ProceedToPreBookingScreen}
-          options={{ title: "Proceed To PreBooking" }}
-        />
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.proceedToBooking}
-          component={ProceedToBookingScreen}
-          initialParams={{ accessoriesList: [] }}
-          options={{ title: "Proceed To Booking" }}
-        />
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.task360}
-          component={TaskThreeSixtyScreen}
-          options={{ title: "Task 360" }}
-        />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.proceedToPreBooking}
+                component={ProceedToPreBookingScreen}
+                options={{ title: "Proceed To PreBooking" }}
+            />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.proceedToBooking}
+                component={ProceedToBookingScreen}
+                initialParams={{ accessoriesList: [] }}
+                options={{ title: "Proceed To Booking" }}
+            />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.task360}
+                component={TaskThreeSixtyScreen}
+                options={{
+                    title: "Task 360",
+                    headerRight: () => {
+                        return (
+                            <LeadAge />
+                        );
+                    },
+                }}
+            />
 
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.homeVisit}
-          component={HomeVisitScreen}
-          options={{ title: "Home Visit" }}
-        />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.homeVisit}
+                component={HomeVisitScreen}
+                options={{ title: "Home Visit" }}
+            />
 
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.testDrive}
-          component={TestDriveScreen}
-          options={{ title: "Test Drive" }}
-        />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.testDrive}
+                component={TestDriveScreen}
+                options={{ title: "Test Drive" }}
+            />
 
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.enquiryFollowUp}
-          component={EnquiryFollowUpScreen}
-          options={{ title: "Enquiry Follow Up" }}
-        />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.enquiryFollowUp}
+                component={EnquiryFollowUpScreen}
+                options={{ title: "Enquiry Follow Up" }}
+            />
 
-        <EmsStack.Screen
-          name={EmsStackIdentifiers.createEnquiry}
-          component={CreateEnquiryScreen}
-          options={{ title: "Create Enquiry" }}
-        />
-      </EmsStack.Navigator>
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.createEnquiry}
+                component={CreateEnquiryScreen}
+                options={{ title: "Create Enquiry" }}
+            />
+        </EmsStack.Navigator>
     );
 };
 
@@ -552,7 +573,7 @@ const PriceStackNavigator = ({ navigation }) => {
 
 const Tab = createBottomTabNavigator();
 
-const TabNavigator = ({navigation, route}) => {
+const TabNavigator = ({ navigation, route }) => {
     const nav = useRoute();
     // let routeName = getFocusedRouteNameFromRoute(route);
     let routeName = nav.params.screen;
@@ -624,8 +645,8 @@ const TabNavigator = ({navigation, route}) => {
                         component={EvtbrlReportStackNavigator}
                         options={{ title: "ETVBRL" }}
                     />
-                ) 
-            } 
+                )
+            }
         </Tab.Navigator>
     );
 };

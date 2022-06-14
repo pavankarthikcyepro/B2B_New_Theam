@@ -8,7 +8,7 @@ import { showToastSucess } from "../../../utils/toast";
 import * as AsyncStorage from "../../../asyncStore";
 import { clearState, getTaskDetailsApi, getEnquiryDetailsApi, getEmployeesListApi, updateTaskApi, updateEmployeeApi, changeEnquiryStatusApi } from '../../../redux/createEnquiryReducer';
 import { getCurrentTasksListApi, getPendingTasksListApi } from "../../../redux/mytaskReducer";
-
+import Geolocation from '@react-native-community/geolocation';
 
 const CreateEnquiryScreen = ({ route, navigation }) => {
 
@@ -18,12 +18,29 @@ const CreateEnquiryScreen = ({ route, navigation }) => {
     const [employeeId, setEmployeeId] = useState("");
     const [showEmployeeSelectModel, setEmployeeSelectModel] = useState(false);
     const [employeesData, setEmployeesData] = useState([]);
+    const [currentLocation, setCurrentLocation] = useState(null);
 
     useEffect(() => {
         getAsyncStorageData();
         dispatch(getTaskDetailsApi(taskId));
         dispatch(getEnquiryDetailsApi(universalId));
     }, [])
+
+    useEffect(() => {
+        navigation.addListener('focus', () => {
+            getCurrentLocation()
+        })
+    }, [navigation]);
+
+    const getCurrentLocation = () => {
+        Geolocation.getCurrentPosition(info => {
+            console.log(info)
+            setCurrentLocation({
+                lat: info.coords.latitude,
+                long: info.coords.longitude
+            })
+        });
+    }
 
     const getAsyncStorageData = async () => {
         const empId = await AsyncStorage.getData(AsyncStorage.Keys.EMP_ID);
@@ -39,6 +56,8 @@ const CreateEnquiryScreen = ({ route, navigation }) => {
 
         const newTaskObj = { ...selector.task_details_response };
         newTaskObj.taskStatus = "CLOSED";
+        newTaskObj.lat = currentLocation ? currentLocation.lat.toString() : null;
+        newTaskObj.lon = currentLocation ? currentLocation.long.toString() : null;
         dispatch(updateTaskApi(newTaskObj));
     }
 

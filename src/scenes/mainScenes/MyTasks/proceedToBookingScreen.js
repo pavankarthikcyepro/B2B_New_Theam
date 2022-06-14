@@ -40,6 +40,7 @@ import {
 } from "../../../redux/mytaskReducer";
 import URL from "../../../networking/endpoints";
 import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
+import Geolocation from '@react-native-community/geolocation';
 
 const FirstDependencyArray = [
   "Lost To Competition",
@@ -77,6 +78,7 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
   });
   const [typeOfActionDispatched, setTypeOfActionDispatched] = useState("");
   const [authToken, setAuthToken] = useState("");
+  const [currentLocation, setCurrentLocation] = useState(null);
 
   useLayoutEffect(() => {
     let title = "Pre Booking Task";
@@ -109,6 +111,7 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     navigation.addListener('focus', () => {
+      getCurrentLocation()
       console.log("@@@@@@@@@@@@@@@@@@@@@@");
       dispatch(getTaskDetailsApi(taskId));
       getAuthToken();
@@ -120,6 +123,16 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
       dispatch(updateStatus())
     })
   }, [navigation]);
+
+  const getCurrentLocation = () => {
+    Geolocation.getCurrentPosition(info => {
+      console.log(info)
+      setCurrentLocation({
+        lat: info.coords.latitude,
+        long: info.coords.longitude
+      })
+    });
+  }
 
   const getAsyncstoreData = async () => {
     const employeeData = await AsyncStore.getData(
@@ -255,6 +268,8 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
 
     const newTaskObj = { ...selector.task_details_response };
     newTaskObj.taskStatus = "CLOSED";
+    newTaskObj.lat = currentLocation ? currentLocation.lat.toString() : null;
+    newTaskObj.lon = currentLocation ? currentLocation.long.toString() : null;
     dispatch(updateTaskApi(newTaskObj));
   };
 
@@ -288,9 +303,11 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
       leadstage:
         identifier === "PROCEED_TO_PRE_BOOKING" ? "PREBOOKING" : "BOOKING",
       orgid: userData.orgId,
+      universalId: universalId
     };
     const url = URL.CUSTOMER_LEAD_REFERENCE();
 
+    console.log("PAYLOAD BOOKING: ", payload);
     await fetch(url, {
       headers: {
         "Content-Type": "application/json",
@@ -313,6 +330,7 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
   };
 
   const updateEnuiquiryDetails = (refNumber) => {
+    console.log("REF NUMBER:", refNumber);
     if (!selector.enquiry_details_response) {
       return;
     }
@@ -402,6 +420,8 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
     }
     else if (identifier === "PROCEED_TO_BOOKING") {
       console.log("INSIDE ", identifier);
+      navigation.popToTop();
+      navigation.navigate('EMS_TAB')
       navigation.navigate(EmsTopTabNavigatorIdentifiers.booking)
     }
     else{

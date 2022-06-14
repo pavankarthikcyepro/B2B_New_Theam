@@ -5,6 +5,7 @@ import { TextinputComp, LoaderComponent } from "../../../components";
 import { Button } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
 import { Dropdown } from 'react-native-element-dropdown';
+import Geolocation from '@react-native-community/geolocation';
 import {
   clearState,
   setHomeVisitDetails,
@@ -73,7 +74,13 @@ const HomeVisitScreen = ({ route, navigation }) => {
     value: otpValue,
     setValue: setOtpValue,
   });
-  const [reasonList, setReasonList] = useState([]);
+  const [reasonList, setReasonList] = useState([{
+    label: 'Other',
+    value: 'Other'
+  }]);
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const [otherReason, setOtherReason] = useState('');
+  const [defaultReasonIndex, setDefaultReasonIndex] = useState(null);
 
   useEffect(() => {
     getAsyncStorageData();
@@ -83,9 +90,38 @@ const HomeVisitScreen = ({ route, navigation }) => {
   useEffect(() => {
     navigation.addListener('focus', () => {
       console.log("TYPE:", reasonTaskName);
+      getCurrentLocation()
       getReasonListData(reasonTaskName)
     })
   }, [navigation]);
+
+  const getCurrentLocation = () => {
+    Geolocation.getCurrentPosition(info => {
+      console.log(info)
+      setCurrentLocation({
+        lat: info.coords.latitude,
+        long: info.coords.longitude
+      })
+    });
+  }
+
+  useEffect(() => {
+    if (selector.isReasonUpdate && reasonList.length > 0) {
+      let reason = selector.reason;
+      let findIndex = reasonList.findIndex((item) => {
+        return item.value === selector.reason
+      })
+      console.log("DEFAULT INDEX:", findIndex);
+      if (findIndex !== -1) {
+        setDefaultReasonIndex(reasonList[findIndex].value)
+      }
+      else{
+        dispatch(setHomeVisitDetails({ key: "REASON", text: 'Other' }));
+        setDefaultReasonIndex('Other')
+        setOtherReason(reason)
+      }
+    }
+  }, [selector.isReasonUpdate, reasonList]);
 
   const getReasonListData = async (taskName) => {
     setLoading(true)
@@ -102,17 +138,17 @@ const HomeVisitScreen = ({ route, navigation }) => {
         console.log("all done", JSON.stringify(res));
         let tempReasonList = [];
         let allReasons = res[0].payload;
-        if(allReasons.length > 0){
-          for(let i = 0; i < allReasons.length; i++){
+        if (allReasons.length > 0) {
+          for (let i = 0; i < allReasons.length; i++) {
             allReasons[i].label = allReasons[i].reason;
             allReasons[i].value = allReasons[i].reason;
-            if(i === allReasons.length - 1){
-              setReasonList(allReasons)
+            if (i === allReasons.length - 1) {
+              setReasonList([...reasonList,...allReasons])
               setLoading(false)
             }
           }
         }
-        else{
+        else {
           setLoading(false)
         }
       }).catch(() => {
@@ -155,7 +191,6 @@ const HomeVisitScreen = ({ route, navigation }) => {
   };
 
   const closeTask = () => {
-
     if (selector.reason.length === 0) {
       showToast("Please Select Reason");
       return;
@@ -187,6 +222,11 @@ const HomeVisitScreen = ({ route, navigation }) => {
       return;
     }
 
+    if (selector.reason === 'Other' && otherReason.length === 0) {
+      showToast("Please Enter Other Reason");
+      return;
+    }
+
     if (selector.customer_remarks.length === 0) {
       showToast("Please enter customer remarks");
       return;
@@ -198,12 +238,15 @@ const HomeVisitScreen = ({ route, navigation }) => {
     }
 
     const newTaskObj = { ...selector.task_details_response };
-    newTaskObj.reason = selector.reason;
+    newTaskObj.reason = selector.reason === 'Other' ? otherReason : selector.reason;
     newTaskObj.customerRemarks = selector.customer_remarks;
     newTaskObj.employeeRemarks = selector.employee_remarks;
+    newTaskObj.lat = currentLocation ? currentLocation.lat.toString() : null;
+    newTaskObj.lon = currentLocation ? currentLocation.long.toString() : null;
     if (actionType === "CLOSE_TASK") {
       newTaskObj.taskStatus = "CLOSED";
     }
+    console.log("PAYLOAD:", JSON.stringify(newTaskObj));
     dispatch(updateTaskApi(newTaskObj));
     setActionType(actionType);
   };
@@ -275,33 +318,44 @@ const HomeVisitScreen = ({ route, navigation }) => {
               }}
             /> */}
             <View style={{ position: 'relative' }}>
-            {selector.reason !== '' &&
-              <View style={{ position: 'absolute', top: 0, left: 10, zIndex: 99 }}>
-                <Text style={{ fontSize: 13, color: Colors.GRAY }}>Reason*</Text>
-              </View>
-            }
-            <Dropdown
-              style={[styles.dropdownContainer,]}
-              placeholderStyle={styles.placeholderStyle}
-              selectedTextStyle={styles.selectedTextStyle}
-              inputSearchStyle={styles.inputSearchStyle}
-              iconStyle={styles.iconStyle}
-              data={reasonList}
-              search
-              maxHeight={300}
-              labelField="label"
-              valueField="value"
-              placeholder={"Reason*"}
-              searchPlaceholder="Search..."
-              // value={value}
-              // onFocus={() => setIsFocus(true)}
-              // onBlur={() => setIsFocus(false)}
-              onChange={val => {
-                console.log("£££", val);
-                dispatch(setHomeVisitDetails({ key: "REASON", text: val.reason }));
-              }}
-            />
+              {selector.reason !== '' &&
+                <View style={{ position: 'absolute', top: 0, left: 10, zIndex: 99 }}>
+                  <Text style={{ fontSize: 13, color: Colors.GRAY }}>Reason*</Text>
+                </View>
+              }
+              <Dropdown
+                style={[styles.dropdownContainer,]}
+                placeholderStyle={styles.placeholderStyle}
+                selectedTextStyle={styles.selectedTextStyle}
+                inputSearchStyle={styles.inputSearchStyle}
+                iconStyle={styles.iconStyle}
+                data={reasonList}
+                search
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                placeholder={"Reason*"}
+                searchPlaceholder="Search..."
+                value={defaultReasonIndex}
+                // onFocus={() => setIsFocus(true)}
+                // onBlur={() => setIsFocus(false)}
+                onChange={val => {
+                  console.log("£££", val);
+                  dispatch(setHomeVisitDetails({ key: "REASON", text: val.value }));
+                }}
+              />
             </View>
+            {selector.reason === 'Other' &&
+              <TextinputComp
+                style={styles.textInputStyle}
+                label={"Other reason"}
+                value={otherReason}
+                maxLength={50}
+                onChangeText={(text) => {
+                  setOtherReason(text)
+                }}
+              />
+            }
             <Text style={GlobalStyle.underline}></Text>
             <TextinputComp
               style={styles.textInputStyle}
@@ -431,7 +485,7 @@ const styles = StyleSheet.create({
   },
   dropdownContainer: {
     backgroundColor: 'white',
-    padding: 12,
+    padding: 8,
     // borderWidth: 1,
     width: '100%',
     height: 50,
@@ -462,6 +516,8 @@ const styles = StyleSheet.create({
   },
   selectedTextStyle: {
     fontSize: 16,
+    color: '#000',
+    fontWeight: '400'
   },
   iconStyle: {
     width: 20,
