@@ -804,6 +804,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dmsLeadDto.firstName = selector.firstName;
       dmsLeadDto.lastName = selector.lastName;
       dmsLeadDto.phone = selector.mobile;
+      if (enqDetails.leadStage === 'ENQUIRY' && enqDetails.leadStatus === null){
+        dmsLeadDto.leadStage = "ENQUIRY";
+        dmsLeadDto.leadStatus = null;
+      }      
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
@@ -1004,7 +1008,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
     console.log("PPPP", JSON.stringify(formData));
     // setTypeOfActionDispatched("UPDATE_ENQUIRY");
-    dispatch(autoSaveEnquiryDetailsApi(formData))
+    // dispatch(autoSaveEnquiryDetailsApi(formData))
+    let payload = {
+      data: formData,
+      status: "Active",
+      universalId: universalId
+    }
+    AsyncStore.storeJsonData(AsyncStore.Keys.ENQ_PAYLOAD, payload);
+    dispatch(updateEnquiryDetailsApiAutoSave(payload))
   }
 
   const submitClicked = async () => {
