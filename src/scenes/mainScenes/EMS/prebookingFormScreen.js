@@ -309,6 +309,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const [defaultAddress, setDefaultAddress] = useState(null);
     const [isEdit, setIsEdit] = useState(false);
     const [isReciptDocUpload, setIsReciptDocUpload] = useState(false);
+    const [isSubmitPress, setIsSubmitPress] = useState(false);
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -1147,6 +1148,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     const submitClicked = () => {
         Keyboard.dismiss();
+        setIsSubmitPress(true)
         // console.log("ATTCH", JSON.stringify(uploadedImagesDataObj));
         // console.log("FOUND: ", uploadedImagesDataObj.hasOwnProperty('receipt'));
         if (!isValidate(selector.first_name)) {
@@ -1233,14 +1235,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         //   return;
         // }
 
-        if (selector.form_or_pan === "PAN") {
-            if (selector.pan_number.length == 0) {
-                scrollToPos(4)
-                setOpenAccordian("4")
-                showToast("please enter pan card number");
-                return;
-            }
-        }
+        // if (selector.form_or_pan === "PAN") {
+        //     if (selector.pan_number.length == 0) {
+        //         scrollToPos(4)
+        //         setOpenAccordian("4")
+        //         showToast("please enter pan card number");
+        //         return;
+        //     }
+        // }
 
         if (selector.enquiry_segment.toLowerCase() === "personal") {
             if (selector.adhaar_number.length == 0) {
@@ -2550,7 +2552,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         showDropDownModelMethod("SALUTATION", "Salutation")
                                     }
                                 />
-
+                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.salutation === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                                 <TextinputComp
                                     style={{ height: 65, width: "100%" }}
                                     value={selector.first_name}
@@ -2564,7 +2566,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         )
                                     }
                                 />
-                                <Text style={GlobalStyle.underline}></Text>
+                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.first_name === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                                 <TextinputComp
                                     style={{ height: 65, width: "100%" }}
                                     value={selector.last_name}
@@ -2578,7 +2580,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         )
                                     }
                                 />
-                                <Text style={GlobalStyle.underline}></Text>
+                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.last_name === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                                 <TextinputComp
                                     style={{ height: 65, width: "100%" }}
                                     value={selector.mobile}
@@ -2589,7 +2591,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         dispatch(setCustomerDetails({ key: "MOBILE", text: text }))
                                     }
                                 />
-                                <Text style={GlobalStyle.underline}></Text>
+                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.mobile === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                                 <TextinputComp
                                     style={{ height: 65, width: "100%" }}
                                     value={selector.email}
@@ -2599,7 +2601,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         dispatch(setCustomerDetails({ key: "EMAIL", text: text }))
                                     }
                                 />
-                                <Text style={GlobalStyle.underline}></Text>
+                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.email === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                                 <DropDownSelectionItem
                                     label={"Enquiry Segment*"}
                                     value={selector.enquiry_segment}
@@ -2610,6 +2612,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         )
                                     }
                                 />
+                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.enquiry_segment === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                                 <DropDownSelectionItem
                                     label={"Customer Type*"}
                                     value={selector.customer_type}
@@ -2617,6 +2620,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         showDropDownModelMethod("CUSTOMER_TYPE", "Customer Type")
                                     }
                                 />
+                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.customer_type === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                                 {selector.enquiry_segment.toLowerCase() === "personal" ? (
                                     <View>
                                         <DropDownSelectionItem
@@ -2693,7 +2697,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         setDefaultAddress(null)
                                     }}
                                 />
-
+                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.pincode === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                                 {addressData.length > 0 &&
                                     <>
                                         <Text style={GlobalStyle.underline}></Text>
@@ -2762,7 +2766,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         )
                                     }
                                 />
-                                <Text style={GlobalStyle.underline}></Text>
+                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.house_number === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                                 <TextinputComp
                                     style={styles.textInputStyle}
                                     value={selector.street_name}
@@ -2777,7 +2781,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         )
                                     }
                                 />
-                                <Text style={GlobalStyle.underline}></Text>
+                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.street_name === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                                 <TextinputComp
                                     style={styles.textInputStyle}
                                     value={selector.village}
@@ -2789,7 +2793,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         )
                                     }
                                 />
-                                <Text style={GlobalStyle.underline}></Text>
+                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.village === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                                 <TextinputComp
                                     style={styles.textInputStyle}
                                     value={selector.mandal}
@@ -2801,7 +2805,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         )
                                     }
                                 />
-                                <Text style={GlobalStyle.underline}></Text>
+                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.mandal === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                                 <TextinputComp
                                     style={styles.textInputStyle}
                                     value={selector.city}
@@ -2813,7 +2817,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         )
                                     }
                                 />
-                                <Text style={GlobalStyle.underline}></Text>
+                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.city === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                                 <TextinputComp
                                     style={styles.textInputStyle}
                                     value={selector.district}
@@ -2825,7 +2829,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         )
                                     }
                                 />
-                                <Text style={GlobalStyle.underline}></Text>
+                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.district === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                                 <TextinputComp
                                     style={styles.textInputStyle}
                                     value={selector.state}
@@ -2837,7 +2841,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         )
                                     }
                                 />
-                                <Text style={GlobalStyle.underline}></Text>
+                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.state === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                                 <View
                                     style={{ height: 20, backgroundColor: Colors.WHITE }}
                                 ></View>
@@ -2903,7 +2907,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         );
                                     }}
                                 />
-                                <Text style={GlobalStyle.underline}></Text>
+                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_pincode === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
 
                                 {addressData2.length > 0 &&
                                     <>
@@ -2978,7 +2982,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         )
                                     }
                                 />
-                                <Text style={GlobalStyle.underline}></Text>
+                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_houseNum === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                                 <TextinputComp
                                     style={styles.textInputStyle}
                                     label={"Street Name*"}
@@ -2993,7 +2997,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         )
                                     }
                                 />
-                                <Text style={GlobalStyle.underline}></Text>
+                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_streetName === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                                 <TextinputComp
                                     style={styles.textInputStyle}
                                     value={selector.p_village}
@@ -3008,7 +3012,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         )
                                     }
                                 />
-                                <Text style={GlobalStyle.underline}></Text>
+                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_village === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                                 <TextinputComp
                                     style={styles.textInputStyle}
                                     value={selector.p_mandal}
@@ -3023,7 +3027,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         )
                                     }
                                 />
-                                <Text style={GlobalStyle.underline}></Text>
+                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_mandal === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                                 <TextinputComp
                                     style={styles.textInputStyle}
                                     value={selector.p_city}
@@ -3035,7 +3039,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         )
                                     }
                                 />
-                                <Text style={GlobalStyle.underline}></Text>
+                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_city === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                                 <TextinputComp
                                     style={styles.textInputStyle}
                                     value={selector.p_district}
@@ -3050,7 +3054,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         )
                                     }
                                 />
-                                <Text style={GlobalStyle.underline}></Text>
+                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_district === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                                 <TextinputComp
                                     style={styles.textInputStyle}
                                     value={selector.p_state}
@@ -3065,7 +3069,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         )
                                     }
                                 />
-                                <Text style={GlobalStyle.underline}></Text>
+                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_state === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                             </List.Accordion>
                             <View style={styles.space}></View>
 
@@ -3094,9 +3098,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     onPress={() => showDropDownModelMethod("MODEL", "Model")}
                                 />
                                 <DropDownSelectionItem
-                                    label={"Varient"}
+                                    label={"Variant"}
                                     value={selector.varient}
-                                    onPress={() => showDropDownModelMethod("VARIENT", "Varient")}
+                                    onPress={() => showDropDownModelMethod("VARIENT", "Variant")}
                                 />
                                 <DropDownSelectionItem
                                     label={"Color"}
@@ -3154,7 +3158,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         <TextinputComp
                                             style={styles.textInputStyle}
                                             value={selector.pan_number}
-                                            label={"PAN Number*"}
+                                            label={"PAN Number"}
                                             maxLength={10}
                                             autoCapitalize={"characters"}
                                             onChangeText={(text) => {
@@ -3240,7 +3244,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                                 )
                                             }
                                         />
-                                        <Text style={GlobalStyle.underline}></Text>
+                                        <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.adhaar_number === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                                         <View style={styles.select_image_bck_vw}>
                                             <ImageSelectItem
                                                 name={"Upload Adhar"}
@@ -4367,7 +4371,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         )
                                     }
                                 />
-                                <Text style={GlobalStyle.underline}></Text>
+                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.booking_amount === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
 
                                 <DropDownSelectionItem
                                     label={"Payment At*"}
@@ -4376,7 +4380,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         showDropDownModelMethod("PAYMENT_AT", "Payment At")
                                     }
                                 />
-
+                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.payment_at === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                                 <DropDownSelectionItem
                                     label={"Booking Payment Mode*"}
                                     value={selector.booking_payment_mode}
@@ -4387,6 +4391,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         )
                                     }
                                 />
+                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.booking_payment_mode === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                             </List.Accordion>
                             <View style={styles.space}></View>
 
@@ -4416,6 +4421,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         dispatch(setDatePicker("CUSTOMER_PREFERRED_DATE"))
                                     }
                                 />
+                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.customer_preferred_date === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                                 <TextinputComp
                                     style={{ height: 65, width: "100%" }}
                                     label={"Occasion"}
@@ -4435,6 +4441,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         dispatch(setDatePicker("TENTATIVE_DELIVERY_DATE"))
                                     }
                                 />
+                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.tentative_delivery_date === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                                 <TextinputComp
                                     style={{ height: 65, width: "100%" }}
                                     label={"Delivery Location"}

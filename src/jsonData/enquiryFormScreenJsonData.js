@@ -194,7 +194,7 @@ export const Buyer_Type_Data = [
   },
   {
     id: "replacement_buyer",
-    name: "Replacement Buyer",
+    name: "Exchange Buyer",
   },
 ];
 export const Additional_Type_Data = [

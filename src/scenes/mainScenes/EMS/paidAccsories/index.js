@@ -56,14 +56,14 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
     const [defaultContext, setDefaultContext] = useState({});
 
     useEffect(() => {
-        console.log("accessorylist: ", selectedAccessoryList, selectedFOCAccessoryList)
+        console.log("accessorylist: ", selectedAccessoryList, accessorylist)
         const titleNames = [];
         const dataObj = {};
         accessorylist.forEach((item) => {
             let isSelected = false;
             let find = [];
             find = selectedAccessoryList.filter((innerItem) => {
-                return innerItem.accessoriesName === item.partName && Number(innerItem.amount) === Number(item.cost)
+                return innerItem.accessoriesName === item.partName && Number(innerItem.amount) === Number(item.cost) && innerItem?.dmsAccessoriesType === item.item
             })
             if (find.length > 0) {
                 isSelected = true;

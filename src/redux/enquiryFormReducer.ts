@@ -75,6 +75,21 @@ export const updateEnquiryDetailsApi = createAsyncThunk(
   }
 );
 
+export const autoSaveEnquiryDetailsApi = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/autoSaveEnquiryDetailsApi",
+  async (payload, { rejectWithValue }) => {
+    console.log("ENQ PAY:", URL.UPDATE_ENQUIRY_DETAILS(), JSON.stringify(payload));
+
+    const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
 export const customerLeadRef = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/customerLeadRef", async (payload, { rejectWithValue }) => {
   const response = await client.post(URL.CUSTOMER_LEAD_REFERENCE(), payload)
   const json = await response.json()
