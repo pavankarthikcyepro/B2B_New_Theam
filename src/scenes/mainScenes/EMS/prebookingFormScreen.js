@@ -1151,16 +1151,34 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setIsSubmitPress(true)
         // console.log("ATTCH", JSON.stringify(uploadedImagesDataObj));
         // console.log("FOUND: ", uploadedImagesDataObj.hasOwnProperty('receipt'));
+        if (selector.first_name.length === 0) {
+            scrollToPos(0)
+            setOpenAccordian('1')
+            showToast("please enter first name");
+            return;
+        }
         if (!isValidate(selector.first_name)) {
             scrollToPos(0)
             setOpenAccordian('1')
             showToast("please enter alphabetics only in firstname");
             return;
         }
+        if (selector.last_name.length === 0) {
+            scrollToPos(0)
+            setOpenAccordian('1')
+            showToast("please enter last name");
+            return;
+        }
         if (!isValidate(selector.last_name)) {
             scrollToPos(0)
             setOpenAccordian('1')
             showToast("please enter alphabetics only in lastname");
+            return;
+        }
+        if (selector.mobile.length === 0) {
+            scrollToPos(0)
+            setOpenAccordian('1')
+            showToast("please enter mobile number");
             return;
         }
         if (selector.email.length === 0) {
