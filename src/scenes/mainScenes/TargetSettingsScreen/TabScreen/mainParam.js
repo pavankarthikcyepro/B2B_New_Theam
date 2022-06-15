@@ -21,6 +21,7 @@ import {
     updateIsTeamPresent
 } from '../../../../redux/homeReducer';
 import { showToast, showToastRedAlert } from '../../../../utils/toast';
+import { updateFuelAndTransmissionType } from '../../../../redux/preBookingFormReducer';
 
 const color = [
     '#9f31bf', '#00b1ff', '#fb03b9', '#ffa239', '#d12a78', '#0800ff', '#1f93ab', '#ec3466'
@@ -52,6 +53,8 @@ const MainParamScreen = ({ route, navigation }) => {
     const [addOrEdit, setAddOrEdit] = useState('');
     const [defaultBranch, setDefaultBranch] = useState(null);
     const [allOwnData, setAllOwnData] = useState(null);
+    const [isFirstTime, setIsFirstTime] = useState(false);
+    const [targetName, setTargetName] = useState('');
 
     // const dropdownData = [
     //     { label: 'Item 1', value: '1' },
@@ -93,6 +96,111 @@ const MainParamScreen = ({ route, navigation }) => {
     }, [selector.activeBranches])
 
     useEffect(async () => {
+        if (!selector.isTeam){
+            if (selector.targetMapping.length > 0 && loggedInEmpDetails !== null && selector.isDataLoaded) {
+                let ownDataArray = [];
+                if (selector.targetType === 'MONTHLY') {
+                    ownDataArray = selector.targetMapping.filter((item) => {
+                        // return Number(item.employeeId) === Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate
+                        return Number(item.employeeId) === Number(loggedInEmpDetails?.empId)
+                    })
+                }
+                else {
+                    ownDataArray = selector.targetMapping.filter((item) => {
+                        return Number(item.employeeId) === Number(loggedInEmpDetails?.empId)
+                    })
+                }
+                console.log("TTT 1: ", JSON.stringify(ownDataArray));
+                if (ownDataArray.length > 0) {
+                    setAllOwnData(ownDataArray)
+                    let ownDataArray2 = []
+                    if (selector.targetType === 'MONTHLY') {
+                        ownDataArray2 = ownDataArray.filter((item) => {
+                            return selector.endDate === item.endDate && selector.startDate === item.startDate
+                        })
+                    }
+                    else {
+                        ownDataArray2 = ownDataArray.filter((item) => {
+                            return selector.endDate === item.endDate && selector.startDate === item.startDate
+                        })
+                    }
+                    console.log("TTT 2: ", JSON.stringify(ownDataArray2));
+                    if (ownDataArray2.length > 0) {
+                        setIsNoTargetAvailable(false)
+                        setOwnData(ownDataArray2[0])
+                        if (ownDataArray2[0]?.targetName) {
+                            setTargetName(ownDataArray2[0]?.targetName)
+                        }
+                    }
+                    else {
+                        setIsNoTargetAvailable(true)
+                        setOwnData({
+                            "retailTarget": null,
+                            "enquiry": null,
+                            "testDrive": null,
+                            "homeVisit": null,
+                            "booking": null,
+                            "exchange": null,
+                            "finance": null,
+                            "insurance": null,
+                            "exWarranty": null,
+                            "accessories": null,
+                            "events": "10",
+                            "startDate": selector.startDate,
+                            "endDate": selector.endDate,
+                            "empName": loggedInEmpDetails?.empName,
+                            "employeeId": loggedInEmpDetails?.empId,
+                        })
+                    }
+                }
+                else {
+                    setIsNoTargetAvailable(true)
+                    setOwnData({
+                        "retailTarget": null,
+                        "enquiry": null,
+                        "testDrive": null,
+                        "homeVisit": null,
+                        "booking": null,
+                        "exchange": null,
+                        "finance": null,
+                        "insurance": null,
+                        "exWarranty": null,
+                        "accessories": null,
+                        "events": null,
+                        "startDate": selector.startDate,
+                        "endDate": selector.endDate,
+                        "empName": loggedInEmpDetails?.empName,
+                        "employeeId": loggedInEmpDetails?.empId,
+                    })
+                }
+            }
+            if (selector.isDataLoaded && selector.targetMapping.length === 0) {
+                setIsNoTargetAvailable(true)
+                setOwnData({
+                    "retailTarget": null,
+                    "enquiry": null,
+                    "testDrive": null,
+                    "homeVisit": null,
+                    "booking": null,
+                    "exchange": null,
+                    "finance": null,
+                    "insurance": null,
+                    "exWarranty": null,
+                    "accessories": null,
+                    "events": null,
+                    "startDate": selector.startDate,
+                    "endDate": selector.endDate,
+                    "empName": loggedInEmpDetails?.empName,
+                    "employeeId": loggedInEmpDetails?.empId,
+                })
+            }
+        }
+        else{
+            setTargetName('')
+        }
+    }, [selector.isTeam, selector.selectedMonth])
+
+    useEffect(async () => {
         if (selector.targetMapping.length > 0 && loggedInEmpDetails !== null && selector.isDataLoaded) {
             let ownDataArray = [];
             if (selector.targetType === 'MONTHLY') {
@@ -123,6 +231,9 @@ const MainParamScreen = ({ route, navigation }) => {
                 console.log("TTT 2: ", JSON.stringify(ownDataArray2));
                 if (ownDataArray2.length > 0) {
                     setOwnData(ownDataArray2[0])
+                    if (ownDataArray2[0]?.targetName){
+                        setTargetName(ownDataArray2[0]?.targetName)
+                    }
                 }
                 else {
                     setIsNoTargetAvailable(true)
@@ -158,7 +269,7 @@ const MainParamScreen = ({ route, navigation }) => {
                     "insurance": null,
                     "exWarranty": null,
                     "accessories": null,
-                    "events": "10",
+                    "events": null,
                     "startDate": selector.startDate,
                     "endDate": selector.endDate,
                     "empName": loggedInEmpDetails?.empName,
@@ -179,7 +290,7 @@ const MainParamScreen = ({ route, navigation }) => {
                 "insurance": null,
                 "exWarranty": null,
                 "accessories": null,
-                "events": "10",
+                "events": null,
                 "startDate": selector.startDate,
                 "endDate": selector.endDate,
                 "empName": loggedInEmpDetails?.empName,
@@ -204,6 +315,9 @@ const MainParamScreen = ({ route, navigation }) => {
             console.log("TTT: ", JSON.stringify(ownDataArray));
             if (ownDataArray.length > 0) {
                 setOwnData(ownDataArray[0])
+                if (ownDataArray[0]?.targetName) {
+                    setTargetName(ownDataArray[0]?.targetName)
+                }
             }
             else {
                 setIsNoTargetAvailable(true)
@@ -218,7 +332,7 @@ const MainParamScreen = ({ route, navigation }) => {
                     "insurance": null,
                     "exWarranty": null,
                     "accessories": null,
-                    "events": "10",
+                    "events": null,
                     "startDate": selector.startDate,
                     "endDate": selector.endDate,
                     "empName": loggedInEmpDetails?.empName,
@@ -237,7 +351,7 @@ const MainParamScreen = ({ route, navigation }) => {
             const payload = {
                 "empId": jsonObj.empId,
                 "pageNo": 1,
-                "size": 1000,
+                "size": 500,
                 "targetType": selector.targetType
             }
             console.log("PAYLOAD", payload);
@@ -268,8 +382,8 @@ const MainParamScreen = ({ route, navigation }) => {
                     "startDate": selector.startDate,
                     // "teamLeadId": otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead')[0].value.value : '',
                     "targetType": selector.targetType,
-                    "targetName": selector.targetType === 'MONTHLY' ? selector.selectedMonth.value : selector.selectedSpecial.keyId
-                    // "targetName": "SPECIAL1"
+                    // "targetName": selector.targetType === 'MONTHLY' ? selector.selectedMonth.value : selector.selectedSpecial.keyId
+                    "targetName": targetName !== '' ? targetName : "DEFAULT"
                 }
                 console.log("PAYLOAD:", payload);
                 Promise.all([
@@ -280,10 +394,11 @@ const MainParamScreen = ({ route, navigation }) => {
                     setRetail('')
                     setSelectedBranch(null)
                     setDefaultBranch(null)
+                    setIsNoTargetAvailable(false)
                     const payload2 = {
                         "empId": jsonObj.empId,
                         "pageNo": 1,
-                        "size": 1000,
+                        "size": 500,
                         "targetType": selector.targetType
                     }
                     dispatch(getAllTargetMapping(payload2))
@@ -315,8 +430,8 @@ const MainParamScreen = ({ route, navigation }) => {
                     "startDate": selector.startDate,
                     // "teamLeadId": otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead')[0].value.value : '',
                     "targetType": selector.targetType,
-                    "targetName": selector.targetType === 'MONTHLY' ? selector.selectedMonth.value : selector.selectedSpecial.keyId
-                    // "targetName": "SPECIAL1"
+                    // "targetName": selector.targetType === 'MONTHLY' ? selector.selectedMonth.value : selector.selectedSpecial.keyId
+                    "targetName": targetName !== '' ? targetName : "DEFAULT"
                 }
                 console.log("PAYLOAD EDIT:", payload);
                 Promise.all([
@@ -326,11 +441,12 @@ const MainParamScreen = ({ route, navigation }) => {
                     setRetail('')
                     setSelectedBranch(null)
                     setDefaultBranch(null)
+                    setIsNoTargetAvailable(false)
                     console.log('I did everything!');
                     const payload2 = {
                         "empId": jsonObj.empId,
                         "pageNo": 1,
-                        "size": 1000,
+                        "size": 500,
                         "targetType": selector.targetType
                     }
                     dispatch(getAllTargetMapping(payload2))
@@ -486,6 +602,10 @@ const MainParamScreen = ({ route, navigation }) => {
                                                     else{
                                                         setAddOrEdit('A')
                                                     }
+                                                if (item?.targetName){
+                                                    setTargetName(item?.targetName)
+                                                }
+                                                setIsNoTargetAvailable(false)
                                                     setRetail((item.retailTarget !== null && selector.endDate === item.endDate && selector.startDate === item.startDate) ? item.retailTarget : 0)
                                                     setSelectedUser(item)
                                                     
@@ -1040,18 +1160,18 @@ const MainParamScreen = ({ route, navigation }) => {
                         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                             <TouchableOpacity style={{ width: '38%', backgroundColor: Colors.RED, height: 40, marginRight: 10, borderRadius: 5, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
                                 // console.log("££££",selectedUser);
-                                if (addOrEdit === 'A') {
+                                // if (addOrEdit === 'A') {
+                                //     editTargetData()
+                                // }
+                                // else {
+                                //     editTargetData()
+                                // }
+                                if (isNoTargetAvailable) {
                                     addTargetData()
                                 }
                                 else {
                                     editTargetData()
                                 }
-                                // if (selectedBranch) {
-                                //     editTargetData()
-                                // }
-                                // else {
-                                //     addTargetData()
-                                // }
                             }}>
                                 <Text style={{ fontSize: 14, color: '#fff', fontWeight: '600' }}>Submit</Text>
                             </TouchableOpacity>

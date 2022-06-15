@@ -395,6 +395,7 @@ const BookingScreen = ({ navigation }) => {
                                             phone={item.phone}
                                             source={item.enquirySource}
                                             model={item.model}
+                                            leadStatus={item.leadStatus}
                                             onItemPress={() =>
                                                 navigation.navigate(
                                                     AppNavigator.EmsStackIdentifiers.task360,
