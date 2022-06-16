@@ -464,7 +464,7 @@ export const homeSlice = createSlice({
 
             })
             .addCase(getOrganaizationHirarchyList.fulfilled, (state, action) => {
-                // console.log("S getOrganaizationHirarchyList: ", JSON.stringify(action.payload));
+                console.log("S getOrganaizationHirarchyList: ", action.payload);
                 if (action.payload) {
                     state.filter_drop_down_data = action.payload;
                 }

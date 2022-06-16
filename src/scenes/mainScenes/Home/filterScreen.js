@@ -43,7 +43,7 @@ const FilterScreen = ({ navigation }) => {
     const selector = useSelector((state) => state.homeReducer);
     const dispatch = useDispatch();
 
-    const [totalDataObj, setTotalDataObj] = useState([]);
+    const [totalDataObj, setTotalDataObj] = useState(null);
     const [showDropDownModel, setShowDropDownModel] = useState(false);
     const [dropDownData, setDropDownData] = useState([]);
     const [selectedItemIndex, setSelectedItemIndex] = useState([]);
@@ -71,32 +71,41 @@ const FilterScreen = ({ navigation }) => {
     }
 
     useEffect(() => {
-        if (nameKeyList.length > 0 && totalDataObj.length > 0){
-            console.log("CALLED");
+        if (nameKeyList.length > 0 && selector.filter_drop_down_data){
+            console.log("CALLED FILTER");
             let findIndex = nameKeyList.findIndex(item => item === 'Dealer Code');
             let arr = [];
-            arr = totalDataObj['Dealer Code'].sublevels.filter((item) => item.disabled === 'N')
+            arr = selector.filter_drop_down_data['Dealer Code'].sublevels.filter((item) => item.disabled === 'N')
             if (findIndex !== -1 && arr.length > 0) {
-                updateSelectedItems(arr, findIndex);
+                console.log("FOUND: ", findIndex, arr);
+                arr[0].selected = true;
+                setTimeout(() => {
+                    console.log(arr[0]);
+                    updateSelectedItems(arr, findIndex);
+                }, 500);
             }
         }
-    }, [nameKeyList, totalDataObj])
+    }, [nameKeyList, selector.filter_drop_down_data])
 
     useEffect(() => {
-        if (selector.filter_drop_down_data) {
-            let names = [];
-            for (let key in selector.filter_drop_down_data) {
-                names.push(key);
+        // navigation.addListener('focus', () => {
+            console.log("INSIDE FILTER");
+            if (selector.filter_drop_down_data) {
+                let names = [];
+                for (let key in selector.filter_drop_down_data) {
+                    names.push(key);
+                }
+                setNameKeyList(names);
+                setTotalDataObj(selector.filter_drop_down_data);
+                console.log("INSIDE FILTER", names, selector.filter_drop_down_data);
             }
-            setNameKeyList(names);
-            setTotalDataObj(selector.filter_drop_down_data);
-        }
-        
-        const currentDate = moment().format(dateFormat)
-        const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-        const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-        setFromDate(monthFirstDate);
-        setToDate(monthLastDate);
+
+            const currentDate = moment().format(dateFormat)
+            const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+            const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+            setFromDate(monthFirstDate);
+            setToDate(monthLastDate);
+        // })
     }, [selector.filter_drop_down_data])
 
     const dropDownItemClicked = (index) => {
@@ -163,6 +172,7 @@ const FilterScreen = ({ navigation }) => {
             let selectedParendIds = [];
             let unselectedParentIds = [];
             data.forEach((item) => {
+                console.log("ITEM ID: ", item.parentId, item?.selected);
                 if (item.selected != undefined && item.selected == true) {
                     selectedParendIds.push(Number(item.parentId));
                 } else {
@@ -171,7 +181,7 @@ const FilterScreen = ({ navigation }) => {
             })
 
             let localIndex = index - 1;
-
+            console.log("PARENT ID:", selectedParendIds, unselectedParentIds);
             for (localIndex; localIndex >= 0; localIndex--) {
 
                 let selectedNewParentIds = [];
@@ -183,6 +193,7 @@ const FilterScreen = ({ navigation }) => {
                 if (dataArray.length > 0) {
                     const newDataArry = dataArray.map((subItem, index) => {
                         const obj = { ...subItem };
+                        console.log("OBJ: ", obj);
                         if (selectedParendIds.includes(Number(obj.id))) {
                             obj.selected = true;
                             selectedNewParentIds.push(Number(obj.parentId));
