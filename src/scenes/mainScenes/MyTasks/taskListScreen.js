@@ -111,6 +111,7 @@ const TaskListScreen = ({ route, navigation }) => {
                                         name={item.customerName}
                                         uniqueId={item.taskId}
                                         navigator={navigation}
+                                        type='task'
                                         status={item.taskStatus}
                                         created={item.createdOn}
                                         dmsLead={item.salesExecutive}

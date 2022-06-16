@@ -369,7 +369,8 @@ const PreEnquiryScreen = ({ navigation }) => {
                                                 from='PRE_ENQUIRY'
                                                 name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
                                                 navigator={navigation}
-                                                uniqueId={item.leadId}                       
+                                                uniqueId={item.leadId}  
+                                                type='PreEnq'                     
                                                  status={""}
                                                 created={item.createdDate}
                                                 dmsLead={item.createdBy}

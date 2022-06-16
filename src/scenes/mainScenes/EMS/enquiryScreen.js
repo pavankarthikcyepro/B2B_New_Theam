@@ -331,6 +331,7 @@ const EnquiryScreen = ({ navigation }) => {
                                             name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
                                             navigator={navigation} 
                                             uniqueId={item.leadId} 
+                                            type='Enq'
                                             status={""}
                                             created={item.createdDate}
                                             dmsLead={item.createdBy}

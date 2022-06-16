@@ -333,7 +333,8 @@ const PreBookingScreen = ({ navigation }) => {
                                             from='PRE_BOOKING'
                                             name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
                                             navigator={navigation} 
-                                            uniqueId={item.leadId}                            
+                                            uniqueId={item.leadId}  
+                                            type='PreBook'                          
                                                            status={""}
                                             created={item.createdDate}
                                             dmsLead={item.createdBy}

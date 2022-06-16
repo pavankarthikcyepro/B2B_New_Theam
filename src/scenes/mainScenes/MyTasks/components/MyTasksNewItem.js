@@ -47,7 +47,7 @@ const IconComp = ({ iconName, onPress }) => {
         let extensionId = await AsyncStore.getData(AsyncStore.Keys.EXTENSION_ID);
         let password = await AsyncStore.getData(AsyncStore.Keys.EXTENSSION_PWD);
 
-      //  alert(phone + uniqueId + "/" + extensionId + "/" + password)
+       // alert(phone + uniqueId + "/" + type + "/" + password)
         var granted = await navigatetoCallWebView();
         console.log("granted status", granted)
 
@@ -67,7 +67,7 @@ const IconComp = ({ iconName, onPress }) => {
 
 }
 
-export const MyTaskNewItem = ({ from = "MY_TASKS",navigator, uniqueId,name, status, created, dmsLead, phone, source, model, onItemPress, onDocPress }) => {
+export const MyTaskNewItem = ({ from = "MY_TASKS",navigator,type, uniqueId,name, status, created, dmsLead, phone, source, model, onItemPress, onDocPress }) => {
 
     let date = "";
     if (from =="MY_TASKS") {
@@ -103,7 +103,7 @@ export const MyTaskNewItem = ({ from = "MY_TASKS",navigator, uniqueId,name, stat
                         />
                         <IconComp
                             iconName={'phone-outline'}
-                            onPress={() => callWebViewRecord({ navigator, phone, uniqueId,from})}
+                            onPress={() => callWebViewRecord({ navigator, phone, uniqueId,type})}
                         />
 
                         <IconComp
