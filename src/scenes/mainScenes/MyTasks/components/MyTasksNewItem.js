@@ -47,19 +47,23 @@ const IconComp = ({ iconName, onPress }) => {
         let extensionId = await AsyncStore.getData(AsyncStore.Keys.EXTENSION_ID);
         let password = await AsyncStore.getData(AsyncStore.Keys.EXTENSSION_PWD);
 
+        if(extensionId && extensionId != null && extensionId != ''){
+            var granted = await navigatetoCallWebView();
+            console.log("granted status", granted)
+
+            if (granted)
+                navigator.navigate(AppNavigator.EmsStackIdentifiers.webViewComp, {
+                    phone: phone,
+                    type: type,
+                    uniqueId: uniqueId,
+                    userName: extensionId,
+                    password: password
+                })
+
+        }
+        else callNumber(phone)
        // alert(phone + uniqueId + "/" + type + "/" + password)
-        var granted = await navigatetoCallWebView();
-        console.log("granted status", granted)
-
-        if (granted)
-            navigator.navigate(AppNavigator.EmsStackIdentifiers.webViewComp, {
-                phone: phone,
-                type: type,
-                uniqueId: uniqueId,
-                userName: extensionId,
-                password: password
-            })
-
+       
     }catch(error){
 
     }
