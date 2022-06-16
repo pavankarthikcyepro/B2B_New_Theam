@@ -2,10 +2,19 @@ import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import URL from "../networking/endpoints";
 import { client } from "../networking/client";
 import { showToast, showToastRedAlert, showToastSucess } from "../utils/toast";
+import {
+    convertTimeStampToDateString,
+    convertToTime,
+} from "../utils/helperFunctions";
 
 interface HomeVisitTextModel {
     key: string,
     text: string
+}
+
+interface CustomerDetailModel {
+    key: string;
+    text: string;
 }
 
 export const getTaskDetailsApi = createAsyncThunk("HOME_VISIT_SLICE/getTaskDetailsApi", async (taskId, { rejectWithValue }) => {
@@ -63,6 +72,12 @@ const slice = createSlice({
         otp_session_key: "",
         validate_otp_response_status: "",
         isReasonUpdate: false,
+        actual_end_time: "",
+        minDate: null,
+        maxDate: null,
+        showDatepicker: false,
+        datePickerKeyId: "",
+        actual_start_time: "",
     },
     reducers: {
         clearState: (state, action) => {
@@ -85,7 +100,36 @@ const slice = createSlice({
                     state.employee_remarks = text;
                     break;
             }
-        }
+        },
+        setDatePicker: (state, action) => {
+            switch (action.payload) {
+                case "ACTUAL_START_TIME":
+                    state.minDate = new Date();
+                    state.maxDate = null;
+                    break;
+                case "ACTUAL_END_TIME":
+                    state.minDate = new Date();
+                    state.maxDate = null;
+                    break;
+            }
+            state.datePickerKeyId = action.payload;
+            state.showDatepicker = !state.showDatepicker;
+        },
+        updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
+            const { key, text } = action.payload;
+            const selectedDate = convertTimeStampToDateString(text, "DD/MM/YYYY");
+            const keyId = key ? key : state.datePickerKeyId;
+            switch (state.datePickerKeyId) {
+                case "ACTUAL_START_TIME":
+                    state.actual_start_time = selectedDate;
+
+                    break;
+                case "ACTUAL_END_TIME":
+                    state.actual_end_time = selectedDate;
+                    break;
+            }
+            state.showDatepicker = !state.showDatepicker;
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(getTaskDetailsApi.pending, (state, action) => {
@@ -101,6 +145,20 @@ const slice = createSlice({
                 state.customer_remarks = taskObj.customerRemarks ? taskObj.customerRemarks : "";
                 state.employee_remarks = taskObj.employeeRemarks ? taskObj.employeeRemarks : "";
                 state.task_details_response = taskObj;
+                const stratDate = taskObj.taskActualStartTime
+                    ? taskObj.taskActualStartTime
+                    : "";
+                state.actual_start_time = convertTimeStampToDateString(
+                    stratDate,
+                    "DD/MM/YYYY"
+                );
+                const endDate = taskObj.taskActualEndTime
+                    ? taskObj.taskActualEndTime
+                    : "";
+                state.actual_end_time = convertTimeStampToDateString(
+                    endDate,
+                    "DD/MM/YYYY"
+                );
             }
         })
         builder.addCase(getTaskDetailsApi.rejected, (state, action) => {
@@ -175,6 +233,8 @@ const slice = createSlice({
 
 export const {
     clearState,
-    setHomeVisitDetails
+    setHomeVisitDetails,
+    setDatePicker,
+    updateSelectedDate
 } = slice.actions;
 export default slice.reducer;

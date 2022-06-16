@@ -79,6 +79,8 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
   const [defaultReasonIndex, setDefaultReasonIndex] = useState(null);
   const [currentLocation, setCurrentLocation] = useState(null);
   const [otherReason, setOtherReason] = useState('');
+  const [isSubmitPress, setIsSubmitPress] = useState(false);
+  const [isDateError, setIsDateError] = useState(false);
 
   useLayoutEffect(() => {
     let title = "Enquiry Follow Up";
@@ -282,7 +284,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
 
   const changeTaskStatusBasedOnActionType = (type) => {
     Keyboard.dismiss();
-
+    setIsSubmitPress(true)
     if (selector.task_details_response?.taskId !== taskId) {
       return;
     }
@@ -337,6 +339,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
         var momentA = moment(selector.actual_start_time, "DD/MM/YYYY");
         var momentB = moment(); // current date
         if (momentA < momentB) {
+          setIsDateError(true)
           showToast("Start date should not be less than current date");
           return;
         }
@@ -468,6 +471,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
                   dispatch(setEnquiryFollowUpDetails({ key: "REASON", text: val.value }));
                 }}
               />
+              <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.reason === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
             </View>
             {selector.reason === 'Other' &&
               <TextinputComp
@@ -497,7 +501,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
                 )
               }
             />
-            <Text style={GlobalStyle.underline}></Text>
+            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.customer_remarks === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
 
             <TextinputComp
               style={styles.textInputStyle}
@@ -514,7 +518,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
                 )
               }
             />
-            <Text style={GlobalStyle.underline}></Text>
+            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.employee_remarks === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
             <DateSelectItem
               label={"Actual Start Date"}
               value={selector.actual_start_time}
@@ -523,7 +527,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
             // onPress={() =>
             // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
             />
-            <Text style={GlobalStyle.underline}></Text>
+            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && (selector.actual_start_time === '' || isDateError) ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
             <DateSelectItem
               label={"Actual End Date"}
               value={selector.actual_end_time}

@@ -146,7 +146,7 @@ const TestDriveScreen = ({ route, navigation }) => {
         value: otpValue,
         setValue: setOtpValue,
     });
-    
+    const [isSubmitPress, setIsSubmitPress] = useState(false);
 
     useEffect(() => {
         //updateBasicDetails(taskData);
@@ -544,6 +544,7 @@ const TestDriveScreen = ({ route, navigation }) => {
         //     showToast("Please enter valid email");
         //     return;
         // }
+        setIsSubmitPress(true)
         if (selectedVehicleDetails.model.length === 0) {
             showToast("Please select model");
             return;
@@ -682,6 +683,7 @@ const TestDriveScreen = ({ route, navigation }) => {
     };
 
     const closeTask = () => {
+        setIsSubmitPress(true)
         if (selectedVehicleDetails.model.length === 0) {
             showToast("Please select model");
             return;
@@ -1059,7 +1061,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                                 disabled={false}
                                 onChangeText={(text) => setName(text)}
                             />
-                            <Text style={GlobalStyle.underline}></Text>
+                            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && name === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                             <TextinputComp
                                 style={{ height: 65, width: "100%" }}
                                 value={email}
@@ -1069,7 +1071,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                                 disabled={false}
                                 onChangeText={(text) => setEmail(text)}
                             />
-                            <Text style={GlobalStyle.underline}></Text>
+                            <Text style={[GlobalStyle.underline]}></Text>
                             <TextinputComp
                                 style={{ height: 65, width: "100%" }}
                                 value={mobileNumber}
@@ -1080,7 +1082,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                                 disabled={false}
                                 onChangeText={(text) => setMobileNumber(text)}
                             />
-                            <Text style={GlobalStyle.underline}></Text>
+                            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && mobileNumber === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
 
                             <DropDownSelectionItem
                                 label={"Model*"}
@@ -1089,7 +1091,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                                 disabled={false}
                                 onPress={() => showDropDownModelMethod("MODEL", "Model")}
                             />
-
+                            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selectedVehicleDetails.vehicleId === 0 ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                             <DropDownSelectionItem
                                 label={"Varient*"}
                                 value={selectedVehicleDetails.varientId ? selectedVehicleDetails.varient : ''}
@@ -1097,7 +1099,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                                 disabled={false}
                                 onPress={() => showDropDownModelMethod("VARIENT", "Varient")}
                             />
-
+                            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selectedVehicleDetails.varientId === 0 ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                             <TextinputComp
                                 style={{ height: 65, width: "100%" }}
                                 label={"Fuel Type"}
@@ -1218,6 +1220,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                                     showDatePickerModelMethod("PREFERRED_DATE", "date")
                                 }
                             />
+                            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.customer_preferred_date === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                             <DropDownSelectionItem
                                 label={"List of Employees"}
                                 value={selectedDseDetails.name}
@@ -1241,6 +1244,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                                     showDatePickerModelMethod("CUSTOMER_PREFERRED_TIME", "time")
                                 }
                             />
+                            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.customer_preferred_time === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                             {/* <View style={{ flexDirection: "row" }}>
                                 <View style={{ width: "50%" }}> */}
                             <DateSelectItem
@@ -1252,6 +1256,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                                     showDatePickerModelMethod("ACTUAL_START_TIME", "time")
                                 }
                             />
+                            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.actual_start_time === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                             {/* </View>
                                 <View style={{ width: "50%" }}> */}
                             <DateSelectItem
@@ -1263,6 +1268,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                                     showDatePickerModelMethod("ACTUAL_END_TIME", "time")
                                 }
                             />
+                            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.actual_end_time === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                             {/* </View> */}
                             {/* </View> */}
 
