@@ -390,6 +390,7 @@ const BookingScreen = ({ navigation }) => {
                                             from="BOOKING"
                                             name={item.firstName + " " + item.lastName}
                                             navigator={navigation}
+                                            uniqueId={item.leadId} 
                                             status={""}
                                             created={item.createdDate}
                                             dmsLead={item.createdBy}

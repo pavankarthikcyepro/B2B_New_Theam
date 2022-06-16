@@ -1,13 +1,14 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { client } from '../networking/client';
 import URL from "../networking/endpoints";
+import * as AsyncStore from '../asyncStore';
 
 
 export const getCallRecordingCredentials = createAsyncThunk("CALLRECORDING/getCallRecordingCredentials", async (data: any, { rejectWithValue }) => {
 
     const response = await client.get(URL.GET_CALL_RECORDING_EXTENSIONID(data.empId, data.orgId));
     const json = await response.json()
-    console.log("hello --------------",json)
+    console.log("hello --------------",data.empId +"/"+data.orgId+json)
     if (!response.ok) {
         return rejectWithValue(json);
     }
@@ -46,8 +47,11 @@ export const callrecordingSlice = createSlice({
              console.log("S  callrecording data: ", action.payload);
             if (action.payload) {
                 const dataObj = action.payload;
-                state.user_name = dataObj[0].sipIaxPassword ? dataObj[0].sipIaxPassword : "";
-                state.password = dataObj[0].voicemailPassword ? dataObj[0].voicemailPassword : "";
+                state.user_name = dataObj[0].extensionId ? dataObj[0].extensionId : "";
+                state.password = dataObj[0].sipIaxPassword ? dataObj[0].sipIaxPassword : "";
+                AsyncStore.storeData(AsyncStore.Keys.EXTENSION_ID, state.user_name.toString())
+                AsyncStore.storeData(AsyncStore.Keys.EXTENSSION_PWD, state.password.toString())
+
                 console.log("invicidual data", state.user_name)
               //  state.complaints_list = dataObj.data ? dataObj.data : [];
             }

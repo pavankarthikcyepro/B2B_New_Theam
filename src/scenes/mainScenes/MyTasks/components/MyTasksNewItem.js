@@ -5,6 +5,7 @@ import { convertTimeStampToDateString, callNumber, navigatetoCallWebView } from 
 import { IconButton } from "react-native-paper";
 import moment from "moment";
 import { AppNavigator, AuthNavigator } from "../../../../navigations";
+import * as AsyncStore from '../../../../asyncStore';
 
 
 
@@ -42,20 +43,27 @@ const IconComp = ({ iconName, onPress }) => {
 }
 
  const callWebViewRecord = async({navigator,phone, uniqueId, type}) =>{
+    try{
+        let extensionId = await AsyncStore.getData(AsyncStore.Keys.EXTENSION_ID);
+        let password = await AsyncStore.getData(AsyncStore.Keys.EXTENSSION_PWD);
+
+      //  alert(phone + uniqueId + "/" + extensionId + "/" + password)
+        var granted = await navigatetoCallWebView();
+        console.log("granted status", granted)
+
+        if (granted)
+            navigator.navigate(AppNavigator.EmsStackIdentifiers.webViewComp, {
+                phone: phone,
+                type: type,
+                uniqueId: uniqueId,
+                userName: extensionId,
+                password: password
+            })
+
+    }catch(error){
+
+    }
     
-alert(phone+uniqueId)
-    var granted = await navigatetoCallWebView();
-     console.log("granted status", granted)
-
-     if (granted)
-         navigator.navigate(AppNavigator.EmsStackIdentifiers.webViewComp, {
-             phone:phone,
-             type:type,
-             uniqueId:uniqueId,
-             userName: 'true',
-             password:''
-         })
-
 
 }
 
