@@ -21,7 +21,10 @@
 // export const lostSubLost = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails"
 
 // Dev End Points
+<<<<<<< HEAD
 
+=======
+>>>>>>> 0be4c32 (task transfer screen and API implementation.)
 export const hrms_url = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8088/hrms";
 export const sales_url = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8081/sales";
 export const roleManagement_url = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8089/role-management";
