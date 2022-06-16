@@ -46,6 +46,9 @@ export const downloadFile1 = "http://automatestaging-724985329.ap-south-1.elb.am
 export const getEmployeeList = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/reporting/all/emp"
 export const getReportingMangerList = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/all/reportingManagers/orgId"
 export const updateEmployeeTaskDelegate = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/emp"
+export const tasktransfer = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8092/sales-gap/target-dropdown";
+export const getTaskList = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8081/sales/task-delegation/get_task_list";
+export const getEmployeeData = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8089/role-management/employee/dept-employees";
 
 const URL = {
     LOGIN: () => hrms_url + "/emplogin",
@@ -272,6 +275,15 @@ const URL = {
     },
     EMPLOYEE_DATA_UPDATE: (empID, managerID) => {
         return `${updateEmployeeTaskDelegate}/${empID}/reportingManager/${managerID}/update`;
+    },
+    TARGET_DROPDOWN: (orgId, parent, child, parentId) => {
+        return `${tasktransfer}?orgId=${orgId}&parent=${parent}&child=${child}&parentId=${parentId}`;
+    },
+    GET_TASK_LIST: (taskId) => {
+        return `${getTaskList}/${taskId}`;
+    },
+    GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
+        return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
     },
 }
 
