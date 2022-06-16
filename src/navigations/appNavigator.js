@@ -439,7 +439,7 @@ const EmsStackNavigator = ({ navigation }) => {
             <EmsStack.Screen
                 name={EmsStackIdentifiers.homeVisit}
                 component={HomeVisitScreen}
-                options={{ title: "Home Visit" }}
+                options={{ title: "Visit" }}
             />
 
             <EmsStack.Screen
@@ -522,7 +522,7 @@ const MyTaskStackNavigator = ({ navigation }) => {
             <MyTaskStack.Screen
                 name={MyTasksStackIdentifiers.homeVisit}
                 component={HomeVisitScreen}
-                options={{ title: "Home Visit" }}
+                options={{ title: "Visit" }}
             />
 
             <MyTaskStack.Screen

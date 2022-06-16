@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { SafeAreaView, View, Text, StyleSheet, Keyboard, Dimensions, KeyboardAvoidingView } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
-import { TextinputComp, LoaderComponent } from "../../../components";
+import { TextinputComp, LoaderComponent, DatePickerComponent } from "../../../components";
 import { Button } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
 import { Dropdown } from 'react-native-element-dropdown';
@@ -12,7 +12,9 @@ import {
   getTaskDetailsApi,
   updateTaskApi,
   generateOtpApi,
-  validateOtpApi
+  validateOtpApi,
+  setDatePicker,
+  updateSelectedDate
 } from "../../../redux/homeVisitReducer";
 import {
   showToastSucess,
@@ -24,7 +26,8 @@ import {
   getCurrentTasksListApi,
   getPendingTasksListApi,
 } from "../../../redux/mytaskReducer";
-import { isValidateAlphabetics } from "../../../utils/helperFunctions";
+import { isValidateAlphabetics, convertDateStringToMillisecondsUsingMoment } from "../../../utils/helperFunctions";
+import { DateSelectItem, RadioTextItem } from "../../../pureComponents";
 import {
   CodeField,
   Cursor,
@@ -36,6 +39,7 @@ import URL from "../../../networking/endpoints";
 import {
   getReasonList
 } from "../../../redux/enquiryFollowUpReducer";
+import moment from "moment";
 
 const otpStyles = StyleSheet.create({
   root: { flex: 1, padding: 20 },
@@ -59,6 +63,21 @@ const CELL_COUNT = 4;
 const screenWidth = Dimensions.get("window").width;
 const otpViewHorizontalPadding = (screenWidth - (160 + 80)) / 2;
 
+const LocalButtonComp = ({ title, onPress, disabled }) => {
+  return (
+    <Button
+      style={{ width: 120 }}
+      mode="contained"
+      color={Colors.RED}
+      disabled={disabled}
+      labelStyle={{ textTransform: "none" }}
+      onPress={onPress}
+    >
+      {title}
+    </Button>
+  );
+};
+
 const HomeVisitScreen = ({ route, navigation }) => {
   const { taskId, identifier, mobile, reasonTaskName } = route.params;
   const selector = useSelector((state) => state.homeVisitReducer);
@@ -81,6 +100,10 @@ const HomeVisitScreen = ({ route, navigation }) => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [otherReason, setOtherReason] = useState('');
   const [defaultReasonIndex, setDefaultReasonIndex] = useState(null);
+  const [addressType, setAddressType] = useState(1);
+  const [customerAddress, setCustomerAddress] = useState("");
+  const [isSubmitPress, setIsSubmitPress] = useState(false);
+  const [isDateError, setIsDateError] = useState(false);
 
   useEffect(() => {
     getAsyncStorageData();
@@ -115,7 +138,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
       if (findIndex !== -1) {
         setDefaultReasonIndex(reasonList[findIndex].value)
       }
-      else{
+      else {
         dispatch(setHomeVisitDetails({ key: "REASON", text: 'Other' }));
         setDefaultReasonIndex('Other')
         setOtherReason(reason)
@@ -143,7 +166,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
             allReasons[i].label = allReasons[i].reason;
             allReasons[i].value = allReasons[i].reason;
             if (i === allReasons.length - 1) {
-              setReasonList([...reasonList,...allReasons])
+              setReasonList([...reasonList, ...allReasons])
               setLoading(false)
             }
           }
@@ -191,6 +214,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
   };
 
   const closeTask = () => {
+    setIsSubmitPress(true)
     if (selector.reason.length === 0) {
       showToast("Please Select Reason");
       return;
@@ -210,9 +234,17 @@ const HomeVisitScreen = ({ route, navigation }) => {
     setIsCloseSelected(true)
   };
 
+  const rescheduleTask = () => {
+    changeStatusForTask("RESCHEDULE");
+  };
+
+  const cancelTask = () => {
+    changeStatusForTask("CANCEL");
+  };
+
   const changeStatusForTask = (actionType) => {
     Keyboard.dismiss();
-
+    setIsSubmitPress(true)
     if (selector.task_details_response?.taskId !== taskId) {
       return;
     }
@@ -243,8 +275,24 @@ const HomeVisitScreen = ({ route, navigation }) => {
     newTaskObj.employeeRemarks = selector.employee_remarks;
     newTaskObj.lat = currentLocation ? currentLocation.lat.toString() : null;
     newTaskObj.lon = currentLocation ? currentLocation.long.toString() : null;
+    newTaskObj.taskActualEndTime = convertDateStringToMillisecondsUsingMoment(
+      selector.actual_end_time
+    );
     if (actionType === "CLOSE_TASK") {
       newTaskObj.taskStatus = "CLOSED";
+    }
+    if (actionType === "CANCEL") {
+      newTaskObj.taskStatus = "CANCELLED";
+    }
+    if (actionType === "RESCHEDULE") {
+      var momentA = moment(selector.actual_start_time, "DD/MM/YYYY");
+      var momentB = moment(); // current date
+      if (momentA < momentB) {
+        setIsDateError(true)
+        showToast("Start date should not be less than current date");
+        return;
+      }
+      newTaskObj.taskStatus = "RESCHEDULED";
     }
     console.log("PAYLOAD:", JSON.stringify(newTaskObj));
     dispatch(updateTaskApi(newTaskObj));
@@ -305,7 +353,20 @@ const HomeVisitScreen = ({ route, navigation }) => {
       keyboardVerticalOffset={100}
     >
       <SafeAreaView style={[styles.container]}>
-
+        <DatePickerComponent
+          visible={selector.showDatepicker}
+          mode={"date"}
+          minimumDate={selector.minDate}
+          value={new Date(Date.now())}
+          onChange={(event, selectedDate) => {
+            console.log("date: ", selectedDate);
+            if (Platform.OS === "android") {
+              //setDatePickerVisible(false);
+            }
+            dispatch(updateSelectedDate({ key: "", text: selectedDate }));
+          }}
+          onRequestClose={() => dispatch(setDatePicker())}
+        />
         <View style={{ padding: 15 }}>
           <View style={[GlobalStyle.shadow, { backgroundColor: Colors.WHITE }]}>
             {/* <TextinputComp
@@ -317,6 +378,40 @@ const HomeVisitScreen = ({ route, navigation }) => {
                 dispatch(setHomeVisitDetails({ key: "REASON", text: text }));
               }}
             /> */}
+            <Text style={styles.chooseAddressTextStyle}>
+              {"Choose address:"}
+            </Text>
+            <View style={styles.view2}>
+              <RadioTextItem
+                label={"Showroom address"}
+                value={"Showroom address"}
+                status={addressType === 1 ? true : false}
+                onPress={() => setAddressType(1)}
+              />
+              <RadioTextItem
+                label={"Customer address"}
+                value={"Customer address"}
+                status={addressType === 2 ? true : false}
+                onPress={() => setAddressType(2)}
+              />
+            </View>
+            <Text style={GlobalStyle.underline}></Text>
+
+            {addressType === 2 && (
+              <View>
+                <TextinputComp
+                  style={{ height: 65, maxHeight: 100, width: "100%" }}
+                  value={customerAddress}
+                  label={"Customer Address"}
+                  multiline={true}
+                  numberOfLines={4}
+                  // editable={isRecordEditable}
+                  // disabled={!isRecordEditable}
+                  onChangeText={(text) => setCustomerAddress(text)}
+                />
+                <Text style={GlobalStyle.underline}></Text>
+              </View>
+            )}
             <View style={{ position: 'relative' }}>
               {selector.reason !== '' &&
                 <View style={{ position: 'absolute', top: 0, left: 10, zIndex: 99 }}>
@@ -344,6 +439,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
                   dispatch(setHomeVisitDetails({ key: "REASON", text: val.value }));
                 }}
               />
+              <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.reason === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
             </View>
             {selector.reason === 'Other' &&
               <TextinputComp
@@ -368,7 +464,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
                 )
               }
             />
-            <Text style={GlobalStyle.underline}></Text>
+            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.customer_remarks === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
             <TextinputComp
               style={styles.textInputStyle}
               label={"Employee Remarks*"}
@@ -379,6 +475,21 @@ const HomeVisitScreen = ({ route, navigation }) => {
                   setHomeVisitDetails({ key: "EMPLOYEE_REMARKS", text: text })
                 )
               }
+            />
+            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.employee_remarks === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+            <DateSelectItem
+              label={"Actual Start Date"}
+              value={selector.actual_start_time}
+              onPress={() => dispatch(setDatePicker("ACTUAL_START_TIME"))}
+            //  value={selector.expected_delivery_date}
+            // onPress={() =>
+            // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
+            />
+            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && (selector.actual_start_time === '' || isDateError) ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+            <DateSelectItem
+              label={"Actual End Date"}
+              value={selector.actual_end_time}
+              onPress={() => dispatch(setDatePicker("ACTUAL_END_TIME"))}
             />
             <Text style={GlobalStyle.underline}></Text>
           </View>
@@ -413,27 +524,76 @@ const HomeVisitScreen = ({ route, navigation }) => {
         </View>
 
         {!isCloseSelected ? (
-          <View style={styles.view1}>
-            <Button
-              mode="contained"
-              style={{ width: 120 }}
-              color={Colors.RED}
-              disabled={selector.is_loading_for_task_update}
-              labelStyle={{ textTransform: "none" }}
-              onPress={updateTask}
-            >
-              Update
-            </Button>
-            <Button
-              mode="contained"
-              style={{ width: 120 }}
-              color={Colors.RED}
-              disabled={selector.is_loading_for_task_update}
-              labelStyle={{ textTransform: "none" }}
-              onPress={closeTask}
-            >
-              Close
-            </Button>
+          // <View style={styles.view1}>
+          //   <Button
+          //     mode="contained"
+          //     style={{ width: 120 }}
+          //     color={Colors.RED}
+          //     disabled={selector.is_loading_for_task_update}
+          //     labelStyle={{ textTransform: "none" }}
+          //     onPress={updateTask}
+          //   >
+          //     Update
+          //   </Button>
+          //   <Button
+          //     mode="contained"
+          //     style={{ width: 120 }}
+          //     color={Colors.RED}
+          //     disabled={selector.is_loading_for_task_update}
+          //     labelStyle={{ textTransform: "none" }}
+          //     onPress={closeTask}
+          //   >
+          //     Close
+          //   </Button>
+
+          //   <Button
+          //     mode="contained"
+          //     style={{ width: 120 }}
+          //     color={Colors.RED}
+          //     disabled={selector.is_loading_for_task_update}
+          //     labelStyle={{ textTransform: "none" }}
+          //     onPress={cancelTask}
+          //   >
+          //     Cancel
+          //   </Button>
+          //   <Button
+          //     mode="contained"
+          //     style={{ width: 120 }}
+          //     color={Colors.RED}
+          //     disabled={selector.is_loading_for_task_update}
+          //     labelStyle={{ textTransform: "none" }}
+          //     onPress={rescheduleTask}
+          //   >
+          //     Reschedule
+          //   </Button>
+          // </View>
+
+          <View>
+            <View style={styles.view1}>
+              <LocalButtonComp
+                title={"Update"}
+                onPress={updateTask}
+                disabled={selector.is_loading_for_task_update}
+              />
+              <LocalButtonComp
+                title={"Close"}
+                onPress={closeTask}
+                disabled={selector.is_loading_for_task_update}
+              />
+            </View>
+
+            <View style={styles.view1}>
+              <LocalButtonComp
+                title={"Cancel"}
+                onPress={cancelTask}
+                disabled={selector.is_loading_for_task_update}
+              />
+              <LocalButtonComp
+                title={"Reschedule"}
+                onPress={rescheduleTask}
+                disabled={selector.is_loading_for_task_update}
+              />
+            </View>
           </View>
         ) : null}
 
@@ -526,5 +686,15 @@ const styles = StyleSheet.create({
   inputSearchStyle: {
     height: 40,
     fontSize: 16,
+  },
+  chooseAddressTextStyle: {
+    padding: 10,
+    justifyContent: "center",
+    color: Colors.GRAY,
+  },
+  view2: {
+    flexDirection: "row",
+    paddingLeft: 12,
+    paddingBottom: 5,
   },
 });
