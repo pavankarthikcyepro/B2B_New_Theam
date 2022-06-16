@@ -59,7 +59,7 @@ export const isValidateAplhaNumeric = (text) => {
 };
 export const navigatetoCallWebView = async () => {
  
-  const requestCameraPermission = async () => {
+  const requestMicroPhonePermission = async () => {
     if (Platform.OS === 'android') {
       try {
         const granted = await PermissionsAndroid.request(
@@ -77,8 +77,32 @@ export const navigatetoCallWebView = async () => {
       }
     } else return true;
   };
-  return requestCameraPermission()
+  const requestCameraPermission = async() =>{
+
+    if(Platform.OS === "android"){
+      try{
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+          {
+            title: 'Camers Permission',
+            message: 'App needs camera permission',
+          },
+        );
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+
+      }catch(error){
+        return false;
+      }
+    }else return true;
+
+  }
+  //return requestCameraPermission()
   var granted = await requestCameraPermission()
+  var granted2 = await requestMicroPhonePermission()
+  if(granted && granted2)
+  return true 
+  else return false
+
   // (granted)
   //  navigation.navigate(AuthNavigator.AuthStackIdentifiers.WebComp)
 
