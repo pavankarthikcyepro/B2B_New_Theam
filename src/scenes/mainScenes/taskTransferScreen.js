@@ -111,7 +111,6 @@ const TaskTranferScreen = () => {
     }
 
     const renderItem = (item, index) => {
-        console.log(" ======== ", item)
         return (
             <TouchableOpacity onPress={() => setShowTrasnferFromDropdowns(true)} style={{
                 backgroundColor: "white",
@@ -297,8 +296,8 @@ const TaskTranferScreen = () => {
                                 onChange={async (item) => {
                                     console.log("£££", item);
                                     setbranchTransferFromDropDownItem(item.value);
-                                    getTargetbranchDropDownListFromServer();
-                                    setDeptTransferFromDropDownList(selector.deptList.map(({ id: value, value: label, ...rest }) => ({ value, label, ...rest })));
+                                    getTargetDeptDropDownListFromServer();
+                                    setbranchTransferFromDropDownItem(selector.deptList.map(({ id: value, value: label, ...rest }) => ({ value, label, ...rest })));
                                 }}
                             />
                         </View>
@@ -354,7 +353,7 @@ const TaskTranferScreen = () => {
                                     console.log("£££", item);
                                     setDesignationTransferFromDropDownItem(item.label);
                                     getEmployeeDetailsFromServer();
-                                    setEmployeeTransferFromDropDownList(selector.employeeList.map(({ empId: value, empName: label, ...rest }) => ({ value, label, ...rest })));
+                                    setDesignationTransferFromDropDownList(selector.employeeList.map(({ empId: value, empName: label, ...rest }) => ({ value, label, ...rest })));
                                 }}
                             />
                         </View>
@@ -380,7 +379,7 @@ const TaskTranferScreen = () => {
                                 )}
                                 onChange={async (item) => {
                                     console.log("£££", item);
-                                    setEmployeeTransferFromDropDownItem(item.label);
+                                    getTaskListFromServer();
                                 }}
                             />
                         </View>
