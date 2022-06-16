@@ -389,6 +389,7 @@ const BookingScreen = ({ navigation }) => {
                                         <MyTaskNewItem
                                             from="BOOKING"
                                             name={item.firstName + " " + item.lastName}
+                                            navigator={navigation}
                                             status={""}
                                             created={item.createdDate}
                                             dmsLead={item.createdBy}

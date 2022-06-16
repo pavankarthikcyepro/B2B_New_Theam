@@ -3,11 +3,11 @@ import { client } from '../networking/client';
 import URL from "../networking/endpoints";
 
 
-export const getCallRecordingCredentials = createAsyncThunk("CALLRECORDING/getCallRecordingCredentials", async (extensionId, { rejectWithValue }) => {
+export const getCallRecordingCredentials = createAsyncThunk("CALLRECORDING/getCallRecordingCredentials", async (data: any, { rejectWithValue }) => {
 
-    const response = await client.get(URL.GET_CALL_RECORDING_EXTENSIONID(extensionId));
+    const response = await client.get(URL.GET_CALL_RECORDING_EXTENSIONID(data.empId, data.orgId));
     const json = await response.json()
-    console.log(json)
+    console.log("hello --------------",json)
     if (!response.ok) {
         return rejectWithValue(json);
     }
@@ -39,6 +39,7 @@ export const callrecordingSlice = createSlice({
     extraReducers: (builder) => {
         // Get Complaints List
         builder.addCase(getCallRecordingCredentials.pending, (state, action) => {
+            console.log("S  callrecording data: ", 'pending');
             state.isLoading = true;
         })
         builder.addCase(getCallRecordingCredentials.fulfilled, (state, action) => {
@@ -53,8 +54,8 @@ export const callrecordingSlice = createSlice({
             state.isLoading = false;
         })
         builder.addCase(getCallRecordingCredentials.rejected, (state, action) => {
-            // console.log("F getComplaintsListApi: ", action.payload);
-            state.isLoading = false;
+            console.log("S  callrecording data: ", 'rejected');          
+              state.isLoading = false;
         })
         // // Get More Complaints List
         // builder.addCase(getMoreComplaintsListApi.pending, (state, action) => {

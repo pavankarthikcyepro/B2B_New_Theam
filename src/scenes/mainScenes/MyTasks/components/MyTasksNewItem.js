@@ -41,18 +41,25 @@ const IconComp = ({ iconName, onPress }) => {
     )
 }
 
- const callWebViewRecord = async({navigator,phone}) =>{
-
+ const callWebViewRecord = async({navigator,phone, uniqueId, type}) =>{
+    
+alert(phone+uniqueId)
     var granted = await navigatetoCallWebView();
      console.log("granted status", granted)
 
      if (granted)
-         navigator.navigate(AppNavigator.EmsStackIdentifiers.webViewComp)
+         navigator.navigate(AppNavigator.EmsStackIdentifiers.webViewComp, {
+             phone:phone,
+             type:type,
+             uniqueId:uniqueId,
+             userName: 'true',
+             password:''
+         })
 
 
 }
 
-export const MyTaskNewItem = ({ from = "MY_TASKS",navigator, name, status, created, dmsLead, phone, source, model, onItemPress, onDocPress }) => {
+export const MyTaskNewItem = ({ from = "MY_TASKS",navigator, uniqueId,name, status, created, dmsLead, phone, source, model, onItemPress, onDocPress }) => {
 
     let date = "";
     if (from =="MY_TASKS") {
@@ -88,7 +95,7 @@ export const MyTaskNewItem = ({ from = "MY_TASKS",navigator, name, status, creat
                         />
                         <IconComp
                             iconName={'phone-outline'}
-                            onPress={() => callWebViewRecord({ navigator, phone})}
+                            onPress={() => callWebViewRecord({ navigator, phone, uniqueId,from})}
                         />
 
                         <IconComp

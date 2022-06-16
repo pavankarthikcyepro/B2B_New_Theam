@@ -8,7 +8,7 @@ import { showAlertMessage, showToastRedAlert } from "../utils/toast";
 
 interface LoginState {
   employeeId: string;
-  password: string;
+  password: string; 
   securePassword: boolean;
   showLoginErr: boolean;
   showPasswordErr: boolean;
@@ -21,6 +21,7 @@ interface LoginState {
   showLoader: boolean;
   offlineStatus: string;
   menuListStatus: string;
+  empIdStatus:String;
   userData: object;
   empId: string;
   menuList: any;
@@ -52,6 +53,7 @@ const initialState: LoginState = {
   userData: {},
   empId: "",
   menuListStatus: "",
+  empIdStatus:"",
   menuList: [],
   login_employee_details: {},
   branchesList: [],
@@ -75,6 +77,20 @@ export const getMenuList = createAsyncThunk(
     const response = await client.get(URL.MENULIST_API(name));
     const json = await response.json();
     if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const getEmpId = createAsyncThunk(
+  "LOGIN_SLICE/getEmpId",
+  async (name, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_EMPID(name));
+    const json = await response.json();
+    console.log("empy id res-----------------", json)
+    if (!response.ok) {
+      alert('not ok')
       return rejectWithValue(json);
     }
     return json;
@@ -134,6 +150,7 @@ export const loginSlice = createSlice({
       state.userData = {};
       state.empId = "";
       state.menuListStatus = "";
+      state.empIdStatus="";
       state.branchesList = [];
     },
     clearUserNameAndPass: (state, action) => {
@@ -227,6 +244,36 @@ export const loginSlice = createSlice({
       .addCase(getPreEnquiryData.rejected, (state) => {
         state.isLoading = false;
         state.offlineStatus = "completed";
+      })
+      .addCase(getEmpId.pending, (state) => {
+        console.log("Login emplouee id ------: ", "pending");
+
+        state.isLoading = true;
+        state.empIdStatus = "pending";
+      })
+      .addCase(getEmpId.fulfilled, (state, action) => {
+        console.log("Login emplouee id ------: ", action.payload.dmsEntity.loginEmployee.empId);
+
+        const empEntityObj = action.payload?.dmsEntity;
+        if (empEntityObj) {
+          const data = empEntityObj.empId;
+
+          // if (data.length > 0) {
+          //   data.forEach((object) => {
+          //     realm.write(() => {
+          //       realm.create("PRE_ENQUIRY_TABLE", { ...object });
+          //     });
+          //   });
+          // }
+        }
+        state.isLoading = false;
+        state.empIdStatus = "completed";
+      })
+      .addCase(getEmpId.rejected, (state) => {
+        console.log("Login emplouee id ------: ", "failed");
+
+        state.isLoading = false;
+        state.empIdStatus = "completed";
       })
       .addCase(getMenuList.pending, (state, action) => {
         state.menuListStatus = "pending";

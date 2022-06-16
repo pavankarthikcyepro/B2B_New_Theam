@@ -13,7 +13,7 @@ import moment from "moment";
 import { Category_Type_List_For_Filter } from '../../../jsonData/enquiryFormScreenJsonData';
 import { MyTaskNewItem } from '../MyTasks/components/MyTasksNewItem';
 import { updateTAB, updateIsSearch, updateSearchKey } from '../../../redux/appReducer';
-
+import { getCallRecordingCredentials } from '../../../redux/callRecordingReducer';
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").format(dateFormat)
 const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
@@ -22,8 +22,10 @@ const PreBookingScreen = ({ navigation }) => {
 
     const selector = useSelector((state) => state.preBookingReducer);
     const appSelector = useSelector(state => state.appReducer);
+    const callrecordingSelector = useSelector(state => state.appReducer);
     const { vehicle_model_list_for_filters, source_of_enquiry_list } = useSelector(state => state.homeReducer);
     const dispatch = useDispatch();
+
     const [vehicleModelList, setVehicleModelList] = useState(vehicle_model_list_for_filters);
     const [sourceList, setSourceList] = useState(source_of_enquiry_list);
     const [categoryList, setCategoryList] = useState(Category_Type_List_For_Filter);
@@ -46,6 +48,7 @@ const PreBookingScreen = ({ navigation }) => {
         orgIdStateRef.current = data.orgId;
         setEmployeeId(data.empId);
         setOrgId(data.orgId);
+        dispatch(getCallRecordingCredentials(1000))
     };
 
     const setFromDateState = date => {
@@ -329,7 +332,9 @@ const PreBookingScreen = ({ navigation }) => {
                                         <MyTaskNewItem
                                             from='PRE_BOOKING'
                                             name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
-                                            status={""}
+                                            navigator={navigation} 
+                                            uniqueId={item.leadId}                            
+                                                           status={""}
                                             created={item.createdDate}
                                             dmsLead={item.createdBy}
                                             phone={item.phone}

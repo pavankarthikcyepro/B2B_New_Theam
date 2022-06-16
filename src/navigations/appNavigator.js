@@ -70,6 +70,7 @@ import ProceedToBookingScreen from "../scenes/mainScenes/MyTasks/proceedToBookin
 import { useSelector, useDispatch } from 'react-redux';
 import { updateModal, updateSearchKey, updateIsSearch } from '../redux/appReducer';
 import etvbrlReportScreen from "../scenes/mainScenes/etvbrlReportScreen";
+import webViewComp from "../scenes/mainScenes/EMS/components/webViewComp";
 
 
 const drawerWidth = 300;
@@ -251,6 +252,7 @@ export const EmsStackIdentifiers = {
     proceedToBooking: "PROCEED_TO_BOOKING_1",
     createEnquiry: "CREATE_ENQUIRY_1",
     bookingForm: "BOOKING_FORM",
+    webViewComp: 'webViewComp',
 };
 
 export const PreBookingStackIdentifiers = {
@@ -458,6 +460,11 @@ const EmsStackNavigator = ({ navigation }) => {
                 name={EmsStackIdentifiers.createEnquiry}
                 component={CreateEnquiryScreen}
                 options={{ title: "Create Enquiry" }}
+            />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.webViewComp}
+                component={webViewComp}
+                options={{ title: "Call Record" }}
             />
         </EmsStack.Navigator>
     );

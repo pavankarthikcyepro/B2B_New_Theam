@@ -8,7 +8,7 @@ const buttonWidth = (screenWidth - 100) / 2;
 const dateFormat = "YYYY-MM-DD";
 
 
-const webViewComp = (navigation ) => {
+const webViewComp = ({route, navigation} ) => {
 
     useEffect(() => {
     }, [])
@@ -17,7 +17,7 @@ const webViewComp = (navigation ) => {
         <SafeAreaView style={styles.container}>
             <WebView
                 source={{
-                    uri: 'https://ardemoiipl.s3.ap-south-1.amazonaws.com/call/webphone/click2call.html?u=1001&p=password&c=7013754099' 
+                    uri: 'https://ardemoiipl.s3.ap-south-1.amazonaws.com/call/webphone/click2call.html?u=' + route.params.userNmae + '&p=' + route.params.userName +'&c='+route.params.phone+'type='+route.params.type+'&uniqueId='+route.params.uniqueId 
                 }}
                 style={{ marginTop: 20 }}
             />
