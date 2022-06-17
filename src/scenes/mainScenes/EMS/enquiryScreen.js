@@ -337,6 +337,7 @@ const EnquiryScreen = ({ navigation }) => {
                                             model={item.model}
                                             leadStatus={item.leadStatus}
                                             needStatus={"YES"}
+                                            enqCat={item.enquiryCategory}
                                             onItemPress={() => {
                                                 console.log("ENQ: ", JSON.stringify(item));
                                                 navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId, mobileNo: item.phone })
