@@ -396,6 +396,7 @@ const BookingScreen = ({ navigation }) => {
                                             source={item.enquirySource}
                                             model={item.model}
                                             leadStatus={item.leadStatus}
+                                            enqCat={item.enquiryCategory}
                                             onItemPress={() =>
                                                 navigation.navigate(
                                                     AppNavigator.EmsStackIdentifiers.task360,

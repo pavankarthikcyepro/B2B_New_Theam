@@ -88,7 +88,7 @@ const ListComponent = ({ route, navigation }) => {
             setIndex(0)
             // setMyTasksData([...defaultData]);
             // setMyTeamsData([...defaultData])
-            // initialTask('TODAY')
+            initialTask('TODAY')
         });
     }, [navigation])
 
