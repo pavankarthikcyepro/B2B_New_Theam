@@ -81,7 +81,7 @@ const IconComp = ({ iconName, onPress }) => {
 }
 
 //export const MyTaskNewItem = ({ from = "MY_TASKS",navigator,type, uniqueId,name, status, created, dmsLead, phone, source, model, onItemPress, onDocPress }) => {
-export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, name, status, created, dmsLead, phone, source, model, leadStatus = '', leadStage = '', needStatus = '', enqCat = '', onItemPress, onDocPress }) => {
+export const MyTaskNewItem = ({ from = "MY_TASKS", name, status, created, dmsLead, phone, source, model, leadStatus = '', needStatus = '', enqCat = '', onItemPress, onDocPress }) => {
 
     let date = "";
     if (from =="MY_TASKS") {
