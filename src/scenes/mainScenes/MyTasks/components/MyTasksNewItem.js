@@ -46,7 +46,7 @@ const IconComp = ({ iconName, onPress }) => {
     try{
         let extensionId = await AsyncStore.getData(AsyncStore.Keys.EXTENSION_ID);
         let password = await AsyncStore.getData(AsyncStore.Keys.EXTENSSION_PWD);
-
+       // alert()
         if(extensionId && extensionId != null && extensionId != ''){
             var granted = await navigatetoCallWebView();
             console.log("granted status", granted)
@@ -71,7 +71,8 @@ const IconComp = ({ iconName, onPress }) => {
 
 }
 
-export const MyTaskNewItem = ({ from = "MY_TASKS",navigator,type, uniqueId,name, status, created, dmsLead, phone, source, model, onItemPress, onDocPress }) => {
+//export const MyTaskNewItem = ({ from = "MY_TASKS",navigator,type, uniqueId,name, status, created, dmsLead, phone, source, model, onItemPress, onDocPress }) => {
+    export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, name, status, created, dmsLead, phone, source, model, leadStatus = '', needStatus = '', onItemPress, onDocPress }) => {
 
     let date = "";
     if (from =="MY_TASKS") {
@@ -89,11 +90,15 @@ export const MyTaskNewItem = ({ from = "MY_TASKS",navigator,type, uniqueId,name,
 
     return (
         <TouchableOpacity onPress={onItemPress} style={styles.section}>
-            <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
+            <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center", position: 'relative'}}>
+                
                 <View style={{ width: "70%" }}>
                     <Text style={styles.text1}>{name}</Text>
                     <Text style={styles.text2}>{source + " - " + dmsLead}</Text>
                     <Text style={styles.text3}>{date}</Text>
+                    {needStatus === "YES" &&
+                        <View style={{ height: 15, width: 15, borderRadius: 10, backgroundColor: leadStatus === 'PREENQUIRYCOMPLETED' || leadStatus === 'ENQUIRYCOMPLETED' || leadStatus === 'PREBOOKINGCOMPLETED' || leadStatus === 'BOOKINGCOMPLETED' ? '#18a835' : '#f29a22', position: 'absolute', top: 0, right: 0 }}></View>
+                    }
                 </View>
                 <View style={{ width: "30%", alignItems: "center" }}>
                     <View style={styles.modal}>

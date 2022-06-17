@@ -3248,8 +3248,8 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 <CheckboxTextAndAmountComp
                                     title={"Handling Charges:"}
                                     disabled={true}
-                                    amount={priceInfomationData.handling_charges.toFixed(2)}
-                                    // amount={handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : "0.00"}
+                                    // amount={priceInfomationData.handling_charges.toFixed(2)}
+                                    amount={handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : "0.00"}
                                     isChecked={handlingChargSlctd}
                                     onPress={() => {
                                         setHandlingChargSlctd(!handlingChargSlctd);
@@ -3265,8 +3265,8 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 <CheckboxTextAndAmountComp
                                     title={"Essential Kit:"}
                                     disabled={true}
-                                    amount={priceInfomationData.essential_kit.toFixed(2)}
-                                    // amount={essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : "0.00"}
+                                    // amount={priceInfomationData.essential_kit.toFixed(2)}
+                                    amount={essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : "0.00"}
                                     isChecked={essentialKitSlctd}
                                     onPress={() => {
                                         setEssentialKitSlctd(!essentialKitSlctd);
@@ -3328,8 +3328,8 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 <CheckboxTextAndAmountComp
                                     title={"Fast Tag:"}
                                     disabled={true}
-                                    amount={priceInfomationData.fast_tag.toFixed(2)}
-                                    // amount={fastTagSlctd ? priceInfomationData.fast_tag.toFixed(2) : "0.00"}
+                                    // amount={priceInfomationData.fast_tag.toFixed(2)}
+                                    amount={fastTagSlctd ? priceInfomationData.fast_tag.toFixed(2) : "0.00"}
                                     isChecked={fastTagSlctd}
                                     onPress={() => {
                                         setFastTagSlctd(!fastTagSlctd);

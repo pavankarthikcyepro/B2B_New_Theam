@@ -110,6 +110,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             "Pincode": ""
         }
     )
+    const [isSubmitPress, setIsSubmitPress] = useState(false);
 
     useEffect(() => {
         getAsyncstoreData();
@@ -383,7 +384,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
 
     const submitClicked = async () => {
         Keyboard.dismiss();
-
+        setIsSubmitPress(true)
         // if (
         //     selector.enquiryType.length == 0 ||
         //     selector.customerType.length == 0 ||
@@ -962,6 +963,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                                 )
                             }
                         />
+                        <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.enquiryType === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                         <DropDownSelectionItem
                             label={"Customer Type*"}
                             value={selector.customerType}
@@ -969,7 +971,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                                 showDropDownModelMethod("CUSTOMER_TYPE", "Select Customer Type")
                             }
                         />
-
+                        <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.customerType === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                         <TextinputComp
                             style={styles.textInputComp}
                             value={selector.firstName}
@@ -1000,7 +1002,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                                 );
                             }}
                         />
-                        <Text style={styles.devider}></Text>
+                        <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.firstName === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
 
                         <TextinputComp
                             style={styles.textInputComp}
@@ -1032,7 +1034,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                                 );
                             }}
                         />
-                        <Text style={styles.devider}></Text>
+                        <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.lastName === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
 
                         <TextinputComp
                             style={styles.textInputComp}
@@ -1044,7 +1046,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                                 dispatch(setPreEnquiryDetails({ key: "MOBILE", text: text }));
                             }}
                         />
-                        <Text style={styles.devider}></Text>
+                        <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.mobile === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
 
                         <TextinputComp
                             style={styles.textInputComp}
@@ -1079,7 +1081,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                                 showDropDownModelMethod("CAR_MODEL", "Select Model")
                             }
                         />
-
+                        <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.carModel === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                         {selector.customerType === "Corporate" ||
                             selector.customerType === "Government" ||
                             selector.customerType === "Retired" ||
@@ -1130,7 +1132,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                                 )
                             }
                         />
-
+                        <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.sourceOfEnquiry === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                         {/* {subSourceData.length > 0 && ( */}
                             <DropDownSelectionItem
                                 label={"Sub Source of Lead*"}
@@ -1144,7 +1146,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                                 }
                             />
                         {/* )} */}
-
+                        <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.subSourceOfEnquiry === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                         {selector.sourceOfEnquiry === "Other" ? (
                             <View>
                                 <TextinputComp
@@ -1208,7 +1210,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                             }
                         />
                         {/* )} */}
-                        <Text style={styles.devider}></Text>
+                        <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.pincode === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                     </View>
 
                     <View style={styles.view2}>

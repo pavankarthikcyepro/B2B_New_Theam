@@ -70,7 +70,8 @@ import {
   customerLeadRef,
   updateEnquiryDetailsApiAutoSave,
   clearPermanentAddr,
-  updateAddressByPincode2
+  updateAddressByPincode2,
+  autoSaveEnquiryDetailsApi
 } from "../../../redux/enquiryFormReducer";
 import {
   RadioTextItem,
@@ -199,7 +200,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [addressData, setAddressData] = useState([]);
   const [addressData2, setAddressData2] = useState([]);
   const [defaultAddress, setDefaultAddress] = useState(null);
-
+  const [isSubmitPress, setIsSubmitPress] = useState(false);
   // console.log("gender", selector.enquiry_details_response)
 
   useLayoutEffect(() => {
@@ -235,21 +236,27 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   //     console.log("CLEAR");
   //     clearInterval(interval)
   //   }
-  // }, [autoSave, selector])
+  // }, [autoSave, selector]);
 
 
   useEffect(() => {
-    let interval;
-    navigation.addListener('focus', () => {
-      interval = setInterval(() => {
+    const interval = setInterval(() => {
+      // if (enqDetails?.leadStage === "ENQUIRY" && enqDetails?.leadStatus === null) {
         updateEnquiry()
-      }, 60000);
-    });
-    navigation.addListener('blur', () => {
-      console.log("CLEAR");
+      // }
+    }, 10000);
+    return () => {
       clearInterval(interval)
-    })
-  }, [navigation]);
+    }
+    // let interval;
+    // interval = setInterval(() => {
+    //   updateEnquiry()
+    // }, 60000);
+    // navigation.addListener('blur', () => {
+    //   console.log("CLEAR");
+    //   clearInterval(interval)
+    // })
+  }, [updateEnquiry, selector, uploadedImagesDataObj]);
 
   // useEffect(() => {
   //   const interval = setInterval(() => {
@@ -271,10 +278,59 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   //     return () => clearInterval(autoSaveInterval);
   // }, [])
 
+  const clearLocalData = () => {
+    setOpenAccordian("0");
+    setComponentAppear(false);
+    setShowDropDownModel(false);
+    setDataForDropDown([]);
+    setDropDownKey("");
+    setDropDownTitle("Select Data");
+    setCarModelsData([]);
+    setSelectedCarVarientsData({
+      varientList: [],
+      varientListForDropDown: [],
+    });
+    setCarColorsData([]);
+    set_c_model_types([]);
+    set_r_model_types([]);
+    set_a_model_types([]);
+    setShowPreBookingBtn(false);
+    setIsDropSelected(false);
+    setUserData({
+      orgId: "",
+      employeeId: "",
+      employeeName: "",
+    });
+    setUploadedImagesDataObj({});
+    setTypeOfActionDispatched("");
+    setMinOrMaxDate({
+      minDate: null,
+      maxDate: null,
+    });
+    serInsurenceCompanyList([]);
+    setFinanceBanksList([]);
+    setSelectedBranchId("");
+
+    // drop section
+    setDropData([]);
+    setDropReason("");
+    setDropSubReason("");
+    setDropBrandName("");
+    setDropDealerName("");
+    setDropLocation("");
+    setDropModel("");
+    setDropPriceDifference("");
+    setDropRemarks("");
+    setImagePath('');
+    setAddressData([]);
+    setAddressData2([]);
+    setDefaultAddress(null);
+  }
 
   const goParentScreen = () => {
-    navigation.goBack();
+    clearLocalData();
     dispatch(clearState());
+    navigation.goBack();
   };
 
   useEffect(() => {
@@ -732,330 +788,72 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const updateEnquiry = async () => {
     console.log("CALLED AUTO UPDATE");
-    // if (selector.designation.length == 0 || selector.buyer_type.length == 0) {
-    //   return;
-    // }
-    // if (!isValidateAlphabetics(selector.occupation)) {
-    //   return;
-    // }
-
-    // if (!isValidateAlphabetics(selector.designation)) {
-    //   return;
-    // }
-
-    // if (selector.salutation.length == 0) {
-    //   return;
-    // }
-
-    // if (selector.enquiry_segment.toLowerCase() == "personal") {
-    //   if (
-    //     selector.dateOfBirth.length == 0
-    //     // ||
-    //     // selector.anniversaryDate.length == 0
-    //   ) {
-    //     return;
-    //   }
-    // }
-    // if (!isValidate(selector.firstName)) {
-    //   return;
-    // }
-    // if (!isValidate(selector.lastName)) {
-    //   return;
-    // }
-    // if (!isValidateAlphabetics(selector.relationName)) {
-    //   return;
-    // }
-    // if (!isValidateAlphabetics(selector.streetName)) {
-    //   return;
-    // }
-    // Model Selection
-    // if (selector.model.length == 0 || selector.varient.length == 0 || selector.color.length == 0) {
-    //   return;
-    // }
-
-    // if (
-    //   selector.houseNum.length == 0 ||
-    //   selector.streetName.length == 0 ||
-    //   selector.village.length == 0 ||
-    //   selector.city.length == 0 ||
-    //   selector.state.length == 0 ||
-    //   selector.district.length == 0
-    // ) {
-    //   return;
-    // }
-
-    // if (selector.retail_finance.length == 0) {
-    //   return;
-    // }
-
-    // if (selector.retail_finance === "In House") {
-    //   if (
-    //     selector.finance_category.length == 0 ||
-    //     selector.loan_of_tenure.length == 0 ||
-    //     selector.emi.length == 0 ||
-    //     selector.approx_annual_income.length == 0 ||
-    //     selector.bank_or_finance.length == 0
-    //   ) {
-    //     return;
-    //   }
-    // }
-
-    // Leashing
-    // if (selector.retail_finance == "Leasing") {
-    //   if (selector.leashing_name.length == 0) {
-    //     return;
-    //   }
-    // }
-
-
-
-    // if (selector.buyer_type === "Additional Buyer") {
-    //   if (
-    //     selector.a_make == 0 ||
-    //     selector.a_model == 0 ||
-    //     selector.a_varient == 0 ||
-    //     selector.a_color == 0 ||
-    //     selector.a_reg_no == 0
-    //   ) {
-    //     return;
-    //   }
-    //   if (!isValidateAlphabetics(selector.a_varient)) {
-
-    //     return;
-    //   }
-    //   if (!isValidateAlphabetics(selector.a_color)) {
-    //     return;
-    //   }
-
-    // }
-
-
-    // if (selector.buyer_type === "Replacement Buyer") {
-    //   if (selector.r_color.length > 0) {
-    //     if (!isValidateAlphabetics(selector.r_color)) {
-    //       return;
-    //     }
-    //   }
-    //   if (selector.r_insurence_company_name.length == 0) {
-    //     return;
-    //   }
-    //   if (!isValidateAlphabetics(selector.r_model_other_name)) {
-    //     return;
-    //   }
-
-    //   if (selector.r_hypothication_checked === true) {
-    //     if (selector.r_hypothication_name.length > 0) {
-    //       if (!isValidateAlphabetics(selector.r_hypothication_name)) {
-    //         return;
-    //       }
-    //     }
-    //     if (selector.r_hypothication_branch.length > 0) {
-    //       if (!isValidateAlphabetics(selector.r_hypothication_branch)) {
-    //         return;
-    //       }
-    //     }
-    //   }
-    // }
-
-    // if (selector.c_looking_for_any_other_brand_checked === true) {
-    //   if (selector.c_dealership_name.length > 0) {
-    //     if (!isValidateAlphabetics(selector.c_dealership_name)) {
-    //       return;
-    //     }
-    //   }
-    // }
-
-    // if (
-    //   selector.leashing_name.length > 0 &&
-    //   !isValidateAlphabetics(selector.leashing_name)
-    // ) {
-    //   return;
-    // }
-
-    // if (!selector.enquiry_details_response) {
-    //   return;
-    // }
-
     let dmsContactOrAccountDto = {};
     let dmsLeadDto = {};
     let formData;
 
     const dmsEntity = selector.enquiry_details_response;
+    console.log("DMS ENTITY: ", dmsEntity);
     if (dmsEntity.hasOwnProperty("dmsContactDto"))
       dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsContactDto);
     else if (dmsEntity.hasOwnProperty("dmsAccountDto"))
       dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsAccountDto);
 
-    if (dmsEntity.hasOwnProperty("dmsLeadDto"))
+    if (dmsEntity.hasOwnProperty("dmsLeadDto")) {
       dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
-    dmsLeadDto.firstName = selector.firstName;
-    dmsLeadDto.lastName = selector.lastName;
-    const employeeData = await AsyncStore.getData(
-      AsyncStore.Keys.LOGIN_EMPLOYEE
-    );
-    if (employeeData) {
-      const jsonObj = JSON.parse(employeeData);
-      let tempAttachments = [];
-      // console.log("GDGHDGDGDGDGD", JSON.stringify(dmsLeadDto.dmsAttachments));
-      if (selector.pan_number || dmsLeadDto.dmsAttachments.filter((item) => {
-        return item.documentType === "pan";
-      })) {
-        tempAttachments.push({
-          branchId: jsonObj.branchs[0]?.branchId,
-          contentSize: 0,
-          createdBy: new Date().getSeconds(),
-          description: "",
-          documentNumber: selector.pan_number,
-          documentPath:
-            dmsLeadDto.dmsAttachments.length > 0
-              ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                return item.documentType === "pan";
-              })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
-                return item.documentType === "pan";
-              })[0]?.documentPath : '')
-              : "",
-          documentType: "pan",
-          documentVersion: 0,
-          fileName:
-            dmsLeadDto.dmsAttachments.length > 0
-              ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                return item.documentType === "pan";
-              })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                return item.documentType === "pan";
-              })[0]?.fileName : '')
-              : "",
-          gstNumber: "",
-          id: 0,
-          isActive: 0,
-          isPrivate: 0,
-          keyName:
-            dmsLeadDto.dmsAttachments.length > 0
-              ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                return item.documentType === "pan";
-              })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                return item.documentType === "pan";
-              })[0]?.keyName : '')
-              : "",
-          modifiedBy: jsonObj.empName,
-          orgId: jsonObj.orgId,
-          ownerId: "",
-          ownerName: jsonObj.empName,
-          parentId: "",
-          tinNumber: "",
-        });
-      }
-      if (selector.adhaar_number || dmsLeadDto.dmsAttachments.filter((item) => {
-        return item.documentType === "aadhar";
-      })) {
-        tempAttachments.push({
-          branchId: jsonObj.branchs[0]?.branchId,
-          contentSize: 0,
-          createdBy: new Date().getSeconds(),
-          description: "",
-          documentNumber: selector.adhaar_number,
-          documentPath:
-            dmsLeadDto.dmsAttachments.length > 0
-              ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                return item.documentType === "aadhar";
-              })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
-                return item.documentType === "aadhar";
-              })[0]?.documentPath : '')
-              : "",
-          documentType: "aadhar",
-          documentVersion: 0,
-          fileName:
-            dmsLeadDto.dmsAttachments.length > 0
-              ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                return item.documentType === "aadhar";
-              })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                return item.documentType === "aadhar";
-              })[0]?.fileName : '')
-              : "",
-          gstNumber: "",
-          id: 0,
-          isActive: 0,
-          isPrivate: 0,
-          keyName:
-            dmsLeadDto.dmsAttachments.length > 0
-              ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                return item.documentType === "aadhar";
-              })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                return item.documentType === "aadhar";
-              })[0]?.keyName : '')
-              : "",
-          modifiedBy: jsonObj.empName,
-          orgId: jsonObj.orgId,
-          ownerId: "",
-          ownerName: jsonObj.empName,
-          parentId: "",
-          tinNumber: "",
-        });
-      }
-      if (selector.employee_id || dmsLeadDto.dmsAttachments.filter((item) => {
-        return item.documentType === "employeeId";
-      })) {
-        tempAttachments.push({
-          branchId: jsonObj.branchs[0]?.branchId,
-          contentSize: 0,
-          createdBy: new Date().getSeconds(),
-          description: "",
-          documentNumber: selector.employee_id,
-          documentPath:
-            dmsLeadDto.dmsAttachments.length > 0
-              ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                return item.documentType === "employeeId";
-              })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
-                return item.documentType === "employeeId";
-              })[0]?.documentPath : '')
-              : "",
-          documentType: "employeeId",
-          documentVersion: 0,
-          fileName:
-            dmsLeadDto.dmsAttachments.length > 0
-              ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                return item.documentType === "employeeId";
-              })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                return item.documentType === "employeeId";
-              })[0]?.fileName : '')
-              : "",
-          gstNumber: "",
-          id: 0,
-          isActive: 0,
-          isPrivate: 0,
-          keyName:
-            dmsLeadDto.dmsAttachments.length > 0
-              ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                return item.documentType === "employeeId";
-              })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                return item.documentType === "employeeId";
-              })[0]?.keyName : '')
-              : "",
-          modifiedBy: jsonObj.empName,
-          orgId: jsonObj.orgId,
-          ownerId: "",
-          ownerName: jsonObj.empName,
-          parentId: "",
-          tinNumber: "",
-        });
-      }
-      if (Object.keys(uploadedImagesDataObj).length > 0) {
-        let tempImages = Object.entries(uploadedImagesDataObj).map((e) => ({ name: e[0], value: e[1] }));
-        for (let i = 0; i < tempImages.length; i++) {
+      dmsLeadDto.firstName = selector.firstName;
+      dmsLeadDto.lastName = selector.lastName;
+      dmsLeadDto.phone = selector.mobile;
+      if (enqDetails.leadStage === 'ENQUIRY' && enqDetails.leadStatus === null){
+        dmsLeadDto.leadStage = "ENQUIRY";
+        dmsLeadDto.leadStatus = null;
+      }      
+      const employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        let tempAttachments = [];
+        // console.log("GDGHDGDGDGDGD", JSON.stringify(dmsLeadDto.dmsAttachments));
+        if (selector.pan_number || dmsLeadDto.dmsAttachments.filter((item) => {
+          return item.documentType === "pan";
+        })) {
           tempAttachments.push({
             branchId: jsonObj.branchs[0]?.branchId,
             contentSize: 0,
             createdBy: new Date().getSeconds(),
             description: "",
-            documentNumber: '',
-            documentPath: tempImages[i].value.documentPath,
-            documentType: tempImages[i].name,
+            documentNumber: selector.pan_number,
+            documentPath:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? (dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "pan";
+                })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "pan";
+                })[0]?.documentPath : '')
+                : "",
+            documentType: "pan",
             documentVersion: 0,
-            fileName: tempImages[i].value.fileName,
+            fileName:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? (dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "pan";
+                })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "pan";
+                })[0]?.fileName : '')
+                : "",
             gstNumber: "",
             id: 0,
             isActive: 0,
             isPrivate: 0,
-            keyName: tempImages[i].value.keyName,
+            keyName:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? (dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "pan";
+                })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "pan";
+                })[0]?.keyName : '')
+                : "",
             modifiedBy: jsonObj.empName,
             orgId: jsonObj.orgId,
             ownerId: "",
@@ -1063,14 +861,137 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             parentId: "",
             tinNumber: "",
           });
+        }
+        if (selector.adhaar_number || dmsLeadDto.dmsAttachments.filter((item) => {
+          return item.documentType === "aadhar";
+        })) {
+          tempAttachments.push({
+            branchId: jsonObj.branchs[0]?.branchId,
+            contentSize: 0,
+            createdBy: new Date().getSeconds(),
+            description: "",
+            documentNumber: selector.adhaar_number,
+            documentPath:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? (dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "aadhar";
+                })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "aadhar";
+                })[0]?.documentPath : '')
+                : "",
+            documentType: "aadhar",
+            documentVersion: 0,
+            fileName:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? (dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "aadhar";
+                })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "aadhar";
+                })[0]?.fileName : '')
+                : "",
+            gstNumber: "",
+            id: 0,
+            isActive: 0,
+            isPrivate: 0,
+            keyName:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? (dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "aadhar";
+                })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "aadhar";
+                })[0]?.keyName : '')
+                : "",
+            modifiedBy: jsonObj.empName,
+            orgId: jsonObj.orgId,
+            ownerId: "",
+            ownerName: jsonObj.empName,
+            parentId: "",
+            tinNumber: "",
+          });
+        }
+        if (selector.employee_id || dmsLeadDto.dmsAttachments.filter((item) => {
+          return item.documentType === "employeeId";
+        })) {
+          tempAttachments.push({
+            branchId: jsonObj.branchs[0]?.branchId,
+            contentSize: 0,
+            createdBy: new Date().getSeconds(),
+            description: "",
+            documentNumber: selector.employee_id,
+            documentPath:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? (dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "employeeId";
+                })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "employeeId";
+                })[0]?.documentPath : '')
+                : "",
+            documentType: "employeeId",
+            documentVersion: 0,
+            fileName:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? (dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "employeeId";
+                })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "employeeId";
+                })[0]?.fileName : '')
+                : "",
+            gstNumber: "",
+            id: 0,
+            isActive: 0,
+            isPrivate: 0,
+            keyName:
+              dmsLeadDto.dmsAttachments.length > 0
+                ? (dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "employeeId";
+                })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "employeeId";
+                })[0]?.keyName : '')
+                : "",
+            modifiedBy: jsonObj.empName,
+            orgId: jsonObj.orgId,
+            ownerId: "",
+            ownerName: jsonObj.empName,
+            parentId: "",
+            tinNumber: "",
+          });
+        }
+        if (Object.keys(uploadedImagesDataObj).length > 0) {
+          let tempImages = Object.entries(uploadedImagesDataObj).map((e) => ({ name: e[0], value: e[1] }));
+          for (let i = 0; i < tempImages.length; i++) {
+            tempAttachments.push({
+              branchId: jsonObj.branchs[0]?.branchId,
+              contentSize: 0,
+              createdBy: new Date().getSeconds(),
+              description: "",
+              documentNumber: '',
+              documentPath: tempImages[i].value.documentPath,
+              documentType: tempImages[i].name,
+              documentVersion: 0,
+              fileName: tempImages[i].value.fileName,
+              gstNumber: "",
+              id: 0,
+              isActive: 0,
+              isPrivate: 0,
+              keyName: tempImages[i].value.keyName,
+              modifiedBy: jsonObj.empName,
+              orgId: jsonObj.orgId,
+              ownerId: "",
+              ownerName: jsonObj.empName,
+              parentId: "",
+              tinNumber: "",
+            });
 
-          if (i === tempImages.length - 1) {
-            dmsLeadDto.dmsAttachments = tempAttachments;
+            if (i === tempImages.length - 1) {
+              dmsLeadDto.dmsAttachments = tempAttachments;
+            }
           }
         }
-      }
-      else {
-        dmsLeadDto.dmsAttachments = tempAttachments;
+        else {
+          dmsLeadDto.dmsAttachments = tempAttachments;
+        }
+        console.log("TEMP ATT:", JSON.stringify(tempAttachments));
+
       }
     }
 
@@ -1085,28 +1006,21 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         dmsLeadDto: dmsLeadDto,
       };
     }
-    setTypeOfActionDispatched("UPDATE_ENQUIRY");
-    // dispatch(updateEnquiryDetailsApi(formData));
-    Promise.all([
-      dispatch(updateEnquiryDetailsApi(formData))
-    ]).then(async (res) => {
-      // console.log("REF NO:", res[0].payload.dmsEntity.dmsLeadDto.referencenumber);
-      // let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-      // if (employeeData) {
-      //   const jsonObj = JSON.parse(employeeData);
-      //   const payload = {
-      //     refNo: res[0].payload.dmsEntity.dmsLeadDto.referencenumber,
-      //     orgId: jsonObj.orgId,
-      //     stageCompleted: "ENQUIRY"
-      //   }
-      //   console.log("PAYLOAD UPDATE REF:", payload);
-      //   dispatch(updateRef(payload))
-      // }
-    });
+    console.log("PPPP", JSON.stringify(formData));
+    // setTypeOfActionDispatched("UPDATE_ENQUIRY");
+    // dispatch(autoSaveEnquiryDetailsApi(formData))
+    let payload = {
+      data: formData,
+      status: "Active",
+      universalId: universalId
+    }
+    AsyncStore.storeJsonData(AsyncStore.Keys.ENQ_PAYLOAD, payload);
+    dispatch(updateEnquiryDetailsApiAutoSave(payload))
   }
 
   const submitClicked = async () => {
     //Personal Intro
+    setIsSubmitPress(true)
     if (selector.salutation.length == 0) {
       scrollToPos(0)
       setOpenAccordian('2')
@@ -1316,18 +1230,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     // }
 
     if (selector.buyer_type === "Additional Buyer") {
-      if (
-        selector.a_make == 0 ||
-        selector.a_model == 0 ||
-        selector.a_varient == 0 ||
-        selector.a_color == 0 ||
-        selector.a_reg_no == 0
-      ) {
-        scrollToPos(8)
-        setOpenAccordian('8')
-        showToast("Please fill required fields in Addtional buyer ");
-        return;
-      }
+      // if (
+      //   selector.a_make == 0 ||
+      //   selector.a_model == 0 ||
+      //   selector.a_varient == 0 ||
+      //   selector.a_color == 0 ||
+      //   selector.a_reg_no == 0
+      // ) {
+      //   scrollToPos(8)
+      //   setOpenAccordian('8')
+      //   showToast("Please fill required fields in Addtional buyer ");
+      //   return;
+      // }
       // if (!isValidateAlphabetics(selector.a_varient)) {
       //   scrollToPos(8)
       //   setOpenAccordian('8')
@@ -1343,7 +1257,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
     }
 
-    if (selector.buyer_type === "Replacement Buyer") {
+    if (selector.buyer_type === "Replacement Buyer" || selector.buyer_type === "Exchange Buyer") {
       if (selector.r_color.length > 0) {
         if (!isValidateAlphabetics(selector.r_color)) {
           scrollToPos(9)
@@ -1865,7 +1779,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dataObj.varient = selector.a_varient;
       dataObj.color = selector.a_color;
       dataObj.regNo = selector.a_reg_no;
-    } else if (selector.buyer_type === "Replacement Buyer") {
+    } else if (selector.buyer_type === "Replacement Buyer" || selector.buyer_type === "Exchange Buyer") {
       dataObj.buyerType = selector.buyer_type;
       dataObj.regNo = selector.r_reg_no;
       dataObj.brand = selector.r_make;
@@ -2038,7 +1952,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           element.taskName === "Evaluation" &&
           (element.taskStatus === "" || element.taskStatus === "ASSIGNED") &&
           selector.enquiry_details_response.dmsLeadDto.buyerType ===
-          "Replacement Buyer"
+          "Replacement Buyer" || selector.enquiry_details_response.dmsLeadDto.buyerType ===
+          "Exchange Buyer"
         ) {
           pendingTaskNames.push("Evaluation : Pending \n");
         }
@@ -2083,7 +1998,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         // );
       }
     }
-    
+
     // console.log(selector.enquiry_details_response.dmsLeadDto, "Proceed to prebooking")
   };
 
@@ -2102,6 +2017,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       } else if (typeOfActionDispatched === "UPDATE_ENQUIRY") {
         showToastSucess("Successfully Enquiry Updated");
       }
+      clearLocalData();
       dispatch(clearState());
       navigation.goBack();
     }
@@ -2428,7 +2344,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     })
       .then((response) => response.json())
       .then((response) => {
-        //console.log('response', response);
+        console.log('response', response);
         if (response) {
           const dataObj = { ...uploadedImagesDataObj };
           console.log("UPLOADED IMAGES: ", JSON.stringify(dataObj));
@@ -2726,7 +2642,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     showDropDownModelMethod("SALUTATION", "Select Salutation")
                   }
                 />
-
+                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.salutation === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                 {selector.enquiry_segment.toLowerCase() == "personal" ? (
                   <DropDownSelectionItem
                     label={"Gender"}
@@ -2748,7 +2664,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     )
                   }
                 />
-                <Text style={GlobalStyle.underline}></Text>
+                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.firstName === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.lastName}
@@ -2760,7 +2676,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     dispatch(setPersonalIntro({ key: "LAST_NAME", text: text }))
                   }
                 />
-                <Text style={GlobalStyle.underline}></Text>
+                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.lastName === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                 <DropDownSelectionItem
                   label={"Relation"}
                   value={selector.relation}
@@ -2793,7 +2709,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     dispatch(setPersonalIntro({ key: "MOBILE", text: text }))
                   }
                 />
-                <Text style={GlobalStyle.underline}></Text>
+                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.mobile === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.alterMobile}
@@ -2898,7 +2814,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     )
                   }
                 />
-                <Text style={GlobalStyle.underline}></Text>
+                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.designation === '' ? 'red' : 'rgba(208, 212, 214, 0.7)'}]}></Text>
 
                 <DropDownSelectionItem
                   label={"Enquiry Segment*"}
@@ -3093,7 +3009,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     showDropDownModelMethod("BUYER_TYPE", "Buyer Type")
                   }
                 />
-
+                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.buyer_type === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                 <DropDownSelectionItem
                   label={"KMs Travelled in Month"}
                   value={selector.kms_travelled_month}
@@ -3173,7 +3089,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     setDefaultAddress(null)
                   }}
                 />
-
+                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.pincode === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
 
                 {addressData.length > 0 &&
                   <>
@@ -3243,7 +3159,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     )
                   }
                 />
-                <Text style={GlobalStyle.underline}></Text>
+                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.houseNum === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.streetName}
@@ -3260,7 +3176,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     )
                   }
                 />
-                <Text style={GlobalStyle.underline}></Text>
+                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.streetName === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                 {/* {selector.isAddressSet && ( */}
                 <>
                   <TextinputComp
@@ -3279,7 +3195,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text style={GlobalStyle.underline}></Text>
+                  <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.village === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
 
                   <TextinputComp
                     style={styles.textInputStyle}
@@ -3297,7 +3213,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text style={GlobalStyle.underline}></Text>
+                  <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.mandal === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
 
                   <TextinputComp
                     style={styles.textInputStyle}
@@ -3312,7 +3228,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text style={GlobalStyle.underline}></Text>
+                  <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.city === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.district}
@@ -3329,7 +3245,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text style={GlobalStyle.underline}></Text>
+                  <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.district === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.state}
@@ -3346,7 +3262,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text style={GlobalStyle.underline}></Text>
+                  <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.state === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                 </>
                 {/* )} */}
                 <View
@@ -3420,7 +3336,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       );
                     }}
                   />
-                  <Text style={GlobalStyle.underline}></Text>
+                  <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_pincode === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
 
                   {addressData2.length > 0 &&
                     <>
@@ -3494,7 +3410,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text style={GlobalStyle.underline}></Text>
+                  <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_houseNum === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                   <TextinputComp
                     style={styles.textInputStyle}
                     label={"Street Name*"}
@@ -3528,7 +3444,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text style={GlobalStyle.underline}></Text>
+                  <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_village === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.p_mandal}
@@ -3562,7 +3478,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text style={GlobalStyle.underline}></Text>
+                  <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_city === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.p_district}
@@ -3579,7 +3495,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text style={GlobalStyle.underline}></Text>
+                  <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_district === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.p_state}
@@ -3596,7 +3512,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text style={GlobalStyle.underline}></Text>
+                  <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_state === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                 </View>
                 {/* ) : null} */}
               </List.Accordion>
@@ -3628,15 +3544,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     showDropDownModelMethod("MODEL", "Select Model")
                   }
                 />
-
+                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.model === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                 <DropDownSelectionItem
-                  label={"Varient*"}
+                  label={"Variant*"}
                   value={selector.varient}
                   onPress={() =>
-                    showDropDownModelMethod("VARIENT", "Select Varient")
+                    showDropDownModelMethod("VARIENT", "Select Variant")
                   }
                 />
-
+                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.varient === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                 <DropDownSelectionItem
                   label={"Color*"}
                   value={selector.color}
@@ -3644,14 +3560,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     showDropDownModelMethod("COLOR", "Select Color")
                   }
                 />
-
+                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.color === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                 <TextinputComp
                   style={{ height: 65, width: "100%" }}
                   label={"Fuel Type"}
                   editable={false}
                   value={selector.fuel_type}
                 />
-                <Text style={GlobalStyle.underline}></Text>
+                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.fuel_type === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
 
                 <TextinputComp
                   style={{ height: 65, width: "100%" }}
@@ -3659,7 +3575,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   editable={false}
                   value={selector.transmission_type}
                 />
-                <Text style={GlobalStyle.underline}></Text>
+                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.transmission_type === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
               </List.Accordion>
               <View style={styles.space}></View>
               {/* // 5. Financial Details*/}
@@ -3689,7 +3605,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     showDropDownModelMethod("RETAIL_FINANCE", "Retail Finance")
                   }
                 />
-
+                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.retail_finance === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                 {selector.retail_finance === "Out House" ? (
                   <View>
                     <TextinputComp
@@ -3859,7 +3775,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
-                      label={"EMI"}
+                      label={"EMI(Approximately)"}
                       keyboardType={"default"}
                       value={selector.emi}
                       onChangeText={(text) =>
@@ -4508,7 +4424,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
               </List.Accordion>
               {selector.buyer_type == "Additional Buyer" ||
-                selector.buyer_type == "Replacement Buyer" ? (
+                selector.buyer_type == "Replacement Buyer" || selector.buyer_type == "Exchange Buyer" ? (
                 <View style={styles.space}></View>
               ) : null}
               {/* // 8.Additional Buyer */}
@@ -4533,7 +4449,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   ]}
                 >
                   <DropDownSelectionItem
-                    label={"Make*"}
+                    label={"Make"}
                     value={selector.a_make}
                     onPress={() => showDropDownModelMethod("A_MAKE", "Make")}
                   />
@@ -4558,7 +4474,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     </View>
                   )}
                   <DropDownSelectionItem
-                    label={"Model*"}
+                    label={"Model"}
                     value={selector.a_model}
                     onPress={() => showDropDownModelMethod("A_MODEL", "Model")}
                   />
@@ -4586,7 +4502,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.a_varient}
-                    label={"Varient*"}
+                    label={"Variant"}
                     maxLength={50}
                     onChangeText={(text) =>
                       dispatch(
@@ -4601,7 +4517,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.a_color}
-                    label={"Color*"}
+                    label={"Color"}
                     maxLength={50}
                     onChangeText={(text) =>
                       dispatch(
@@ -4616,7 +4532,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.a_reg_no}
-                    label={"Reg. No.*"}
+                    label={"Reg. No."}
                     maxLength={50}
                     keyboardType={"default"}
                     autoCapitalize={"characters"}
@@ -4634,10 +4550,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               ) : null}
 
               {/* // 9.Replacement Buyer */}
-              {selector.buyer_type == "Replacement Buyer" ? (
+              {selector.buyer_type == "Replacement Buyer" || selector.buyer_type == "Exchange Buyer" ? (
                 <List.Accordion
                   id={"9"}
-                  title={"Replacement Buyer"}
+                  title={"Exchange Buyer"}
                   titleStyle={{
                     color: openAccordian === "9" ? Colors.BLACK : Colors.BLACK,
                     fontSize: 16,
@@ -4670,7 +4586,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text style={GlobalStyle.underline}></Text>
+                  <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.r_reg_no === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                   <View style={styles.select_image_bck_vw}>
                     <ImageSelectItem
                       name={"Upload Reg Doc"}
@@ -4748,7 +4664,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                   <TextinputComp
                     style={{ height: 65, width: "100%" }}
-                    label={"Varient"}
+                    label={"Variant"}
                     editable={true}
                     value={selector.r_varient}
                     maxLength={50}

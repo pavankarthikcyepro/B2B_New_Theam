@@ -15,7 +15,7 @@ export const getEnquiryDetailsApi = createAsyncThunk(
     const autoSaveResponse = await client.get(URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
     const autoSavejson = await autoSaveResponse.json();
     console.log("URL$$$: ", URL.ENQUIRY_DETAILS(universalId));
-    
+
     const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
     const json = await response.json();
     // console.log("enquirey lead", json);
@@ -63,10 +63,25 @@ export const updateEnquiryDetailsApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/updateEnquiryDetailsApi",
   async (payload, { rejectWithValue }) => {
     console.log("ENQ PAY:", URL.UPDATE_ENQUIRY_DETAILS(), JSON.stringify(payload));
-    
+
     const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
     const json = await response.json();
     console.log("UPDATE ENQ:", JSON.stringify(json));
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+
+export const autoSaveEnquiryDetailsApi = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/autoSaveEnquiryDetailsApi",
+  async (payload, { rejectWithValue }) => {
+    console.log("ENQ PAY:", URL.UPDATE_ENQUIRY_DETAILS(), JSON.stringify(payload));
+
+    const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
+    const json = await response.json();
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -355,6 +370,38 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.employee_id = "";
       state.gstin_number = "";
       state.expected_delivery_date = ''
+      state.a_make = ""
+      state.a_model = ""
+      state.a_make_other_name = ""
+      state.a_model_other_name = ""
+      state.a_varient = ""
+      state.a_color = ""
+      state.a_reg_no = ""
+      // Replacement Buyer
+      state.r_reg_no = ""
+      state.r_varient = ""
+      state.r_color = ""
+      state.r_make = ""
+      state.r_model = ""
+      state.r_make_other_name = ""
+      state.r_model_other_name = ""
+      state.r_fuel_type = ""
+      state.r_transmission_type = ""
+      state.r_mfg_year = ""
+      state.r_kms_driven_or_odometer_reading = ""
+      state.r_expected_price = ""
+      state.r_registration_date = ""
+      state.r_registration_validity_date = ""
+      state.r_hypothication_checked = false
+      state.r_hypothication_name = ""
+      state.r_hypothication_branch = ""
+      state.r_insurence_checked = false
+      state.r_insurence_company_name = ""
+      state.r_insurence_expiry_date = ""
+      state.r_insurence_type = ""
+      state.r_insurence_from_date = ""
+      state.r_insurence_to_date = ""
+      state.r_insurence_document_checked = false
     },
     setEditable: (state, action) => {
       console.log("pressed");
@@ -659,7 +706,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       switch (key) {
         case "PINCODE":
           state.pincode = text;
-          if (state.is_permanent_address_same == "YES"){
+          if (state.is_permanent_address_same == "YES") {
             state.p_pincode = text;
           }
           break;
@@ -957,7 +1004,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     updateDmsContactOrAccountDtoData: (state, action) => {
       // dmsContactOrAccountDto
       console.log("dmsContactOrAccountDto", JSON.stringify(action.payload));
-      
+
       const dms_C_Or_A_Dto = action.payload;
       state.email = dms_C_Or_A_Dto.email ? dms_C_Or_A_Dto.email : "";
       state.firstName = dms_C_Or_A_Dto.firstName
@@ -1251,16 +1298,16 @@ const enquiryDetailsOverViewSlice = createSlice({
           ? dataObj.yearofManufacture
           : "";
         state.rmfgYear = yearOfManfac;
-        if (isNaN(yearOfManfac)){
+        if (isNaN(yearOfManfac)) {
           state.r_mfg_year = yearOfManfac
         }
-        else{
+        else {
           state.r_mfg_year = convertTimeStampToDateString(
             yearOfManfac,
             "MM-YYYY"
           );
         }
-        
+
         console.log("DATE:", state.r_mfg_year, dataObj.yearofManufacture);
 
         state.r_kms_driven_or_odometer_reading = dataObj.kiloMeters
@@ -1337,12 +1384,12 @@ const enquiryDetailsOverViewSlice = createSlice({
         dmsAttachments.forEach((item, index) => {
           switch (item.documentType) {
             case "pan":
-              if (item.documentNumber){
+              if (item.documentNumber) {
                 state.pan_number = item.documentNumber;
               }
               break;
             case "aadhar":
-              if (item.documentNumber){
+              if (item.documentNumber) {
                 state.adhaar_number = item.documentNumber;
               }
               break;
@@ -1368,7 +1415,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       console.log("pincode action", action)
 
       state.village = action.payload.Block || ""
-      
+
       state.mandal = state.mandal ? state.mandal : action.payload.Mandal || ""
       // state.mandal = action.payload.Block || ""
       state.city = action.payload.District || ""
@@ -1406,9 +1453,9 @@ const enquiryDetailsOverViewSlice = createSlice({
     builder.addCase(getEnquiryDetailsApi.fulfilled, (state, action) => {
       // if (action.payload.dmsEntity) {
       //  state.enquiry_details_response = action.payload.dmsEntity;
-        console.log("action.payload", action.payload)
-        state.enquiry_details_response = action.payload;
-       state.isOpened = true
+      console.log("action.payload", action.payload)
+      state.enquiry_details_response = action.payload;
+      state.isOpened = true
       // }
       state.isLoading = false;
     });
