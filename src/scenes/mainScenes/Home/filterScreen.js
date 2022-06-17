@@ -77,10 +77,12 @@ const FilterScreen = ({ navigation }) => {
             let arr = [];
             arr = selector.filter_drop_down_data['Dealer Code'].sublevels.filter((item) => item.disabled === 'N')
             if (findIndex !== -1 && arr.length > 0) {
-                console.log("FOUND: ", findIndex, arr);
-                arr[0].selected = true;
+                console.log("FOUND: ", findIndex, arr[0]);
+                let item = {...arr[0]}
+                item["selected"] = true
+                arr.shift();
+                arr.unshift(item);
                 setTimeout(() => {
-                    console.log(arr[0]);
                     updateSelectedItems(arr, findIndex);
                 }, 500);
             }
@@ -112,7 +114,7 @@ const FilterScreen = ({ navigation }) => {
         console.log("INDEX: ", index, nameKeyList[index - 1], nameKeyList[index]);
         const topRowSelectedIds = [];
         if (index > 0) {
-            const topRowData = nameKeyList[index - 1] === 'Dealer Code' ? totalDataObj[nameKeyList[index - 1]].sublevels.filter((item) => item.disabled === 'N') : totalDataObj[nameKeyList[index - 1]].sublevels;
+            const topRowData = nameKeyList[index - 1] === 'Dealer Code' ? totalDataObj[nameKeyList[index - 1]].sublevels.filter((item) => item.disabled === 'N') : totalDataObj[nameKeyList[index - 1]].sublevels.filter((item) => item?.parentId !== undefined);
             topRowData.forEach((item) => {
                 if (item.selected != undefined && item.selected === true) {
                     topRowSelectedIds.push(Number(item.id));
@@ -135,7 +137,10 @@ const FilterScreen = ({ navigation }) => {
         else {
             data = nameKeyList[index] === 'Dealer Code' ? totalDataObj[nameKeyList[index]].sublevels.filter((item) => item.disabled === 'N') : totalDataObj[nameKeyList[index]].sublevels
         }
-
+        data.unshift({
+            "name": "All",
+        })
+        console.log("DROP DATA", data);
         setDropDownData([...data])
         setSelectedItemIndex(index);
         setShowDropDownModel(true);
@@ -172,11 +177,13 @@ const FilterScreen = ({ navigation }) => {
             let selectedParendIds = [];
             let unselectedParentIds = [];
             data.forEach((item) => {
-                console.log("ITEM ID: ", item.parentId, item?.selected);
-                if (item.selected != undefined && item.selected == true) {
-                    selectedParendIds.push(Number(item.parentId));
-                } else {
-                    unselectedParentIds.push(Number(item.parentId));
+                // console.log("ITEM ID: ", item.parentId, item?.selected);
+                if (item?.parentId){
+                    if (item.selected != undefined && item.selected == true) {
+                        selectedParendIds.push(Number(item.parentId));
+                    } else {
+                        unselectedParentIds.push(Number(item.parentId));
+                    }
                 }
             })
 
@@ -193,7 +200,7 @@ const FilterScreen = ({ navigation }) => {
                 if (dataArray.length > 0) {
                     const newDataArry = dataArray.map((subItem, index) => {
                         const obj = { ...subItem };
-                        console.log("OBJ: ", obj);
+                        // console.log("OBJ: ", obj);
                         if (selectedParendIds.includes(Number(obj.id))) {
                             obj.selected = true;
                             selectedNewParentIds.push(Number(obj.parentId));
@@ -532,7 +539,9 @@ const FilterScreen = ({ navigation }) => {
                                                 let selectedNames = "";
                                                 data.forEach((obj, index) => {
                                                     if (obj.selected != undefined && obj.selected == true) {
-                                                        selectedNames += obj.name + ", "
+                                                        if (obj.name !== 'All'){
+                                                            selectedNames += obj.name + ", "
+                                                        }
                                                     }
                                                 })
 

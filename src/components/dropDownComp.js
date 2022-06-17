@@ -40,14 +40,57 @@ const DropDownComponant = ({ visible = false, multiple = false, headerTitle = "S
 
     const itemSelected = (index) => {
         let updatedMultipleData = [...multipleData];
-        const obj = { ...updatedMultipleData[index] };
-        if (obj.selected != undefined) {
-            obj.selected = !obj.selected;
-        } else {
-            obj.selected = true;
+        if (updatedMultipleData[index].name === 'All'){
+            const obj = { ...updatedMultipleData[index] };
+            if (obj.selected != undefined) {
+                obj.selected = !obj.selected;
+                for(let i = 0; i < updatedMultipleData.length; i++){
+                    let innerObj = { ...updatedMultipleData[i] };
+                    innerObj.selected = obj.selected;
+                    updatedMultipleData[i] = innerObj;
+                    if (i === updatedMultipleData.length - 1){
+                        setMultipleData(updatedMultipleData);
+                    }
+                }
+            } else {
+                obj.selected = true;
+                for (let i = 0; i < updatedMultipleData.length; i++) {
+                    let innerObj = { ...updatedMultipleData[i] };
+                    innerObj.selected = true;
+                    updatedMultipleData[i] = innerObj;
+                    if (i === updatedMultipleData.length - 1) {
+                        setMultipleData(updatedMultipleData);
+                    }
+                }
+            }
         }
-        updatedMultipleData[index] = obj;
-        setMultipleData(updatedMultipleData);
+        else{
+            const obj = { ...updatedMultipleData[index] };
+            if (obj.selected != undefined) {
+                obj.selected = !obj.selected;
+            } else {
+                obj.selected = true;
+            }
+            updatedMultipleData[index] = obj;
+            if (updatedMultipleData.findIndex((item) => item.name === 'All') === 0){
+                let allSelected = true;
+                for (let i = 1; i < updatedMultipleData.length; i++) {
+                    if (updatedMultipleData[i].selected === false) {
+                        allSelected = false;
+                    }
+                    if (i === updatedMultipleData.length - 1) {
+                        const innerObj = { ...updatedMultipleData[0] };
+                        innerObj.selected = allSelected;
+                        updatedMultipleData[0] = innerObj;
+                        setMultipleData(updatedMultipleData);
+                    }
+                }
+            }
+            else{
+                setMultipleData(updatedMultipleData);
+            }
+
+        }
     }
 
     const closeModalWithSelectedItem = (item) => {
