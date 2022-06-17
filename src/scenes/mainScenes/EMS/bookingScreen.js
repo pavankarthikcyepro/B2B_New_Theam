@@ -404,6 +404,7 @@ const BookingScreen = ({ navigation }) => {
                                                 )
                                             }
                                             onDocPress={() => {
+                                                console.log("BK DTLS:", item);
                                                 navigation.navigate(
                                                     AppNavigator.EmsStackIdentifiers.bookingForm,
                                                     { universalId: item.universalId }
