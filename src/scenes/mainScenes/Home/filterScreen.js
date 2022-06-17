@@ -72,12 +72,10 @@ const FilterScreen = ({ navigation }) => {
 
     useEffect(() => {
         if (nameKeyList.length > 0 && selector.filter_drop_down_data){
-            console.log("CALLED FILTER");
             let findIndex = nameKeyList.findIndex(item => item === 'Dealer Code');
             let arr = [];
             arr = selector.filter_drop_down_data['Dealer Code'].sublevels.filter((item) => item.disabled === 'N')
             if (findIndex !== -1 && arr.length > 0) {
-                console.log("FOUND: ", findIndex, arr[0]);
                 let item = {...arr[0]}
                 item["selected"] = true
                 arr.shift();
@@ -91,7 +89,6 @@ const FilterScreen = ({ navigation }) => {
 
     useEffect(() => {
         // navigation.addListener('focus', () => {
-            console.log("INSIDE FILTER");
             if (selector.filter_drop_down_data) {
                 let names = [];
                 for (let key in selector.filter_drop_down_data) {
@@ -99,7 +96,6 @@ const FilterScreen = ({ navigation }) => {
                 }
                 setNameKeyList(names);
                 setTotalDataObj(selector.filter_drop_down_data);
-                console.log("INSIDE FILTER", names, selector.filter_drop_down_data);
             }
 
             const currentDate = moment().format(dateFormat)
@@ -125,7 +121,7 @@ const FilterScreen = ({ navigation }) => {
         let data = [];
         if (topRowSelectedIds.length > 0) {
             const subLevels = nameKeyList[index] === 'Dealer Code' ? totalDataObj[nameKeyList[index]].sublevels.filter((item) => item.disabled === 'N') : totalDataObj[nameKeyList[index]].sublevels;
-            console.log("SUB: ", subLevels, totalDataObj[nameKeyList[index]].sublevels.filter((item) => item.disabled === 'N'));
+            console.log("SUB: ", subLevels, totalDataObj[nameKeyList[index]].sublevels);
             subLevels.forEach((subItem) => {
                 const obj = { ...subItem };
                 obj.selected = false;
@@ -171,8 +167,6 @@ const FilterScreen = ({ navigation }) => {
         // console.log("index: ", index)
 
         const totalDataObjLocal = { ...totalDataObj };
-        console.log("LOCAL OBJ:", totalDataObjLocal);
-
         if (index > 0) {
             let selectedParendIds = [];
             let unselectedParentIds = [];
@@ -188,7 +182,6 @@ const FilterScreen = ({ navigation }) => {
             })
 
             let localIndex = index - 1;
-            console.log("PARENT ID:", selectedParendIds, unselectedParentIds);
             for (localIndex; localIndex >= 0; localIndex--) {
 
                 let selectedNewParentIds = [];
@@ -300,15 +293,12 @@ const FilterScreen = ({ navigation }) => {
         // }
         const dataArray = totalDataObj['Dealer Code'].sublevels;
         if (dataArray.length > 0) {
-            console.log("IDS: ", JSON.stringify(dataArray));
             dataArray.forEach((item, index) => {
                 if (item.hasOwnProperty('selected') && item?.selected == true) {
-                    console.log("ITEM STAT: ", item.hasOwnProperty('selected'), item);
                     selectedIds.push(item.id)
                 }
             })
         }
-        console.log("selectedIds: ", selectedIds);
         if (selectedIds.length > 0) {
             setIsLoading(true);
             getDashboadTableDataFromServer(selectedIds, "LEVEL");
