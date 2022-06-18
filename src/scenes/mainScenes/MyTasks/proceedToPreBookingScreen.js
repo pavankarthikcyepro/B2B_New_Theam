@@ -151,20 +151,20 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
         setTypeOfActionDispatched("DROP_ENQUIRY");
 
         if (dropReason.length === 0 || dropRemarks.length === 0) {
-            showToastRedAlert("Please enter details for drop")
+            showToastRedAlert("Please Enter Details for Drop")
             return
         }
 
         if (dropReason === "Lost To Co-Dealer") {
             if (dealerName.length === 0 || location.length === 0 || model.length === 0) {
-                showToast("please enter details");
+                showToast("Please Enter Details");
                 return;
             }
         }
 
         if (dropReason === "Lost To Competition" || dropReason === "Lost To Used Car") {
             if (brandName.length === 0 || dealerName.length === 0 || location.length === 0 || model.length === 0) {
-                showToast("please enter details");
+                showToast("Please Enter Details");
                 return;
             }
         }

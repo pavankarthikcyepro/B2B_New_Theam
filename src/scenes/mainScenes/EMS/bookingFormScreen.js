@@ -1112,15 +1112,15 @@ const BookingFormScreen = ({ route, navigation }) => {
         Keyboard.dismiss();
 
         if (!isValidate(selector.first_name)) {
-            showToast("please enter alphabetics only in firstname");
+            showToast("Please enter alphabetics only in First Name");
             return;
         }
         if (!isValidate(selector.last_name)) {
-            showToast("please enter alphabetics only in lastname");
+            showToast("Please enter alphabetics only in Last Name");
             return;
         }
         if (selector.marital_status.length == 0) {
-            showToast("Please fill the martial status");
+            showToast("Please fill the Martial Status");
             return;
         }
         if (
@@ -1129,7 +1129,7 @@ const BookingFormScreen = ({ route, navigation }) => {
             // selector.relationship_proof.length == 0 ||
             selector.customer_type_category.length == 0
         ) {
-            showToast("please enter document upload section");
+            showToast("Please enter Document Upload Section");
         }
 
         // if (
@@ -1142,7 +1142,7 @@ const BookingFormScreen = ({ route, navigation }) => {
 
         if (selector.form_or_pan === "PAN") {
             if (selector.pan_number.length == 0) {
-                showToast("please enter pan card number");
+                showToast("Please enter Pan Card Number");
             }
         }
 
@@ -1153,24 +1153,24 @@ const BookingFormScreen = ({ route, navigation }) => {
                 selector.customer_type_category == "B2C")
         ) {
             if (selector.gstin_number.length == 0) {
-                showToast("please enter GSTIN number");
+                showToast("Please enter GSTIN Number");
             }
         }
 
         if (selector.retail_finance == "Leasing") {
             if (selector.leashing_name.length == 0) {
-                showToast("Please fill required fields in leasing name");
+                showToast("Please fill required fields in Leasing Name");
                 return;
             }
             if (!isValidateAlphabetics(selector.leashing_name)) {
-                showToast("Please enter proper leasing name");
+                showToast("Please enter proper Leasing Name");
                 return;
             }
         }
 
         const bookingAmount = parseInt(selector.booking_amount);
         if (bookingAmount < 5000) {
-            showToast("please enter booking amount minimum 5000");
+            showToast("Please enter Booking Amount Minimum 5000");
             return;
         }
 
@@ -1178,7 +1178,7 @@ const BookingFormScreen = ({ route, navigation }) => {
             selector.payment_at.length === 0 ||
             selector.booking_payment_mode.length === 0
         ) {
-            showToast("Please enter booking details");
+            showToast("Please enter Booking Details");
             return;
         }
 
@@ -1186,7 +1186,7 @@ const BookingFormScreen = ({ route, navigation }) => {
             selector.customer_preferred_date.length === 0 ||
             selector.tentative_delivery_date.length === 0
         ) {
-            showToast("Please enter commitment details");
+            showToast("Please enter Commitment Details");
             return;
         }
 
@@ -1293,7 +1293,7 @@ const BookingFormScreen = ({ route, navigation }) => {
             dmsLeadDto.leadStatus = "PREBOOKINGCOMPLETED";
         } else if (type === "REJECT") {
             if (selector.reject_remarks.length == 0) {
-                showToast("Please enter reject remarks");
+                showToast("Please enter Reject Remarks");
                 return;
             }
 
@@ -1523,7 +1523,7 @@ const BookingFormScreen = ({ route, navigation }) => {
 
     const proceedToCancelPreBooking = async () => {
         if (dropRemarks.length === 0 || dropReason.length === 0) {
-            showToastRedAlert("Please enter details for drop");
+            showToastRedAlert("Please enter details for Drop");
             return;
         }
 
@@ -2632,7 +2632,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                     onPress={() => showDropDownModelMethod("MODEL", "Model")}
                                 />
                                 <DropDownSelectionItem
-                                    label={"Varient"}
+                                    label={"Variant"}
                                     value={selector.varient}
                                     disabled={true}
                                     onPress={() => showDropDownModelMethod("VARIENT", "Varient")}

@@ -1154,55 +1154,55 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         if (selector.first_name.length === 0) {
             scrollToPos(0)
             setOpenAccordian('1')
-            showToast("please enter first name");
+            showToast("Please enter First Name");
             return;
         }
         if (!isValidate(selector.first_name)) {
             scrollToPos(0)
             setOpenAccordian('1')
-            showToast("please enter alphabetics only in firstname");
+            showToast("Please enter alphabetics only in First Name");
             return;
         }
         if (selector.last_name.length === 0) {
             scrollToPos(0)
             setOpenAccordian('1')
-            showToast("please enter last name");
+            showToast("Please enter Last Name");
             return;
         }
         if (!isValidate(selector.last_name)) {
             scrollToPos(0)
             setOpenAccordian('1')
-            showToast("please enter alphabetics only in lastname");
+            showToast("Please enter alphabetics only in Last Name");
             return;
         }
         if (selector.mobile.length === 0) {
             scrollToPos(0)
             setOpenAccordian('1')
-            showToast("please enter mobile number");
+            showToast("Please enter Mobile Number");
             return;
         }
         if (selector.email.length === 0) {
             scrollToPos(0)
             setOpenAccordian('1')
-            showToast("please enter email");
+            showToast("Please enter Email");
             return;
         }
         if (!isEmail(selector.email)) {
             scrollToPos(0)
             setOpenAccordian('1')
-            showToast("please enter valid email");
+            showToast("Please enter Valid Email");
             return;
         }
         if (selector.enquiry_segment.length == 0) {
             scrollToPos(0)
             setOpenAccordian('1')
-            showToast("Please select enquery segment");
+            showToast("Please select Enquiry Segment");
             return;
         }
         if (selector.customer_type.length == 0) {
             scrollToPos(0)
             setOpenAccordian('1')
-            showToast("Please select customer type");
+            showToast("Please select Customer Type");
             return;
         }
         if (selector.pincode.length === 0 ||
@@ -1224,7 +1224,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             selector.p_urban_or_rural == 0) {
             scrollToPos(2)
             setOpenAccordian('2')
-            showToast("please enter address");
+            showToast("Please enter Address");
             return;
         }
         // if (selector.enquiry_segment.toLowerCase() === "personal" && selector.marital_status.length == 0) {
@@ -1266,7 +1266,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             if (selector.adhaar_number.length == 0) {
                 scrollToPos(4)
                 setOpenAccordian("4")
-                showToast("please enter aadhar number");
+                showToast("Please enter Aadhar Number");
                 return;
             }
         }
@@ -1302,25 +1302,37 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         if (bookingAmount < 5000) {
             scrollToPos(8)
             setOpenAccordian('8')
-            showToast("please enter booking amount minimum 5000");
+            showToast("Please enter Booking Amount Minimum 5000");
             return;
         }
 
+        if(selector.payment_at.length === 0)
+        {scrollToPos(8)
+        setOpenAccordian('8')
+    showToast("Please fill Payment At ");
+    return;
+}
         if (
-            selector.payment_at.length === 0 ||
+            
             selector.booking_payment_mode.length === 0
         ) {
             scrollToPos(8)
             setOpenAccordian('8')
-            showToast("Please enter booking details");
+            showToast("Please fill Booking Payment Mode");
             return;
         }
 
         if (
-            selector.customer_preferred_date.length === 0 ||
-            selector.tentative_delivery_date.length === 0
+            selector.customer_preferred_date.length === 0 
+           
         ) {
-            showToast("Please enter DOD details");
+            showToast("Please enter Customer Preferred Date ");
+            scrollToPos(9)
+            setOpenAccordian('9')
+            return;
+        }
+        if(selector.tentative_delivery_date.length === 0){
+            showToast("Please enter Tentative Delivery Date");
             scrollToPos(9)
             setOpenAccordian('9')
             return;
@@ -1636,7 +1648,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             dmsLeadDto.leadStatus = "PREBOOKINGCOMPLETED";
         } else if (type === "REJECT") {
             if (selector.reject_remarks.length == 0) {
-                showToast("Please enter reject remarks");
+                showToast("Please enter Reject Remarks");
                 return;
             }
 
@@ -1862,7 +1874,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const proceedToCancelPreBooking = () => {
 
         if (dropRemarks.length === 0 || dropReason.length === 0) {
-            showToastRedAlert("Please enter details for drop");
+            showToastRedAlert("Please enter details for Drop");
             return;
         }
 
@@ -1929,7 +1941,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 if (!uploadedImagesDataObj.hasOwnProperty('receipt')) {
                     scrollToPos(12)
                     setOpenAccordian('12')
-                    showToast("Please upload receipt doc");
+                    showToast("Please Upload Receipt Doc");
                     return;
                 }
 

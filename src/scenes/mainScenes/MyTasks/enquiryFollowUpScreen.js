@@ -290,29 +290,29 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     }
 
     if (selector.reason.length === 0) {
-      showToast("Please select reason");
+      showToast("Please select Reason");
       return;
     }
     if (selector.reason === 'Other' && otherReason.length === 0) {
-      showToast("Please Enter Other Reason");
+      showToast("Please enter Other Reason");
       return;
     }
     if (selector.customer_remarks == 0) {
-      showToast("Please enter customer remarks");
+      showToast("Please enter Customer Remarks");
       return;
     }
     if (!isValidateAlphabetics(selector.customer_remarks)) {
-      showToast("Please enter alphabetics only in customer remarks");
+      showToast("Please enter alphabetics only in Customer Remarks");
       return;
     }
 
     if (selector.employee_remarks.length === 0) {
-      showToast("Please enter employee remarks");
+      showToast("Please enter Employee Remarks");
       return;
     }
 
     if (!isValidateAlphabetics(selector.employee_remarks)) {
-      showToast("Please enter alphabetics only in employee remarks");
+      showToast("Please enter alphabetics only in Employee Remarks");
       return;
     }
     const newTaskObj = { ...selector.task_details_response };
@@ -413,24 +413,24 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
           <View style={[GlobalStyle.shadow]}>
             {(identifier === "ENQUIRY_FOLLOW_UP" ||
               identifier === "PRE_ENQUIRY_FOLLOW_UP") && (
-                <View>
-                  <DropDownSelectionItem
-                    label={"Model"}
-                    value={selector.model}
-                    onPress={() =>
-                      setDropDownDataForModel("MODEL", "Select Model")
-                    }
-                  />
+              <View>
+                <DropDownSelectionItem
+                  label={"Model"}
+                  value={selector.model}
+                  onPress={() =>
+                    setDropDownDataForModel("MODEL", "Select Model")
+                  }
+                />
 
-                  <DropDownSelectionItem
-                    label={"Varient"}
-                    value={selector.varient}
-                    onPress={() =>
-                      setDropDownDataForModel("VARIENT", "Select Varient")
-                    }
-                  />
-                </View>
-              )}
+                <DropDownSelectionItem
+                  label={"Variant"}
+                  value={selector.varient}
+                  onPress={() =>
+                    setDropDownDataForModel("VARIENT", "Select Varient")
+                  }
+                />
+              </View>
+            )}
 
             {/* <TextinputComp
               style={styles.textInputStyle}
@@ -444,14 +444,18 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
                 );
               }}
             /> */}
-            <View style={{position: 'relative'}}>
-              {selector.reason !== '' &&
-                <View style={{ position: 'absolute', top: 0, left: 10, zIndex: 99 }}>
-                  <Text style={{ fontSize: 13, color: Colors.GRAY }}>Reason*</Text>
+            <View style={{ position: "relative" }}>
+              {selector.reason !== "" && (
+                <View
+                  style={{ position: "absolute", top: 0, left: 10, zIndex: 99 }}
+                >
+                  <Text style={{ fontSize: 13, color: Colors.GRAY }}>
+                    Reason*
+                  </Text>
                 </View>
-              }
+              )}
               <Dropdown
-                style={[styles.dropdownContainer,]}
+                style={[styles.dropdownContainer]}
                 placeholderStyle={styles.placeholderStyle}
                 selectedTextStyle={styles.selectedTextStyle}
                 inputSearchStyle={styles.inputSearchStyle}
@@ -466,24 +470,30 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
                 value={defaultReasonIndex}
                 // onFocus={() => setIsFocus(true)}
                 // onBlur={() => setIsFocus(false)}
-                onChange={val => {
+                onChange={(val) => {
                   console.log("£££", val);
-                  dispatch(setEnquiryFollowUpDetails({ key: "REASON", text: val.value }));
+                  dispatch(
+                    setEnquiryFollowUpDetails({
+                      key: "REASON",
+                      text: val.value,
+                    })
+                  );
                 }}
               />
               <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.reason === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
             </View>
-            {selector.reason === 'Other' &&
+            {selector.reason === "Other" && (
               <TextinputComp
                 style={styles.textInputStyle}
-                label={"Other reason"}
+                label={"Other Reason"}
+                autoCapitalize="words"
                 value={otherReason}
                 maxLength={50}
                 onChangeText={(text) => {
-                  setOtherReason(text)
+                  setOtherReason(text);
                 }}
               />
-            }
+            )}
             <Text style={GlobalStyle.underline}></Text>
 
             <TextinputComp
@@ -523,9 +533,9 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
               label={"Actual Start Date"}
               value={selector.actual_start_time}
               onPress={() => dispatch(setDatePicker("ACTUAL_START_TIME"))}
-            //  value={selector.expected_delivery_date}
-            // onPress={() =>
-            // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
+              //  value={selector.expected_delivery_date}
+              // onPress={() =>
+              // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
             />
             <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && (selector.actual_start_time === '' || isDateError) ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
             <DateSelectItem

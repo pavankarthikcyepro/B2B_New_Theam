@@ -216,17 +216,17 @@ const HomeVisitScreen = ({ route, navigation }) => {
   const closeTask = () => {
     setIsSubmitPress(true)
     if (selector.reason.length === 0) {
-      showToast("Please Select Reason");
+      showToast("Please select Reason");
       return;
     }
 
     if (selector.customer_remarks.length === 0) {
-      showToast("Please enter customer remarks");
+      showToast("Please enter Customer Remarks");
       return;
     }
 
     if (selector.employee_remarks.length === 0) {
-      showToast("Please Enter employee remarks");
+      showToast("Please enter Employee Remarks");
       return;
     }
 
@@ -250,22 +250,22 @@ const HomeVisitScreen = ({ route, navigation }) => {
     }
 
     if (selector.reason.length === 0) {
-      showToast("Please Select Reason");
+      showToast("Please select Reason");
       return;
     }
 
     if (selector.reason === 'Other' && otherReason.length === 0) {
-      showToast("Please Enter Other Reason");
+      showToast("Please enter Other Reason");
       return;
     }
 
     if (selector.customer_remarks.length === 0) {
-      showToast("Please enter customer remarks");
+      showToast("Please enter Customer Remarks");
       return;
     }
 
     if (selector.employee_remarks.length === 0) {
-      showToast("Please Enter employee remarks");
+      showToast("Please enter Employee Remarks");
       return;
     }
 
@@ -302,7 +302,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
   const generateOtpToCloseTask = () => {
 
     if (!mobile) {
-      showToastRedAlert("No mobile found");
+      showToastRedAlert("No Mobile Found");
       return
     }
 
@@ -326,7 +326,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
     }
 
     if (!mobile) {
-      showToastRedAlert("No mobile found");
+      showToastRedAlert("No Mobile Found");
       return
     }
 
@@ -353,20 +353,6 @@ const HomeVisitScreen = ({ route, navigation }) => {
       keyboardVerticalOffset={100}
     >
       <SafeAreaView style={[styles.container]}>
-        <DatePickerComponent
-          visible={selector.showDatepicker}
-          mode={"date"}
-          minimumDate={selector.minDate}
-          value={new Date(Date.now())}
-          onChange={(event, selectedDate) => {
-            console.log("date: ", selectedDate);
-            if (Platform.OS === "android") {
-              //setDatePickerVisible(false);
-            }
-            dispatch(updateSelectedDate({ key: "", text: selectedDate }));
-          }}
-          onRequestClose={() => dispatch(setDatePicker())}
-        />
         <View style={{ padding: 15 }}>
           <View style={[GlobalStyle.shadow, { backgroundColor: Colors.WHITE }]}>
             {/* <TextinputComp
@@ -378,48 +364,18 @@ const HomeVisitScreen = ({ route, navigation }) => {
                 dispatch(setHomeVisitDetails({ key: "REASON", text: text }));
               }}
             /> */}
-            <Text style={styles.chooseAddressTextStyle}>
-              {"Choose address:"}
-            </Text>
-            <View style={styles.view2}>
-              <RadioTextItem
-                label={"Showroom address"}
-                value={"Showroom address"}
-                status={addressType === 1 ? true : false}
-                onPress={() => setAddressType(1)}
-              />
-              <RadioTextItem
-                label={"Customer address"}
-                value={"Customer address"}
-                status={addressType === 2 ? true : false}
-                onPress={() => setAddressType(2)}
-              />
-            </View>
-            <Text style={GlobalStyle.underline}></Text>
-
-            {addressType === 2 && (
-              <View>
-                <TextinputComp
-                  style={{ height: 65, maxHeight: 100, width: "100%" }}
-                  value={customerAddress}
-                  label={"Customer Address"}
-                  multiline={true}
-                  numberOfLines={4}
-                  // editable={isRecordEditable}
-                  // disabled={!isRecordEditable}
-                  onChangeText={(text) => setCustomerAddress(text)}
-                />
-                <Text style={GlobalStyle.underline}></Text>
-              </View>
-            )}
-            <View style={{ position: 'relative' }}>
-              {selector.reason !== '' &&
-                <View style={{ position: 'absolute', top: 0, left: 10, zIndex: 99 }}>
-                  <Text style={{ fontSize: 13, color: Colors.GRAY }}>Reason*</Text>
+            <View style={{ position: "relative" }}>
+              {selector.reason !== "" && (
+                <View
+                  style={{ position: "absolute", top: 0, left: 10, zIndex: 99 }}
+                >
+                  <Text style={{ fontSize: 13, color: Colors.GRAY }}>
+                    Reason*
+                  </Text>
                 </View>
-              }
+              )}
               <Dropdown
-                style={[styles.dropdownContainer,]}
+                style={[styles.dropdownContainer]}
                 placeholderStyle={styles.placeholderStyle}
                 selectedTextStyle={styles.selectedTextStyle}
                 inputSearchStyle={styles.inputSearchStyle}
@@ -434,30 +390,34 @@ const HomeVisitScreen = ({ route, navigation }) => {
                 value={defaultReasonIndex}
                 // onFocus={() => setIsFocus(true)}
                 // onBlur={() => setIsFocus(false)}
-                onChange={val => {
+                onChange={(val) => {
                   console.log("£££", val);
-                  dispatch(setHomeVisitDetails({ key: "REASON", text: val.value }));
+                  dispatch(
+                    setHomeVisitDetails({ key: "REASON", text: val.value })
+                  );
                 }}
               />
               <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.reason === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
             </View>
-            {selector.reason === 'Other' &&
+            {selector.reason === "Other" && (
               <TextinputComp
                 style={styles.textInputStyle}
-                label={"Other reason"}
+                label={"Other Reason"}
+                autoCapitalize="words"
                 value={otherReason}
                 maxLength={50}
                 onChangeText={(text) => {
-                  setOtherReason(text)
+                  setOtherReason(text);
                 }}
               />
-            }
+            )}
             <Text style={GlobalStyle.underline}></Text>
             <TextinputComp
               style={styles.textInputStyle}
               label={"Customer Remarks*"}
               maxLength={50}
               value={selector.customer_remarks}
+              autoCapitalize="words"
               onChangeText={(text) =>
                 dispatch(
                   setHomeVisitDetails({ key: "CUSTOMER_REMARKS", text: text })
@@ -468,6 +428,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
             <TextinputComp
               style={styles.textInputStyle}
               label={"Employee Remarks*"}
+              autoCapitalize="words"
               maxLength={50}
               value={selector.employee_remarks}
               onChangeText={(text) =>
@@ -495,9 +456,22 @@ const HomeVisitScreen = ({ route, navigation }) => {
           </View>
 
           {isCloseSelected ? (
-            <View style={{ marginTop: 20, paddingHorizontal: otpViewHorizontalPadding }}>
-              <View style={{ height: 60, justifyContent: 'center', alignItems: "center" }}>
-                <Text style={{ textAlign: "center" }}>{"We have sent an OTP to mobile number, please verify"}</Text>
+            <View
+              style={{
+                marginTop: 20,
+                paddingHorizontal: otpViewHorizontalPadding,
+              }}
+            >
+              <View
+                style={{
+                  height: 60,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text style={{ textAlign: "center" }}>
+                  {"We have sent an OTP to Mobile Number, Please Verify"}
+                </Text>
               </View>
               <CodeField
                 ref={ref}
@@ -513,14 +487,14 @@ const HomeVisitScreen = ({ route, navigation }) => {
                   <Text
                     key={index}
                     style={[otpStyles.cell, isFocused && otpStyles.focusCell]}
-                    onLayout={getCellOnLayoutHandler(index)}>
+                    onLayout={getCellOnLayoutHandler(index)}
+                  >
                     {symbol || (isFocused ? <Cursor /> : null)}
                   </Text>
                 )}
               />
             </View>
           ) : null}
-
         </View>
 
         {!isCloseSelected ? (

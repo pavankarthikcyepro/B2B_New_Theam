@@ -373,6 +373,7 @@ const PreEnquiryScreen = ({ navigation }) => {
                                                 dmsLead={item.createdBy}
                                                 phone={item.phone}
                                                 source={item.enquirySource}
+                                                // enquiryCategory={item.enquiryCategory}
                                                 model={item.model}
                                                 leadStatus={item.leadStatus}
                                                 needStatus={"YES"}

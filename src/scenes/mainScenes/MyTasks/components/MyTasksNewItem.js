@@ -56,41 +56,70 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", name, status, created, dmsLea
     }
 
     return (
-        <TouchableOpacity onPress={onItemPress} style={styles.section}>
-            <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center", position: 'relative'}}>
-                
-                <View style={{ width: "70%" }}>
-                    <Text style={styles.text1}>{name}</Text>
-                    <Text style={styles.text2}>{source + " - " + dmsLead}</Text>
-                    <Text style={styles.text3}>{date}</Text>
-                    {needStatus === "YES" &&
-                        <View style={{ height: 15, width: 15, borderRadius: 10, backgroundColor: leadStatus === 'PREENQUIRYCOMPLETED' || leadStatus === 'ENQUIRYCOMPLETED' || leadStatus === 'PREBOOKINGCOMPLETED' || leadStatus === 'BOOKINGCOMPLETED' ? '#18a835' : '#f29a22', position: 'absolute', top: 0, right: 0 }}></View>
-                    }
-                </View>
-                <View style={{ width: "30%", alignItems: "center" }}>
-                    <View style={styles.modal}>
-                        <Text style={styles.text4}>{model}</Text>
-                    </View>
-                    {/* <View style={{ height: 8 }}></View> */}
-                    <View style={{ flexDirection: "row", width: "100%", justifyContent: "space-evenly" }}>
-                        <IconComp
-                            iconName={'format-list-bulleted-square'}
-                            onPress={onDocPress}
-                        />
-                        <IconComp
-                            iconName={'phone-outline'}
-                            onPress={() => callNumber(phone)}
-                        />
-
-                        <IconComp
-                            iconName={'whatsapp'}
-                            onPress={() => sendWhatsApp(phone)}
-                        />
-                    </View>
-                </View>
+      <TouchableOpacity onPress={onItemPress} style={styles.section}>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            position: "relative",
+          }}
+        >
+          <View style={{ width: "70%" }}>
+            <Text style={styles.text1}>{name}</Text>
+            <Text style={styles.text2}>{source + " - " + dmsLead}</Text>
+            <Text style={styles.text3}>{date}</Text>
+            {needStatus === "YES" && (
+              <View
+                style={{
+                  height: 13,
+                  width: 13,
+                  borderRadius: 10,
+                  backgroundColor:
+                    leadStatus === "PREENQUIRYCOMPLETED" ||
+                    leadStatus === "ENQUIRYCOMPLETED" ||
+                    leadStatus === "PREBOOKINGCOMPLETED" ||
+                    leadStatus === "BOOKINGCOMPLETED"
+                      ? "#18a835"
+                      : "#f29a22",
+                  position: "absolute",
+                  top: 4,
+                  right: 242,
+                }}
+              ></View>
+            )}
+          </View>
+          <View style={{ width: "30%", alignItems: "flex-end" }}>
+            <View style={styles.modal}>
+              <Text style={styles.text4}>{model}</Text>
             </View>
-        </TouchableOpacity>
-    )
+            {/* <View style={{ height: 8 }}></View> */}
+            <View
+              style={{
+                flexDirection: "row",
+                width: "100%",
+                justifyContent: "space-evenly",
+              }}
+            >
+              <IconComp
+                iconName={"format-list-bulleted-square"}
+                onPress={onDocPress}
+              />
+              <View style={{ padding: 4 }} />
+              <IconComp
+                iconName={"phone-outline"}
+                onPress={() => callNumber(phone)}
+              />
+              <View style={{ padding: 4 }} />
+              <IconComp
+                iconName={"whatsapp"}
+                onPress={() => sendWhatsApp(phone)}
+              />
+            </View>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
 }
 
 const styles = StyleSheet.create({
@@ -98,6 +127,7 @@ const styles = StyleSheet.create({
         color: Colors.BLACK,
         fontSize: 16,
         fontWeight: '700',
+        left:12,
         marginBottom: 5
     },
     text2: {

@@ -546,12 +546,12 @@ const TestDriveScreen = ({ route, navigation }) => {
         // }
         setIsSubmitPress(true)
         if (selectedVehicleDetails.model.length === 0) {
-            showToast("Please select model");
+            showToast("Please Select Model");
             return;
         }
 
         if (selectedVehicleDetails.varient.length === 0) {
-            showToast("Please select model");
+            showToast("Please Select Variant");
             return;
         }
 
@@ -559,7 +559,7 @@ const TestDriveScreen = ({ route, navigation }) => {
             selectedVehicleDetails.vehicleId == 0 ||
             selectedVehicleDetails.varientId == 0
         ) {
-            showToast("Please select model & varient");
+            showToast("Please Select Model & Varient");
             return;
         }
         // if (selectedDriverDetails.name.length === 0) {
@@ -568,34 +568,39 @@ const TestDriveScreen = ({ route, navigation }) => {
         // }
 
         if (selector.customer_preferred_date.length === 0) {
-            showToast("Please select customer preffered date");
+            showToast("Please select Customer Preffered Date");
             return;
         }
 
         if (addressType === 0) {
-            showToast("Please select address type");
+            showToast("Please select Address Type");
             return;
         }
 
         if (customerHavingDrivingLicense === 0) {
-            showToast("Please select customer having driving license");
+            showToast("Please select Customer Having Driving License");
             return;
         }
 
         if (
-            selector.customer_preferred_time.length === 0 ||
-            selector.actual_start_time.length === 0 ||
-            selector.actual_end_time.length === 0
+            selector.customer_preferred_time.length === 0 ){
+                showToast("Please select Customer Preffered time");
+                return;
+            }
+            if(selector.actual_start_time.length === 0 
         ) {
-            showToast("Please select time");
+            showToast("Please select Actual Start Time");
             return;
         }
+        if(selector.actual_end_time.length === 0)
+        {showToast("Please select End Time");
+    return;}
 
         if (
             selectedVehicleDetails.vehicleId == 0 ||
             selectedVehicleDetails.varientId == 0
         ) {
-            showToast("Please select model & varient");
+            showToast("Please select Model & Varient");
             return;
         }
 
@@ -616,7 +621,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 !uploadedImagesDataObj.dlFrontUrl ||
                 !uploadedImagesDataObj.dlBackUrl
             ) {
-                showToast("Please upload driving license front & back");
+                showToast("Please Upload Driving License Front & Back");
                 return;
             }
         }
@@ -685,7 +690,7 @@ const TestDriveScreen = ({ route, navigation }) => {
     const closeTask = () => {
         setIsSubmitPress(true)
         if (selectedVehicleDetails.model.length === 0) {
-            showToast("Please select model");
+            showToast("Please Select Model");
             return;
         }
 
@@ -695,17 +700,17 @@ const TestDriveScreen = ({ route, navigation }) => {
         // }
 
         if (selector.customer_preferred_date.length === 0) {
-            showToast("Please select customer preffered date");
+            showToast("Please Select Customer Preffered Date");
             return;
         }
 
         if (addressType === 0) {
-            showToast("Please select address type");
+            showToast("Please Select Address Type");
             return;
         }
 
         if (customerHavingDrivingLicense === 0) {
-            showToast("Please select customer having driving license");
+            showToast("Please Select Customer Having Driving License");
             return;
         }
 
@@ -714,7 +719,7 @@ const TestDriveScreen = ({ route, navigation }) => {
             selector.actual_start_time.length === 0 ||
             selector.actual_end_time.length === 0
         ) {
-            showToast("Please select time");
+            showToast("Please Select Time");
             return;
         }
 
@@ -722,7 +727,7 @@ const TestDriveScreen = ({ route, navigation }) => {
             selectedVehicleDetails.vehicleId == 0 ||
             selectedVehicleDetails.varientId == 0
         ) {
-            showToast("Please select model & varient");
+            showToast("Please Select Model & Varient");
             return;
         }
 
@@ -743,7 +748,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 !uploadedImagesDataObj.dlFrontUrl ||
                 !uploadedImagesDataObj.dlBackUrl
             ) {
-                showToast("Please upload driving license front & back");
+                showToast("Please Upload Driving License Front & Back");
                 return;
             }
         }
@@ -809,8 +814,8 @@ const TestDriveScreen = ({ route, navigation }) => {
 
     const showAlertMsg = (isSucess) => {
         let message = isSucess
-            ? "TestDrive Appointment has sent for approval"
-            : "TestDrive Appointment has failed";
+            ? "TestDrive Appointment has Sent for Approval"
+            : "TestDrive Appointment has Failed";
         Alert.alert(
             "",
             message,
@@ -935,12 +940,12 @@ const TestDriveScreen = ({ route, navigation }) => {
     const verifyClicked = async () => {
 
         if (otpValue.length != 4) {
-            showToastRedAlert("Please enter valid OTP")
+            showToastRedAlert("Please Enter Valid OTP")
             return;
         }
 
         if (!mobileNumber) {
-            showToastRedAlert("No mobile found");
+            showToastRedAlert("No Mobile Found");
             return
         }
 
@@ -1093,7 +1098,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                             />
                             <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selectedVehicleDetails.vehicleId === 0 ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                             <DropDownSelectionItem
-                                label={"Varient*"}
+                                label={"Variant*"}
                                 value={selectedVehicleDetails.varientId ? selectedVehicleDetails.varient : ''}
                                 // disabled={!isRecordEditable}
                                 disabled={false}
@@ -1348,7 +1353,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                     {isCloseSelected ? (
                         <View style={{ marginTop: 20, paddingHorizontal: otpViewHorizontalPadding }}>
                             <View style={{ height: 60, justifyContent: 'center', alignItems: "center" }}>
-                                <Text style={{ textAlign: "center" }}>{"We have sent an OTP to mobile number, please verify"}</Text>
+                                <Text style={{ textAlign: "center" }}>{"We Have Sent an OTP to Mobile Number, Please Verify"}</Text>
                             </View>
                             <CodeField
                                 ref={ref}

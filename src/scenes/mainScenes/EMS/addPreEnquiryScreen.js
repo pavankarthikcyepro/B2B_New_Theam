@@ -399,35 +399,35 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         //     return;
         // }
         if (selector.enquiryType.length == 0){
-            showToastRedAlert("Please select enquery segment");
+            showToastRedAlert("Please select Enquiry Segment");
             return;
         }
         if (selector.customerType.length == 0) {
-            showToastRedAlert("Please select customer type");
+            showToastRedAlert("Please select Customer Type");
             return;
         }
         if (selector.firstName.length == 0) {
-            showToastRedAlert("Please enter first name");
+            showToastRedAlert("Please enter First Name");
             return;
         }
         if (selector.lastName.length == 0) {
-            showToastRedAlert("Please enter last name");
+            showToastRedAlert("Please enter Last Name");
             return;
         }
         if (selector.mobile.length == 0) {
-            showToastRedAlert("Please enter mobile number");
+            showToastRedAlert("Please enter Mobile Number");
             return;
         }
         if (selector.carModel.length == 0) {
-            showToastRedAlert("Please select model");
+            showToastRedAlert("Please select Model");
             return;
         }
         if (selector.sourceOfEnquiry.length == 0) {
-            showToastRedAlert("Please select source of lead");
+            showToastRedAlert("Please select Source of Lead");
             return;
         }
         if (selector.subSourceOfEnquiry.length == 0) {
-            showToastRedAlert("Please select sub source of lead");
+            showToastRedAlert("Please select Sub Source of Lead");
             return;
         }
         if (selector.enquiryType === "Personal") {
@@ -441,14 +441,14 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
 
         if (selector.enquiryType === "Personal" && selector.customerType === "Other") {
             if (selector.other.length > 0 && !isValidateAlphabetics(selector.other)) {
-                showToast("Please enter the alphabets only in other");
+                showToast("Please enter the alphabets only in Other");
                 return;
             }
         }
 
         if (!fromEdit) {
             if (selector.pincode.length == 0) {
-                showToastRedAlert("Please fill pincode");
+                showToastRedAlert("Please fill Pincode");
                 return;
             }
         }
@@ -464,7 +464,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                 // showToast("please enter alphabetics only in firstname ");
                 setFirstNameErrorHandler({
                     showError: true,
-                    msg: "please enter alphabetics only",
+                    msg: "Please enter alphabetics only",
                 });
                 return;
             }
@@ -472,31 +472,31 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                 // showToast("please enter alphabetics only in lastname ");
                 setLastNameErrorHandler({
                     showError: true,
-                    msg: "please enter alphabetics only",
+                    msg: "Please enter alphabetics only",
                 });
                 return;
             }
         }
         if (selector.mobile.length > 0 && !isMobileNumber(selector.mobile)) {
-            showToast("Please enter valid number");
+            showToast("Please enter valid Mobile Number");
             return;
         }
         if (
             selector.alterMobile.length > 0 &&
             !isMobileNumber(selector.alterMobile)
         ) {
-            showToast("Please enter valid alternate mobile number");
+            showToast("Please enter valid alternate Mobile Number");
             return;
         }
 
         if (selector.email.length > 0 && !isEmail(selector.email)) {
-            showToast("Please enter valid email");
+            showToast("Please enter valid Email");
             return;
         }
 
         if (!fromEdit) {
             if (selector.pincode.length > 0 && !isPincode(selector.pincode)) {
-                showToast("Please enter valid pincode");
+                showToast("Please enter valid Pincode");
                 return;
             }
         }
@@ -504,7 +504,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         // Get Pincode details from server
         if (selector.sourceOfEnquiry === "Event") {
             if (selector.eventName.length > 0) {
-                showToast("Please select event details");
+                showToast("Please select Event Details");
                 return;
             }
         }
@@ -562,7 +562,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                     const refNumber = dmsEntiry.leadCustomerReference.referencenumber;
                     makeCreatePreEnquiry(refNumber, addressObj);
                 } else {
-                    showToast("Refrence number failed");
+                    showToast("Reference Number Failed");
                 }
             })
             .catch((error) => {

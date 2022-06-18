@@ -1024,7 +1024,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (selector.salutation.length == 0) {
       scrollToPos(0)
       setOpenAccordian('2')
-      showToast("Please fill required salutation field in Personal Intro");
+      showToast("Please fill required Salutation field in Personal Intro");
       return;
     }
 
@@ -1042,13 +1042,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (!isValidate(selector.firstName)) {
       scrollToPos(0)
       setOpenAccordian('2')
-      showToast("please enter alphabetics only in firstname");
+      showToast("Please enter alphabetics only in Firstname");
       return;
     }
     if (!isValidate(selector.lastName)) {
       scrollToPos(0)
       setOpenAccordian('2')
-      showToast("please enter alphabetics only in lastname");
+      showToast("Please enter alphabetics only in Lastname");
       return;
     }
     // if (!isValidateAlphabetics(selector.relationName)) {
@@ -1060,7 +1060,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (!isValidateAlphabetics(selector.streetName)) {
       scrollToPos(3)
       setOpenAccordian('3')
-      showToast("Please enter alphabetics only in street name");
+      showToast("Please enter alphabetics only in Street Name");
       return;
     }
     //Customer Profile
@@ -1068,7 +1068,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (selector.designation.length == 0) {
       scrollToPos(2)
       setOpenAccordian('1')
-      showToast("Please fill designation");
+      showToast("Please fill Designation");
       return;
     }
     // if (selector.expected_delivery_date.length == 0) {
@@ -1078,19 +1078,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (selector.enquiry_segment.length == 0) {
       scrollToPos(2)
       setOpenAccordian('1')
-      showToast("Please select enquery segment");
+      showToast("Please select Enquiry Segment");
       return;
     }
     if (selector.customer_type.length == 0) {
       scrollToPos(2)
       setOpenAccordian('1')
-      showToast("Please select customer type");
+      showToast("Please select Customer Type");
       return;
     }
     if (selector.buyer_type.length == 0) {
       scrollToPos(2)
       setOpenAccordian('1')
-      showToast("Please fill  Buyer type");
+      showToast("Please fill  Buyer Type");
       return;
     }
     // if (!isValidateAlphabetics(selector.occupation)) {
@@ -1101,7 +1101,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (!isValidateAlphabetics(selector.designation)) {
       scrollToPos(2)
       setOpenAccordian('1')
-      showToast("Please enter alphabetics only in designation");
+      showToast("Please enter alphabetics only in Designation");
       return;
     }
     //communication Address
@@ -1120,32 +1120,32 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (selector.village.length == 0) {
       scrollToPos(3)
       setOpenAccordian('3')
-      showToast("Please fill village ");
+      showToast("Please fill Village ");
       return;
     }
     if (selector.mandal.length == 0) {
       scrollToPos(3)
       setOpenAccordian('3')
-      showToast("Please fill mandal");
+      showToast("Please fill Mandal");
       return;
     }
     if (selector.city.length == 0) {
       scrollToPos(3)
       setOpenAccordian('3')
-      showToast("Please fill city ");
+      showToast("Please fill City ");
       return;
     }
     if (selector.state.length == 0) {
       scrollToPos(3)
       setOpenAccordian('3')
-      showToast("Please fill state ");
+      showToast("Please fill State ");
       return;
     }
     if (
       selector.district.length == 0) {
       scrollToPos(3)
       setOpenAccordian('3')
-      showToast("Please fill district ");
+      showToast("Please fill District ");
       return;
     }
     // Model Selection
@@ -1153,19 +1153,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       selector.model.length == 0) {
       scrollToPos(4)
       setOpenAccordian('4')
-      showToast("Please fill model");
+      showToast("Please fill Model");
       return;
     }
     if (selector.varient.length == 0) {
       scrollToPos(4)
       setOpenAccordian('4')
-      showToast("Please fill Varient");
+      showToast("Please fill Variant");
       return;
     }
     if (selector.color.length == 0) {
       scrollToPos(4)
       setOpenAccordian('4')
-      showToast("Please fill color");
+      showToast("Please fill Color");
       return;
     }
     if (selector.p_pincode.length == 0 ||
@@ -1179,7 +1179,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       selector.p_state.length == 0) {
       scrollToPos(3)
       setOpenAccordian('3')
-      showToast("Please fill permanet address ");
+      showToast("Please fill Permanet Address ");
       return;
     }
     //Finance Details
@@ -1251,7 +1251,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       if (!isValidateAlphabetics(selector.a_color)) {
         scrollToPos(8)
         setOpenAccordian('8')
-        showToast("Please enter alphabetics only in color ");
+        showToast("Please enter alphabetics only in Color ");
         return;
       }
 
@@ -1262,20 +1262,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         if (!isValidateAlphabetics(selector.r_color)) {
           scrollToPos(9)
           setOpenAccordian('9')
-          showToast("Please enter alphabetics only in color ");
+          showToast("Please enter alphabetics only in Color ");
           return;
         }
       }
       if (selector.r_reg_no.length == 0) {
         scrollToPos(9)
         setOpenAccordian('9')
-        showToast("Please fill reg no is mandatory");
+        showToast("Please fill Reg No");
         return;
       }
       if (!isValidateAlphabetics(selector.r_model_other_name)) {
         scrollToPos(9)
         setOpenAccordian('9')
-        showToast("Please enter proper model other name");
+        showToast("Please enter proper Model Other Name");
         return;
       }
 
@@ -1289,7 +1289,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           if (!isValidateAlphabetics(selector.r_hypothication_name)) {
             scrollToPos(9)
             setOpenAccordian('9')
-            showToast("Please enter the proper Hypothication name");
+            showToast("Please enter the proper Hypothication Name");
             return;
           }
         }
@@ -1297,7 +1297,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           if (!isValidateAlphabetics(selector.r_hypothication_branch)) {
             scrollToPos(9)
             setOpenAccordian('9')
-            showToast("Please enter the proper Hypothication branch");
+            showToast("Please enter the proper Hypothication Branch");
             return;
           }
         }
@@ -1309,7 +1309,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         if (!isValidateAlphabetics(selector.c_dealership_name)) {
           scrollToPos(7)
           setOpenAccordian('7')
-          showToast("please enter the validate Dealership name");
+          showToast("Please enter the validate Dealership Name");
           return;
         }
       }
@@ -1329,7 +1329,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     ) {
       scrollToPos(6)
       setOpenAccordian('6')
-      showToast("Please enter proper PAN number");
+      showToast("Please enter proper PAN Number");
       return;
     }
     if (
@@ -1338,7 +1338,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     ) {
       scrollToPos(6)
       setOpenAccordian('6')
-      showToast("Please enter proper gstin number");
+      showToast("Please enter proper GSTIN Number");
       return;
     }
 
@@ -2039,7 +2039,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dropRemarks.length === 0 ||
       dropReason.length === 0
     ) {
-      showToastRedAlert("Please enter details for drop");
+      showToastRedAlert("Please enter details for Drop");
       return;
     }
 
@@ -2593,8 +2593,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           flexDirection: "column",
           justifyContent: "center",
         }}
-        behavior={Platform.OS == "ios" ?
-          "padding" : "height"}
+        behavior={Platform.OS == "ios" ? "padding" : "height"}
         enabled
         keyboardVerticalOffset={100}
       >
@@ -2627,9 +2626,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "2"
-                        ? Colors.RED
-                        : Colors.WHITE,
+                      openAccordian === "2" ? Colors.RED : Colors.WHITE,
                     height: 60,
                   },
                   styles.accordianBorder,
@@ -2778,9 +2775,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "1"
-                        ? Colors.RED
-                        : Colors.WHITE,
+                      openAccordian === "1" ? Colors.RED : Colors.WHITE,
                     height: 60,
                     // justifyContent: 'center'
                   },
@@ -2841,11 +2836,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
 
                 {selector.customer_type.toLowerCase() === "fleet" ||
-                  selector.customer_type.toLowerCase() === "institution" ||
-                  selector.customer_type.toLowerCase() === "corporate" ||
-                  selector.customer_type.toLowerCase() === "government" ||
-                  selector.customer_type.toLowerCase() === "retired" ||
-                  selector.customer_type.toLowerCase() === "other" ? (
+                selector.customer_type.toLowerCase() === "institution" ||
+                selector.customer_type.toLowerCase() === "corporate" ||
+                selector.customer_type.toLowerCase() === "government" ||
+                selector.customer_type.toLowerCase() === "retired" ||
+                selector.customer_type.toLowerCase() === "other" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -2895,19 +2890,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     .toLowerCase()
                     .trim()
                     .replace(/ /g, "") === "socialnetwork") && (
-                    <View>
-                      <DropDownSelectionItem
-                        label={"Sub Source Of Enquiry"}
-                        value={selector.sub_source_of_enquiry}
-                        onPress={() =>
-                          showDropDownModelMethod(
-                            "SUB_SOURCE_OF_ENQUIRY",
-                            "Sub Source Of Enquiry"
-                          )
-                        }
-                      />
-                    </View>
-                  )}
+                  <View>
+                    <DropDownSelectionItem
+                      label={"Sub Source Of Enquiry"}
+                      value={selector.sub_source_of_enquiry}
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "SUB_SOURCE_OF_ENQUIRY",
+                          "Sub Source Of Enquiry"
+                        )
+                      }
+                    />
+                  </View>
+                )}
 
                 {selector.source_of_enquiry.toLowerCase() === "reference" && (
                   <View>
@@ -2984,7 +2979,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 <DateSelectItem
                   label={"Expected Delivery Date*"}
-                  value={selector.expected_delivery_date.length == 0 ? moment().format("DD/MM/YYYY") : selector.expected_delivery_date}
+                  value={
+                    selector.expected_delivery_date.length == 0
+                      ? moment().format("DD/MM/YYYY")
+                      : selector.expected_delivery_date
+                  }
                   onPress={() =>
                     dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
                   }
@@ -2993,7 +2992,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <DropDownSelectionItem
                   label={"Enquiry Category"}
                   disabled={true}
-                  value={selector.enquiry_category.length == 0 ? "Hot" : selector.enquiry_category}
+                  value={
+                    selector.enquiry_category.length == 0
+                      ? "Hot"
+                      : selector.enquiry_category
+                  }
                   onPress={() =>
                     showDropDownModelMethod(
                       "ENQUIRY_CATEGORY",
@@ -3064,9 +3067,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "3"
-                        ? Colors.RED
-                        : Colors.WHITE,
+                      openAccordian === "3" ? Colors.RED : Colors.WHITE,
                     height: 60,
                   },
                   styles.accordianBorder,
@@ -3086,16 +3087,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     dispatch(
                       setCommunicationAddress({ key: "PINCODE", text: text })
                     );
-                    setDefaultAddress(null)
+                    setDefaultAddress(null);
                   }}
                 />
-                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.pincode === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
 
-                {addressData.length > 0 &&
+                {addressData.length > 0 && (
                   <>
                     <Text style={GlobalStyle.underline}></Text>
                     <Dropdown
-                      style={[styles.dropdownContainer,]}
+                      style={[styles.dropdownContainer]}
                       placeholderStyle={styles.placeholderStyle}
                       selectedTextStyle={styles.selectedTextStyle}
                       inputSearchStyle={styles.inputSearchStyle}
@@ -3105,18 +3105,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       maxHeight={300}
                       labelField="label"
                       valueField="value"
-                      placeholder={'Select address'}
+                      placeholder={"Select address"}
                       searchPlaceholder="Search..."
                       value={defaultAddress}
                       // onFocus={() => setIsFocus(true)}
                       // onBlur={() => setIsFocus(false)}
-                      onChange={val => {
+                      onChange={(val) => {
                         console.log("ADDR: ", val);
                         dispatch(updateAddressByPincode(val.value));
                       }}
                     />
                   </>
-                }
+                )}
                 <Text style={GlobalStyle.underline}></Text>
                 <View style={styles.radioGroupBcVw}>
                   <RadioTextItem
@@ -3307,8 +3307,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           key: "PERMANENT_ADDRESS",
                           text: "false",
                         })
-                      )
-                      dispatch(clearPermanentAddr())
+                      );
+                      dispatch(clearPermanentAddr());
                     }}
                   />
                 </View>
@@ -3338,11 +3338,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   />
                   <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_pincode === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
 
-                  {addressData2.length > 0 &&
+                  {addressData2.length > 0 && (
                     <>
                       <Text style={GlobalStyle.underline}></Text>
                       <Dropdown
-                        style={[styles.dropdownContainer,]}
+                        style={[styles.dropdownContainer]}
                         placeholderStyle={styles.placeholderStyle}
                         selectedTextStyle={styles.selectedTextStyle}
                         inputSearchStyle={styles.inputSearchStyle}
@@ -3352,18 +3352,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         maxHeight={300}
                         labelField="label"
                         valueField="value"
-                        placeholder={'Select address'}
+                        placeholder={"Select address"}
                         searchPlaceholder="Search..."
                         // value={defaultAddress}
                         // onFocus={() => setIsFocus(true)}
                         // onBlur={() => setIsFocus(false)}
-                        onChange={val => {
+                        onChange={(val) => {
                           console.log("ADDR: ", val);
                           dispatch(updateAddressByPincode2(val.value));
                         }}
                       />
                     </>
-                  }
+                  )}
 
                   <View style={styles.radioGroupBcVw}>
                     <RadioTextItem
@@ -3529,9 +3529,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "4"
-                        ? Colors.RED
-                        : Colors.WHITE,
+                      openAccordian === "4" ? Colors.RED : Colors.WHITE,
                     height: 60,
                   },
                   styles.accordianBorder,
@@ -3590,9 +3588,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "5"
-                        ? Colors.RED
-                        : Colors.WHITE,
+                      openAccordian === "5" ? Colors.RED : Colors.WHITE,
                     height: 60,
                   },
                   styles.accordianBorder,
@@ -3611,6 +3607,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
                       label={"Bank/Finance Name"}
+                      autoCapitalize="words"
                       keyboardType={"default"}
                       value={selector.bank_or_finance_name}
                       onChangeText={(text) =>
@@ -3627,6 +3624,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
                       label={"Location"}
+                      autoCapitalize="words"
                       keyboardType={"default"}
                       value={selector.location}
                       onChangeText={(text) =>
@@ -3644,6 +3642,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
                       label={"Leasing Name"}
+                      autoCapitalize="words"
                       maxLength={50}
                       value={selector.leashing_name}
                       onChangeText={(text) =>
@@ -3695,51 +3694,51 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {(selector.retail_finance === "In House" ||
                   selector.retail_finance === "Out House") && (
-                    <View>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Loan Amount"}
-                        keyboardType={"numeric"}
-                        maxLength={10}
-                        value={selector.loan_amount}
-                        onChangeText={(text) => {
-                          emiCal(
-                            text,
-                            selector.loan_of_tenure,
-                            selector.rate_of_interest
-                          );
-                          dispatch(
-                            setFinancialDetails({
-                              key: "LOAN_AMOUNT",
-                              text: text,
-                            })
-                          );
-                        }}
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                      <TextinputComp
-                        style={{ height: 65, width: "100%" }}
-                        label={"Rate of Interest"}
-                        keyboardType={"numeric"}
-                        maxLength={10}
-                        value={selector.rate_of_interest}
-                        onChangeText={(text) => {
-                          emiCal(
-                            selector.loan_amount,
-                            selector.loan_of_tenure,
-                            text
-                          );
-                          dispatch(
-                            setFinancialDetails({
-                              key: "RATE_OF_INTEREST",
-                              text: text,
-                            })
-                          );
-                        }}
-                      />
-                      <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                  )}
+                  <View>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Loan Amount"}
+                      keyboardType={"numeric"}
+                      maxLength={10}
+                      value={selector.loan_amount}
+                      onChangeText={(text) => {
+                        emiCal(
+                          text,
+                          selector.loan_of_tenure,
+                          selector.rate_of_interest
+                        );
+                        dispatch(
+                          setFinancialDetails({
+                            key: "LOAN_AMOUNT",
+                            text: text,
+                          })
+                        );
+                      }}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                    <TextinputComp
+                      style={{ height: 65, width: "100%" }}
+                      label={"Rate of Interest"}
+                      keyboardType={"numeric"}
+                      maxLength={10}
+                      value={selector.rate_of_interest}
+                      onChangeText={(text) => {
+                        emiCal(
+                          selector.loan_amount,
+                          selector.loan_of_tenure,
+                          text
+                        );
+                        dispatch(
+                          setFinancialDetails({
+                            key: "RATE_OF_INTEREST",
+                            text: text,
+                          })
+                        );
+                      }}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                )}
 
                 {selector.retail_finance === "In House" && (
                   <View>
@@ -3812,9 +3811,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "6"
-                        ? Colors.RED
-                        : Colors.WHITE,
+                      openAccordian === "6" ? Colors.RED : Colors.WHITE,
                     height: 60,
                   },
                   styles.accordianBorder,
@@ -3828,7 +3825,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   maxLength={10}
                   autoCapitalize={"characters"}
                   onChangeText={(text) => {
-                    dispatch(setUploadDocuments({ key: "PAN", text: text.replace(/[^a-zA-Z0-9]/g, "") }));
+                    dispatch(
+                      setUploadDocuments({
+                        key: "PAN",
+                        text: text.replace(/[^a-zA-Z0-9]/g, ""),
+                      })
+                    );
                   }}
                 />
                 <Text style={GlobalStyle.underline}></Text>
@@ -3839,16 +3841,33 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   />
                 </View>
                 {uploadedImagesDataObj?.pan?.fileName ? (
-
-                  <View style={{ flexDirection: 'row' }}>
-                    <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                      if (uploadedImagesDataObj.pan?.documentPath) {
-                        setImagePath(uploadedImagesDataObj.pan?.documentPath)
-                      }
-                    }}>
-                      <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                  <View style={{ flexDirection: "row" }}>
+                    <TouchableOpacity
+                      style={{
+                        width: "20%",
+                        height: 30,
+                        backgroundColor: Colors.SKY_BLUE,
+                        borderRadius: 4,
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                      onPress={() => {
+                        if (uploadedImagesDataObj.pan?.documentPath) {
+                          setImagePath(uploadedImagesDataObj.pan?.documentPath);
+                        }
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: Colors.WHITE,
+                          fontSize: 14,
+                          fontWeight: "600",
+                        }}
+                      >
+                        Preview
+                      </Text>
                     </TouchableOpacity>
-                    <View style={{ width: '80%' }}>
+                    <View style={{ width: "80%" }}>
                       <DisplaySelectedImage
                         fileName={uploadedImagesDataObj.pan.fileName}
                         from={"PAN"}
@@ -3880,16 +3899,35 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       />
                     </View>
                     {uploadedImagesDataObj?.aadhar?.fileName ? (
-
-                      <View style={{ flexDirection: 'row' }}>
-                        <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                          if (uploadedImagesDataObj.aadhar?.documentPath) {
-                            setImagePath(uploadedImagesDataObj.aadhar?.documentPath)
-                          }
-                        }}>
-                          <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          style={{
+                            width: "20%",
+                            height: 30,
+                            backgroundColor: Colors.SKY_BLUE,
+                            borderRadius: 4,
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                          onPress={() => {
+                            if (uploadedImagesDataObj.aadhar?.documentPath) {
+                              setImagePath(
+                                uploadedImagesDataObj.aadhar?.documentPath
+                              );
+                            }
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: Colors.WHITE,
+                              fontSize: 14,
+                              fontWeight: "600",
+                            }}
+                          >
+                            Preview
+                          </Text>
                         </TouchableOpacity>
-                        <View style={{ width: '80%' }}>
+                        <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
                             fileName={uploadedImagesDataObj.aadhar.fileName}
                             from={"AADHAR"}
@@ -3902,9 +3940,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {/* // Employeed ID */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  (selector.customer_type.toLowerCase() === "corporate" ||
-                    selector.customer_type.toLowerCase() === "government" ||
-                    selector.customer_type.toLowerCase() === "retired") ? (
+                (selector.customer_type.toLowerCase() === "corporate" ||
+                  selector.customer_type.toLowerCase() === "government" ||
+                  selector.customer_type.toLowerCase() === "retired") ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -3930,16 +3968,37 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       />
                     </View>
                     {uploadedImagesDataObj?.employeeId?.fileName ? (
-
-                      <View style={{ flexDirection: 'row' }}>
-                        <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                          if (uploadedImagesDataObj.employeeId?.documentPath) {
-                            setImagePath(uploadedImagesDataObj.employeeId?.documentPath)
-                          }
-                        }}>
-                          <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          style={{
+                            width: "20%",
+                            height: 30,
+                            backgroundColor: Colors.SKY_BLUE,
+                            borderRadius: 4,
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                          onPress={() => {
+                            if (
+                              uploadedImagesDataObj.employeeId?.documentPath
+                            ) {
+                              setImagePath(
+                                uploadedImagesDataObj.employeeId?.documentPath
+                              );
+                            }
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: Colors.WHITE,
+                              fontSize: 14,
+                              fontWeight: "600",
+                            }}
+                          >
+                            Preview
+                          </Text>
                         </TouchableOpacity>
-                        <View style={{ width: '80%' }}>
+                        <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
                             fileName={uploadedImagesDataObj.employeeId.fileName}
                             from={"EMPLOYEE_ID"}
@@ -3952,8 +4011,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {/* Last 3 month payslip */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  (selector.customer_type.toLowerCase() === "corporate" ||
-                    selector.customer_type.toLowerCase() === "government") ? (
+                (selector.customer_type.toLowerCase() === "corporate" ||
+                  selector.customer_type.toLowerCase() === "government") ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -3964,16 +4023,35 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       />
                     </View>
                     {uploadedImagesDataObj?.payslips ? (
-
-                      <View style={{ flexDirection: 'row' }}>
-                        <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                          if (uploadedImagesDataObj?.payslips?.documentPath) {
-                            setImagePath(uploadedImagesDataObj.payslips?.documentPath)
-                          }
-                        }}>
-                          <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          style={{
+                            width: "20%",
+                            height: 30,
+                            backgroundColor: Colors.SKY_BLUE,
+                            borderRadius: 4,
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                          onPress={() => {
+                            if (uploadedImagesDataObj?.payslips?.documentPath) {
+                              setImagePath(
+                                uploadedImagesDataObj.payslips?.documentPath
+                              );
+                            }
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: Colors.WHITE,
+                              fontSize: 14,
+                              fontWeight: "600",
+                            }}
+                          >
+                            Preview
+                          </Text>
                         </TouchableOpacity>
-                        <View style={{ width: '80%' }}>
+                        <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
                             fileName={uploadedImagesDataObj?.payslips.fileName}
                             from={"3_MONTHS_PAYSLIP"}
@@ -3986,7 +4064,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {/* Patta Pass book */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  selector.customer_type.toLowerCase() === "farmer" ? (
+                selector.customer_type.toLowerCase() === "farmer" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -3997,16 +4075,35 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       />
                     </View>
                     {uploadedImagesDataObj.passbook ? (
-
-                      <View style={{ flexDirection: 'row' }}>
-                        <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                          if (uploadedImagesDataObj.passbook?.documentPath) {
-                            setImagePath(uploadedImagesDataObj.passbook?.documentPath)
-                          }
-                        }}>
-                          <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          style={{
+                            width: "20%",
+                            height: 30,
+                            backgroundColor: Colors.SKY_BLUE,
+                            borderRadius: 4,
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                          onPress={() => {
+                            if (uploadedImagesDataObj.passbook?.documentPath) {
+                              setImagePath(
+                                uploadedImagesDataObj.passbook?.documentPath
+                              );
+                            }
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: Colors.WHITE,
+                              fontSize: 14,
+                              fontWeight: "600",
+                            }}
+                          >
+                            Preview
+                          </Text>
                         </TouchableOpacity>
-                        <View style={{ width: '80%' }}>
+                        <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
                             fileName={uploadedImagesDataObj.passbook.fileName}
                             from={"PATTA_PASS_BOOK"}
@@ -4019,7 +4116,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {/* Pension Letter */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  selector.customer_type.toLowerCase() === "retired" ? (
+                selector.customer_type.toLowerCase() === "retired" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -4030,16 +4127,35 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       />
                     </View>
                     {uploadedImagesDataObj.pension ? (
-
-                      <View style={{ flexDirection: 'row' }}>
-                        <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                          if (uploadedImagesDataObj.pension?.documentPath) {
-                            setImagePath(uploadedImagesDataObj.pension?.documentPath)
-                          }
-                        }}>
-                          <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          style={{
+                            width: "20%",
+                            height: 30,
+                            backgroundColor: Colors.SKY_BLUE,
+                            borderRadius: 4,
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                          onPress={() => {
+                            if (uploadedImagesDataObj.pension?.documentPath) {
+                              setImagePath(
+                                uploadedImagesDataObj.pension?.documentPath
+                              );
+                            }
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: Colors.WHITE,
+                              fontSize: 14,
+                              fontWeight: "600",
+                            }}
+                          >
+                            Preview
+                          </Text>
                         </TouchableOpacity>
-                        <View style={{ width: '80%' }}>
+                        <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
                             fileName={uploadedImagesDataObj.pension.fileName}
                             from={"PENSION_LETTER"}
@@ -4052,7 +4168,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {/* IMA Certificate */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                  selector.customer_type.toLowerCase() === "doctor" ? (
+                selector.customer_type.toLowerCase() === "doctor" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -4063,18 +4179,42 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       />
                     </View>
                     {uploadedImagesDataObj.imaCertificate ? (
-
-                      <View style={{ flexDirection: 'row' }}>
-                        <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                          if (uploadedImagesDataObj.imaCertificate?.documentPath) {
-                            setImagePath(uploadedImagesDataObj.imaCertificate?.documentPath)
-                          }
-                        }}>
-                          <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          style={{
+                            width: "20%",
+                            height: 30,
+                            backgroundColor: Colors.SKY_BLUE,
+                            borderRadius: 4,
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                          onPress={() => {
+                            if (
+                              uploadedImagesDataObj.imaCertificate?.documentPath
+                            ) {
+                              setImagePath(
+                                uploadedImagesDataObj.imaCertificate
+                                  ?.documentPath
+                              );
+                            }
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: Colors.WHITE,
+                              fontSize: 14,
+                              fontWeight: "600",
+                            }}
+                          >
+                            Preview
+                          </Text>
                         </TouchableOpacity>
-                        <View style={{ width: '80%' }}>
+                        <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
-                            fileName={uploadedImagesDataObj.imaCertificate.fileName}
+                            fileName={
+                              uploadedImagesDataObj.imaCertificate.fileName
+                            }
                             from={"IMA_CERTIFICATE"}
                           />
                         </View>
@@ -4085,7 +4225,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {/* Leasing Confirmation */}
                 {selector.enquiry_segment.toLowerCase() === "commercial" &&
-                  selector.customer_type.toLowerCase() === "fleet" ? (
+                selector.customer_type.toLowerCase() === "fleet" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -4098,18 +4238,42 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       />
                     </View>
                     {uploadedImagesDataObj.leasingConfirm ? (
-
-                      <View style={{ flexDirection: 'row' }}>
-                        <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                          if (uploadedImagesDataObj.leasingConfirm?.documentPath) {
-                            setImagePath(uploadedImagesDataObj.leasingConfirm?.documentPath)
-                          }
-                        }}>
-                          <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          style={{
+                            width: "20%",
+                            height: 30,
+                            backgroundColor: Colors.SKY_BLUE,
+                            borderRadius: 4,
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                          onPress={() => {
+                            if (
+                              uploadedImagesDataObj.leasingConfirm?.documentPath
+                            ) {
+                              setImagePath(
+                                uploadedImagesDataObj.leasingConfirm
+                                  ?.documentPath
+                              );
+                            }
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: Colors.WHITE,
+                              fontSize: 14,
+                              fontWeight: "600",
+                            }}
+                          >
+                            Preview
+                          </Text>
                         </TouchableOpacity>
-                        <View style={{ width: '80%' }}>
+                        <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
-                            fileName={uploadedImagesDataObj.leasingConfirm.fileName}
+                            fileName={
+                              uploadedImagesDataObj.leasingConfirm.fileName
+                            }
                             from={"LEASING_CONFIRMATION"}
                           />
                         </View>
@@ -4120,7 +4284,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {/* Address Proof */}
                 {selector.enquiry_segment.toLowerCase() === "company" &&
-                  selector.customer_type.toLowerCase() === "institution" ? (
+                selector.customer_type.toLowerCase() === "institution" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -4131,16 +4295,35 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       />
                     </View>
                     {uploadedImagesDataObj.address ? (
-
-                      <View style={{ flexDirection: 'row' }}>
-                        <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                          if (uploadedImagesDataObj.address?.documentPath) {
-                            setImagePath(uploadedImagesDataObj.address?.documentPath)
-                          }
-                        }}>
-                          <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          style={{
+                            width: "20%",
+                            height: 30,
+                            backgroundColor: Colors.SKY_BLUE,
+                            borderRadius: 4,
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                          onPress={() => {
+                            if (uploadedImagesDataObj.address?.documentPath) {
+                              setImagePath(
+                                uploadedImagesDataObj.address?.documentPath
+                              );
+                            }
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: Colors.WHITE,
+                              fontSize: 14,
+                              fontWeight: "600",
+                            }}
+                          >
+                            Preview
+                          </Text>
                         </TouchableOpacity>
-                        <View style={{ width: '80%' }}>
+                        <View style={{ width: "80%" }}>
                           <DisplaySelectedImage
                             fileName={uploadedImagesDataObj.address.fileName}
                             from={"ADDRESS_PROOF"}
@@ -4153,7 +4336,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {/* GSTIN Number */}
                 {selector.enquiry_segment.toLowerCase() === "company" &&
-                  selector.customer_type.toLowerCase() === "institution" ? (
+                selector.customer_type.toLowerCase() === "institution" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -4186,9 +4369,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "7"
-                        ? Colors.RED
-                        : Colors.WHITE,
+                      openAccordian === "7" ? Colors.RED : Colors.WHITE,
                     height: 60,
                   },
                   styles.accordianBorder,
@@ -4274,6 +4455,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <TextinputComp
                       style={{ height: 65, width: "100%" }}
                       label={"Variant"}
+                      autoCapitalize="words"
                       editable={true}
                       maxLength={40}
                       value={selector.c_variant}
@@ -4317,7 +4499,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       label={"Transmission Type"}
                       value={selector.c_transmission_type}
                       onPress={() =>
-                        showDropDownModelMethod("C_TRANSMISSION_TYPE", "Transmission Type")
+                        showDropDownModelMethod(
+                          "C_TRANSMISSION_TYPE",
+                          "Transmission Type"
+                        )
                       }
                     />
 
@@ -4424,7 +4609,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
               </List.Accordion>
               {selector.buyer_type == "Additional Buyer" ||
-                selector.buyer_type == "Replacement Buyer" || selector.buyer_type == "Exchange Buyer" ? (
+              selector.buyer_type == "Replacement Buyer" ? (
                 <View style={styles.space}></View>
               ) : null}
               {/* // 8.Additional Buyer */}
@@ -4440,9 +4625,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={[
                     {
                       backgroundColor:
-                        openAccordian === "8"
-                          ? Colors.RED
-                          : Colors.WHITE,
+                        openAccordian === "8" ? Colors.RED : Colors.WHITE,
                       height: 60,
                     },
                     styles.accordianBorder,
@@ -4502,7 +4685,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.a_varient}
-                    label={"Variant"}
+                    label={"Variant*"}
+                    autoCapitalize="words"
                     maxLength={50}
                     onChangeText={(text) =>
                       dispatch(
@@ -4517,7 +4701,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.a_color}
-                    label={"Color"}
+                    autoCapitalize="words"
+                    label={"Color*"}
                     maxLength={50}
                     onChangeText={(text) =>
                       dispatch(
@@ -4562,9 +4747,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={[
                     {
                       backgroundColor:
-                        openAccordian === "9"
-                          ? Colors.RED
-                          : Colors.WHITE,
+                        openAccordian === "9" ? Colors.RED : Colors.WHITE,
                       height: 60,
                     },
                     styles.accordianBorder,
@@ -4594,16 +4777,35 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     />
                   </View>
                   {uploadedImagesDataObj.REGDOC ? (
-
-                    <View style={{ flexDirection: 'row' }}>
-                      <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                        if (uploadedImagesDataObj.REGDOC?.documentPath) {
-                          setImagePath(uploadedImagesDataObj.REGDOC?.documentPath)
-                        }
-                      }}>
-                        <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                    <View style={{ flexDirection: "row" }}>
+                      <TouchableOpacity
+                        style={{
+                          width: "20%",
+                          height: 30,
+                          backgroundColor: Colors.SKY_BLUE,
+                          borderRadius: 4,
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                        onPress={() => {
+                          if (uploadedImagesDataObj.REGDOC?.documentPath) {
+                            setImagePath(
+                              uploadedImagesDataObj.REGDOC?.documentPath
+                            );
+                          }
+                        }}
+                      >
+                        <Text
+                          style={{
+                            color: Colors.WHITE,
+                            fontSize: 14,
+                            fontWeight: "600",
+                          }}
+                        >
+                          Preview
+                        </Text>
                       </TouchableOpacity>
-                      <View style={{ width: '80%' }}>
+                      <View style={{ width: "80%" }}>
                         <DisplaySelectedImage
                           fileName={uploadedImagesDataObj.REGDOC.fileName}
                           from={"REGDOC"}
@@ -4666,6 +4868,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     style={{ height: 65, width: "100%" }}
                     label={"Variant"}
                     editable={true}
+                    autoCapitalize="words"
                     value={selector.r_varient}
                     maxLength={50}
                     onChangeText={(text) =>
@@ -4682,6 +4885,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <TextinputComp
                     style={{ height: 65, width: "100%" }}
                     label={"Color"}
+                    autoCapitalize="words"
                     editable={true}
                     maxLength={50}
                     value={selector.r_color}
@@ -4777,6 +4981,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         style={styles.textInputStyle}
                         value={selector.r_hypothication_name}
                         label={"Hypothication Name"}
+                        autoCapitalize="words"
                         keyboardType={"default"}
                         maxLength={50}
                         onChangeText={(text) =>
@@ -4793,6 +4998,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         style={styles.textInputStyle}
                         value={selector.r_hypothication_branch}
                         label={"Hypothication Branch"}
+                        autoCapitalize="words"
                         keyboardType={"default"}
                         maxLength={50}
                         onChangeText={(text) =>
@@ -4896,18 +5102,41 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         />
                       ) : null} */}
                       {uploadedImagesDataObj.insurance ? (
-
-                        <View style={{ flexDirection: 'row' }}>
-                          <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                            if (uploadedImagesDataObj.insurance?.documentPath) {
-                              setImagePath(uploadedImagesDataObj.insurance?.documentPath)
-                            }
-                          }}>
-                            <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
+                        <View style={{ flexDirection: "row" }}>
+                          <TouchableOpacity
+                            style={{
+                              width: "20%",
+                              height: 30,
+                              backgroundColor: Colors.SKY_BLUE,
+                              borderRadius: 4,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                            onPress={() => {
+                              if (
+                                uploadedImagesDataObj.insurance?.documentPath
+                              ) {
+                                setImagePath(
+                                  uploadedImagesDataObj.insurance?.documentPath
+                                );
+                              }
+                            }}
+                          >
+                            <Text
+                              style={{
+                                color: Colors.WHITE,
+                                fontSize: 14,
+                                fontWeight: "600",
+                              }}
+                            >
+                              Preview
+                            </Text>
                           </TouchableOpacity>
-                          <View style={{ width: '80%' }}>
+                          <View style={{ width: "80%" }}>
                             <DisplaySelectedImage
-                              fileName={uploadedImagesDataObj.insurance.fileName}
+                              fileName={
+                                uploadedImagesDataObj.insurance.fileName
+                              }
                               from={"INSURENCE"}
                             />
                           </View>
@@ -5006,9 +5235,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={[
                     {
                       backgroundColor:
-                        openAccordian === "10"
-                          ? Colors.RED
-                          : Colors.WHITE,
+                        openAccordian === "10" ? Colors.RED : Colors.WHITE,
                       height: 60,
                     },
                     styles.accordianBorder,
@@ -5044,7 +5271,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 mode="contained"
                 style={{ width: 120 }}
                 color={Colors.GRAY}
-
                 labelStyle={{ textTransform: "none", color: Colors.WHITE }}
                 onPress={() => setIsDropSelected(true)}
               >
@@ -5090,20 +5316,46 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
       <Modal
         animationType="fade"
-        visible={imagePath !== ''}
-        onRequestClose={() => { setImagePath('') }}
-        transparent={true}>
-        <View style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: 'rgba(0,0,0,0.7)',
-        }}>
-          <View style={{ width: '90%' }}>
-            <Image style={{ width: '100%', height: 400, borderRadius: 4 }} resizeMode="contain" source={{ uri: imagePath }} />
+        visible={imagePath !== ""}
+        onRequestClose={() => {
+          setImagePath("");
+        }}
+        transparent={true}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "rgba(0,0,0,0.7)",
+          }}
+        >
+          <View style={{ width: "90%" }}>
+            <Image
+              style={{ width: "100%", height: 400, borderRadius: 4 }}
+              resizeMode="contain"
+              source={{ uri: imagePath }}
+            />
           </View>
-          <TouchableOpacity style={{ width: 100, height: 40, justifyContent: 'center', alignItems: 'center', position: 'absolute', left: '37%', bottom: '15%', borderRadius: 5, backgroundColor: Colors.RED }} onPress={() => setImagePath('')}>
-            <Text style={{ fontSize: 14, fontWeight: '600', color: Colors.WHITE }}>Close</Text>
+          <TouchableOpacity
+            style={{
+              width: 100,
+              height: 40,
+              justifyContent: "center",
+              alignItems: "center",
+              position: "absolute",
+              left: "37%",
+              bottom: "15%",
+              borderRadius: 5,
+              backgroundColor: Colors.RED,
+            }}
+            onPress={() => setImagePath("")}
+          >
+            <Text
+              style={{ fontSize: 14, fontWeight: "600", color: Colors.WHITE }}
+            >
+              Close
+            </Text>
           </TouchableOpacity>
         </View>
       </Modal>
