@@ -79,7 +79,7 @@ const LoginScreen = ({ navigation }) => {
     if (employeeId.length === 0) {
       let object = {
         key: "EMPLOYEEID",
-        message: "Please enter username",
+        message: "Please enter Username",
       };
       dispatch(showErrorMessage(object));
       return;
@@ -88,7 +88,7 @@ const LoginScreen = ({ navigation }) => {
     if (password.length === 0) {
       let object = {
         key: "PASSWORD",
-        message: "Please enter password",
+        message: "Please enter Password",
       };
       dispatch(showErrorMessage(object));
       return;
