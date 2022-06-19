@@ -117,6 +117,7 @@ const TaskTranferScreen = () => {
     }
 
     const renderItem = (item, index) => {
+        console.log(" ======== ", item)
         return (
             <TouchableOpacity onPress={() => {
                 setShowTrasnferFromDropdowns(true);
@@ -227,7 +228,6 @@ const TaskTranferScreen = () => {
                                 setbranchDropDownItem(item.value);
                                 getTargetDeptDropDownListFromServer();
                                 setDeptDropDownList(selector.deptList.map(({ id: value, value: label, ...rest }) => ({ value, label, ...rest })));
-                                setDeptTransferFromDropDownList(selector.deptList.map(({ id: value, value: label, ...rest }) => ({ value, label, ...rest })));
                             }}
                         />
                     </View>
@@ -284,7 +284,6 @@ const TaskTranferScreen = () => {
                                 setEmployeeDropDownItem(item.label);
                                 getEmployeeDetailsFromServer();
                                 setEmployeeDropDownList(selector.employeeList.map(({ empId: value, empName: label, ...rest }) => ({ value, label, ...rest })));
-                                setEmployeeTransferFromDropDownList(selector.employeeList.map(({ id: value, value: label, ...rest }) => ({ value, label, ...rest })));
                             }}
                         />
                     </View>
@@ -370,8 +369,8 @@ const TaskTranferScreen = () => {
                                 onChange={async (item) => {
                                     console.log("£££", item);
                                     setbranchTransferFromDropDownItem(item.value);
-                                    getTargetDeptDropDownListFromServer();
-                                    setbranchTransferFromDropDownItem(selector.deptList.map(({ id: value, value: label, ...rest }) => ({ value, label, ...rest })));
+                                    getTargetbranchDropDownListFromServer();
+                                    setDeptTransferFromDropDownList(selector.deptList.map(({ id: value, value: label, ...rest }) => ({ value, label, ...rest })));
                                 }}
                             />
                         </View>
@@ -427,7 +426,7 @@ const TaskTranferScreen = () => {
                                     console.log("£££", item);
                                     setDesignationTransferFromDropDownItem(item.label);
                                     getEmployeeDetailsFromServer();
-                                    setDesignationTransferFromDropDownList(selector.employeeList.map(({ empId: value, empName: label, ...rest }) => ({ value, label, ...rest })));
+                                    setEmployeeTransferFromDropDownList(selector.employeeList.map(({ empId: value, empName: label, ...rest }) => ({ value, label, ...rest })));
                                 }}
                             />
                         </View>
@@ -453,6 +452,7 @@ const TaskTranferScreen = () => {
                                 )}
                                 onChange={async (item) => {
                                     console.log("£££", item);
+                                    setEmployeeTransferFromDropDownItem(item.label);
                                 }}
                             />
                         </View>
