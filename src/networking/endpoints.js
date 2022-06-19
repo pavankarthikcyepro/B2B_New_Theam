@@ -42,9 +42,9 @@ export const lostSubLost = "http://automatestaging-724985329.ap-south-1.elb.amaz
 export const getBranch = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/oh";
 export const downloadFile = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8093/dynamic-reports";
 export const downloadFile1 = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8095/dynamic-reports/etvbrl_report_download";
-export const tasktransfer = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8092/sales-gap/target-dropdown";
-export const getTaskList = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8081/sales/task-delegation/get_task_list";
-export const getEmployeeData = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8089/role-management/employee/dept-employees";
+export const tasktransfer = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/sales-gap/target-dropdown";
+export const getTaskList = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/task-delegation/get_task_list";
+export const getEmployeeData = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8089/role-management/employee/dept-employees";
 
 const URL = {
     LOGIN: () => hrms_url + "/emplogin",
