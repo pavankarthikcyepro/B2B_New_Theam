@@ -82,6 +82,7 @@ export const getEnquiryDetailsApi = createAsyncThunk(
 export const updateEnquiryDetailsApi = createAsyncThunk(
   "PROCEED_TO_BOOKING_SLICE/updateEnquiryDetailsApi",
   async (payload, { rejectWithValue }) => {
+    console.log("PROCEED TO BOOKING:", URL.UPDATE_ENQUIRY_DETAILS(), payload);
     const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
     const json = await response.json();
     if (!response.ok) {
