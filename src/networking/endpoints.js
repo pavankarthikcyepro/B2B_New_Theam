@@ -21,34 +21,30 @@
 // export const lostSubLost = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails"
 
 // Dev End Points
-<<<<<<< HEAD
-
-=======
->>>>>>> 0be4c32 (task transfer screen and API implementation.)
-export const hrms_url = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8088/hrms";
-export const sales_url = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8081/sales";
-export const roleManagement_url = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8089/role-management";
-export const vehicleInfoService_url = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8090/vehicle-information-service";
-export const ops_url = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8084/ops"
-export const inventory_url = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8087/inventory";
-export const vehicleServices_url = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8083/vehicle-services";
-export const admin_url = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8082/admin";
-export const notificationServices_url = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8086/notification-service";
-export const customerService_url = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8085/customer-service";
-export const dynamicReports_url = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/dynamic-reports";
-export const dynamicForms = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/dynamic-forms";
-export const orgnaizationHirarchy = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/oh";
-export const dashboard = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8092/dashboard";
-export const dfGetAll = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/df-get-all"
-export const subSourceAllDetails = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails"
-export const salesGap = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8092/sales-gap"
-export const lostSubLost = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails"
-export const getBranch = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8092/oh";
-export const downloadFile = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8093/dynamic-reports";
-export const downloadFile1 = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8095/dynamic-reports/etvbrl_report_download";
-export const tasktransfer = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/sales-gap/target-dropdown";
-export const getTaskList = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/task-delegation/get_task_list";
-export const getEmployeeData = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8089/role-management/employee/dept-employees";
+export const hrms_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8088/hrms";
+export const sales_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales";
+export const roleManagement_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8089/role-management";
+export const vehicleInfoService_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8090/vehicle-information-service";
+export const ops_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8084/ops"
+export const inventory_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8087/inventory";
+export const vehicleServices_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8083/vehicle-services";
+export const admin_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8082/admin";
+export const notificationServices_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8086/notification-service";
+export const customerService_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8085/customer-service";
+export const dynamicReports_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/dynamic-reports";
+export const dynamicForms = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/dynamic-forms";
+export const orgnaizationHirarchy = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/oh";
+export const dashboard = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard";
+export const dfGetAll = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/df-get-all"
+export const subSourceAllDetails = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Source_SubSource_AllDetails"
+export const salesGap = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/sales-gap"
+export const lostSubLost = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails"
+export const getBranch = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/oh";
+export const downloadFile = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8093/dynamic-reports";
+export const downloadFile1 = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8095/dynamic-reports/etvbrl_report_download";
+export const tasktransfer = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8092/sales-gap/target-dropdown";
+export const getTaskList = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8081/sales/task-delegation/get_task_list";
+export const getEmployeeData = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8089/role-management/employee/dept-employees";
 
 const URL = {
     LOGIN: () => hrms_url + "/emplogin",

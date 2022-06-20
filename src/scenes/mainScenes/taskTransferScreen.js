@@ -117,7 +117,6 @@ const TaskTranferScreen = () => {
     }
 
     const renderItem = (item, index) => {
-        console.log(" ======== ", item)
         return (
             <TouchableOpacity onPress={() => {
                 setShowTrasnferFromDropdowns(true);
@@ -197,7 +196,6 @@ const TaskTranferScreen = () => {
                     }}
                 />
             </View> */}
-
             <ScrollView>
                 <View style={{ width: '100%', paddingHorizontal: 15, height: 60, justifyContent: 'center' }}>
                     <Text style={{ fontSize: 18, fontWeight: 'bold' }} >Select Employee to Transfer Tasks</Text>
