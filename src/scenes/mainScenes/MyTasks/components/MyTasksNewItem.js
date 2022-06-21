@@ -72,7 +72,7 @@ const IconComp = ({ iconName, onPress }) => {
 }
 
 //export const MyTaskNewItem = ({ from = "MY_TASKS",navigator,type, uniqueId,name, status, created, dmsLead, phone, source, model, onItemPress, onDocPress }) => {
-    export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, name, status, created, dmsLead, phone, source, model, leadStatus = '', needStatus = '', onItemPress, onDocPress }) => {
+export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, name, status, created, dmsLead, phone, source, model, leadStatus = '', needStatus = '', enqCat = '', onItemPress, onDocPress }) => {
 
     let date = "";
     if (from =="MY_TASKS") {
@@ -93,7 +93,12 @@ const IconComp = ({ iconName, onPress }) => {
             <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center", position: 'relative'}}>
                 
                 <View style={{ width: "70%" }}>
-                    <Text style={styles.text1}>{name}</Text>
+                    <View style={{flexDirection: 'row'}}>
+                        <View style={{maxWidth: '73%',}}>
+                            <Text style={styles.text1}>{name}</Text>
+                        </View>
+                        <Text style={styles.catText}>{enqCat}</Text>
+                    </View>
                     <Text style={styles.text2}>{source + " - " + dmsLead}</Text>
                     <Text style={styles.text3}>{date}</Text>
                     {needStatus === "YES" &&
@@ -170,5 +175,13 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         marginBottom: 10
-    }
+    },
+    catText: {
+        color: "#7b79f6",
+        fontSize: 16,
+        fontWeight: '700',
+        marginBottom: 5,
+        marginLeft: 5,
+        textTransform: 'uppercase'
+    },
 })

@@ -681,6 +681,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             const dmsLeadDto = selector.pre_booking_details_response.dmsLeadDto;
             dispatch(getOnRoadPriceDtoListApi(dmsLeadDto.id));
             if (dmsLeadDto.leadStatus === "ENQUIRYCOMPLETED" || dmsLeadDto.leadStatus === "SENTFORAPPROVAL" || dmsLeadDto.leadStatus === "REJECTED") {
+                console.log("INSIDE ", dmsLeadDto.leadStatus);
                 setShowSubmitDropBtn(true);
             }
             if (dmsLeadDto.leadStatus === "SENTFORAPPROVAL") {
@@ -1376,22 +1377,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         postOnRoadPriceTable.form_or_pan = selector.form_or_pan;
 
         console.log("PAYLOAD:", JSON.stringify(postOnRoadPriceTable));
-        Promise.all([
-            dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable))
-        ]).then(async (res) => {
-            console.log("REF NO:", selector.refNo);
-            let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-            if (employeeData) {
-                const jsonObj = JSON.parse(employeeData);
-                const payload = {
-                    "refNo": selector.refNo,
-                    "orgId": jsonObj.orgId,
-                    "stageCompleted": "PREBOOKING"
-                }
-                console.log("PAYLOAD:", payload);
-                dispatch(updateRef(payload))
-            }
-        });
+        dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable))
+        // Promise.all([
+        //     dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable))
+        // ]).then(async (res) => {
+        //     console.log("REF NO:", selector.refNo);
+        //     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        //     if (employeeData) {
+        //         const jsonObj = JSON.parse(employeeData);
+        //         const payload = {
+        //             "refNo": selector.refNo,
+        //             "orgId": jsonObj.orgId,
+        //             "stageCompleted": "PREBOOKING"
+        //         }
+        //         console.log("PAYLOAD:", payload);
+        //         dispatch(updateRef(payload))
+        //     }
+        // });
     };
 
     // Handle On Road Price Response
@@ -1621,7 +1623,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             }
             console.log("PBK PAYLOAD:", JSON.stringify(formData));
             setTypeOfActionDispatched("UPDATE_PRE_BOOKING");
-            dispatch(updatePrebookingDetailsApi(formData));
+            // dispatch(updatePrebookingDetailsApi(formData));
+            Promise.all([
+                dispatch(updatePrebookingDetailsApi(formData))
+            ]).then(async (res) => {
+                console.log("REF NO:", selector.refNo);
+                let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+                if (employeeData) {
+                    const jsonObj = JSON.parse(employeeData);
+                    const payload = {
+                        "refNo":selector.refNo,
+                        "orgId":jsonObj.orgId,
+                        "stageCompleted":"PREBOOKING"
+                    }
+                    console.log("PAYLOAD:", payload);
+                    dispatch(updateRef(payload))
+                }
+            });
         }
     }, [selector.send_onRoad_price_details_response]);
 

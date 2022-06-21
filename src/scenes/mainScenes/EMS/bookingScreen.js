@@ -399,6 +399,7 @@ const BookingScreen = ({ navigation }) => {
                                             source={item.enquirySource}
                                             model={item.model}
                                             leadStatus={item.leadStatus}
+                                            enqCat={item.enquiryCategory}
                                             onItemPress={() =>
                                                 navigation.navigate(
                                                     AppNavigator.EmsStackIdentifiers.task360,
@@ -406,6 +407,7 @@ const BookingScreen = ({ navigation }) => {
                                                 )
                                             }
                                             onDocPress={() => {
+                                                console.log("BK DTLS:", item);
                                                 navigation.navigate(
                                                     AppNavigator.EmsStackIdentifiers.bookingForm,
                                                     { universalId: item.universalId }

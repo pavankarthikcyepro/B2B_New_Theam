@@ -343,6 +343,7 @@ const PreBookingScreen = ({ navigation }) => {
                                             model={item.model}
                                             leadStatus={item.leadStatus}
                                             needStatus={"YES"}
+                                            enqCat={item.enquiryCategory}
                                             onItemPress={() =>  {
                                                 console.log("PBK: ", JSON.stringify(item));
                                                 navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId })

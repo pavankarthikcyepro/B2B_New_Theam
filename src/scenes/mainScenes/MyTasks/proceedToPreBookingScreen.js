@@ -253,12 +253,14 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
     const callCustomerLeadReferenceApi = async () => {
 
         const payload = {
-            "branchid": userData.branchId,
-            "leadstage": identifier === "PROCEED_TO_PRE_BOOKING" ? "PREBOOKING" : "BOOKING",
-            "orgid": userData.orgId
+            branchid: userData.branchId,
+            leadstage:
+                identifier === "PROCEED_TO_PRE_BOOKING" ? "PREBOOKING" : "BOOKING",
+            orgid: userData.orgId,
+            universalId: universalId
         }
         const url = URL.CUSTOMER_LEAD_REFERENCE();
-
+        console.log("PPPLLL: ", payload);
         await fetch(url, {
             headers: {
                 'Content-Type': 'application/json',

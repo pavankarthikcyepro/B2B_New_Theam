@@ -957,7 +957,7 @@ const MainStackDrawerNavigator = () => {
             />
             <MainDrawerNavigator.Screen
                 name={DrawerStackIdentifiers.monthlyTarget}
-                component={TabNavigator}
+                component={MonthlyTargetStackNavigator}
                 initialParams={{ screen: DrawerStackIdentifiers.monthlyTarget }}
             />
             <MainDrawerNavigator.Screen
