@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, FlatList, Dimensions, Text, TouchableOpacity } from "react-native";
+import { View, StyleSheet, FlatList, Dimensions, Text, TouchableOpacity, Image } from "react-native";
 import { Colors } from "../../../../styles";
 import { TargetListComp } from "../../../../components";
 import { DropDownSelectionItem, DateSelectItem, ChartNameList, EmptyListView } from "../../../../pureComponents";
@@ -20,6 +20,10 @@ import moment from 'moment';
 
 import * as AsyncStore from '../../../../asyncStore';
 import { ScrollView } from "react-native-gesture-handler";
+import ShuffleIcon from "react-native-vector-icons/Entypo";
+import { Dropdown } from 'react-native-element-dropdown';
+import CloseIcon from "react-native-vector-icons/MaterialIcons";
+import Modal from "react-native-modal";
 
 //const paramtersTitlesData = ["Parameter", "E", "TD", "HV", "VC", "B", "Ex", "R", "F", "I", "Ex-W", "Acc.", "Ev"]
 const paramtersTitlesData = ["Parameter", "Target", "Achivement", "Achivement %", "ShortFall", "ShortFall %"]
@@ -414,6 +418,9 @@ const TargetScreen = ({ route, navigation }) => {
     const [dateDiff, setDateDiff] = useState(null);
     const [isTeamPresent, setIsTeamPresent] = useState(false);
     const [isTeam, setIsTeam] = useState(false);
+  const [showShuffleModal, setShowShuffleModal] = useState(false);
+  const [headerTitle, setHeaderTitle] = useState("Selected employees has Active tasks. Please delegate to another employee");
+  const [dropDownPlaceHolder, setDropDownPlaceHolder] = useState("Employees");
 
     useEffect(() => {
         const dateFormat = "YYYY-MM-DD";
@@ -693,7 +700,7 @@ const TargetScreen = ({ route, navigation }) => {
                             height: 40,
                             borderWidth: 1,
                             borderColor: "#d1d1d1",
-                            width: 150,
+                            width: 155,
                             justifyContent: "center",
                             alignItems: "center",
                           }}
@@ -714,9 +721,8 @@ const TargetScreen = ({ route, navigation }) => {
                           </View>
                           <View
                             style={{
-                              height: 30,
+                              height: '100%',
                               justifyContent: "center",
-                              alignItems: "center",
                               marginLeft: 10,
                               width: 80,
                             }}
@@ -732,11 +738,27 @@ const TargetScreen = ({ route, navigation }) => {
                               {item.empName}
                             </Text>
                           </View>
+
+                          <View
+                            style={{
+                              width: 30,
+                              height: 30,
+                              borderRadius: 50,
+                              justifyContent: "center",
+                              alignItems: "center",
+                              backgroundColor: color[index % color.length],
+                            }}
+                          >
+                            <TouchableOpacity activeOpacity={0.6} onPress={() => setShowShuffleModal(true)} style={{ ...styles.shuffleBGView, backgroundColor: color[index % color.length] }}>
+                              <ShuffleIcon name="shuffle" color={Colors.WHITE} size={18} />
+                            </TouchableOpacity>
+                          </View>
+                          
                         </View>
                         <View style={{ flexDirection: "row", height: 30 }}>
                           <View
                             style={{
-                              width: 50,
+                              width: 51.6,
                               justifyContent: "center",
                               alignItems: "center",
                               borderWidth: 1,
@@ -750,7 +772,7 @@ const TargetScreen = ({ route, navigation }) => {
                           </View>
                           <View
                             style={{
-                              width: 50,
+                              width: 51.6,
                               justifyContent: "center",
                               alignItems: "center",
                               borderWidth: 1,
@@ -764,7 +786,7 @@ const TargetScreen = ({ route, navigation }) => {
                           </View>
                           <View
                             style={{
-                              width: 50,
+                              width: 51.6,
                               justifyContent: "center",
                               alignItems: "center",
                               borderWidth: 1,
@@ -787,7 +809,7 @@ const TargetScreen = ({ route, navigation }) => {
                                 >
                                   <View
                                     style={{
-                                      width: 50,
+                                      width: 51.6,
                                       justifyContent: "center",
                                       alignItems: "center",
                                       borderWidth: 1,
@@ -806,7 +828,7 @@ const TargetScreen = ({ route, navigation }) => {
                                   </View>
                                   <View
                                     style={{
-                                      width: 50,
+                                      width: 51.6,
                                       justifyContent: "center",
                                       alignItems: "center",
                                       borderWidth: 1,
@@ -831,7 +853,7 @@ const TargetScreen = ({ route, navigation }) => {
                                   </View>
                                   <View
                                     style={{
-                                      width: 50,
+                                      width: 51.6,
                                       justifyContent: "center",
                                       alignItems: "center",
                                       borderWidth: 1,
@@ -871,6 +893,72 @@ const TargetScreen = ({ route, navigation }) => {
                 </ScrollView>
               </View>
             )}
+
+            <Modal isVisible={showShuffleModal}>
+              <View style={{ width: "95%", height: "60%", alignSelf: 'center', backgroundColor: 'white', borderRadius: 8 }}>
+                <View style={{
+                  flexDirection: 'row', justifyContent: 'space-between', borderWidth: 1,
+                  borderColor: "#d1d1d1",
+                  backgroundColor: "#d1d1d1",
+                  borderTopEndRadius: 8, borderTopStartRadius: 8
+                }}>
+                  <Text style={{ fontSize: 17, fontWeight: '500', margin: 10 }}>Team Shuffle</Text>
+
+                  <TouchableOpacity activeOpacity={0.6} onPress={() => {
+                    setShowShuffleModal(false);
+
+                    setHeaderTitle('Selected employees has Active tasks. Please delegate to another employee');
+                    setDropDownPlaceHolder('Employees')
+                  }}>
+                    <CloseIcon style={{ margin: 10 }} name="close" color={Colors.BLACK} size={20} />
+                  </TouchableOpacity>
+                </View>
+
+                <Text style={{ color: Colors.GRAY, marginLeft: 8 }}>{headerTitle}</Text>
+                <Dropdown
+                  style={styles.dropdownContainer}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  inputSearchStyle={styles.inputSearchStyle}
+                  iconStyle={styles.iconStyle}
+                  data={[{ label: 'hi', value: 'hello' }, { label: 'hi', value: 'hello' }, { label: 'hi', value: 'hello' }, { label: 'hi', value: 'hello' }, { label: 'hi', value: 'hello' }, { label: 'hi', value: 'hello' }]}
+                  search
+                  maxHeight={250}
+                  labelField="label"
+                  valueField="value"
+                  placeholder={dropDownPlaceHolder}
+                  searchPlaceholder="Search..."
+                  renderRightIcon={() => (
+                    <Image style={{ height: 5, width: 10 }} source={require('../../../../assets/images/Polygon.png')} />
+                  )}
+                  onChange={async (item) => {
+                    console.log("£££", item);
+                  }}
+                />
+
+                <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, marginBottom: 10, flexDirection: 'row', width: '95%', justifyContent: 'space-around' }}>
+                  {dropDownPlaceHolder === 'Employees' ?
+                    <View style={{ flexDirection: 'row', width: '95%', justifyContent: 'space-around' }}>
+                      <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 70, alignItems: 'center', justifyContent: 'center', marginLeft: 18, marginRight: 12 }}>
+                        <Text style={{ fontSize: 13, fontWeight: '300', color: Colors.RED }}>NEXT</Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 220, alignItems: 'center', justifyContent: 'center' }} onPress={() => {
+                        setHeaderTitle('Reporting Managers');
+                        setDropDownPlaceHolder('Reporting Manager')
+                      }}>
+                        <Text style={{ fontSize: 13, fontWeight: '300', color: Colors.RED }}>CONTINUE WITHOUT DELEGATING</Text>
+                      </TouchableOpacity>
+                    </View> :
+                    <View style={{ position: 'absolute', right: 0, bottom: 0 }}>
+                      <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 70, alignItems: 'center', justifyContent: 'center', marginLeft: 18, marginRight: 12 }}>
+                        <Text style={{ fontSize: 13, fontWeight: '300', color: Colors.RED }}>SUBMIT</Text>
+                      </TouchableOpacity>
+                    </View>}
+                </View>
+              </View>
+            </Modal>
+
           </View>
         ) : (
           <>
@@ -1474,6 +1562,39 @@ const styles = StyleSheet.create({
      flexDirection: 'row',
     justifyContent: 'flex-start', alignItems: 'center', height: 30, marginLeft: 10,backgroundColor:"#F5F5F5"
   },
-
-    
+  shuffleBGView: {
+    width: 30,
+    height: 30,
+    borderRadius: 60 / 2,
+    borderColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center'
+  },
+  dropdownContainer: {
+    backgroundColor: 'white',
+    padding: 13,
+    borderWidth: 1,
+    borderColor: Colors.GRAY,
+    width: '60%',
+    height: 50,
+    borderRadius: 5,
+    margin: 8,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+    color: '#000',
+    fontWeight: '400'
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
 })
