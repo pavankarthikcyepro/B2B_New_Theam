@@ -17,7 +17,7 @@ const webViewComp = ({route, navigation} ) => {
         <SafeAreaView style={styles.container}>
             <WebView
                 source={{
-                    uri: 'https://ardemoiipl.s3.ap-south-1.amazonaws.com/call/webphone/click2call.html?u=' + route.params.userNmae + '&p=' + route.params.userName +'&c='+route.params.phone+'type='+route.params.type+'&uniqueId='+route.params.uniqueId 
+                    uri: 'https://ardemoiipl.s3.ap-south-1.amazonaws.com/call/webphone/click2call.html?u=' + route.params.userNmae + '&p=' + route.params.password +'&c='+route.params.phone+'&type='+route.params.type+'&uniqueId='+route.params.uniqueId 
                 }}
                 style={{ marginTop: 0 }}
                 allowsInlineMediaPlayback

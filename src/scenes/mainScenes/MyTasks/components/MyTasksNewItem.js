@@ -45,27 +45,35 @@ const IconComp = ({ iconName, onPress }) => {
  const callWebViewRecord = async({navigator,phone, uniqueId, type}) =>{
     try{
         let extensionId = await AsyncStore.getData(AsyncStore.Keys.EXTENSION_ID);
-        let password = await AsyncStore.getData(AsyncStore.Keys.EXTENSSION_PWD);
-       // alert()
+        var password = await AsyncStore.getData(AsyncStore.Keys.EXTENSSION_PWD);        
+        password = await encodeURIComponent(password)
+      // var uri = 'https://ardemoiipl.s3.ap-south-1.amazonaws.com/call/webphone/click2call.html?u=' + extensionId + '&p=' + password + '&c=' + phone + '&type=' + type + '&uniqueId=' + uniqueId 
+
+      // await alert("phone" + phone + "  type" + type + "  uniqueId" + uniqueId + "  userName" + extensionId + "  pwd " + password)
+ //alert(uri)
+ //console.log("call recording uri=", uri)
         if(extensionId && extensionId != null && extensionId != ''){
             var granted = await navigatetoCallWebView();
             console.log("granted status", granted)
 
             if (granted)
-                navigator.navigate(AppNavigator.EmsStackIdentifiers.webViewComp, {
+            {
+                    navigator.navigate(AppNavigator.EmsStackIdentifiers.webViewComp, {
                     phone: phone,
                     type: type,
                     uniqueId: uniqueId,
                     userName: extensionId,
-                    password: password
+                    password:password
                 })
+            }
+                
 
         }
         else callNumber(phone)
        // alert(phone + uniqueId + "/" + type + "/" + password)
        
     }catch(error){
-
+      console.log("call record issue",error)
     }
     
 
