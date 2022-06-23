@@ -47,11 +47,11 @@ const IconComp = ({ iconName, onPress }) => {
         let extensionId = await AsyncStore.getData(AsyncStore.Keys.EXTENSION_ID);
         var password = await AsyncStore.getData(AsyncStore.Keys.EXTENSSION_PWD);        
         password = await encodeURIComponent(password)
-      // var uri = 'https://ardemoiipl.s3.ap-south-1.amazonaws.com/call/webphone/click2call.html?u=' + extensionId + '&p=' + password + '&c=' + phone + '&type=' + type + '&uniqueId=' + uniqueId 
+       var uri = 'https://ardemoiipl.s3.ap-south-1.amazonaws.com/call/webphone/click2call.html?u=' + extensionId + '&p=' + password + '&c=' + phone + '&type=' + type + '&uniqueId=' + uniqueId 
 
       // await alert("phone" + phone + "  type" + type + "  uniqueId" + uniqueId + "  userName" + extensionId + "  pwd " + password)
  //alert(uri)
- //console.log("call recording uri=", uri)
+ console.log("call recording uri=", uri)
         if(extensionId && extensionId != null && extensionId != ''){
             var granted = await navigatetoCallWebView();
             console.log("granted status", granted)
@@ -63,7 +63,8 @@ const IconComp = ({ iconName, onPress }) => {
                     type: type,
                     uniqueId: uniqueId,
                     userName: extensionId,
-                    password:password
+                    password:password,
+                    url: uri
                 })
             }
                 
