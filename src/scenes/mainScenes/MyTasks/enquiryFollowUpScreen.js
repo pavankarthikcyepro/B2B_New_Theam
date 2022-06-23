@@ -454,33 +454,42 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
                   </Text>
                 </View>
               )}
-              <Dropdown
-                style={[styles.dropdownContainer]}
-                placeholderStyle={styles.placeholderStyle}
-                selectedTextStyle={styles.selectedTextStyle}
-                inputSearchStyle={styles.inputSearchStyle}
-                iconStyle={styles.iconStyle}
-                data={reasonList}
-                search
-                maxHeight={300}
-                labelField="label"
-                valueField="value"
-                placeholder={"Reason*"}
-                searchPlaceholder="Search..."
-                value={defaultReasonIndex}
-                // onFocus={() => setIsFocus(true)}
-                // onBlur={() => setIsFocus(false)}
-                onChange={(val) => {
-                  console.log("£££", val);
-                  dispatch(
-                    setEnquiryFollowUpDetails({
-                      key: "REASON",
-                      text: val.value,
-                    })
-                  );
+              <View
+                style={{
+                  borderColor:
+                    isSubmitPress && selector.reason === "" ? "red" : "#fff",
+                  borderWidth: 1,
                 }}
-              />
-              <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.reason === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+              >
+                <Dropdown
+                  style={[styles.dropdownContainer]}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  inputSearchStyle={styles.inputSearchStyle}
+                  iconStyle={styles.iconStyle}
+                  data={reasonList}
+                  search
+                  maxHeight={300}
+                  labelField="label"
+                  valueField="value"
+                  placeholder={"Reason*"}
+                  searchPlaceholder="Search..."
+                  value={defaultReasonIndex}
+                  // onFocus={() => setIsFocus(true)}
+                  // onBlur={() => setIsFocus(false)}
+                  onChange={(val) => {
+                    console.log("£££", val);
+                    dispatch(
+                      setEnquiryFollowUpDetails({
+                        key: "REASON",
+                        text: val.value,
+                      })
+                    );
+                  }}
+                />
+              </View>
+
+              {/* <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.reason === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text> */}
             </View>
             {selector.reason === "Other" && (
               <TextinputComp
@@ -495,40 +504,78 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
               />
             )}
             <Text style={GlobalStyle.underline}></Text>
-
-            <TextinputComp
-              style={styles.textInputStyle}
-              label={"Customer Remarks*"}
-              maxLength={50}
-              value={selector.customer_remarks}
-              autoCapitalize={"words"}
-              onChangeText={(text) =>
-                dispatch(
-                  setEnquiryFollowUpDetails({
-                    key: "CUSTOMER_REMARKS",
-                    text: text,
-                  })
-                )
-              }
-            />
-            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.customer_remarks === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-
-            <TextinputComp
-              style={styles.textInputStyle}
-              label={"Employee Remarks*"}
-              value={selector.employee_remarks}
-              maxLength={50}
-              autoCapitalize={"words"}
-              onChangeText={(text) =>
-                dispatch(
-                  setEnquiryFollowUpDetails({
-                    key: "EMPLOYEE_REMARKS",
-                    text: text,
-                  })
-                )
-              }
-            />
-            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.employee_remarks === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+            <View
+              style={{
+                borderColor:
+                  isSubmitPress && selector.customer_remarks === ""
+                    ? "red"
+                    : "#fff",
+                borderWidth: 1,
+              }}
+            >
+              <TextinputComp
+                style={styles.textInputStyle}
+                label={"Customer Remarks*"}
+                maxLength={50}
+                value={selector.customer_remarks}
+                autoCapitalize={"words"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setEnquiryFollowUpDetails({
+                      key: "CUSTOMER_REMARKS",
+                      text: text,
+                    })
+                  )
+                }
+              />
+            </View>
+            {/* <Text
+              style={[
+                GlobalStyle.underline,
+                {
+                  backgroundColor:
+                    isSubmitPress && selector.customer_remarks === ""
+                      ? "red"
+                      : "rgba(208, 212, 214, 0.7)",
+                },
+              ]}
+            ></Text> */}
+            <View
+              style={{
+                borderColor:
+                  isSubmitPress && selector.employee_remarks === ""
+                    ? "red"
+                    : "#fff",
+                borderWidth: 1,
+              }}
+            >
+              <TextinputComp
+                style={styles.textInputStyle}
+                label={"Employee Remarks*"}
+                value={selector.employee_remarks}
+                maxLength={50}
+                autoCapitalize={"words"}
+                onChangeText={(text) =>
+                  dispatch(
+                    setEnquiryFollowUpDetails({
+                      key: "EMPLOYEE_REMARKS",
+                      text: text,
+                    })
+                  )
+                }
+              />
+            </View>
+            {/* <Text
+              style={[
+                GlobalStyle.underline,
+                {
+                  backgroundColor:
+                    isSubmitPress && selector.employee_remarks === ""
+                      ? "red"
+                      : "rgba(208, 212, 214, 0.7)",
+                },
+              ]}
+            ></Text> */}
             <DateSelectItem
               label={"Actual Start Date"}
               value={selector.actual_start_time}
@@ -537,7 +584,18 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
               // onPress={() =>
               // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
             />
-            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && (selector.actual_start_time === '' || isDateError) ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+            <Text
+              style={[
+                GlobalStyle.underline,
+                {
+                  backgroundColor:
+                    isSubmitPress &&
+                    (selector.actual_start_time === "" || isDateError)
+                      ? "red"
+                      : "rgba(208, 212, 214, 0.7)",
+                },
+              ]}
+            ></Text>
             <DateSelectItem
               label={"Actual End Date"}
               value={selector.actual_end_time}

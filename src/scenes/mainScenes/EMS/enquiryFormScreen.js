@@ -2632,14 +2632,24 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   styles.accordianBorder,
                 ]}
               >
-                <DropDownSelectionItem
-                  label={"Salutation*"}
-                  value={selector.salutation}
-                  onPress={() =>
-                    showDropDownModelMethod("SALUTATION", "Select Salutation")
-                  }
-                />
-                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.salutation === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+                <View
+                  style={{
+                    borderColor:
+                      isSubmitPress && selector.salutation === ""
+                        ? "red"
+                        : "#fff",
+                    borderWidth: 1,
+                  }}
+                >
+                  <DropDownSelectionItem
+                    label={"Salutation*"}
+                    value={selector.salutation}
+                    onPress={() =>
+                      showDropDownModelMethod("SALUTATION", "Select Salutation")
+                    }
+                  />
+                </View>
+                {/* <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.salutation === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text> */}
                 {selector.enquiry_segment.toLowerCase() == "personal" ? (
                   <DropDownSelectionItem
                     label={"Gender"}
@@ -2647,33 +2657,74 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     onPress={() => showDropDownModelMethod("GENDER", "Gender")}
                   />
                 ) : null}
-
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.firstName}
-                  label={"First Name*"}
-                  autoCapitalize="words"
-                  keyboardType={"default"}
-                  // editable={false}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setPersonalIntro({ key: "FIRST_NAME", text: text })
-                    )
-                  }
-                />
-                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.firstName === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.lastName}
-                  label={"Last Name*"}
-                  // editable={false}
-                  autoCapitalize={"words"}
-                  keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(setPersonalIntro({ key: "LAST_NAME", text: text }))
-                  }
-                />
-                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.lastName === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+                <View
+                  style={{
+                    borderColor:
+                      isSubmitPress && selector.firstName === ""
+                        ? "red"
+                        : "#fff",
+                    borderWidth: 1,
+                  }}
+                >
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.firstName}
+                    label={"First Name*"}
+                    autoCapitalize="words"
+                    keyboardType={"default"}
+                    // editable={false}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setPersonalIntro({ key: "FIRST_NAME", text: text })
+                      )
+                    }
+                  />
+                </View>
+                {/* <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.firstName === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text> */}
+                <View
+                  style={{
+                    borderColor:
+                      isSubmitPress && selector.lastName === ""
+                        ? "red"
+                        : "#fff",
+                    borderWidth: 1,
+                  }}
+                >
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.lastName}
+                    label={"Last Name*"}
+                    // editable={false}
+                    autoCapitalize={"words"}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setPersonalIntro({ key: "LAST_NAME", text: text })
+                      )
+                    }
+                  />
+                </View>
+                {/* <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.lastName === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text> */}
                 <DropDownSelectionItem
                   label={"Relation"}
                   value={selector.relation}
@@ -2695,18 +2746,36 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     )
                   }
                 />
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.mobile}
-                  label={"Mobile Number*"}
-                  // editable={false}
-                  maxLength={13}
-                  keyboardType={"phone-pad"}
-                  onChangeText={(text) =>
-                    dispatch(setPersonalIntro({ key: "MOBILE", text: text }))
-                  }
-                />
-                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.mobile === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+                <View
+                  style={{
+                    borderColor:
+                      isSubmitPress && selector.mobile === "" ? "red" : "#fff",
+                    borderWidth: 1,
+                  }}
+                >
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.mobile}
+                    label={"Mobile Number*"}
+                    // editable={false}
+                    maxLength={13}
+                    keyboardType={"phone-pad"}
+                    onChangeText={(text) =>
+                      dispatch(setPersonalIntro({ key: "MOBILE", text: text }))
+                    }
+                  />
+                </View>
+                {/* <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.mobile === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text> */}
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.alterMobile}
@@ -2796,20 +2865,40 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   }
                 />
                 <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.designation}
-                  autoCapitalize="words"
-                  label={"Designation*"}
-                  keyboardType={"default"}
-                  maxLength={40}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCustomerProfile({ key: "DESIGNATION", text: text })
-                    )
-                  }
-                />
-                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.designation === '' ? 'red' : 'rgba(208, 212, 214, 0.7)'}]}></Text>
+                <View
+                  style={{
+                    borderColor:
+                      isSubmitPress && selector.designation === ""
+                        ? "red"
+                        : "#fff",
+                    borderWidth: 1,
+                  }}
+                >
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.designation}
+                    autoCapitalize="words"
+                    label={"Designation*"}
+                    keyboardType={"default"}
+                    maxLength={40}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCustomerProfile({ key: "DESIGNATION", text: text })
+                      )
+                    }
+                  />
+                </View>
+                {/* <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.designation === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text> */}
 
                 <DropDownSelectionItem
                   label={"Enquiry Segment*"}
@@ -3004,15 +3093,34 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     )
                   }
                 />
-
-                <DropDownSelectionItem
-                  label={"Buyer Type*"}
-                  value={selector.buyer_type}
-                  onPress={() =>
-                    showDropDownModelMethod("BUYER_TYPE", "Buyer Type")
-                  }
-                />
-                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.buyer_type === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+                <View
+                  style={{
+                    borderColor:
+                      isSubmitPress && selector.buyer_type === ""
+                        ? "red"
+                        : "#fff",
+                    borderWidth: 1,
+                  }}
+                >
+                  <DropDownSelectionItem
+                    label={"Buyer Type*"}
+                    value={selector.buyer_type}
+                    onPress={() =>
+                      showDropDownModelMethod("BUYER_TYPE", "Buyer Type")
+                    }
+                  />
+                </View>
+                {/* <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.buyer_type === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text> */}
                 <DropDownSelectionItem
                   label={"KMs Travelled in Month"}
                   value={selector.kms_travelled_month}
@@ -3147,122 +3255,256 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   />
                 </View>
                 <Text style={GlobalStyle.underline}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.houseNum}
-                  label={"H.No*"}
-                  maxLength={50}
-                  keyboardType={"number-pad"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({ key: "HOUSE_NO", text: text })
-                    )
-                  }
-                />
-                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.houseNum === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                <TextinputComp
-                  style={styles.textInputStyle}
-                  value={selector.streetName}
-                  label={"Street Name*"}
-                  autoCapitalize="words"
-                  maxLength={120}
-                  keyboardType={"default"}
-                  onChangeText={(text) =>
-                    dispatch(
-                      setCommunicationAddress({
-                        key: "STREET_NAME",
-                        text: text,
-                      })
-                    )
-                  }
-                />
-                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.streetName === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+                <View
+                  style={{
+                    borderColor:
+                      isSubmitPress && selector.houseNum === ""
+                        ? "red"
+                        : "#fff",
+                    borderWidth: 1,
+                  }}
+                >
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.houseNum}
+                    label={"H.No*"}
+                    maxLength={50}
+                    keyboardType={"number-pad"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({ key: "HOUSE_NO", text: text })
+                      )
+                    }
+                  />
+                </View>
+                {/* <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.houseNum === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text> */}
+                <View
+                  style={{
+                    borderColor:
+                      isSubmitPress && selector.streetName === ""
+                        ? "red"
+                        : "#fff",
+                    borderWidth: 1,
+                  }}
+                >
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.streetName}
+                    label={"Street Name*"}
+                    autoCapitalize="words"
+                    maxLength={120}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "STREET_NAME",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                </View>
+                {/* <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.streetName === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text> */}
                 {/* {selector.isAddressSet && ( */}
                 <>
-                  <TextinputComp
-                    style={styles.textInputStyle}
-                    value={selector.village}
-                    label={"Village/Town*"}
-                    autoCapitalize="words"
-                    maxLength={50}
-                    keyboardType={"default"}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setCommunicationAddress({
-                          key: "VILLAGE",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.village === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-
-                  <TextinputComp
-                    style={styles.textInputStyle}
-                    value={selector.mandal}
-                    label={"Mandal*"}
-                    autoCapitalize="words"
-                    maxLength={50}
-                    keyboardType={"default"}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setCommunicationAddress({
-                          key: "MANDAL",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.mandal === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-
-                  <TextinputComp
-                    style={styles.textInputStyle}
-                    value={selector.city}
-                    label={"City*"}
-                    autoCapitalize="words"
-                    maxLength={50}
-                    keyboardType={"default"}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setCommunicationAddress({ key: "CITY", text: text })
-                      )
-                    }
-                  />
-                  <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.city === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                  <TextinputComp
-                    style={styles.textInputStyle}
-                    value={selector.district}
-                    label={"District*"}
-                    autoCapitalize="words"
-                    maxLength={50}
-                    keyboardType={"default"}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setCommunicationAddress({
-                          key: "DISTRICT",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.district === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                  <TextinputComp
-                    style={styles.textInputStyle}
-                    value={selector.state}
-                    label={"State*"}
-                    autoCapitalize="words"
-                    maxLength={50}
-                    keyboardType={"default"}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setCommunicationAddress({
-                          key: "STATE",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.state === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+                  <View
+                    style={{
+                      borderColor:
+                        isSubmitPress && selector.village === ""
+                          ? "red"
+                          : "#fff",
+                      borderWidth: 1,
+                    }}
+                  >
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.village}
+                      label={"Village/Town*"}
+                      autoCapitalize="words"
+                      maxLength={50}
+                      keyboardType={"default"}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "VILLAGE",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                  </View>
+                  {/* <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.village === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text> */}
+                  <View
+                    style={{
+                      borderColor:
+                        isSubmitPress && selector.mandal === ""
+                          ? "red"
+                          : "#fff",
+                      borderWidth: 1,
+                    }}
+                  >
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.mandal}
+                      label={"Mandal*"}
+                      autoCapitalize="words"
+                      maxLength={50}
+                      keyboardType={"default"}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "MANDAL",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                  </View>
+                  {/* <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.mandal === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text> */}
+                  <View
+                    style={{
+                      borderColor:
+                        isSubmitPress && selector.city === "" ? "red" : "#fff",
+                      borderWidth: 1,
+                    }}
+                  >
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.city}
+                      label={"City*"}
+                      autoCapitalize="words"
+                      maxLength={50}
+                      keyboardType={"default"}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setCommunicationAddress({ key: "CITY", text: text })
+                        )
+                      }
+                    />
+                  </View>
+                  {/* <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.city === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text> */}
+                  <View
+                    style={{
+                      borderColor:
+                        isSubmitPress && selector.district === ""
+                          ? "red"
+                          : "#fff",
+                      borderWidth: 1,
+                    }}
+                  >
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.district}
+                      label={"District*"}
+                      autoCapitalize="words"
+                      maxLength={50}
+                      keyboardType={"default"}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "DISTRICT",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                  </View>
+                  {/* <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.district === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text> */}
+                  <View
+                    style={{
+                      borderColor:
+                        isSubmitPress && selector.state === "" ? "red" : "#fff",
+                      borderWidth: 1,
+                    }}
+                  >
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.state}
+                      label={"State*"}
+                      autoCapitalize="words"
+                      maxLength={50}
+                      keyboardType={"default"}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "STATE",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                  </View>
+                  {/* <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.state === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text> */}
                 </>
                 {/* )} */}
                 <View
@@ -3316,27 +3558,47 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {/* {selector.is_permanent_address_same === "NO" ? ( */}
                 <View>
-                  <TextinputComp
-                    style={styles.textInputStyle}
-                    value={selector.p_pincode}
-                    label={"Pincode*"}
-                    maxLength={6}
-                    keyboardType={"phone-pad"}
-                    onChangeText={(text) => {
-                      if (text.length === 6) {
-                        updateAddressDetails2(text);
-                      }
-                      dispatch(
-                        dispatch(
-                          setCommunicationAddress({
-                            key: "P_PINCODE",
-                            text: text,
-                          })
-                        )
-                      );
+                  <View
+                    style={{
+                      borderColor:
+                        isSubmitPress && selector.p_pincode === ""
+                          ? "red"
+                          : "#fff",
+                      borderWidth: 1,
                     }}
-                  />
-                  <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_pincode === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+                  >
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.p_pincode}
+                      label={"Pincode*"}
+                      maxLength={6}
+                      keyboardType={"phone-pad"}
+                      onChangeText={(text) => {
+                        if (text.length === 6) {
+                          updateAddressDetails2(text);
+                        }
+                        dispatch(
+                          dispatch(
+                            setCommunicationAddress({
+                              key: "P_PINCODE",
+                              text: text,
+                            })
+                          )
+                        );
+                      }}
+                    />
+                  </View>
+                  {/* <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.p_pincode === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text> */}
 
                   {addressData2.length > 0 && (
                     <>
@@ -3394,23 +3656,42 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     />
                   </View>
                   <Text style={GlobalStyle.underline}></Text>
-
-                  <TextinputComp
-                    style={styles.textInputStyle}
-                    label={"H.No*"}
-                    keyboardType={"number-pad"}
-                    maxLength={50}
-                    value={selector.p_houseNum}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setCommunicationAddress({
-                          key: "P_HOUSE_NO",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_houseNum === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+                  <View
+                    style={{
+                      borderColor:
+                        isSubmitPress && selector.p_houseNum === ""
+                          ? "red"
+                          : "#fff",
+                      borderWidth: 1,
+                    }}
+                  >
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      label={"H.No*"}
+                      keyboardType={"number-pad"}
+                      maxLength={50}
+                      value={selector.p_houseNum}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "P_HOUSE_NO",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                  </View>
+                  {/* <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.p_houseNum === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text> */}
                   <TextinputComp
                     style={styles.textInputStyle}
                     label={"Street Name*"}
@@ -3428,23 +3709,43 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     }
                   />
                   <Text style={GlobalStyle.underline}></Text>
-                  <TextinputComp
-                    style={styles.textInputStyle}
-                    value={selector.p_village}
-                    label={"Village/Town*"}
-                    autoCapitalize="words"
-                    maxLength={50}
-                    keyboardType={"default"}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setCommunicationAddress({
-                          key: "P_VILLAGE",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_village === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+                  <View
+                    style={{
+                      borderColor:
+                        isSubmitPress && selector.p_village === ""
+                          ? "red"
+                          : "#fff",
+                      borderWidth: 1,
+                    }}
+                  >
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.p_village}
+                      label={"Village/Town*"}
+                      autoCapitalize="words"
+                      maxLength={50}
+                      keyboardType={"default"}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "P_VILLAGE",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                  </View>
+                  {/* <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.p_village === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text> */}
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.p_mandal}
@@ -3462,57 +3763,117 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     }
                   />
                   <Text style={GlobalStyle.underline}></Text>
-                  <TextinputComp
-                    style={styles.textInputStyle}
-                    value={selector.p_city}
-                    label={"City*"}
-                    autoCapitalize="words"
-                    maxLength={50}
-                    keyboardType={"default"}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setCommunicationAddress({
-                          key: "P_CITY",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_city === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                  <TextinputComp
-                    style={styles.textInputStyle}
-                    value={selector.p_district}
-                    label={"District*"}
-                    autoCapitalize="words"
-                    maxLength={50}
-                    keyboardType={"default"}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setCommunicationAddress({
-                          key: "P_DISTRICT",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_district === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                  <TextinputComp
-                    style={styles.textInputStyle}
-                    value={selector.p_state}
-                    label={"State*"}
-                    autoCapitalize="words"
-                    maxLength={50}
-                    keyboardType={"default"}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setCommunicationAddress({
-                          key: "P_STATE",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_state === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+                  <View
+                    style={{
+                      borderColor:
+                        isSubmitPress && selector.p_city === ""
+                          ? "red"
+                          : "#fff",
+                      borderWidth: 1,
+                    }}
+                  >
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.p_city}
+                      label={"City*"}
+                      autoCapitalize="words"
+                      maxLength={50}
+                      keyboardType={"default"}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "P_CITY",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                  </View>
+                  {/* <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.p_city === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text> */}
+                  <View
+                    style={{
+                      borderColor:
+                        isSubmitPress && selector.p_district === ""
+                          ? "red"
+                          : "#fff",
+                      borderWidth: 1,
+                    }}
+                  >
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.p_district}
+                      label={"District*"}
+                      autoCapitalize="words"
+                      maxLength={50}
+                      keyboardType={"default"}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "P_DISTRICT",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                  </View>
+                  {/* <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.p_district === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text> */}
+                  <View
+                    style={{
+                      borderColor:
+                        isSubmitPress && selector.p_state === ""
+                          ? "red"
+                          : "#fff",
+                      borderWidth: 1,
+                    }}
+                  >
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.p_state}
+                      label={"State*"}
+                      autoCapitalize="words"
+                      maxLength={50}
+                      keyboardType={"default"}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "P_STATE",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                  </View>
+                  {/* <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.p_state === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text> */}
                 </View>
                 {/* ) : null} */}
               </List.Accordion>
@@ -3535,45 +3896,138 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   styles.accordianBorder,
                 ]}
               >
-                <DropDownSelectionItem
-                  label={"Model*"}
-                  value={selector.model}
-                  onPress={() =>
-                    showDropDownModelMethod("MODEL", "Select Model")
-                  }
-                />
-                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.model === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                <DropDownSelectionItem
-                  label={"Variant*"}
-                  value={selector.varient}
-                  onPress={() =>
-                    showDropDownModelMethod("VARIENT", "Select Variant")
-                  }
-                />
-                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.varient === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                <DropDownSelectionItem
-                  label={"Color*"}
-                  value={selector.color}
-                  onPress={() =>
-                    showDropDownModelMethod("COLOR", "Select Color")
-                  }
-                />
-                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.color === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                <TextinputComp
-                  style={{ height: 65, width: "100%" }}
-                  label={"Fuel Type"}
-                  editable={false}
-                  value={selector.fuel_type}
-                />
-                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.fuel_type === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-
-                <TextinputComp
-                  style={{ height: 65, width: "100%" }}
-                  label={"Transmission Type"}
-                  editable={false}
-                  value={selector.transmission_type}
-                />
-                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.transmission_type === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+                <View
+                  style={{
+                    borderColor:
+                      isSubmitPress && selector.model === "" ? "red" : "#fff",
+                    borderWidth: 1,
+                  }}
+                >
+                  <DropDownSelectionItem
+                    label={"Model*"}
+                    value={selector.model}
+                    onPress={() =>
+                      showDropDownModelMethod("MODEL", "Select Model")
+                    }
+                  />
+                </View>
+                {/* <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.model === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text> */}
+                <View
+                  style={{
+                    borderColor:
+                      isSubmitPress && selector.varient === "" ? "red" : "#fff",
+                    borderWidth: 1,
+                  }}
+                >
+                  <DropDownSelectionItem
+                    label={"Variant*"}
+                    value={selector.varient}
+                    onPress={() =>
+                      showDropDownModelMethod("VARIENT", "Select Variant")
+                    }
+                  />
+                </View>
+                {/* <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.varient === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text> */}
+                <View
+                  style={{
+                    borderColor:
+                      isSubmitPress && selector.color === "" ? "red" : "#fff",
+                    borderWidth: 1,
+                  }}
+                >
+                  <DropDownSelectionItem
+                    label={"Color*"}
+                    value={selector.color}
+                    onPress={() =>
+                      showDropDownModelMethod("COLOR", "Select Color")
+                    }
+                  />
+                </View>
+                {/* <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.color === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text> */}
+                <View
+                  style={{
+                    borderColor:
+                      isSubmitPress && selector.fuel_type === ""
+                        ? "red"
+                        : "#fff",
+                    borderWidth: 1,
+                  }}
+                >
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    label={"Fuel Type"}
+                    editable={false}
+                    value={selector.fuel_type}
+                  />
+                </View>
+                {/* <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.fuel_type === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text> */}
+                <View
+                  style={{
+                    borderColor:
+                      isSubmitPress && selector.transmission_type === ""
+                        ? "red"
+                        : "#fff",
+                    borderWidth: 1,
+                  }}
+                >
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    label={"Transmission Type"}
+                    editable={false}
+                    value={selector.transmission_type}
+                  />
+                </View>
+                {/* <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.transmission_type === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text> */}
               </List.Accordion>
               <View style={styles.space}></View>
               {/* // 5. Financial Details*/}
@@ -3594,14 +4048,37 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   styles.accordianBorder,
                 ]}
               >
-                <DropDownSelectionItem
-                  label={"Retail Finance*"}
-                  value={selector.retail_finance}
-                  onPress={() =>
-                    showDropDownModelMethod("RETAIL_FINANCE", "Retail Finance")
-                  }
-                />
-                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.retail_finance === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+                <View
+                  style={{
+                    borderColor:
+                      isSubmitPress && selector.retail_finance === ""
+                        ? "red"
+                        : "#fff",
+                    borderWidth: 1,
+                  }}
+                >
+                  <DropDownSelectionItem
+                    label={"Retail Finance*"}
+                    value={selector.retail_finance}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "RETAIL_FINANCE",
+                        "Retail Finance"
+                      )
+                    }
+                  />
+                </View>
+                {/* <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.retail_finance === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text> */}
                 {selector.retail_finance === "Out House" ? (
                   <View>
                     <TextinputComp
@@ -4608,6 +5085,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
                 <Text style={GlobalStyle.underline}></Text>
               </List.Accordion>
+              <View style={styles.space}></View>
               {selector.buyer_type == "Additional Buyer" ||
               selector.buyer_type == "Replacement Buyer" ? (
                 <View style={styles.space}></View>
@@ -4733,9 +5211,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <Text style={GlobalStyle.underline}></Text>
                 </List.Accordion>
               ) : null}
-
+              <View style={styles.space}></View>
               {/* // 9.Replacement Buyer */}
-              {selector.buyer_type == "Replacement Buyer" || selector.buyer_type == "Exchange Buyer" ? (
+              {selector.buyer_type == "Replacement Buyer" ||
+              selector.buyer_type == "Exchange Buyer" ? (
                 <List.Accordion
                   id={"9"}
                   title={"Exchange Buyer"}
@@ -4753,23 +5232,43 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     styles.accordianBorder,
                   ]}
                 >
-                  <TextinputComp
-                    style={styles.textInputStyle}
-                    value={selector.r_reg_no}
-                    label={"Reg. No.*"}
-                    maxLength={12}
-                    keyboardType={"default"}
-                    autoCapitalize={"characters"}
-                    onChangeText={(text) =>
-                      dispatch(
-                        setReplacementBuyerDetails({
-                          key: "R_REG_NO",
-                          text: text,
-                        })
-                      )
-                    }
-                  />
-                  <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.r_reg_no === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+                  <View
+                    style={{
+                      borderColor:
+                        isSubmitPress && selector.r_reg_no === ""
+                          ? "red"
+                          : "#fff",
+                      borderWidth: 1,
+                    }}
+                  >
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.r_reg_no}
+                      label={"Reg. No.*"}
+                      maxLength={12}
+                      keyboardType={"default"}
+                      autoCapitalize={"characters"}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setReplacementBuyerDetails({
+                            key: "R_REG_NO",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                  </View>
+                  {/* <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.r_reg_no === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text> */}
                   <View style={styles.select_image_bck_vw}>
                     <ImageSelectItem
                       name={"Upload Reg Doc"}

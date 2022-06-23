@@ -374,30 +374,38 @@ const HomeVisitScreen = ({ route, navigation }) => {
                   </Text>
                 </View>
               )}
-              <Dropdown
-                style={[styles.dropdownContainer]}
-                placeholderStyle={styles.placeholderStyle}
-                selectedTextStyle={styles.selectedTextStyle}
-                inputSearchStyle={styles.inputSearchStyle}
-                iconStyle={styles.iconStyle}
-                data={reasonList}
-                search
-                maxHeight={300}
-                labelField="label"
-                valueField="value"
-                placeholder={"Reason*"}
-                searchPlaceholder="Search..."
-                value={defaultReasonIndex}
-                // onFocus={() => setIsFocus(true)}
-                // onBlur={() => setIsFocus(false)}
-                onChange={(val) => {
-                  console.log("£££", val);
-                  dispatch(
-                    setHomeVisitDetails({ key: "REASON", text: val.value })
-                  );
+              <View
+                style={{
+                  borderColor:
+                    isSubmitPress && selector.reason === "" ? "red" : "#fff",
+                  borderWidth: 1,
                 }}
-              />
-              <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.reason === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+              >
+                <Dropdown
+                  style={[styles.dropdownContainer]}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  inputSearchStyle={styles.inputSearchStyle}
+                  iconStyle={styles.iconStyle}
+                  data={reasonList}
+                  search
+                  maxHeight={300}
+                  labelField="label"
+                  valueField="value"
+                  placeholder={"Reason*"}
+                  searchPlaceholder="Search..."
+                  value={defaultReasonIndex}
+                  // onFocus={() => setIsFocus(true)}
+                  // onBlur={() => setIsFocus(false)}
+                  onChange={(val) => {
+                    console.log("£££", val);
+                    dispatch(
+                      setHomeVisitDetails({ key: "REASON", text: val.value })
+                    );
+                  }}
+                />
+              </View>
+              {/* <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.reason === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text> */}
             </View>
             {selector.reason === "Other" && (
               <TextinputComp
@@ -412,41 +420,102 @@ const HomeVisitScreen = ({ route, navigation }) => {
               />
             )}
             <Text style={GlobalStyle.underline}></Text>
-            <TextinputComp
-              style={styles.textInputStyle}
-              label={"Customer Remarks*"}
-              maxLength={50}
-              value={selector.customer_remarks}
-              autoCapitalize="words"
-              onChangeText={(text) =>
-                dispatch(
-                  setHomeVisitDetails({ key: "CUSTOMER_REMARKS", text: text })
-                )
-              }
-            />
-            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.customer_remarks === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-            <TextinputComp
-              style={styles.textInputStyle}
-              label={"Employee Remarks*"}
-              autoCapitalize="words"
-              maxLength={50}
-              value={selector.employee_remarks}
-              onChangeText={(text) =>
-                dispatch(
-                  setHomeVisitDetails({ key: "EMPLOYEE_REMARKS", text: text })
-                )
-              }
-            />
-            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.employee_remarks === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-            <DateSelectItem
-              label={"Actual Start Date"}
-              value={selector.actual_start_time}
-              onPress={() => dispatch(setDatePicker("ACTUAL_START_TIME"))}
-            //  value={selector.expected_delivery_date}
-            // onPress={() =>
-            // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
-            />
-            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && (selector.actual_start_time === '' || isDateError) ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+            <View
+              style={{
+                borderColor:
+                  isSubmitPress && selector.customer_remarks === ""
+                    ? "red"
+                    : "#fff",
+                borderWidth: 1,
+              }}
+            >
+              <TextinputComp
+                style={styles.textInputStyle}
+                label={"Customer Remarks*"}
+                maxLength={50}
+                value={selector.customer_remarks}
+                autoCapitalize="words"
+                onChangeText={(text) =>
+                  dispatch(
+                    setHomeVisitDetails({ key: "CUSTOMER_REMARKS", text: text })
+                  )
+                }
+              />
+            </View>
+            {/* <Text
+              style={[
+                GlobalStyle.underline,
+                {
+                  backgroundColor:
+                    isSubmitPress && selector.customer_remarks === ""
+                      ? "red"
+                      : "rgba(208, 212, 214, 0.7)",
+                },
+              ]}
+            ></Text> */}
+            <View
+              style={{
+                borderColor:
+                  isSubmitPress && selector.employee_remarks === ""
+                    ? "red"
+                    : "#fff",
+                borderWidth: 1,
+              }}
+            >
+              <TextinputComp
+                style={styles.textInputStyle}
+                label={"Employee Remarks*"}
+                autoCapitalize="words"
+                maxLength={50}
+                value={selector.employee_remarks}
+                onChangeText={(text) =>
+                  dispatch(
+                    setHomeVisitDetails({ key: "EMPLOYEE_REMARKS", text: text })
+                  )
+                }
+              />
+            </View>
+            {/* <Text
+              style={[
+                GlobalStyle.underline,
+                {
+                  backgroundColor:
+                    isSubmitPress && selector.employee_remarks === ""
+                      ? "red"
+                      : "rgba(208, 212, 214, 0.7)",
+                },
+              ]}
+            ></Text> */}
+            <View
+              style={{
+                borderColor:
+                  isSubmitPress && selector.actual_start_time === ""
+                    ? "red"
+                    : "#fff",
+                borderWidth: 1,
+              }}
+            >
+              <DateSelectItem
+                label={"Actual Start Date"}
+                value={selector.actual_start_time}
+                onPress={() => dispatch(setDatePicker("ACTUAL_START_TIME"))}
+                //  value={selector.expected_delivery_date}
+                // onPress={() =>
+                // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
+              />
+            </View>
+            {/* <Text
+              style={[
+                GlobalStyle.underline,
+                {
+                  backgroundColor:
+                    isSubmitPress &&
+                    (selector.actual_start_time === "" || isDateError)
+                      ? "red"
+                      : "rgba(208, 212, 214, 0.7)",
+                },
+              ]}
+            ></Text> */}
             <DateSelectItem
               label={"Actual End Date"}
               value={selector.actual_end_time}

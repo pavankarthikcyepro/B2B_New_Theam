@@ -72,9 +72,9 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", name, status, created, dmsLea
             {needStatus === "YES" && (
               <View
                 style={{
-                  height: 13,
-                  width: 13,
-                  borderRadius: 10,
+                  height: 18,
+                  width: 18,
+                  borderRadius: 4,
                   backgroundColor:
                     leadStatus === "PREENQUIRYCOMPLETED" ||
                     leadStatus === "ENQUIRYCOMPLETED" ||
@@ -84,7 +84,7 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", name, status, created, dmsLea
                       : "#f29a22",
                   position: "absolute",
                   top: 4,
-                  right: 242,
+                  right: -12,
                 }}
               ></View>
             )}
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
         color: Colors.BLACK,
         fontSize: 16,
         fontWeight: '700',
-        left:12,
+        // left:5,
         marginBottom: 5
     },
     text2: {
