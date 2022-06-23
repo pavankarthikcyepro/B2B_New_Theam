@@ -272,6 +272,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     varient: "",
     color: "",
     fuel_type: "",
+    dmsLeadProducts:[],
     transmission_type: "",
     model_drop_down_data_update_statu: "",
     // financial details
@@ -1180,6 +1181,16 @@ const enquiryDetailsOverViewSlice = createSlice({
       let dataObj: any = {};
       if (dmsLeadProducts.length > 0) {
         dataObj = { ...dmsLeadProducts[0] };
+       // dmsLeadProducts[0] = dmsLeadProducts[0]
+       // dmsLeadProducts[1]= dmsLeadProducts[0]
+        // const dms = [{ "color": "Outback Bronze", "fuel": "Petrol", "id": 2704, "model": "Kwid",
+        //  "transimmisionType": "Manual", "variant": "KWID RXT 1.0L EASY- R BS6 ORVM MY22" },
+        //   { "color": "Caspian Blue", "fuel": "Petrol", "id": 1833, "model": "Kiger", "transimmisionType": "Automatic", 
+        //   "variant": "Rxt 1.0L Ece Easy-R Ece My22" }]
+        state.dmsLeadProducts = dmsLeadProducts
+        console.log("dmm model products------------", state.dmsLeadProducts)
+
+       // state.dmsLeadProducts[1] = dmsLeadProducts[0]
       }
       state.lead_product_id = dataObj.id ? dataObj.id : 0;
       if (dataObj.model) {

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import {
-  SafeAreaView,
+  SafeAreaView, FlatList,
   StyleSheet,
   View,
   Text,
@@ -22,7 +22,7 @@ import {
   Checkbox,
   IconButton,
   List,
-  Button,
+  Button, Divider
 } from "react-native-paper";
 import { Colors, GlobalStyle } from "../../../styles";
 import VectorImage from "react-native-vector-image";
@@ -32,6 +32,7 @@ import {
   DropDownComponant,
   DatePickerComponent,
 } from "../../../components";
+import { ModelListitemCom } from "./components/ModelListitemCom";
 import {
   clearState,
   setEditable,
@@ -177,6 +178,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     employeeName: "",
   });
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
+  const [modelsList, setModelsList] = useState([]);
+
   const [typeOfActionDispatched, setTypeOfActionDispatched] = useState("");
   const [minOrMaxDate, setMinOrMaxDate] = useState({
     minDate: null,
@@ -338,7 +341,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     getBranchId();
     setComponentAppear(true);
     getCustomerType();
-
+ const dms = [{ "color": "Outback Bronze", "fuel": "Petrol", "id": 2704, "model": "Kwid",
+          "transimmisionType": "Manual", "variant": "KWID RXT 1.0L EASY- R BS6 ORVM MY22" },
+           { "color": "Caspian Blue", "fuel": "Petrol", "id": 1833, "model": "Kiger", "transimmisionType": "Automatic", 
+          "variant": "Rxt 1.0L Ece Easy-R Ece My22" }]
+          setModelsList(dms)
     BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
     // return () => {
     //   BackHandler.removeEventListener(
@@ -3537,14 +3544,36 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   styles.accordianBorder,
                 ]}
               >
-                <DropDownSelectionItem
-                  label={"Model*"}
-                  value={selector.model}
-                  onPress={() =>
-                    showDropDownModelMethod("MODEL", "Select Model")
-                  }
-                />
-                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.model === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+                <View style={{marginHorizontal:5}}>
+                  <FlatList
+                  //  style={{ height: faltListHeight }}
+                    data={modelsList}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({ item, index }) => {
+                      return (
+                        // <Pressable onPress={() => selectedItem(item, index)}>
+                          < View >                           
+                          
+                            <ModelListitemCom 
+                            dmsProducts={item}/>
+                        
+                            {/* <Divider /> */}
+                          </View>
+                        // </Pressable>
+                      )
+                    }}
+                  />
+                  <DropDownSelectionItem
+                    label={"Model*"}
+                    value={selector.model}
+                    onPress={() =>
+                      showDropDownModelMethod("MODEL", "Select Model")
+                    }
+                  />
+                  <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.model === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+                
+                </View>
+               
                 <DropDownSelectionItem
                   label={"Variant*"}
                   value={selector.varient}
