@@ -137,7 +137,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
             const payload2 = {
                 "empId": jsonObj.empId,
                 "pageNo": 1,
-                "size": 1000,
+                "size": 500,
                 "targetType": selector.targetType
             }
             const dateFormat = "YYYY-MM-DD";

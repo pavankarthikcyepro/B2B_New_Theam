@@ -727,7 +727,7 @@ const TargetScreen = ({ route, navigation }) => {
                                 color: color[index % color.length],
                                 fontWeight: "600",
                               }}
-                              // numberOfLines={1}
+                              numberOfLines={1}
                             >
                               {item.empName}
                             </Text>

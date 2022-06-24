@@ -8,7 +8,8 @@ import {
     Dimensions,
     Pressable,
     ActivityIndicator,
-    RefreshControl
+    RefreshControl,
+    TextInput
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { MyTaskItem } from "../../../pureComponents/myTaskItem";
@@ -34,9 +35,13 @@ const mytasksIdentifires = {
 const TaskListScreen = ({ route, navigation }) => {
     const dispatch = useDispatch();
     const [employeeId, setEmployeeId] = useState("");
+    const [searchedData, setSearchedData] = useState([]);
 
     useEffect(() => {
-    }, []);
+        navigation.addListener('focus', () => {
+            setSearchedData(route.params.data);
+        })
+    }, [navigation]);
 
     const itemClicked = (item) => {
 
@@ -96,8 +101,35 @@ const TaskListScreen = ({ route, navigation }) => {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.view1}>
+                <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                    <View style={{ width: '90%', height: 40, borderWidth: 1, borderColor: '#333', borderRadius: 5, justifyContent: 'center', paddingHorizontal: 15, marginBottom: 10, marginTop: 5 }}>
+                        <TextInput
+                            style={{ color: '#333', fontSize: 15, fontWeight: '500' }}
+                            placeholder={"Search"}
+                            placeholderTextColor={"#333"}
+                            onChangeText={(text) => {
+                                if(text.trim() === ''){
+                                    setSearchedData(route.params.data);
+                                }
+                                else{
+                                    console.log(route.params.data[0]);
+                                    let tempData = [];
+                                    tempData = route.params.data.filter(item => {
+                                        return item.customerName.toLowerCase().includes(text.toLowerCase()) || item.salesExecutive.toLowerCase().includes(text.toLowerCase())
+                                    })
+                                    if(tempData.length > 0){
+                                        setSearchedData([...tempData])
+                                    }
+                                    else{
+                                        setSearchedData([])
+                                    }
+                                }
+                            }}
+                        />
+                    </View>
+                </View>
                 <FlatList
-                    data={route.params.data}
+                    data={searchedData}
                     keyExtractor={(item, index) => index.toString()}
                     showsVerticalScrollIndicator={false}
                     onEndReachedThreshold={0}

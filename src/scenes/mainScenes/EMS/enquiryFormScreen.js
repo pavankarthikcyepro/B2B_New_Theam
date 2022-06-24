@@ -242,7 +242,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   useEffect(() => {
     const interval = setInterval(() => {
       // if (enqDetails?.leadStage === "ENQUIRY" && enqDetails?.leadStatus === null) {
-        updateEnquiry()
+      updateEnquiry()
       // }
     }, 10000);
     return () => {
@@ -804,10 +804,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dmsLeadDto.firstName = selector.firstName;
       dmsLeadDto.lastName = selector.lastName;
       dmsLeadDto.phone = selector.mobile;
-      if (enqDetails.leadStage === 'ENQUIRY' && enqDetails.leadStatus === null){
+      if (enqDetails.leadStage === 'ENQUIRY' && enqDetails.leadStatus === null) {
         dmsLeadDto.leadStage = "ENQUIRY";
         dmsLeadDto.leadStatus = null;
-      }      
+      }
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
@@ -1951,9 +1951,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         if (
           element.taskName === "Evaluation" &&
           (element.taskStatus === "" || element.taskStatus === "ASSIGNED") &&
-          selector.enquiry_details_response.dmsLeadDto.buyerType ===
+          (selector.enquiry_details_response.dmsLeadDto.buyerType ===
           "Replacement Buyer" || selector.enquiry_details_response.dmsLeadDto.buyerType ===
-          "Exchange Buyer"
+          "Exchange Buyer")
         ) {
           pendingTaskNames.push("Evaluation : Pending \n");
         }
@@ -2814,7 +2814,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     )
                   }
                 />
-                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.designation === '' ? 'red' : 'rgba(208, 212, 214, 0.7)'}]}></Text>
+                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.designation === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
 
                 <DropDownSelectionItem
                   label={"Enquiry Segment*"}

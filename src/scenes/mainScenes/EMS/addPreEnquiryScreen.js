@@ -426,10 +426,10 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             showToastRedAlert("Please select source of lead");
             return;
         }
-        if (selector.subSourceOfEnquiry.length == 0) {
-            showToastRedAlert("Please select sub source of lead");
-            return;
-        }
+        // if (selector.sourceOfEnquiry.length > 0 && selector.subSourceOfEnquiry.length == 0) {
+        //     showToastRedAlert("Please select sub source of lead");
+        //     return;
+        // }
         if (selector.enquiryType === "Personal") {
             if (selector.customerType === "Government") {
                if (selector.companyName.length > 0 && !isValidateAlphabetics(selector.companyName))  {
@@ -1133,9 +1133,9 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                             }
                         />
                         <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.sourceOfEnquiry === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                        {/* {subSourceData.length > 0 && ( */}
+                        {subSourceData.length > 0 && (
                             <DropDownSelectionItem
-                                label={"Sub Source of Lead*"}
+                                label={"Sub Source of Lead"}
                                 value={selector.subSourceOfEnquiry}
                                 // disabled={fromEdit}
                                 onPress={() =>
@@ -1145,8 +1145,9 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                                     )
                                 }
                             />
-                        {/* )} */}
-                        <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.subSourceOfEnquiry === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+                        )}
+                        <Text style={[GlobalStyle.underline]}></Text>
+                        {/* <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.subSourceOfEnquiry === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text> */}
                         {selector.sourceOfEnquiry === "Other" ? (
                             <View>
                                 <TextinputComp

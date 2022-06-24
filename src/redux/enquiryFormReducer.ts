@@ -163,8 +163,12 @@ export const getPendingTasksApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/getPendingTasksApi",
   async (endUrl, { rejectWithValue }) => {
     const url = URL.TASKS_PRE_ENQUIRY() + endUrl;
+    console.log("$$$URL: ", url);
+    
     const response = await client.get(url);
     const json = await response.json();
+    console.log("RES:", JSON.stringify(json));
+    
     if (!response.ok) {
       return rejectWithValue(json);
     }
