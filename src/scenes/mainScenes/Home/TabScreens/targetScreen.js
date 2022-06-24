@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, FlatList, Dimensions, Text, TouchableOpacity, Image } from "react-native";
+import { View, StyleSheet, FlatList, Dimensions, Text, TouchableOpacity, Image, Alert } from "react-native";
 import { Colors } from "../../../../styles";
 import { TargetListComp } from "../../../../components";
 import { DropDownSelectionItem, DateSelectItem, ChartNameList, EmptyListView } from "../../../../pureComponents";
@@ -24,6 +24,10 @@ import ShuffleIcon from "react-native-vector-icons/Entypo";
 import { Dropdown } from 'react-native-element-dropdown';
 import CloseIcon from "react-native-vector-icons/MaterialIcons";
 import Modal from "react-native-modal";
+import { LoaderComponent } from '../../../../components';
+
+import { getEmployeesList, getReportingManagerList, updateEmployeeDataBasedOnDelegate } from "../../../../redux/homeReducer";
+
 
 //const paramtersTitlesData = ["Parameter", "E", "TD", "HV", "VC", "B", "Ex", "R", "F", "I", "Ex-W", "Acc.", "Ev"]
 const paramtersTitlesData = ["Parameter", "Target", "Achivement", "Achivement %", "ShortFall", "ShortFall %"]
@@ -408,6 +412,7 @@ const color = [
 
 const TargetScreen = ({ route, navigation }) => {
     const selector = useSelector((state) => state.homeReducer);
+    const dispatch = useDispatch();
 
     const [retailData, setRetailData] = useState(null);
     const [bookingData, setBookingData] = useState(null);
@@ -418,9 +423,31 @@ const TargetScreen = ({ route, navigation }) => {
     const [dateDiff, setDateDiff] = useState(null);
     const [isTeamPresent, setIsTeamPresent] = useState(false);
     const [isTeam, setIsTeam] = useState(false);
-  const [showShuffleModal, setShowShuffleModal] = useState(false);
-  const [headerTitle, setHeaderTitle] = useState("Selected employees has Active tasks. Please delegate to another employee");
+    const [showShuffleModal, setShowShuffleModal] = useState(false);
+    const [delegateButtonClick, setDelegateButtonClick] = useState(false);
+    const [headerTitle, setHeaderTitle] = useState("Selected employees has Active tasks. Please delegate to another employee");
   const [dropDownPlaceHolder, setDropDownPlaceHolder] = useState("Employees");
+
+  const [employeeListDropdownItem, setEmployeeListDropdownItem] = useState(0);
+  const [employeeDropdownList, setEmployeeDropdownList] = useState([]);
+  const [reoprtingManagerListDropdownItem, setReoprtingManagerListDropdownItem] = useState(0);
+  const [reoprtingManagerDropdownList, setReoprtingManagerDropdownList] = useState([]);
+
+  const getEmployeeListFromServer = async () => {
+    dispatch(getEmployeesList(427));
+  }
+
+  const getReportingManagerListFromServer = async () => {
+    dispatch(getReportingManagerList(16));
+  }
+
+  const updateEmployeeData = async () => {
+    const payload = {
+      empID: employeeListDropdownItem ? employeeListDropdownItem : 427,
+      managerID: reoprtingManagerListDropdownItem ? reoprtingManagerListDropdownItem : 456
+    }
+    dispatch(updateEmployeeDataBasedOnDelegate(payload));
+  }
 
     useEffect(() => {
         const dateFormat = "YYYY-MM-DD";
@@ -503,6 +530,25 @@ const TargetScreen = ({ route, navigation }) => {
     useEffect(() => {
         setIsTeam(selector.isTeam)
     }, [selector.isTeam])
+
+    const handleModalDropdownDataForShuffle = () => {
+      if(delegateButtonClick){
+        getReportingManagerListFromServer();
+        setShowShuffleModal(true);
+        setReoprtingManagerDropdownList(selector.reporting_manager_list.map(({ name: label, id: value, ...rest }) => ({ value, label, ...rest })));
+      }else {
+        getEmployeeListFromServer();
+        setShowShuffleModal(true);
+        setEmployeeDropdownList(selector.employee_list.map(({ name: label, id: value, ...rest }) => ({ value, label, ...rest })));
+      }
+    }
+
+  useEffect(() => {
+    setEmployeeDropdownList(selector.employee_list.map(({ name: label, id: value, ...rest }) => ({ value, label, ...rest })))
+  }, [selector.employee_list])
+
+  useEffect(() => {
+    setReoprtingManagerDropdownList(selector.reporting_manager_list.map(({ name: label, id: value, ...rest }) => ({ value, label, ...rest })))  }, [selector.reporting_manager_list])
 
     return (
       <View style={styles.container}>
@@ -749,7 +795,9 @@ const TargetScreen = ({ route, navigation }) => {
                               backgroundColor: color[index % color.length],
                             }}
                           >
-                            <TouchableOpacity activeOpacity={0.6} onPress={() => setShowShuffleModal(true)} style={{ ...styles.shuffleBGView, backgroundColor: color[index % color.length] }}>
+                            <TouchableOpacity activeOpacity={0.6} onPress={() => {
+                              handleModalDropdownDataForShuffle();
+                              }} style={{ ...styles.shuffleBGView, backgroundColor: color[index % color.length]}}>
                               <ShuffleIcon name="shuffle" color={Colors.WHITE} size={18} />
                             </TouchableOpacity>
                           </View>
@@ -906,9 +954,8 @@ const TargetScreen = ({ route, navigation }) => {
 
                   <TouchableOpacity activeOpacity={0.6} onPress={() => {
                     setShowShuffleModal(false);
-
                     setHeaderTitle('Selected employees has Active tasks. Please delegate to another employee');
-                    setDropDownPlaceHolder('Employees')
+                    setDropDownPlaceHolder('Employees');
                   }}>
                     <CloseIcon style={{ margin: 10 }} name="close" color={Colors.BLACK} size={20} />
                   </TouchableOpacity>
@@ -921,7 +968,7 @@ const TargetScreen = ({ route, navigation }) => {
                   selectedTextStyle={styles.selectedTextStyle}
                   inputSearchStyle={styles.inputSearchStyle}
                   iconStyle={styles.iconStyle}
-                  data={[{ label: 'hi', value: 'hello' }, { label: 'hi', value: 'hello' }, { label: 'hi', value: 'hello' }, { label: 'hi', value: 'hello' }, { label: 'hi', value: 'hello' }, { label: 'hi', value: 'hello' }]}
+                  data={delegateButtonClick ? reoprtingManagerDropdownList : employeeDropdownList}
                   search
                   maxHeight={250}
                   labelField="label"
@@ -932,26 +979,47 @@ const TargetScreen = ({ route, navigation }) => {
                     <Image style={{ height: 5, width: 10 }} source={require('../../../../assets/images/Polygon.png')} />
                   )}
                   onChange={async (item) => {
-                    console.log("£££", item);
+                    console.log("£££", item.value);
+                    if (delegateButtonClick) { setReoprtingManagerListDropdownItem(item.value);
+                      console.log(reoprtingManagerListDropdownItem)
+                    } else {
+                      setEmployeeListDropdownItem(item.value); }
                   }}
+                />
+
+                <LoaderComponent
+                  visible={selector.isLoading}
+                  onRequestClose={() => { }}
                 />
 
                 <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, marginBottom: 10, flexDirection: 'row', width: '95%', justifyContent: 'space-around' }}>
                   {dropDownPlaceHolder === 'Employees' ?
                     <View style={{ flexDirection: 'row', width: '95%', justifyContent: 'space-around' }}>
-                      <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 70, alignItems: 'center', justifyContent: 'center', marginLeft: 18, marginRight: 12 }}>
+                      <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 70, alignItems: 'center', justifyContent: 'center', marginLeft: 18, marginRight: 12 }} onPress={() => {
+                          updateEmployeeData();
+                          setShowShuffleModal(false);
+                          setHeaderTitle('Selected employees has Active tasks. Please delegate to another employee');
+                          setDropDownPlaceHolder('Employees');
+                      }}>
                         <Text style={{ fontSize: 13, fontWeight: '300', color: Colors.RED }}>NEXT</Text>
                       </TouchableOpacity>
 
                       <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 220, alignItems: 'center', justifyContent: 'center' }} onPress={() => {
                         setHeaderTitle('Reporting Managers');
-                        setDropDownPlaceHolder('Reporting Manager')
+                        setDropDownPlaceHolder('Reporting Manager');
+                        setDelegateButtonClick(true);
+                        getReportingManagerListFromServer();
                       }}>
                         <Text style={{ fontSize: 13, fontWeight: '300', color: Colors.RED }}>CONTINUE WITHOUT DELEGATING</Text>
                       </TouchableOpacity>
                     </View> :
                     <View style={{ position: 'absolute', right: 0, bottom: 0 }}>
-                      <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 70, alignItems: 'center', justifyContent: 'center', marginLeft: 18, marginRight: 12 }}>
+                      <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 70, alignItems: 'center', justifyContent: 'center', marginLeft: 18, marginRight: 12 }} onPress={() => {
+                        updateEmployeeData();
+                        setShowShuffleModal(false);
+                        setHeaderTitle('Selected employees has Active tasks. Please delegate to another employee');
+                        setDropDownPlaceHolder('Employees');
+                      }}>
                         <Text style={{ fontSize: 13, fontWeight: '300', color: Colors.RED }}>SUBMIT</Text>
                       </TouchableOpacity>
                     </View>}
