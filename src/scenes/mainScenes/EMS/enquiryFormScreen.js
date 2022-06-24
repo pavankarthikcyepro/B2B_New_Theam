@@ -167,6 +167,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     varientListForDropDown: [],
   });
   const [carColorsData, setCarColorsData] = useState([]);
+  const [carModelsList, setCarModelsList] = useState([]);
+
   const [c_model_types, set_c_model_types] = useState([]);
   const [r_model_types, set_r_model_types] = useState([]);
   const [a_model_types, set_a_model_types] = useState([]);
@@ -297,6 +299,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     set_c_model_types([]);
     set_r_model_types([]);
     set_a_model_types([]);
+   // setCarModelsList([]);
     setShowPreBookingBtn(false);
     setIsDropSelected(false);
     setUserData({
@@ -341,11 +344,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     getBranchId();
     setComponentAppear(true);
     getCustomerType();
- const dms = [{ "color": "Outback Bronze", "fuel": "Petrol", "id": 2704, "model": "Kwid",
-          "transimmisionType": "Manual", "variant": "KWID RXT 1.0L EASY- R BS6 ORVM MY22" },
-           { "color": "Caspian Blue", "fuel": "Petrol", "id": 1833, "model": "Kiger", "transimmisionType": "Automatic", 
-          "variant": "Rxt 1.0L Ece Easy-R Ece My22" }]
-          setModelsList(dms)
+//  const dms = [{ "color": "Outback Bronze", "fuel": "Petrol", "id": 2704, "model": "Kwid",
+//           "transimmisionType": "Manual", "variant": "KWID RXT 1.0L EASY- R BS6 ORVM MY22" },
+//            { "color": "Caspian Blue", "fuel": "Petrol", "id": 1833, "model": "Kiger", "transimmisionType": "Automatic", 
+//           "variant": "Rxt 1.0L Ece Easy-R Ece My22" }]
+//           setModelsList(dms)
     BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
     // return () => {
     //   BackHandler.removeEventListener(
@@ -444,6 +447,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             });
           }
           setCarModelsData([...modalList]);
+          alert("entry---------",JSON.stringify(selector.dmsLeadProducts))
+          setCarModelsList(selector.dmsLeadProducts)
+
         },
         (rejected) => {
           console.log("getCarModelListFromServer Failed");
@@ -493,6 +499,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     );
   };
 
+  useEffect(()=>{
+     alert("useeffect"+ JSON.stringify(selector.dmsLeadProducts))
+  }, [selector.dmsLeadProducts])
   useEffect(() => {
     console.log("$%$%^^^%&^&*^&&&*&", selector.pincode);
     if (selector.pincode) {
@@ -560,6 +569,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dispatch(updateDmsAddressData(dmsLeadDto.dmsAddresses));
       // Updaet Model Selection
       dispatch(updateModelSelectionData(dmsLeadDto.dmsLeadProducts));
+      alert("reponse---------", JSON.stringify(dmsLeadDto.dmsLeadProducts))
+      setCarModelsList(selector.dmsLeadProducts)
       // Update Finance Details
       dispatch(updateFinancialData(dmsLeadDto.dmsfinancedetails));
       // Update Customer Need Analysys
@@ -572,6 +583,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
       saveAttachmentDetailsInLocalObject(dmsLeadDto.dmsAttachments);
       dispatch(updateDmsAttachmentDetails(dmsLeadDto.dmsAttachments));
+      
     }
   }, [selector.enquiry_details_response]);
 
@@ -1695,7 +1707,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     return dmsAddresses;
   };
 
-  const mapLeadProducts = (prevDmsLeadProducts) => {
+  const mapLeadProducts = async(prevDmsLeadProducts) => {
     let dmsLeadProducts = [...prevDmsLeadProducts];
     let dataObj = {};
     if (dmsLeadProducts.length > 0) {
@@ -1707,7 +1719,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.color = selector.color;
     dataObj.fuel = selector.fuel_type;
     dataObj.transimmisionType = selector.transmission_type;
-    dmsLeadProducts[0] = dataObj;
+    alert(JSON.stringify(carModelsList))
+    dmsLeadProducts = await carModelsList;
     return dmsLeadProducts;
   };
 
@@ -1776,7 +1789,27 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
     return dmsExchagedetails;
   };
+  const modelOnclick = async(index, value, type) => {
+    try{
+      if (type == "update") {
+        let arr = await [...carModelsList]
+        arr.splice(carModelsList, index, value);
+       await setCarModelsList([...arr])
+      }
+      else {
+        let arr = await [...carModelsList]
+        arr.splice(index, 1)
+        //alert(JSON.stringify(arr))
+        await setCarModelsList([...arr])
+       // carModelsList.splice(0, 1)
+      }
 
+     // console.log("onValueChangeonValueChange@@@@ ", value)
+    }catch(error){
+     // alert(error)
+    }
+     
+  }
   const formatExchangeDetails = (prevData) => {
     let dataObj = { ...prevData };
     if (selector.buyer_type === "Additional Buyer") {
@@ -2242,7 +2275,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     let arrTemp = varientList.filter(function (obj) {
       return obj.name === selectedVarientName;
     });
-
     let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
     if (carModelObj !== undefined) {
       let newArray = [];
@@ -2271,6 +2303,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         modelsData = item.models;
       }
     });
+   // alert("color")
     // console.log("modelsData: ", modelsData);
     switch (dropDownKey) {
       case "C_MAKE":
@@ -3544,10 +3577,28 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   styles.accordianBorder,
                 ]}
               >
-                <View style={{marginHorizontal:5}}>
+                {/* <View style={{marginHorizontal:5}}> */}
+                <TouchableOpacity 
+                onPress={() => {
+                    const carmodeldata = {
+                      "color": '',
+                      "fuel": '',
+                      "id": '',
+                      "model": "",
+                      "transimmisionType": '',
+                      "variant": ''
+                    }
+                    let arr = [...carModelsList]
+                    arr.push(carmodeldata)
+                    setCarModelsList(arr)
+                   // selector.dmsLeadProducts = [...selector.dmsLeadProducts, carmodeldata]
+                }}
+                style={{width:'40%',margin:5,borderRadius:5, backgroundColor:Colors.PINK, height:40, alignSelf:'flex-end',alignContent:'flex-end', alignItems:'center',justifyContent:'center'}}>
+                  <Text style={{fontSize:16,textAlign:'center', textAlignVertical:'center', color: Colors.WHITE,width:'100%', height:40}}>Add Model</Text>
+                </TouchableOpacity>
                   <FlatList
                   //  style={{ height: faltListHeight }}
-                    data={modelsList}
+                    data={carModelsList}
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={({ item, index }) => {
                       return (
@@ -3555,7 +3606,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           < View >                           
                           
                             <ModelListitemCom 
-                            dmsProducts={item}/>
+                            modelOnclick = {modelOnclick}
+                            index={index}
+                            item={item}/>
                         
                             {/* <Divider /> */}
                           </View>
@@ -3563,7 +3616,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }}
                   />
-                  <DropDownSelectionItem
+                  {/* <DropDownSelectionItem
                     label={"Model*"}
                     value={selector.model}
                     onPress={() =>
@@ -3604,7 +3657,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   editable={false}
                   value={selector.transmission_type}
                 />
-                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.transmission_type === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.transmission_type === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text> */}
               </List.Accordion>
               <View style={styles.space}></View>
               {/* // 5. Financial Details*/}

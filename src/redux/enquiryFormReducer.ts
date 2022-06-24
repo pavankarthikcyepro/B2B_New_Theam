@@ -603,6 +603,11 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.datePickerKeyId = action.payload;
       state.showDatepicker = !state.showDatepicker;
     },
+    updatedmsLeadProduct:(state, action)=>{
+     // alert(JSON.stringify(action.payload))
+      const data = action.payload;
+      state.dmsLeadProducts = data
+    },
     updateSelectedDate: (state, action: PayloadAction<PersonalIntroModel>) => {
       const { key, text } = action.payload;
       const selectedDate = convertTimeStampToDateString(text, "DD/MM/YYYY");
@@ -1187,6 +1192,7 @@ const enquiryDetailsOverViewSlice = createSlice({
         //  "transimmisionType": "Manual", "variant": "KWID RXT 1.0L EASY- R BS6 ORVM MY22" },
         //   { "color": "Caspian Blue", "fuel": "Petrol", "id": 1833, "model": "Kiger", "transimmisionType": "Automatic", 
         //   "variant": "Rxt 1.0L Ece Easy-R Ece My22" }]
+        alert("hiii")
         state.dmsLeadProducts = dmsLeadProducts
         console.log("dmm model products------------", state.dmsLeadProducts)
 
@@ -1637,6 +1643,7 @@ export const {
   updateRefNo,
   updateStatus,
   clearPermanentAddr,
-  updateAddressByPincode2
+  updateAddressByPincode2,
+  updatedmsLeadProduct
 } = enquiryDetailsOverViewSlice.actions;
 export default enquiryDetailsOverViewSlice.reducer;

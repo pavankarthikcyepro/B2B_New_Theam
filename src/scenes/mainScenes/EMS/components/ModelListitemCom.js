@@ -33,6 +33,16 @@ import {
     DatePickerComponent,
 } from "../../../../components"; 
 import {
+    convertDateStringToMilliseconds,
+    convertDateStringToMillisecondsUsingMoment,
+    emiCalculator,
+    GetCarModelList,
+    GetDropList,
+    GetFinanceBanksList,
+    PincodeDetails,
+    PincodeDetailsNew
+} from "../../../../utils/helperFunctions";
+import {
     RadioTextItem,
     DropDownSelectionItem,
     ImageSelectItem,
@@ -77,9 +87,12 @@ import {
     updateEnquiryDetailsApiAutoSave,
     clearPermanentAddr,
     updateAddressByPincode2,
-    autoSaveEnquiryDetailsApi
+    autoSaveEnquiryDetailsApi,
+    updatedmsLeadProduct
 } from "../../../../redux/enquiryFormReducer";
-export const ModelListitemCom = ({ dmsProducts}) =>{
+export const ModelListitemCom = ({ modelOnclick,item, index}) =>{
+    const dispatch = useDispatch();
+
     const selector = useSelector((state) => state.enquiryFormReducer);
     const [dropDownKey, setDropDownKey] = useState("");
     const [dropDownTitle, setDropDownTitle] = useState("Select Data");
@@ -87,6 +100,16 @@ export const ModelListitemCom = ({ dmsProducts}) =>{
     const [dataForDropDown, setDataForDropDown] = useState([]);
     const [isSubmitPress, setIsSubmitPress] = useState(false);
     const [imagePath, setImagePath] = useState('');
+    const [carModel, setCarModel] = useState('');
+    const [carVariant, setCarVariant] = useState('');
+    const [carFuelType, setCarFuelType] = useState('');
+    const [carTransmissionType, setCarTransmissionType] = useState('');
+    const [carColor, setCarColor] = useState('');
+
+
+
+
+
 
 
     const [carColorsData, setCarColorsData] = useState([]);
@@ -107,7 +130,7 @@ export const ModelListitemCom = ({ dmsProducts}) =>{
 
         switch (key) {
             case "MODEL":
-                console.log("onpreseed")
+               console.log("onpreseed", carModelsData)
                 setDataForDropDown([...carModelsData]);
                 break;
             case "VARIENT":
@@ -137,29 +160,40 @@ export const ModelListitemCom = ({ dmsProducts}) =>{
         // };
     }, []);
     const getAsyncstoreData = async () => {
-        const employeeData = await AsyncStore.getData(
-            AsyncStore.Keys.LOGIN_EMPLOYEE
-        );
-        if (employeeData) {
-            const jsonObj = JSON.parse(employeeData);
-            setUserData({
-                orgId: jsonObj.orgId,
-                employeeId: jsonObj.employeeId,
-                employeeName: jsonObj.empName,
-            });
-            getCarModelListFromServer(jsonObj.orgId);
+        try{
+            const employeeData = await AsyncStore.getData(
+                AsyncStore.Keys.LOGIN_EMPLOYEE
+            );
+            setCarColor(item.color)
+            setCarModel(item.model)
+            setCarFuelType(item.fuel)
+            setCarTransmissionType(item.transimmisionType)
+            setCarVariant(item.variant)
+            if (employeeData) {
 
-            // Get Token
-            AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
-                if (token.length > 0) {
-                    getInsurenceCompanyNamesFromServer(token, jsonObj.orgId);
-                    getBanksListFromServer(jsonObj.orgId, token);
-                    GetEnquiryDropReasons(jsonObj.orgId, token);
-                }
-            });
+                const jsonObj = JSON.parse(employeeData);
+                setUserData({
+                    orgId: jsonObj.orgId,
+                    employeeId: jsonObj.employeeId,
+                    employeeName: jsonObj.empName,
+                });
+                getCarModelListFromServer(jsonObj.orgId);
+
+                // Get Token
+                AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
+                    if (token.length > 0) {
+                        getInsurenceCompanyNamesFromServer(token, jsonObj.orgId);
+                        getBanksListFromServer(jsonObj.orgId, token);
+                        GetEnquiryDropReasons(jsonObj.orgId, token);
+                    }
+                });
+            }
+        }catch(error){
+         alert(error)
         }
+       
     };
-    const updateVariantModelsData = (
+    const updateVariantModelsData = async(
         selectedModelName,
         fromInitialize,
         selectedVarientName
@@ -175,6 +209,31 @@ export const ModelListitemCom = ({ dmsProducts}) =>{
         let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
         if (carModelObj !== undefined) {
             let newArray = [];
+            setCarModel(selectedModelName)
+            setCarColor("")
+            setCarVariant('')
+            setCarFuelType('')
+            setCarTransmissionType('')
+            try{
+                const carmodeldata = {
+                    "color": '',
+                    "fuel": '',
+                    "id": item.id,
+                    "model": selectedModelName,
+                    "transimmisionType": '',
+                    "variant": ''
+                }
+                var modelsarr = await selector.dmsLeadProducts
+                modelsarr[index] = await carmodeldata
+                modelOnclick(index, carmodeldata, "update")
+
+             // await alert(index + JSON.stringify(modelsarr))
+                await dispatch(updatedmsLeadProduct(modelsarr))
+            }catch(error){
+               // alert(error)
+            }
+           
+           // selector.dmsLeadProducts[index] = carmodeldata
             let mArray = carModelObj.varients;
             if (mArray.length) {
                 mArray.forEach((item) => {
@@ -221,6 +280,24 @@ export const ModelListitemCom = ({ dmsProducts}) =>{
                     fuelType: carModelObj.fuelType,
                     transmissionType: carModelObj.transmission_type,
                 };
+               // setCarModel(selectedModelName)
+                setCarColor("")
+                setCarVariant(selectedVarientName)
+                setCarFuelType(carModelObj.fuelType)
+                setCarTransmissionType(carModelObj.transmission_type)
+                const carmodeldata = {
+                    "color": '', 
+                    "fuel": carModelObj.fuelType,
+                    "id": item.id, 
+                    "model": carModel,
+                    "transimmisionType": carModelObj.transmission_type, 
+                    "variant": selectedVarientName
+                }
+                const modelsarr = selector.dmsLeadProducts
+                modelsarr[index] = carmodeldata
+               modelOnclick(index, carmodeldata, "update")
+
+                dispatch(updatedmsLeadProduct(modelsarr))
                 dispatch(updateFuelAndTransmissionType(obj));
                 setCarColorsData([...newArray]);
             }
@@ -228,9 +305,11 @@ export const ModelListitemCom = ({ dmsProducts}) =>{
     };
     const getCarModelListFromServer = (orgId) => {
         // Call Api
+
         GetCarModelList(orgId)
             .then(
                 (resolve) => {
+
                     let modalList = [];
                     if (resolve.length > 0) {
                         resolve.forEach((item) => {
@@ -245,15 +324,31 @@ export const ModelListitemCom = ({ dmsProducts}) =>{
                     setCarModelsData([...modalList]);
                 },
                 (rejected) => {
+                   // alert("reject")
                     console.log("getCarModelListFromServer Failed");
                 }
             )
             .finally(() => {
+              //  alert("final")
                 // Get Enquiry Details
                 getEnquiryDetailsFromServer();
             });
     };
-
+    const updateColor = (dataobj)=>{
+        setCarColor(dataobj.name)
+        const carmodeldata = {
+            "color": dataobj.name,
+            "fuel": carFuelType,
+            "id": item.id,
+            "model": carModel,
+            "transimmisionType": carTransmissionType,
+            "variant": carVariant
+        }
+        const modelsarr = selector.dmsLeadProducts
+        modelsarr[index] = carmodeldata
+        modelOnclick(index, carmodeldata, "update")
+        dispatch(updatedmsLeadProduct(modelsarr))
+    }
     return(
         <View >
             <DropDownComponant
@@ -270,7 +365,11 @@ export const ModelListitemCom = ({ dmsProducts}) =>{
                             item.name,
                             selectedCarVarientsData.varientList
                         );
-                    } else if (
+                    } else if (dropDownKey === "COLOR") {
+                      updateColor(item)
+                        
+                    }
+                    else if (
                         dropDownKey === "C_MAKE" ||
                         dropDownKey === "R_MAKE" ||
                         dropDownKey === "A_MAKE"
@@ -285,8 +384,9 @@ export const ModelListitemCom = ({ dmsProducts}) =>{
             />
             <View style={{ padding: 5, marginVertical: 10, borderRadius: 5, backgroundColor: Colors.LIGHT_GRAY2 }}>
                 <View style={{flexDirection:'row',width:'100%', justifyContent:'space-between'}}>
-                    <Text style={{color:Colors.WHITE, fontSize:18, marginLeft:10,textAlignVertical:'center'}}>{dmsProducts.model}</Text>
-                    <TouchableOpacity >               
+                    <Text style={{color:Colors.WHITE, fontSize:18, marginLeft:10,textAlignVertical:'center'}}>{carModel}</Text>
+                    <TouchableOpacity 
+                        onPress={(value) => modelOnclick(index, item, "delete")}>               
                           <IconButton
                         icon="trash-can-outline"
                         color={Colors.PINK}
@@ -300,7 +400,7 @@ export const ModelListitemCom = ({ dmsProducts}) =>{
            
             <DropDownSelectionItem
                 label={"Model*"}
-                value={dmsProducts.model}
+                    value={carModel}
                 onPress={() =>
                     showDropDownModelMethod("MODEL", "Select Model")
                 }
@@ -308,7 +408,7 @@ export const ModelListitemCom = ({ dmsProducts}) =>{
             <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.model === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
             <DropDownSelectionItem
                   label={"Variant*"}
-                value={dmsProducts.variant}
+                value={carVariant}
                   onPress={() =>
                     showDropDownModelMethod("VARIENT", "Select Variant")
                   }
@@ -316,7 +416,7 @@ export const ModelListitemCom = ({ dmsProducts}) =>{
                 <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.varient === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                 <DropDownSelectionItem
                   label={"Color*"}
-                  value={selector.color}
+                  value={carColor}
                   onPress={() =>
                     showDropDownModelMethod("COLOR", "Select Color")
                   }
@@ -326,7 +426,7 @@ export const ModelListitemCom = ({ dmsProducts}) =>{
                   style={{ height: 65, width: "100%" }}
                   label={"Fuel Type"}
                   editable={false}
-                  value={selector.fuel_type}
+                  value={carFuelType}
                 />
                 <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.fuel_type === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
 
@@ -334,7 +434,7 @@ export const ModelListitemCom = ({ dmsProducts}) =>{
                   style={{ height: 65, width: "100%" }}
                   label={"Transmission Type"}
                   editable={false}
-                  value={selector.transmission_type}
+                  value={carTransmissionType}
                 />
                 <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.transmission_type === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
             </View>
