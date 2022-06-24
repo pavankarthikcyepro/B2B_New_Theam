@@ -336,6 +336,7 @@ const EnquiryScreen = ({ navigation }) => {
                                             source={item.enquirySource}
                                             model={item.model}
                                             leadStatus={item.leadStatus}
+                                            leadStage={item.leadStage}
                                             needStatus={"YES"}
                                             enqCat={item.enquiryCategory}
                                             onItemPress={() => {
