@@ -71,7 +71,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { updateModal, updateSearchKey, updateIsSearch } from '../redux/appReducer';
 import etvbrlReportScreen from "../scenes/mainScenes/etvbrlReportScreen";
 import webViewComp from "../scenes/mainScenes/EMS/components/webViewComp";
-
+import leaderBoardScreen from "../scenes/mainScenes/Home/leaderBoardScreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -232,7 +232,8 @@ export const TabStackIdentifiers = {
 export const HomeStackIdentifiers = {
     filter: "FILTER",
     select_branch: "SELECT_BRANCH",
-    test: "TEST"
+    test: "TEST",
+    leaderboard: "LEADERBOARD"
 };
 
 export const EmsStackIdentifiers = {
@@ -331,6 +332,11 @@ const HomeStackNavigator = ({ navigation }) => {
                 name={HomeStackIdentifiers.test}
                 component={TestScreen}
                 options={{ title: "Test Screen" }}
+            />
+            <HomeStack.Screen
+                name={HomeStackIdentifiers.leaderboard}
+                component={leaderBoardScreen}
+                options={{ title: "LeaderBoard" }}
             />
         </HomeStack.Navigator>
     );
