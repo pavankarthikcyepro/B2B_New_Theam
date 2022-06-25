@@ -1,7 +1,8 @@
 import qs from "qs";
-import { Linking, Alert, Platform } from "react-native";
+import { Linking, Alert, Platform, PermissionsAndroid } from "react-native";
 import moment from "moment";
 import URL from "../networking/endpoints";
+import { AuthNavigator } from "../navigations";
 
 export const isMobileNumber = (mobile) => {
   // var regex = /^[1-9]{1}[0-9]{9}$/; // /^\d{10}$/
@@ -56,6 +57,57 @@ export const isValidateAplhaNumeric = (text) => {
   }
   return false;
 };
+export const navigatetoCallWebView = async () => {
+ 
+  const requestMicroPhonePermission = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+          {
+            title: 'Record Permission',
+            message: 'App needs record audio permission',
+          },
+        );
+        // If CAMERA Permission is granted
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+      } catch (err) {
+        console.warn(err);
+        return false;
+      }
+    } else return true;
+  };
+  const requestCameraPermission = async() =>{
+
+    if(Platform.OS === "android"){
+      try{
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+          {
+            title: 'Camers Permission',
+            message: 'App needs camera permission',
+          },
+        );
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+
+      }catch(error){
+        return false;
+      }
+    }else return true;
+
+  }
+  //return requestCameraPermission()
+  var granted = await requestCameraPermission()
+  var granted2 = await requestMicroPhonePermission()
+  if(granted && granted2)
+  return true 
+  else return false
+
+  // (granted)
+  //  navigation.navigate(AuthNavigator.AuthStackIdentifiers.WebComp)
+
+
+}
 
 export const callNumber = (phone) => {
   console.log("callNumber ----> ", phone);

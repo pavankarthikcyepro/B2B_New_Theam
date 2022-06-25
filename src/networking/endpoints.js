@@ -45,6 +45,9 @@ export const downloadFile1 = "http://automatestaging-724985329.ap-south-1.elb.am
 export const tasktransfer = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/sales-gap/target-dropdown";
 export const getTaskList = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/task-delegation/get_task_list";
 export const getEmployeeData = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8089/role-management/employee/dept-employees";
+export const getEmployeeList = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/reporting/all/emp"
+export const getReportingMangerList = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/all/reportingManagers/orgId"
+export const updateEmployeeTaskDelegate = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/emp"
 
 const URL = {
     LOGIN: () => hrms_url + "/emplogin",
@@ -58,6 +61,12 @@ const URL = {
     },
     VEHICLE_MODELS: (orgId) => {
         return vehicleInfoService_url + "/api/vehicle_details/?organizationId=" + orgId;
+    },
+    GET_EMPID: (userName) => {
+        return roleManagement_url + '/user/' + userName;
+    },
+    GET_CALL_RECORDING_EXTENSIONID: (userName, orgId) => {
+        return sales_url + '/callrecording/getCallLoginDetails?orgId=' + orgId  +'&empId='+userName;
     },
     CUSTOMER_TYPE: (orgId) => {
         return sales_url + `/master-data/customertype/${orgId}`
@@ -265,6 +274,14 @@ const URL = {
     },
     GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
         return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
+    GET_EMPLOYEE_LIST: (empId) => {
+        return `${getEmployeeList}/${empId}`;
+    },
+    GET_REPORTING_MANAGER_LIST: (orgId) => {
+        return `${getReportingMangerList}/${orgId}/for/dropdown`;
+    },
+    EMPLOYEE_DATA_UPDATE: (empID, managerID) => {
+        return `${updateEmployeeTaskDelegate}/${empID}/reportingManager/${managerID}/update`;
     },
 }
 

@@ -35,6 +35,7 @@ const CUSTOMER_NEED_ANALYSIS = require("../images/customer_need_analysis.svg");
 const CUSTOMER_PROFILE = require("../images/customer_profile.svg");
 const CUSTOMER_RELATIONSHIP = require("../images/customer_relationship.svg");
 const DATE_RANGE = require("../images/date_range.svg");
+const DELETE = require("../images/delete.svg");
 const DELIVERY = require("../images/delivery.svg");
 const DIGITAL_PAYMENT = require("../images/digital_payment.svg");
 const DOT = require("../images/dot.svg");
