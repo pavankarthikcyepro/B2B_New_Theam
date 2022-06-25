@@ -18,6 +18,7 @@ export const getEnquiryDetailsApi = createAsyncThunk(
 
     const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
     const json = await response.json();
+    
     // console.log("enquirey lead", json);
     // console.log("autoSavejson", autoSavejson);
 
@@ -403,6 +404,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.r_insurence_from_date = ""
       state.r_insurence_to_date = ""
       state.r_insurence_document_checked = false
+    //  state.dmsLeadProducts =[]
     },
     setEditable: (state, action) => {
       console.log("pressed");
@@ -1125,6 +1127,7 @@ const enquiryDetailsOverViewSlice = createSlice({
         "DD/MM/YYYY"
       );
       state.model = dmsLeadDto.model ? dmsLeadDto.model : "";
+      state.dmsLeadProducts = dmsLeadDto.dmsLeadProducts;
 
       // documentType: dmsLeadDto.documentType === null ? '' : dmsLeadDto.documentType,
       // modeOfPayment: dmsLeadDto.modeOfPayment === null ? '' : dmsLeadDto.modeOfPayment,
@@ -1184,31 +1187,32 @@ const enquiryDetailsOverViewSlice = createSlice({
     updateModelSelectionData: (state, action) => {
       const dmsLeadProducts = action.payload;
       let dataObj: any = {};
-      if (dmsLeadProducts.length > 0) {
-        dataObj = { ...dmsLeadProducts[0] };
-       // dmsLeadProducts[0] = dmsLeadProducts[0]
-       // dmsLeadProducts[1]= dmsLeadProducts[0]
-        // const dms = [{ "color": "Outback Bronze", "fuel": "Petrol", "id": 2704, "model": "Kwid",
-        //  "transimmisionType": "Manual", "variant": "KWID RXT 1.0L EASY- R BS6 ORVM MY22" },
-        //   { "color": "Caspian Blue", "fuel": "Petrol", "id": 1833, "model": "Kiger", "transimmisionType": "Automatic", 
-        //   "variant": "Rxt 1.0L Ece Easy-R Ece My22" }]
-        alert("hiii")
-        state.dmsLeadProducts = dmsLeadProducts
-        console.log("dmm model products------------", state.dmsLeadProducts)
+      // if (dmsLeadProducts.length > 0) {
+      //   dataObj = { ...dmsLeadProducts[0] };
+      //  // dmsLeadProducts[0] = dmsLeadProducts[0]
+      //  // dmsLeadProducts[1]= dmsLeadProducts[0]
+      //   // const dms = [{ "color": "Outback Bronze", "fuel": "Petrol", "id": 2704, "model": "Kwid",
+      //   //  "transimmisionType": "Manual", "variant": "KWID RXT 1.0L EASY- R BS6 ORVM MY22" },
+      //   //   { "color": "Caspian Blue", "fuel": "Petrol", "id": 1833, "model": "Kiger", "transimmisionType": "Automatic", 
+      //   //   "variant": "Rxt 1.0L Ece Easy-R Ece My22" }]
+      //   alert("hiii")
+      //   state.dmsLeadProducts = dmsLeadProducts
+      //   console.log("dmm model products------------", state.dmsLeadProducts)
 
-       // state.dmsLeadProducts[1] = dmsLeadProducts[0]
-      }
-      state.lead_product_id = dataObj.id ? dataObj.id : 0;
-      if (dataObj.model) {
-        state.model = dataObj.model;
-      }
-      state.varient = dataObj.variant ? dataObj.variant : "";
-      state.color = dataObj.color ? dataObj.color : "";
-      state.fuel_type = dataObj.fuel ? dataObj.fuel : "";
-      state.transmission_type = dataObj.transimmisionType
-        ? dataObj.transimmisionType
-        : "";
+      //  // state.dmsLeadProducts[1] = dmsLeadProducts[0]
+      // }
+      // state.lead_product_id = dataObj.id ? dataObj.id : 0;
+      // if (dataObj.model) {
+      //   state.model = dataObj.model;
+      // }
+      // state.varient = dataObj.variant ? dataObj.variant : "";
+      // state.color = dataObj.color ? dataObj.color : "";
+      // state.fuel_type = dataObj.fuel ? dataObj.fuel : "";
+      // state.transmission_type = dataObj.transimmisionType
+      //   ? dataObj.transimmisionType
+      //   : "";
       state.model_drop_down_data_update_statu = "update";
+      state.dmsLeadProducts = dmsLeadProducts;
     },
     updateFinancialData: (state, action) => {
       const dmsfinancedetails = action.payload;

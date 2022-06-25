@@ -447,7 +447,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             });
           }
           setCarModelsData([...modalList]);
-          alert("entry---------",JSON.stringify(selector.dmsLeadProducts))
+        //  alert("entry---------",JSON.stringify(selector.dmsLeadProducts))
           setCarModelsList(selector.dmsLeadProducts)
 
         },
@@ -500,6 +500,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   useEffect(()=>{
+      setCarModelsList(selector.dmsLeadProducts)
      alert("useeffect"+ JSON.stringify(selector.dmsLeadProducts))
   }, [selector.dmsLeadProducts])
   useEffect(() => {
@@ -569,8 +570,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dispatch(updateDmsAddressData(dmsLeadDto.dmsAddresses));
       // Updaet Model Selection
       dispatch(updateModelSelectionData(dmsLeadDto.dmsLeadProducts));
-      alert("reponse---------", JSON.stringify(dmsLeadDto.dmsLeadProducts))
-      setCarModelsList(selector.dmsLeadProducts)
+   //   alert("reponse---------", JSON.stringify(dmsLeadDto.dmsLeadProducts))
+    //  setCarModelsList(selector.dmsLeadProducts)
       // Update Finance Details
       dispatch(updateFinancialData(dmsLeadDto.dmsfinancedetails));
       // Update Customer Need Analysys
@@ -1168,25 +1169,31 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
     // Model Selection
-    if (
-      selector.model.length == 0) {
+    if(carModelsList.length == 0){
       scrollToPos(4)
       setOpenAccordian('4')
-      showToast("Please fill model");
+      showToast("Please fill model details");
       return;
     }
-    if (selector.varient.length == 0) {
-      scrollToPos(4)
-      setOpenAccordian('4')
-      showToast("Please fill Varient");
-      return;
-    }
-    if (selector.color.length == 0) {
-      scrollToPos(4)
-      setOpenAccordian('4')
-      showToast("Please fill color");
-      return;
-    }
+    // if (
+    //   selector.model.length == 0) {
+    //   scrollToPos(4)
+    //   setOpenAccordian('4')
+    //   showToast("Please fill model");
+    //   return;
+    // }
+    // if (selector.varient.length == 0) {
+    //   scrollToPos(4)
+    //   setOpenAccordian('4')
+    //   showToast("Please fill Varient");
+    //   return;
+    // }
+    // if (selector.color.length == 0) {
+    //   scrollToPos(4)
+    //   setOpenAccordian('4')
+    //   showToast("Please fill color");
+    //   return;
+    // }
     if (selector.p_pincode.length == 0 ||
       selector.p_urban_or_rural.length == 0 ||
       selector.p_houseNum.length == 0 ||
@@ -1376,10 +1383,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsAccountDto);
 
     if (dmsEntity.hasOwnProperty("dmsLeadDto")) {
-      dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
+      try{
+        dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
+
+      }catch(error){
+      }
       dmsLeadDto.firstName = selector.firstName;
       dmsLeadDto.lastName = selector.lastName;
       dmsLeadDto.phone = selector.mobile;
+      dmsLeadDto.dmsLeadProducts = await carModelsList
+
+      await alert(JSON.stringify(dmsLeadDto))
+
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
@@ -1710,16 +1725,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const mapLeadProducts = async(prevDmsLeadProducts) => {
     let dmsLeadProducts = [...prevDmsLeadProducts];
     let dataObj = {};
-    if (dmsLeadProducts.length > 0) {
-      dataObj = { ...dmsLeadProducts[0] };
-    }
-    dataObj.id = dataObj.id ? dataObj.id : 0;
-    dataObj.model = selector.model;
-    dataObj.variant = selector.varient;
-    dataObj.color = selector.color;
-    dataObj.fuel = selector.fuel_type;
-    dataObj.transimmisionType = selector.transmission_type;
-    alert(JSON.stringify(carModelsList))
+    // if (dmsLeadProducts.length > 0) {
+    //   dataObj = { ...dmsLeadProducts[0] };
+    // }
+    // dataObj.id = dataObj.id ? dataObj.id : 0;
+    // dataObj.model = selector.model;
+    // dataObj.variant = selector.varient;
+    // dataObj.color = selector.color;
+    // dataObj.fuel = selector.fuel_type;
+    // dataObj.transimmisionType = selector.transmission_type;
+   // alert(JSON.stringify(carModelsList))
     dmsLeadProducts = await carModelsList;
     return dmsLeadProducts;
   };
@@ -1793,8 +1808,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     try{
       if (type == "update") {
         let arr = await [...carModelsList]
-        arr.splice(carModelsList, index, value);
+        arr[index] = value
+       // arr.splice(carModelsList, index, value);
        await setCarModelsList([...arr])
+       alert(JSON.stringify(carModelsList))
       }
       else {
         let arr = await [...carModelsList]
@@ -3583,7 +3600,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     const carmodeldata = {
                       "color": '',
                       "fuel": '',
-                      "id": '',
+                      "id": 0,
                       "model": "",
                       "transimmisionType": '',
                       "variant": ''
