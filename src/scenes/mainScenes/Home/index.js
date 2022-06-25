@@ -893,7 +893,9 @@ const HomeScreen = ({ route, navigation }) => {
                                                 <View style={{
                                                     flexDirection: 'row'
                                                 }}>
-                                                    <View style={styles.rankIconBox}>
+                                                    <TouchableOpacity style={styles.rankIconBox} onPress={() => { 
+                                                        navigation.navigate(AppNavigator.HomeStackIdentifiers.leaderboard)
+                                                     }}>
                                                         {/* <VectorImage
                                                     width={25}
                                                     height={16}
@@ -901,7 +903,7 @@ const HomeScreen = ({ route, navigation }) => {
                                                 // style={{ tintColor: Colors.DARK_GRAY }}
                                                 /> */}
                                                         <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
-                                                    </View>
+                                                    </TouchableOpacity>
                                                     <View style={{
                                                         marginTop: 5,
                                                         marginLeft: 3
