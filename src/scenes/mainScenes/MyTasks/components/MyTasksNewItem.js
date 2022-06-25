@@ -1,9 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Colors } from '../../../../styles';
-import { convertTimeStampToDateString, callNumber } from '../../../../utils/helperFunctions';
+import { convertTimeStampToDateString, callNumber, navigatetoCallWebView } from '../../../../utils/helperFunctions';
 import { IconButton } from "react-native-paper";
 import moment from "moment";
+import { AppNavigator, AuthNavigator } from "../../../../navigations";
+import * as AsyncStore from '../../../../asyncStore';
+
 
 
 const statusBgColors = {
@@ -39,7 +42,46 @@ const IconComp = ({ iconName, onPress }) => {
     )
 }
 
-export const MyTaskNewItem = ({ from = "MY_TASKS", name, status, created, dmsLead, phone, source, model, leadStatus = '', needStatus = '', onItemPress, onDocPress }) => {
+ const callWebViewRecord = async({navigator,phone, uniqueId, type}) =>{
+    try{
+        let extensionId = await AsyncStore.getData(AsyncStore.Keys.EXTENSION_ID);
+        var password = await AsyncStore.getData(AsyncStore.Keys.EXTENSSION_PWD);        
+        password = await encodeURIComponent(password)
+       var uri = 'https://ardemoiipl.s3.ap-south-1.amazonaws.com/call/webphone/click2call.html?u=' + extensionId + '&p=' + password + '&c=' + phone + '&type=' + type + '&uniqueId=' + uniqueId 
+
+      // await alert("phone" + phone + "  type" + type + "  uniqueId" + uniqueId + "  userName" + extensionId + "  pwd " + password)
+ //alert(uri)
+ console.log("call recording uri=", uri)
+        if(extensionId && extensionId != null && extensionId != ''){
+            var granted = await navigatetoCallWebView();
+            console.log("granted status", granted)
+
+            if (granted)
+            {
+                    navigator.navigate(AppNavigator.EmsStackIdentifiers.webViewComp, {
+                    phone: phone,
+                    type: type,
+                    uniqueId: uniqueId,
+                    userName: extensionId,
+                    password:password,
+                    url: uri
+                })
+            }
+                
+
+        }
+        else callNumber(phone)
+       // alert(phone + uniqueId + "/" + type + "/" + password)
+       
+    }catch(error){
+      console.log("call record issue",error)
+    }
+    
+
+}
+
+//export const MyTaskNewItem = ({ from = "MY_TASKS",navigator,type, uniqueId,name, status, created, dmsLead, phone, source, model, onItemPress, onDocPress }) => {
+export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, name, status, created, dmsLead, phone, source, model, leadStatus = '', leadStage = '', needStatus = '', enqCat = '', onItemPress, onDocPress }) => {
 
     let date = "";
     if (from =="MY_TASKS") {
@@ -167,5 +209,13 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         marginBottom: 10
-    }
+    },
+    catText: {
+        color: "#7b79f6",
+        fontSize: 16,
+        fontWeight: '700',
+        marginBottom: 5,
+        marginLeft: 5,
+        textTransform: 'uppercase'
+    },
 })

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import {
-  SafeAreaView,
+  SafeAreaView, FlatList,
   StyleSheet,
   View,
   Text,
@@ -22,7 +22,7 @@ import {
   Checkbox,
   IconButton,
   List,
-  Button,
+  Button, Divider
 } from "react-native-paper";
 import { Colors, GlobalStyle } from "../../../styles";
 import VectorImage from "react-native-vector-image";
@@ -32,6 +32,7 @@ import {
   DropDownComponant,
   DatePickerComponent,
 } from "../../../components";
+import { ModelListitemCom } from "./components/ModelListitemCom";
 import {
   clearState,
   setEditable,
@@ -166,6 +167,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     varientListForDropDown: [],
   });
   const [carColorsData, setCarColorsData] = useState([]);
+  const [carModelsList, setCarModelsList] = useState([]);
+
   const [c_model_types, set_c_model_types] = useState([]);
   const [r_model_types, set_r_model_types] = useState([]);
   const [a_model_types, set_a_model_types] = useState([]);
@@ -177,6 +180,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     employeeName: "",
   });
   const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
+  const [modelsList, setModelsList] = useState([]);
+
   const [typeOfActionDispatched, setTypeOfActionDispatched] = useState("");
   const [minOrMaxDate, setMinOrMaxDate] = useState({
     minDate: null,
@@ -294,6 +299,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     set_c_model_types([]);
     set_r_model_types([]);
     set_a_model_types([]);
+    setCarModelsList([]);
     setShowPreBookingBtn(false);
     setIsDropSelected(false);
     setUserData({
@@ -338,7 +344,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     getBranchId();
     setComponentAppear(true);
     getCustomerType();
-
+//  const dms = [{ "color": "Outback Bronze", "fuel": "Petrol", "id": 2704, "model": "Kwid",
+//           "transimmisionType": "Manual", "variant": "KWID RXT 1.0L EASY- R BS6 ORVM MY22" },
+//            { "color": "Caspian Blue", "fuel": "Petrol", "id": 1833, "model": "Kiger", "transimmisionType": "Automatic", 
+//           "variant": "Rxt 1.0L Ece Easy-R Ece My22" }]
+//           setModelsList(dms)
     BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
     // return () => {
     //   BackHandler.removeEventListener(
@@ -437,6 +447,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             });
           }
           setCarModelsData([...modalList]);
+        //  alert("entry---------",JSON.stringify(selector.dmsLeadProducts))
+          setCarModelsList(selector.dmsLeadProducts)
+
         },
         (rejected) => {
           console.log("getCarModelListFromServer Failed");
@@ -486,6 +499,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     );
   };
 
+  useEffect(()=>{
+    try{
+      if (selector.dmsLeadProducts && selector.dmsLeadProducts.length > 0)
+        setCarModelsList(selector.dmsLeadProducts)
+    }catch(error){
+    // alert("useeffect"+error)
+
+    }
+    
+  }, [selector.dmsLeadProducts])
   useEffect(() => {
     console.log("$%$%^^^%&^&*^&&&*&", selector.pincode);
     if (selector.pincode) {
@@ -553,6 +576,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dispatch(updateDmsAddressData(dmsLeadDto.dmsAddresses));
       // Updaet Model Selection
       dispatch(updateModelSelectionData(dmsLeadDto.dmsLeadProducts));
+   //   alert("reponse---------", JSON.stringify(dmsLeadDto.dmsLeadProducts))
+    //  setCarModelsList(selector.dmsLeadProducts)
       // Update Finance Details
       dispatch(updateFinancialData(dmsLeadDto.dmsfinancedetails));
       // Update Customer Need Analysys
@@ -565,6 +590,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
       saveAttachmentDetailsInLocalObject(dmsLeadDto.dmsAttachments);
       dispatch(updateDmsAttachmentDetails(dmsLeadDto.dmsAttachments));
+      
     }
   }, [selector.enquiry_details_response]);
 
@@ -1149,8 +1175,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
     // Model Selection
-    if (
-      selector.model.length == 0) {
+    if(carModelsList.length == 0){
       scrollToPos(4)
       setOpenAccordian('4')
       showToast("Please fill Model");
@@ -1168,6 +1193,25 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("Please fill Color");
       return;
     }
+    // if (
+    //   selector.model.length == 0) {
+    //   scrollToPos(4)
+    //   setOpenAccordian('4')
+    //   showToast("Please fill model");
+    //   return;
+    // }
+    // if (selector.varient.length == 0) {
+    //   scrollToPos(4)
+    //   setOpenAccordian('4')
+    //   showToast("Please fill Varient");
+    //   return;
+    // }
+    // if (selector.color.length == 0) {
+    //   scrollToPos(4)
+    //   setOpenAccordian('4')
+    //   showToast("Please fill color");
+    //   return;
+    // }
     if (selector.p_pincode.length == 0 ||
       selector.p_urban_or_rural.length == 0 ||
       selector.p_houseNum.length == 0 ||
@@ -1357,10 +1401,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsAccountDto);
 
     if (dmsEntity.hasOwnProperty("dmsLeadDto")) {
-      dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
+      try{
+        dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
+
+      }catch(error){
+      }
       dmsLeadDto.firstName = selector.firstName;
       dmsLeadDto.lastName = selector.lastName;
       dmsLeadDto.phone = selector.mobile;
+      dmsLeadDto.dmsLeadProducts = await carModelsList
+
+     // await alert(JSON.stringify(dmsLeadDto.dmsLeadProducts))
+
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
@@ -1688,19 +1740,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     return dmsAddresses;
   };
 
-  const mapLeadProducts = (prevDmsLeadProducts) => {
+  const mapLeadProducts = async(prevDmsLeadProducts) => {
     let dmsLeadProducts = [...prevDmsLeadProducts];
     let dataObj = {};
-    if (dmsLeadProducts.length > 0) {
-      dataObj = { ...dmsLeadProducts[0] };
-    }
-    dataObj.id = dataObj.id ? dataObj.id : 0;
-    dataObj.model = selector.model;
-    dataObj.variant = selector.varient;
-    dataObj.color = selector.color;
-    dataObj.fuel = selector.fuel_type;
-    dataObj.transimmisionType = selector.transmission_type;
-    dmsLeadProducts[0] = dataObj;
+    // if (dmsLeadProducts.length > 0) {
+    //   dataObj = { ...dmsLeadProducts[0] };
+    // }
+    // dataObj.id = dataObj.id ? dataObj.id : 0;
+    // dataObj.model = selector.model;
+    // dataObj.variant = selector.varient;
+    // dataObj.color = selector.color;
+    // dataObj.fuel = selector.fuel_type;
+    // dataObj.transimmisionType = selector.transmission_type;
+   // alert(JSON.stringify(carModelsList))
+    dmsLeadProducts = await carModelsList;
     return dmsLeadProducts;
   };
 
@@ -1769,7 +1822,29 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
     return dmsExchagedetails;
   };
+  const modelOnclick = async(index, value, type) => {
+    try{
+      if (type == "update") {
+        let arr = await [...carModelsList]
+        arr[index] = value
+       // arr.splice(carModelsList, index, value);
+       await setCarModelsList([...arr])
+      // alert(JSON.stringify(carModelsList))
+      }
+      else {
+        let arr = await [...carModelsList]
+        arr.splice(index, 1)
+        //alert(JSON.stringify(arr))
+        await setCarModelsList([...arr])
+       // carModelsList.splice(0, 1)
+      }
 
+     // console.log("onValueChangeonValueChange@@@@ ", value)
+    }catch(error){
+     // alert(error)
+    }
+     
+  }
   const formatExchangeDetails = (prevData) => {
     let dataObj = { ...prevData };
     if (selector.buyer_type === "Additional Buyer") {
@@ -2235,7 +2310,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     let arrTemp = varientList.filter(function (obj) {
       return obj.name === selectedVarientName;
     });
-
     let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
     if (carModelObj !== undefined) {
       let newArray = [];
@@ -2264,6 +2338,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         modelsData = item.models;
       }
     });
+   // alert("color")
     // console.log("modelsData: ", modelsData);
     switch (dropDownKey) {
       case "C_MAKE":
