@@ -72,7 +72,7 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", name, status, created, dmsLea
             {needStatus === "YES" && (
               <View
                 style={{
-                  height: 18,
+                  height: 20,
                   width: 18,
                   borderRadius: 4,
                   backgroundColor:
@@ -83,7 +83,7 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", name, status, created, dmsLea
                       ? "#18a835"
                       : "#f29a22",
                   position: "absolute",
-                  top: 4,
+                  top: 1,
                   right: -12,
                 }}
               ></View>
@@ -105,12 +105,12 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", name, status, created, dmsLea
                 iconName={"format-list-bulleted-square"}
                 onPress={onDocPress}
               />
-              <View style={{ padding: 4 }} />
+              <View style={{ padding: 8 }} />
               <IconComp
                 iconName={"phone-outline"}
                 onPress={() => callNumber(phone)}
               />
-              <View style={{ padding: 4 }} />
+              <View style={{ padding: 8 }} />
               <IconComp
                 iconName={"whatsapp"}
                 onPress={() => sendWhatsApp(phone)}
