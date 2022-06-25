@@ -35,6 +35,7 @@ import {
     updateIsDSE,
     updateTargetData
 } from '../../../redux/homeReducer';
+import { getCallRecordingCredentials } from '../../../redux/callRecordingReducer'
 import {
     updateData,
     updateIsManager,
@@ -325,6 +326,16 @@ const HomeScreen = ({ route, navigation }) => {
     }
 
     const checkLoginUserAndEnableReportButton = async () => {
+        let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
+        let orgId = await AsyncStore.getData(AsyncStore.Keys.ORG_ID);
+        let data = {
+            empId: empId,
+            orgId: orgId
+        }
+
+        dispatch(getCallRecordingCredentials(data))
+
+
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
          console.log("SSSSSSSSSSSSSSSSSSSSS$$$$$ LOGIN EMP:", employeeData);
         if (employeeData) {

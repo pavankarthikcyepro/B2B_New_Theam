@@ -368,7 +368,10 @@ const PreEnquiryScreen = ({ navigation }) => {
                                             <MyTaskNewItem
                                                 from='PRE_ENQUIRY'
                                                 name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
-                                                status={""}
+                                                navigator={navigation}
+                                                uniqueId={item.leadId}  
+                                                type='PreEnq'                     
+                                                 status={""}
                                                 created={item.createdDate}
                                                 dmsLead={item.createdBy}
                                                 phone={item.phone}

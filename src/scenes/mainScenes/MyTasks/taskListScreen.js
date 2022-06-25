@@ -109,13 +109,17 @@ const TaskListScreen = ({ route, navigation }) => {
                             <View style={{marginHorizontal: 10}}>
                                 <MyTaskNewItem
                                         name={item.customerName}
+                                        uniqueId={item.taskId}
+                                        navigator={navigation}
+                                        type='task'
                                         status={item.taskStatus}
                                         created={item.createdOn}
                                         dmsLead={item.salesExecutive}
                                         phone={item.phoneNo}
                                         source={item.sourceType}
-                                        model={item.model}
-                                        onDocPress={() => itemClicked(item)}
+                                        model={item.model}                                        
+                                        onDocPress={() =>{
+                                             itemClicked(item)}}
                                 />
                                 {/* <Text style={GlobalStyle.underline}></Text> */}
                             </View>

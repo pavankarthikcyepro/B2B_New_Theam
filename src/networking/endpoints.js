@@ -43,7 +43,9 @@ export const lostSubLost = "http://automatestaging-724985329.ap-south-1.elb.amaz
 export const getBranch = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/oh";
 export const downloadFile = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8093/dynamic-reports";
 export const downloadFile1 = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8095/dynamic-reports/etvbrl_report_download";
-
+export const getEmployeeList = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/reporting/all/emp"
+export const getReportingMangerList = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/all/reportingManagers/orgId"
+export const updateEmployeeTaskDelegate = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/emp"
 
 const URL = {
     LOGIN: () => hrms_url + "/emplogin",
@@ -57,6 +59,12 @@ const URL = {
     },
     VEHICLE_MODELS: (orgId) => {
         return vehicleInfoService_url + "/api/vehicle_details/?organizationId=" + orgId;
+    },
+    GET_EMPID: (userName) => {
+        return roleManagement_url + '/user/' + userName;
+    },
+    GET_CALL_RECORDING_EXTENSIONID: (userName, orgId) => {
+        return sales_url + '/callrecording/getCallLoginDetails?orgId=' + orgId  +'&empId='+userName;
     },
     CUSTOMER_TYPE: (orgId) => {
         return sales_url + `/master-data/customertype/${orgId}`
@@ -255,6 +263,15 @@ const URL = {
     },
     REASON_LIST: (orgId, taskName) => {
         return `${downloadFile}/get-followup/${orgId}/${taskName}`;
+    },
+    GET_EMPLOYEE_LIST: (empId) => {
+        return `${getEmployeeList}/${empId}`;
+    },
+    GET_REPORTING_MANAGER_LIST: (orgId) => {
+        return `${getReportingMangerList}/${orgId}/for/dropdown`;
+    },
+    EMPLOYEE_DATA_UPDATE: (empID, managerID) => {
+        return `${updateEmployeeTaskDelegate}/${empID}/reportingManager/${managerID}/update`;
     },
 }
 
