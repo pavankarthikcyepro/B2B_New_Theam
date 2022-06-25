@@ -299,7 +299,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     set_c_model_types([]);
     set_r_model_types([]);
     set_a_model_types([]);
-   // setCarModelsList([]);
+    setCarModelsList([]);
     setShowPreBookingBtn(false);
     setIsDropSelected(false);
     setUserData({
@@ -500,8 +500,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   useEffect(()=>{
-      setCarModelsList(selector.dmsLeadProducts)
-     alert("useeffect"+ JSON.stringify(selector.dmsLeadProducts))
+    try{
+      if (selector.dmsLeadProducts && selector.dmsLeadProducts.length > 0)
+        setCarModelsList(selector.dmsLeadProducts)
+    }catch(error){
+    // alert("useeffect"+error)
+
+    }
+    
   }, [selector.dmsLeadProducts])
   useEffect(() => {
     console.log("$%$%^^^%&^&*^&&&*&", selector.pincode);
@@ -1393,7 +1399,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dmsLeadDto.phone = selector.mobile;
       dmsLeadDto.dmsLeadProducts = await carModelsList
 
-      await alert(JSON.stringify(dmsLeadDto))
+     // await alert(JSON.stringify(dmsLeadDto.dmsLeadProducts))
 
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -1811,7 +1817,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         arr[index] = value
        // arr.splice(carModelsList, index, value);
        await setCarModelsList([...arr])
-       alert(JSON.stringify(carModelsList))
+      // alert(JSON.stringify(carModelsList))
       }
       else {
         let arr = await [...carModelsList]

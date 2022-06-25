@@ -14,7 +14,7 @@ export const getEnquiryDetailsApi = createAsyncThunk(
   async (universalId, { rejectWithValue }) => {
     const autoSaveResponse = await client.get(URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
     const autoSavejson = await autoSaveResponse.json();
-    console.log("URL$$$: ", URL.ENQUIRY_DETAILS(universalId));
+    console.log("URL$$$: ", URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
 
     const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
     const json = await response.json();
@@ -22,7 +22,7 @@ export const getEnquiryDetailsApi = createAsyncThunk(
     // console.log("enquirey lead", json);
     // console.log("autoSavejson", autoSavejson);
 
-    if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
+    if (json.hasOwnProperty("dmsLeadDto")) {
       console.log("autoSavejson is true")
     }
 
@@ -37,8 +37,8 @@ export const getEnquiryDetailsApi = createAsyncThunk(
       return rejectWithValue(json);
     }
 
-    if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
-      return autoSavejson;
+    if (json.hasOwnProperty("dmsLeadDto")) {
+      return json;
     } else {
       return json.dmsEntity
     }
@@ -404,7 +404,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.r_insurence_from_date = ""
       state.r_insurence_to_date = ""
       state.r_insurence_document_checked = false
-    //  state.dmsLeadProducts =[]
+      state.dmsLeadProducts =[]
     },
     setEditable: (state, action) => {
       console.log("pressed");
@@ -1127,7 +1127,8 @@ const enquiryDetailsOverViewSlice = createSlice({
         "DD/MM/YYYY"
       );
       state.model = dmsLeadDto.model ? dmsLeadDto.model : "";
-      state.dmsLeadProducts = dmsLeadDto.dmsLeadProducts;
+      if (dmsLeadDto.dmsLeadProducts && dmsLeadDto.dmsLeadProducts.length != 0)
+      state.dmsLeadProducts = dmsLeadDto.dmsLeadProducts ;
 
       // documentType: dmsLeadDto.documentType === null ? '' : dmsLeadDto.documentType,
       // modeOfPayment: dmsLeadDto.modeOfPayment === null ? '' : dmsLeadDto.modeOfPayment,
@@ -1184,7 +1185,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.p_state = "";
       state.p_urban_or_rural = 0
     },
-    updateModelSelectionData: (state, action) => {
+    updateModelSelectionData: (state , action) => {
       const dmsLeadProducts = action.payload;
       let dataObj: any = {};
       // if (dmsLeadProducts.length > 0) {
@@ -1211,8 +1212,15 @@ const enquiryDetailsOverViewSlice = createSlice({
       // state.transmission_type = dataObj.transimmisionType
       //   ? dataObj.transimmisionType
       //   : "";
-      state.model_drop_down_data_update_statu = "update";
-      state.dmsLeadProducts = dmsLeadProducts;
+      try{
+        if (dmsLeadProducts && dmsLeadProducts.length != 0)
+          state.dmsLeadProducts = dmsLeadProducts;
+        state.model_drop_down_data_update_statu = "update";
+      }catch(error){
+       // alert(error)
+      }
+     
+
     },
     updateFinancialData: (state, action) => {
       const dmsfinancedetails = action.payload;
