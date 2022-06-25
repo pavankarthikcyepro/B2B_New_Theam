@@ -60,6 +60,12 @@ const URL = {
     VEHICLE_MODELS: (orgId) => {
         return vehicleInfoService_url + "/api/vehicle_details/?organizationId=" + orgId;
     },
+    GET_EMPID: (userName) => {
+        return roleManagement_url + '/user/' + userName;
+    },
+    GET_CALL_RECORDING_EXTENSIONID: (userName, orgId) => {
+        return sales_url + '/callrecording/getCallLoginDetails?orgId=' + orgId  +'&empId='+userName;
+    },
     CUSTOMER_TYPE: (orgId) => {
         return sales_url + `/master-data/customertype/${orgId}`
     },
