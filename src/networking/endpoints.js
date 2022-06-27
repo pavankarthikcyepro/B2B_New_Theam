@@ -274,15 +274,17 @@ const URL = {
     },
     GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
         return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
+    },
     GET_EMPLOYEE_LIST: (empId) => {
         return `${getEmployeeList}/${empId}`;
     },
-    GET_REPORTING_MANAGER_LIST: (orgId) => {
+    GET_REPORTING_MANAGER_LIST : (orgId) => {
         return `${getReportingMangerList}/${orgId}/for/dropdown`;
     },
-    EMPLOYEE_DATA_UPDATE: (empID, managerID) => {
+    EMPLOYEE_DATA_UPDATE : (empID, managerID) => {
         return `${updateEmployeeTaskDelegate}/${empID}/reportingManager/${managerID}/update`;
-    },
+    }
+    
 }
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason
