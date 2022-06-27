@@ -1,22 +1,11 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, FlatList } from 'react-native'
-import { Colors, GlobalStyle } from '../../../styles';
-import * as acctionCreator from '../../../redux/targetSettingsReducer';
-import { DateRangeComp, DatePickerComponent, SortAndFilterComp } from '../../../components';
-import { DateModalComp } from "../../../components/dateModalComp";
-import { getMenuList } from '../../../redux/homeReducer';
-import { DashboardTopTabNavigator } from '../../../navigations/dashboardTopTabNavigator';
-import { DashboardTopTabNavigatorNew } from '../../../navigations/dashboardTopTabNavigatorNew';
-import { HomeStackIdentifiers } from '../../../navigations/appNavigator';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, FlatList, LogBox } from 'react-native'
+import { Colors } from '../../../styles';
 import * as AsyncStore from '../../../asyncStore';
-import moment from 'moment';
-import { TargetAchivementComp } from './targetAchivementComp';
-import { HeaderComp, DropDownComponant, LoaderComponent } from '../../../components';
-import { TargetDropdown } from "../../../pureComponents";
-import RNFetchBlob from 'rn-fetch-blob';
 import { useDispatch, useSelector } from 'react-redux';
 import { Dropdown } from 'react-native-element-dropdown';
 import ArrowIcon from "react-native-vector-icons/FontAwesome";
+import { getLeaderBoardList } from "../../../redux/homeReducer";
 
 const dropdownData = [
     { label: 'Item 1', value: '1' },
@@ -29,15 +18,15 @@ const dropdownData = [
     { label: 'Item 8', value: '8' },
 ];
 
-const rankList = [
+const toprankList = [
     {
         "empId": 146,
         "orgId": 1,
         "rank": 1,
-        "targetAchivements": 21,
+        "targetAchivements": 23,
         "branchId": 242,
         "empName": "E Ravi",
-        "achivementPerc": 23
+        "achivementPerc": 26
     },
     {
         "empId": 102,
@@ -128,16 +117,232 @@ const rankList = [
         "branchId": 244,
         "empName": "Mujtaba Shaik Mohammed",
         "achivementPerc": 0
+    },
+    {
+        "empId": 731,
+        "orgId": 1,
+        "rank": 3,
+        "targetAchivements": 0,
+        "branchId": 245,
+        "empName": "Sayanna",
+        "achivementPerc": 0
+    },
+    {
+        "empId": 732,
+        "orgId": 1,
+        "rank": 3,
+        "targetAchivements": 0,
+        "branchId": 245,
+        "empName": "Anil",
+        "achivementPerc": 0
+    },
+    {
+        "empId": 733,
+        "orgId": 1,
+        "rank": 3,
+        "targetAchivements": 0,
+        "branchId": 266,
+        "empName": "Sai Krishna Vulvila",
+        "achivementPerc": 0
+    },
+    {
+        "empId": 734,
+        "orgId": 1,
+        "rank": 3,
+        "targetAchivements": 0,
+        "branchId": 266,
+        "empName": "Manibushan Gangaram",
+        "achivementPerc": 0
+    },
+    {
+        "empId": 735,
+        "orgId": 1,
+        "rank": 3,
+        "targetAchivements": 0,
+        "branchId": 266,
+        "empName": "Udaya Bhargavi Ayancha",
+        "achivementPerc": 0
+    },
+    {
+        "empId": 741,
+        "orgId": 1,
+        "rank": 3,
+        "targetAchivements": 0,
+        "branchId": 242,
+        "empName": "Charjun",
+        "achivementPerc": 0
+    }
+];
+
+const bottomrankList = [
+    {
+        "empId": 146,
+        "orgId": 1,
+        "rank": 1,
+        "targetAchivements": 23,
+        "branchId": 242,
+        "empName": "E Ravi",
+        "achivementPerc": 26
+    },
+    {
+        "empId": 102,
+        "orgId": 1,
+        "rank": 2,
+        "targetAchivements": 1,
+        "branchId": 244,
+        "empName": "GUDIPATI LAXMIKANTH",
+        "achivementPerc": 0
+    },
+    {
+        "empId": 97,
+        "orgId": 1,
+        "rank": 3,
+        "targetAchivements": 0,
+        "branchId": 244,
+        "empName": "M Rakesh",
+        "achivementPerc": 0
+    },
+    {
+        "empId": 100,
+        "orgId": 1,
+        "rank": 3,
+        "targetAchivements": 0,
+        "branchId": 244,
+        "empName": "Mohammed Saarvar Ali",
+        "achivementPerc": 0
+    },
+    {
+        "empId": 101,
+        "orgId": 1,
+        "rank": 3,
+        "targetAchivements": 0,
+        "branchId": 244,
+        "empName": "V Vinay ",
+        "achivementPerc": 0
+    },
+    {
+        "empId": 174,
+        "orgId": 1,
+        "rank": 3,
+        "targetAchivements": 0,
+        "branchId": 244,
+        "empName": "GEETHA",
+        "achivementPerc": 0
+    },
+    {
+        "empId": 182,
+        "orgId": 1,
+        "rank": 3,
+        "targetAchivements": 0,
+        "branchId": 242,
+        "empName": "Rekha",
+        "achivementPerc": 0
+    },
+    {
+        "empId": 682,
+        "orgId": 1,
+        "rank": 3,
+        "targetAchivements": 0,
+        "branchId": 242,
+        "empName": "Vidhya Sagar",
+        "achivementPerc": 0
+    },
+    {
+        "empId": 685,
+        "orgId": 1,
+        "rank": 3,
+        "targetAchivements": 0,
+        "branchId": 242,
+        "empName": "Babu Rao Dhesha",
+        "achivementPerc": 0
+    },
+    {
+        "empId": 699,
+        "orgId": 1,
+        "rank": 3,
+        "targetAchivements": 0,
+        "branchId": 244,
+        "empName": "Masthan Reddy Kalluri",
+        "achivementPerc": 0
+    },
+    {
+        "empId": 700,
+        "orgId": 1,
+        "rank": 3,
+        "targetAchivements": 0,
+        "branchId": 244,
+        "empName": "Mujtaba Shaik Mohammed",
+        "achivementPerc": 0
+    },
+    {
+        "empId": 731,
+        "orgId": 1,
+        "rank": 3,
+        "targetAchivements": 0,
+        "branchId": 245,
+        "empName": "Sayanna",
+        "achivementPerc": 0
+    },
+    {
+        "empId": 732,
+        "orgId": 1,
+        "rank": 3,
+        "targetAchivements": 0,
+        "branchId": 245,
+        "empName": "Anil",
+        "achivementPerc": 0
+    },
+    {
+        "empId": 733,
+        "orgId": 1,
+        "rank": 3,
+        "targetAchivements": 0,
+        "branchId": 266,
+        "empName": "Sai Krishna Vulvila",
+        "achivementPerc": 0
+    },
+    {
+        "empId": 734,
+        "orgId": 1,
+        "rank": 3,
+        "targetAchivements": 0,
+        "branchId": 266,
+        "empName": "Manibushan Gangaram",
+        "achivementPerc": 0
+    },
+    {
+        "empId": 735,
+        "orgId": 1,
+        "rank": 3,
+        "targetAchivements": 0,
+        "branchId": 266,
+        "empName": "Udaya Bhargavi Ayancha",
+        "achivementPerc": 0
+    },
+    {
+        "empId": 741,
+        "orgId": 1,
+        "rank": 3,
+        "targetAchivements": 0,
+        "branchId": 242,
+        "empName": "Charjun",
+        "achivementPerc": 0
     }
 ]
 
 export default function leaderBoardScreen() {
     const selector = useSelector((state) => state.homeReducer);
     const dispatch = useDispatch();
+    const [showTop5View, setShowTop5View] = useState(false);
+    const [showBottom5View, setShowBottom5View] = useState(false);
     const [groupDealerRank, setGroupDealerRank] = useState(null);
     const [groupDealerCount, setGroupDealerCount] = useState(null);
+    const [top5RankList, setTop5RankList] = useState([]);
+    const [bottom5RankList, setBottom5RankList] = useState([]);
+    const [reversebottomRankList, setReverseBottomRankList] = useState([]);
 
     useEffect(async () => {
+        LogBox.ignoreAllLogs();
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
@@ -154,23 +359,70 @@ export default function leaderBoardScreen() {
 
                 }
             }
-        }
+        };
     }, [selector.allGroupDealerData]);
 
-    const renderItemTaskTransferList = (item, index) => {
+
+    const getLeaderboardListFromServer = async () => {
+        let payload = {
+            "endDate": "2022-06-30",
+            "levelSelected": null,
+            "loggedInEmpId": 146,
+            "pageNo": 0,
+            "size": 0,
+            "startDate": "2022-06-01"
+        };
+        dispatch(getLeaderBoardList(payload));
+    }
+
+    useEffect(async () => {
+        LogBox.ignoreAllLogs();
+        getLeaderboardListFromServer();
+
+        setTop5RankList(toprankList.slice(0, 5));
+        setBottom5RankList(bottomrankList.reverse().slice(0, 5));
+        setReverseBottomRankList(bottomrankList.reverse());
+    }, []);
+
+    const renderItemLeaderTopList = (item, extraIndex) => {
         return (
-            <TouchableOpacity style={{
-                backgroundColor: "white",
-                padding: 10
-            }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <Text style={{ color: index === 0 ? '#F59D44' : 'black', alignSelf: 'center'}}>{index === 0 ? 'Rank' : index}</Text>
-                    <Text style={{ color: index === 0 ? '#D81F9F' : 'black', textAlign: 'center', }}>{index === 0 ? 'Branch' : item.branchId}</Text>
-                    <Text style={{ color: index === 0 ? '#983AAA' : 'black', alignSelf: 'center' }}>{index === 0 ? 'Code' : item.branchId}</Text>
-                    <Text style={{ color: index === 0 ? '#328B91' : 'black', textAlign: 'center' }}>{index === 0 ? 'Ret T/A%' : item.achivementPerc}</Text>
-                    <Text style={{ color: index === 0 ? '#E54875' : 'black', textAlign: 'center' }}>{index === 0 ? 'Retails' : item.targetAchivements}</Text>
+            <View style={{ backgroundColor: "white", padding: 10, width: '100%' }}>
+                {extraIndex == 0 ? <View style={{ flexDirection: 'row', width: '100%', marginBottom: 5 }}>
+                    <Text style={{ color: '#F59D44', textAlign: 'center', flex: 1  }}>Rank</Text>
+                    <Text style={{ color: '#D81F9F', textAlign: 'center', flex: 1 }}>Branch</Text>
+                    <Text style={{ color: '#983AAA', textAlign: 'center', flex: 1 }}>Code</Text>
+                    <Text style={{ color: '#328B91', textAlign: 'center', flex: 1 }}>Ret T/A%</Text>
+                    <Text style={{ color: '#E54875', textAlign: 'center', flex: 1 }}>Retails</Text>
+                </View> : null}
+                <View style={{ flexDirection: 'row', width: '100%' }}>
+                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{extraIndex + 1}</Text>
+                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchId}</Text>
+                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchId}</Text>
+                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.achivementPerc}</Text>
+                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.targetAchivements}</Text>
                 </View>
-            </TouchableOpacity>
+            </View>
+        );
+    };
+
+    const renderItemLeaderBottomList = (item, extraIndex) => {
+        return (
+            <View style={{ backgroundColor: "white", padding: 10, width: '100%' }}>
+                {extraIndex == 0 ? <View style={{ flexDirection: 'row', width: '100%', marginBottom: 5 }}>
+                    <Text style={{ color: '#F59D44', textAlign: 'center', flex: 1 }}>Rank</Text>
+                    <Text style={{ color: '#D81F9F', textAlign: 'center', flex: 1 }}>Branch</Text>
+                    <Text style={{ color: '#983AAA', textAlign: 'center', flex: 1 }}>Code</Text>
+                    <Text style={{ color: '#328B91', textAlign: 'center', flex: 1 }}>Ret T/A%</Text>
+                    <Text style={{ color: '#E54875', textAlign: 'center', flex: 1 }}>Retails</Text>
+                </View> : null}
+                <View style={{ flexDirection: 'row', width: '100%' }}>
+                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.rank}</Text>
+                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchId}</Text>
+                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchId}</Text>
+                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.achivementPerc}</Text>
+                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.targetAchivements}</Text>
+                </View>
+            </View>
         );
     };
 
@@ -257,7 +509,7 @@ export default function leaderBoardScreen() {
                     </View>
 
                     <View style={{
-                        height: 250,
+                        height: showTop5View ? 480 : 280,
                         width: '95%',
                         backgroundColor: 'white',
                         shadowColor: "#000",
@@ -276,18 +528,21 @@ export default function leaderBoardScreen() {
                         margin: 5,
                         alignSelf: 'center'
                     }}>
-                        <View style={{ width: '98%', height: 200, backgroundColor: 'pink' }}>
+                        <View style={{
+                            width: '98%', height: showTop5View ? 430 : 230
+                        }}>
                             <FlatList
-                                data={rankList}
+                                data={showTop5View ? toprankList : top5RankList}
                                 nestedScrollEnabled={true}
                                 keyExtractor={(item, index) => index.toString()}
-                                renderItem={({ item, index }) => renderItemTaskTransferList(item, index)}
+                                renderItem={({ item, index }) => renderItemLeaderTopList(item, index)}
                                 showsVerticalScrollIndicator={false}
+                                maxToRenderPerBatch={5}
                             />
                         </View>
 
-                        <TouchableOpacity style={{ alignSelf: 'flex-end' }}>
-                            <Text style={{ color: 'red', alignSelf: 'flex-end', margin: 12 }}>View All &gt;</Text>
+                        <TouchableOpacity style={{ alignSelf: 'flex-end' }} onPress={() => { setShowTop5View(!showTop5View); }}>
+                            <Text style={{ color: 'red', alignSelf: 'flex-end', margin: 12 }}>{showTop5View ? 'View Less' : 'View All'}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -305,7 +560,7 @@ export default function leaderBoardScreen() {
                     </View>
 
                     <View style={{
-                        height: 250,
+                        height: showBottom5View ? 480 : 280,
                         width: '95%',
                         backgroundColor: 'white',
                         shadowColor: "#000",
@@ -324,18 +579,18 @@ export default function leaderBoardScreen() {
                         margin: 5,
                         alignSelf: 'center'
                     }}>
-                        <View style={{ width: '98%', height: 200, backgroundColor: 'pink' }}>
+                        <View style={{ width: '98%', height: showBottom5View ? 430 : 230 }}>
                             <FlatList
-                                data={rankList}
+                                data={showBottom5View ? reversebottomRankList : bottom5RankList}
                                 nestedScrollEnabled={true}
                                 keyExtractor={(item, index) => index.toString()}
-                                renderItem={({ item, index }) => renderItemTaskTransferList(item, index)}
+                                renderItem={({ item, index }) => renderItemLeaderBottomList(item, index)}
                                 showsVerticalScrollIndicator={false}
                             />
                         </View>
 
-                        <TouchableOpacity style={{ alignSelf: 'flex-end' }}>
-                            <Text style={{ color: 'red', alignSelf: 'flex-end', margin: 12 }}>View All &gt;</Text>
+                        <TouchableOpacity style={{ alignSelf: 'flex-end' }} onPress={() => { setShowBottom5View(!showBottom5View); }}>
+                            <Text style={{ color: 'red', alignSelf: 'flex-end', margin: 12 }}>{showBottom5View ? 'View Less' : 'View All'}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -376,9 +631,6 @@ const styles = StyleSheet.create({
         paddingBottom: 10
     },
     rankIcon: { width: 35, height: 35 },
-
-
-
     dropdownContainer: {
         backgroundColor: 'white',
         padding: 16,

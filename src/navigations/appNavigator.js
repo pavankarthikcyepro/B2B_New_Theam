@@ -72,6 +72,7 @@ import { updateModal, updateSearchKey, updateIsSearch } from '../redux/appReduce
 import etvbrlReportScreen from "../scenes/mainScenes/etvbrlReportScreen";
 import webViewComp from "../scenes/mainScenes/EMS/components/webViewComp";
 import leaderBoardScreen from "../scenes/mainScenes/Home/leaderBoardScreen";
+import branchRankingScreen from "../scenes/mainScenes/Home/branchRankingScreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -233,7 +234,8 @@ export const HomeStackIdentifiers = {
     filter: "FILTER",
     select_branch: "SELECT_BRANCH",
     test: "TEST",
-    leaderboard: "LEADERBOARD"
+    leaderboard: "LEADERBOARD",
+    branchRanking: "BRANCH_RANKING"
 };
 
 export const EmsStackIdentifiers = {
@@ -337,6 +339,11 @@ const HomeStackNavigator = ({ navigation }) => {
                 name={HomeStackIdentifiers.leaderboard}
                 component={leaderBoardScreen}
                 options={{ title: "LeaderBoard" }}
+            />
+            <HomeStack.Screen
+                name={HomeStackIdentifiers.branchRanking}
+                component={branchRankingScreen}
+                options={{ title: "Branch ranking" }}
             />
         </HomeStack.Navigator>
     );
