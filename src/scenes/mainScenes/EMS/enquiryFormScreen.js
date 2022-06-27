@@ -156,7 +156,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.enquiryFormReducer);
   const [openAccordian, setOpenAccordian] = useState("0");
   const [componentAppear, setComponentAppear] = useState(false);
-  const { universalId, enqDetails } = route.params;
+  const { universalId, enqDetails, leadStatus, leadStage } = route.params;
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [dataForDropDown, setDataForDropDown] = useState([]);
   const [dropDownKey, setDropDownKey] = useState("");
@@ -621,7 +621,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (universalId) {
       // if (selector.isOpened) {
       // dispatch(getAutoSaveEnquiryDetailsApi(universalId));
-      dispatch(getEnquiryDetailsApi(universalId));
+      dispatch(getEnquiryDetailsApi({universalId, leadStage, leadStatus}));
       // } else {
     }
   };
