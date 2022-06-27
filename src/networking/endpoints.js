@@ -42,6 +42,9 @@ export const lostSubLost = "http://automatestaging-724985329.ap-south-1.elb.amaz
 export const getBranch = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/oh";
 export const downloadFile = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8093/dynamic-reports";
 export const downloadFile1 = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8095/dynamic-reports/etvbrl_report_download";
+export const tasktransfer = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/sales-gap/target-dropdown";
+export const getTaskList = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/task-delegation/get_task_list";
+export const getEmployeeData = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8089/role-management/employee/dept-employees";
 export const getEmployeeList = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/reporting/all/emp"
 export const getReportingMangerList = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/all/reportingManagers/orgId"
 export const updateEmployeeTaskDelegate = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/emp"
@@ -268,6 +271,15 @@ const URL = {
     REASON_LIST: (orgId, taskName) => {
         return `${downloadFile}/get-followup/${orgId}/${taskName}`;
     },
+    TARGET_DROPDOWN: (orgId, parent, child, parentId) => {
+        return `${tasktransfer}?orgId=${orgId}&parent=${parent}&child=${child}&parentId=${parentId}`;
+    },
+    GET_TASK_LIST: (taskId) => {
+        return `${getTaskList}/${taskId}`;
+    },
+    GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
+        return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
+    },
     GET_EMPLOYEE_LIST: (empId) => {
         return `${getEmployeeList}/${empId}`;
     },
@@ -304,6 +316,7 @@ const URL = {
     GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
         return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
     },
+    }
 }
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason

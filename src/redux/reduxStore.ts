@@ -28,6 +28,7 @@ import bookingReducer from "./bookingReducer";
 import bookingFormReducer from "./bookingFormReducer";
 import proceedToBookingReducer from "./proceedToBookingReducer";
 import appReducer from "./appReducer";
+import taskTransferReducer from "./taskTransferReducer";
 import callRecordingReducer from "./callRecordingReducer";
 import taskTransferReducer from "./taskTransferReducer";
 

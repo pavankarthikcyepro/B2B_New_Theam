@@ -6,7 +6,7 @@ import {
     StyleSheet,
     FlatList,
     Dimensions,
-    Image, TouchableOpacity
+    Image, TouchableOpacity, ScrollView
 } from "react-native";
 import { Colors } from "../../styles";
 import { SettingsScreenItem } from "../../pureComponents/settingScreenItem";
@@ -14,7 +14,9 @@ const screenWidth = Dimensions.get("window").width;
 import { Dropdown } from 'react-native-element-dropdown';
 import { useDispatch, useSelector } from "react-redux";
 import { getTaskList, getBranchDropdown, getDeptDropdown, getDesignationDropdown, getEmployeeDetails } from "../../redux/taskTransferReducer";
-import { ScrollView } from "react-native-gesture-handler";
+import { useIsFocused } from '@react-navigation/native';
+import { Checkbox, IconButton } from 'react-native-paper';
+import moment from "moment";
 
 const datalist = [
     {
@@ -34,11 +36,12 @@ const TaskTranferScreen = () => {
     const selector = useSelector((state) => state.taskTransferReducer);
     const dispatch = useDispatch();
     const [showTaskList, setShowTaskList] = useState(false);
+    const [showTaskFlatlist, setShowTaskFlatlist] = useState(false);
+    const [tasklistHeader, setTasklistHeader] = useState(false);
+
     const [showTrasnferFromDropdowns, setShowTrasnferFromDropdowns] = useState(false);
-
-
-    const [employeeTransferFromDropDownItem, setEmployeeTransferFromDropDownItem] = useState("");
-    const [employeeTransferFromDropDownList, setEmployeeTransferFromDropDownList] = useState([]);
+    const [taskNameHeader, setTaskNameHeader] = useState("Task List");
+    const [checked, setChecked] = useState({});
 
     //task transfer to states
     const [branchDropDownItem, setbranchDropDownItem] = useState("");
@@ -59,10 +62,15 @@ const TaskTranferScreen = () => {
     const [deptTransferFromDropDownList, setDeptTransferFromDropDownList] = useState([]);
     const [designationTransferFromDropDownItem, setDesignationTransferFromDropDownItem] = useState("");
     const [designationTransferFromDropDownList, setDesignationTransferFromDropDownList] = useState([]);
+    const [employeeTransferFromDropDownItem, setEmployeeTransferFromDropDownItem] = useState("");
+    const [employeeTransferFromDropDownList, setEmployeeTransferFromDropDownList] = useState([]);
+
+    const [taskList, setTaskList] = useState([]);
 
     useEffect(() => {
         getTargetbranchDropDownListFromServer();
         setbranchDropDownList(selector.branchList.map(({ id: value, value: label, ...rest }) => ({ value, label, ...rest })));
+        setbranchTransferFromDropDownList(selector.branchList.map(({ id: value, value: label, ...rest }) => ({ value, label, ...rest })));
     }, []);
 
     const getTaskListFromServer = async () => {
@@ -112,7 +120,12 @@ const TaskTranferScreen = () => {
 
     const renderItem = (item, index) => {
         return (
-            <TouchableOpacity onPress={() => setShowTrasnferFromDropdowns(true)} style={{
+            <TouchableOpacity onPress={() => {
+                setShowTrasnferFromDropdowns(true);
+                setTaskNameHeader(item.item.taskName);
+                setShowTaskFlatlist(true);
+                setShowTaskList(false);
+            }} style={{
                 backgroundColor: "white",
                 borderTopWidth: 0.6,
                 borderBottomWidth: index === item.item.length ? 0.6 : 0,
@@ -120,6 +133,53 @@ const TaskTranferScreen = () => {
                 padding: 10
             }}>
                 <Text>{item.item.taskName}</Text>
+            </TouchableOpacity>
+        );
+    };
+
+    const updatedItem = (index) => {
+        if (checked[index] !== undefined) {
+            return checked[index];
+        } else {
+            return false;
+        }
+    }
+
+    //Add this line to tell the function that it's in focuse
+    useIsFocused();
+
+    const renderItemTaskTransferList = (item, index) => {
+        return (
+            <TouchableOpacity style={{
+                backgroundColor: "white",
+                borderTopWidth: 0.6,
+                borderBottomWidth: index === item.length ? 0.6 : 0,
+                borderColor: "#333",
+                padding: 10
+            }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Checkbox.Android
+                        status={updatedItem(index) ? 'checked' : 'unchecked'}
+                        uncheckedColor={Colors.DARK_GRAY}
+                        color={Colors.RED}
+                        onPress={() => {
+                            if (checked.hasOwnProperty(index)) {
+                                const temp = checked;
+                                temp[index] = !temp[index];
+                                setChecked({ ...temp, index: temp[index] });
+                            } else {
+                                const temp = checked;
+                                temp[index] = true;
+                                setChecked({ ...temp, index: temp[index] });
+                            }
+                        }}
+                    />
+                    <Text>{item.customerName}</Text>
+                    <Text>{item.mobileNumber}</Text>
+                    <Text>{moment(item.createdOn).format('MMMM Do YYYY, h:mm:ss a')}</Text>
+                    <Text>{item.taskStatus}</Text>
+                    <Text>{item.employeeName}</Text>
+                </View>
             </TouchableOpacity>
         );
     };
@@ -199,6 +259,7 @@ const TaskTranferScreen = () => {
                                 setDesignationDropDownList(selector.designationList.map(({ id: value, value: label, ...rest }) => ({ value, label, ...rest })));
                             }}
                         />
+                        
                     </View>
                     <View style={styles.dropWrap}>
                         <View style={styles.dropHeadTextWrap}>
@@ -252,12 +313,13 @@ const TaskTranferScreen = () => {
                                 console.log("£££", item);
                                 getTaskListFromServer();
                                 setTaskList(selector.taskList);
+                                setTasklistHeader(true);
                             }}
                         />
                     </View>
 
-                    {showTaskList ? <View style={{ width: '100%', paddingHorizontal: 15, height: 60, justifyContent: 'center' }}>
-                        <Text style={{ fontSize: 18, fontWeight: 'bold' }} >Task List</Text>
+                    {tasklistHeader ? <View style={{ width: '100%', paddingHorizontal: 15, height: 60, justifyContent: 'center' }}>
+                        <Text style={{ fontSize: 18, fontWeight: 'bold' }} >{taskNameHeader}</Text>
                     </View> : null}
 
                     {showTaskList ? <View style={{ paddingVertical: 18, height: 350 }}>
@@ -268,6 +330,18 @@ const TaskTranferScreen = () => {
                             renderItem={(item, index) => renderItem(item, index)}
                         />
                     </View> : null}
+
+                    {showTaskFlatlist ? <ScrollView horizontal={true} style={{ paddingVertical: 5, height: 350, marginLeft: 8, marginRight: 8 }}>
+                        <View style={{ width: 800 }}>
+                            <FlatList
+                                data={taskList}
+                                nestedScrollEnabled={true}
+                                keyExtractor={(item, index) => index.toString()}
+                                extraData={checked}
+                                renderItem={({ item, index }) => renderItemTaskTransferList(item, index)}
+                            />
+                        </View>
+                    </ScrollView> : null}
 
                     {showTrasnferFromDropdowns ? <View style={{ width: '100%', paddingHorizontal: 15, height: 60, justifyContent: 'center' }}>
                         <Text style={{ fontSize: 18, fontWeight: 'bold' }} >Transfer Task from</Text>
