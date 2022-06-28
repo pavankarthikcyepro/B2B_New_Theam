@@ -25,11 +25,11 @@ const datalist = [
 ];
 
 const dropdownData = [
-    { Customername: "", number: "", created: "", status: "", empname: "", value: '1' },
-    { Customername: "", number: "", created: "", status: "", empname: "", value: '2' },
-    { Customername: "", number: "", created: "", status: "", empname: "", value: '3' },
-    { Customername: "", number: "", created: "", status: "", empname: "", value: '4' },
-    { Customername: "", number: "", created: "", status: "", empname: "", value: '5' }
+    { label: 'Item 1', value: '1' },
+    { label: 'Item 2', value: '2' },
+    { label: 'Item 3', value: '3' },
+    { label: 'Item 4', value: '4' },
+    { label: 'Item 5', value: '5' }
 ];
 
 const TaskTranferScreen = () => {
@@ -52,6 +52,8 @@ const TaskTranferScreen = () => {
     const [designationDropDownList, setDesignationDropDownList] = useState([]);
     const [employeeDropDownItem, setEmployeeDropDownItem] = useState("");
     const [employeeDropDownList, setEmployeeDropDownList] = useState([]);
+
+    const [taskList, setTaskList] = useState([]);
 
     //task trasnfer from status
     const [branchTransferFromDropDownItem, setbranchTransferFromDropDownItem] = useState("");
@@ -257,6 +259,7 @@ const TaskTranferScreen = () => {
                                 setDesignationDropDownList(selector.designationList.map(({ id: value, value: label, ...rest }) => ({ value, label, ...rest })));
                             }}
                         />
+                        
                     </View>
                     <View style={styles.dropWrap}>
                         <View style={styles.dropHeadTextWrap}>

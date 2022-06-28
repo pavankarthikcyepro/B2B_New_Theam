@@ -5,7 +5,7 @@ import * as AsyncStore from '../asyncStore';
 import empData from '../get_target_params_for_emp.json'
 import allData from '../get_target_params_for_all_emps.json'
 import targetData from '../get_target_params.json'
-
+ 
 const data = [
     {
         title: "Pre-Enquiry",
@@ -207,7 +207,7 @@ export const getDealerRanking = createAsyncThunk("HOME/getDealerRanking", async 
     // console.log("%%%DEALER", URL.GET_TARGET_RANKING(payload.orgId, payload.branchId), payload.payload);
     const response = await client.post(URL.GET_TARGET_RANKING(payload.orgId, payload.branchId), payload.payload)
     const json = await response.json()
-    console.log("&&&&&& DATA GET_TARGET_RANKING:", json);
+    // console.log("&&&&&& DATA GET_TARGET_RANKING:", json);
 
     if (!response.ok) {
         return rejectWithValue(json);
@@ -295,10 +295,29 @@ export const getReportingManagerList = createAsyncThunk("HOME/getReportingManage
     }
     return json;
 })
+
 export const updateEmployeeDataBasedOnDelegate = createAsyncThunk("HOME/updateEmployeeDataBasedOnDelegate", async (body, { rejectWithValue }) => {
     const response = await client.put(URL.EMPLOYEE_DATA_UPDATE(body["empID"], body["managerID"]))  
     const json = await response.json()
     if (!response.success) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const getLeaderBoardList = createAsyncThunk("HOME/getLeaderBoardList", async (payload: any, { rejectWithValue }) => {
+    const response = await client.post(URL.GET_LEADERBOARD_DATA(), payload)
+    const json = await response.json();
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const getBranchRanksList = createAsyncThunk("HOME/getBranchRanksList", async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.GET_BRANCH_RANKING_DATA(payload), payload)
+    const json = await response.json();
+    if (!response.ok) {
         return rejectWithValue(json);
     }
     return json;
@@ -352,7 +371,9 @@ export const homeSlice = createSlice({
         self_target_parameters_data: empData,
         employee_list: [],
         reporting_manager_list: [],
-        isLoading: false
+        isLoading: false,
+        leaderboard_list: [],
+        branchrank_list: []
     },
     reducers: {
         dateSelected: (state, action) => {
@@ -413,6 +434,8 @@ export const homeSlice = createSlice({
             state.employee_list = []
             state.reporting_manager_list = []
             state.isLoading = false
+            state.leaderboard_list = []
+            state.branchrank_list = []
         },
     },
     extraReducers: (builder) => {
@@ -733,6 +756,30 @@ export const homeSlice = createSlice({
                     state.isLoading = false;
             })
             .addCase(updateEmployeeDataBasedOnDelegate.rejected, (state, action) => {
+                state.isLoading = false;
+            })
+            .addCase(getLeaderBoardList.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(getLeaderBoardList.fulfilled, (state, action) => {
+                // console.log("res2: ", action.payload);
+                const dataObj = action.payload;
+                state.leaderboard_list = dataObj ? dataObj : [];
+                state.isLoading = false;
+            })
+            .addCase(getLeaderBoardList.rejected, (state, action) => {
+                state.isLoading = false;
+            })
+            .addCase(getBranchRanksList.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(getBranchRanksList.fulfilled, (state, action) => {
+                // console.log("res2: ", action.payload);
+                const dataObj = action.payload;
+                state.branchrank_list = dataObj ? dataObj : [];
+                state.isLoading = false;
+            })
+            .addCase(getBranchRanksList.rejected, (state, action) => {
                 state.isLoading = false;
             })
         }

@@ -926,15 +926,17 @@ const HomeScreen = ({ route, navigation }) => {
                                                 <View style={{
                                                     flexDirection: 'row'
                                                 }}>
-                                                    <View style={styles.rankIconBox}>
-                                                        {/* <VectorImage
+                                                    <TouchableOpacity style={styles.rankIconBox} onPress={() => {
+                                                        navigation.navigate(AppNavigator.HomeStackIdentifiers.branchRanking)
+                                                    }}>                                                        
+                                                    {/* <VectorImage
                                                     width={25}
                                                     height={16}
                                                     source={SPEED}
                                                 // style={{ tintColor: Colors.DARK_GRAY }}
                                                 /> */}
                                                         <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
-                                                    </View>
+                                                    </TouchableOpacity>
                                                     <View style={{
                                                         marginTop: 5,
                                                         marginLeft: 3,
