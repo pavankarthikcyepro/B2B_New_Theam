@@ -6,6 +6,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Dropdown } from 'react-native-element-dropdown';
 import ArrowIcon from "react-native-vector-icons/FontAwesome";
 import { getLeaderBoardList } from "../../../redux/homeReducer";
+import { LoaderComponent } from '../../../components';
+import moment from 'moment';
 
 const dropdownData = [
     { label: 'Item 1', value: '1' },
@@ -18,318 +20,6 @@ const dropdownData = [
     { label: 'Item 8', value: '8' },
 ];
 
-const toprankList = [
-    {
-        "empId": 146,
-        "orgId": 1,
-        "rank": 1,
-        "targetAchivements": 23,
-        "branchId": 242,
-        "empName": "E Ravi",
-        "achivementPerc": 26
-    },
-    {
-        "empId": 102,
-        "orgId": 1,
-        "rank": 2,
-        "targetAchivements": 1,
-        "branchId": 244,
-        "empName": "GUDIPATI LAXMIKANTH",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 97,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 244,
-        "empName": "M Rakesh",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 100,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 244,
-        "empName": "Mohammed Saarvar Ali",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 101,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 244,
-        "empName": "V Vinay ",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 174,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 244,
-        "empName": "GEETHA",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 182,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 242,
-        "empName": "Rekha",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 682,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 242,
-        "empName": "Vidhya Sagar",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 685,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 242,
-        "empName": "Babu Rao Dhesha",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 699,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 244,
-        "empName": "Masthan Reddy Kalluri",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 700,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 244,
-        "empName": "Mujtaba Shaik Mohammed",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 731,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 245,
-        "empName": "Sayanna",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 732,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 245,
-        "empName": "Anil",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 733,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 266,
-        "empName": "Sai Krishna Vulvila",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 734,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 266,
-        "empName": "Manibushan Gangaram",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 735,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 266,
-        "empName": "Udaya Bhargavi Ayancha",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 741,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 242,
-        "empName": "Charjun",
-        "achivementPerc": 0
-    }
-];
-
-const bottomrankList = [
-    {
-        "empId": 146,
-        "orgId": 1,
-        "rank": 1,
-        "targetAchivements": 23,
-        "branchId": 242,
-        "empName": "E Ravi",
-        "achivementPerc": 26
-    },
-    {
-        "empId": 102,
-        "orgId": 1,
-        "rank": 2,
-        "targetAchivements": 1,
-        "branchId": 244,
-        "empName": "GUDIPATI LAXMIKANTH",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 97,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 244,
-        "empName": "M Rakesh",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 100,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 244,
-        "empName": "Mohammed Saarvar Ali",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 101,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 244,
-        "empName": "V Vinay ",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 174,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 244,
-        "empName": "GEETHA",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 182,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 242,
-        "empName": "Rekha",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 682,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 242,
-        "empName": "Vidhya Sagar",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 685,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 242,
-        "empName": "Babu Rao Dhesha",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 699,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 244,
-        "empName": "Masthan Reddy Kalluri",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 700,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 244,
-        "empName": "Mujtaba Shaik Mohammed",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 731,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 245,
-        "empName": "Sayanna",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 732,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 245,
-        "empName": "Anil",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 733,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 266,
-        "empName": "Sai Krishna Vulvila",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 734,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 266,
-        "empName": "Manibushan Gangaram",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 735,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 266,
-        "empName": "Udaya Bhargavi Ayancha",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 741,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 242,
-        "empName": "Charjun",
-        "achivementPerc": 0
-    }
-]
-
 export default function leaderBoardScreen() {
     const selector = useSelector((state) => state.homeReducer);
     const dispatch = useDispatch();
@@ -338,6 +28,7 @@ export default function leaderBoardScreen() {
     const [groupDealerRank, setGroupDealerRank] = useState(null);
     const [groupDealerCount, setGroupDealerCount] = useState(null);
     const [top5RankList, setTop5RankList] = useState([]);
+    const [topRankList, setTopRankList] = useState([]);
     const [bottom5RankList, setBottom5RankList] = useState([]);
     const [reversebottomRankList, setReverseBottomRankList] = useState([]);
 
@@ -364,13 +55,16 @@ export default function leaderBoardScreen() {
 
 
     const getLeaderboardListFromServer = async () => {
+        var date = new Date();
+        var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+        var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
         let payload = {
-            "endDate": "2022-06-30",
+            "endDate": moment.utc(lastDay).format('YYYY-MM-DD'),
             "levelSelected": null,
             "loggedInEmpId": 146,
             "pageNo": 0,
             "size": 0,
-            "startDate": "2022-06-01"
+            "startDate": moment.utc(firstDay).format('YYYY-MM-DD')
         };
         dispatch(getLeaderBoardList(payload));
     }
@@ -379,10 +73,19 @@ export default function leaderBoardScreen() {
         LogBox.ignoreAllLogs();
         getLeaderboardListFromServer();
 
-        setTop5RankList(toprankList.slice(0, 5));
-        setBottom5RankList(bottomrankList.reverse().slice(0, 5));
-        setReverseBottomRankList(bottomrankList.reverse());
-    }, []);
+        let top = selector.leaderboard_list;
+        let bottom = [];
+        bottom = selector.leaderboard_list;
+        setTimeout(() => {
+            setTopRankList(top);
+            setTop5RankList(top.slice(0, 5));
+        }, 2000);
+        
+        setTimeout(() => {
+            setBottom5RankList([...bottom].reverse().slice(0, 5));
+            setReverseBottomRankList([...bottom].reverse());
+        }, 2000);
+    }, [top5RankList]);
 
     const renderItemLeaderTopList = (item, extraIndex) => {
         return (
@@ -395,7 +98,7 @@ export default function leaderBoardScreen() {
                     <Text style={{ color: '#E54875', textAlign: 'center', flex: 1 }}>Retails</Text>
                 </View> : null}
                 <View style={{ flexDirection: 'row', width: '100%' }}>
-                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{extraIndex + 1}</Text>
+                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.rank}</Text>
                     <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchId}</Text>
                     <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchId}</Text>
                     <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.achivementPerc}</Text>
@@ -496,6 +199,11 @@ export default function leaderBoardScreen() {
                     </View>
                 </View>
 
+                {top5RankList.length && bottom5RankList.length ? null : <LoaderComponent
+                    visible={selector.isLoading}
+                    onRequestClose={() => { }}
+                />}
+
                 <View>
                     <View style={{ flexDirection: 'row', alignItems: 'center', padding: 10 }}>
                         <View style={{
@@ -532,7 +240,7 @@ export default function leaderBoardScreen() {
                             width: '98%', height: showTop5View ? 430 : 230
                         }}>
                             <FlatList
-                                data={showTop5View ? toprankList : top5RankList}
+                                data={showTop5View ? topRankList : top5RankList}
                                 nestedScrollEnabled={true}
                                 keyExtractor={(item, index) => index.toString()}
                                 renderItem={({ item, index }) => renderItemLeaderTopList(item, index)}
