@@ -65,7 +65,7 @@ const TaskTranferScreen = () => {
     const [employeeTransferFromDropDownItem, setEmployeeTransferFromDropDownItem] = useState("");
     const [employeeTransferFromDropDownList, setEmployeeTransferFromDropDownList] = useState([]);
 
-    const [taskList, setTaskList] = useState([]);
+   // const [taskList, setTaskList] = useState([]);
 
     useEffect(() => {
         getTargetbranchDropDownListFromServer();

@@ -21,6 +21,7 @@ import {
     IconButton,
     List,
     Button,
+    ToggleButton, Switch
 } from "react-native-paper";
 import { Colors, GlobalStyle } from "../../../../styles";
 import * as AsyncStore from "../../../../asyncStore";
@@ -90,7 +91,7 @@ import {
     autoSaveEnquiryDetailsApi,
     updatedmsLeadProduct
 } from "../../../../redux/enquiryFormReducer";
-export const ModelListitemCom = ({ modelOnclick,item, index}) =>{
+export const ModelListitemCom = ({ modelOnclick,isPrimaryOnclick ,item, index, leadStage}) =>{
     const dispatch = useDispatch();
 
     const selector = useSelector((state) => state.enquiryFormReducer);
@@ -105,6 +106,8 @@ export const ModelListitemCom = ({ modelOnclick,item, index}) =>{
     const [carFuelType, setCarFuelType] = useState('');
     const [carTransmissionType, setCarTransmissionType] = useState('');
     const [carColor, setCarColor] = useState('');
+    const [isPrimary, setisPrimary] = useState(false);
+
 
 
 
@@ -167,6 +170,8 @@ export const ModelListitemCom = ({ modelOnclick,item, index}) =>{
             setCarColor(item.color)
             setCarModel(item.model)
             setCarFuelType(item.fuel)
+            if (leadStage === 'PREBOOKING')
+            setisPrimary(item.isPrimary)
             setCarTransmissionType(item.transimmisionType)
             setCarVariant(item.variant)
             if (employeeData) {
@@ -189,7 +194,7 @@ export const ModelListitemCom = ({ modelOnclick,item, index}) =>{
                 });
             }
         }catch(error){
-         alert(error)
+        // alert(error)
         }
        
     };
@@ -206,6 +211,8 @@ export const ModelListitemCom = ({ modelOnclick,item, index}) =>{
             return obj.model === selectedModelName;
         });
 
+      //  alert(JSON.stringify(carModelsData))
+
         let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
         if (carModelObj !== undefined) {
             let newArray = [];
@@ -213,21 +220,40 @@ export const ModelListitemCom = ({ modelOnclick,item, index}) =>{
             setCarColor("")
             setCarVariant('')
             setCarFuelType('')
+           
+            
             setCarTransmissionType('')
             try{
-                const carmodeldata = {
-                    "color": '',
-                    "fuel": '',
-                    "id": item.id,
-                    "model": selectedModelName,
-                    "transimmisionType": '',
-                    "variant": ''
+                var carmodeldata;
+                if (leadStage === 'PREBOOKING') {
+                     carmodeldata = {
+                        "color": '',
+                        "fuel": '',
+                        "id": item.id,
+                        "model": selectedModelName,
+                        "transimmisionType": '',
+                        "variant": '',
+                         "isPrimary": item.isPrimary
+
+                    }
                 }
+                else {
+                     carmodeldata = {
+                        "color": '',
+                        "fuel": '',
+                        "id": item.id,
+                        "model": selectedModelName,
+                        "transimmisionType": '',
+                        "variant": '',
+                        "isPrimary":item.isPrimary
+
+                    }
+                }
+               
                 var modelsarr = await selector.dmsLeadProducts
                 modelsarr[index] = await carmodeldata
                 modelOnclick(index, carmodeldata, "update")
 
-             // await alert(index + JSON.stringify(modelsarr))
                 await dispatch(updatedmsLeadProduct(modelsarr))
             }catch(error){
                // alert(error)
@@ -285,14 +311,29 @@ export const ModelListitemCom = ({ modelOnclick,item, index}) =>{
                 setCarVariant(selectedVarientName)
                 setCarFuelType(carModelObj.fuelType)
                 setCarTransmissionType(carModelObj.transmission_type)
-                const carmodeldata = {
-                    "color": '', 
-                    "fuel": carModelObj.fuelType,
-                    "id": item.id, 
-                    "model": carModel,
-                    "transimmisionType": carModelObj.transmission_type, 
-                    "variant": selectedVarientName
+                var carmodeldata;
+                if(leadStage === 'PREBOOKING'){
+                     carmodeldata = {
+                        "color": '',
+                        "fuel": carModelObj.fuelType,
+                        "id": item.id,
+                        "model": carModel,
+                        "transimmisionType": carModelObj.transmission_type,
+                        "variant": selectedVarientName,
+                        "isPrimary":item.isPrimary
+                    }
                 }
+                else {
+                     carmodeldata = {
+                        "color": '',
+                        "fuel": carModelObj.fuelType,
+                        "id": item.id,
+                        "model": carModel,
+                        "transimmisionType": carModelObj.transmission_type,
+                        "variant": selectedVarientName
+                    }
+                }
+                
                 const modelsarr = selector.dmsLeadProducts
                 modelsarr[index] = carmodeldata
                modelOnclick(index, carmodeldata, "update")
@@ -336,14 +377,31 @@ export const ModelListitemCom = ({ modelOnclick,item, index}) =>{
     };
     const updateColor = (dataobj)=>{
         setCarColor(dataobj.name)
-        const carmodeldata = {
-            "color": dataobj.name,
-            "fuel": carFuelType,
-            "id": item.id,
-            "model": carModel,
-            "transimmisionType": carTransmissionType,
-            "variant": carVariant
+        var carmodeldata;
+        if (leadStage === 'PREBOOKING') {
+             carmodeldata = {
+                "color": dataobj.name,
+                "fuel": carFuelType,
+                "id": item.id,
+                "model": carModel,
+                "transimmisionType": carTransmissionType,
+                "variant": carVariant,
+                 "isPrimary": item.isPrimary
+            }
+           
         }
+        else {
+            carmodeldata = {
+                "color": dataobj.name,
+                "fuel": carFuelType,
+                "id": item.id,
+                "model": carModel,
+                "transimmisionType": carTransmissionType,
+                "variant": carVariant,
+                "isPrimary": item.isPrimary
+            }
+        }
+
         const modelsarr = selector.dmsLeadProducts
         modelsarr[index] = carmodeldata
         modelOnclick(index, carmodeldata, "update")
@@ -385,7 +443,22 @@ export const ModelListitemCom = ({ modelOnclick,item, index}) =>{
             <View style={{ padding: 5, marginVertical: 10, borderRadius: 5, backgroundColor: Colors.LIGHT_GRAY2 }}>
                 <View style={{flexDirection:'row',width:'100%', justifyContent:'space-between'}}>
                     <Text style={{color:Colors.WHITE, fontSize:18, marginLeft:10,textAlignVertical:'center'}}>{carModel}</Text>
-                    <TouchableOpacity 
+                   
+                    {leadStage === 'PREBOOKING' ?
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Text style={{ color: Colors.WHITE, fontSize: 16, marginRight: 10 }}>Is Primary</Text>
+                            <Switch
+                                icon=" toggle-switch-off-outline"
+                                value={isPrimary}
+                                onValueChange={() => {
+                                    
+                                    isPrimaryOnclick(!isPrimary, index, item);
+                                    setisPrimary(!isPrimary)}}
+                                color={Colors.PINK}
+                                size={35} />
+                        </View> : null
+                    } 
+                   <TouchableOpacity 
                         onPress={(value) => modelOnclick(index, item, "delete")}>               
                           <IconButton
                         icon="trash-can-outline"

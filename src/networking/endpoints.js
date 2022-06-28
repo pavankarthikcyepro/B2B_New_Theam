@@ -48,9 +48,6 @@ export const getEmployeeData = "http://automatestaging-724985329.ap-south-1.elb.
 export const getEmployeeList = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/reporting/all/emp"
 export const getReportingMangerList = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/all/reportingManagers/orgId"
 export const updateEmployeeTaskDelegate = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/emp"
-export const tasktransfer = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8092/sales-gap/target-dropdown";
-export const getTaskList = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8081/sales/task-delegation/get_task_list";
-export const getEmployeeData = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8089/role-management/employee/dept-employees";
 export const getLeaderBoardData = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard/v2/get_emp_target_ranking/org/1"
 export const getBranchRankingData = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard/v2/get_emp_target_ranking/org/1/branch"
 
@@ -317,7 +314,7 @@ const URL = {
         return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
     },
     }
-}
+
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason
 // http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/df-get-all/1/%22Active%22/1/enqueryCategory

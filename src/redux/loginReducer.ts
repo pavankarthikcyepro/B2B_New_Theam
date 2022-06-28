@@ -75,6 +75,7 @@ export const getMenuList = createAsyncThunk(
   "LOGIN_SLICE/getMenuList",
   async (name, { rejectWithValue }) => {
     const response = await client.get(URL.MENULIST_API(name));
+    console.log("empid api", URL.MENULIST_API(name))
     const json = await response.json();
     if (!response.ok) {
       return rejectWithValue(json);

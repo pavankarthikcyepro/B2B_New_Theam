@@ -349,7 +349,7 @@ const PreBookingScreen = ({ navigation }) => {
                                                 console.log("PBK: ", JSON.stringify(item));
                                                 navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId })
                                             }}
-                                            onDocPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.preBookingForm, { universalId: item.universalId })}
+                                            onDocPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.preBookingForm, { universalId: item.universalId , leadStage: item.leadStage, leadStatus: item.leadStatus})}
                                         />
                                     </View>
                                 </>
