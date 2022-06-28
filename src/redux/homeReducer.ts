@@ -315,7 +315,7 @@ export const getLeaderBoardList = createAsyncThunk("HOME/getLeaderBoardList", as
 })
 
 export const getBranchRanksList = createAsyncThunk("HOME/getBranchRanksList", async (payload, { rejectWithValue }) => {
-    const response = await client.post(URL.GET_BRANCH_RANKING_DATA(payload), payload)
+    const response = await client.post(URL.GET_BRANCH_RANKING_DATA(), payload);
     const json = await response.json();
     if (!response.ok) {
         return rejectWithValue(json);

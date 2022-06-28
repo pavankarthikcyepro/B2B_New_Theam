@@ -3,17 +3,8 @@ import { View, Text, StyleSheet, ScrollView, FlatList, LogBox } from 'react-nati
 import * as AsyncStore from '../../../asyncStore';
 import { useDispatch, useSelector } from 'react-redux';
 import { getBranchRanksList } from "../../../redux/homeReducer";
-
-const dropdownData = [
-    { label: 'Item 1', value: '1' },
-    { label: 'Item 2', value: '2' },
-    { label: 'Item 3', value: '3' },
-    { label: 'Item 4', value: '4' },
-    { label: 'Item 5', value: '5' },
-    { label: 'Item 6', value: '6' },
-    { label: 'Item 7', value: '7' },
-    { label: 'Item 8', value: '8' },
-];
+import { LoaderComponent } from '../../../components';
+import moment from 'moment';
 
 const toprankList = [
     {
@@ -176,29 +167,36 @@ export default function branchRankingScreen() {
     const dispatch = useDispatch();
     const [branchName, setBranchName] = useState(null);
     const [branchCode, setBranchCode] = useState(null);
+    const [branchList, setBranchList] = useState([]);
 
     const getBranchRankListFromServer = async () => {
-        let payload = { 
-            "endDate": "2022-06-30", 
-            "levelSelected": null, 
-            "loggedInEmpId": 146, 
-            "pageNo": 0, 
-            "size": 0, 
-            "startDate": "2022-06-01" 
+        var date = new Date();
+        var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+        var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+        let payload = {
+            "endDate": moment.utc(lastDay).format('YYYY-MM-DD'),
+            "levelSelected": null,
+            "loggedInEmpId": 146,
+            "pageNo": 0,
+            "size": 0,
+            "startDate": moment.utc(firstDay).format('YYYY-MM-DD')
         };
         dispatch(getBranchRanksList(payload));
     }
 
     useEffect(async () => {
         LogBox.ignoreAllLogs();
-        getBranchRankListFromServer();
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             setBranchCode(jsonObj.branchs[0]?.branchName.substring(0, (jsonObj.branchs[0]?.branchName).indexOf('-')));
             setBranchName(jsonObj.branchs[0]?.branchName.substring((jsonObj.branchs[0]?.branchName).indexOf("-") + 1));
         }
-    }, [branchName, branchCode]);
+        getBranchRankListFromServer();
+        setTimeout(() => {
+            setBranchList(selector.branchrank_list);
+        }, 2000);
+    }, [branchList]);
 
     const renderItemLeaderTopList = (item, extraIndex) => {
         return (
@@ -228,13 +226,19 @@ export default function branchRankingScreen() {
                     <View style={{
                         width: '98%', height: '98%'
                     }}>
+
+                        {branchList.length ? null : <LoaderComponent
+                            visible={selector.isLoading}
+                            onRequestClose={() => { }}
+                        />}
+
                         <FlatList
-                            data={toprankList}
+                            data={branchList}
                             nestedScrollEnabled={true}
                             keyExtractor={(item, index) => index.toString()}
                             renderItem={({ item, index }) => renderItemLeaderTopList(item, index)}
                             showsVerticalScrollIndicator={false}
-                            maxToRenderPerBatch={5}
+                            extraData={branchList}
                         />
                     </View>
                 </View>

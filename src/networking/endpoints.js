@@ -52,7 +52,7 @@ export const tasktransfer = "http://liveautomate-345116193.ap-south-1.elb.amazon
 export const getTaskList = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8081/sales/task-delegation/get_task_list";
 export const getEmployeeData = "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8089/role-management/employee/dept-employees";
 export const getLeaderBoardData = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard/v2/get_emp_target_ranking/org/1"
-export const getBranchRankingData = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard/v2/get_emp_target_ranking/org/1/branch"
+export const getBranchRankingData = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard/v2/get_emp_target_ranking/org/1/branch/242"
 
 const URL = {
     LOGIN: () => hrms_url + "/emplogin",
@@ -301,8 +301,8 @@ const URL = {
     GET_LEADERBOARD_DATA: () => {
         return `${getLeaderBoardData}`;
     },
-    GET_BRANCH_RANKING_DATA: (branchId) => {
-        return `${getBranchRankingData}/${branchId}`;
+    GET_BRANCH_RANKING_DATA: () => {
+        return `${getBranchRankingData}`;
     },
     EMPLOYEE_DATA_UPDATE : (empID, managerID) => {
         return `${updateEmployeeTaskDelegate}/${empID}/reportingManager/${managerID}/update`;
