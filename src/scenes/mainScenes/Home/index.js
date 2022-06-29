@@ -33,7 +33,9 @@ import {
     downloadFile,
     updateIsMD,
     updateIsDSE,
-    updateTargetData
+    updateTargetData,
+    getNewTargetParametersAllData,
+    getTotalTargetParametersData
 } from '../../../redux/homeReducer';
 import {
     updateData,
@@ -419,7 +421,7 @@ const HomeScreen = ({ route, navigation }) => {
                     "empId": jsonObj.empId
                 }
                 // console.log("PAYLOAD:", payload);
-                getAllTargetParametersDataFromServer(payload)
+                getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
             }
             if (jsonObj?.hrmsRole.toLowerCase().includes('manager')) {
                 // dispatch(updateData(sidemenuSelector.managerData))
@@ -534,7 +536,7 @@ const HomeScreen = ({ route, navigation }) => {
                     "pageNo": 0,
                     "size": 5
                 })),
-                getAllTargetParametersDataFromServer(payload);
+                getAllTargetParametersDataFromServer(payload, jsonObj.orgId);
             }
             else{
                 getTargetParametersDataFromServer(payload);
@@ -598,15 +600,28 @@ const HomeScreen = ({ route, navigation }) => {
         });
     }
 
-    const getAllTargetParametersDataFromServer = (payload) => {
+    const getAllTargetParametersDataFromServer = (payload, orgId) => {
         const payload1 = {
             ...payload,
             "pageNo": 0,
             "size": 5
         }
-        // console.log("PAYLOAD:", payload1);
+        const payload2 = {
+            "orgId": orgId,
+            "selectedEmpId": payload.empId,
+            "endDate": payload.endDate,
+            "loggedInEmpId": payload.empId,
+            "empId": payload.empId,
+            "startDate": payload.startDate,
+            "levelSelected": null,
+            "pageNo": 0,
+            "size": 100
+        }
+        console.log("$$$$PAYLOAD:", payload2);
         Promise.allSettled([
-            dispatch(getTargetParametersAllData(payload1)),
+            // dispatch(getTargetParametersAllData(payload1)),
+            dispatch(getNewTargetParametersAllData(payload2)),
+            dispatch(getTotalTargetParametersData(payload2)),
             dispatch(getTargetParametersEmpData(payload1))
         ]).then(() => {
             console.log('I did everything!');
