@@ -21,7 +21,6 @@
 // export const lostSubLost = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails"
 
 // Dev End Points
-
 export const hrms_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8088/hrms";
 export const sales_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales";
 export const roleManagement_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8089/role-management";
@@ -43,7 +42,14 @@ export const lostSubLost = "http://automatestaging-724985329.ap-south-1.elb.amaz
 export const getBranch = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/oh";
 export const downloadFile = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8093/dynamic-reports";
 export const downloadFile1 = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8095/dynamic-reports/etvbrl_report_download";
-
+export const tasktransfer = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/sales-gap/target-dropdown";
+export const getTaskList = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/task-delegation/get_task_list";
+export const getEmployeeData = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8089/role-management/employee/dept-employees";
+export const getEmployeeList = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/reporting/all/emp"
+export const getReportingMangerList = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/all/reportingManagers/orgId"
+export const updateEmployeeTaskDelegate = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/emp"
+export const getLeaderBoardData = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard/v2/get_emp_target_ranking/org/1"
+export const getBranchRankingData = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard/v2/get_emp_target_ranking/org/1/branch/242"
 
 const URL = {
     LOGIN: () => hrms_url + "/emplogin",
@@ -57,6 +63,12 @@ const URL = {
     },
     VEHICLE_MODELS: (orgId) => {
         return vehicleInfoService_url + "/api/vehicle_details/?organizationId=" + orgId;
+    },
+    GET_EMPID: (userName) => {
+        return roleManagement_url + '/user/' + userName;
+    },
+    GET_CALL_RECORDING_EXTENSIONID: (userName, orgId) => {
+        return sales_url + '/callrecording/getCallLoginDetails?orgId=' + orgId  +'&empId='+userName;
     },
     CUSTOMER_TYPE: (orgId) => {
         return sales_url + `/master-data/customertype/${orgId}`
@@ -256,7 +268,53 @@ const URL = {
     REASON_LIST: (orgId, taskName) => {
         return `${downloadFile}/get-followup/${orgId}/${taskName}`;
     },
-}
+    TARGET_DROPDOWN: (orgId, parent, child, parentId) => {
+        return `${tasktransfer}?orgId=${orgId}&parent=${parent}&child=${child}&parentId=${parentId}`;
+    },
+    GET_TASK_LIST: (taskId) => {
+        return `${getTaskList}/${taskId}`;
+    },
+    GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
+        return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
+    },
+    GET_EMPLOYEE_LIST: (empId) => {
+        return `${getEmployeeList}/${empId}`;
+    },
+    GET_REPORTING_MANAGER_LIST : (orgId) => {
+        return `${getReportingMangerList}/${orgId}/for/dropdown`;
+    },
+    EMPLOYEE_DATA_UPDATE : (empID, managerID) => {
+        return `${updateEmployeeTaskDelegate}/${empID}/reportingManager/${managerID}/update`;
+    },
+    TARGET_DROPDOWN: (orgId, parent, child, parentId) => {
+        return `${tasktransfer}?orgId=${orgId}&parent=${parent}&child=${child}&parentId=${parentId}`;
+    },
+    GET_TASK_LIST: (taskId) => {
+        return `${getTaskList}/${taskId}`;
+    },
+    GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
+        return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
+    },
+    GET_LEADERBOARD_DATA: () => {
+        return `${getLeaderBoardData}`;
+    },
+    GET_BRANCH_RANKING_DATA: () => {
+        return `${getBranchRankingData}`;
+    },
+    EMPLOYEE_DATA_UPDATE : (empID, managerID) => {
+        return `${updateEmployeeTaskDelegate}/${empID}/reportingManager/${managerID}/update`;
+    },
+    TARGET_DROPDOWN: (orgId, parent, child, parentId) => {
+        return `${tasktransfer}?orgId=${orgId}&parent=${parent}&child=${child}&parentId=${parentId}`;
+    },
+    GET_TASK_LIST: (taskId) => {
+        return `${getTaskList}/${taskId}`;
+    },
+    GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
+        return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
+    },
+    }
+
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason
 // http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/df-get-all/1/%22Active%22/1/enqueryCategory

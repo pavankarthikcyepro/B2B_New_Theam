@@ -61,6 +61,24 @@ const teleCollerMenu = [
     "Monthly Target Planning",
     "Helpdesk",
     "Task Management",
+    "Sign Out"
+];
+const ShowRoomMenu = [
+    "Home",
+    "Settings",
+    "Digital Payment",
+    "Monthly Target Planning",
+    "Helpdesk",
+    "Task Management",
+    "Sign Out"
+];
+const MDMenu = [
+    "Home",
+    "Settings",
+    "Digital Payment",
+    "Monthly Target Planning",
+    "Helpdesk",
+    "Task Management",
     "Task Transfer",
     "Sign Out"
 ];
@@ -97,7 +115,6 @@ const SideMenuScreen = ({ navigation }) => {
     // }, [userData])
 
     useEffect(() => {
-
         if (homeSelector.login_employee_details) {
             const jsonObj = homeSelector.login_employee_details;
             updateUserData(jsonObj);
@@ -112,7 +129,6 @@ const SideMenuScreen = ({ navigation }) => {
             const jsonObj = JSON.parse(jsonString);
             updateUserData(jsonObj);
             getProfilePic(jsonObj);
-
         }
     }
 
@@ -144,13 +160,18 @@ const SideMenuScreen = ({ navigation }) => {
         // setUserData(jsonObj)
         getProfilePic(jsonObj);
 
-
         let newFilterData = [];
         if (jsonObj.hrmsRole === "Reception") {
             newFilterData = selector.tableData.filter(item => receptionMenu.includes(item.title))
         }
         else if (jsonObj.hrmsRole === "Tele Caller") {
             newFilterData = selector.tableData.filter(item => teleCollerMenu.includes(item.title))
+        }
+        else if (jsonObj.hrmsRole === "Showroom DSE") {
+            newFilterData = selector.tableData.filter(item => ShowRoomMenu.includes(item.title))
+        }
+        else if (jsonObj.hrmsRole === "MD") {
+            newFilterData = selector.tableData.filter(item => MDMenu.includes(item.title))
         }
         else {
             newFilterData = selector.tableData;
@@ -217,6 +238,8 @@ const SideMenuScreen = ({ navigation }) => {
         AsyncStore.storeData(AsyncStore.Keys.LOGIN_EMPLOYEE, "");
         AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_ID, "");
         AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_NAME, "");
+        AsyncStore.storeData(AsyncStore.Keys.EXTENSION_ID, "")
+        AsyncStore.storeData(AsyncStore.Keys.EXTENSSION_PWD, "")
         AsyncStore.storeData(AsyncStore.Keys.IS_LOGIN, 'false');
         navigation.closeDrawer()
         //realm.close();

@@ -5,7 +5,7 @@ import * as AsyncStore from '../asyncStore';
 import empData from '../get_target_params_for_emp.json'
 import allData from '../get_target_params_for_all_emps.json'
 import targetData from '../get_target_params.json'
-
+ 
 const data = [
     {
         title: "Pre-Enquiry",
@@ -207,7 +207,7 @@ export const getDealerRanking = createAsyncThunk("HOME/getDealerRanking", async 
     console.log("%%%BRANCH", URL.GET_TARGET_RANKING(payload.orgId, payload.branchId), payload.payload);
     const response = await client.post(URL.GET_TARGET_RANKING(payload.orgId, payload.branchId), payload.payload)
     const json = await response.json()
-    console.log("&&&&&& DATA GET_TARGET_RANKING:", json);
+    // console.log("&&&&&& DATA GET_TARGET_RANKING:", json);
 
     if (!response.ok) {
         return rejectWithValue(json);
@@ -278,6 +278,51 @@ export const updateIsTeam = createAsyncThunk("HOME/updateIsTeam", async (payload
     return payload;
 })
 
+export const getEmployeesList = createAsyncThunk("HOME/getEmployeesList", async (empID, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_EMPLOYEE_LIST(empID))
+    const json = await response.json();
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const getReportingManagerList = createAsyncThunk("HOME/getReportingManagerList", async (orgID, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_REPORTING_MANAGER_LIST(orgID))
+    const json = await response.json();
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const updateEmployeeDataBasedOnDelegate = createAsyncThunk("HOME/updateEmployeeDataBasedOnDelegate", async (body, { rejectWithValue }) => {
+    const response = await client.put(URL.EMPLOYEE_DATA_UPDATE(body["empID"], body["managerID"]))  
+    const json = await response.json()
+    if (!response.success) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const getLeaderBoardList = createAsyncThunk("HOME/getLeaderBoardList", async (payload: any, { rejectWithValue }) => {
+    const response = await client.post(URL.GET_LEADERBOARD_DATA(), payload)
+    const json = await response.json();
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const getBranchRanksList = createAsyncThunk("HOME/getBranchRanksList", async (payload, { rejectWithValue }) => {
+    const response = await client.post(URL.GET_BRANCH_RANKING_DATA(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
 const AVAILABLE_SCREENS = [
     {
         "menuId": 81,
@@ -324,6 +369,11 @@ export const homeSlice = createSlice({
         isMD: false,
         isDSE: false,
         self_target_parameters_data: empData,
+        employee_list: [],
+        reporting_manager_list: [],
+        isLoading: false,
+        leaderboard_list: [],
+        branchrank_list: []
     },
     reducers: {
         dateSelected: (state, action) => {
@@ -381,6 +431,11 @@ export const homeSlice = createSlice({
             state.isTeamPresent = false
             state.isMD = false
             state.isDSE = false
+            state.employee_list = []
+            state.reporting_manager_list = []
+            state.isLoading = false
+            state.leaderboard_list = []
+            state.branchrank_list = []
         },
     },
     extraReducers: (builder) => {
@@ -660,7 +715,74 @@ export const homeSlice = createSlice({
             .addCase(getTargetParametersEmpData.rejected, (state, action) => {
                 // state.self_target_parameters_data = [];
             })
-    }
+            .addCase(getEmployeesList.pending, (state, action) => {
+                // state.employee_list = [];
+                state.isLoading = true;
+            })
+            .addCase(getEmployeesList.fulfilled, (state, action) => {
+                //console.log("S getEmployeesList: ", JSON.stringify(action.payload));
+                if (action.payload) {
+                    const dataObj = action.payload;
+                    state.employee_list = dataObj ? dataObj : [];
+                    state.isLoading = false;
+                }
+            })
+            .addCase(getEmployeesList.rejected, (state, action) => {
+                // state.employee_list = [];
+                state.isLoading = false;
+            })
+            .addCase(getReportingManagerList.pending, (state, action) => {
+                // state.reporting_manager_list = [];
+                state.isLoading = true;
+            })
+            .addCase(getReportingManagerList.fulfilled, (state, action) => {
+                //console.log("S getEmployeesList: ", JSON.stringify(action.payload));
+                if (action.payload) {
+                    const dataObj = action.payload;
+                    state.reporting_manager_list = dataObj ? dataObj : [];
+                    state.isLoading = false;
+                }
+            })
+            .addCase(getReportingManagerList.rejected, (state, action) => {
+                // state.reporting_manager_list = [];
+                state.isLoading = false;
+            })
+            .addCase(updateEmployeeDataBasedOnDelegate.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(updateEmployeeDataBasedOnDelegate.fulfilled, (state, action) => {
+                // console.log("res2: ", action.payload);
+                const dataObj = action.payload;
+                    state.isLoading = false;
+            })
+            .addCase(updateEmployeeDataBasedOnDelegate.rejected, (state, action) => {
+                state.isLoading = false;
+            })
+            .addCase(getLeaderBoardList.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(getLeaderBoardList.fulfilled, (state, action) => {
+                // console.log("res2: ", action.payload);
+                const dataObj = action.payload;
+                state.leaderboard_list = dataObj ? dataObj : [];
+                state.isLoading = false;
+            })
+            .addCase(getLeaderBoardList.rejected, (state, action) => {
+                state.isLoading = false;
+            })
+            .addCase(getBranchRanksList.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(getBranchRanksList.fulfilled, (state, action) => {
+                // console.log("res2: ", action.payload);
+                const dataObj = action.payload;
+                state.branchrank_list = dataObj ? dataObj : [];
+                state.isLoading = false;
+            })
+            .addCase(getBranchRanksList.rejected, (state, action) => {
+                state.isLoading = false;
+            })
+        }
 });
 
 export const { dateSelected, updateFilterDropDownData, updateIsTeamPresent, updateIsMD, updateIsDSE, clearState, updateTargetData } = homeSlice.actions;

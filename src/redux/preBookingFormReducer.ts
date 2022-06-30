@@ -378,6 +378,8 @@ const prebookingFormSlice = createSlice({
     color: "",
     fuel_type: "",
     transmission_type: "",
+    dmsLeadProducts: [],
+
     lead_product_id: "",
     model_drop_down_data_update_status: null,
     // financial details
@@ -507,6 +509,7 @@ const prebookingFormSlice = createSlice({
       state.fuel_type = "";
       state.transmission_type = "";
       state.lead_product_id = "";
+      state.dmsLeadProducts = [];
       state.model_drop_down_data_update_status = null;
       // financial details
       state.retail_finance = "";
@@ -1133,7 +1136,14 @@ const prebookingFormSlice = createSlice({
       state.color = dataObj.color ? dataObj.color : "";
       state.fuel_type = dataObj.fuel ? dataObj.fuel : "";
       state.transmission_type = dataObj.transimmisionType ? dataObj.transimmisionType : "";
-      state.model_drop_down_data_update_status = "update";
+      try {
+        if (dmsLeadProducts && dmsLeadProducts.length != 0)
+          state.dmsLeadProducts = dmsLeadProducts;
+        state.model_drop_down_data_update_statu = "update";
+      } catch (error) {
+        // alert(error)
+      }
+//state.model_drop_down_data_update_status = "update";
     },
     updateFinancialData: (state, action) => {
       const dmsfinancedetails = action.payload;

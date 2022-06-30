@@ -35,6 +35,7 @@ import {
     updateIsDSE,
     updateTargetData
 } from '../../../redux/homeReducer';
+import { getCallRecordingCredentials } from '../../../redux/callRecordingReducer'
 import {
     updateData,
     updateIsManager,
@@ -325,6 +326,16 @@ const HomeScreen = ({ route, navigation }) => {
     }
 
     const checkLoginUserAndEnableReportButton = async () => {
+        let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
+        let orgId = await AsyncStore.getData(AsyncStore.Keys.ORG_ID);
+        let data = {
+            empId: empId,
+            orgId: orgId
+        }
+
+        dispatch(getCallRecordingCredentials(data))
+
+
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
          console.log("SSSSSSSSSSSSSSSSSSSSS$$$$$ LOGIN EMP:", employeeData);
         if (employeeData) {
@@ -882,7 +893,9 @@ const HomeScreen = ({ route, navigation }) => {
                                                 <View style={{
                                                     flexDirection: 'row'
                                                 }}>
-                                                    <View style={styles.rankIconBox}>
+                                                    <TouchableOpacity style={styles.rankIconBox} onPress={() => { 
+                                                        navigation.navigate(AppNavigator.HomeStackIdentifiers.leaderboard)
+                                                     }}>
                                                         {/* <VectorImage
                                                     width={25}
                                                     height={16}
@@ -890,7 +903,7 @@ const HomeScreen = ({ route, navigation }) => {
                                                 // style={{ tintColor: Colors.DARK_GRAY }}
                                                 /> */}
                                                         <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
-                                                    </View>
+                                                    </TouchableOpacity>
                                                     <View style={{
                                                         marginTop: 5,
                                                         marginLeft: 3
@@ -913,15 +926,17 @@ const HomeScreen = ({ route, navigation }) => {
                                                 <View style={{
                                                     flexDirection: 'row'
                                                 }}>
-                                                    <View style={styles.rankIconBox}>
-                                                        {/* <VectorImage
+                                                    <TouchableOpacity style={styles.rankIconBox} onPress={() => {
+                                                        navigation.navigate(AppNavigator.HomeStackIdentifiers.branchRanking)
+                                                    }}>                                                        
+                                                    {/* <VectorImage
                                                     width={25}
                                                     height={16}
                                                     source={SPEED}
                                                 // style={{ tintColor: Colors.DARK_GRAY }}
                                                 /> */}
                                                         <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
-                                                    </View>
+                                                    </TouchableOpacity>
                                                     <View style={{
                                                         marginTop: 5,
                                                         marginLeft: 3,

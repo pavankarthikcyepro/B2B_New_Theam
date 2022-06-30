@@ -28,6 +28,8 @@ import bookingReducer from "./bookingReducer";
 import bookingFormReducer from "./bookingFormReducer";
 import proceedToBookingReducer from "./proceedToBookingReducer";
 import appReducer from "./appReducer";
+import callRecordingReducer from "./callRecordingReducer";
+import taskTransferReducer from "./taskTransferReducer";
 
 const reducer = combineReducers({
   routeReducer,
@@ -53,7 +55,7 @@ const reducer = combineReducers({
   upcomingDeliveriesReducer,
   targetSettingsReducer,
   taskThreeSixtyReducer,
-  bookingReducer, bookingFormReducer, proceedToBookingReducer, appReducer
+  bookingReducer, bookingFormReducer, proceedToBookingReducer, appReducer, callRecordingReducer, taskTransferReducer
 });
 
 const createDebugger = require("redux-flipper").default;

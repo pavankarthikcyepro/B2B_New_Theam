@@ -329,6 +329,9 @@ const EnquiryScreen = ({ navigation }) => {
                                         <MyTaskNewItem
                                             from='PRE_ENQUIRY'
                                             name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
+                                            navigator={navigation} 
+                                            uniqueId={item.leadId} 
+                                            type='Enq'
                                             status={""}
                                             created={item.createdDate}
                                             dmsLead={item.createdBy}
@@ -343,7 +346,7 @@ const EnquiryScreen = ({ navigation }) => {
                                                 console.log("ENQ: ", JSON.stringify(item));
                                                 navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId, mobileNo: item.phone })
                                             }}
-                                            onDocPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.detailsOverview, { universalId: item.universalId, enqDetails: item })}
+                                            onDocPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.detailsOverview, { universalId: item.universalId, enqDetails: item, leadStatus: item.leadStatus, leadStage: item.leadStage })}
                                         />
                                     </View>
                                 </>
