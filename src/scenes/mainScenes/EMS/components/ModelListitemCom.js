@@ -91,9 +91,10 @@ import {
     autoSaveEnquiryDetailsApi,
     updatedmsLeadProduct
 } from "../../../../redux/enquiryFormReducer";
+import { useNavigation } from '@react-navigation/native';
 export const ModelListitemCom = ({ modelOnclick,isPrimaryOnclick ,item, index, leadStage}) =>{
     const dispatch = useDispatch();
-
+    const navigation = useNavigation();
     const selector = useSelector((state) => state.enquiryFormReducer);
     const [dropDownKey, setDropDownKey] = useState("");
     const [dropDownTitle, setDropDownTitle] = useState("Select Data");
@@ -137,6 +138,7 @@ export const ModelListitemCom = ({ modelOnclick,isPrimaryOnclick ,item, index, l
                 setDataForDropDown([...carModelsData]);
                 break;
             case "VARIENT":
+                console.log("TTTTT: ", selectedCarVarientsData);
                 setDataForDropDown([...selectedCarVarientsData.varientListForDropDown]);
                 break;
             case "COLOR":
@@ -149,6 +151,9 @@ export const ModelListitemCom = ({ modelOnclick,isPrimaryOnclick ,item, index, l
         setShowDropDownModel(true);
     };
     useEffect(() => {
+        // navigation.addListener('focus', () => {
+        //     getAsyncstoreData();
+        // })
         getAsyncstoreData();
      //   getBranchId();
        // setComponentAppear(true);
@@ -161,19 +166,21 @@ export const ModelListitemCom = ({ modelOnclick,isPrimaryOnclick ,item, index, l
         //     handleBackButtonClick
         //   );
         // };
-    }, []);
+    }, [navigation]);
     const getAsyncstoreData = async () => {
         try{
+            console.log("CAR MODEL:", item.model);
             const employeeData = await AsyncStore.getData(
                 AsyncStore.Keys.LOGIN_EMPLOYEE
             );
-            setCarColor(item.color)
-            setCarModel(item.model)
-            setCarFuelType(item.fuel)
+            setCarColor(item?.color)
+            setCarModel(item?.model)
+            
+            setCarFuelType(item?.fuel)
             if (leadStage === 'PREBOOKING')
-            setisPrimary(item.isPrimary)
-            setCarTransmissionType(item.transimmisionType)
-            setCarVariant(item.variant)
+            setisPrimary(item?.isPrimary)
+            setCarTransmissionType(item?.transimmisionType)
+            setCarVariant(item?.variant)
             if (employeeData) {
 
                 const jsonObj = JSON.parse(employeeData);
@@ -183,15 +190,15 @@ export const ModelListitemCom = ({ modelOnclick,isPrimaryOnclick ,item, index, l
                     employeeName: jsonObj.empName,
                 });
                 getCarModelListFromServer(jsonObj.orgId);
-
+                updateVariantModelsData(item.model, false)
                 // Get Token
-                AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
-                    if (token.length > 0) {
-                        getInsurenceCompanyNamesFromServer(token, jsonObj.orgId);
-                        getBanksListFromServer(jsonObj.orgId, token);
-                        GetEnquiryDropReasons(jsonObj.orgId, token);
-                    }
-                });
+                // AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
+                //     if (token.length > 0) {
+                //         getInsurenceCompanyNamesFromServer(token, jsonObj.orgId);
+                //         getBanksListFromServer(jsonObj.orgId, token);
+                //         GetEnquiryDropReasons(jsonObj.orgId, token);
+                //     }
+                // });
             }
         }catch(error){
         // alert(error)
@@ -206,7 +213,7 @@ export const ModelListitemCom = ({ modelOnclick,isPrimaryOnclick ,item, index, l
         if (!selectedModelName || selectedModelName.length === 0) {
             return;
         }
-
+        console.log("CALLED MODEL: ", selectedModelName, carModelsData);
         let arrTemp = carModelsData.filter(function (obj) {
             return obj.model === selectedModelName;
         });
@@ -276,6 +283,7 @@ export const ModelListitemCom = ({ modelOnclick,isPrimaryOnclick ,item, index, l
                     updateColorsDataForSelectedVarient(selectedVarientName, [...mArray]);
                 }
             }
+            console.log("MARRAY: ", mArray);
         }
     };
 
@@ -344,9 +352,24 @@ export const ModelListitemCom = ({ modelOnclick,isPrimaryOnclick ,item, index, l
             }
         }
     };
+
+    useEffect(() => {
+        console.log("UPDATE CAR MODEL", carModelsData);
+        if (carModelsData.length > 0){
+            console.log("CALLED$$$$$$$$");
+            if (!item?.variant){
+                updateVariantModelsData(item.model, false)
+            }
+        }
+    }, [carModelsData])
+
+    useEffect(() => {
+        console.log("VARIENTS: ", selectedCarVarientsData);
+    }, [selectedCarVarientsData])
+
     const getCarModelListFromServer = (orgId) => {
         // Call Api
-
+        console.log("CALLED LIST API");
         GetCarModelList(orgId)
             .then(
                 (resolve) => {
@@ -372,7 +395,7 @@ export const ModelListitemCom = ({ modelOnclick,isPrimaryOnclick ,item, index, l
             .finally(() => {
               //  alert("final")
                 // Get Enquiry Details
-                getEnquiryDetailsFromServer();
+                // getEnquiryDetailsFromServer();
             });
     };
     const updateColor = (dataobj)=>{

@@ -875,11 +875,13 @@ const TestDriveScreen = ({ route, navigation }) => {
         }
         setSelectedVehicleDetails({
             model: vehicleInfo.model,
-            varient: vehicleInfo.varientName,
+            varient: fromVarient ? vehicleInfo.varientName : '',
             fuelType: fromVarient ? vehicleInfo.fuelType : "",
             transType: fromVarient ? vehicleInfo.transmission_type : "",
+            // fuelType: vehicleInfo.fuelType || "",
+            // transType: vehicleInfo.transmission_type || "",
             vehicleId: vehicleInfo.vehicleId,
-            varientId: vehicleInfo.varientId,
+            varientId: fromVarient ? vehicleInfo.varientId : '',
         });
     };
 
