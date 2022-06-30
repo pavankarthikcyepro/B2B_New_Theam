@@ -19,39 +19,41 @@ export const getEnquiryDetailsApi = createAsyncThunk(
     const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
     const json = await response.json();
     
-    if ((leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY'))
-    {
-      if (json.hasOwnProperty("dmsLeadDto")) {
-        console.log("autoSavejson is true")
-      }
-      if (!response.ok) {
-        return rejectWithValue(json);
-      }
+    // if ((leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY'))
+    // {
+    //   if (json.hasOwnProperty("dmsLeadDto")) {
+    //     console.log("autoSavejson is true")
+    //   }
+    //   if (!response.ok) {
+    //     return rejectWithValue(json);
+    //   }
 
-      if (json.hasOwnProperty("dmsLeadDto")) {
-        return json;
-      } else {
-        return json.dmsEntity
-      }
-    }
-    else{
-      if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
-        console.log("autoSavejson is true")
-      }
-      if (!autoSaveResponse.ok) {
-        return rejectWithValue(autoSavejson);
-      }
+    //   if (json.hasOwnProperty("dmsLeadDto")) {
+    //     return json;
+    //   } else {
+    //     return json.dmsEntity
+    //   }
+    // }
+    // else{
+    //   if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
+    //     console.log("autoSavejson is true")
+    //   }
+    //   if (!autoSaveResponse.ok) {
+    //     return rejectWithValue(autoSavejson);
+    //   }
 
-      if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
-        return autoSavejson;
-      } else {
-        return autoSavejson.dmsEntity
-      }
-    }
+    //   if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
+    //     return autoSavejson;
+    //   } else {
+    //     return autoSavejson.dmsEntity
+    //   }
+    // }
     // console.log("enquirey lead", json);
     // console.log("autoSavejson", autoSavejson);
 
-    
+    if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
+      console.log("autoSavejson is true")
+    }
 
     // if (json.success) {
     //   console.log("came here")
@@ -60,7 +62,15 @@ export const getEnquiryDetailsApi = createAsyncThunk(
     //     // console.log("autoSavejson", autoSavejson);
     // }
 
-    
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+
+    if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
+      return autoSavejson;
+    } else {
+      return json.dmsEntity
+    }
     // return json
   }
 );
@@ -183,8 +193,12 @@ export const getPendingTasksApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/getPendingTasksApi",
   async (endUrl, { rejectWithValue }) => {
     const url = URL.TASKS_PRE_ENQUIRY() + endUrl;
+    console.log("$$$URL: ", url);
+    
     const response = await client.get(url);
     const json = await response.json();
+    console.log("RES:", JSON.stringify(json));
+    
     if (!response.ok) {
       return rejectWithValue(json);
     }

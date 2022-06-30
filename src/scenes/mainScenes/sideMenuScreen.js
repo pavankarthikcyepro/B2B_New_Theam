@@ -51,6 +51,8 @@ const receptionMenu = [
     "Monthly Target Planning",
     "Helpdesk",
     "Task Management",
+    "Task Transfer",
+    "Sign Out"
 ];
 const teleCollerMenu = [
     "Home",
@@ -59,6 +61,7 @@ const teleCollerMenu = [
     "Monthly Target Planning",
     "Helpdesk",
     "Task Management",
+    "Sign Out"
 ];
 const ShowRoomMenu = [
     "Home",
@@ -438,7 +441,8 @@ const styles = StyleSheet.create({
         overflow: 'hidden'
     },
     profilDetailes: {
-        marginLeft: 15
+        marginLeft: 15,
+        width: '75%'
     },
     nameStyle: {
         fontSize: 17,
@@ -449,7 +453,7 @@ const styles = StyleSheet.create({
         marginTop: 3,
         fontSize: 14,
         fontWeight: "200",
-        textAlign: 'center',
+        // textAlign: 'center',
         color: Colors.DARK_GRAY,
     },
     profileContainerView: {

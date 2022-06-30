@@ -14,7 +14,7 @@ const HeaderComp = ({ title, branchName = "", height = 56, menuClicked, branchCl
                     size={30}
                     onPress={menuClicked}
                 />
-                <Text style={style.title}>{title}</Text>
+                <View style={{width: '78%',}}><Text numberOfLines={1} style={style.title}>{title}</Text></View>
             </View>
             <View>
                 {branchName.length > 0 ? (
@@ -58,6 +58,7 @@ const style = StyleSheet.create({
     subContainer: {
         flexDirection: "row",
         alignItems: "center",
+        width: '73%'
     },
     title: {
         color: Colors.WHITE,
