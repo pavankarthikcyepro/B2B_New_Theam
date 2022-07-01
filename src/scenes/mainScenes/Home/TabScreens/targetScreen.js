@@ -1211,7 +1211,7 @@ const TargetScreen = ({ route, navigation }) => {
                     </View>
                     <View
                       style={{
-                        width: 40,
+                        width: 45,
                         height: 25,
                         borderColor: color[index % color.length],
                         borderWidth: 1,
@@ -1224,9 +1224,13 @@ const TargetScreen = ({ route, navigation }) => {
                     >
                       <Text>
                         {parseInt(item.achievment) > parseInt(item.target) ? 0 : (dateDiff > 0 && parseInt(item.shortfall) !== 0
-                          ? Math.abs(
+                          ? (Math.abs(
                             Math.round(parseInt(item.shortfall) / dateDiff)
-                          )
+                          ) >= 100000 ? Math.abs(
+                            Math.round(parseInt(item.shortfall) / dateDiff)
+                          ) / 100000 + "L" : Math.abs(
+                            Math.round(parseInt(item.shortfall) / dateDiff)
+                          ))
                           : 0)}
                       </Text>
                     </View>

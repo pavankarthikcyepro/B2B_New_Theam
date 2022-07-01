@@ -4810,6 +4810,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                                 value={selector.transfer_from_mobile}
                                                 label={"Transfer From Mobile"}
                                                 keyboardType={"number-pad"}
+                                                maxLength={10}
                                                 onChangeText={(text) =>
                                                     dispatch(
                                                         setPreBookingPaymentDetials({
@@ -4825,6 +4826,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                                 value={selector.transfer_to_mobile}
                                                 label={"Transfer To Mobile"}
                                                 keyboardType={"number-pad"}
+                                                maxLength={10}
                                                 onChangeText={(text) =>
                                                     dispatch(
                                                         setPreBookingPaymentDetials({
