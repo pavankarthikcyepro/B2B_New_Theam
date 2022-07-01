@@ -816,6 +816,16 @@ const DropAnalysisStackNavigator = ({ navigation }) => {
                 options={{
                     title: "Lead Drop List",
                     headerLeft: () => <MenuIcon navigation={navigation} />,
+                    headerRight: () => {
+                        return (
+                            <View style={{ flexDirection: "row" }}>
+                                <SearchIcon />
+                                {/* <RefreshIcon /> */}
+                                {/* <MapIcon /> */}
+                               
+                            </View>
+                        );
+                    },
                 }}
             />
         </DropAnalysisStack.Navigator>

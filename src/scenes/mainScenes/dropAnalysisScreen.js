@@ -77,6 +77,21 @@ const DropAnalysisScreen = ({ navigation }) => {
     }, [selector.leadDropList])
 
     useEffect(() => {
+        if (selector.approvalStatus === "sucess") {
+           selector.approvalStatus = ""
+           setSelectedItemIds([])
+           setisApprovalUIVisible(false)
+            getEnquiryListFromServer(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)
+        }
+        else {
+            selector.approvalStatus = ""
+            setSelectedItemIds([])
+            setisApprovalUIVisible(false)
+            getEnquiryListFromServer(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)
+        }
+    }, [selector.approvalStatus])
+
+    useEffect(() => {
         if (appSelector.isSearch) {
             dispatch(updateIsSearch(false))
             if (appSelector.searchKey !== '') {
@@ -150,6 +165,7 @@ const DropAnalysisScreen = ({ navigation }) => {
     }
 
     const getEnquiryListFromServer = (empId,empName, branchId,orgId, startDate, endDate) => {
+        setisApprovalUIVisible(false)
         const payload = getPayloadData(empId,empName, branchId,orgId, startDate, endDate, 0)
         dispatch(getLeadDropList(payload));
     }
@@ -246,8 +262,7 @@ const DropAnalysisScreen = ({ navigation }) => {
     }
     const updateBulkStatus = async (status)=>{
         if(status === 'reject'){
-            const arr = await
-            setSelectedItemIds( selectedItemIds.map(item => 
+            const arr = await selectedItemIds.map(item => 
                 {
                 const dmsLeadDropInfo =
                              {
@@ -257,8 +272,8 @@ const DropAnalysisScreen = ({ navigation }) => {
                             }                        
                 return { dmsLeadDropInfo }
               
-                }))
-            dispatch(updateBulkApproval(arr));
+                })
+            await dispatch(updateBulkApproval(arr));
         } else dispatch(updateBulkApproval(selectedItemIds));
 
     }
@@ -444,7 +459,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                             refreshControl={(
                                 <RefreshControl
                                     refreshing={selector.isLoading}
-                                    onRefresh={() => getEnquiryListFromServer(employeeId,employeeId,branchId,orgId, selectedFromDate, selectedToDate)}
+                                    onRefresh={() => getEnquiryListFromServer(employeeId,employeeName,branchId,orgId, selectedFromDate, selectedToDate)}
                                     progressViewOffset={200}
                                 />
                             )}

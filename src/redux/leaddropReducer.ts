@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import URL from "../networking/endpoints";
 import { client } from '../networking/client';
+import { showToast } from '../utils/toast';
 
 export const getLeadDropList = createAsyncThunk('DROPANALYSIS/getLeaddropList', async (payload, { rejectWithValue })=>{
 
@@ -63,7 +64,8 @@ const leaddropListSlice = createSlice({
         totalPages: 1,
         isLoading: false,
         isLoadingExtraData: false,
-        status: ""
+        status: "",
+        approvalStatus:""
     },
     reducers:{},
     extraReducers:(builder)=>{
@@ -124,14 +126,15 @@ const leaddropListSlice = createSlice({
             // console.log('res: ', action.payload);
             const status = action.payload?.status;
             if (status === 'SUCCESS') {
-               
+                showToast("Successfully updated");
+
             }
             state.isLoadingExtraData = false;
-            state.status = "sucess";
+            state.approvalStatus = "sucess";
         })
         builder.addCase(updateSingleApproval.rejected, (state, action) => {
             state.isLoadingExtraData = false;
-            state.status = "failed";
+            state.approvalStatus = "failed";
         })
 
         builder.addCase(updateBulkApproval.pending, (state) => {
@@ -139,16 +142,20 @@ const leaddropListSlice = createSlice({
         })
         builder.addCase(updateBulkApproval.fulfilled, (state, action) => {
              console.log('builk uplres: ', action.payload);
+             if(action.payload.length > 0){
+                 showToast("Successfully updated");
+
+             }
             // const status = action.payload?.status;
             // if (status === 'SUCCESS') {
 
             // }
             // state.isLoadingExtraData = false;
-            // state.status = "sucess";
+             state.approvalStatus = "sucess";
         })
         builder.addCase(updateBulkApproval.rejected, (state, action) => {
             state.isLoadingExtraData = false;
-            state.status = "failed";
+            state.approvalStatus = "failed";
         })
 
     }
