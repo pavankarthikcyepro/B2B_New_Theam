@@ -46,7 +46,7 @@ const IconComp = ({ iconName, onPress,bgColor }) => {
 
 
 
-export const DropAnalysisItem = ({ from = "MY_TASKS",  leadDropId, uniqueId, name, status, created, dmsLead, lostReason }) => {
+export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected,leadDropId, uniqueId, enqCat, leadStage, name, status, created, dmsLead, lostReason }) => {
     const [isItemSelected, setisItemSelected ]= useState('unchecked')
 
     const checkboxSelected = async () => {
@@ -84,7 +84,7 @@ export const DropAnalysisItem = ({ from = "MY_TASKS",  leadDropId, uniqueId, nam
     }
 
     return (
-        <TouchableOpacity onPress={onItemPress} style={styles.section}>
+        <TouchableOpacity  style={styles.section}>
             <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", position: 'relative' }}>
 
                 <View style={{ width: "70%" }}>
@@ -116,7 +116,7 @@ export const DropAnalysisItem = ({ from = "MY_TASKS",  leadDropId, uniqueId, nam
                         <View style={{ flexDirection: 'column' }}>
                         <IconComp
                             iconName={'window-close'}
-                            onPress={onItemSelected(uniqueId, leadDropId,'single','reject')}
+                            onPress={()=>onItemSelected(uniqueId, leadDropId,'single','reject')}
                             bgColor='#FF0000'
                         />
                             <Text style={{ color: Colors.BLUE, fontSize: 12, margin: 2 }}>Deny</Text>
@@ -124,7 +124,7 @@ export const DropAnalysisItem = ({ from = "MY_TASKS",  leadDropId, uniqueId, nam
                             <View style={{ flexDirection: 'column' }}>
                         <IconComp
                             iconName={'check'}
-                            onPress={onItemSelected(uniqueId, leadDropId, 'single', 'approve')}
+                            onPress={()=>onItemSelected(uniqueId, leadDropId, 'single', 'approve')}
                             bgColor='#008000'
                         />
                             <Text style={{ color: Colors.BLUE, fontSize: 12, margin: 2 }}>Deny</Text>

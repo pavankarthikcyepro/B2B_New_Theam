@@ -68,14 +68,14 @@ const leaddropListSlice = createSlice({
     reducers:{},
     extraReducers:(builder)=>{
         builder.addCase(getLeadDropList.pending,(state, action)=>{
-            console.log("dropanalysis pending")
+            console.log("dropanalysis pending", action)
             state.totalPages = 1
             state.pageNumber = 0
             state.leadDropList = []
             state.isLoading = true;
         })
         builder.addCase(getLeadDropList.fulfilled,(state, action)=>{
-            console.log("dropanalysis", action.payload)
+            console.log("dropanalysis success", action.payload)
 
             const dmsLeadDropInfos = action.payload?.dmsLeadDropInfos;
             state.totalPages = 1
@@ -138,13 +138,13 @@ const leaddropListSlice = createSlice({
             state.isLoadingExtraData = true;
         })
         builder.addCase(updateBulkApproval.fulfilled, (state, action) => {
-            // console.log('res: ', action.payload);
-            const status = action.payload?.status;
-            if (status === 'SUCCESS') {
+             console.log('builk uplres: ', action.payload);
+            // const status = action.payload?.status;
+            // if (status === 'SUCCESS') {
 
-            }
-            state.isLoadingExtraData = false;
-            state.status = "sucess";
+            // }
+            // state.isLoadingExtraData = false;
+            // state.status = "sucess";
         })
         builder.addCase(updateBulkApproval.rejected, (state, action) => {
             state.isLoadingExtraData = false;

@@ -162,8 +162,8 @@ const dataForManager = [
   },
 {title: "Sign Out",
   icon: CUSTOMER_RELATIONSHIP_STR,
-  screen: 112,
-  pngIcon: require('../assets/images/Signout-01.png')}
+  screen: 112
+}
 ];
 
 // {

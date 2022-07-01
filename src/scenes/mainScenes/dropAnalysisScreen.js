@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Colors, GlobalStyle } from "../../styles";
 import { AppNavigator } from '../../navigations';
 import * as AsyncStore from '../../asyncStore';
-import { getLeadDropList, getMoreLeadDropList, updateSingleApproval } from "../../redux/leaddropReducer";
+import { getLeadDropList, getMoreLeadDropList, updateSingleApproval,updateBulkApproval } from "../../redux/leaddropReducer";
 import { callNumber } from "../../utils/helperFunctions";
 import moment from "moment";
 import { Category_Type_List_For_Filter } from '../../jsonData/enquiryFormScreenJsonData';
@@ -470,12 +470,13 @@ const DropAnalysisScreen = ({ navigation }) => {
                                             onItemSelected={onItemSelected}
                                                 from='PRE_ENQUIRY'
                                                 name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
-                                               
+                                                enqCat={item.enquiryCategory}
                                                 uniqueId={item.leadId}
                                                 leadDropId={item.leadDropId}
                                                 created={item.droppedDate}
                                                 dmsLead={item.droppedby}
-                                                source={item.enquirySource}  
+                                                source={item.enquirySource}
+                                                lostReason={item.lostReason}
                                                 leadStatus={item.status}
                                                 leadStage={item.stage}
                                             />
