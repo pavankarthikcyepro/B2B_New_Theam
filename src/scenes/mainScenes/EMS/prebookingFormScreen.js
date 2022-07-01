@@ -2747,7 +2747,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     value={selector.mobile}
                                     // editable={false}
                                     label={"Mobile Number*"}
-                                    maxLength={13}
+                                    maxLength={10}
                                     onChangeText={(text) =>
                                         dispatch(setCustomerDetails({ key: "MOBILE", text: text }))
                                     }
