@@ -184,6 +184,15 @@ const URL = {
     EVENT_DATA: () => dashboard + "/v2/get_events_data",
     TASKS_DATA: () => dashboard + "/v2/get_todays_data",
     GET_LOST_DROP_CHART_DATA: () => dashboard + "/v2/get_lostdrop_data",
+    UPDATE_SINGLEAPPROVAL : () =>{
+        return sales_url + '/lead-drop' 
+    },
+    UPDATE_BULKAPPROVAL: () => {
+        return sales_url + '/lead-drop/bulkdrop'
+    },
+    GET_LEADDROP_LIST: (branchId, empName, orgId) => {
+        return sales_url + '/lead-drop/details?branch=' + branchId + '&limit=500&loginUser=' + empName + '&offset=0&orgId=' + orgId;
+    },
     GET_EMPLOYEES_DROP_DOWN_DATA: (orgId, employeeId) => {
 
         return orgnaizationHirarchy + `/active-dropdowns/${orgId}/${employeeId}`

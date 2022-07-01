@@ -35,6 +35,8 @@ import MonthlyTargetScreen from "../scenes/mainScenes/monthlyTargetScreen";
 import HelpDeskScreen from "../scenes/mainScenes/helpDeskScreen";
 import taskManagementScreen from "../scenes/mainScenes/taskManagementScreen";
 import TaskTranferScreen from "../scenes/mainScenes/taskTransferScreen";
+import DropAnalysisScreen from "../scenes/mainScenes/dropAnalysisScreen";
+
 
 
 import EventManagementScreen from "../scenes/mainScenes/eventManagementScreen";
@@ -219,7 +221,8 @@ export const DrawerStackIdentifiers = {
     helpdesk: "HELP_DESK",
     taskManagement: "TASK_MANAGEMENT",
     taskTransfer: "TASK_TRANSFER",
-    evtbrlReport: "EVTBRL_REPORT"
+    evtbrlReport: "EVTBRL_REPORT",
+    dropAnalysis:'DROP_ANALYSIS'
 };
 
 export const TabStackIdentifiers = {
@@ -802,6 +805,23 @@ const HelpDeskStackNavigator = ({ navigation }) => {
     );
 };
 
+const DropAnalysisStack = createStackNavigator();
+
+const DropAnalysisStackNavigator = ({ navigation }) => {
+    return (
+        <DropAnalysisStack.Navigator screenOptions={screeOptionStyle}>
+            <DropAnalysisStack.Screen
+                name={"DROP_ANALYSIS"}
+                component={DropAnalysisScreen}
+                options={{
+                    title: "Lead Drop List",
+                    headerLeft: () => <MenuIcon navigation={navigation} />,
+                }}
+            />
+        </DropAnalysisStack.Navigator>
+    );
+};
+
 const TaskManagementStack = createStackNavigator();
 
 const TaskManagementStackNavigator = ({ navigation }) => {
@@ -976,6 +996,10 @@ const MainStackDrawerNavigator = () => {
             <MainDrawerNavigator.Screen
                 name={DrawerStackIdentifiers.taskManagement}
                 component={TaskManagementStackNavigator}
+            />
+            <MainDrawerNavigator.Screen
+                name={DrawerStackIdentifiers.dropAnalysis}
+                component={DropAnalysisStackNavigator}
             />
             <MainDrawerNavigator.Screen
                 name={DrawerStackIdentifiers.taskTransfer}

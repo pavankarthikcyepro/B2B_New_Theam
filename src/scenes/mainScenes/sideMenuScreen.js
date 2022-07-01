@@ -51,6 +51,8 @@ const receptionMenu = [
     "Monthly Target Planning",
     "Helpdesk",
     "Task Management",
+    "Drop Analysis",
+
 ];
 const teleCollerMenu = [
     "Home",
@@ -59,6 +61,8 @@ const teleCollerMenu = [
     "Monthly Target Planning",
     "Helpdesk",
     "Task Management",
+    "Drop Analysis",
+
 ];
 const ShowRoomMenu = [
     "Home",
@@ -67,6 +71,7 @@ const ShowRoomMenu = [
     "Monthly Target Planning",
     "Helpdesk",
     "Task Management",
+    "Drop Analysis",
     "Sign Out"
 ];
 const MDMenu = [
@@ -77,6 +82,7 @@ const MDMenu = [
     "Helpdesk",
     "Task Management",
     "Task Transfer",
+    "Drop Analysis",
     "Sign Out"
 ];
 
@@ -218,6 +224,9 @@ const SideMenuScreen = ({ navigation }) => {
                 break;
             case 111:
                 navigation.navigate(AppNavigator.DrawerStackIdentifiers.evtbrlReport);
+                break;
+            case 113:
+                navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis);
                 break;
             case 112:
                 signOutClicked();

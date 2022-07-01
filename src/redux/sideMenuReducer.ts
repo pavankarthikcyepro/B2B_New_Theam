@@ -5,6 +5,7 @@ export const HOME_LINE_STR = "HOME_LINE";
 export const BOOKING_TRACKER_STR = "BOOKING_TRACKER";
 export const DOCUMENT_WALLET_STR = "DOCUMENT_WALLET";
 export const CUSTOMER_RELATIONSHIP_STR = "CUSTOMER_RELATIONSHIP";
+export const DROP_ANALYSIS = 'DROP_ANALYSIS';
 export const EVENT_MANAGEMENT_STR = "EVENT_MANAGEMENT";
 export const DIGITAL_PAYMENT_STR = "DIGITAL_PAYMENT"
 export const QR_CODE_STR = "QR_CODE"
@@ -84,6 +85,11 @@ const data = [
   //   pngIcon: require('../assets/images/Reports-01.png')
   // },
   {
+    title: "Drop Analysis",
+    icon: DROP_ANALYSIS,
+    screen: 113,
+  },
+  {
     title: "Sign Out",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 112,
@@ -146,6 +152,11 @@ const dataForManager = [
     title: "Settings",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 102,
+  },
+  {
+    title: "Drop Analysis",
+    icon: DROP_ANALYSIS,
+    screen: 113,
   },
 ];
 
