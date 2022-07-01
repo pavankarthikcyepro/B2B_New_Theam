@@ -50,6 +50,7 @@ import {
   setReplacementBuyerDetails,
   setEnquiryDropDetails,
   getEnquiryDetailsApi,
+  getEnquiryDetailsApiAuto,
   getAutoSaveEnquiryDetailsApi,
   updateDmsContactOrAccountDtoData,
   updateDmsLeadDtoData,
@@ -247,7 +248,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   useEffect(() => {
     const interval = setInterval(() => {
       // if (enqDetails?.leadStage === "ENQUIRY" && enqDetails?.leadStatus === null) {
-        updateEnquiry()
+      updateEnquiry()
       // }
     }, 10000);
     return () => {
@@ -344,11 +345,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     getBranchId();
     setComponentAppear(true);
     getCustomerType();
-//  const dms = [{ "color": "Outback Bronze", "fuel": "Petrol", "id": 2704, "model": "Kwid",
-//           "transimmisionType": "Manual", "variant": "KWID RXT 1.0L EASY- R BS6 ORVM MY22" },
-//            { "color": "Caspian Blue", "fuel": "Petrol", "id": 1833, "model": "Kiger", "transimmisionType": "Automatic", 
-//           "variant": "Rxt 1.0L Ece Easy-R Ece My22" }]
-//           setModelsList(dms)
+    //  const dms = [{ "color": "Outback Bronze", "fuel": "Petrol", "id": 2704, "model": "Kwid",
+    //           "transimmisionType": "Manual", "variant": "KWID RXT 1.0L EASY- R BS6 ORVM MY22" },
+    //            { "color": "Caspian Blue", "fuel": "Petrol", "id": 1833, "model": "Kiger", "transimmisionType": "Automatic", 
+    //           "variant": "Rxt 1.0L Ece Easy-R Ece My22" }]
+    //           setModelsList(dms)
     BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
     // return () => {
     //   BackHandler.removeEventListener(
@@ -447,9 +448,22 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             });
           }
           setCarModelsData([...modalList]);
-        //  alert("entry---------",JSON.stringify(selector.dmsLeadProducts))
-          setCarModelsList(selector.dmsLeadProducts)
-
+          //  alert("entry---------",JSON.stringify(selector.dmsLeadProducts))
+          if (selector.dmsLeadProducts.length > 0) {
+            setCarModelsList(selector.dmsLeadProducts)
+          }
+          else {
+            let tempModelObj = {
+              "color": '',
+              "fuel": '',
+              "id": 0,
+              "model": enquiry_details_response?.dmsLeadDto?.model,
+              "transimmisionType": '',
+              "variant": ''
+            }
+            console.log("TEMP MODEL:", tempModelObj);
+            setCarModelsList([tempModelObj])
+          }
         },
         (rejected) => {
           console.log("getCarModelListFromServer Failed");
@@ -499,16 +513,29 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     );
   };
 
-  useEffect(()=>{
-    try{
-      if (selector.dmsLeadProducts && selector.dmsLeadProducts.length > 0)
+  useEffect(() => {
+    try {
+      if (selector.dmsLeadProducts && selector.dmsLeadProducts.length > 0) {
         setCarModelsList(selector.dmsLeadProducts)
-    }catch(error){
-    // alert("useeffect"+error)
+      }
+      else {
+        let tempModelObj = {
+          "color": '',
+          "fuel": '',
+          "id": 0,
+          "model": selector.enquiry_details_response?.dmsLeadDto?.model,
+          "transimmisionType": '',
+          "variant": ''
+        }
+        console.log("TEMP MODEL:", tempModelObj);
+        setCarModelsList([tempModelObj])
+      }
+    } catch (error) {
+      // alert("useeffect"+error)
 
     }
-    
-  }, [selector.dmsLeadProducts])
+
+  }, [selector.dmsLeadProducts, selector.enquiry_details_response])
   useEffect(() => {
     console.log("$%$%^^^%&^&*^&&&*&", selector.pincode);
     if (selector.pincode) {
@@ -576,8 +603,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dispatch(updateDmsAddressData(dmsLeadDto.dmsAddresses));
       // Updaet Model Selection
       dispatch(updateModelSelectionData(dmsLeadDto.dmsLeadProducts));
-   //   alert("reponse---------", JSON.stringify(dmsLeadDto.dmsLeadProducts))
-    //  setCarModelsList(selector.dmsLeadProducts)
+      //   alert("reponse---------", JSON.stringify(dmsLeadDto.dmsLeadProducts))
+      //  setCarModelsList(selector.dmsLeadProducts)
       // Update Finance Details
       dispatch(updateFinancialData(dmsLeadDto.dmsfinancedetails));
       // Update Customer Need Analysys
@@ -590,7 +617,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
       saveAttachmentDetailsInLocalObject(dmsLeadDto.dmsAttachments);
       dispatch(updateDmsAttachmentDetails(dmsLeadDto.dmsAttachments));
-      
+
     }
   }, [selector.enquiry_details_response]);
 
@@ -621,7 +648,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (universalId) {
       // if (selector.isOpened) {
       // dispatch(getAutoSaveEnquiryDetailsApi(universalId));
-      dispatch(getEnquiryDetailsApi({universalId, leadStage, leadStatus}));
+      if (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY') {
+        dispatch(getEnquiryDetailsApi({ universalId, leadStage, leadStatus }));
+      }
+      else {
+        Promise.all([
+          dispatch(getEnquiryDetailsApiAuto({ universalId, leadStage, leadStatus }))
+        ]).then(() => {
+          dispatch(getEnquiryDetailsApi({ universalId, leadStage, leadStatus }))
+        }).catch(() => {
+          console.log("INSIDE CATCH");
+        })
+      }
+      // dispatch(getEnquiryDetailsApi({universalId, leadStage, leadStatus}));
       // } else {
     }
   };
@@ -830,10 +869,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dmsLeadDto.firstName = selector.firstName;
       dmsLeadDto.lastName = selector.lastName;
       dmsLeadDto.phone = selector.mobile;
-      if (enqDetails.leadStage === 'ENQUIRY' && enqDetails.leadStatus === null){
+      if (enqDetails.leadStage === 'ENQUIRY' && enqDetails.leadStatus === null) {
         dmsLeadDto.leadStage = "ENQUIRY";
         dmsLeadDto.leadStatus = null;
-      }      
+      }
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
       );
@@ -1175,7 +1214,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
     // Model Selection
-    if(carModelsList.length == 0){
+    if (carModelsList.length == 0) {
       scrollToPos(4)
       setOpenAccordian('4')
       showToast("Please fill model details");
@@ -1389,17 +1428,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsAccountDto);
 
     if (dmsEntity.hasOwnProperty("dmsLeadDto")) {
-      try{
+      try {
         dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
 
-      }catch(error){
+      } catch (error) {
       }
       dmsLeadDto.firstName = selector.firstName;
       dmsLeadDto.lastName = selector.lastName;
       dmsLeadDto.phone = selector.mobile;
-      dmsLeadDto.dmsLeadProducts = await carModelsList
+      dmsLeadDto.dmsLeadProducts = carModelsList
 
-     // await alert(JSON.stringify(dmsLeadDto.dmsLeadProducts))
+      // await alert(JSON.stringify(dmsLeadDto.dmsLeadProducts))
 
       const employeeData = await AsyncStore.getData(
         AsyncStore.Keys.LOGIN_EMPLOYEE
@@ -1728,7 +1767,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     return dmsAddresses;
   };
 
-  const mapLeadProducts = async(prevDmsLeadProducts) => {
+  const mapLeadProducts = async (prevDmsLeadProducts) => {
     let dmsLeadProducts = [...prevDmsLeadProducts];
     let dataObj = {};
     // if (dmsLeadProducts.length > 0) {
@@ -1740,7 +1779,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     // dataObj.color = selector.color;
     // dataObj.fuel = selector.fuel_type;
     // dataObj.transimmisionType = selector.transmission_type;
-   // alert(JSON.stringify(carModelsList))
+    // alert(JSON.stringify(carModelsList))
     dmsLeadProducts = await carModelsList;
     return dmsLeadProducts;
   };
@@ -1810,28 +1849,28 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
     return dmsExchagedetails;
   };
-  const modelOnclick = async(index, value, type) => {
-    try{
+  const modelOnclick = async (index, value, type) => {
+    try {
       if (type == "update") {
         let arr = await [...carModelsList]
         arr[index] = value
-       // arr.splice(carModelsList, index, value);
-       await setCarModelsList([...arr])
-      // alert(JSON.stringify(carModelsList))
+        // arr.splice(carModelsList, index, value);
+        await setCarModelsList([...arr])
+        // alert(JSON.stringify(carModelsList))
       }
       else {
         let arr = await [...carModelsList]
         arr.splice(index, 1)
         //alert(JSON.stringify(arr))
         await setCarModelsList([...arr])
-       // carModelsList.splice(0, 1)
+        // carModelsList.splice(0, 1)
       }
 
-     // console.log("onValueChangeonValueChange@@@@ ", value)
-    }catch(error){
-     // alert(error)
+      // console.log("onValueChangeonValueChange@@@@ ", value)
+    } catch (error) {
+      // alert(error)
     }
-     
+
   }
   const formatExchangeDetails = (prevData) => {
     let dataObj = { ...prevData };
@@ -2014,9 +2053,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         if (
           element.taskName === "Evaluation" &&
           (element.taskStatus === "" || element.taskStatus === "ASSIGNED") &&
-          selector.enquiry_details_response.dmsLeadDto.buyerType ===
-          "Replacement Buyer" || selector.enquiry_details_response.dmsLeadDto.buyerType ===
-          "Exchange Buyer"
+          (selector.enquiry_details_response.dmsLeadDto.buyerType ===
+            "Replacement Buyer" || selector.enquiry_details_response.dmsLeadDto.buyerType ===
+            "Exchange Buyer")
         ) {
           pendingTaskNames.push("Evaluation : Pending \n");
         }
@@ -2326,7 +2365,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         modelsData = item.models;
       }
     });
-   // alert("color")
+    // alert("color")
     // console.log("modelsData: ", modelsData);
     switch (dropDownKey) {
       case "C_MAKE":
@@ -2766,7 +2805,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   value={selector.mobile}
                   label={"Mobile Number*"}
                   // editable={false}
-                  maxLength={13}
+                  maxLength={10}
                   keyboardType={"phone-pad"}
                   onChangeText={(text) =>
                     dispatch(setPersonalIntro({ key: "MOBILE", text: text }))
@@ -2779,7 +2818,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   label={"Alternate Mobile Number"}
                   editable={true}
                   keyboardType={"phone-pad"}
-                  maxLength={13}
+                  maxLength={10}
                   onChangeText={(text) =>
                     dispatch(
                       setPersonalIntro({ key: "ALTER_MOBILE", text: text })
@@ -2877,7 +2916,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     )
                   }
                 />
-                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.designation === '' ? 'red' : 'rgba(208, 212, 214, 0.7)'}]}></Text>
+                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.designation === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
 
                 <DropDownSelectionItem
                   label={"Enquiry Segment*"}
@@ -3601,8 +3640,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 ]}
               >
                 {/* <View style={{marginHorizontal:5}}> */}
-                <TouchableOpacity 
-                onPress={() => {
+                <TouchableOpacity
+                  onPress={() => {
                     const carmodeldata = {
                       "color": '',
                       "fuel": '',
@@ -3614,32 +3653,32 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     let arr = [...carModelsList]
                     arr.push(carmodeldata)
                     setCarModelsList(arr)
-                   // selector.dmsLeadProducts = [...selector.dmsLeadProducts, carmodeldata]
-                }}
-                style={{width:'40%',margin:5,borderRadius:5, backgroundColor:Colors.PINK, height:40, alignSelf:'flex-end',alignContent:'flex-end', alignItems:'center',justifyContent:'center'}}>
-                  <Text style={{fontSize:16,textAlign:'center', textAlignVertical:'center', color: Colors.WHITE,width:'100%', height:40}}>Add Model</Text>
+                    // selector.dmsLeadProducts = [...selector.dmsLeadProducts, carmodeldata]
+                  }}
+                  style={{ width: '40%', margin: 5, borderRadius: 5, backgroundColor: Colors.PINK, height: 40, alignSelf: 'flex-end', alignContent: 'flex-end', alignItems: 'center', justifyContent: 'center' }}>
+                  <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.WHITE, }}>Add Model</Text>
                 </TouchableOpacity>
-                  <FlatList
+                <FlatList
                   //  style={{ height: faltListHeight }}
-                    data={carModelsList}
-                    keyExtractor={(item, index) => index.toString()}
-                    renderItem={({ item, index }) => {
-                      return (
-                        // <Pressable onPress={() => selectedItem(item, index)}>
-                          < View >                           
-                          
-                            <ModelListitemCom 
-                            modelOnclick = {modelOnclick}
-                            index={index}
-                            item={item}/>
-                        
-                            {/* <Divider /> */}
-                          </View>
-                        // </Pressable>
-                      )
-                    }}
-                  />
-                  {/* <DropDownSelectionItem
+                  data={carModelsList}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={({ item, index }) => {
+                    return (
+                      // <Pressable onPress={() => selectedItem(item, index)}>
+                      < View >
+
+                        <ModelListitemCom
+                          modelOnclick={modelOnclick}
+                          index={index}
+                          item={item} />
+
+                        {/* <Divider /> */}
+                      </View>
+                      // </Pressable>
+                    )
+                  }}
+                />
+                {/* <DropDownSelectionItem
                     label={"Model*"}
                     value={selector.model}
                     onPress={() =>

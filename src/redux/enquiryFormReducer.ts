@@ -12,46 +12,67 @@ import { showToastRedAlert } from "../utils/toast";
 export const getEnquiryDetailsApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/getEnquiryDetailsApi",
   async ({universalId, leadStage, leadStatus}, { rejectWithValue }) => {
-    const autoSaveResponse = await client.get(URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
-    const autoSavejson = await autoSaveResponse.json();
-    console.log("URL$$$: ", URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
+    // // try {
+    //   const autoSaveResponse = await client.get(URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
+    //   const autoSavejson = await autoSaveResponse.json();
+    //   console.log("URL$$$: ", URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
+    //   console.log("ENQ DETAILS: ", JSON.stringify(autoSavejson));
+    // // } catch (error) {
+      
+    // // }
+    
 
     const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
     const json = await response.json();
     
-    if ((leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY'))
-    {
-      if (json.hasOwnProperty("dmsLeadDto")) {
-        console.log("autoSavejson is true")
-      }
-      if (!response.ok) {
-        return rejectWithValue(json);
-      }
-
-      if (json.hasOwnProperty("dmsLeadDto")) {
-        return json;
-      } else {
-        return json.dmsEntity
-      }
+    console.log("ENQ DETAILS @@@: ", URL.ENQUIRY_DETAILS(universalId), JSON.stringify(json));
+    
+    if (!response.ok) {
+      return rejectWithValue(json);
     }
-    else{
-      if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
-        console.log("autoSavejson is true")
-      }
-      if (!autoSaveResponse.ok) {
-        return rejectWithValue(autoSavejson);
-      }
+    
+    return json.dmsEntity
+    // if (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY')
+    // {
+    //   // if (json.dmsEntity.hasOwnProperty("dmsLeadDto")) {
+    //   //   console.log("autoSavejson is true")
+    //   // }
+    //   if (!response.ok) {
+    //     return rejectWithValue(json);
+    //   }
 
-      if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
-        return autoSavejson;
-      } else {
-        return autoSavejson.dmsEntity
-      }
-    }
+    //   // if (json.dmsEntity.hasOwnProperty("dmsLeadDto")) {
+    //   //   return json;
+    //   // } else {
+    //   //   return json.dmsEntity
+    //   // }
+    //   return json.dmsEntity
+    // }
+    // else{
+    //   // if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
+    //   //   console.log("autoSavejson is true")
+    //   // }
+    //   if (autoSaveResponse){
+    //     if (!autoSaveResponse.ok) {
+    //       return rejectWithValue(autoSavejson);
+    //     }
+
+    //     if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
+    //       return autoSavejson;
+    //     } else {
+    //       return json.dmsEntity
+    //     }
+    //   }
+    //   else{
+    //     json.dmsEntity
+    //   }
+    // }
     // console.log("enquirey lead", json);
     // console.log("autoSavejson", autoSavejson);
 
-    
+    // if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
+    //   console.log("autoSavejson is true")
+    // }
 
     // if (json.success) {
     //   console.log("came here")
@@ -60,8 +81,95 @@ export const getEnquiryDetailsApi = createAsyncThunk(
     //     // console.log("autoSavejson", autoSavejson);
     // }
 
-    
-    // return json
+    // if (!response.ok) {
+    //   return rejectWithValue(json);
+    // }
+
+    // if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
+    //   return autoSavejson;
+    // } else {
+    //   return json.dmsEntity
+    // }
+    // return autoSavejson
+  }
+);
+
+export const getEnquiryDetailsApiAuto = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/getEnquiryDetailsApiAuto",
+  async ({ universalId, leadStage, leadStatus }, { rejectWithValue }) => {
+    // try {
+    const autoSaveResponse = await client.get(URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
+    const autoSavejson = await autoSaveResponse.json();
+    console.log("URL$$$: ", URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
+    console.log("ENQ DETAILS: ", JSON.stringify(autoSavejson));
+    // } catch (error) {
+
+    // }
+
+
+    const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
+    const json = await response.json();
+
+    console.log("ENQ DETAILS @@@: ", URL.ENQUIRY_DETAILS(universalId), JSON.stringify(json));
+
+    if (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY') {
+      // if (json.dmsEntity.hasOwnProperty("dmsLeadDto")) {
+      //   console.log("autoSavejson is true")
+      // }
+      if (!response.ok) {
+        return rejectWithValue(json);
+      }
+
+      // if (json.dmsEntity.hasOwnProperty("dmsLeadDto")) {
+      //   return json;
+      // } else {
+      //   return json.dmsEntity
+      // }
+      return json.dmsEntity
+    }
+    else {
+      // if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
+      //   console.log("autoSavejson is true")
+      // }
+      if (autoSaveResponse) {
+        if (!autoSaveResponse.ok) {
+          return rejectWithValue(autoSavejson);
+        }
+
+        if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
+          return autoSavejson;
+        } else {
+          return json.dmsEntity
+        }
+      }
+      else {
+        json.dmsEntity
+      }
+    }
+    // console.log("enquirey lead", json);
+    // console.log("autoSavejson", autoSavejson);
+
+    // if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
+    //   console.log("autoSavejson is true")
+    // }
+
+    // if (json.success) {
+    //   console.log("came here")
+    //    autoSaveResponse = await client.get(URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
+    //     autoSavejson = await autoSaveResponse.json();
+    //     // console.log("autoSavejson", autoSavejson);
+    // }
+
+    // if (!response.ok) {
+    //   return rejectWithValue(json);
+    // }
+
+    // if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
+    //   return autoSavejson;
+    // } else {
+    //   return json.dmsEntity
+    // }
+    // return autoSavejson
   }
 );
 
@@ -183,8 +291,12 @@ export const getPendingTasksApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/getPendingTasksApi",
   async (endUrl, { rejectWithValue }) => {
     const url = URL.TASKS_PRE_ENQUIRY() + endUrl;
+    console.log("$$$URL: ", url);
+    
     const response = await client.get(url);
     const json = await response.json();
+    console.log("RES:", JSON.stringify(json));
+    
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -1507,19 +1619,35 @@ const enquiryDetailsOverViewSlice = createSlice({
       // }
       state.isLoading = false;
     });
-    builder.addCase(getEnquiryDetailsApi.rejected, (state, action) => {
+    builder.addCase(getEnquiryDetailsApi.rejected, (state, action) => {      
+      state.isLoading = false;
+    });
+    builder.addCase(getEnquiryDetailsApiAuto.pending, (state) => {
+      state.isLoading = true;
+      state.enquiry_details_response = null;
+    });
+    builder.addCase(getEnquiryDetailsApiAuto.fulfilled, (state, action) => {
+      // if (action.payload.dmsEntity) {
+      //  state.enquiry_details_response = action.payload.dmsEntity;
+      console.log("action.payload", action.payload)
+      state.enquiry_details_response = action.payload;
+      state.isOpened = true
+      // }
+      state.isLoading = false;
+    });
+    builder.addCase(getEnquiryDetailsApiAuto.rejected, (state, action) => {
       state.isLoading = false;
     });
     // Update Enquiry Details
     builder.addCase(getAutoSaveEnquiryDetailsApi.pending, (state, action) => {
       state.isLoading = true;
-      state.enquiry_details_response = null;
+      // state.enquiry_details_response = null;
     });
     builder.addCase(getAutoSaveEnquiryDetailsApi.fulfilled, (state, action) => {
       // console.log("form reducers data", action.payload)
       if (action.payload) {
         // console.log("came here in enquiry form reducers", action.payload)
-        state.enquiry_details_response = action.payload;
+        // state.enquiry_details_response = action.payload;
       }
 
       // console.log("state", state)
