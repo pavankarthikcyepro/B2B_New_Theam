@@ -9,7 +9,8 @@ import {
     Keyboard,
     Platform,
     Alert,
-    Dimensions
+    Dimensions,
+    FlatList
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { useDispatch, useSelector } from "react-redux";
@@ -41,7 +42,7 @@ import {
     DropDownSelectionItem,
 } from "../../../pureComponents";
 import { Dropdown } from "sharingan-rn-modal-dropdown";
-import { Button, IconButton, RadioButton } from "react-native-paper";
+import { Button, IconButton, RadioButton, Checkbox } from "react-native-paper";
 import * as AsyncStore from "../../../asyncStore";
 import { convertToDate, convertToTime, isEmail } from "../../../utils/helperFunctions";
 import {
@@ -77,6 +78,8 @@ const LocalButtonComp = ({
         </Button>
     );
 };
+
+const modelSelectionData = [{ "modelname": "Duster" }, { "modelname": "Kiger" }, { "modelname": "Kwid" }, { "modelname": "Triber" }]
 
 const TestDriveScreen = ({ route, navigation }) => {
     const { taskId, identifier, universalId, taskData, mobile } = route.params;
@@ -147,6 +150,7 @@ const TestDriveScreen = ({ route, navigation }) => {
         setValue: setOtpValue,
     });
     const [isSubmitPress, setIsSubmitPress] = useState(false);
+    const [checked, setChecked] = useState({});
 
     useEffect(() => {
         //updateBasicDetails(taskData);
@@ -961,6 +965,14 @@ const TestDriveScreen = ({ route, navigation }) => {
         }
     }, [selector.validate_otp_response_status])
 
+    const updatedItem = (index) => {
+        if (checked[index] !== undefined) {
+            return checked[index];
+        } else {
+            return false;
+        }
+    }
+
     return (
         <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
             <ImagePickerComponent
@@ -1046,6 +1058,50 @@ const TestDriveScreen = ({ route, navigation }) => {
                     keyboardShouldPersistTaps={"handled"}
                     style={{ flex: 1 }}
                 >
+
+                    <View style={styles.baseVw}>
+                        <View
+                            style={[
+                                styles.accordianBckVw,
+                                GlobalStyle.shadow,
+                                { backgroundColor: "white", marginBottom: 10, height: 95, borderColor: Colors.TARGET_GRAY, borderWidth: 4, borderRadius: 5 },
+                            ]}>
+                            <Text style={{marginBottom: 5, fontSize: 16.5, height: 35, backgroundColor: Colors.TARGET_GRAY, color: Colors.WHITE, fontWeight: '500' }}>  Model Selection</Text>
+
+                            <FlatList
+                                data={modelSelectionData}
+                                keyExtractor={(item, index) => index.toString()}
+                                horizontal={true}
+                                showsHorizontalScrollIndicator={false}
+                                renderItem={({ item, index }) => {
+                                    return (
+                                        <View style={{ backgroundColor: "white", alignItems: 'center', padding: 5, borderWidth: 0.5, borderColor: Colors.GRAY_LIGHT, borderRadius: 5, margin: 8,  flexDirection: 'row' }}>
+
+                                            <Checkbox.Android
+                                                status={updatedItem(index) ? 'checked' : 'unchecked'}
+                                                uncheckedColor={Colors.DARK_GRAY}
+                                                color={Colors.RED}
+                                                onPress={() => {
+                                                    if (checked.hasOwnProperty(index)) {
+                                                        const temp = checked;
+                                                        temp[index] = !temp[index];
+                                                        setChecked({ ...temp, index: temp[index] });
+                                                    } else {
+                                                        const temp = checked;
+                                                        temp[index] = true;
+                                                        setChecked({ ...temp, index: temp[index] });
+                                                    }
+                                                }}
+                                            />
+
+                                            <Text style={{marginLeft: 8, marginRight: 10}}>{item.modelname}</Text>
+                                        </View>
+                                    )
+                                }}
+                            />
+                            </View>
+                    </View>
+
                     <View style={styles.baseVw}>
                         {/* // 1.Test Drive */}
                         <View
