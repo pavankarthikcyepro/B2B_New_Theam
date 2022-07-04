@@ -177,7 +177,7 @@ export const getTargetParametersAllData = createAsyncThunk("HOME/getTargetParame
 })
 
 export const getTargetParametersEmpData = createAsyncThunk("HOME/getTargetParametersEmpData", async (payload: any, { rejectWithValue }) => {
-    // console.log("PAYLOAD:", URL.GET_TARGET_PARAMS_EMP(), payload);
+    console.log("PAYLOAD:", URL.GET_TARGET_PARAMS_EMP(), payload);
 
     const response = await client.post(URL.GET_TARGET_PARAMS_EMP(), payload)
     const json = await response.json()
@@ -299,7 +299,7 @@ export const getReportingManagerList = createAsyncThunk("HOME/getReportingManage
 export const updateEmployeeDataBasedOnDelegate = createAsyncThunk("HOME/updateEmployeeDataBasedOnDelegate", async (body, { rejectWithValue }) => {
     const response = await client.put(URL.EMPLOYEE_DATA_UPDATE(body["empID"], body["managerID"]))  
     const json = await response.json()
-    if (!response.success) {
+    if (!response.ok) {
         return rejectWithValue(json);
     }
     return json;

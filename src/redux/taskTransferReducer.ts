@@ -40,6 +40,20 @@ export const getDeptDropdown = createAsyncThunk("TASK_TRANSFER/getDeptDropdown",
     return json;
 });
 
+export const getDeptDropdownTrans = createAsyncThunk("TASK_TRANSFER/getDeptDropdownTrans", async (payload, { rejectWithValue }) => {
+    const response = await client.get(URL.TARGET_DROPDOWN(
+        payload["orgId"],
+        payload["parent"],
+        payload["child"],
+        payload["parentId"]
+    ));
+    const json = await response.json();
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+});
+
 export const getDesignationDropdown = createAsyncThunk("TASK_TRANSFER/getDesignationDropdown", async (payload, { rejectWithValue }) => {
     const response = await client.get(URL.TARGET_DROPDOWN(
         payload["orgId"],
@@ -54,7 +68,34 @@ export const getDesignationDropdown = createAsyncThunk("TASK_TRANSFER/getDesigna
     return json;
 });
 
+export const getDesignationDropdownTrans = createAsyncThunk("TASK_TRANSFER/getDesignationDropdownTrans", async (payload, { rejectWithValue }) => {
+    const response = await client.get(URL.TARGET_DROPDOWN(
+        payload["orgId"],
+        payload["parent"],
+        payload["child"],
+        payload["parentId"]
+    ));
+    const json = await response.json();
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+});
+
 export const getEmployeeDetails = createAsyncThunk("TASK_TRANSFER/getEmployeeDetails", async (payload, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_EMPLOYEE_DETAILS(
+        payload["orgId"],
+        payload["branchId"],
+        payload["deptId"],
+        payload["desigId"]));
+    const json = await response.json();
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+});
+
+export const getEmployeeDetailsTrans = createAsyncThunk("TASK_TRANSFER/getEmployeeDetailsTrans", async (payload, { rejectWithValue }) => {
     const response = await client.get(URL.GET_EMPLOYEE_DETAILS(
         payload["orgId"],
         payload["branchId"],
@@ -84,7 +125,11 @@ export const taskTransferSlice = createSlice({
         deptList: [],
         designationList: [],
         employeeList: [],
-        taskList: []
+        taskList: [],
+
+        deptListTrans: [],
+        designationListTrans: [],
+        employeeListTrans: [],
     },
     reducers: {},
     extraReducers: (builder) => {
@@ -118,6 +163,20 @@ export const taskTransferSlice = createSlice({
             state.isLoading = false;
         })
 
+        builder.addCase(getDeptDropdownTrans.pending, (state, action) => {
+            state.isLoading = true;
+        })
+        builder.addCase(getDeptDropdownTrans.fulfilled, (state, action) => {
+            if (action.payload) {
+                const dataObj = action.payload;
+                state.deptListTrans = dataObj ? dataObj : []
+            }
+            state.isLoading = false;
+        })
+        builder.addCase(getDeptDropdownTrans.rejected, (state, action) => {
+            state.isLoading = false;
+        })
+
         // Get Designation List
         builder.addCase(getDesignationDropdown.pending, (state, action) => {
             state.isLoading = true;
@@ -133,18 +192,49 @@ export const taskTransferSlice = createSlice({
             state.isLoading = false;
         })
 
+        builder.addCase(getDesignationDropdownTrans.pending, (state, action) => {
+            state.isLoading = true;
+        })
+        builder.addCase(getDesignationDropdownTrans.fulfilled, (state, action) => {
+            if (action.payload) {
+                const dataObj = action.payload;
+                state.designationListTrans = dataObj ? dataObj : []
+            }
+            state.isLoading = false;
+        })
+        builder.addCase(getDesignationDropdownTrans.rejected, (state, action) => {
+            state.isLoading = false;
+        })
+
+
         // Get Employees List
         builder.addCase(getEmployeeDetails.pending, (state, action) => {
             state.isLoading = true;
         })
         builder.addCase(getEmployeeDetails.fulfilled, (state, action) => {
-            if (action.payload) {
+            if (action.payload?.success) {
+                console.log("EMP:", JSON.stringify(action.payload));
+                
                 const dataObj = action.payload;
                 state.employeeList = dataObj ? dataObj.dmsEntity.employees : []
             }
             state.isLoading = false;
         })
         builder.addCase(getEmployeeDetails.rejected, (state, action) => {
+            state.isLoading = false;
+        })
+
+        builder.addCase(getEmployeeDetailsTrans.pending, (state, action) => {
+            state.isLoading = true;
+        })
+        builder.addCase(getEmployeeDetailsTrans.fulfilled, (state, action) => {
+            if (action.payload?.success) {
+                const dataObj = action.payload;
+                state.employeeListTrans = dataObj ? dataObj.dmsEntity.employees : []
+            }
+            state.isLoading = false;
+        })
+        builder.addCase(getEmployeeDetailsTrans.rejected, (state, action) => {
             state.isLoading = false;
         })
 

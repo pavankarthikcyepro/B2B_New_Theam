@@ -175,9 +175,9 @@ const HomeScreen = ({ route, navigation }) => {
     }
 
     useEffect(() => {
-        if (selector.target_parameters_data.length > 0) {
+        if (selector.self_target_parameters_data.length > 0) {
             let tempRetail = [];
-            tempRetail = selector.target_parameters_data.filter((item) => {
+            tempRetail = selector.self_target_parameters_data.filter((item) => {
                 return item.paramName.toLowerCase() === 'invoice'
             })
             if (tempRetail.length > 0) {
@@ -185,7 +185,7 @@ const HomeScreen = ({ route, navigation }) => {
             }
         } else {
         }
-    }, [selector.target_parameters_data])
+    }, [selector.self_target_parameters_data])
 
     useEffect(async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);

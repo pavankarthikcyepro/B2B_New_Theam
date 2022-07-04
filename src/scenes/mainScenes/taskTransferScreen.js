@@ -13,10 +13,11 @@ import { SettingsScreenItem } from "../../pureComponents/settingScreenItem";
 const screenWidth = Dimensions.get("window").width;
 import { Dropdown } from 'react-native-element-dropdown';
 import { useDispatch, useSelector } from "react-redux";
-import { getTaskList, getBranchDropdown, getDeptDropdown, getDesignationDropdown, getEmployeeDetails } from "../../redux/taskTransferReducer";
+import { getTaskList, getBranchDropdown, getDeptDropdown, getDesignationDropdown, getEmployeeDetails, getDeptDropdownTrans, getDesignationDropdownTrans, getEmployeeDetailsTrans } from "../../redux/taskTransferReducer";
 import { useIsFocused } from '@react-navigation/native';
 import { Checkbox, IconButton } from 'react-native-paper';
 import moment from "moment";
+import * as AsyncStore from "../../asyncStore";
 
 const datalist = [
     {
@@ -65,13 +66,62 @@ const TaskTranferScreen = () => {
     const [employeeTransferFromDropDownItem, setEmployeeTransferFromDropDownItem] = useState("");
     const [employeeTransferFromDropDownList, setEmployeeTransferFromDropDownList] = useState([]);
 
-   // const [taskList, setTaskList] = useState([]);
+    // const [taskList, setTaskList] = useState([]);
 
     useEffect(() => {
         getTargetbranchDropDownListFromServer();
-        setbranchDropDownList(selector.branchList.map(({ id: value, value: label, ...rest }) => ({ value, label, ...rest })));
-        setbranchTransferFromDropDownList(selector.branchList.map(({ id: value, value: label, ...rest }) => ({ value, label, ...rest })));
+        // setbranchDropDownList(selector.branchList.map(({ id: value, value: label, ...rest }) => ({ value, label, ...rest })));
+        // setbranchTransferFromDropDownList(selector.branchList.map(({ id: value, value: label, ...rest }) => ({ value, label, ...rest })));
     }, []);
+
+    useEffect(() => {
+        if (selector.branchList.length > 0) {
+            setbranchDropDownList(selector.branchList.map(({ id: value, value: label, ...rest }) => ({ value, label, ...rest })));
+            setbranchTransferFromDropDownList(selector.branchList.map(({ id: value, value: label, ...rest }) => ({ value, label, ...rest })));
+        }
+    }, [selector.branchList]);
+
+    useEffect(() => {
+        if (selector.deptList.length > 0) {
+            setDeptDropDownList(selector.deptList.map(({ id: value, value: label, ...rest }) => ({ value, label, ...rest })));
+        }
+    }, [selector.deptList]);
+
+    useEffect(() => {
+        if (selector.deptListTrans.length > 0) {
+            setDeptTransferFromDropDownList(selector.deptListTrans.map(({ id: value, value: label, ...rest }) => ({ value, label, ...rest })));
+        }
+    }, [selector.deptListTrans]);
+
+    useEffect(() => {
+        if (selector.employeeList.length > 0) {
+            setEmployeeDropDownList(selector.employeeList.map(({ empId: value, empName: label, ...rest }) => ({ value, label, ...rest })));
+        }
+    }, [selector.employeeList]);
+
+    useEffect(() => {
+        if (selector.employeeListTrans.length > 0) {
+            setEmployeeTransferFromDropDownList(selector.employeeListTrans.map(({ empId: value, empName: label, ...rest }) => ({ value, label, ...rest })));
+        }
+    }, [selector.employeeListTrans]);
+
+    useEffect(() => {
+        if (selector.designationList.length > 0) {
+            setDesignationDropDownList(selector.designationList.map(({ id: value, value: label, ...rest }) => ({ value, label, ...rest })));
+        }
+    }, [selector.designationList]);
+
+    useEffect(() => {
+        if (selector.designationListTrans.length > 0) {
+            setDesignationTransferFromDropDownList(selector.designationListTrans.map(({ id: value, value: label, ...rest }) => ({ value, label, ...rest })));
+        }
+    }, [selector.designationListTrans]);
+
+    useEffect(() => {
+        if (selector.taskList.length > 0) {
+            setTaskList(selector.taskList);
+        }
+    }, [selector.taskList]);
 
     const getTaskListFromServer = async () => {
         dispatch(getTaskList(119));
@@ -88,34 +138,103 @@ const TaskTranferScreen = () => {
         return dispatch(getBranchDropdown(payload));
     }
 
-    const getTargetDeptDropDownListFromServer = async () => {
-        const payload = {
-            "orgId": 1,
-            "parent": branchDropDownItem,
-            "child": "department",
-            "parentId": 242
+    const getTargetDeptDropDownListFromServer = async (item) => {
+        const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            const payload = {
+                "orgId": jsonObj.orgId,
+                "parent": branchDropDownItem,
+                "child": "department",
+                "parentId": item.value
+            }
+            return dispatch(getDeptDropdown(payload));
         }
-        return dispatch(getDeptDropdown(payload));
     }
 
-    const getTargetDesignationDropDownListFromServer = async () => {
-        const payload = {
-            "orgId": 1,
-            "parent": deptDropDownItem,
-            "child": "designation",
-            "parentId": 2
+    const getTargetDeptDropDownListTransFromServer = async (item) => {
+        const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            const payload = {
+                "orgId": jsonObj.orgId,
+                "parent": branchTransferFromDropDownItem,
+                "child": "department",
+                "parentId": item.value
+            }
+            return dispatch(getDeptDropdownTrans(payload));
         }
-        return dispatch(getDesignationDropdown(payload));
     }
 
-    const getEmployeeDetailsFromServer = async () => {
-        const payload = {
-            "orgId": 16,
-            "branchId": 267,
-            "deptId": 180,
-            "desigId": 56
+    const getTargetDesignationDropDownListFromServer = async (item) => {
+        const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            const payload = {
+                "orgId": jsonObj.orgId,
+                "parent": deptDropDownItem,
+                "child": "designation",
+                "parentId": item.value
+            }
+            return dispatch(getDesignationDropdown(payload));
         }
-        dispatch(getEmployeeDetails(payload));
+    }
+
+    const getTargetDesignationDropDownListTransFromServer = async (item) => {
+        const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            const payload = {
+                "orgId": jsonObj.orgId,
+                "parent": deptDropDownItem,
+                "child": "designation",
+                "parentId": item.value
+            }
+            return dispatch(getDesignationDropdownTrans(payload));
+        }
+    }
+
+    const getEmployeeDetailsFromServer = async (item) => {
+        const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            const payload = {
+                // "orgId": jsonObj.orgId,
+                // "branchId": branchDropDownItem,
+                // "deptId": deptDropDownItem,
+                // "desigId": item.value
+                "orgId": 16,
+                "branchId": 267,
+                "deptId": 180,
+                "desigId": 56
+            }
+            console.log("EMP PAYLOAD: ", payload);
+            dispatch(getEmployeeDetails(payload));
+        }
+    }
+
+    const getEmployeeDetailsTransFromServer = async (item) => {
+        const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            const payload = {
+                // "orgId": jsonObj.orgId,
+                // "branchId": branchDropDownItem,
+                // "deptId": deptDropDownItem,
+                // "desigId": item.value
+                "orgId": 16,
+                "branchId": 267,
+                "deptId": 180,
+                "desigId": 56
+            }
+            dispatch(getEmployeeDetailsTrans(payload));
+        }
     }
 
     const renderItem = (item, index) => {
@@ -227,8 +346,8 @@ const TaskTranferScreen = () => {
                             onChange={async (item) => {
                                 console.log("£££", item);
                                 setbranchDropDownItem(item.value);
-                                getTargetDeptDropDownListFromServer();
-                                setDeptDropDownList(selector.deptList.map(({ id: value, value: label, ...rest }) => ({ value, label, ...rest })));
+                                getTargetDeptDropDownListFromServer(item);
+
                             }}
                         />
                     </View>
@@ -254,12 +373,12 @@ const TaskTranferScreen = () => {
                             )}
                             onChange={async (item) => {
                                 console.log("£££", item);
-                                setDesignationDropDownItem(item.label);
-                                getTargetDesignationDropDownListFromServer();
-                                setDesignationDropDownList(selector.designationList.map(({ id: value, value: label, ...rest }) => ({ value, label, ...rest })));
+                                setDeptDropDownItem(item.value)
+                                getTargetDesignationDropDownListFromServer(item);
+
                             }}
                         />
-                        
+
                     </View>
                     <View style={styles.dropWrap}>
                         <View style={styles.dropHeadTextWrap}>
@@ -283,9 +402,8 @@ const TaskTranferScreen = () => {
                             )}
                             onChange={async (item) => {
                                 console.log("£££", item);
-                                setEmployeeDropDownItem(item.label);
-                                getEmployeeDetailsFromServer();
-                                setEmployeeDropDownList(selector.employeeList.map(({ empId: value, empName: label, ...rest }) => ({ value, label, ...rest })));
+                                setDesignationDropDownItem(item.value);
+                                getEmployeeDetailsFromServer(item);
                             }}
                         />
                     </View>
@@ -311,8 +429,8 @@ const TaskTranferScreen = () => {
                             )}
                             onChange={async (item) => {
                                 console.log("£££", item);
+                                setEmployeeDropDownItem(item.value)
                                 getTaskListFromServer();
-                                setTaskList(selector.taskList);
                                 setTasklistHeader(true);
                             }}
                         />
@@ -371,8 +489,7 @@ const TaskTranferScreen = () => {
                                 onChange={async (item) => {
                                     console.log("£££", item);
                                     setbranchTransferFromDropDownItem(item.value);
-                                    getTargetDeptDropDownListFromServer();
-                                    setbranchTransferFromDropDownItem(selector.deptList.map(({ id: value, value: label, ...rest }) => ({ value, label, ...rest })));
+                                    getTargetDeptDropDownListTransFromServer(item);
                                 }}
                             />
                         </View>
@@ -398,9 +515,8 @@ const TaskTranferScreen = () => {
                                 )}
                                 onChange={async (item) => {
                                     console.log("£££", item);
-                                    setDeptTransferFromDropDownItem(item.label);
-                                    getTargetDesignationDropDownListFromServer();
-                                    setDesignationTransferFromDropDownList(selector.designationList.map(({ id: value, value: label, ...rest }) => ({ value, label, ...rest })));
+                                    setDeptTransferFromDropDownItem(item.value);
+                                    getTargetDesignationDropDownListTransFromServer(item);
                                 }}
                             />
                         </View>
@@ -426,9 +542,8 @@ const TaskTranferScreen = () => {
                                 )}
                                 onChange={async (item) => {
                                     console.log("£££", item);
-                                    setDesignationTransferFromDropDownItem(item.label);
-                                    getEmployeeDetailsFromServer();
-                                    setDesignationTransferFromDropDownList(selector.employeeList.map(({ empId: value, empName: label, ...rest }) => ({ value, label, ...rest })));
+                                    setDesignationTransferFromDropDownItem(item.value);
+                                    getEmployeeDetailsTransFromServer(item);
                                 }}
                             />
                         </View>
@@ -454,7 +569,8 @@ const TaskTranferScreen = () => {
                                 )}
                                 onChange={async (item) => {
                                     console.log("£££", item);
-                                    getTaskListFromServer();
+                                    setEmployeeTransferFromDropDownItem(item.value);
+                                    // getTaskListFromServer();
                                 }}
                             />
                         </View>
