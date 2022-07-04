@@ -1344,8 +1344,12 @@ const enquiryDetailsOverViewSlice = createSlice({
       //   ? dataObj.transimmisionType
       //   : "";
       try{
-        if (dmsLeadProducts && dmsLeadProducts.length != 0)
+        if (dmsLeadProducts && dmsLeadProducts.length != 0){
           state.dmsLeadProducts = dmsLeadProducts;
+        }
+        else {
+          state.dmsLeadProducts = []
+        }
         state.model_drop_down_data_update_statu = "update";
       }catch(error){
        // alert(error)
@@ -1435,14 +1439,14 @@ const enquiryDetailsOverViewSlice = createSlice({
       if (dmsExchagedetails.length > 0) {
         dataObj = dmsExchagedetails[0];
       }
-
+      console.log("BUYER TYPE: ", JSON.stringify(dataObj));
       if (dataObj.buyerType === "Additional Buyer") {
         state.a_make = dataObj.brand ? dataObj.brand : "";
         state.a_model = dataObj.model ? dataObj.model : "";
         state.a_varient = dataObj.varient ? dataObj.varient : "";
         state.a_color = dataObj.color ? dataObj.color : "";
         state.a_reg_no = dataObj.regNo ? dataObj.regNo : "";
-      } else if (dataObj.buyerType === "Replacement Buyer") {
+      } else if (dataObj.buyerType === "Replacement Buyer" || dataObj.buyerType === "Exchange Buyer") {
         state.r_reg_no = dataObj.regNo ? dataObj.regNo : "";
         state.r_make = dataObj.brand ? dataObj.brand : "";
         state.r_model = dataObj.model ? dataObj.model : "";
@@ -1629,7 +1633,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     builder.addCase(getEnquiryDetailsApiAuto.fulfilled, (state, action) => {
       // if (action.payload.dmsEntity) {
       //  state.enquiry_details_response = action.payload.dmsEntity;
-      console.log("action.payload", action.payload)
+      console.log("action.payload auto", action.payload)
       state.enquiry_details_response = action.payload;
       state.isOpened = true
       // }

@@ -13,6 +13,13 @@ export const getTaskList = createAsyncThunk("TASK_TRANSFER/getTaskList", async (
 });
 
 export const getBranchDropdown = createAsyncThunk("TASK_TRANSFER/getBranchDropdown", async (payload, { rejectWithValue }) => {
+    console.log("URL:", URL.TARGET_DROPDOWN(
+        payload["orgId"],
+        payload["parent"],
+        payload["child"],
+        payload["parentId"]
+    ));
+    
     const response = await client.get(URL.TARGET_DROPDOWN(
         payload["orgId"],
         payload["parent"],

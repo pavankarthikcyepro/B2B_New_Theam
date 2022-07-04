@@ -622,6 +622,7 @@ const BookingFormScreen = ({ route, navigation }) => {
 
     // Handle Pre-Booking Details Response
     useEffect(() => {
+        console.log("BOOKING DATA: ", JSON.stringify(selector.pre_booking_details_response));
         if (selector.pre_booking_details_response) {
             let dmsContactOrAccountDto;
             if (

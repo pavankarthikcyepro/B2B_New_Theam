@@ -26,7 +26,7 @@ import CloseIcon from "react-native-vector-icons/MaterialIcons";
 import Modal from "react-native-modal";
 import { LoaderComponent } from '../../../../components';
 
-import { getEmployeesList, getReportingManagerList, updateEmployeeDataBasedOnDelegate } from "../../../../redux/homeReducer";
+import { getEmployeesList, getReportingManagerList, updateEmployeeDataBasedOnDelegate, getDeptDropdown, getDesignationDropdown } from "../../../../redux/homeReducer";
 
 
 //const paramtersTitlesData = ["Parameter", "E", "TD", "HV", "VC", "B", "Ex", "R", "F", "I", "Ex-W", "Acc.", "Ev"]
@@ -434,7 +434,47 @@ const TargetScreen = ({ route, navigation }) => {
     const [reoprtingManagerDropdownList, setReoprtingManagerDropdownList] = useState([]);
 
   const getEmployeeListFromServer = async () => {
-    dispatch(getEmployeesList(424));
+    // dispatch(getEmployeesList(424));
+    const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    console.log("EMP DTLS: ", employeeData);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      const payloadDept = {
+        "orgId": jsonObj.orgId,
+        "parent": "branch",
+        "child": "department",
+        "parentId": jsonObj.branchId
+      }
+      Promise.all([dispatch(getDeptDropdown(payloadDept))]).then((res1) => {
+        console.log("TTTRRR: ", JSON.stringify(res1));
+        let dept = [];
+        dept = res1[0].payload.filter((item) => item.value === jsonObj.primaryDepartment)
+        const payloadDesig = {
+          "orgId": jsonObj.orgId,
+          "parent": "department",
+          "child": "designation",
+          "parentId": dept ? dept[0].id : 0
+        }
+
+        Promise.all([dispatch(getDesignationDropdown(payloadDesig))]).then((res1) => {
+          let desig = [];
+          desig = res1[0].payload.filter((item) => item.value === jsonObj.primaryDesignation)
+          const payload = {
+            "orgId": jsonObj.orgId,
+            "branchId": jsonObj.branchId,
+            "deptId": dept ? dept[0].id : 0,
+            "desigId": desig ? desig[0].id : 0
+            // "orgId": 16,
+            // "branchId": 267,
+            // "deptId": 180,
+            // "desigId": 56
+          }
+          console.log("EMP PAYLOAD: ", payload);
+          dispatch(getEmployeesList(payload));
+        })
+      })
+      
+    }
   }
 
   const getReportingManagerListFromServer = async () => {
@@ -535,11 +575,11 @@ const TargetScreen = ({ route, navigation }) => {
       if(delegateButtonClick){
         getReportingManagerListFromServer();
         setShowShuffleModal(true);
-        setReoprtingManagerDropdownList(selector.reporting_manager_list.map(({ name: label, id: value, ...rest }) => ({ value, label, ...rest })));
+        // setReoprtingManagerDropdownList(selector.reporting_manager_list.map(({ name: label, id: value, ...rest }) => ({ value, label, ...rest })));
       }else {
         getEmployeeListFromServer();
         setShowShuffleModal(true);
-        setEmployeeDropdownList(selector.employee_list.map(({ name: label, id: value, ...rest }) => ({ value, label, ...rest })));
+        // setEmployeeDropdownList(selector.employee_list.map(({ name: label, id: value, ...rest }) => ({ value, label, ...rest })));
       }
     }
 

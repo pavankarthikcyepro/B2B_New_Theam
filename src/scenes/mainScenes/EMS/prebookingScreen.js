@@ -128,6 +128,7 @@ const PreBookingScreen = ({ navigation }) => {
         const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
+            setEmployeeId(jsonObj.empId);
             getPreBookingListFromServer(jsonObj.empId, lastMonthFirstDate, currentDate);
         }
     }

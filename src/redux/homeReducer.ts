@@ -278,14 +278,46 @@ export const updateIsTeam = createAsyncThunk("HOME/updateIsTeam", async (payload
     return payload;
 })
 
-export const getEmployeesList = createAsyncThunk("HOME/getEmployeesList", async (empID, { rejectWithValue }) => {
-    const response = await client.get(URL.GET_EMPLOYEE_LIST(empID))
+export const getEmployeesList = createAsyncThunk("HOME/getEmployeesList", async (payload, { rejectWithValue }) => {
+    const response = await client.get(URL.GET_EMPLOYEE_DETAILS(
+        payload["orgId"],
+        payload["branchId"],
+        payload["deptId"],
+        payload["desigId"]));
     const json = await response.json();
     if (!response.ok) {
         return rejectWithValue(json);
     }
     return json;
 })
+
+export const getDeptDropdown = createAsyncThunk("TASK_TRANSFER/getDeptDropdown", async (payload, { rejectWithValue }) => {
+    const response = await client.get(URL.TARGET_DROPDOWN(
+        payload["orgId"],
+        payload["parent"],
+        payload["child"],
+        payload["parentId"]
+    ));
+    const json = await response.json();
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+});
+
+export const getDesignationDropdown = createAsyncThunk("TASK_TRANSFER/getDesignationDropdown", async (payload, { rejectWithValue }) => {
+    const response = await client.get(URL.TARGET_DROPDOWN(
+        payload["orgId"],
+        payload["parent"],
+        payload["child"],
+        payload["parentId"]
+    ));
+    const json = await response.json();
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+});
 
 export const getReportingManagerList = createAsyncThunk("HOME/getReportingManagerList", async (orgID, { rejectWithValue }) => {
     const response = await client.get(URL.GET_REPORTING_MANAGER_LIST(orgID))
@@ -373,7 +405,9 @@ export const homeSlice = createSlice({
         reporting_manager_list: [],
         isLoading: false,
         leaderboard_list: [],
-        branchrank_list: []
+        branchrank_list: [],
+        designationList: [],
+        deptList: []
     },
     reducers: {
         dateSelected: (state, action) => {
@@ -720,10 +754,11 @@ export const homeSlice = createSlice({
                 state.isLoading = true;
             })
             .addCase(getEmployeesList.fulfilled, (state, action) => {
-                //console.log("S getEmployeesList: ", JSON.stringify(action.payload));
+                console.log("S getEmployeesList: ", JSON.stringify(action.payload));
                 if (action.payload) {
                     const dataObj = action.payload;
-                    state.employee_list = dataObj ? dataObj : [];
+                    // state.employee_list = dataObj ? dataObj.dmsEntity.employees : [];
+                    state.employee_list = dataObj ? dataObj.dmsEntity.employees : [];
                     state.isLoading = false;
                 }
             })
@@ -782,6 +817,35 @@ export const homeSlice = createSlice({
             .addCase(getBranchRanksList.rejected, (state, action) => {
                 state.isLoading = false;
             })
+
+        builder.addCase(getDeptDropdown.pending, (state, action) => {
+            state.isLoading = true;
+        })
+        builder.addCase(getDeptDropdown.fulfilled, (state, action) => {
+            if (action.payload) {
+                const dataObj = action.payload;
+                state.deptList = dataObj ? dataObj : []
+            }
+            // state.isLoading = false;
+        })
+        builder.addCase(getDeptDropdown.rejected, (state, action) => {
+            state.isLoading = false;
+        })
+
+        // Get Designation List
+        builder.addCase(getDesignationDropdown.pending, (state, action) => {
+            state.isLoading = true;
+        })
+        builder.addCase(getDesignationDropdown.fulfilled, (state, action) => {
+            if (action.payload) {
+                const dataObj = action.payload;
+                state.designationList = dataObj ? dataObj : []
+            }
+            // state.isLoading = false;
+        })
+        builder.addCase(getDesignationDropdown.rejected, (state, action) => {
+            state.isLoading = false;
+        })
         }
 });
 

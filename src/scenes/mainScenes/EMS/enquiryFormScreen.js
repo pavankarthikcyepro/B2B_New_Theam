@@ -207,6 +207,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [addressData2, setAddressData2] = useState([]);
   const [defaultAddress, setDefaultAddress] = useState(null);
   const [isSubmitPress, setIsSubmitPress] = useState(false);
+  const [isPrimaryCureentIndex, setIsPrimaryCurrentIndex] = useState(0);
   // console.log("gender", selector.enquiry_details_response)
 
   useLayoutEffect(() => {
@@ -459,7 +460,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               "id": 0,
               "model": enquiry_details_response?.dmsLeadDto?.model,
               "transimmisionType": '',
-              "variant": ''
+              "variant": '',
+              "isPrimary": false
             }
             console.log("TEMP MODEL:", tempModelObj);
             setCarModelsList([tempModelObj])
@@ -516,7 +518,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   useEffect(() => {
     try {
       if (selector.dmsLeadProducts && selector.dmsLeadProducts.length > 0) {
-        setCarModelsList(selector.dmsLeadProducts)
+        // setCarModelsList(selector.dmsLeadProducts)
+        addingIsPrimary()
       }
       else {
         let tempModelObj = {
@@ -525,7 +528,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           "id": 0,
           "model": selector.enquiry_details_response?.dmsLeadDto?.model,
           "transimmisionType": '',
-          "variant": ''
+          "variant": '',
+          "isPrimary": false
         }
         console.log("TEMP MODEL:", tempModelObj);
         setCarModelsList([tempModelObj])
@@ -850,6 +854,43 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       });
     }
   };
+
+  const addingIsPrimary = async()=>{
+        try{
+            let array = await [...selector.dmsLeadProducts]
+            for (let i = 0; i < selector.dmsLeadProducts.length; i++) {
+                var item = await array[i]
+                if (i == 0) {
+                    item = await {
+                        "color": item.color,
+                        "fuel": item.fuel,
+                        "id": item.id,
+                        "model": item.model,
+                        "transimmisionType": item.transimmisionType,
+                        "variant": item.variant,
+                        "isPrimary": true
+                    }
+                    updateVariantModelsData(item.model, true, item.variant);
+                }
+                else {
+                    item = await {
+                        "color": item.color,
+                        "fuel": item.fuel,
+                        "id": item.id,
+                        "model": item.model,
+                        "transimmisionType": item.transimmisionType,
+                        "variant": item.variant,
+                        "isPrimary": false
+                    }
+                }
+                array[i] = await item
+               // console.log(userObject.username);
+            }
+            await setCarModelsList(array)
+        } catch(error){
+        }
+        
+    }
 
   const updateEnquiry = async () => {
     console.log("CALLED AUTO UPDATE");
@@ -1872,6 +1913,51 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
 
   }
+
+  const isPrimaryOnclick = async (isPrimaryEnabled, index, item) => {
+
+    try {
+      if (isPrimaryEnabled) {
+        updateVariantModelsData(item.model, true, item.variant);
+      }
+      if (carModelsList && carModelsList.length > 0) {
+        let arr = await [...carModelsList]
+        var data = arr[isPrimaryCureentIndex]
+        const cardata = await {
+          "color": data.color,
+          "fuel": data.fuel,
+          "id": data.id,
+          "model": data.model,
+          "transimmisionType": data.transimmisionType,
+          "variant": data.variant,
+          "isPrimary": false
+        }
+        const selecteditem = await {
+          "color": item.color,
+          "fuel": item.fuel,
+          "id": item.id,
+          "model": item.model,
+          "transimmisionType": item.transimmisionType,
+          "variant": item.variant,
+          "isPrimary": true
+        }
+        await setCarModelsList([])
+        arr[isPrimaryCureentIndex] = cardata;
+        arr[index] = selecteditem
+        await setCarModelsList([...arr])
+        await setIsPrimaryCurrentIndex(index)
+
+
+
+      }
+    } catch (error) {
+      // alert(error)
+    }
+
+
+
+  }
+
   const formatExchangeDetails = (prevData) => {
     let dataObj = { ...prevData };
     if (selector.buyer_type === "Additional Buyer") {
@@ -3648,7 +3734,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       "id": 0,
                       "model": "",
                       "transimmisionType": '',
-                      "variant": ''
+                      "variant": '',
+                      "isPrimary": false
                     }
                     let arr = [...carModelsList]
                     arr.push(carmodeldata)
@@ -3661,6 +3748,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <FlatList
                   //  style={{ height: faltListHeight }}
                   data={carModelsList}
+                  extraData={carModelsList}
                   keyExtractor={(item, index) => index.toString()}
                   renderItem={({ item, index }) => {
                     return (
@@ -3669,6 +3757,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                         <ModelListitemCom
                           modelOnclick={modelOnclick}
+                          isPrimaryOnclick={isPrimaryOnclick}
                           index={index}
                           item={item} />
 

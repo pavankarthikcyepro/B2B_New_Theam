@@ -125,6 +125,7 @@ const EnquiryScreen = ({ navigation }) => {
         const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
+            setEmployeeId(jsonObj.empId);
             getEnquiryListFromServer(jsonObj.empId, lastMonthFirstDate, currentDate);
         }
     }
@@ -136,6 +137,7 @@ const EnquiryScreen = ({ navigation }) => {
     }
 
     const getEnquiryListFromServer = (empId, startDate, endDate) => {
+        console.log("DATE: ", empId, startDate, endDate);
         const payload = getPayloadData(empId, startDate, endDate, 0)
         dispatch(getEnquiryList(payload));
     }
