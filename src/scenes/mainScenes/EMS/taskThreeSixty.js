@@ -1,12 +1,13 @@
 
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView, View, Text, StyleSheet, FlatList, SectionList, ActivityIndicator, TouchableOpacity, Image, Platform, Linking } from "react-native";
-import {useDispatch, useSelector} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getWorkFlow, getEnquiryDetails, getLeadAge } from "../../../redux/taskThreeSixtyReducer";
-import { Colors,GlobalStyle } from "../../../styles"
+import { Colors, GlobalStyle } from "../../../styles"
 import moment from "moment";
 import { AppNavigator } from "../../../navigations";
 import { showToast } from "../../../utils/toast";
+import * as AsyncStore from "../../../asyncStore";
 
 const mytasksIdentifires = {
     testdrive: "TEST_DRIVE",
@@ -20,7 +21,7 @@ const mytasksIdentifires = {
     createenquiry: "CREATE_ENQUIRY"
 }
 
-const TaskThreeSixtyScreen = ({ route, navigation}) => {
+const TaskThreeSixtyScreen = ({ route, navigation }) => {
 
     const { universalId, mobileNo, itemData } = route.params;
     const dispatch = useDispatch();
@@ -28,8 +29,19 @@ const TaskThreeSixtyScreen = ({ route, navigation}) => {
     const [plannedTasks, setPlannedTasks] = useState([]);
     const [closedTasks, setClosedTasks] = useState([]);
     const [dataForSectionList, setDataForSectionList] = useState([]);
+    const [userRole, setUserRole] = useState('');
+    const [isApprovar, setIsApprovar] = useState(false);
 
-    useEffect(() => {
+    useEffect(async () => {
+        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        console.log("$$$$$ LOGIN EMP:", employeeData);
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            setUserRole(jsonObj.hrmsRole)
+            if (jsonObj?.hrmsRole === "Test drive approver" ) {
+                setIsApprovar(true)
+            }
+        }
         dispatch(getEnquiryDetails(universalId));
     }, [])
 
@@ -52,7 +64,7 @@ const TaskThreeSixtyScreen = ({ route, navigation}) => {
 
 
     // Handle work flow response
-    useEffect(() => {
+    useEffect(async () => {
         if (selector.wrokflow_response_status === "success") {
             const plannedData = [];
             const closedData = [];
@@ -64,7 +76,7 @@ const TaskThreeSixtyScreen = ({ route, navigation}) => {
                     }
                     else if (element.taskStatus == 'CLOSED') {
                         closedData.push(element);
-                    } 
+                    }
                 });
             }
 
@@ -72,7 +84,7 @@ const TaskThreeSixtyScreen = ({ route, navigation}) => {
 
             if (plannedData.length > 0)
                 data.push({ title: "Planned Tasks", data: plannedData });
-            
+
             if (closedData.length > 0)
                 data.push({ title: "Closed Tasks", data: closedData });
 
@@ -136,18 +148,18 @@ const TaskThreeSixtyScreen = ({ route, navigation}) => {
                 break;
         }
         if (!navigationId) { return }
-        if (navigationId === AppNavigator.EmsStackIdentifiers.confirmedPreEnq){
+        if (navigationId === AppNavigator.EmsStackIdentifiers.confirmedPreEnq) {
             console.log("ITEM DATA:", JSON.stringify(itemData));
             navigation.navigate(navigationId, { itemData: itemData, fromCreatePreEnquiry: false })
         }
-        else{
+        else {
             navigation.navigate(navigationId, { identifier: mytasksIdentifires[finalTaskName], taskId, universalId, taskStatus, taskData: item, mobile: mobileNo, reasonTaskName: taskNameNew });
         }
     };
 
     if (selector.isLoading) {
-        return(
-            <View style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
+        return (
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
                 <ActivityIndicator size="small" color={Colors.RED} />
             </View>
         )
@@ -183,15 +195,15 @@ const TaskThreeSixtyScreen = ({ route, navigation}) => {
             }
         });
     }
-    
+
     return (
         <SafeAreaView style={styles.container}>
-            <View style={{ flex:1}}>
+            <View style={{ flex: 1 }}>
 
                 <SectionList
                     sections={dataForSectionList}
                     keyExtractor={(item, index) => item + index}
-                    renderItem={({ item, index, section}) => {
+                    renderItem={({ item, index, section }) => {
                         const date = moment(item.taskUpdatedTime).format("ddd MM/YY h:mm a").split(" ");
 
                         let topBcgColor = Colors.LIGHT_GRAY;
@@ -205,42 +217,82 @@ const TaskThreeSixtyScreen = ({ route, navigation}) => {
                         }
 
                         return (
-                            <View style={{ width: "100%", flexDirection: "row" }}>
-                                <View style={{ width: "25%", justifyContent: "center" }}>
-                                    <View style={{ marginLeft: 8, flex: 1, width: 2, backgroundColor: topBcgColor }}></View>
-                                    <View style={{ marginLeft: 8, flex: 1, width: 2, backgroundColor: bottomBcgColor }}></View>
+                            <>
+                                {item.taskName === 'Test Drive Approval' ?
+                                    (isApprovar ? 
+                                        <View style={{ width: "100%", flexDirection: "row" }}>
+                                            <View style={{ width: "25%", justifyContent: "center" }}>
+                                                <View style={{ marginLeft: 8, flex: 1, width: 2, backgroundColor: topBcgColor }}></View>
+                                                <View style={{ marginLeft: 8, flex: 1, width: 2, backgroundColor: bottomBcgColor }}></View>
 
-                                    <View style={{ alignItems: "center", flexDirection: "row", position: "absolute" }}>
-                                        <Text style={{ height: 20, width: 20, borderRadius: 10, backgroundColor: Colors.GRAY }}></Text>
-                                        <View style={{ marginLeft: 5 }}>
-                                            <Text style={{ fontSize: 12, fontWeight: "400" }}>{date[0] + " " + date[1]}</Text>
-                                            <Text style={{ fontSize: 12, fontWeight: "400" }}>{date[2] + " " + date[3]}</Text>
+                                                <View style={{ alignItems: "center", flexDirection: "row", position: "absolute" }}>
+                                                    <Text style={{ height: 20, width: 20, borderRadius: 10, backgroundColor: Colors.GRAY }}></Text>
+                                                    <View style={{ marginLeft: 5 }}>
+                                                        <Text style={{ fontSize: 12, fontWeight: "400" }}>{date[0] + " " + date[1]}</Text>
+                                                        <Text style={{ fontSize: 12, fontWeight: "400" }}>{date[2] + " " + date[3]}</Text>
+                                                    </View>
+                                                </View>
+                                            </View>
+                                            <View style={{ width: "75%", padding: 5, }}>
+                                                <View style={[{ backgroundColor: Colors.WHITE }, GlobalStyle.shadow]}>
+                                                    <TouchableOpacity onPress={() => itemClicked(item)}>
+                                                        <View style={[{ paddingVertical: 5, paddingLeft: 10, backgroundColor: Colors.WHITE },]}>
+                                                            <Text style={{ fontSize: 16, fontWeight: "700", marginBottom: 5 }}>{item.taskName}</Text>
+                                                            <Text style={{ fontSize: 14, fontWeight: "400" }}>{"Assignee: " + item.assignee?.empName}</Text>
+                                                            <Text style={{ fontSize: 14, fontWeight: "400", color: Colors.GRAY }}>{"Remarks: " + (item.employeeRemarks ? item.employeeRemarks : "")}</Text>
+                                                        </View>
+                                                    </TouchableOpacity>
+                                                    {item.lat && item.lon &&
+                                                        <TouchableOpacity style={{ position: 'absolute', top: 0, right: 0 }} onPress={() => openMap(item.lat, item.lon)}>
+                                                            <View style={{ width: 35, height: 35, justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: "#d1d1d1", borderRadius: 5 }}>
+                                                                <Image style={{ height: 25, width: 15 }} source={require('../../../assets/images/location-pin.png')} />
+                                                            </View>
+                                                        </TouchableOpacity>
+                                                    }
+                                                </View>
+                                            </View>
+                                        </View>
+                                        : 
+                                        null)
+                                    :
+                                    <View style={{ width: "100%", flexDirection: "row" }}>
+                                        <View style={{ width: "25%", justifyContent: "center" }}>
+                                            <View style={{ marginLeft: 8, flex: 1, width: 2, backgroundColor: topBcgColor }}></View>
+                                            <View style={{ marginLeft: 8, flex: 1, width: 2, backgroundColor: bottomBcgColor }}></View>
+
+                                            <View style={{ alignItems: "center", flexDirection: "row", position: "absolute" }}>
+                                                <Text style={{ height: 20, width: 20, borderRadius: 10, backgroundColor: Colors.GRAY }}></Text>
+                                                <View style={{ marginLeft: 5 }}>
+                                                    <Text style={{ fontSize: 12, fontWeight: "400" }}>{date[0] + " " + date[1]}</Text>
+                                                    <Text style={{ fontSize: 12, fontWeight: "400" }}>{date[2] + " " + date[3]}</Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                        <View style={{ width: "75%", padding: 5, }}>
+                                            <View style={[{ backgroundColor: Colors.WHITE }, GlobalStyle.shadow]}>
+                                                <TouchableOpacity onPress={() => itemClicked(item)}>
+                                                    <View style={[{ paddingVertical: 5, paddingLeft: 10, backgroundColor: Colors.WHITE },]}>
+                                                        <Text style={{ fontSize: 16, fontWeight: "700", marginBottom: 5 }}>{item.taskName}</Text>
+                                                        <Text style={{ fontSize: 14, fontWeight: "400" }}>{"Assignee: " + item.assignee?.empName}</Text>
+                                                        <Text style={{ fontSize: 14, fontWeight: "400", color: Colors.GRAY }}>{"Remarks: " + (item.employeeRemarks ? item.employeeRemarks : "")}</Text>
+                                                    </View>
+                                                </TouchableOpacity>
+                                                {item.lat && item.lon &&
+                                                    <TouchableOpacity style={{ position: 'absolute', top: 0, right: 0 }} onPress={() => openMap(item.lat, item.lon)}>
+                                                        <View style={{ width: 35, height: 35, justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: "#d1d1d1", borderRadius: 5 }}>
+                                                            <Image style={{ height: 25, width: 15 }} source={require('../../../assets/images/location-pin.png')} />
+                                                        </View>
+                                                    </TouchableOpacity>
+                                                }
+                                            </View>
                                         </View>
                                     </View>
-                                </View>
-                                <View style={{ width: "75%", padding: 5, }}>
-                                    <View style={[{ backgroundColor: Colors.WHITE }, GlobalStyle.shadow]}>
-                                        <TouchableOpacity onPress={() => itemClicked(item)}>
-                                            <View style={[{ paddingVertical: 5, paddingLeft: 10, backgroundColor: Colors.WHITE },]}>
-                                                <Text style={{ fontSize: 16, fontWeight: "700", marginBottom: 5 }}>{item.taskName}</Text>
-                                                <Text style={{ fontSize: 14, fontWeight: "400" }}>{"Assignee: " + item.assignee?.empName}</Text>
-                                                <Text style={{ fontSize: 14, fontWeight: "400", color: Colors.GRAY }}>{"Remarks: " + (item.employeeRemarks ? item.employeeRemarks : "")}</Text>
-                                            </View>
-                                        </TouchableOpacity>
-                                        {item.lat && item.lon &&
-                                            <TouchableOpacity style={{ position: 'absolute', top: 0, right: 0 }} onPress={() => openMap(item.lat, item.lon)}>
-                                                <View style={{ width: 35, height: 35, justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: "#d1d1d1", borderRadius: 5 }}>
-                                                    <Image style={{ height: 25, width: 15 }} source={require('../../../assets/images/location-pin.png')} />
-                                                </View>
-                                            </TouchableOpacity>
-                                        }
-                                    </View>
-                                </View>
-                            </View>
+                                }
+                            </>
                         )
                     }}
                     renderSectionHeader={({ section: { title } }) => (
-                        <View style={{ height: 50, justifyContent: "center"}}>
+                        <View style={{ height: 50, justifyContent: "center" }}>
                             <Text style={{ fontSize: 18, fontWeight: "700", marginBottom: 5 }}>{title}</Text>
                         </View>
                     )}
