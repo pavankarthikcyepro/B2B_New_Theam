@@ -190,8 +190,8 @@ const URL = {
     UPDATE_BULKAPPROVAL: () => {
         return sales_url + '/lead-drop/bulkdrop'
     },
-    GET_LEADDROP_LIST: (branchId, empName, orgId) => {
-        return sales_url + '/lead-drop/details?branch=' + branchId + '&limit=500&loginUser=' + empName + '&offset=0&orgId=' + orgId;
+    GET_LEADDROP_LIST: (branchId, empName, orgId, offSet, limit) => {
+        return sales_url + '/lead-drop/details?branch=' + branchId + '&limit='+limit+'&loginUser=' + empName + '&offset='+offSet+'&orgId=' + orgId;
     },
     GET_EMPLOYEES_DROP_DOWN_DATA: (orgId, employeeId) => {
 

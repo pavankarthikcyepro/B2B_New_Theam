@@ -154,6 +154,7 @@ const DropAnalysisScreen = ({ navigation }) => {
             await setOrgId(jsonObj.orgId)
 
             await setEmployeeName(jsonObj.empName)
+            await setEmployeeId(jsonObj.empId)
             getDropListFromServer(jsonObj.empId, jsonObj.empName, branchId, jsonObj.orgId, lastMonthFirstDate, currentDate);
         }
     }
@@ -184,11 +185,15 @@ const DropAnalysisScreen = ({ navigation }) => {
     }
 
     const getMoreEnquiryListFromServer = async () => {
-        if (selector.isLoadingExtraData) { return }
-        if (employeeId && ((selector.pageNumber + 1) < selector.totalPages)) {
-            const payload = getPayloadData(employeeId,employeeName, branchId, selectedFromDate, selectedToDate, (selector.pageNumber + 1))
+        if (selector.isLoadingExtraData) {
+             return }
+
+        if (employeeId && ((selector.pageNumber + 1) <= selector.totalPages)) {
+            renderFooter()
+            const payload = getPayloadData(employeeId,employeeName, branchId,orgId, selectedFromDate, selectedToDate, (selector.pageNumber + 1))
             dispatch(getMoreLeadDropList(payload));
-        }
+        } 
+
     }
 
     const showDatePickerMethod = (key) => {
@@ -496,6 +501,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                                 );
                             }}
                         />
+                        {renderFooter()}
                         {renderApprovalUi()}
                     </View>}
             </SafeAreaView>

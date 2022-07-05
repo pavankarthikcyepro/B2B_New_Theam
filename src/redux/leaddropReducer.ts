@@ -5,9 +5,9 @@ import { showToast } from '../utils/toast';
 
 export const getLeadDropList = createAsyncThunk('DROPANALYSIS/getLeaddropList', async (payload, { rejectWithValue })=>{
 
-    console.log("PAYLOAD EN: ", URL.GET_LEADDROP_LIST(payload.branchId, payload.empName, payload.orgId));
+    console.log("PAYLOAD EN: ", URL.GET_LEADDROP_LIST(payload.branchId, payload.empName, payload.orgId, payload.offset,payload.limit));
 
-    const response = await client.get(URL.GET_LEADDROP_LIST(payload.branchId, payload.empName, payload.orgId));
+    const response = await client.get(URL.GET_LEADDROP_LIST(payload.branchId, payload.empName, payload.orgId, payload.offset, payload.limit));
     const json = await response.json()
     console.log("ENQ LIST:", JSON.stringify(json));
 
@@ -21,7 +21,7 @@ export const getMoreLeadDropList = createAsyncThunk('DROPANALYSIS/getMoreLeaddro
     console.log("PAYLOAD EN: ", JSON.stringify(payload));
     console.log("ENQ LIST:", "hi");
 
-    const response = await client.get(URL.GET_LEADDROP_LIST(payload.branchId, payload.empName, payload.orgId));
+    const response = await client.get(URL.GET_LEADDROP_LIST(payload.branchId, payload.empName, payload.orgId, payload.offset, payload.limit));
     const json = await response.json()
 
     if (!response.ok) {
@@ -77,7 +77,6 @@ const leaddropListSlice = createSlice({
             state.isLoading = true;
         })
         builder.addCase(getLeadDropList.fulfilled,(state, action)=>{
-            console.log("dropanalysis success", action.payload)
 
             const dmsLeadDropInfos = action.payload?.dmsLeadDropInfos;
             state.totalPages = 1
@@ -101,18 +100,27 @@ const leaddropListSlice = createSlice({
             state.status = "failed";
         })
         builder.addCase(getMoreLeadDropList.pending, (state) => {
+            state.totalPages = 1
+            state.pageNumber = 0
             state.isLoadingExtraData = true;
         })
         builder.addCase(getMoreLeadDropList.fulfilled, (state, action) => {
             // console.log('res: ', action.payload);
+            console.log("dropanalysis success", action.payload)
+
+           
             const dmsLeadDropInfos = action.payload?.dmsLeadDropInfos;
+            state.totalPages = 1
+            state.pageNumber = 0
             if (dmsLeadDropInfos) {
+                state.totalPages = dmsLeadDropInfos.totalPages;
                 state.pageNumber = dmsLeadDropInfos.pageable.pageNumber;
                 const content = dmsLeadDropInfos.content;
                 state.leadDropList = [...state.leadDropList, ...content];
             }
-            state.isLoadingExtraData = false;
             state.status = "sucess";
+            state.isLoadingExtraData = false;
+
         })
         builder.addCase(getMoreLeadDropList.rejected, (state, action) => {
             state.isLoadingExtraData = false;
@@ -120,7 +128,6 @@ const leaddropListSlice = createSlice({
         })
 
         builder.addCase(updateSingleApproval.pending, (state) => {
-            state.isLoadingExtraData = true;
         })
         builder.addCase(updateSingleApproval.fulfilled, (state, action) => {
             // console.log('res: ', action.payload);
@@ -133,12 +140,10 @@ const leaddropListSlice = createSlice({
             state.approvalStatus = "sucess";
         })
         builder.addCase(updateSingleApproval.rejected, (state, action) => {
-            state.isLoadingExtraData = false;
             state.approvalStatus = "failed";
         })
 
         builder.addCase(updateBulkApproval.pending, (state) => {
-            state.isLoadingExtraData = true;
         })
         builder.addCase(updateBulkApproval.fulfilled, (state, action) => {
              console.log('builk uplres: ', action.payload);
@@ -154,7 +159,6 @@ const leaddropListSlice = createSlice({
              state.approvalStatus = "sucess";
         })
         builder.addCase(updateBulkApproval.rejected, (state, action) => {
-            state.isLoadingExtraData = false;
             state.approvalStatus = "failed";
         })
 
