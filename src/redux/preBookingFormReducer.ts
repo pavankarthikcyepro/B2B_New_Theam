@@ -1139,7 +1139,7 @@ const prebookingFormSlice = createSlice({
       try {
         if (dmsLeadProducts && dmsLeadProducts.length != 0)
           state.dmsLeadProducts = dmsLeadProducts;
-        state.model_drop_down_data_update_statu = "update";
+        state.model_drop_down_data_update_status = "update";
       } catch (error) {
         // alert(error)
       }

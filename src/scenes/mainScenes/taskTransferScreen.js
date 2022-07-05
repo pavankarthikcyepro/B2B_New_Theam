@@ -129,13 +129,18 @@ const TaskTranferScreen = () => {
     }
 
     const getTargetbranchDropDownListFromServer = async () => {
-        const payload = {
-            "orgId": 1,
-            "parent": "organization",
-            "child": "branch",
-            "parentId": 1
+        const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            const payload = {
+                "orgId": jsonObj.orgId,
+                "parent": "organization",
+                "child": "branch",
+                "parentId": 1
+            }
+            return dispatch(getBranchDropdown(payload));
         }
-        return dispatch(getBranchDropdown(payload));
     }
 
     const getTargetDeptDropDownListFromServer = async (item) => {
@@ -145,7 +150,7 @@ const TaskTranferScreen = () => {
             const jsonObj = JSON.parse(employeeData);
             const payload = {
                 "orgId": jsonObj.orgId,
-                "parent": branchDropDownItem,
+                "parent": "branch",
                 "child": "department",
                 "parentId": item.value
             }
@@ -160,7 +165,7 @@ const TaskTranferScreen = () => {
             const jsonObj = JSON.parse(employeeData);
             const payload = {
                 "orgId": jsonObj.orgId,
-                "parent": branchTransferFromDropDownItem,
+                "parent": "branch",
                 "child": "department",
                 "parentId": item.value
             }
@@ -175,7 +180,7 @@ const TaskTranferScreen = () => {
             const jsonObj = JSON.parse(employeeData);
             const payload = {
                 "orgId": jsonObj.orgId,
-                "parent": deptDropDownItem,
+                "parent": "department",
                 "child": "designation",
                 "parentId": item.value
             }
@@ -190,7 +195,7 @@ const TaskTranferScreen = () => {
             const jsonObj = JSON.parse(employeeData);
             const payload = {
                 "orgId": jsonObj.orgId,
-                "parent": deptDropDownItem,
+                "parent": "department",
                 "child": "designation",
                 "parentId": item.value
             }
@@ -204,14 +209,14 @@ const TaskTranferScreen = () => {
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             const payload = {
-                // "orgId": jsonObj.orgId,
-                // "branchId": branchDropDownItem,
-                // "deptId": deptDropDownItem,
-                // "desigId": item.value
-                "orgId": 16,
-                "branchId": 267,
-                "deptId": 180,
-                "desigId": 56
+                "orgId": jsonObj.orgId,
+                "branchId": branchDropDownItem,
+                "deptId": deptDropDownItem,
+                "desigId": item.value
+                // "orgId": 16,
+                // "branchId": 267,
+                // "deptId": 180,
+                // "desigId": 56
             }
             console.log("EMP PAYLOAD: ", payload);
             dispatch(getEmployeeDetails(payload));

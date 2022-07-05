@@ -177,7 +177,7 @@ export const ModelListitemCom = ({ modelOnclick,isPrimaryOnclick ,item, index, l
             setCarModel(item?.model)
             
             setCarFuelType(item?.fuel)
-            if (leadStage === 'PREBOOKING')
+            // if (leadStage === 'PREBOOKING')
             setisPrimary(item?.isPrimary)
             setCarTransmissionType(item?.transimmisionType)
             setCarVariant(item?.variant)
@@ -228,35 +228,42 @@ export const ModelListitemCom = ({ modelOnclick,isPrimaryOnclick ,item, index, l
             setCarVariant('')
             setCarFuelType('')
            
-            
             setCarTransmissionType('')
             try{
                 var carmodeldata;
-                if (leadStage === 'PREBOOKING') {
-                     carmodeldata = {
-                        "color": '',
-                        "fuel": '',
-                        "id": item.id,
-                        "model": selectedModelName,
-                        "transimmisionType": '',
-                        "variant": '',
-                         "isPrimary": item.isPrimary
+                // if (leadStage === 'PREBOOKING') {
+                //      carmodeldata = {
+                //         "color": '',
+                //         "fuel": '',
+                //         "id": item.id,
+                //         "model": selectedModelName,
+                //         "transimmisionType": '',
+                //         "variant": '',
+                //          "isPrimary": item.isPrimary
 
-                    }
-                }
-                else {
-                     carmodeldata = {
-                        "color": '',
-                        "fuel": '',
-                        "id": item.id,
-                        "model": selectedModelName,
-                        "transimmisionType": '',
-                        "variant": '',
-                        "isPrimary":item.isPrimary
+                //     }
+                // }
+                // else {
+                //      carmodeldata = {
+                //         "color": '',
+                //         "fuel": '',
+                //         "id": item.id,
+                //         "model": selectedModelName,
+                //         "transimmisionType": '',
+                //         "variant": '',
+                //         "isPrimary":item.isPrimary
 
-                    }
+                //     }
+                // }
+                carmodeldata = {
+                    "color": '',
+                    "fuel": '',
+                    "id": item.id,
+                    "model": selectedModelName,
+                    "transimmisionType": '',
+                    "variant": '',
+                    "isPrimary": item.isPrimary
                 }
-               
                 var modelsarr = await selector.dmsLeadProducts
                 modelsarr[index] = await carmodeldata
                 modelOnclick(index, carmodeldata, "update")
@@ -465,9 +472,11 @@ export const ModelListitemCom = ({ modelOnclick,isPrimaryOnclick ,item, index, l
             />
             <View style={{ padding: 5, marginVertical: 10, borderRadius: 5, backgroundColor: Colors.LIGHT_GRAY2 }}>
                 <View style={{flexDirection:'row',width:'100%', justifyContent:'space-between'}}>
-                    <Text style={{color:Colors.WHITE, fontSize:18, marginLeft:10,textAlignVertical:'center'}}>{carModel}</Text>
+                    <View style={{height: 50, width: '46%', justifyContent: 'center'}}>
+                        <Text style={{ color: Colors.WHITE, fontSize: 18, marginLeft: 10, textAlignVertical: 'center' }} numberOfLines={2}>{carModel}</Text>
+                    </View>
                    
-                    {leadStage === 'PREBOOKING' ?
+                    {/* {leadStage === 'PREBOOKING' ?
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Text style={{ color: Colors.WHITE, fontSize: 16, marginRight: 10 }}>Is Primary</Text>
                             <Switch
@@ -481,6 +490,20 @@ export const ModelListitemCom = ({ modelOnclick,isPrimaryOnclick ,item, index, l
                                 size={35} />
                         </View> : null
                     } 
+                     */}
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Text style={{ color: Colors.WHITE, fontSize: 16, marginRight: 10 }}>Is Primary</Text>
+                        <Switch
+                            icon=" toggle-switch-off-outline"
+                            value={isPrimary}
+                            onValueChange={() => {
+
+                                isPrimaryOnclick(!isPrimary, index, item);
+                                setisPrimary(!isPrimary)
+                            }}
+                            color={Colors.PINK}
+                            size={35} />
+                    </View>
                    <TouchableOpacity 
                         onPress={(value) => modelOnclick(index, item, "delete")}>               
                           <IconButton

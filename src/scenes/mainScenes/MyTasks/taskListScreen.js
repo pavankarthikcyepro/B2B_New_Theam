@@ -173,6 +173,7 @@ const styles = StyleSheet.create({
     view1: {
         // paddingHorizontal: 15,
         marginTop: 20,
+        marginBottom: '15%'
     },
     listBgVw: {
         // width: "100%",
