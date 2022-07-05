@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, FlatList, Dimensions, Text, TouchableOpacity } from "react-native";
+import { View, StyleSheet, FlatList, Dimensions, Text, TouchableOpacity, Modal } from "react-native";
 import { Colors } from "../../../../styles";
 import { TargetListComp } from "../../../../components";
 import { DropDownSelectionItem, DateSelectItem, ChartNameList, EmptyListView } from "../../../../pureComponents";
@@ -418,6 +418,8 @@ const TargetScreen = ({ route, navigation }) => {
   const [dateDiff, setDateDiff] = useState(null);
   const [isTeamPresent, setIsTeamPresent] = useState(false);
   const [isTeam, setIsTeam] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedName, setSelectedName] = useState('');
   const [allParameters, setAllParameters] = useState([])
   const [tempData, setTempData] = useState([
     {
@@ -840,6 +842,24 @@ const TargetScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
+
+      <Modal
+        animationType={'fade'}
+        transparent={true}
+        visible={selectedName !== ''}
+        onRequestClose={() => setSelectedName('')}
+      >
+        <View style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          paddingHorizontal: 20}}>
+            <View style={{width: '90%', minHeight: 50, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', borderRadius: 10}}>
+            <Text style={{ fontSize: 16, color: '#616161'}}>{selectedName}</Text>
+            </View>
+        </View>
+      </Modal>
       {/* {!selector.isTeam &&
                 
             } */}
@@ -1249,6 +1269,10 @@ const TargetScreen = ({ route, navigation }) => {
                 <View style={{ flexDirection: 'row' }}>
                   <View style={{ width: '10%', minHeight: 40, justifyContent: 'center', alignItems: 'center', flexDirection: 'column', }}>
                     <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FF8600', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 5, marginBottom: item.isOpenInner ? 5 : 5 }} onPress={async () => {
+                      setSelectedName(item.empName);
+                      setTimeout(() => {
+                        setSelectedName('')
+                      }, 5000);
                       let localData = [...allParameters];
                       let current = localData[index].isOpenInner;
                       for (let i = 0; i < localData.length; i++) {
@@ -1317,6 +1341,10 @@ const TargetScreen = ({ route, navigation }) => {
                       return (
                         <>
                           <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#000000', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 4, marginBottom: item.isOpenInner ? 5 : 4 }} onPress={async () => {
+                            setSelectedName(innerItem1.empName);
+                            setTimeout(() => {
+                              setSelectedName('')
+                            }, 5000);
                             let localData = [...allParameters];
                             let current = localData[index].employeeTargetAchievements[innerIndex1].isOpenInner;
                             for (let i = 0; i < localData[index].employeeTargetAchievements.length; i++) {
@@ -1388,6 +1416,10 @@ const TargetScreen = ({ route, navigation }) => {
                               return (
                                 <>
                                   <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#A5A5A5', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 4, marginBottom: item.isOpenInner ? 5 : 4 }} onPress={async () => {
+                                    setSelectedName(innerItem2.empName);
+                                    setTimeout(() => {
+                                      setSelectedName('')
+                                    }, 5000);
                                     let localData = [...allParameters];
                                     let current = localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].isOpenInner;
                                     for (let i = 0; i < localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements.length; i++) {
@@ -1460,6 +1492,10 @@ const TargetScreen = ({ route, navigation }) => {
                                       return (
                                         <>
                                           <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#EC3466', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 4, marginBottom: item.isOpenInner ? 5 : 4 }} onPress={async () => {
+                                            setSelectedName(innerItem3.empName);
+                                            setTimeout(() => {
+                                              setSelectedName('')
+                                            }, 5000);
                                             let localData = [...allParameters];
                                             let current = localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].isOpenInner;
                                             for (let i = 0; i < localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements.length; i++) {
@@ -1525,6 +1561,10 @@ const TargetScreen = ({ route, navigation }) => {
                                               return (
                                                 <>
                                                   <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#1C95A6', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 4, marginBottom: item.isOpenInner ? 5 : 4 }} onPress={async () => {
+                                                    setSelectedName(innerItem4.empName);
+                                                    setTimeout(() => {
+                                                      setSelectedName('')
+                                                    }, 5000);
                                                     let localData = [...allParameters];
                                                     let current = localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].isOpenInner;
                                                     for (let i = 0; i < localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements.length; i++) {
@@ -1590,6 +1630,10 @@ const TargetScreen = ({ route, navigation }) => {
                                                       return (
                                                         <>
                                                           <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#1C95A6', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 4, marginBottom: item.isOpenInner ? 5 : 4 }} onPress={async () => {
+                                                            setSelectedName(innerItem5.empName);
+                                                            setTimeout(() => {
+                                                              setSelectedName('')
+                                                            }, 5000);
                                                             let localData = [...allParameters];
                                                             let current = localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].isOpenInner;
                                                             for (let i = 0; i < localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements.length; i++) {
@@ -1655,6 +1699,10 @@ const TargetScreen = ({ route, navigation }) => {
                                                               return (
                                                                 <>
                                                                   <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#1C95A6', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 4, marginBottom: item.isOpenInner ? 5 : 4 }} onPress={async () => {
+                                                                    setSelectedName(innerItem6.empName);
+                                                                    setTimeout(() => {
+                                                                      setSelectedName('')
+                                                                    }, 5000);
                                                                     let localData = [...allParameters];
                                                                     let current = localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].employeeTargetAchievements[innerIndex6].isOpenInner;
                                                                     for (let i = 0; i < localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].employeeTargetAchievements.length; i++) {
