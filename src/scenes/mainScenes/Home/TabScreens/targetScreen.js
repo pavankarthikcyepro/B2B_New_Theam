@@ -608,9 +608,9 @@ const TargetScreen = ({ route, navigation }) => {
 
   }, [selector.login_employee_details])
 
-  useEffect(async() => {
+  useEffect(async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-    if (employeeData){
+    if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       if (selector.all_emp_parameters_data.length > 0) {
         let tempParams = [...selector.all_emp_parameters_data.filter((item) => item.empId !== jsonObj.empId)];
@@ -743,7 +743,7 @@ const TargetScreen = ({ route, navigation }) => {
 
   const getTotalAchivent = (params) => {
     let total = 0;
-    for(let i = 0; i < params.length; i++){
+    for (let i = 0; i < params.length; i++) {
       total += Number(params[i].achievment);
     }
     return total;
@@ -760,8 +760,8 @@ const TargetScreen = ({ route, navigation }) => {
   const getTotalAchiventByParam = (allData, paramName) => {
     let total = 0;
     total += Number(allData.targetAchievements.filter((item) => item.paramName === paramName)[0].achievment);
-    if (allData.employeeTargetAchievements.length > 0){
-      for (let i = 0; i < allData.employeeTargetAchievements.length; i++){
+    if (allData.employeeTargetAchievements.length > 0) {
+      for (let i = 0; i < allData.employeeTargetAchievements.length; i++) {
         total += Number(allData.employeeTargetAchievements[i].targetAchievements.filter((item) => item.paramName === paramName)[0].achievment);
         if (allData.employeeTargetAchievements[i].employeeTargetAchievements.length > 0) {
           for (let j = 0; j < allData.employeeTargetAchievements[i].employeeTargetAchievements.length; j++) {
@@ -787,6 +787,55 @@ const TargetScreen = ({ route, navigation }) => {
       }
     }
     return total;
+  }
+
+  const renderData = (item) => {
+    return (
+      <View style={{ width: '90%', minHeight: 40, flexDirection: 'row' }}>
+        <View style={styles.itemBox}>
+          <Text style={{ color: '#000000' }}>{Number(item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].achievment) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].achievment) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].achievment) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].achievment) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].achievment)}/{Number(item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].target) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].target) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].target) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].target) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].target)}</Text>
+        </View>
+
+        <View style={styles.itemBox}>
+          <Text style={{ color: '#000000' }}>{Number(item.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].achievment) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].achievment) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].achievment) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].achievment) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].achievment)}/{Number(item.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].target) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].target) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].target) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].target) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].target)}</Text>
+        </View>
+
+        <View style={styles.itemBox}>
+          <Text style={{ color: '#000000' }}>{Number(item.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].achievment) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].achievment) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].achievment) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].achievment) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].achievment)}/{Number(item.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].target) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].target) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].target) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].target) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].target)}</Text>
+        </View>
+
+        <View style={styles.itemBox}>
+          <Text style={{ color: '#000000' }}>{Number(item.targetAchievements.filter((param) => param.paramName === 'Booking')[0].achievment) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Booking')[0].achievment) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Booking')[0].achievment) > 999 ? (Math.round) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Booking')[0].achievment)}/{Number(item.targetAchievements.filter((param) => param.paramName === 'Booking')[0].target) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Booking')[0].target) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Booking')[0].target) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Booking')[0].target) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Booking')[0].target)}</Text>
+        </View>
+
+        <View style={styles.itemBox}>
+          <Text style={{ color: '#000000' }}>{Number(item.targetAchievements.filter((param) => param.paramName === 'Finance')[0].achievment) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Finance')[0].achievment) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Finance')[0].achievment) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Finance')[0].achievment) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Finance')[0].achievment)}/{Number(item.targetAchievements.filter((param) => param.paramName === 'Finance')[0].target) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Finance')[0].target) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Finance')[0].target) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Finance')[0].target) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Finance')[0].target)}</Text>
+        </View>
+
+        <View style={styles.itemBox}>
+          <Text style={{ color: '#000000' }}>{Number(item.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].achievment) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].achievment) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].achievment) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].achievment) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].achievment)}/{Number(item.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].target) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].target) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].target) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].target) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].target)}</Text>
+        </View>
+
+        <View style={styles.itemBox}>
+          <Text style={{ color: '#000000' }}>{Number(item.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].achievment) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].achievment) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].achievment) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].achievment) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].achievment)}/{Number(item.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].target) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].target) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].target) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].target) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].target)}</Text>
+        </View>
+
+        <View style={styles.itemBox}>
+          <Text style={{ color: '#000000' }}>{Number(item.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].achievment) > 99999 ? Number(item.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].achievment) / 100000 + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].achievment) > 999 ? Number(item.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].achievment) / 1000 + 'K' : item.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].achievment)}/{Number(item.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].target) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].target) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].target) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].target) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].target)}</Text>
+        </View>
+
+        <View style={styles.itemBox}>
+          <Text style={{ color: '#000000' }}>{Number(item.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].achievment) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].achievment) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].achievment) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].achievment) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].achievment)}/{Number(item.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].target) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].target) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].target) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].target) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].target)}</Text>
+        </View>
+
+        <View style={styles.itemBox}>
+          <Text style={{ color: '#000000' }}>{Number(item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].achievment) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].achievment) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].achievment) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].achievment) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].achievment)}/{Number(item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].target) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].target) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].target) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].target) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].target)}</Text>
+        </View>
+        <View style={styles.itemBox}>
+          <Text style={{ color: '#000000' }}>{getTotalAchivent(item.targetAchievements) > 99999 ? Math.round(getTotalAchivent(item.targetAchievements) / 100000) + 'L' : (getTotalAchivent(item.targetAchievements) > 999 ? Math.round(getTotalAchivent(item.targetAchievements) / 1000) + 'K' : getTotalAchivent(item.targetAchievements))}/{getTotalTarget(item.targetAchievements) > 99999 ? Math.round(getTotalTarget(item.targetAchievements) / 100000) + 'L' : (getTotalTarget(item.targetAchievements) > 999 ? Math.round(getTotalTarget(item.targetAchievements) / 1000) + 'K' : getTotalTarget(item.targetAchievements))}</Text>
+        </View>
+      </View>
+    )
   }
 
   return (
@@ -1172,10 +1221,10 @@ const TargetScreen = ({ route, navigation }) => {
                   <Text style={{ color: '#1C95A6' }}>Bkg</Text>
                 </View>
                 <View style={styles.itemBox}>
-                  <Text style={{ color: '#EC3466' }}>Fin %</Text>
+                  <Text style={{ color: '#EC3466' }}>Fin</Text>
                 </View>
                 <View style={styles.itemBox}>
-                  <Text style={{ color: '#1C95A6' }}>Ins %</Text>
+                  <Text style={{ color: '#1C95A6' }}>Ins</Text>
                 </View>
                 <View style={styles.itemBox}>
                   <Text style={{ color: '#FF8600' }}>Acc</Text>
@@ -1199,7 +1248,7 @@ const TargetScreen = ({ route, navigation }) => {
               return (
                 <View style={{ flexDirection: 'row' }}>
                   <View style={{ width: '10%', minHeight: 40, justifyContent: 'center', alignItems: 'center', flexDirection: 'column', }}>
-                    <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FF8600', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 5, marginBottom: item.isOpenInner ? 5 : 5 }} onPress={async() => {
+                    <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FF8600', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 5, marginBottom: item.isOpenInner ? 5 : 5 }} onPress={async () => {
                       let localData = [...allParameters];
                       let current = localData[index].isOpenInner;
                       for (let i = 0; i < localData.length; i++) {
@@ -1208,7 +1257,7 @@ const TargetScreen = ({ route, navigation }) => {
                           localData[index].isOpenInner = !current;
                         }
                       }
-                      if(!current){
+                      if (!current) {
                         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
                         // console.log("$$$$$ LOGIN EMP:", employeeData);
                         if (employeeData) {
@@ -1236,7 +1285,7 @@ const TargetScreen = ({ route, navigation }) => {
                             let tempRawData = [];
                             tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((emp) => emp.empId !== item.empId);
                             if (tempRawData.length > 0) {
-                              
+
                               for (let i = 0; i < tempRawData.length; i++) {
                                 tempRawData[i] = {
                                   ...tempRawData[i],
@@ -1258,16 +1307,16 @@ const TargetScreen = ({ route, navigation }) => {
                           // }
                         }
                       }
-                      else{
+                      else {
                         setAllParameters([...localData])
-                      }                      
+                      }
                     }}>
                       <Text style={{ fontSize: 14, color: '#fff' }}>{item.empName.charAt(0)}</Text>
                     </TouchableOpacity>
                     {item.isOpenInner && item.employeeTargetAchievements.length > 0 && item.employeeTargetAchievements.map((innerItem1, innerIndex1) => {
                       return (
                         <>
-                          <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#000000', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 4, marginBottom: item.isOpenInner ? 5 : 4 }} onPress={async() => {
+                          <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#000000', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 4, marginBottom: item.isOpenInner ? 5 : 4 }} onPress={async () => {
                             let localData = [...allParameters];
                             let current = localData[index].employeeTargetAchievements[innerIndex1].isOpenInner;
                             for (let i = 0; i < localData[index].employeeTargetAchievements.length; i++) {
@@ -1277,7 +1326,7 @@ const TargetScreen = ({ route, navigation }) => {
                               }
                             }
 
-                            if(!current){
+                            if (!current) {
                               let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
                               // console.log("$$$$$ LOGIN EMP:", employeeData);
                               if (employeeData) {
@@ -1327,19 +1376,361 @@ const TargetScreen = ({ route, navigation }) => {
                                 // setAllParameters([...localData])
                               }
                             }
-                            else{
+                            else {
                               setAllParameters([...localData])
-                            }                            
+                            }
                             // setAllParameters([...localData])
                           }}>
                             <Text style={{ fontSize: 14, color: '#fff' }}>{innerItem1.empName.charAt(0)}</Text>
                           </TouchableOpacity>
                           {
-                            innerItem1.isOpenInner && innerItem1.employeeTargetAchievements.length > 0 && innerItem1.employeeTargetAchievements.map((innerItem2, index) => {
+                            innerItem1.isOpenInner && innerItem1.employeeTargetAchievements.length > 0 && innerItem1.employeeTargetAchievements.map((innerItem2, innerIndex2) => {
                               return (
-                                <View style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#A5A5A5', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 4, marginBottom: item.isOpenInner ? 5 : 4 }}>
-                                  <Text style={{ fontSize: 14, color: '#fff' }}>{innerItem2.empName.charAt(0)}</Text>
-                                </View>
+                                <>
+                                  <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#A5A5A5', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 4, marginBottom: item.isOpenInner ? 5 : 4 }} onPress={async () => {
+                                    let localData = [...allParameters];
+                                    let current = localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].isOpenInner;
+                                    for (let i = 0; i < localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements.length; i++) {
+                                      localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[i].isOpenInner = false;
+                                      if (i === localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements.length - 1) {
+                                        localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].isOpenInner = !current;
+                                      }
+                                    }
+
+                                    if (!current) {
+                                      let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+                                      // console.log("$$$$$ LOGIN EMP:", employeeData);
+                                      if (employeeData) {
+                                        const jsonObj = JSON.parse(employeeData);
+                                        const dateFormat = "YYYY-MM-DD";
+                                        const currentDate = moment().format(dateFormat)
+                                        const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                                        const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                                        let payload = {
+                                          "orgId": jsonObj.orgId,
+                                          "selectedEmpId": innerItem2.empId,
+                                          "endDate": monthLastDate,
+                                          "loggedInEmpId": jsonObj.empId,
+                                          "empId": innerItem2.empId,
+                                          "startDate": monthFirstDate,
+                                          "levelSelected": null,
+                                          "pageNo": 0,
+                                          "size": 100
+                                        }
+                                        console.log("PPPLLL", payload);
+                                        Promise.all([
+                                          dispatch(getUserWiseTargetParameters(payload))
+                                        ]).then((res) => {
+                                          console.log("DATA:", JSON.stringify(res));
+                                          let tempRawData = [];
+                                          tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem2.empId);
+                                          if (tempRawData.length > 0) {
+                                            for (let i = 0; i < tempRawData.length; i++) {
+                                              tempRawData[i] = {
+                                                ...tempRawData[i],
+                                                isOpenInner: false,
+                                                employeeTargetAchievements: []
+                                              }
+                                              if (i === tempRawData.length - 1) {
+                                                localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements = tempRawData;
+                                              }
+                                            }
+                                          }
+                                          setAllParameters([...localData])
+                                        })
+
+                                        // if (localData[index].employeeTargetAchievements.length > 0) {
+                                        //   for (let j = 0; j < localData[index].employeeTargetAchievements.length; j++) {
+                                        //     localData[index].employeeTargetAchievements[j].isOpenInner = false;
+                                        //   }
+                                        // }
+                                        // setAllParameters([...localData])
+                                      }
+                                    }
+                                    else {
+                                      setAllParameters([...localData])
+                                    }
+                                    // setAllParameters([...localData])
+                                  }}>
+                                    <Text style={{ fontSize: 14, color: '#fff' }}>{innerItem2.empName.charAt(0)}</Text>
+                                  </TouchableOpacity>
+
+                                  {
+                                    innerItem2.isOpenInner && innerItem2.employeeTargetAchievements.length > 0 && innerItem2.employeeTargetAchievements.map((innerItem3, innerIndex3) => {
+                                      return (
+                                        <>
+                                          <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#EC3466', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 4, marginBottom: item.isOpenInner ? 5 : 4 }} onPress={async () => {
+                                            let localData = [...allParameters];
+                                            let current = localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].isOpenInner;
+                                            for (let i = 0; i < localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements.length; i++) {
+                                              localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[i].isOpenInner = false;
+                                              if (i === localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements.length - 1) {
+                                                localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].isOpenInner = !current;
+                                              }
+                                            }
+
+                                            if (!current) {
+                                              let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+                                              // console.log("$$$$$ LOGIN EMP:", employeeData);
+                                              if (employeeData) {
+                                                const jsonObj = JSON.parse(employeeData);
+                                                const dateFormat = "YYYY-MM-DD";
+                                                const currentDate = moment().format(dateFormat)
+                                                const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                                                const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                                                let payload = {
+                                                  "orgId": jsonObj.orgId,
+                                                  "selectedEmpId": innerItem3.empId,
+                                                  "endDate": monthLastDate,
+                                                  "loggedInEmpId": jsonObj.empId,
+                                                  "empId": innerItem3.empId,
+                                                  "startDate": monthFirstDate,
+                                                  "levelSelected": null,
+                                                  "pageNo": 0,
+                                                  "size": 100
+                                                }
+                                                console.log("PPPLLL", payload);
+                                                Promise.all([
+                                                  dispatch(getUserWiseTargetParameters(payload))
+                                                ]).then((res) => {
+                                                  console.log("DATA:", JSON.stringify(res));
+                                                  let tempRawData = [];
+                                                  tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem3.empId);
+                                                  if (tempRawData.length > 0) {
+                                                    for (let i = 0; i < tempRawData.length; i++) {
+                                                      tempRawData[i] = {
+                                                        ...tempRawData[i],
+                                                        isOpenInner: false,
+                                                        employeeTargetAchievements: []
+                                                      }
+                                                      if (i === tempRawData.length - 1) {
+                                                        localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements = tempRawData;
+                                                      }
+                                                    }
+                                                  }
+                                                  setAllParameters([...localData])
+                                                })
+                                              }
+                                            }
+                                            else {
+                                              setAllParameters([...localData])
+                                            }
+                                            // setAllParameters([...localData])
+                                          }}>
+                                            <Text style={{ fontSize: 14, color: '#fff' }}>{innerItem3.empName.charAt(0)}</Text>
+                                          </TouchableOpacity>
+
+                                          {
+                                            innerItem3.isOpenInner && innerItem3.employeeTargetAchievements.length > 0 && innerItem3.employeeTargetAchievements.map((innerItem4, innerIndex4) => {
+                                              return (
+                                                <>
+                                                  <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#1C95A6', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 4, marginBottom: item.isOpenInner ? 5 : 4 }} onPress={async () => {
+                                                    let localData = [...allParameters];
+                                                    let current = localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].isOpenInner;
+                                                    for (let i = 0; i < localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements.length; i++) {
+                                                      localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[i].isOpenInner = false;
+                                                      if (i === localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements.length - 1) {
+                                                        localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].isOpenInner = !current;
+                                                      }
+                                                    }
+
+                                                    if (!current) {
+                                                      let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+                                                      // console.log("$$$$$ LOGIN EMP:", employeeData);
+                                                      if (employeeData) {
+                                                        const jsonObj = JSON.parse(employeeData);
+                                                        const dateFormat = "YYYY-MM-DD";
+                                                        const currentDate = moment().format(dateFormat)
+                                                        const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                                                        const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                                                        let payload = {
+                                                          "orgId": jsonObj.orgId,
+                                                          "selectedEmpId": innerItem4.empId,
+                                                          "endDate": monthLastDate,
+                                                          "loggedInEmpId": jsonObj.empId,
+                                                          "empId": innerItem4.empId,
+                                                          "startDate": monthFirstDate,
+                                                          "levelSelected": null,
+                                                          "pageNo": 0,
+                                                          "size": 100
+                                                        }
+                                                        console.log("PPPLLL", payload);
+                                                        Promise.all([
+                                                          dispatch(getUserWiseTargetParameters(payload))
+                                                        ]).then((res) => {
+                                                          console.log("DATA:", JSON.stringify(res));
+                                                          let tempRawData = [];
+                                                          tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem4.empId);
+                                                          if (tempRawData.length > 0) {
+                                                            for (let i = 0; i < tempRawData.length; i++) {
+                                                              tempRawData[i] = {
+                                                                ...tempRawData[i],
+                                                                isOpenInner: false,
+                                                                employeeTargetAchievements: []
+                                                              }
+                                                              if (i === tempRawData.length - 1) {
+                                                                localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements = tempRawData;
+                                                              }
+                                                            }
+                                                          }
+                                                          setAllParameters([...localData])
+                                                        })
+                                                      }
+                                                    }
+                                                    else {
+                                                      setAllParameters([...localData])
+                                                    }
+                                                    // setAllParameters([...localData])
+                                                  }}>
+                                                    <Text style={{ fontSize: 14, color: '#fff' }}>{innerItem4.empName.charAt(0)}</Text>
+                                                  </TouchableOpacity>
+
+                                                  {
+                                                    innerItem4.isOpenInner && innerItem4.employeeTargetAchievements.length > 0 && innerItem4.employeeTargetAchievements.map((innerItem5, innerIndex5) => {
+                                                      return (
+                                                        <>
+                                                          <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#1C95A6', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 4, marginBottom: item.isOpenInner ? 5 : 4 }} onPress={async () => {
+                                                            let localData = [...allParameters];
+                                                            let current = localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].isOpenInner;
+                                                            for (let i = 0; i < localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements.length; i++) {
+                                                              localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[i].isOpenInner = false;
+                                                              if (i === localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements.length - 1) {
+                                                                localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].isOpenInner = !current;
+                                                              }
+                                                            }
+
+                                                            if (!current) {
+                                                              let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+                                                              // console.log("$$$$$ LOGIN EMP:", employeeData);
+                                                              if (employeeData) {
+                                                                const jsonObj = JSON.parse(employeeData);
+                                                                const dateFormat = "YYYY-MM-DD";
+                                                                const currentDate = moment().format(dateFormat)
+                                                                const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                                                                const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                                                                let payload = {
+                                                                  "orgId": jsonObj.orgId,
+                                                                  "selectedEmpId": innerItem5.empId,
+                                                                  "endDate": monthLastDate,
+                                                                  "loggedInEmpId": jsonObj.empId,
+                                                                  "empId": innerItem5.empId,
+                                                                  "startDate": monthFirstDate,
+                                                                  "levelSelected": null,
+                                                                  "pageNo": 0,
+                                                                  "size": 100
+                                                                }
+                                                                console.log("PPPLLL", payload);
+                                                                Promise.all([
+                                                                  dispatch(getUserWiseTargetParameters(payload))
+                                                                ]).then((res) => {
+                                                                  console.log("DATA:", JSON.stringify(res));
+                                                                  let tempRawData = [];
+                                                                  tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem5.empId);
+                                                                  if (tempRawData.length > 0) {
+                                                                    for (let i = 0; i < tempRawData.length; i++) {
+                                                                      tempRawData[i] = {
+                                                                        ...tempRawData[i],
+                                                                        isOpenInner: false,
+                                                                        employeeTargetAchievements: []
+                                                                      }
+                                                                      if (i === tempRawData.length - 1) {
+                                                                        localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].employeeTargetAchievements = tempRawData;
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                  setAllParameters([...localData])
+                                                                })
+                                                              }
+                                                            }
+                                                            else {
+                                                              setAllParameters([...localData])
+                                                            }
+                                                            // setAllParameters([...localData])
+                                                          }}>
+                                                            <Text style={{ fontSize: 14, color: '#fff' }}>{innerItem5.empName.charAt(0)}</Text>
+                                                          </TouchableOpacity>
+
+                                                          {
+                                                            innerItem5.isOpenInner && innerItem5.employeeTargetAchievements.length > 0 && innerItem5.employeeTargetAchievements.map((innerItem6, innerIndex6) => {
+                                                              return (
+                                                                <>
+                                                                  <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#1C95A6', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 4, marginBottom: item.isOpenInner ? 5 : 4 }} onPress={async () => {
+                                                                    let localData = [...allParameters];
+                                                                    let current = localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].employeeTargetAchievements[innerIndex6].isOpenInner;
+                                                                    for (let i = 0; i < localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].employeeTargetAchievements.length; i++) {
+                                                                      localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].employeeTargetAchievements[i].isOpenInner = false;
+                                                                      if (i === localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].employeeTargetAchievements.length - 1) {
+                                                                        localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].employeeTargetAchievements[innerIndex6].isOpenInner = !current;
+                                                                      }
+                                                                    }
+
+                                                                    if (!current) {
+                                                                      let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+                                                                      // console.log("$$$$$ LOGIN EMP:", employeeData);
+                                                                      if (employeeData) {
+                                                                        const jsonObj = JSON.parse(employeeData);
+                                                                        const dateFormat = "YYYY-MM-DD";
+                                                                        const currentDate = moment().format(dateFormat)
+                                                                        const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                                                                        const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                                                                        let payload = {
+                                                                          "orgId": jsonObj.orgId,
+                                                                          "selectedEmpId": innerItem6.empId,
+                                                                          "endDate": monthLastDate,
+                                                                          "loggedInEmpId": jsonObj.empId,
+                                                                          "empId": innerItem6.empId,
+                                                                          "startDate": monthFirstDate,
+                                                                          "levelSelected": null,
+                                                                          "pageNo": 0,
+                                                                          "size": 100
+                                                                        }
+                                                                        console.log("PPPLLL", payload);
+                                                                        Promise.all([
+                                                                          dispatch(getUserWiseTargetParameters(payload))
+                                                                        ]).then((res) => {
+                                                                          console.log("DATA:", JSON.stringify(res));
+                                                                          let tempRawData = [];
+                                                                          tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem6.empId);
+                                                                          if (tempRawData.length > 0) {
+                                                                            for (let i = 0; i < tempRawData.length; i++) {
+                                                                              tempRawData[i] = {
+                                                                                ...tempRawData[i],
+                                                                                isOpenInner: false,
+                                                                                employeeTargetAchievements: []
+                                                                              }
+                                                                              if (i === tempRawData.length - 1) {
+                                                                                localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].employeeTargetAchievements[innerIndex6].employeeTargetAchievements = tempRawData;
+                                                                              }
+                                                                            }
+                                                                          }
+                                                                          setAllParameters([...localData])
+                                                                        })
+                                                                      }
+                                                                    }
+                                                                    else {
+                                                                      setAllParameters([...localData])
+                                                                    }
+                                                                    // setAllParameters([...localData])
+                                                                  }}>
+                                                                    <Text style={{ fontSize: 14, color: '#fff' }}>{innerItem6.empName.charAt(0)}</Text>
+                                                                  </TouchableOpacity>
+                                                                </>
+                                                              )
+                                                            })
+                                                          }
+                                                        </>
+                                                      )
+                                                    })
+                                                  }
+                                                </>
+                                              )
+                                            })
+                                          }
+                                        </>
+                                      )
+                                    })
+                                  }
+                                </>
                               )
                             })
                           }
@@ -1347,168 +1738,79 @@ const TargetScreen = ({ route, navigation }) => {
                       )
                     })
                     }
-                    <View style={{marginTop: 7, marginBottom: 7}}>
+                    <View style={{ marginTop: 7, marginBottom: 7 }}>
                       <Text style={{ fontSize: 14, color: '#000', fontWeight: '600' }}>Team Total</Text>
                     </View>
                   </View>
-                  <View style={[{ width: '90%', minHeight: 40, flexDirection: 'column', paddingHorizontal: 5, }, item.isOpenInner && { backgroundColor: '#EEEEEE', borderRadius: 10, borderWidth: 1, borderColor: '#FF8600',}]}>
+                  <View style={[{ width: '90%', minHeight: 40, flexDirection: 'column', paddingHorizontal: 5, }, item.isOpenInner && { backgroundColor: '#EEEEEE', borderRadius: 10, borderWidth: 1, borderColor: '#FF8600', }]}>
                     <View style={{ width: '100%', minHeight: 40, flexDirection: 'row' }}>
-                      <View style={styles.itemBox}>
-                        <Text style={{ color: '#000000' }}>{Number(item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].achievment) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].achievment) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].achievment) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].achievment) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].achievment)}/{Number(item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].target) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].target) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].target) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].target) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].target)}</Text>
-                      </View>
-
-                      <View style={styles.itemBox}>
-                        <Text style={{ color: '#000000' }}>{Number(item.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].achievment) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].achievment) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].achievment) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].achievment) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].achievment)}/{Number(item.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].target) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].target) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].target) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].target) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].target)}</Text>
-                      </View>
-
-                      <View style={styles.itemBox}>
-                        <Text style={{ color: '#000000' }}>{Number(item.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].achievment) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].achievment) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].achievment) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].achievment) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].achievment)}/{Number(item.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].target) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].target) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].target) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].target) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].target)}</Text>
-                      </View>
-
-                      <View style={styles.itemBox}>
-                        <Text style={{ color: '#000000' }}>{Number(item.targetAchievements.filter((param) => param.paramName === 'Booking')[0].achievment) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Booking')[0].achievment) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Booking')[0].achievment) > 999 ? (Math.round) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Booking')[0].achievment)}/{Number(item.targetAchievements.filter((param) => param.paramName === 'Booking')[0].target) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Booking')[0].target) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Booking')[0].target) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Booking')[0].target) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Booking')[0].target)}</Text>
-                      </View>
-
-                      <View style={styles.itemBox}>
-                        <Text style={{ color: '#000000' }}>{Number(item.targetAchievements.filter((param) => param.paramName === 'Finance')[0].achievment) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Finance')[0].achievment) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Finance')[0].achievment) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Finance')[0].achievment) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Finance')[0].achievment)}/{Number(item.targetAchievements.filter((param) => param.paramName === 'Finance')[0].target) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Finance')[0].target) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Finance')[0].target) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Finance')[0].target) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Finance')[0].target)}</Text>
-                      </View>
-
-                      <View style={styles.itemBox}>
-                        <Text style={{ color: '#000000' }}>{Number(item.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].achievment) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].achievment) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].achievment) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].achievment) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].achievment)}/{Number(item.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].target) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].target) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].target) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].target) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].target)}</Text>
-                      </View>
-
-                      <View style={styles.itemBox}>
-                        <Text style={{ color: '#000000' }}>{Number(item.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].achievment) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].achievment) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].achievment) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].achievment) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].achievment)}/{Number(item.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].target) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].target) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].target) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].target) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].target)}</Text>
-                      </View>
-
-                      <View style={styles.itemBox}>
-                        <Text style={{ color: '#000000' }}>{Number(item.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].achievment) > 99999 ? Number(item.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].achievment) / 100000 + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].achievment) > 999 ? Number(item.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].achievment) / 1000 + 'K' : item.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].achievment)}/{Number(item.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].target) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].target) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].target) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].target) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].target)}</Text>
-                      </View>
-
-                      <View style={styles.itemBox}>
-                        <Text style={{ color: '#000000' }}>{Number(item.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].achievment) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].achievment) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].achievment) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].achievment) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].achievment)}/{Number(item.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].target) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].target) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].target) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].target) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].target)}</Text>
-                      </View>
-
-                      <View style={styles.itemBox}>
-                        <Text style={{ color: '#000000' }}>{Number(item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].achievment) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].achievment) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].achievment) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].achievment) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].achievment)}/{Number(item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].target) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].target) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].target) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].target) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].target)}</Text>
-                      </View>
-                      <View style={styles.itemBox}>
-                        <Text style={{ color: '#000000' }}>{getTotalAchivent(item.targetAchievements) > 99999 ? Math.round(getTotalAchivent(item.targetAchievements) / 100000) + 'L' : (getTotalAchivent(item.targetAchievements) > 999 ? Math.round(getTotalAchivent(item.targetAchievements) / 1000) + 'K' : getTotalAchivent(item.targetAchievements))}/{getTotalTarget(item.targetAchievements) > 99999 ? Math.round(getTotalTarget(item.targetAchievements) / 100000) + 'L' : (getTotalTarget(item.targetAchievements) > 999 ? Math.round(getTotalTarget(item.targetAchievements) / 1000) + 'K' : getTotalTarget(item.targetAchievements))}</Text>
-                      </View>
+                      {renderData(item)}
                     </View>
 
                     {item.isOpenInner && item.employeeTargetAchievements.length > 0 &&
-                      // <View style={[{ width: '100%', minHeight: 40, flexDirection: 'column', }, item.isOpenInner && { borderRadius: 10, borderWidth: 1, borderColor: '#d1d1d1', backgroundColor: '#FFFFFF' }]}>
-                      // {
                       item.employeeTargetAchievements.map((innerItem1, index) => {
-                          return (
-                            <View style={[{ width: '100%', minHeight: 40, flexDirection: 'column', }, innerItem1.isOpenInner && { borderRadius: 10, borderWidth: 1, borderColor: '#d1d1d1', backgroundColor: '#FFFFFF' }]}>
+                        return (
+                          <View style={[{ width: '100%', minHeight: 40, flexDirection: 'column', }, innerItem1.isOpenInner && { borderRadius: 10, borderWidth: 1, borderColor: '#000000', backgroundColor: '#FFFFFF' }]}>
                             <View style={[{ width: '100%', minHeight: 40, flexDirection: 'column', },]}>
-                              <View style={{ width: '90%', minHeight: 40, flexDirection: 'row' }}>
-                                  <View style={styles.itemBox}>
-                                    <Text style={{ color: '#000000' }}>{Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].achievment) > 99999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].achievment) / 100000) + 'L' : (Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].achievment) > 999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].achievment) / 1000) + 'K' : innerItem1.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].achievment)}/{Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].target) > 99999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].target) / 100000) + 'L' : (Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].target) > 999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].target) / 1000) + 'K' : innerItem1.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].target)}</Text>
-                                  </View>
-
-                                  <View style={styles.itemBox}>
-                                    <Text style={{ color: '#000000' }}>{Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].achievment) > 99999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].achievment) / 100000) + 'L' : (Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].achievment) > 999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].achievment) / 1000) + 'K' : innerItem1.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].achievment)}/{Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].target) > 99999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].target) / 100000) + 'L' : (Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].target) > 999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].target) / 1000) + 'K' : innerItem1.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].target)}</Text>
-                                  </View>
-
-                                  <View style={styles.itemBox}>
-                                    <Text style={{ color: '#000000' }}>{Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].achievment) > 99999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].achievment) / 100000) + 'L' : (Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].achievment) > 999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].achievment) / 1000) + 'K' : innerItem1.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].achievment)}/{Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].target) > 99999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].target) / 100000) + 'L' : (Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].target) > 999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].target) / 1000) + 'K' : innerItem1.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].target)}</Text>
-                                  </View>
-
-                                  <View style={styles.itemBox}>
-                                    <Text style={{ color: '#000000' }}>{Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Booking')[0].achievment) > 99999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Booking')[0].achievment) / 100000) + 'L' : (Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Booking')[0].achievment) > 999 ? (Math.round) + 'K' : innerItem1.targetAchievements.filter((param) => param.paramName === 'Booking')[0].achievment)}/{Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Booking')[0].target) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Booking')[0].target) / 100000) + 'L' : (Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Booking')[0].target) > 999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Booking')[0].target) / 1000) + 'K' : innerItem1.targetAchievements.filter((param) => param.paramName === 'Booking')[0].target)}</Text>
-                                  </View>
-
-                                  <View style={styles.itemBox}>
-                                    <Text style={{ color: '#000000' }}>{Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Finance')[0].achievment) > 99999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Finance')[0].achievment) / 100000) + 'L' : (Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Finance')[0].achievment) > 999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Finance')[0].achievment) / 1000) + 'K' : innerItem1.targetAchievements.filter((param) => param.paramName === 'Finance')[0].achievment)}/{Number(item.targetAchievements.filter((param) => param.paramName === 'Finance')[0].target) > 99999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Finance')[0].target) / 100000) + 'L' : (Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Finance')[0].target) > 999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Finance')[0].target) / 1000) + 'K' : innerItem1.targetAchievements.filter((param) => param.paramName === 'Finance')[0].target)}</Text>
-                                  </View>
-
-                                  <View style={styles.itemBox}>
-                                    <Text style={{ color: '#000000' }}>{Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].achievment) > 99999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].achievment) / 100000) + 'L' : (Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].achievment) > 999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].achievment) / 1000) + 'K' : innerItem1.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].achievment)}/{Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].target) > 99999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].target) / 100000) + 'L' : (Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].target) > 999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].target) / 1000) + 'K' : innerItem1.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].target)}</Text>
-                                  </View>
-
-                                  <View style={styles.itemBox}>
-                                    <Text style={{ color: '#000000' }}>{Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].achievment) > 99999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].achievment) / 100000) + 'L' : (Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].achievment) > 999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].achievment) / 1000) + 'K' : innerItem1.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].achievment)}/{Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].target) > 99999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].target) / 100000) + 'L' : (Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].target) > 999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].target) / 1000) + 'K' : innerItem1.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].target)}</Text>
-                                  </View>
-
-                                  <View style={styles.itemBox}>
-                                    <Text style={{ color: '#000000' }}>{Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].achievment) > 99999 ? Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].achievment) / 100000 + 'L' : (Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].achievment) > 999 ? Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].achievment) / 1000 + 'K' : innerItem1.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].achievment)}/{Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].target) > 99999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].target) / 100000) + 'L' : (Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].target) > 999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].target) / 1000) + 'K' : innerItem1.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].target)}</Text>
-                                  </View>
-
-                                  <View style={styles.itemBox}>
-                                    <Text style={{ color: '#000000' }}>{Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].achievment) > 99999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].achievment) / 100000) + 'L' : (Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].achievment) > 999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].achievment) / 1000) + 'K' : innerItem1.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].achievment)}/{Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].target) > 99999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].target) / 100000) + 'L' : (Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].target) > 999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].target) / 1000) + 'K' : innerItem1.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].target)}</Text>
-                                  </View>
-
-                                  <View style={styles.itemBox}>
-                                    <Text style={{ color: '#000000' }}>{Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].achievment) > 99999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].achievment) / 100000) + 'L' : (Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].achievment) > 999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].achievment) / 1000) + 'K' : innerItem1.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].achievment)}/{Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].target) > 99999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].target) / 100000) + 'L' : (Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].target) > 999 ? Math.round(Number(innerItem1.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].target) / 1000) + 'K' : innerItem1.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].target)}</Text>
-                                  </View>
-                                  <View style={styles.itemBox}>
-                                    <Text style={{ color: '#000000' }}>{getTotalAchivent(innerItem1.targetAchievements) > 99999 ? Math.round(getTotalAchivent(innerItem1.targetAchievements) / 100000) + 'L' : (getTotalAchivent(innerItem1.targetAchievements) > 999 ? Math.round(getTotalAchivent(innerItem1.targetAchievements) / 1000) + 'K' : getTotalAchivent(innerItem1.targetAchievements))}/{getTotalTarget(innerItem1.targetAchievements) > 99999 ? Math.round(getTotalTarget(innerItem1.targetAchievements) / 100000) + 'L' : (getTotalTarget(innerItem1.targetAchievements) > 999 ? Math.round(getTotalTarget(innerItem1.targetAchievements) / 1000) + 'K' : getTotalTarget(innerItem1.targetAchievements))}</Text>
-                                  </View>
-                              </View>
+                              {renderData(innerItem1)}
                               {
-                                  innerItem1.isOpenInner && innerItem1.employeeTargetAchievements.length > 0 &&
-                                // <View style={[{ width: '100%', minHeight: 40, flexDirection: 'column', }, innerItem1.isOpenInner && { borderRadius: 10, borderWidth: 1, borderColor: '#d1d1d1', backgroundColor: '#FFFFFF' }]}>
-                                //   {
-                                  innerItem1.employeeTargetAchievements.map((innerItem2, innerIndex2) => {
-                                      return (
-                                        <View style={{ width: '90%', minHeight: 40, flexDirection: 'row' }}>
-                                          <View style={styles.itemBox}>
-                                            <Text style={{ color: '#000000' }}>{Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].achievment) > 99999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].achievment) / 100000) + 'L' : (Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].achievment) > 999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].achievment) / 1000) + 'K' : innerItem2.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].achievment)}/{Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].target) > 99999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].target) / 100000) + 'L' : (Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].target) > 999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].target) / 1000) + 'K' : innerItem2.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].target)}</Text>
-                                          </View>
-
-                                          <View style={styles.itemBox}>
-                                            <Text style={{ color: '#000000' }}>{Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].achievment) > 99999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].achievment) / 100000) + 'L' : (Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].achievment) > 999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].achievment) / 1000) + 'K' : innerItem2.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].achievment)}/{Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].target) > 99999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].target) / 100000) + 'L' : (Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].target) > 999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].target) / 1000) + 'K' : innerItem2.targetAchievements.filter((param) => param.paramName === 'Test Drive')[0].target)}</Text>
-                                          </View>
-
-                                          <View style={styles.itemBox}>
-                                            <Text style={{ color: '#000000' }}>{Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].achievment) > 99999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].achievment) / 100000) + 'L' : (Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].achievment) > 999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].achievment) / 1000) + 'K' : innerItem2.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].achievment)}/{Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].target) > 99999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].target) / 100000) + 'L' : (Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].target) > 999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].target) / 1000) + 'K' : innerItem2.targetAchievements.filter((param) => param.paramName === 'Home Visit')[0].target)}</Text>
-                                          </View>
-
-                                          <View style={styles.itemBox}>
-                                            <Text style={{ color: '#000000' }}>{Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Booking')[0].achievment) > 99999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Booking')[0].achievment) / 100000) + 'L' : (Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Booking')[0].achievment) > 999 ? (Math.round) + 'K' : innerItem2.targetAchievements.filter((param) => param.paramName === 'Booking')[0].achievment)}/{Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Booking')[0].target) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Booking')[0].target) / 100000) + 'L' : (Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Booking')[0].target) > 999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Booking')[0].target) / 1000) + 'K' : innerItem2.targetAchievements.filter((param) => param.paramName === 'Booking')[0].target)}</Text>
-                                          </View>
-
-                                          <View style={styles.itemBox}>
-                                            <Text style={{ color: '#000000' }}>{Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Finance')[0].achievment) > 99999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Finance')[0].achievment) / 100000) + 'L' : (Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Finance')[0].achievment) > 999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Finance')[0].achievment) / 1000) + 'K' : innerItem2.targetAchievements.filter((param) => param.paramName === 'Finance')[0].achievment)}/{Number(item.targetAchievements.filter((param) => param.paramName === 'Finance')[0].target) > 99999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Finance')[0].target) / 100000) + 'L' : (Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Finance')[0].target) > 999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Finance')[0].target) / 1000) + 'K' : innerItem2.targetAchievements.filter((param) => param.paramName === 'Finance')[0].target)}</Text>
-                                          </View>
-
-                                          <View style={styles.itemBox}>
-                                            <Text style={{ color: '#000000' }}>{Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].achievment) > 99999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].achievment) / 100000) + 'L' : (Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].achievment) > 999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].achievment) / 1000) + 'K' : innerItem2.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].achievment)}/{Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].target) > 99999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].target) / 100000) + 'L' : (Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].target) > 999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].target) / 1000) + 'K' : innerItem2.targetAchievements.filter((param) => param.paramName === 'Insurance')[0].target)}</Text>
-                                          </View>
-
-                                          <View style={styles.itemBox}>
-                                            <Text style={{ color: '#000000' }}>{Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].achievment) > 99999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].achievment) / 100000) + 'L' : (Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].achievment) > 999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].achievment) / 1000) + 'K' : innerItem2.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].achievment)}/{Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].target) > 99999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].target) / 100000) + 'L' : (Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].target) > 999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].target) / 1000) + 'K' : innerItem2.targetAchievements.filter((param) => param.paramName === 'Accessories')[0].target)}</Text>
-                                          </View>
-
-                                          <View style={styles.itemBox}>
-                                            <Text style={{ color: '#000000' }}>{Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].achievment) > 99999 ? Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].achievment) / 100000 + 'L' : (Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].achievment) > 999 ? Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].achievment) / 1000 + 'K' : innerItem2.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].achievment)}/{Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].target) > 99999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].target) / 100000) + 'L' : (Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].target) > 999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].target) / 1000) + 'K' : innerItem2.targetAchievements.filter((param) => param.paramName === 'INVOICE')[0].target)}</Text>
-                                          </View>
-
-                                          <View style={styles.itemBox}>
-                                            <Text style={{ color: '#000000' }}>{Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].achievment) > 99999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].achievment) / 100000) + 'L' : (Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].achievment) > 999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].achievment) / 1000) + 'K' : innerItem2.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].achievment)}/{Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].target) > 99999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].target) / 100000) + 'L' : (Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].target) > 999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].target) / 1000) + 'K' : innerItem2.targetAchievements.filter((param) => param.paramName === 'Exchange')[0].target)}</Text>
-                                          </View>
-
-                                          <View style={styles.itemBox}>
-                                            <Text style={{ color: '#000000' }}>{Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].achievment) > 99999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].achievment) / 100000) + 'L' : (Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].achievment) > 999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].achievment) / 1000) + 'K' : innerItem2.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].achievment)}/{Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].target) > 99999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].target) / 100000) + 'L' : (Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].target) > 999 ? Math.round(Number(innerItem2.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].target) / 1000) + 'K' : innerItem2.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].target)}</Text>
-                                          </View>
-                                          <View style={styles.itemBox}>
-                                            <Text style={{ color: '#000000' }}>{getTotalAchivent(innerItem2.targetAchievements) > 99999 ? Math.round(getTotalAchivent(innerItem2.targetAchievements) / 100000) + 'L' : (getTotalAchivent(innerItem2.targetAchievements) > 999 ? Math.round(getTotalAchivent(innerItem2.targetAchievements) / 1000) + 'K' : getTotalAchivent(innerItem2.targetAchievements))}/{getTotalTarget(innerItem2.targetAchievements) > 99999 ? Math.round(getTotalTarget(innerItem2.targetAchievements) / 100000) + 'L' : (getTotalTarget(innerItem2.targetAchievements) > 999 ? Math.round(getTotalTarget(innerItem2.targetAchievements) / 1000) + 'K' : getTotalTarget(innerItem2.targetAchievements))}</Text>
-                                          </View>
-                                        </View>
-                                      )
-                                    })
+                                innerItem1.isOpenInner && innerItem1.employeeTargetAchievements.length > 0 &&
+                                innerItem1.employeeTargetAchievements.map((innerItem2, innerIndex2) => {
+                                  return (
+                                    <View style={[{ width: '98%', minHeight: 40, flexDirection: 'column', }, innerItem2.isOpenInner && { borderRadius: 10, borderWidth: 1, borderColor: '#A5A5A5', backgroundColor: '#EEEEEE', marginHorizontal: 5 }]}>
+                                      {renderData(innerItem2)}
+                                      {
+                                        innerItem2.isOpenInner && innerItem2.employeeTargetAchievements.length > 0 &&
+                                        innerItem2.employeeTargetAchievements.map((innerItem3, innerIndex3) => {
+                                          return (
+                                            <View style={[{ width: '98%', minHeight: 40, flexDirection: 'column', }, innerItem3.isOpenInner && { borderRadius: 10, borderWidth: 1, borderColor: '#EC3466', backgroundColor: '#FFFFFF', marginHorizontal: 5 }]}>
+                                              {renderData(innerItem3)}
+                                              {
+                                                innerItem3.isOpenInner && innerItem3.employeeTargetAchievements.length > 0 &&
+                                                innerItem3.employeeTargetAchievements.map((innerItem4, innerIndex4) => {
+                                                  return (
+                                                    <View style={[{ width: '98%', minHeight: 40, flexDirection: 'column', }, innerItem4.isOpenInner && { borderRadius: 10, borderWidth: 1, borderColor: '#1C95A6', backgroundColor: '#EEEEEE', marginHorizontal: 5 }]}>
+                                                      {renderData(innerItem4)}
+                                                      {
+                                                        innerItem4.isOpenInner && innerItem4.employeeTargetAchievements.length > 0 &&
+                                                        innerItem4.employeeTargetAchievements.map((innerItem5, innerIndex5) => {
+                                                          return (
+                                                            <View style={[{ width: '98%', minHeight: 40, flexDirection: 'column', }, innerItem5.isOpenInner && { borderRadius: 10, borderWidth: 1, borderColor: '#FF8600', backgroundColor: '#FFFFFF', marginHorizontal: 5 }]}>
+                                                              {renderData(innerItem5)}
+                                                              {
+                                                                innerItem5.isOpenInner && innerItem5.employeeTargetAchievements.length > 0 &&
+                                                                innerItem5.employeeTargetAchievements.map((innerItem6, innerIndex6) => {
+                                                                  return (
+                                                                    <View style={[{ width: '98%', minHeight: 40, flexDirection: 'column', }, innerItem6.isOpenInner && { borderRadius: 10, borderWidth: 1, borderColor: '#FF8600', backgroundColor: '#FFFFFF', marginHorizontal: 5 }]}>
+                                                                      {renderData(innerItem6)}
+                                                                    </View>
+                                                                  )
+                                                                })
+                                                              }
+                                                            </View>
+                                                          )
+                                                        })
+                                                      }
+                                                    </View>
+                                                  )
+                                                })
+                                              }
+                                            </View>
+                                          )
+                                        })
+                                      }
+                                    </View>
+                                  )
+                                })
                                 //   }
                                 // </View>
                               }
                             </View>
-                            </View>
-                          )
-                        })
-                    //   }
-                    // </View>
+                          </View>
+                        )
+                      })
+                      //   }
+                      // </View>
                     }
                     <View style={{ width: '90%', minHeight: 40, flexDirection: 'row' }}>
                       <View style={styles.itemBox}>
@@ -1556,35 +1858,35 @@ const TargetScreen = ({ route, navigation }) => {
                   <View style={styles.itemBox}>
                     <Text style={{ color: '#000000', fontWeight: '600' }}>{Number(selector.totalParameters.filter((item) => item.paramName === 'Enquiry')[0].achievment) > 99999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Enquiry')[0].achievment) / 100000) + 'L' : (Number(selector.totalParameters.filter((item) => item.paramName === 'Enquiry')[0].achievment) > 999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Enquiry')[0].achievment) / 1000) + 'K' : Number(selector.totalParameters.filter((item) => item.paramName === 'Enquiry')[0].achievment))}/{Number(selector.totalParameters.filter((item) => item.paramName === 'Enquiry')[0].target) > 99999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Enquiry')[0].target) / 100000) + 'L' : (Number(selector.totalParameters.filter((item) => item.paramName === 'Enquiry')[0].target) > 999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Enquiry')[0].target) / 1000) + 'K' : selector.totalParameters.filter((item) => item.paramName === 'Enquiry')[0].target)}</Text>
                   </View>
-                  
+
                   <View style={styles.itemBox}>
                     <Text style={{ color: '#000000', fontWeight: '600' }}>{Number(selector.totalParameters.filter((item) => item.paramName === 'Test Drive')[0].achievment) > 99999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Test Drive')[0].achievment) / 100000) + 'L' : (Number(selector.totalParameters.filter((item) => item.paramName === 'Test Drive')[0].achievment) > 999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Test Drive')[0].achievment) / 1000) + 'K' : Number(selector.totalParameters.filter((item) => item.paramName === 'Test Drive')[0].achievment))}/{Number(selector.totalParameters.filter((item) => item.paramName === 'Test Drive')[0].target) > 99999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Test Drive')[0].target) / 100000) + 'L' : (Number(selector.totalParameters.filter((item) => item.paramName === 'Test Drive')[0].target) > 999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Test Drive')[0].target) / 1000) + 'K' : selector.totalParameters.filter((item) => item.paramName === 'Test Drive')[0].target)}</Text>
                   </View>
-                  
+
                   <View style={styles.itemBox}>
                     <Text style={{ color: '#000000', fontWeight: '600' }}>{Number(selector.totalParameters.filter((item) => item.paramName === 'Home Visit')[0].achievment) > 99999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Home Visit')[0].achievment) / 100000) + 'L' : (Number(selector.totalParameters.filter((item) => item.paramName === 'Home Visit')[0].achievment) > 999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Home Visit')[0].achievment) / 1000) + 'K' : Number(selector.totalParameters.filter((item) => item.paramName === 'Home Visit')[0].achievment))}/{Number(selector.totalParameters.filter((item) => item.paramName === 'Home Visit')[0].target) > 99999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Home Visit')[0].target) / 100000) + 'L' : (Number(selector.totalParameters.filter((item) => item.paramName === 'Home Visit')[0].target) > 999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Home Visit')[0].target) / 1000) + 'K' : selector.totalParameters.filter((item) => item.paramName === 'Home Visit')[0].target)}</Text>
                   </View>
-                  
+
                   <View style={styles.itemBox}>
                     <Text style={{ color: '#000000', fontWeight: '600' }}>{Number(selector.totalParameters.filter((item) => item.paramName === 'Booking')[0].achievment) > 99999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Booking')[0].achievment) / 100000) + 'L' : (Number(selector.totalParameters.filter((item) => item.paramName === 'Booking')[0].achievment) > 999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Booking')[0].achievment) / 1000) + 'K' : Number(selector.totalParameters.filter((item) => item.paramName === 'Booking')[0].achievment))}/{Number(selector.totalParameters.filter((item) => item.paramName === 'Booking')[0].target) > 99999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Booking')[0].target) / 100000) + 'L' : (Number(selector.totalParameters.filter((item) => item.paramName === 'Booking')[0].target) > 999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Booking')[0].target) / 1000) + 'K' : selector.totalParameters.filter((item) => item.paramName === 'Booking')[0].target)}</Text>
                   </View>
-                  
+
                   <View style={styles.itemBox}>
                     <Text style={{ color: '#000000', fontWeight: '600' }}>{Number(selector.totalParameters.filter((item) => item.paramName === 'Finance')[0].achievment) > 99999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Finance')[0].achievment) / 100000) + 'L' : (Number(selector.totalParameters.filter((item) => item.paramName === 'Finance')[0].achievment) > 999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Finance')[0].achievment) / 1000) + 'K' : Number(selector.totalParameters.filter((item) => item.paramName === 'Finance')[0].achievment))}/{Number(selector.totalParameters.filter((item) => item.paramName === 'Finance')[0].target) > 99999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Finance')[0].target) / 100000) + 'L' : (Number(selector.totalParameters.filter((item) => item.paramName === 'Finance')[0].target) > 999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Finance')[0].target) / 1000) + 'K' : selector.totalParameters.filter((item) => item.paramName === 'Finance')[0].target)}</Text>
                   </View>
-                  
+
                   <View style={styles.itemBox}>
                     <Text style={{ color: '#000000', fontWeight: '600' }}>{Number(selector.totalParameters.filter((item) => item.paramName === 'Insurance')[0].achievment) > 99999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Insurance')[0].achievment) / 100000) + 'L' : (Number(selector.totalParameters.filter((item) => item.paramName === 'Insurance')[0].achievment) > 999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Insurance')[0].achievment) / 1000) + 'K' : Number(selector.totalParameters.filter((item) => item.paramName === 'Insurance')[0].achievment))}/{Number(selector.totalParameters.filter((item) => item.paramName === 'Insurance')[0].target) > 99999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Insurance')[0].target) / 100000) + 'L' : (Number(selector.totalParameters.filter((item) => item.paramName === 'Insurance')[0].target) > 999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Insurance')[0].target) / 1000) + 'K' : selector.totalParameters.filter((item) => item.paramName === 'Insurance')[0].target)}</Text>
                   </View>
-                  
+
                   <View style={styles.itemBox}>
                     <Text style={{ color: '#000000', fontWeight: '600' }}>{Number(selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].achievment) > 99999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].achievment) / 100000) + 'L' : (Number(selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].achievment) > 999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].achievment) / 1000) + 'K' : Number(selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].achievment))}/{Number(selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].target) > 99999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].target) / 100000) + 'L' : (Number(selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].target) > 999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].target) / 1000) + 'K' : selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].target)}</Text>
                   </View>
-                  
+
                   <View style={styles.itemBox}>
                     <Text style={{ color: '#000000', fontWeight: '600' }}>{Number(selector.totalParameters.filter((item) => item.paramName === 'INVOICE')[0].achievment) > 99999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'INVOICE')[0].achievment) / 100000) + 'L' : (Number(selector.totalParameters.filter((item) => item.paramName === 'INVOICE')[0].achievment) > 999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'INVOICE')[0].achievment) / 1000) + 'K' : Number(selector.totalParameters.filter((item) => item.paramName === 'INVOICE')[0].achievment))}/{Number(selector.totalParameters.filter((item) => item.paramName === 'INVOICE')[0].target) > 99999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'INVOICE')[0].target) / 100000) + 'L' : (Number(selector.totalParameters.filter((item) => item.paramName === 'INVOICE')[0].target) > 999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'INVOICE')[0].target) / 1000) + 'K' : selector.totalParameters.filter((item) => item.paramName === 'INVOICE')[0].target)}</Text>
                   </View>
-                  
+
                   <View style={styles.itemBox}>
                     <Text style={{ color: '#000000', fontWeight: '600' }}>{Number(selector.totalParameters.filter((item) => item.paramName === 'Exchange')[0].achievment) > 99999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Exchange')[0].achievment) / 100000) + 'L' : (Number(selector.totalParameters.filter((item) => item.paramName === 'Exchange')[0].achievment) > 999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Exchange')[0].achievment) / 1000) + 'K' : Number(selector.totalParameters.filter((item) => item.paramName === 'Exchange')[0].achievment))}/{Number(selector.totalParameters.filter((item) => item.paramName === 'Exchange')[0].target) > 99999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Exchange')[0].target) / 100000) + 'L' : (Number(selector.totalParameters.filter((item) => item.paramName === 'Exchange')[0].target) > 999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Exchange')[0].target) / 1000) + 'K' : selector.totalParameters.filter((item) => item.paramName === 'Exchange')[0].target)}</Text>
                   </View>
