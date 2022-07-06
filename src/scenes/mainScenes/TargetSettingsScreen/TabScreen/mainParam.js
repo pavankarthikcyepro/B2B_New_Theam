@@ -96,7 +96,7 @@ const MainParamScreen = ({ route, navigation }) => {
     }, [selector.activeBranches])
 
     useEffect(async () => {
-        if (!selector.isTeam){
+        if (!selector.isTeam) {
             if (selector.targetMapping.length > 0 && loggedInEmpDetails !== null && selector.isDataLoaded) {
                 let ownDataArray = [];
                 if (selector.targetType === 'MONTHLY') {
@@ -195,7 +195,7 @@ const MainParamScreen = ({ route, navigation }) => {
                 })
             }
         }
-        else{
+        else {
             setTargetName('')
         }
     }, [selector.isTeam, selector.selectedMonth])
@@ -231,7 +231,7 @@ const MainParamScreen = ({ route, navigation }) => {
                 console.log("TTT 2: ", JSON.stringify(ownDataArray2));
                 if (ownDataArray2.length > 0) {
                     setOwnData(ownDataArray2[0])
-                    if (ownDataArray2[0]?.targetName){
+                    if (ownDataArray2[0]?.targetName) {
                         setTargetName(ownDataArray2[0]?.targetName)
                     }
                 }
@@ -340,7 +340,7 @@ const MainParamScreen = ({ route, navigation }) => {
                 })
             }
         }
-        
+
     }, [selector.selectedMonth])
 
     useEffect(async () => {
@@ -531,9 +531,9 @@ const MainParamScreen = ({ route, navigation }) => {
                         <View style={styles.paramBox}>
                             <Text style={[styles.text,]}>Exchange</Text>
                         </View>
-                    <View style={styles.paramBox}>
-                        <Text style={[styles.text,]}>Extended Warranty</Text>
-                    </View>
+                        <View style={styles.paramBox}>
+                            <Text style={[styles.text,]}>Extended Warranty</Text>
+                        </View>
                         {/* <View style={styles.paramBox}>
                             <Text style={[styles.text, { color: '#00b1ff' }]}>Enquiry</Text>
                         </View>
@@ -599,19 +599,19 @@ const MainParamScreen = ({ route, navigation }) => {
                                                         setDefaultBranch(Number(item.branch))
                                                         setAddOrEdit('E')
                                                     }
-                                                    else{
+                                                    else {
                                                         setAddOrEdit('A')
                                                     }
-                                                if (item?.targetName){
-                                                    setTargetName(item?.targetName)
-                                                }
-                                                setIsNoTargetAvailable(false)
+                                                    if (item?.targetName) {
+                                                        setTargetName(item?.targetName)
+                                                    }
+                                                    setIsNoTargetAvailable(false)
                                                     setRetail((item.retailTarget !== null && selector.endDate === item.endDate && selector.startDate === item.startDate) ? item.retailTarget : 0)
                                                     setSelectedUser(item)
-                                                    
+
                                                     setOpenRetail(true)
                                                 }}>
-                                                <Text style={styles.textInput}>{item.retailTarget !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.retailTarget : 0}</Text>
+                                                    <Text style={styles.textInput}>{item.retailTarget !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.retailTarget : 0}</Text>
                                                 </TouchableOpacity>
                                             }
                                         </>
@@ -630,7 +630,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                         <>
                                             {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
                                                 <View style={styles.textBox2}>
-                                                <Text style={styles.textInput}>{item.enquiry !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.enquiry : 0}</Text>
+                                                    <Text style={styles.textInput}>{item.enquiry !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.enquiry : 0}</Text>
                                                 </View>
                                             }
                                         </>
@@ -649,7 +649,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                         <>
                                             {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
                                                 <View style={styles.textBox2}>
-                                                <Text style={styles.textInput}>{item.booking !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.booking : 0}</Text>
+                                                    <Text style={styles.textInput}>{item.booking !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.booking : 0}</Text>
                                                 </View>
                                             }
                                         </>
@@ -668,7 +668,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                         <>
                                             {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
                                                 <View style={styles.textBox2}>
-                                                <Text style={styles.textInput}>{item.testDrive !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.testDrive : 0}</Text>
+                                                    <Text style={styles.textInput}>{item.testDrive !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.testDrive : 0}</Text>
                                                 </View>
                                             }
                                         </>
@@ -689,7 +689,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                         <>
                                             {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
                                                 <View style={styles.textBox2}>
-                                                <Text style={styles.textInput}>{item.homeVisit !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.homeVisit : 0}</Text>
+                                                    <Text style={styles.textInput}>{item.homeVisit !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.homeVisit : 0}</Text>
                                                 </View>
                                             }
                                         </>
@@ -708,7 +708,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                         <>
                                             {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
                                                 <View style={styles.textBox2}>
-                                                <Text style={styles.textInput}>{item.finance !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.finance : 0}</Text>
+                                                    <Text style={styles.textInput}>{item.finance !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.finance : 0}</Text>
                                                 </View>
                                             }
                                         </>
@@ -727,7 +727,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                         <>
                                             {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
                                                 <View style={styles.textBox2}>
-                                                <Text style={styles.textInput}>{item.insurance !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.insurance : 0}</Text>
+                                                    <Text style={styles.textInput}>{item.insurance !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.insurance : 0}</Text>
                                                 </View>
                                             }
                                         </>
@@ -746,7 +746,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                         <>
                                             {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
                                                 <View style={styles.textBox2}>
-                                                <Text style={styles.textInput}>{item.accessories !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.accessories : 0}</Text>
+                                                    <Text style={styles.textInput}>{item.accessories !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.accessories : 0}</Text>
                                                 </View>
                                             }
                                         </>
@@ -765,7 +765,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                         <>
                                             {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
                                                 <View style={styles.textBox2}>
-                                                <Text style={styles.textInput}>{item.exchange !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.exchange : 0}</Text>
+                                                    <Text style={styles.textInput}>{item.exchange !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.exchange : 0}</Text>
                                                 </View>
                                             }
                                         </>
@@ -774,24 +774,24 @@ const MainParamScreen = ({ route, navigation }) => {
                             }
                         </View>
 
-                    <View style={styles.textBoxWrap}>
-                        <View style={styles.textBox2}>
-                            <Text style={styles.textInput}>{getTotal('exWarranty')}</Text>
+                        <View style={styles.textBoxWrap}>
+                            <View style={styles.textBox2}>
+                                <Text style={styles.textInput}>{getTotal('exWarranty')}</Text>
+                            </View>
+                            {
+                                selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
+                                    return (
+                                        <>
+                                            {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
+                                                <View style={styles.textBox2}>
+                                                    <Text style={styles.textInput}>{item.exWarranty !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.exWarranty : 0}</Text>
+                                                </View>
+                                            }
+                                        </>
+                                    )
+                                })
+                            }
                         </View>
-                        {
-                            selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
-                                return (
-                                    <>
-                                        {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
-                                            <View style={styles.textBox2}>
-                                            <Text style={styles.textInput}>{item.exWarranty !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.exWarranty : 0}</Text>
-                                            </View>
-                                        }
-                                    </>
-                                )
-                            })
-                        }
-                    </View>
                     </ScrollView>
                 </View>
             }
@@ -856,7 +856,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                 setDefaultBranch(Number(ownData.branch))
                                 setAddOrEdit('E')
                             }
-                            else{
+                            else {
                                 setAddOrEdit('A')
                             }
                             (ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate) ? setRetail(ownData.retailTarget.toString()) : setRetail('')
@@ -957,9 +957,9 @@ const MainParamScreen = ({ route, navigation }) => {
                         <View style={styles.paramBox}>
                             <Text style={[styles.text,]}>Exchange</Text>
                         </View>
-                    <View style={styles.paramBox}>
-                        <Text style={[styles.text,]}>Extended Warranty</Text>
-                    </View>
+                        <View style={styles.paramBox}>
+                            <Text style={[styles.text,]}>Extended Warranty</Text>
+                        </View>
                     </View>
                     <ScrollView style={{ width: '100%' }} contentContainerStyle={{ flexDirection: 'column' }} showsVerticalScrollIndicator={false}
                         showsHorizontalScrollIndicator={false} horizontal={true}>
@@ -983,7 +983,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                     setDefaultBranch(Number(ownData.branch))
                                     setAddOrEdit('E')
                                 }
-                                else{
+                                else {
                                     setAddOrEdit('A')
                                 }
                                 setSelectedUser(loggedInEmpDetails)
@@ -1044,11 +1044,11 @@ const MainParamScreen = ({ route, navigation }) => {
                             </View>
                         </View>
 
-                    <View style={styles.textBoxWrap}>
-                        <View style={styles.textBox2}>
-                            <Text style={styles.textInput}>{ownData.exWarranty !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.exWarranty : 0}</Text>
+                        <View style={styles.textBoxWrap}>
+                            <View style={styles.textBox2}>
+                                <Text style={styles.textInput}>{ownData.exWarranty !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.exWarranty : 0}</Text>
+                            </View>
                         </View>
-                    </View>
                     </ScrollView>
                 </View>
             }
