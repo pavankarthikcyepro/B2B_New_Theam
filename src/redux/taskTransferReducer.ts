@@ -13,7 +13,7 @@ export const getTaskList = createAsyncThunk("TASK_TRANSFER/getTaskList", async (
 });
 
 export const getBranchDropdown = createAsyncThunk("TASK_TRANSFER/getBranchDropdown", async (payload, { rejectWithValue }) => {
-    console.log("URL:", URL.TARGET_DROPDOWN(
+    console.log("BRANCH URL:", URL.TARGET_DROPDOWN(
         payload["orgId"],
         payload["parent"],
         payload["child"],
@@ -34,6 +34,13 @@ export const getBranchDropdown = createAsyncThunk("TASK_TRANSFER/getBranchDropdo
 });
 
 export const getDeptDropdown = createAsyncThunk("TASK_TRANSFER/getDeptDropdown", async (payload, { rejectWithValue }) => {
+    console.log("DEPT URL:", URL.TARGET_DROPDOWN(
+        payload["orgId"],
+        payload["parent"],
+        payload["child"],
+        payload["parentId"]
+    ));
+    
     const response = await client.get(URL.TARGET_DROPDOWN(
         payload["orgId"],
         payload["parent"],
@@ -48,6 +55,13 @@ export const getDeptDropdown = createAsyncThunk("TASK_TRANSFER/getDeptDropdown",
 });
 
 export const getDeptDropdownTrans = createAsyncThunk("TASK_TRANSFER/getDeptDropdownTrans", async (payload, { rejectWithValue }) => {
+    console.log("DEPT URL:", URL.TARGET_DROPDOWN(
+        payload["orgId"],
+        payload["parent"],
+        payload["child"],
+        payload["parentId"]
+    ));
+    
     const response = await client.get(URL.TARGET_DROPDOWN(
         payload["orgId"],
         payload["parent"],
@@ -62,6 +76,13 @@ export const getDeptDropdownTrans = createAsyncThunk("TASK_TRANSFER/getDeptDropd
 });
 
 export const getDesignationDropdown = createAsyncThunk("TASK_TRANSFER/getDesignationDropdown", async (payload, { rejectWithValue }) => {
+    console.log("DESIG URL:", URL.TARGET_DROPDOWN(
+        payload["orgId"],
+        payload["parent"],
+        payload["child"],
+        payload["parentId"]
+    ));
+    
     const response = await client.get(URL.TARGET_DROPDOWN(
         payload["orgId"],
         payload["parent"],
@@ -76,6 +97,13 @@ export const getDesignationDropdown = createAsyncThunk("TASK_TRANSFER/getDesigna
 });
 
 export const getDesignationDropdownTrans = createAsyncThunk("TASK_TRANSFER/getDesignationDropdownTrans", async (payload, { rejectWithValue }) => {
+    console.log("DESIG URL:", URL.TARGET_DROPDOWN(
+        payload["orgId"],
+        payload["parent"],
+        payload["child"],
+        payload["parentId"]
+    ));
+    
     const response = await client.get(URL.TARGET_DROPDOWN(
         payload["orgId"],
         payload["parent"],
@@ -90,6 +118,13 @@ export const getDesignationDropdownTrans = createAsyncThunk("TASK_TRANSFER/getDe
 });
 
 export const getEmployeeDetails = createAsyncThunk("TASK_TRANSFER/getEmployeeDetails", async (payload, { rejectWithValue }) => {
+    console.log("EMP URL:", URL.GET_EMPLOYEE_DETAILS(
+        payload["orgId"],
+        payload["branchId"],
+        payload["deptId"],
+        payload["desigId"]
+    ));
+    
     const response = await client.get(URL.GET_EMPLOYEE_DETAILS(
         payload["orgId"],
         payload["branchId"],
@@ -103,11 +138,43 @@ export const getEmployeeDetails = createAsyncThunk("TASK_TRANSFER/getEmployeeDet
 });
 
 export const getEmployeeDetailsTrans = createAsyncThunk("TASK_TRANSFER/getEmployeeDetailsTrans", async (payload, { rejectWithValue }) => {
+    console.log("EMP URL:", URL.GET_EMPLOYEE_DETAILS(
+        payload["orgId"],
+        payload["branchId"],
+        payload["deptId"],
+        payload["desigId"]
+    ));
+    
     const response = await client.get(URL.GET_EMPLOYEE_DETAILS(
         payload["orgId"],
         payload["branchId"],
         payload["deptId"],
         payload["desigId"]));
+    const json = await response.json();
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+});
+
+export const submitTaskTransfer = createAsyncThunk("TASK_TRANSFER/submitTaskTransfer", async (payload, { rejectWithValue }) => {
+    console.log("EMP URL:", URL.TRANSFER_TASK(
+        payload["fromUserId"],
+        payload["toUserId"]
+    ), {
+        fromEmpId: payload["fromUserId"].toString(),
+        taskIdList: payload["taskIdList"],
+        toEmpId: payload["toUserId"].toString()
+    });
+
+    const response = await client.post(URL.TRANSFER_TASK(
+        payload["fromUserId"],
+        payload["toUserId"]
+    ), {
+        fromEmpId: payload["fromUserId"].toString(),
+        taskIdList: payload["taskIdList"],
+        toEmpId: payload["toUserId"].toString()
+    });
     const json = await response.json();
     if (!response.ok) {
         return rejectWithValue(json);
@@ -137,8 +204,13 @@ export const taskTransferSlice = createSlice({
         deptListTrans: [],
         designationListTrans: [],
         employeeListTrans: [],
+        taskTransferStatus: ''
     },
-    reducers: {},
+    reducers: {
+        updateStatus: (state, action) => {
+            state.taskTransferStatus = "";
+        }
+    },
     extraReducers: (builder) => {
         // Get Branch List
         builder.addCase(getBranchDropdown.pending, (state, action) => {
@@ -259,8 +331,22 @@ export const taskTransferSlice = createSlice({
         builder.addCase(getTaskList.rejected, (state, action) => {
             state.isLoading = false;
         })
+
+        builder.addCase(submitTaskTransfer.pending, (state, action) => {
+            
+        })
+        builder.addCase(submitTaskTransfer.fulfilled, (state, action) => {
+            console.log("TTRTTRTR", action.payload);
+            
+            if (action.payload.success){
+                state.taskTransferStatus = 'success'
+            }
+        })
+        builder.addCase(submitTaskTransfer.rejected, (state, action) => {
+            state.taskTransferStatus = 'faild'
+        })
     }
 });
 
-export const { } = taskTransferSlice.actions;
+export const { updateStatus } = taskTransferSlice.actions;
 export default taskTransferSlice.reducer;

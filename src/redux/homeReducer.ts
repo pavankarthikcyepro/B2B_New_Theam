@@ -5,6 +5,7 @@ import * as AsyncStore from '../asyncStore';
 import empData from '../get_target_params_for_emp.json'
 import allData from '../get_target_params_for_all_emps.json'
 import targetData from '../get_target_params.json'
+import { showToast } from "../utils/toast";
  
 const data = [
     {
@@ -279,11 +280,8 @@ export const updateIsTeam = createAsyncThunk("HOME/updateIsTeam", async (payload
 })
 
 export const getEmployeesList = createAsyncThunk("HOME/getEmployeesList", async (payload, { rejectWithValue }) => {
-    const response = await client.get(URL.GET_EMPLOYEE_DETAILS(
-        payload["orgId"],
-        payload["branchId"],
-        payload["deptId"],
-        payload["desigId"]));
+    const response = await client.get(URL.GET_EMPLOYEE_LIST(
+        payload["empId"]));
     const json = await response.json();
     if (!response.ok) {
         return rejectWithValue(json);
@@ -327,6 +325,29 @@ export const getReportingManagerList = createAsyncThunk("HOME/getReportingManage
     }
     return json;
 })
+
+export const delegateTask = createAsyncThunk("HOME/delegateTask", async (payload, { rejectWithValue }) => {
+    console.log("EMP URL:", URL.TRANSFER_TASK(
+        payload["fromUserId"],
+        payload["toUserId"]
+    ), {
+        fromEmpId: payload["fromUserId"].toString(),
+        toEmpId: payload["toUserId"].toString()
+    });
+
+    const response = await client.post(URL.TRANSFER_TASK(
+        payload["fromUserId"],
+        payload["toUserId"]
+    ), {
+        fromEmpId: payload["fromUserId"].toString(),
+        toEmpId: payload["toUserId"].toString()
+    });
+    const json = await response.json();
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+});
 
 export const updateEmployeeDataBasedOnDelegate = createAsyncThunk("HOME/updateEmployeeDataBasedOnDelegate", async (body, { rejectWithValue }) => {
     const response = await client.put(URL.EMPLOYEE_DATA_UPDATE(body["empID"], body["managerID"]))  
@@ -758,7 +779,7 @@ export const homeSlice = createSlice({
                 if (action.payload) {
                     const dataObj = action.payload;
                     // state.employee_list = dataObj ? dataObj.dmsEntity.employees : [];
-                    state.employee_list = dataObj ? dataObj.dmsEntity.employees : [];
+                    state.employee_list = dataObj ? dataObj : [];
                     state.isLoading = false;
                 }
             })
@@ -789,6 +810,9 @@ export const homeSlice = createSlice({
                 // console.log("res2: ", action.payload);
                 const dataObj = action.payload;
                     state.isLoading = false;
+                if (action.payload.success){
+                    showToast("Successfully updated")
+                }
             })
             .addCase(updateEmployeeDataBasedOnDelegate.rejected, (state, action) => {
                 state.isLoading = false;
