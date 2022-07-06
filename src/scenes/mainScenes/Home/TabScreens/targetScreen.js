@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, FlatList, Dimensions, Text, TouchableOpacity, Modal } from "react-native";
+import { View, StyleSheet, FlatList, Dimensions, Text, TouchableOpacity, Modal, Image } from "react-native";
 import { Colors } from "../../../../styles";
 import { TargetListComp } from "../../../../components";
 import { DropDownSelectionItem, DateSelectItem, ChartNameList, EmptyListView } from "../../../../pureComponents";
@@ -20,10 +20,16 @@ import moment from 'moment';
 
 import * as AsyncStore from '../../../../asyncStore';
 import { ScrollView } from "react-native-gesture-handler";
+import ShuffleIcon from "react-native-vector-icons/Entypo";
+import { Dropdown } from 'react-native-element-dropdown';
+import CloseIcon from "react-native-vector-icons/MaterialIcons";
+import { LoaderComponent } from '../../../../components';
 
-import {
-  getUserWiseTargetParameters
-} from '../../../../redux/homeReducer';
+// import {
+//   getUserWiseTargetParameters
+// } from '../../../../redux/homeReducer';
+
+import { getEmployeesList, getReportingManagerList, updateEmployeeDataBasedOnDelegate, getDeptDropdown, getDesignationDropdown, getUserWiseTargetParameters } from "../../../../redux/homeReducer";
 
 //const paramtersTitlesData = ["Parameter", "E", "TD", "HV", "VC", "B", "Ex", "R", "F", "I", "Ex-W", "Acc.", "Ev"]
 const paramtersTitlesData = ["Parameter", "Target", "Achivement", "Achivement %", "ShortFall", "ShortFall %"]
@@ -421,116 +427,15 @@ const TargetScreen = ({ route, navigation }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedName, setSelectedName] = useState('');
   const [allParameters, setAllParameters] = useState([])
-  const [tempData, setTempData] = useState([
-    {
-      name: 'Karthik',
-      isOpenInner: false,
-      users: [
-        {
-          name: 'Atanu',
-          isOpenInner: false,
-          users: [
-            {
-              name: 'Pritam'
-            },
-            {
-              name: 'Pratim'
-            }
-          ]
-        },
-        {
-          name: 'Sutanu',
-          isOpenInner: false,
-          users: [
-            {
-              name: 'Pritam'
-            },
-            {
-              name: 'Pratim'
-            },
-            {
-              name: 'Ajay'
-            },
-            {
-              name: 'Bijay'
-            }
-          ]
-        }
-      ]
-    },
-    {
-      name: 'Karthik',
-      isOpenInner: false,
-      users: [
-        {
-          name: 'Atanu',
-          isOpenInner: false,
-          users: [
-            {
-              name: 'Pritam'
-            },
-            {
-              name: 'Pratim'
-            }
-          ]
-        }
-      ]
-    },
-    {
-      name: 'Karthik',
-      isOpenInner: false,
-      users: [
-        {
-          name: 'Atanu',
-          isOpenInner: false,
-          users: [
-            {
-              name: 'Pritam'
-            },
-            {
-              name: 'Pratim'
-            }
-          ]
-        }
-      ]
-    },
-    {
-      name: 'Karthik',
-      isOpenInner: false,
-      users: [
-        {
-          name: 'Atanu',
-          isOpenInner: false,
-          users: [
-            {
-              name: 'Pritam'
-            },
-            {
-              name: 'Pratim'
-            }
-          ]
-        }
-      ]
-    },
-    {
-      name: 'Karthik',
-      isOpenInner: false,
-      users: [
-        {
-          name: 'Atanu',
-          isOpenInner: false,
-          users: [
-            {
-              name: 'Pritam'
-            },
-            {
-              name: 'Pratim'
-            }
-          ]
-        }
-      ]
-    }
-  ])
+  const [showShuffleModal, setShowShuffleModal] = useState(false);
+  const [delegateButtonClick, setDelegateButtonClick] = useState(false);
+  const [headerTitle, setHeaderTitle] = useState("Selected employees has Active tasks. Please delegate to another employee");
+  const [dropDownPlaceHolder, setDropDownPlaceHolder] = useState("Employees");
+
+  const [employeeListDropdownItem, setEmployeeListDropdownItem] = useState(0);
+  const [employeeDropdownList, setEmployeeDropdownList] = useState([]);
+  const [reoprtingManagerListDropdownItem, setReoprtingManagerListDropdownItem] = useState(0);
+  const [reoprtingManagerDropdownList, setReoprtingManagerDropdownList] = useState([]);
 
   useEffect(() => {
     const dateFormat = "YYYY-MM-DD";
@@ -638,111 +543,6 @@ const TargetScreen = ({ route, navigation }) => {
     setIsTeam(selector.isTeam)
   }, [selector.isTeam])
 
-  // let tempData = [
-  //   {
-  //     name: 'Karthik',
-  //     isOpenInner: true,
-  //     users: [
-  //       {
-  //         name: 'Atanu',
-  //         isOpenInner: true,
-  //         users: [
-  //           {
-  //             name: 'Pritam'
-  //           },
-  //           {
-  //             name: 'Pratim'
-  //           }
-  //         ]
-  //       },
-  //       {
-  //         name: 'Sutanu',
-  //         isOpenInner: false,
-  //         users: [
-  //           {
-  //             name: 'Pritam'
-  //           },
-  //           {
-  //             name: 'Pratim'
-  //           }
-  //         ]
-  //       }
-  //     ]
-  //   },
-  //   {
-  //     name: 'Karthik',
-  //     isOpenInner: false,
-  //     users: [
-  //       {
-  //         name: 'Atanu',
-  //         isOpenInner: false,
-  //         users: [
-  //           {
-  //             name: 'Pritam'
-  //           },
-  //           {
-  //             name: 'Pratim'
-  //           }
-  //         ]
-  //       }
-  //     ]
-  //   },
-  //   {
-  //     name: 'Karthik',
-  //     isOpenInner: false,
-  //     users: [
-  //       {
-  //         name: 'Atanu',
-  //         isOpenInner: false,
-  //         users: [
-  //           {
-  //             name: 'Pritam'
-  //           },
-  //           {
-  //             name: 'Pratim'
-  //           }
-  //         ]
-  //       }
-  //     ]
-  //   },
-  //   {
-  //     name: 'Karthik',
-  //     isOpenInner: false,
-  //     users: [
-  //       {
-  //         name: 'Atanu',
-  //         isOpenInner: false,
-  //         users: [
-  //           {
-  //             name: 'Pritam'
-  //           },
-  //           {
-  //             name: 'Pratim'
-  //           }
-  //         ]
-  //       }
-  //     ]
-  //   },
-  //   {
-  //     name: 'Karthik',
-  //     isOpenInner: false,
-  //     users: [
-  //       {
-  //         name: 'Atanu',
-  //         isOpenInner: false,
-  //         users: [
-  //           {
-  //             name: 'Pritam'
-  //           },
-  //           {
-  //             name: 'Pratim'
-  //           }
-  //         ]
-  //       }
-  //     ]
-  //   }
-  // ]
-
   const getTotalAchivent = (params) => {
     let total = 0;
     for (let i = 0; i < params.length; i++) {
@@ -791,7 +591,83 @@ const TargetScreen = ({ route, navigation }) => {
     return total;
   }
 
-  const renderData = (item) => {
+  useEffect(() => {
+    setEmployeeDropdownList(selector.employee_list.map(({ name: label, id: value, ...rest }) => ({ value, label, ...rest })));
+  }, [selector.employee_list])
+
+  useEffect(() => {
+    setReoprtingManagerDropdownList(selector.reporting_manager_list.map(({ name: label, id: value, ...rest }) => ({ value, label, ...rest })));
+  }, [selector.reporting_manager_list])
+
+  const handleModalDropdownDataForShuffle = () => {
+    if (delegateButtonClick) {
+      getReportingManagerListFromServer();
+      setShowShuffleModal(true);
+      // setReoprtingManagerDropdownList(selector.reporting_manager_list.map(({ name: label, id: value, ...rest }) => ({ value, label, ...rest })));
+    } else {
+      getEmployeeListFromServer();
+      setShowShuffleModal(true);
+      // setEmployeeDropdownList(selector.employee_list.map(({ name: label, id: value, ...rest }) => ({ value, label, ...rest })));
+    }
+  }
+
+  const getReportingManagerListFromServer = async () => {
+    dispatch(getReportingManagerList(16));
+  }
+
+  const getEmployeeListFromServer = async () => {
+    // dispatch(getEmployeesList(424));
+    const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    console.log("EMP DTLS: ", employeeData);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      const payloadDept = {
+        "orgId": jsonObj.orgId,
+        "parent": "branch",
+        "child": "department",
+        "parentId": jsonObj.branchId
+      }
+      Promise.all([dispatch(getDeptDropdown(payloadDept))]).then((res1) => {
+        console.log("TTTRRR: ", JSON.stringify(res1));
+        let dept = [];
+        dept = res1[0].payload.filter((item) => item.value === jsonObj.primaryDepartment)
+        const payloadDesig = {
+          "orgId": jsonObj.orgId,
+          "parent": "department",
+          "child": "designation",
+          "parentId": dept ? dept[0].id : 0
+        }
+
+        Promise.all([dispatch(getDesignationDropdown(payloadDesig))]).then((res1) => {
+          let desig = [];
+          desig = res1[0].payload.filter((item) => item.value === jsonObj.primaryDesignation)
+          const payload = {
+            "orgId": jsonObj.orgId,
+            "branchId": jsonObj.branchId,
+            "deptId": dept ? dept[0].id : 0,
+            "desigId": desig ? desig[0].id : 0
+            // "orgId": 16,
+            // "branchId": 267,
+            // "deptId": 180,
+            // "desigId": 56
+          }
+          console.log("EMP PAYLOAD: ", payload);
+          dispatch(getEmployeesList(payload));
+        })
+      })
+
+    }
+  }
+
+  const updateEmployeeData = async () => {
+    const payload = {
+      empID: employeeListDropdownItem ? employeeListDropdownItem : 427,
+      managerID: reoprtingManagerListDropdownItem ? reoprtingManagerListDropdownItem : 456
+    }
+    dispatch(updateEmployeeDataBasedOnDelegate(payload));
+  }
+
+  const renderData = (item, color) => {
     return (
       <View style={{ width: '90%', minHeight: 40, flexDirection: 'row' }}>
         <View style={styles.itemBox}>
@@ -836,12 +712,139 @@ const TargetScreen = ({ route, navigation }) => {
         <View style={styles.itemBox}>
           <Text style={{ color: '#000000' }}>{getTotalAchivent(item.targetAchievements) > 99999 ? Math.round(getTotalAchivent(item.targetAchievements) / 100000) + 'L' : (getTotalAchivent(item.targetAchievements) > 999 ? Math.round(getTotalAchivent(item.targetAchievements) / 1000) + 'K' : getTotalAchivent(item.targetAchievements))}/{getTotalTarget(item.targetAchievements) > 99999 ? Math.round(getTotalTarget(item.targetAchievements) / 100000) + 'L' : (getTotalTarget(item.targetAchievements) > 999 ? Math.round(getTotalTarget(item.targetAchievements) / 1000) + 'K' : getTotalTarget(item.targetAchievements))}</Text>
         </View>
+
+        <View style={styles.itemBox}>
+          <View
+            style={{
+              width: 30,
+              height: 30,
+              borderRadius: 50,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: color,
+            }}
+          >
+            <TouchableOpacity activeOpacity={0.6} onPress={() => {
+              handleModalDropdownDataForShuffle();
+            }} style={{ ...styles.shuffleBGView, backgroundColor: color }}>
+              <ShuffleIcon name="shuffle" color={Colors.WHITE} size={18} />
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
     )
   }
 
   return (
     <View style={styles.container}>
+
+      <Modal 
+      visible={showShuffleModal}
+        animationType={'fade'}
+        transparent={true}
+        onRequestClose={() => setShowShuffleModal(false)}
+      >
+        <View style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          paddingHorizontal: 20
+        }}>
+          <View style={{ width: "95%", height: "35%", alignSelf: 'center', backgroundColor: 'white', borderRadius: 8 }}>
+            <View style={{
+              flexDirection: 'row', justifyContent: 'space-between', borderWidth: 1,
+              borderColor: "#d1d1d1",
+              backgroundColor: "#d1d1d1",
+              borderTopEndRadius: 8, borderTopStartRadius: 8
+            }}>
+              <Text style={{ fontSize: 17, fontWeight: '500', margin: 10 }}>Team Shuffle</Text>
+
+              <TouchableOpacity activeOpacity={0.6} onPress={() => {
+                setShowShuffleModal(false);
+                setHeaderTitle('Selected employees has Active tasks. Please delegate to another employee');
+                setDropDownPlaceHolder('Employees');
+                setDelegateButtonClick(false);
+                setEmployeeDropdownList([]);
+                setReoprtingManagerDropdownList([]);
+              }}>
+                <CloseIcon style={{ margin: 10 }} name="close" color={Colors.BLACK} size={20} />
+              </TouchableOpacity>
+            </View>
+
+            <Text style={{ color: Colors.GRAY, marginLeft: 8, marginTop: 5 }}>{headerTitle}</Text>
+            <Dropdown
+              style={styles.dropdownContainer}
+              placeholderStyle={styles.placeholderStyle}
+              selectedTextStyle={styles.selectedTextStyle}
+              inputSearchStyle={styles.inputSearchStyle}
+              iconStyle={styles.iconStyle}
+              data={delegateButtonClick ? reoprtingManagerDropdownList : employeeDropdownList}
+              search
+              maxHeight={300}
+              labelField="label"
+              valueField="value"
+              placeholder={dropDownPlaceHolder}
+              searchPlaceholder="Search..."
+              renderRightIcon={() => (
+                <Image style={{ height: 5, width: 10 }} source={require('../../../../assets/images/Polygon.png')} />
+              )}
+              onChange={async (item) => {
+                console.log("£££", item.value);
+                if (delegateButtonClick) {
+                  setReoprtingManagerListDropdownItem(item.value);
+                  console.log(reoprtingManagerListDropdownItem)
+                } else {
+                  setEmployeeListDropdownItem(item.value);
+                }
+              }}
+            />
+
+            <LoaderComponent
+              visible={selector.isLoading}
+              onRequestClose={() => { }}
+            />
+
+            <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, marginBottom: 10, flexDirection: 'row', width: '95%', justifyContent: 'space-around' }}>
+              {dropDownPlaceHolder === 'Employees' ?
+                <View style={{ flexDirection: 'row', width: '95%', justifyContent: 'space-around' }}>
+                  <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 70, alignItems: 'center', justifyContent: 'center', marginLeft: 18, marginRight: 12, backgroundColor: Colors.RED }} onPress={() => {
+                    updateEmployeeData();
+                    setDelegateButtonClick(true);
+                    setHeaderTitle('Reporting Managers');
+                    setDropDownPlaceHolder(state => state = 'Reporting Manager');
+                    getReportingManagerListFromServer();
+                  }}>
+                    <Text style={{ fontSize: 13, fontWeight: '300', color: Colors.WHITE }}>NEXT</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 220, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.RED }} onPress={() => {
+                    setHeaderTitle('Reporting Managers');
+                    setDropDownPlaceHolder('Reporting Manager');
+                    setDelegateButtonClick(true);
+                    getReportingManagerListFromServer();
+                  }}>
+                    <Text style={{ fontSize: 13, fontWeight: '300', color: Colors.WHITE }}>CONTINUE WITHOUT DELEGATING</Text>
+                  </TouchableOpacity>
+                </View> :
+                <View style={{ position: 'absolute', right: 0, bottom: 0 }}>
+                  <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 70, alignItems: 'center', justifyContent: 'center', marginLeft: 18, marginRight: 12, backgroundColor: Colors.RED }} onPress={() => {
+                    updateEmployeeData();
+                    setShowShuffleModal(false);
+                    setHeaderTitle('Selected employees has Active tasks. Please delegate to another employee');
+                    setDropDownPlaceHolder('Employees');
+                    setDelegateButtonClick(false);
+                    setEmployeeDropdownList([]);
+                    setReoprtingManagerDropdownList([]);
+                  }}>
+                    <Text style={{ fontSize: 13, fontWeight: '300', color: Colors.WHITE }}>SUBMIT</Text>
+                  </TouchableOpacity>
+                </View>}
+            </View>
+          </View>
+        </View>
+        
+      </Modal>
 
       <Modal
         animationType={'fade'}
@@ -854,10 +857,11 @@ const TargetScreen = ({ route, navigation }) => {
           justifyContent: "center",
           alignItems: "center",
           backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          paddingHorizontal: 20}}>
-            <View style={{width: '90%', minHeight: 50, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', borderRadius: 10}}>
-            <Text style={{ fontSize: 16, color: '#616161'}}>{selectedName}</Text>
-            </View>
+          paddingHorizontal: 20
+        }}>
+          <View style={{ width: '90%', minHeight: 50, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', borderRadius: 10 }}>
+            <Text style={{ fontSize: 16, color: '#616161' }}>{selectedName}</Text>
+          </View>
         </View>
       </Modal>
       {/* {!selector.isTeam &&
@@ -1792,7 +1796,7 @@ const TargetScreen = ({ route, navigation }) => {
                   </View>
                   <View style={[{ width: '90%', minHeight: 40, flexDirection: 'column', paddingHorizontal: 5, }, item.isOpenInner && { backgroundColor: '#EEEEEE', borderRadius: 10, borderWidth: 1, borderColor: '#FF8600', }]}>
                     <View style={{ width: '100%', minHeight: 40, flexDirection: 'row' }}>
-                      {renderData(item)}
+                      {renderData(item, '#FF8600')}
                     </View>
 
                     {item.isOpenInner && item.employeeTargetAchievements.length > 0 &&
@@ -1800,37 +1804,37 @@ const TargetScreen = ({ route, navigation }) => {
                         return (
                           <View style={[{ width: '100%', minHeight: 40, flexDirection: 'column', }, innerItem1.isOpenInner && { borderRadius: 10, borderWidth: 1, borderColor: '#000000', backgroundColor: '#FFFFFF' }]}>
                             <View style={[{ width: '100%', minHeight: 40, flexDirection: 'column', },]}>
-                              {renderData(innerItem1)}
+                              {renderData(innerItem1, '#000000')}
                               {
                                 innerItem1.isOpenInner && innerItem1.employeeTargetAchievements.length > 0 &&
                                 innerItem1.employeeTargetAchievements.map((innerItem2, innerIndex2) => {
                                   return (
                                     <View style={[{ width: '98%', minHeight: 40, flexDirection: 'column', }, innerItem2.isOpenInner && { borderRadius: 10, borderWidth: 1, borderColor: '#A5A5A5', backgroundColor: '#EEEEEE', marginHorizontal: 5 }]}>
-                                      {renderData(innerItem2)}
+                                      {renderData(innerItem2, '#A5A5A5')}
                                       {
                                         innerItem2.isOpenInner && innerItem2.employeeTargetAchievements.length > 0 &&
                                         innerItem2.employeeTargetAchievements.map((innerItem3, innerIndex3) => {
                                           return (
                                             <View style={[{ width: '98%', minHeight: 40, flexDirection: 'column', }, innerItem3.isOpenInner && { borderRadius: 10, borderWidth: 1, borderColor: '#EC3466', backgroundColor: '#FFFFFF', marginHorizontal: 5 }]}>
-                                              {renderData(innerItem3)}
+                                              {renderData(innerItem3, '#EC3466')}
                                               {
                                                 innerItem3.isOpenInner && innerItem3.employeeTargetAchievements.length > 0 &&
                                                 innerItem3.employeeTargetAchievements.map((innerItem4, innerIndex4) => {
                                                   return (
                                                     <View style={[{ width: '98%', minHeight: 40, flexDirection: 'column', }, innerItem4.isOpenInner && { borderRadius: 10, borderWidth: 1, borderColor: '#1C95A6', backgroundColor: '#EEEEEE', marginHorizontal: 5 }]}>
-                                                      {renderData(innerItem4)}
+                                                      {renderData(innerItem4, '#1C95A6')}
                                                       {
                                                         innerItem4.isOpenInner && innerItem4.employeeTargetAchievements.length > 0 &&
                                                         innerItem4.employeeTargetAchievements.map((innerItem5, innerIndex5) => {
                                                           return (
                                                             <View style={[{ width: '98%', minHeight: 40, flexDirection: 'column', }, innerItem5.isOpenInner && { borderRadius: 10, borderWidth: 1, borderColor: '#FF8600', backgroundColor: '#FFFFFF', marginHorizontal: 5 }]}>
-                                                              {renderData(innerItem5)}
+                                                              {renderData(innerItem5, '#FF8600')}
                                                               {
                                                                 innerItem5.isOpenInner && innerItem5.employeeTargetAchievements.length > 0 &&
                                                                 innerItem5.employeeTargetAchievements.map((innerItem6, innerIndex6) => {
                                                                   return (
                                                                     <View style={[{ width: '98%', minHeight: 40, flexDirection: 'column', }, innerItem6.isOpenInner && { borderRadius: 10, borderWidth: 1, borderColor: '#FF8600', backgroundColor: '#FFFFFF', marginHorizontal: 5 }]}>
-                                                                      {renderData(innerItem6)}
+                                                                      {renderData(innerItem6, '#FF8600')}
                                                                     </View>
                                                                   )
                                                                 })
@@ -2545,6 +2549,40 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start', alignItems: 'center', height: 30, marginLeft: 10, backgroundColor: "#F5F5F5"
   },
-  itemBox: { width: 60, height: 40, justifyContent: 'center', alignItems: 'center' }
-
+  itemBox: { width: 60, height: 40, justifyContent: 'center', alignItems: 'center' },
+  shuffleBGView: {
+    width: 30,
+    height: 30,
+    borderRadius: 60 / 2,
+    borderColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center'
+  },
+  dropdownContainer: {
+    backgroundColor: 'white',
+    padding: 13,
+    borderWidth: 1,
+    borderColor: Colors.GRAY,
+    width: '95%',
+    height: 45,
+    borderRadius: 5,
+    margin: 8,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+    color: '#000',
+    fontWeight: '400'
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
 })
