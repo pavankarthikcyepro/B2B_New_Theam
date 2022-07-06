@@ -2799,6 +2799,28 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           ref={scrollRef}
         >
           <View style={styles.baseVw}>
+            <Button style={{height:40, width:200,marginBottom:15, alignSelf:'flex-end', alignContent:'center', backgroundColor:Colors.PINK, color: Colors.WHITE}}
+              labelStyle={{ textTransform: "none",fontSize:16, color: Colors.WHITE }}>Proforma Invoice</Button>
+           <List.Accordion
+                id={"1"}
+                title={"Proforma Invoice"}
+                titleStyle={{
+                  color: openAccordian === "1" ? Colors.BLACK : Colors.BLACK,
+                  fontSize: 16,
+                  fontWeight: "600",
+                }}
+                style={[
+                  {
+                    backgroundColor:
+                      openAccordian === "1"
+                        ? Colors.RED
+                        : Colors.WHITE,
+                    height: 60,
+                    // justifyContent: 'center'
+                  },
+                  styles.accordianBorder,
+                ]}
+              ></List.Accordion>
             <List.AccordionGroup
               expandedId={openAccordian}
               onAccordionPress={(expandedId) => updateAccordian(expandedId)}
