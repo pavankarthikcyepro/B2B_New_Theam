@@ -285,12 +285,17 @@ const TestDriveScreen = ({ route, navigation }) => {
         if (selector.test_drive_vehicle_list_for_drop_down.length > 0 && selectedVehicleDetails?.varient !== '') {
             let tempObj = { ...selectedVehicleDetails };
             let findModel = [];
+            console.log("MODELS: ", selector.test_drive_vehicle_list_for_drop_down);
             findModel = selector.test_drive_vehicle_list_for_drop_down.filter((item) => {
                 return item.varientName === selectedVehicleDetails.varient || item.model === selectedVehicleDetails.model
             })
             if (findModel.length > 0) {
                 tempObj.vehicleId = findModel[0].vehicleId;
                 tempObj.varientId = findModel[0].varientId;
+            }
+            else{
+                tempObj.fuelType = '';
+                tempObj.transType = '';
             }
             setSelectedVehicleDetails(tempObj)
         }

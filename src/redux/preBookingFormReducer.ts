@@ -1124,11 +1124,13 @@ const prebookingFormSlice = createSlice({
       state.p_urban_or_rural = 0
     },
     updateModelSelectionData: (state, action) => {
-
       const dmsLeadProducts = action.payload;
       let dataObj: any = {};
       if (dmsLeadProducts.length > 0) {
-        dataObj = { ...dmsLeadProducts[0] };
+        // dataObj = { ...dmsLeadProducts[0] };
+        let modelData = dmsLeadProducts.filter((item) => item.model === state.pre_booking_details_response?.dmsLeadDto?.model)
+        dataObj = { ...modelData[0] };
+        console.log("$$$$$$$$$ MODEL $$$$$$$$$$", modelData[0])
       }
       state.lead_product_id = dataObj.id ? dataObj.id : "";
       state.model = dataObj.model ? dataObj.model : "";
