@@ -67,7 +67,7 @@ const TaskTranferScreen = () => {
     const [designationTransferFromDropDownList, setDesignationTransferFromDropDownList] = useState([]);
     const [employeeTransferFromDropDownItem, setEmployeeTransferFromDropDownItem] = useState(null);
     const [employeeTransferFromDropDownList, setEmployeeTransferFromDropDownList] = useState([]);
-
+    const [isAllSelect, setIsAllSelect] = useState(false);
     // const [taskList, setTaskList] = useState([]);
 
     useEffect(() => {
@@ -77,7 +77,7 @@ const TaskTranferScreen = () => {
     }, []);
 
     useEffect(() => {
-        if (selector.taskTransferStatus === 'success'){
+        if (selector.taskTransferStatus === 'success') {
             showToast("Transferred Successfully")
             dispatch(updateStatus(''))
             clearData()
@@ -158,6 +158,7 @@ const TaskTranferScreen = () => {
         setEmployeeTransferFromDropDownList([]);
         setShowTrasnferFromDropdowns(false)
         setShowTaskFlatlist(false)
+        setSelectedTaskList([])
     }
 
     const getTaskListFromServer = async () => {
@@ -276,10 +277,10 @@ const TaskTranferScreen = () => {
     }
 
     const submitTransfer = () => {
-        if (!employeeDropDownItem || !employeeTransferFromDropDownItem || selectedTaskList.length === 0){
+        if (!employeeDropDownItem || !employeeTransferFromDropDownItem || selectedTaskList.length === 0) {
             showToast("Please select all value")
         }
-        else{
+        else {
             const payload = {
                 "fromUserId": employeeDropDownItem.value,
                 "toUserId": employeeTransferFromDropDownItem.value,
@@ -338,22 +339,34 @@ const TaskTranferScreen = () => {
                             if (checked.hasOwnProperty(index)) {
                                 const temp = checked;
                                 temp[index] = !temp[index];
-                                if (temp[index]){
+                                if (temp[index]) {
                                     console.log("INSIDE IF");
                                     let tempArr = [...selectedTaskList];
                                     tempArr.push(item.taskId)
+                                    if(tempArr.length === taskList.length){
+                                        setIsAllSelect(true)
+                                    }
+                                    else{
+                                        setIsAllSelect(false)
+                                    }
                                     setSelectedTaskList(tempArr)
                                 }
-                                else{
+                                else {
                                     let tempArr = [...selectedTaskList];
                                     let taskIndex = -1;
                                     console.log("Temp arr", tempArr);
                                     taskIndex = tempArr.findIndex((taskId) => taskId === item.taskId)
                                     console.log("INSIDE ELSE ", taskIndex);
-                                    if(taskIndex !== -1){
+                                    if (taskIndex !== -1) {
                                         tempArr.splice(taskIndex, 1)
+                                        if (tempArr.length === taskList.length) {
+                                            setIsAllSelect(true)
+                                        }
+                                        else {
+                                            setIsAllSelect(false)
+                                        }
                                         setSelectedTaskList(tempArr)
-                                    }                                
+                                    }
                                 }
                                 setChecked({ ...temp, index: temp[index] });
                             } else {
@@ -363,6 +376,12 @@ const TaskTranferScreen = () => {
                                 let tempArr = [...selectedTaskList];
                                 tempArr.push(item.taskId)
                                 setSelectedTaskList(tempArr)
+                                if (tempArr.length === taskList.length) {
+                                    setIsAllSelect(true)
+                                }
+                                else {
+                                    setIsAllSelect(false)
+                                }
                                 setChecked({ ...temp, index: temp[index] });
                             }
                         }}
@@ -511,7 +530,40 @@ const TaskTranferScreen = () => {
                     </View>
 
                     {tasklistHeader ? <View style={{ width: '100%', paddingHorizontal: 15, height: 60, justifyContent: 'center' }}>
-                        <Text style={{ fontSize: 18, fontWeight: 'bold' }} >{taskNameHeader}</Text>
+                        {showTaskFlatlist ?
+
+                            <View style={{ flexDirection: 'row', alignItems: 'center',  }}>
+                                <Checkbox.Android
+                                    status={isAllSelect ? 'checked' : 'unchecked'}
+                                    uncheckedColor={Colors.DARK_GRAY}
+                                    color={Colors.RED}
+                                    onPress={() => {
+                                        console.log("IS ALL", isAllSelect, checked, selectedTaskList);
+                                        let preveState = isAllSelect;
+                                        setIsAllSelect(!isAllSelect)
+                                        if(!preveState){
+                                            let obj = {};
+                                            let tempSelectTask = [];
+                                            for(let i = 0; i < taskList.length; i++){
+                                                obj[i] = true;
+                                                tempSelectTask.push(taskList[i].taskId);
+                                                if(i === taskList.length - 1){
+                                                    setChecked({ ...obj, index: true });
+                                                    setSelectedTaskList([...tempSelectTask])
+                                                }
+                                            }
+                                        }
+                                        else{
+                                            setChecked({});
+                                            setSelectedTaskList([])
+                                        }
+                                    }}
+                                />
+                                <Text style={{ fontSize: 18, fontWeight: 'bold' }} >{taskNameHeader}</Text>
+                            </View>
+                            :
+                            <Text style={{ fontSize: 18, fontWeight: 'bold' }} >{taskNameHeader}</Text>
+                        }
                     </View> : null}
 
                     {showTaskList ? <View style={{ paddingVertical: 18, height: 350 }}>
