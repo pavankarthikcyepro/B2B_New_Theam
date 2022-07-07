@@ -760,178 +760,747 @@ const TargetScreen = ({ route, navigation }) => {
   }
 
   return (
-    <View style={styles.container}>
-      <Modal
-        visible={showShuffleModal}
-        animationType={'fade'}
-        transparent={true}
-        onRequestClose={() => setShowShuffleModal(false)}
-      >
-        <View style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          paddingHorizontal: 20
-        }}>
-          <View
-            style={{
-              width: "95%",
-              height: "30%",
-              alignSelf: "center",
-              backgroundColor: "white",
-              borderRadius: 8,
-            }}
+    <>
+    <Modal
+            visible={showShuffleModal}
+            animationType={'fade'}
+            transparent={true}
+            onRequestClose={() => setShowShuffleModal(false)}
           >
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                borderWidth: 1,
-                borderColor: "#d1d1d1",
-                backgroundColor: "#d1d1d1",
-                borderTopEndRadius: 8,
-                borderTopStartRadius: 8,
-              }}
-            >
-              <Text style={{ fontSize: 17, fontWeight: "500", margin: 10 }}>
-                Team Shuffle
-                  </Text>
-
-              <TouchableOpacity
-                activeOpacity={0.6}
-                onPress={() => {
-                  setShowShuffleModal(false);
-                  setHeaderTitle(
-                    "Selected employees has Active tasks. Please delegate to another employee"
-                  );
-                  setDropDownPlaceHolder("Employees");
-                  setDelegateButtonClick(false);
-                  setEmployeeDropdownList([]);
-                  setReoprtingManagerDropdownList([]);
+            <View style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              paddingHorizontal: 20
+            }}>
+              <View
+                style={{
+                  width: "95%",
+                  height: "30%",
+                  alignSelf: "center",
+                  backgroundColor: "white",
+                  borderRadius: 8,
                 }}
               >
-                <CloseIcon
-                  style={{ margin: 10 }}
-                  name="close"
-                  color={Colors.BLACK}
-                  size={20}
-                />
-              </TouchableOpacity>
-            </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    borderWidth: 1,
+                    borderColor: "#d1d1d1",
+                    backgroundColor: "#d1d1d1",
+                    borderTopEndRadius: 8,
+                    borderTopStartRadius: 8,
+                  }}
+                >
+                  <Text style={{ fontSize: 17, fontWeight: "500", margin: 10 }}>
+              Team Shuffle
+                  </Text>
 
-            <Text
-              style={{ color: Colors.GRAY, marginLeft: 12, marginTop: 5 }}
-            >
-              {headerTitle}
-            </Text>
-            <Dropdown
-              style={styles.dropdownContainer}
-              placeholderStyle={styles.placeholderStyle}
-              selectedTextStyle={styles.selectedTextStyle}
-              inputSearchStyle={styles.inputSearchStyle}
-              iconStyle={styles.iconStyle}
-              data={
-                delegateButtonClick
-                  ? reoprtingManagerDropdownList
-                  : employeeDropdownList
-              }
-              search
-              maxHeight={300}
-              labelField="label"
-              valueField="value"
-              placeholder={dropDownPlaceHolder}
-              searchPlaceholder="Search..."
-              renderRightIcon={() => (
-                <Image
-                  style={{ height: 5, width: 10 }}
-                  source={require("../../../../assets/images/Polygon.png")}
-                />
-              )}
-              onChange={async (item) => {
-                console.log("£££", item.value);
-                if (delegateButtonClick) {
-                  setReoprtingManagerListDropdownItem(item.value);
-                  console.log(reoprtingManagerListDropdownItem);
-                } else {
-                  setEmployeeListDropdownItem(item.value);
-                }
-              }}
-            />
-
-            <LoaderComponent
-              visible={selector.isLoading}
-              onRequestClose={() => { }}
-            />
-
-            <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, marginBottom: 10, flexDirection: 'row', width: '95%', justifyContent: 'space-around' }}>
-              {dropDownPlaceHolder === 'Employees' ?
-                <View style={{ flexDirection: 'row', width: '95%', justifyContent: 'space-around' }}>
-                  <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 70, alignItems: 'center', justifyContent: 'center', marginLeft: 18, marginRight: 12, backgroundColor: Colors.RED }} onPress={() => {
-                    // updateEmployeeData();
-                    if (employeeListDropdownItem !== 0) {
-                      setDelegateButtonClick(true);
-                      setHeaderTitle('Reporting Managers');
-                      setDropDownPlaceHolder(state => state = 'Reporting Manager');
-                      console.log("TDTDTDTDTDTD: ", employeeListDropdownItem);
-                      getReportingManagerListFromServer(selectedUser);
-                    }
-                  }}>
-                    <Text style={{ fontSize: 13, fontWeight: '300', color: Colors.WHITE }}>NEXT</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 220, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.RED }} onPress={() => {
-                    if (employeeListDropdownItem !== 0) {
-                      setHeaderTitle('Reporting Managers');
-                      setDropDownPlaceHolder('Reporting Manager');
-                      setDelegateButtonClick(true);
-                      getReportingManagerListFromServer(selectedUser);
-                    }
-                  }}>
-                    <Text style={{ fontSize: 13, fontWeight: '300', color: Colors.WHITE }}>CONTINUE WITHOUT DELEGATING</Text>
-                  </TouchableOpacity>
-                </View> :
-                <View style={{ position: 'absolute', right: 0, bottom: 0 }}>
-                  <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 70, alignItems: 'center', justifyContent: 'center', marginLeft: 18, marginRight: 12, backgroundColor: Colors.RED }} onPress={() => {
-                    if (reoprtingManagerListDropdownItem !== 0) {
-                      updateEmployeeData();
+                  <TouchableOpacity
+                    activeOpacity={0.6}
+                    onPress={() => {
                       setShowShuffleModal(false);
-                      setHeaderTitle('Selected employees has Active tasks. Please delegate to another employee');
-                      setDropDownPlaceHolder('Employees');
+                      setHeaderTitle(
+                        "Selected employees has Active tasks. Please delegate to another employee"
+                      );
+                      setDropDownPlaceHolder("Employees");
                       setDelegateButtonClick(false);
                       setEmployeeDropdownList([]);
                       setReoprtingManagerDropdownList([]);
-                    }
-                  }}>
-                    <Text style={{ fontSize: 13, fontWeight: '300', color: Colors.WHITE }}>SUBMIT</Text>
+                    }}
+                  >
+                    <CloseIcon
+                      style={{ margin: 10 }}
+                      name="close"
+                      color={Colors.BLACK}
+                      size={20}
+                    />
                   </TouchableOpacity>
-                </View>}
+                </View>
+
+                <Text
+                  style={{ color: Colors.GRAY, marginLeft: 12, marginTop: 5 }}
+                >
+                  {headerTitle}
+                </Text>
+                <Dropdown
+                  style={styles.dropdownContainer}
+                  placeholderStyle={styles.placeholderStyle}
+                  selectedTextStyle={styles.selectedTextStyle}
+                  inputSearchStyle={styles.inputSearchStyle}
+                  iconStyle={styles.iconStyle}
+                  data={
+                    delegateButtonClick
+                      ? reoprtingManagerDropdownList
+                      : employeeDropdownList
+                  }
+                  search
+                  maxHeight={300}
+                  labelField="label"
+                  valueField="value"
+                  placeholder={dropDownPlaceHolder}
+                  searchPlaceholder="Search..."
+                  renderRightIcon={() => (
+                    <Image
+                      style={{ height: 5, width: 10 }}
+                      source={require("../../../../assets/images/Polygon.png")}
+                    />
+                  )}
+                  onChange={async (item) => {
+                    console.log("£££", item.value);
+                    if (delegateButtonClick) {
+                      setReoprtingManagerListDropdownItem(item.value);
+                      console.log(reoprtingManagerListDropdownItem);
+                    } else {
+                      setEmployeeListDropdownItem(item.value);
+                    }
+                  }}
+                />
+
+                <LoaderComponent
+                  visible={selector.isLoading}
+                  onRequestClose={() => { }}
+                />
+
+                <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, marginBottom: 10, flexDirection: 'row', width: '95%', justifyContent: 'space-around' }}>
+                  {dropDownPlaceHolder === 'Employees' ?
+                    <View style={{ flexDirection: 'row', width: '95%', justifyContent: 'space-around' }}>
+                      <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 70, alignItems: 'center', justifyContent: 'center', marginLeft: 18, marginRight: 12, backgroundColor: Colors.RED }} onPress={() => {
+                        // updateEmployeeData();
+                        if (employeeListDropdownItem !== 0) {
+                          setDelegateButtonClick(true);
+                          setHeaderTitle('Reporting Managers');
+                          setDropDownPlaceHolder(state => state = 'Reporting Manager');
+                          console.log("TDTDTDTDTDTD: ", employeeListDropdownItem);
+                          getReportingManagerListFromServer(selectedUser);
+                        }
+                      }}>
+                        <Text style={{ fontSize: 13, fontWeight: '300', color: Colors.WHITE }}>NEXT</Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 220, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.RED }} onPress={() => {
+                        if (employeeListDropdownItem !== 0) {
+                          setHeaderTitle('Reporting Managers');
+                          setDropDownPlaceHolder('Reporting Manager');
+                          setDelegateButtonClick(true);
+                          getReportingManagerListFromServer(selectedUser);
+                        }
+                      }}>
+                        <Text style={{ fontSize: 13, fontWeight: '300', color: Colors.WHITE }}>CONTINUE WITHOUT DELEGATING</Text>
+                      </TouchableOpacity>
+                    </View> :
+                    <View style={{ position: 'absolute', right: 0, bottom: 0 }}>
+                      <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 70, alignItems: 'center', justifyContent: 'center', marginLeft: 18, marginRight: 12, backgroundColor: Colors.RED }} onPress={() => {
+                        if (reoprtingManagerListDropdownItem !== 0) {
+                          updateEmployeeData();
+                          setShowShuffleModal(false);
+                          setHeaderTitle('Selected employees has Active tasks. Please delegate to another employee');
+                          setDropDownPlaceHolder('Employees');
+                          setDelegateButtonClick(false);
+                          setEmployeeDropdownList([]);
+                          setReoprtingManagerDropdownList([]);
+                        }
+                      }}>
+                        <Text style={{ fontSize: 13, fontWeight: '300', color: Colors.WHITE }}>SUBMIT</Text>
+                      </TouchableOpacity>
+                    </View>}
+                </View>
+              </View>
             </View>
-          </View>
-        </View>
 
-      </Modal>
-      
-      <Modal
-        animationType={'fade'}
-        transparent={true}
-        visible={selectedName !== ''}
-        onRequestClose={() => setSelectedName('')}
-      >
-        <View style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          paddingHorizontal: 20
-        }}>
-          <View style={{ width: '90%', minHeight: 50, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', borderRadius: 10 }}>
-            <Text style={{ fontSize: 16, color: '#616161' }}>{selectedName}</Text>
-          </View>
-        </View>
-      </Modal>
+          </Modal>
 
+          <Modal
+            animationType={'fade'}
+            transparent={true}
+            visible={selectedName !== ''}
+            onRequestClose={() => setSelectedName('')}
+          >
+            <View style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              paddingHorizontal: 20
+            }}>
+              <View style={{ width: '90%', minHeight: 50, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', borderRadius: 10 }}>
+                <Text style={{ fontSize: 16, color: '#616161' }}>{selectedName}</Text>
+              </View>
+            </View>
+          </Modal>
+    <View style={styles.container}>
       {selector.isTeam ? (
+
+        // <View>
+        //   <View style={{ flexDirection: "row", marginLeft: 8 }}>
+        //     <View
+        //       style={{ width: "10%", justifyContent: "center", marginTop: 5 }}
+        //     ></View>
+        //     {/* <View style={{ width: '2%', borderRightWidth: 2, borderRightColor: '#d1d1d1', height: 53 }}>
+        //                 </View> */}
+        //     <View
+        //       style={{
+        //         width: "40%",
+        //         justifyContent: "center",
+        //         marginTop: 5,
+        //         alignItems: "center",
+        //       }}
+        //     >
+        //       <View
+        //         style={{
+        //           width: "100%",
+        //           justifyContent: "center",
+        //           alignItems: "center",
+        //           height: 40,
+        //           borderWidth: 1,
+        //           borderColor: "#d1d1d1",
+        //         }}
+        //       >
+        //         <Text
+        //           style={{
+        //             fontSize: 14,
+        //             color: "#0600FF",
+        //             fontWeight: "600",
+        //           }}
+        //         >
+        //           Team Total
+        //           </Text>
+        //       </View>
+        //       <View style={{ flexDirection: "row", height: 30 }}>
+        //         <View
+        //           style={{
+        //             width: "33%",
+        //             justifyContent: "center",
+        //             alignItems: "center",
+        //             borderWidth: 1,
+        //             borderColor: "#d1d1d1",
+        //             backgroundColor: "#d1d1d1",
+        //           }}
+        //         >
+        //           <Text style={{ fontSize: 14, fontWeight: "600" }}>Ach</Text>
+        //         </View>
+        //         <View
+        //           style={{
+        //             width: "33%",
+        //             justifyContent: "center",
+        //             alignItems: "center",
+        //             borderWidth: 1,
+        //             borderColor: "#d1d1d1",
+        //             backgroundColor: "#d1d1d1",
+        //           }}
+        //         >
+        //           <Text style={{ fontSize: 14, fontWeight: "600" }}>Bal</Text>
+        //         </View>
+        //         <View
+        //           style={{
+        //             width: "33%",
+        //             justifyContent: "center",
+        //             alignItems: "center",
+        //             borderWidth: 1,
+        //             borderColor: "#d1d1d1",
+        //             backgroundColor: "#d1d1d1",
+        //           }}
+        //         >
+        //           <Text style={{ fontSize: 14, fontWeight: "600" }}>
+        //             AR/D
+        //             </Text>
+        //         </View>
+        //       </View>
+        //     </View>
+        //     {/* <View style={{ width: '2%', borderRightWidth: 2, borderRightColor: '#d1d1d1', height: 53 }}>
+        //                 </View> */}
+        //   </View>
+        //   {selector.all_target_parameters_data.length > 0 && (
+        //     <View style={{ flexDirection: "row", marginLeft: 8 }}>
+        //       <View style={{ width: "10%", marginTop: 5 }}>
+        //         {selector.all_target_parameters_data.map((item, index) => {
+        //           return (
+        //             <View style={{ height: 30 }} key={index}>
+        //               <Text
+        //                 style={{
+        //                   color: color[index % color.length],
+        //                   fontSize: 14,
+        //                   fontWeight: "600",
+        //                 }}
+        //               >
+        //                 {item.paramShortName}
+        //               </Text>
+        //             </View>
+        //           );
+        //         })}
+
+        //         {/* <View style={{ marginBottom: 5 }}>
+        //                         <Text>Eng</Text>
+        //                     </View>
+        //                     <View>
+        //                         <Text>TD</Text>
+        //                     </View> */}
+        //       </View>
+        //       {/* <View style={{ width: '2%', borderRightWidth: 2, borderRightColor: '#d1d1d1', minHeight: 300 }}></View> */}
+
+        //       <View style={{ width: "40%" }}>
+        //         {selector.all_target_parameters_data.map((item, index) => {
+        //           return (
+        //             <View
+        //               style={{ flexDirection: "row", height: 30 }}
+        //               key={index}
+        //             >
+        //               <View
+        //                 style={{
+        //                   width: "33%",
+        //                   justifyContent: "center",
+        //                   alignItems: "center",
+        //                   borderWidth: 1,
+        //                   borderColor: "#d1d1d1",
+        //                 }}
+        //               >
+        //                 <Text style={{ fontSize: 12, fontWeight: "600" }}>
+        //                   {Number(item.achievment) >= 100000
+        //                     ? Math.round(Number(item.achievment) / 100000) +
+        //                     "L"
+        //                     : Number(item.achievment) >= 1000
+        //                       ? Math.round(Number(item.achievment) / 1000) + "K"
+        //                       : item.achievment}
+        //                     /
+        //                     {Number(item.target) >= 100000
+        //                     ? Math.round(Number(item.target) / 100000) + "L"
+        //                     : Number(item.target) >= 1000
+        //                       ? Math.round(Number(item.target) / 1000) + "K"
+        //                       : item.target}
+        //                 </Text>
+        //               </View>
+        //               <View
+        //                 style={{
+        //                   width: "33%",
+        //                   justifyContent: "center",
+        //                   alignItems: "center",
+        //                   borderWidth: 1,
+        //                   borderColor: "#d1d1d1",
+        //                 }}
+        //               >
+        //                 <Text style={{ fontSize: 12, fontWeight: "600" }}>
+        //                   {Number(item.achievment) > Number(item.target)
+        //                     ? 0
+        //                     : Math.abs(Number(item.shortfall)) >= 100000
+        //                       ? Math.round(
+        //                         Math.abs(Number(item.shortfall)) / 100000
+        //                       ) + "L"
+        //                       : Math.round(Math.abs(Number(item.shortfall)))}
+        //                 </Text>
+        //               </View>
+        //               <View
+        //                 style={{
+        //                   width: "33%",
+        //                   justifyContent: "center",
+        //                   alignItems: "center",
+        //                   borderWidth: 1,
+        //                   borderColor: "#d1d1d1",
+        //                 }}
+        //               >
+        //                 <Text style={{ fontSize: 12, fontWeight: "600" }}>
+        //                   {Number(item.achievment) > Number(item.target)
+        //                     ? 0
+        //                     : dateDiff > 0 && parseInt(item.shortfall) !== 0
+        //                       ? Math.round(
+        //                         parseInt(item.shortfall) / dateDiff
+        //                       ) >= 100000
+        //                         ? Math.round(
+        //                           parseInt(item.shortfall) / dateDiff / 100000
+        //                         ) + "L"
+        //                         : Math.round(
+        //                           parseInt(item.shortfall) / dateDiff
+        //                         )
+        //                       : 0}
+        //                 </Text>
+        //               </View>
+        //             </View>
+        //           );
+        //         })}
+        //       </View>
+
+        //       {/* <View style={{ width: '2%', borderRightWidth: 2, borderRightColor: '#d1d1d1', minHeight: 300 }}></View> */}
+        //       <ScrollView
+        //         style={{ marginBottom: 0, marginTop: -80 }}
+        //         contentContainerStyle={{ alignItems: "center" }}
+        //         horizontal={true}
+        //       >
+        //         {selector.all_emp_parameters_data.map((item, index) => {
+        //           return (
+        //             <View
+        //               style={{ flexDirection: "column", marginTop: 5 }}
+        //               key={index}
+        //             >
+        //               <View
+        //                 style={{
+        //                   flexDirection: "row",
+        //                   height: 40,
+        //                   borderWidth: 1,
+        //                   borderColor: "#d1d1d1",
+        //                   width: 155,
+        //                   justifyContent: "center",
+        //                   alignItems: "center",
+        //                 }}
+        //               >
+        //                 <View
+        //                   style={{
+        //                     width: 30,
+        //                     height: 30,
+        //                     borderRadius: 50,
+        //                     justifyContent: "center",
+        //                     alignItems: "center",
+        //                     backgroundColor: color[index % color.length],
+        //                   }}
+        //                 >
+        //                   <Text style={{ color: "#fff" }}>
+        //                     {item.empName.charAt(0)}
+        //                   </Text>
+        //                 </View>
+        //                 <View
+        //                   style={{
+        //                     height: "100%",
+        //                     justifyContent: "center",
+        //                     marginLeft: 10,
+        //                     width: 80,
+        //                   }}
+        //                 >
+        //                   <Text
+        //                     style={{
+        //                       fontSize: 12,
+        //                       color: color[index % color.length],
+        //                       fontWeight: "600",
+        //                     }}
+        //                     numberOfLines={2}
+        //                   >
+        //                     {item.empName}
+        //                   </Text>
+        //                 </View>
+
+        //                 <View
+        //                   style={{
+        //                     width: 30,
+        //                     height: 30,
+        //                     borderRadius: 50,
+        //                     justifyContent: "center",
+        //                     alignItems: "center",
+        //                     backgroundColor: color[index % color.length],
+        //                   }}
+        //                 >
+        //                   <TouchableOpacity activeOpacity={0.6} onPress={() => {
+        //                     setSelectedUser(item)
+        //                     handleModalDropdownDataForShuffle(item);
+        //                   }} style={{ ...styles.shuffleBGView, backgroundColor: color[index % color.length] }}>
+        //                     <ShuffleIcon name="shuffle" color={Colors.WHITE} size={18} />
+        //                   </TouchableOpacity>
+        //                 </View>
+        //               </View>
+        //               <View style={{ flexDirection: "row", height: 30 }}>
+        //                 <View
+        //                   style={{
+        //                     width: 51.6,
+        //                     justifyContent: "center",
+        //                     alignItems: "center",
+        //                     borderWidth: 1,
+        //                     borderColor: "#d1d1d1",
+        //                     backgroundColor: "#d1d1d1",
+        //                   }}
+        //                 >
+        //                   <Text style={{ fontSize: 14, fontWeight: "600" }}>
+        //                     Ach
+        //                     </Text>
+        //                 </View>
+        //                 <View
+        //                   style={{
+        //                     width: 51.6,
+        //                     justifyContent: "center",
+        //                     alignItems: "center",
+        //                     borderWidth: 1,
+        //                     borderColor: "#d1d1d1",
+        //                     backgroundColor: "#d1d1d1",
+        //                   }}
+        //                 >
+        //                   <Text style={{ fontSize: 14, fontWeight: "600" }}>
+        //                     Bal
+        //                     </Text>
+        //                 </View>
+        //                 <View
+        //                   style={{
+        //                     width: 51.6,
+        //                     justifyContent: "center",
+        //                     alignItems: "center",
+        //                     borderWidth: 1,
+        //                     borderColor: "#d1d1d1",
+        //                     backgroundColor: "#d1d1d1",
+        //                   }}
+        //                 >
+        //                   <Text style={{ fontSize: 14, fontWeight: "600" }}>
+        //                     AR/D
+        //                     </Text>
+        //                 </View>
+        //               </View>
+        //               {item.targetAchievements.map(
+        //                 (innerItem, innerIndex) => {
+        //                   return (
+        //                     <>
+        //                       <View
+        //                         style={{ flexDirection: "row", height: 30 }}
+        //                         key={innerIndex}
+        //                       >
+        //                         <View
+        //                           style={{
+        //                             width: 51.6,
+        //                             justifyContent: "center",
+        //                             alignItems: "center",
+        //                             borderWidth: 1,
+        //                             borderColor: "#d1d1d1",
+        //                           }}
+        //                         >
+        //                           <Text
+        //                             style={{
+        //                               fontSize: 12,
+        //                               fontWeight: "600",
+        //                             }}
+        //                           >
+        //                             {/* {innerItem.achievment}/{innerItem.target} */}
+        //                             {Number(innerItem.achievment) >= 100000
+        //                               ? Math.round(
+        //                                 Number(innerItem.achievment) /
+        //                                 100000
+        //                               ) + "L"
+        //                               : Number(innerItem.achievment) >= 1000
+        //                                 ? Math.round(
+        //                                   Number(innerItem.achievment) / 1000
+        //                                 ) + "K"
+        //                                 : innerItem.achievment}
+        //                               /
+        //                               {Number(innerItem.target) >= 100000
+        //                               ? Math.round(
+        //                                 Number(innerItem.target) / 100000
+        //                               ) + "L"
+        //                               : Number(innerItem.target) >= 1000
+        //                                 ? Math.round(
+        //                                   Number(innerItem.target) / 1000
+        //                                 ) + "K"
+        //                                 : innerItem.target}
+        //                           </Text>
+        //                         </View>
+        //                         <View
+        //                           style={{
+        //                             width: 51.6,
+        //                             justifyContent: "center",
+        //                             alignItems: "center",
+        //                             borderWidth: 1,
+        //                             borderColor: "#d1d1d1",
+        //                           }}
+        //                         >
+        //                           <Text
+        //                             style={{
+        //                               fontSize: 12,
+        //                               fontWeight: "600",
+        //                             }}
+        //                           >
+        //                             {Number(innerItem.achievment) >
+        //                               Number(innerItem.target)
+        //                               ? 0
+        //                               : Math.abs(
+        //                                 Number(innerItem.shortfall)
+        //                               ) >= 100000
+        //                                 ? Math.round(
+        //                                   Math.abs(
+        //                                     Number(innerItem.shortfall)
+        //                                   ) / 100000
+        //                                 ) + "L"
+        //                                 : Math.round(
+        //                                   Math.abs(
+        //                                     Number(innerItem.shortfall)
+        //                                   )
+        //                                 )}
+        //                           </Text>
+        //                         </View>
+        //                         <View
+        //                           style={{
+        //                             width: 51.6,
+        //                             justifyContent: "center",
+        //                             alignItems: "center",
+        //                             borderWidth: 1,
+        //                             borderColor: "#d1d1d1",
+        //                           }}
+        //                         >
+        //                           <Text
+        //                             style={{
+        //                               fontSize: 12,
+        //                               fontWeight: "600",
+        //                             }}
+        //                           >
+        //                             {Number(innerItem.achievment) >
+        //                               Number(innerItem.target)
+        //                               ? 0
+        //                               : dateDiff > 0 &&
+        //                                 parseInt(innerItem.shortfall) !== 0
+        //                                 ? // ? (
+        //                                 //     parseInt(innerItem.shortfall) /
+        //                                 //     dateDiff
+        //                                 //   ).toFixed(1)
+        //                                 Math.abs(
+        //                                   Math.round(
+        //                                     parseInt(innerItem.shortfall) /
+        //                                     dateDiff
+        //                                   )
+        //                                 )
+        //                                 : 0}
+        //                           </Text>
+        //                         </View>
+        //                       </View>
+        //                       {}
+        //                     </>
+        //                   );
+        //                 }
+        //               )}
+        //             </View>
+        //           );
+        //         })}
+        //       </ScrollView>
+        //     </View>
+        //   )}
+
+        //   <Modal isVisible={showShuffleModal}>
+        //     <View
+        //       style={{
+        //         width: "95%",
+        //         height: "30%",
+        //         alignSelf: "center",
+        //         backgroundColor: "white",
+        //         borderRadius: 8,
+        //       }}
+        //     >
+        //       <View
+        //         style={{
+        //           flexDirection: "row",
+        //           justifyContent: "space-between",
+        //           borderWidth: 1,
+        //           borderColor: "#d1d1d1",
+        //           backgroundColor: "#d1d1d1",
+        //           borderTopEndRadius: 8,
+        //           borderTopStartRadius: 8,
+        //         }}
+        //       >
+        //         <Text style={{ fontSize: 17, fontWeight: "500", margin: 10 }}>
+        //           Team Shuffle
+        //           </Text>
+
+        //         <TouchableOpacity
+        //           activeOpacity={0.6}
+        //           onPress={() => {
+        //             setShowShuffleModal(false);
+        //             setHeaderTitle(
+        //               "Selected employees has Active tasks. Please delegate to another employee"
+        //             );
+        //             setDropDownPlaceHolder("Employees");
+        //             setDelegateButtonClick(false);
+        //             setEmployeeDropdownList([]);
+        //             setReoprtingManagerDropdownList([]);
+        //           }}
+        //         >
+        //           <CloseIcon
+        //             style={{ margin: 10 }}
+        //             name="close"
+        //             color={Colors.BLACK}
+        //             size={20}
+        //           />
+        //         </TouchableOpacity>
+        //       </View>
+
+        //       <Text
+        //         style={{ color: Colors.GRAY, marginLeft: 12, marginTop: 5 }}
+        //       >
+        //         {headerTitle}
+        //       </Text>
+        //       <Dropdown
+        //         style={styles.dropdownContainer}
+        //         placeholderStyle={styles.placeholderStyle}
+        //         selectedTextStyle={styles.selectedTextStyle}
+        //         inputSearchStyle={styles.inputSearchStyle}
+        //         iconStyle={styles.iconStyle}
+        //         data={
+        //           delegateButtonClick
+        //             ? reoprtingManagerDropdownList
+        //             : employeeDropdownList
+        //         }
+        //         search
+        //         maxHeight={300}
+        //         labelField="label"
+        //         valueField="value"
+        //         placeholder={dropDownPlaceHolder}
+        //         searchPlaceholder="Search..."
+        //         renderRightIcon={() => (
+        //           <Image
+        //             style={{ height: 5, width: 10 }}
+        //             source={require("../../../../assets/images/Polygon.png")}
+        //           />
+        //         )}
+        //         onChange={async (item) => {
+        //           console.log("£££", item.value);
+        //           if (delegateButtonClick) {
+        //             setReoprtingManagerListDropdownItem(item.value);
+        //             console.log(reoprtingManagerListDropdownItem);
+        //           } else {
+        //             setEmployeeListDropdownItem(item.value);
+        //           }
+        //         }}
+        //       />
+
+        //       <LoaderComponent
+        //         visible={selector.isLoading}
+        //         onRequestClose={() => { }}
+        //       />
+
+        //       <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, marginBottom: 10, flexDirection: 'row', width: '95%', justifyContent: 'space-around' }}>
+        //         {dropDownPlaceHolder === 'Employees' ?
+        //           <View style={{ flexDirection: 'row', width: '95%', justifyContent: 'space-around' }}>
+        //             <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 70, alignItems: 'center', justifyContent: 'center', marginLeft: 18, marginRight: 12, backgroundColor: Colors.RED }} onPress={() => {
+        //               // updateEmployeeData();
+        //               if (employeeListDropdownItem !== 0) {
+        //                 setDelegateButtonClick(true);
+        //                 setHeaderTitle('Reporting Managers');
+        //                 setDropDownPlaceHolder(state => state = 'Reporting Manager');
+        //                 console.log("TDTDTDTDTDTD: ", employeeListDropdownItem);
+        //                 getReportingManagerListFromServer(selectedUser);
+        //               }
+        //             }}>
+        //               <Text style={{ fontSize: 13, fontWeight: '300', color: Colors.WHITE }}>NEXT</Text>
+        //             </TouchableOpacity>
+
+        //             <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 220, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.RED }} onPress={() => {
+        //               if (employeeListDropdownItem !== 0) {
+        //                 setHeaderTitle('Reporting Managers');
+        //                 setDropDownPlaceHolder('Reporting Manager');
+        //                 setDelegateButtonClick(true);
+        //                 getReportingManagerListFromServer(selectedUser);
+        //               }
+        //             }}>
+        //               <Text style={{ fontSize: 13, fontWeight: '300', color: Colors.WHITE }}>CONTINUE WITHOUT DELEGATING</Text>
+        //             </TouchableOpacity>
+        //           </View> :
+        //           <View style={{ position: 'absolute', right: 0, bottom: 0 }}>
+        //             <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 70, alignItems: 'center', justifyContent: 'center', marginLeft: 18, marginRight: 12, backgroundColor: Colors.RED }} onPress={() => {
+        //               if (reoprtingManagerListDropdownItem !== 0) {
+        //                 updateEmployeeData();
+        //                 setShowShuffleModal(false);
+        //                 setHeaderTitle('Selected employees has Active tasks. Please delegate to another employee');
+        //                 setDropDownPlaceHolder('Employees');
+        //                 setDelegateButtonClick(false);
+        //                 setEmployeeDropdownList([]);
+        //                 setReoprtingManagerDropdownList([]);
+        //               }
+        //             }}>
+        //               <Text style={{ fontSize: 13, fontWeight: '300', color: Colors.WHITE }}>SUBMIT</Text>
+        //             </TouchableOpacity>
+        //           </View>}
+        //       </View>
+        //     </View>
+        //   </Modal>
+        // </View>
         <View >
           <ScrollView contentContainerStyle={{ paddingRight: 20, flexDirection: 'column' }} horizontal={true} directionalLockEnabled={true}>
             <View style={{ flexDirection: 'row' }}>
@@ -2097,6 +2666,7 @@ const TargetScreen = ({ route, navigation }) => {
                 />
             </TouchableOpacity> */}
     </View>
+    </>
   );
 }
 
