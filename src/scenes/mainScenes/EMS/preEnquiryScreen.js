@@ -68,13 +68,22 @@ const PreEnquiryScreen = ({ navigation }) => {
     }
 
 
-    useEffect(() => {
+    useEffect(async() => {
 
         // Get Data From Server
         let isMounted = true;
         setFromDateState(lastMonthFirstDate);
         const tomorrowDate = moment().add(1, "day").format(dateFormat)
         setToDateState(currentDate);
+
+        const employeeData = await AsyncStore.getData(
+            AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            setEmployeeId(jsonObj.empId);
+            setOrgId(jsonObj.orgId);
+        }
         // getAsyncData().then(data => {
         //     if (isMounted) {
         //         setMyState(data);
@@ -94,7 +103,7 @@ const PreEnquiryScreen = ({ navigation }) => {
         const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
-            setEmployeeId(jsonObj.empId);
+            // setEmployeeId(jsonObj.empId);
             getPreEnquiryListFromServer(jsonObj.empId, lastMonthFirstDate, currentDate);
         }
     }
@@ -114,7 +123,10 @@ const PreEnquiryScreen = ({ navigation }) => {
             // getAsyncData(lastMonthFirstDate, currentDate).then(data => {
             //     console.log(data)
             // });
-            console.log(fromDateRef.current, toDateRef.current)
+            setFromDateState(lastMonthFirstDate);
+            const tomorrowDate = moment().add(1, "day").format(dateFormat)
+            setToDateState(currentDate);
+            console.log("DATE &&&&", fromDateRef.current, toDateRef.current, lastMonthFirstDate, currentDate)
             getDataFromDB()
         });
 
@@ -161,7 +173,7 @@ const PreEnquiryScreen = ({ navigation }) => {
 
     const getPreEnquiryListFromServer = (empId, startDate, endDate) => {
         const payload = getPayloadData(empId, startDate, endDate, 0);
-        console.log("payload called")
+        console.log("payload called", payload)
         dispatch(getPreEnquiryData(payload));
     }
 
@@ -177,7 +189,7 @@ const PreEnquiryScreen = ({ navigation }) => {
             "empId": empId,
             "status": "PREENQUIRY",
             "offset": offSet,
-            "limit": 1000,
+            "limit": 10,
         }
         return payload;
     }
@@ -196,7 +208,6 @@ const PreEnquiryScreen = ({ navigation }) => {
     }
 
     const updateSelectedDate = (date, key) => {
-
         const formatDate = moment(date).format(dateFormat);
         switch (key) {
             case "FROM_DATE":
@@ -397,13 +408,15 @@ const PreEnquiryScreen = ({ navigation }) => {
                     </View>
                     }
 
-                <View style={[styles.addView, GlobalStyle.shadow]}>
-                    <Pressable onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.addPreEnq, { fromEdit: false })}>
-                        {/* <View style={[GlobalStyle.shadow, { height: 60, width: 60, borderRadius: 30, shadowRadius: 5 }]}> */}
-                        {/* <VectorImage source={CREATE_NEW} width={60} height={60} color={"rgba(76,24,197,0.8)"} /> */}
-                        <CREATE_NEW width={60} height={60} fill={"rgba(255,21,107,6)"} />
-                        {/* </View> */}
-                    </Pressable>
+                <View style={[styles.addView, GlobalStyle.shadow, {justifyContent: 'center', alignItems: 'center'}]}>
+                    <View style={{width: 60, height: 60, borderRadius: 30, backgroundColor: '#FFFFFF'}}>
+                        <Pressable onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.addPreEnq, { fromEdit: false })}>
+                            {/* <View style={[GlobalStyle.shadow, { height: 60, width: 60, borderRadius: 30, shadowRadius: 5 }]}> */}
+                            {/* <VectorImage source={CREATE_NEW} width={60} height={60} color={"rgba(76,24,197,0.8)"} /> */}
+                            <CREATE_NEW width={60} height={60} fill={"rgba(255,21,107,6)"} />
+                            {/* </View> */}
+                        </Pressable>
+                    </View>
                 </View>
 
             </View>

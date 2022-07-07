@@ -48,11 +48,10 @@ const receptionMenu = [
     "Upcoming Deliveries",
     "Settings",
     "Digital Payment",
-    "Monthly Target Planning",
+    "Target Planning",
     "Helpdesk",
     "Task Management",
     "Drop Analysis",
-
     "Task Transfer",
     "Sign Out"
 ];
@@ -60,18 +59,17 @@ const teleCollerMenu = [
     "Home",
     "Settings",
     "Digital Payment",
-    "Monthly Target Planning",
+    "Target Planning",
     "Helpdesk",
     "Task Management",
     "Drop Analysis",
-
     "Sign Out"
 ];
 const ShowRoomMenu = [
     "Home",
     "Settings",
     "Digital Payment",
-    "Monthly Target Planning",
+    "Target Planning",
     "Helpdesk",
     "Task Management",
     "Drop Analysis",
@@ -81,7 +79,7 @@ const MDMenu = [
     "Home",
     "Settings",
     "Digital Payment",
-    "Monthly Target Planning",
+    "Target Planning",
     "Helpdesk",
     "Task Management",
     "Task Transfer",

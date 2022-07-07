@@ -115,6 +115,7 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, na
                 <View style={{ width: "30%", alignItems: "center" }}>
                     <View style={styles.modal}>
                         <Text style={styles.text4}>{model}</Text>
+                        {/* <Text style={styles.text4}>{"Jeep Compact SUV"}</Text> */}
                     </View>
                     {/* <View style={{ height: 8 }}></View> */}
                     <View style={{ flexDirection: "row", width: "100%", justifyContent: "space-evenly" }}>
@@ -177,8 +178,8 @@ const styles = StyleSheet.create({
     modal: {
         backgroundColor: Colors.RED,
         borderRadius: 4,
-        width: "85%",
-        height: 21,
+        minWidth: "85%",
+        minHeight: 21,
         justifyContent: "center",
         alignItems: "center",
         marginBottom: 10
