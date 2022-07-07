@@ -29,7 +29,8 @@ import { LoaderComponent } from '../../../../components';
 //   getUserWiseTargetParameters
 // } from '../../../../redux/homeReducer';
 
-import { getEmployeesList, getReportingManagerList, updateEmployeeDataBasedOnDelegate, getDeptDropdown, getDesignationDropdown, getUserWiseTargetParameters } from "../../../../redux/homeReducer";
+import { getEmployeesList, getReportingManagerList, updateEmployeeDataBasedOnDelegate, getDeptDropdown, getDesignationDropdown, getUserWiseTargetParameters, delegateTask } from "../../../../redux/homeReducer";
+import { showToast } from "../../../../utils/toast";
 
 //const paramtersTitlesData = ["Parameter", "E", "TD", "HV", "VC", "B", "Ex", "R", "F", "I", "Ex-W", "Acc.", "Ev"]
 const paramtersTitlesData = ["Parameter", "Target", "Achivement", "Achivement %", "ShortFall", "ShortFall %"]
@@ -436,6 +437,7 @@ const TargetScreen = ({ route, navigation }) => {
   const [employeeDropdownList, setEmployeeDropdownList] = useState([]);
   const [reoprtingManagerListDropdownItem, setReoprtingManagerListDropdownItem] = useState(0);
   const [reoprtingManagerDropdownList, setReoprtingManagerDropdownList] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
     const dateFormat = "YYYY-MM-DD";
@@ -599,72 +601,100 @@ const TargetScreen = ({ route, navigation }) => {
     setReoprtingManagerDropdownList(selector.reporting_manager_list.map(({ name: label, id: value, ...rest }) => ({ value, label, ...rest })));
   }, [selector.reporting_manager_list])
 
-  const handleModalDropdownDataForShuffle = () => {
+  const handleModalDropdownDataForShuffle = (user) => {
     if (delegateButtonClick) {
-      getReportingManagerListFromServer();
+      getReportingManagerListFromServer(user);
       setShowShuffleModal(true);
       // setReoprtingManagerDropdownList(selector.reporting_manager_list.map(({ name: label, id: value, ...rest }) => ({ value, label, ...rest })));
     } else {
-      getEmployeeListFromServer();
+      getEmployeeListFromServer(user);
       setShowShuffleModal(true);
       // setEmployeeDropdownList(selector.employee_list.map(({ name: label, id: value, ...rest }) => ({ value, label, ...rest })));
     }
   }
 
-  const getReportingManagerListFromServer = async () => {
-    dispatch(getReportingManagerList(16));
-  }
-
-  const getEmployeeListFromServer = async () => {
-    // dispatch(getEmployeesList(424));
+  const getReportingManagerListFromServer = async (user) => {
     const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     console.log("EMP DTLS: ", employeeData);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
-      const payloadDept = {
-        "orgId": jsonObj.orgId,
-        "parent": "branch",
-        "child": "department",
-        "parentId": jsonObj.branchId
-      }
-      Promise.all([dispatch(getDeptDropdown(payloadDept))]).then((res1) => {
-        console.log("TTTRRR: ", JSON.stringify(res1));
-        let dept = [];
-        dept = res1[0].payload.filter((item) => item.value === jsonObj.primaryDepartment)
-        const payloadDesig = {
-          "orgId": jsonObj.orgId,
-          "parent": "department",
-          "child": "designation",
-          "parentId": dept ? dept[0].id : 0
-        }
-
-        Promise.all([dispatch(getDesignationDropdown(payloadDesig))]).then((res1) => {
-          let desig = [];
-          desig = res1[0].payload.filter((item) => item.value === jsonObj.primaryDesignation)
-          const payload = {
-            "orgId": jsonObj.orgId,
-            "branchId": jsonObj.branchId,
-            "deptId": dept ? dept[0].id : 0,
-            "desigId": desig ? desig[0].id : 0
-            // "orgId": 16,
-            // "branchId": 267,
-            // "deptId": 180,
-            // "desigId": 56
-          }
-          console.log("EMP PAYLOAD: ", payload);
-          dispatch(getEmployeesList(payload));
-        })
-      })
-
+      dispatch(delegateTask({
+        fromUserId: jsonObj.empId,
+        toUserId: user.empId
+      }))
     }
+    dispatch(getReportingManagerList(user.orgId));
+  }
+
+  const getEmployeeListFromServer = async (user) => {
+    // dispatch(getEmployeesList(424));
+    // const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    // console.log("EMP DTLS: ", employeeData);
+    // if (employeeData) {
+    //   const jsonObj = JSON.parse(employeeData);
+    //   const payloadDept = {
+    //     "orgId": jsonObj.orgId,
+    //     "parent": "branch",
+    //     "child": "department",
+    //     "parentId": jsonObj.branchId
+    //   }
+    //   Promise.all([dispatch(getDeptDropdown(payloadDept))]).then((res1) => {
+    //     console.log("TTTRRR: ", JSON.stringify(res1));
+    //     let dept = [];
+    //     dept = res1[0].payload.filter((item) => item.value === jsonObj.primaryDepartment)
+    //     const payloadDesig = {
+    //       "orgId": jsonObj.orgId,
+    //       "parent": "department",
+    //       "child": "designation",
+    //       "parentId": dept ? dept[0].id : 0
+    //     }
+
+    //     Promise.all([dispatch(getDesignationDropdown(payloadDesig))]).then((res1) => {
+    //       let desig = [];
+    //       desig = res1[0].payload.filter((item) => item.value === jsonObj.primaryDesignation)
+    //       const payload = {
+    //         "orgId": jsonObj.orgId,
+    //         "branchId": jsonObj.branchId,
+    //         "deptId": dept ? dept[0].id : 0,
+    //         "desigId": desig ? desig[0].id : 0
+    //         // "orgId": 16,
+    //         // "branchId": 267,
+    //         // "deptId": 180,
+    //         // "desigId": 56
+    //       }
+    //       console.log("EMP PAYLOAD: ", payload);
+    //       dispatch(getEmployeesList(payload));
+    //     })
+    //   })
+
+    // }
+
+    const payload = {
+      "empId": user.empId
+    }
+    console.log("EMP PAYLOAD: ", payload);
+    dispatch(getEmployeesList(payload));
   }
 
   const updateEmployeeData = async () => {
-    const payload = {
-      empID: employeeListDropdownItem ? employeeListDropdownItem : 427,
-      managerID: reoprtingManagerListDropdownItem ? reoprtingManagerListDropdownItem : 456
+    if (employeeListDropdownItem !== 0 && reoprtingManagerListDropdownItem !== 0) {
+      const payload = {
+        empID: employeeListDropdownItem,
+        managerID: reoprtingManagerListDropdownItem
+      }
+      Promise.all([dispatch(updateEmployeeDataBasedOnDelegate(payload))]).then(() => {
+        showToast("Successfully updated")
+        setDelegateButtonClick(false);
+        setHeaderTitle("Selected employees has Active tasks. Please delegate to another employee");
+        setDropDownPlaceHolder("Employees");
+
+        setEmployeeListDropdownItem(0);
+        setEmployeeDropdownList([]);
+        setReoprtingManagerListDropdownItem(0);
+        setReoprtingManagerDropdownList([]);
+        setSelectedUser(null);
+      })
     }
-    dispatch(updateEmployeeDataBasedOnDelegate(payload));
   }
 
   const renderData = (item, color) => {
@@ -725,7 +755,8 @@ const TargetScreen = ({ route, navigation }) => {
             }}
           >
             <TouchableOpacity activeOpacity={0.6} onPress={() => {
-              handleModalDropdownDataForShuffle();
+              setSelectedUser(item)
+              handleModalDropdownDataForShuffle(item);
             }} style={{ ...styles.shuffleBGView, backgroundColor: color }}>
               <ShuffleIcon name="shuffle" color={Colors.WHITE} size={18} />
             </TouchableOpacity>
@@ -751,35 +782,68 @@ const TargetScreen = ({ route, navigation }) => {
           backgroundColor: 'rgba(0, 0, 0, 0.5)',
           paddingHorizontal: 20
         }}>
-          <View style={{ width: "95%", height: "35%", alignSelf: 'center', backgroundColor: 'white', borderRadius: 8 }}>
-            <View style={{
-              flexDirection: 'row', justifyContent: 'space-between', borderWidth: 1,
-              borderColor: "#d1d1d1",
-              backgroundColor: "#d1d1d1",
-              borderTopEndRadius: 8, borderTopStartRadius: 8
-            }}>
-              <Text style={{ fontSize: 17, fontWeight: '500', margin: 10 }}>Team Shuffle</Text>
+          <View
+            style={{
+              width: "95%",
+              height: "30%",
+              alignSelf: "center",
+              backgroundColor: "white",
+              borderRadius: 8,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                borderWidth: 1,
+                borderColor: "#d1d1d1",
+                backgroundColor: "#d1d1d1",
+                borderTopEndRadius: 8,
+                borderTopStartRadius: 8,
+              }}
+            >
+              <Text style={{ fontSize: 17, fontWeight: "500", margin: 10 }}>
+                Team Shuffle
+                  </Text>
 
-              <TouchableOpacity activeOpacity={0.6} onPress={() => {
-                setShowShuffleModal(false);
-                setHeaderTitle('Selected employees has Active tasks. Please delegate to another employee');
-                setDropDownPlaceHolder('Employees');
-                setDelegateButtonClick(false);
-                setEmployeeDropdownList([]);
-                setReoprtingManagerDropdownList([]);
-              }}>
-                <CloseIcon style={{ margin: 10 }} name="close" color={Colors.BLACK} size={20} />
+              <TouchableOpacity
+                activeOpacity={0.6}
+                onPress={() => {
+                  setShowShuffleModal(false);
+                  setHeaderTitle(
+                    "Selected employees has Active tasks. Please delegate to another employee"
+                  );
+                  setDropDownPlaceHolder("Employees");
+                  setDelegateButtonClick(false);
+                  setEmployeeDropdownList([]);
+                  setReoprtingManagerDropdownList([]);
+                }}
+              >
+                <CloseIcon
+                  style={{ margin: 10 }}
+                  name="close"
+                  color={Colors.BLACK}
+                  size={20}
+                />
               </TouchableOpacity>
             </View>
 
-            <Text style={{ color: Colors.GRAY, marginLeft: 8, marginTop: 5 }}>{headerTitle}</Text>
+            <Text
+              style={{ color: Colors.GRAY, marginLeft: 12, marginTop: 5 }}
+            >
+              {headerTitle}
+            </Text>
             <Dropdown
               style={styles.dropdownContainer}
               placeholderStyle={styles.placeholderStyle}
               selectedTextStyle={styles.selectedTextStyle}
               inputSearchStyle={styles.inputSearchStyle}
               iconStyle={styles.iconStyle}
-              data={delegateButtonClick ? reoprtingManagerDropdownList : employeeDropdownList}
+              data={
+                delegateButtonClick
+                  ? reoprtingManagerDropdownList
+                  : employeeDropdownList
+              }
               search
               maxHeight={300}
               labelField="label"
@@ -787,13 +851,16 @@ const TargetScreen = ({ route, navigation }) => {
               placeholder={dropDownPlaceHolder}
               searchPlaceholder="Search..."
               renderRightIcon={() => (
-                <Image style={{ height: 5, width: 10 }} source={require('../../../../assets/images/Polygon.png')} />
+                <Image
+                  style={{ height: 5, width: 10 }}
+                  source={require("../../../../assets/images/Polygon.png")}
+                />
               )}
               onChange={async (item) => {
                 console.log("£££", item.value);
                 if (delegateButtonClick) {
                   setReoprtingManagerListDropdownItem(item.value);
-                  console.log(reoprtingManagerListDropdownItem)
+                  console.log(reoprtingManagerListDropdownItem);
                 } else {
                   setEmployeeListDropdownItem(item.value);
                 }
@@ -809,33 +876,40 @@ const TargetScreen = ({ route, navigation }) => {
               {dropDownPlaceHolder === 'Employees' ?
                 <View style={{ flexDirection: 'row', width: '95%', justifyContent: 'space-around' }}>
                   <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 70, alignItems: 'center', justifyContent: 'center', marginLeft: 18, marginRight: 12, backgroundColor: Colors.RED }} onPress={() => {
-                    updateEmployeeData();
-                    setDelegateButtonClick(true);
-                    setHeaderTitle('Reporting Managers');
-                    setDropDownPlaceHolder(state => state = 'Reporting Manager');
-                    getReportingManagerListFromServer();
+                    // updateEmployeeData();
+                    if (employeeListDropdownItem !== 0) {
+                      setDelegateButtonClick(true);
+                      setHeaderTitle('Reporting Managers');
+                      setDropDownPlaceHolder(state => state = 'Reporting Manager');
+                      console.log("TDTDTDTDTDTD: ", employeeListDropdownItem);
+                      getReportingManagerListFromServer(selectedUser);
+                    }
                   }}>
                     <Text style={{ fontSize: 13, fontWeight: '300', color: Colors.WHITE }}>NEXT</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 220, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.RED }} onPress={() => {
-                    setHeaderTitle('Reporting Managers');
-                    setDropDownPlaceHolder('Reporting Manager');
-                    setDelegateButtonClick(true);
-                    getReportingManagerListFromServer();
+                    if (employeeListDropdownItem !== 0) {
+                      setHeaderTitle('Reporting Managers');
+                      setDropDownPlaceHolder('Reporting Manager');
+                      setDelegateButtonClick(true);
+                      getReportingManagerListFromServer(selectedUser);
+                    }
                   }}>
                     <Text style={{ fontSize: 13, fontWeight: '300', color: Colors.WHITE }}>CONTINUE WITHOUT DELEGATING</Text>
                   </TouchableOpacity>
                 </View> :
                 <View style={{ position: 'absolute', right: 0, bottom: 0 }}>
                   <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 70, alignItems: 'center', justifyContent: 'center', marginLeft: 18, marginRight: 12, backgroundColor: Colors.RED }} onPress={() => {
-                    updateEmployeeData();
-                    setShowShuffleModal(false);
-                    setHeaderTitle('Selected employees has Active tasks. Please delegate to another employee');
-                    setDropDownPlaceHolder('Employees');
-                    setDelegateButtonClick(false);
-                    setEmployeeDropdownList([]);
-                    setReoprtingManagerDropdownList([]);
+                    if (reoprtingManagerListDropdownItem !== 0) {
+                      updateEmployeeData();
+                      setShowShuffleModal(false);
+                      setHeaderTitle('Selected employees has Active tasks. Please delegate to another employee');
+                      setDropDownPlaceHolder('Employees');
+                      setDelegateButtonClick(false);
+                      setEmployeeDropdownList([]);
+                      setReoprtingManagerDropdownList([]);
+                    }
                   }}>
                     <Text style={{ fontSize: 13, fontWeight: '300', color: Colors.WHITE }}>SUBMIT</Text>
                   </TouchableOpacity>
