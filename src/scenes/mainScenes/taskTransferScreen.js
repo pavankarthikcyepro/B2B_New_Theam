@@ -42,7 +42,7 @@ const TaskTranferScreen = () => {
     const [tasklistHeader, setTasklistHeader] = useState(false);
 
     const [showTrasnferFromDropdowns, setShowTrasnferFromDropdowns] = useState(false);
-    const [taskNameHeader, setTaskNameHeader] = useState("Task List");
+    const [taskNameHeader, setTaskNameHeader] = useState("Task Name");
     const [checked, setChecked] = useState({});
 
     //task transfer to states
@@ -413,7 +413,7 @@ const TaskTranferScreen = () => {
 
             <ScrollView>
                 <View style={{ width: '100%', paddingHorizontal: 15, height: 60, justifyContent: 'center' }}>
-                    <Text style={{ fontSize: 18, fontWeight: 'bold' }} >Select Employee to Transfer Tasks</Text>
+                    <Text style={{ fontSize: 18, fontWeight: 'bold' }} > Transfer Tasks From</Text>
                 </View>
                 <View style={{ width: '100%', paddingHorizontal: 15, justifyContent: 'center' }}>
                     <View style={styles.dropWrap}>
@@ -588,7 +588,7 @@ const TaskTranferScreen = () => {
                     </ScrollView> : null}
 
                     {showTrasnferFromDropdowns ? <View style={{ width: '100%', paddingHorizontal: 15, height: 60, justifyContent: 'center' }}>
-                        <Text style={{ fontSize: 18, fontWeight: 'bold' }} >Transfer Task from</Text>
+                        <Text style={{ fontSize: 18, fontWeight: 'bold' }} > To</Text>
                     </View> : null}
 
                     {showTrasnferFromDropdowns ? <View>
@@ -716,70 +716,91 @@ const TaskTranferScreen = () => {
 export default TaskTranferScreen;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        flexDirection: "column",
-        backgroundColor: Colors.LIGHT_GRAY,
-        paddingTop: 10,
-    },
-    view2: {
-        flex: 1,
-        padding: 10,
-    },
-    list: {
-        padding: 20,
-        backgroundColor: Colors.WHITE,
-        borderRadius: 10,
-    },
-    view1: {
-        height: 10,
-        backgroundColor: Colors.LIGHT_GRAY,
-    },
-    dropdownContainer: {
-        backgroundColor: 'white',
-        padding: 16,
-        borderWidth: 1,
-        borderColor: '#000000',
-        width: '100%',
-        height: 57,
-        borderRadius: 5
-    },
-    dropdown: {
-        height: 50,
-        borderColor: 'gray',
-        borderWidth: 0.5,
-        borderRadius: 8,
-        paddingHorizontal: 8,
-    },
-    icon: {
-        marginRight: 5,
-    },
-    label: {
-        position: 'absolute',
-        backgroundColor: 'white',
-        left: 22,
-        top: 8,
-        zIndex: 999,
-        paddingHorizontal: 8,
-        fontSize: 14,
-    },
-    placeholderStyle: {
-        fontSize: 16,
-    },
-    selectedTextStyle: {
-        fontSize: 16,
-    },
-    iconStyle: {
-        width: 20,
-        height: 20,
-    },
-    inputSearchStyle: {
-        height: 40,
-        fontSize: 16,
-    },
-    dropHeadTextWrap: { height: 30, paddingHorizontal: 8, position: 'absolute', top: -8, left: 10, backgroundColor: '#fff', zIndex: 9 },
-    dropHeadText: { color: '#B8B8B8', fontSize: 12 },
-    dropWrap: { position: 'relative', marginBottom: 20 },
-    nextBtnWrap: { width: '100%', justifyContent: 'center', alignItems: 'center', paddingTop: 50, paddingBottom: 30 },
-    nextBtn: { height: 50, width: 200, backgroundColor: '#FC291C', borderRadius: 4, justifyContent: 'center', alignItems: 'center' }
+  container: {
+    flex: 1,
+    flexDirection: "column",
+    backgroundColor: Colors.LIGHT_GRAY,
+    paddingTop: 10,
+  },
+  view2: {
+    flex: 1,
+    padding: 10,
+  },
+  list: {
+    padding: 20,
+    backgroundColor: Colors.WHITE,
+    borderRadius: 10,
+  },
+  view1: {
+    height: 10,
+    backgroundColor: Colors.LIGHT_GRAY,
+  },
+  dropdownContainer: {
+    backgroundColor: "white",
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "#000000",
+    width: "100%",
+    height: 57,
+    borderRadius: 5,
+  },
+  dropdown: {
+    height: 50,
+    borderColor: "gray",
+    borderWidth: 0.5,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+  },
+  icon: {
+    marginRight: 5,
+  },
+  label: {
+    position: "absolute",
+    backgroundColor: "white",
+    left: 22,
+    top: 8,
+    zIndex: 999,
+    paddingHorizontal: 8,
+    fontSize: 14,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+  },
+  dropHeadTextWrap: {
+    height: 30,
+    paddingHorizontal: 8,
+    position: "absolute",
+    top: -8,
+    left: 10,
+    backgroundColor: "#fff",
+    zIndex: 9,
+  },
+  dropHeadText: { color: "#B8B8B8", fontSize: 12 },
+  dropWrap: { position: "relative", marginBottom: 20 },
+  nextBtnWrap: {
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: 50,
+    paddingBottom: 30,
+  },
+  nextBtn: {
+    height: 50,
+    width: 200,
+    backgroundColor: "#FF156B",
+    borderRadius: 4,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });

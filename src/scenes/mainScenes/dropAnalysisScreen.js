@@ -81,13 +81,13 @@ const DropAnalysisScreen = ({ navigation }) => {
            selector.approvalStatus = ""
            setSelectedItemIds([])
            setisApprovalUIVisible(false)
-            getEnquiryListFromServer(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)
+            getDropListFromServer(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)
         }
         else {
             selector.approvalStatus = ""
             setSelectedItemIds([])
             setisApprovalUIVisible(false)
-            getEnquiryListFromServer(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)
+            getDropListFromServer(employeeId, employeeName, branchId, orgId, selectedFromDate, selectedToDate)
         }
     }, [selector.approvalStatus])
 
@@ -154,17 +154,13 @@ const DropAnalysisScreen = ({ navigation }) => {
             await setOrgId(jsonObj.orgId)
 
             await setEmployeeName(jsonObj.empName)
-            getEnquiryListFromServer(jsonObj.empId, jsonObj.empName, branchId, jsonObj.orgId, lastMonthFirstDate, currentDate);
+            await setEmployeeId(jsonObj.empId)
+            getDropListFromServer(jsonObj.empId, jsonObj.empName, branchId, jsonObj.orgId, lastMonthFirstDate, currentDate);
         }
     }
+   
 
-    const getAsyncData = async () => {
-        let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
-        let orgId = await AsyncStore.getData(AsyncStore.Keys.ORG_ID);
-        return { empId, orgId };
-    }
-
-    const getEnquiryListFromServer = (empId,empName, branchId,orgId, startDate, endDate) => {
+    const getDropListFromServer = (empId,empName, branchId,orgId, startDate, endDate) => {
         setisApprovalUIVisible(false)
         const payload = getPayloadData(empId,empName, branchId,orgId, startDate, endDate, 0)
         dispatch(getLeadDropList(payload));
@@ -189,11 +185,15 @@ const DropAnalysisScreen = ({ navigation }) => {
     }
 
     const getMoreEnquiryListFromServer = async () => {
-        if (selector.isLoadingExtraData) { return }
-        if (employeeId && ((selector.pageNumber + 1) < selector.totalPages)) {
-            const payload = getPayloadData(employeeId,employeeName, branchId, selectedFromDate, selectedToDate, (selector.pageNumber + 1))
+        if (selector.isLoadingExtraData) {
+             return }
+
+        if (employeeId && ((selector.pageNumber + 1) <= selector.totalPages)) {
+            renderFooter()
+            const payload = getPayloadData(employeeId,employeeName, branchId,orgId, selectedFromDate, selectedToDate, (selector.pageNumber + 1))
             dispatch(getMoreLeadDropList(payload));
-        }
+        } 
+
     }
 
     const showDatePickerMethod = (key) => {
@@ -207,11 +207,11 @@ const DropAnalysisScreen = ({ navigation }) => {
         switch (key) {
             case "FROM_DATE":
                 setFromDateState(formatDate);
-                getEnquiryListFromServer(employeeId,employeeName, branchId,orgId, formatDate, selectedToDate);
+                getDropListFromServer(employeeId,employeeName, branchId,orgId, formatDate, selectedToDate);
                 break;
             case "TO_DATE":
                 setToDateState(formatDate);
-                getEnquiryListFromServer(employeeId,employeeName, branchId,orgId, selectedFromDate, formatDate);
+                getDropListFromServer(employeeId,employeeName, branchId,orgId, selectedFromDate, formatDate);
                 break;
         }
     }
@@ -321,6 +321,7 @@ const DropAnalysisScreen = ({ navigation }) => {
 
 
                  } else { 
+
                     //reject api
                     const data = {
                         "dmsLeadDropInfo": {
@@ -459,7 +460,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                             refreshControl={(
                                 <RefreshControl
                                     refreshing={selector.isLoading}
-                                    onRefresh={() => getEnquiryListFromServer(employeeId,employeeName,branchId,orgId, selectedFromDate, selectedToDate)}
+                                    onRefresh={() => getDropListFromServer(employeeId,employeeName,branchId,orgId, selectedFromDate, selectedToDate)}
                                     progressViewOffset={200}
                                 />
                             )}
@@ -500,6 +501,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                                 );
                             }}
                         />
+                        {renderFooter()}
                         {renderApprovalUi()}
                     </View>}
             </SafeAreaView>

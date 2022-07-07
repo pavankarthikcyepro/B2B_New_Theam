@@ -425,8 +425,8 @@ const TargetScreen = ({ route, navigation }) => {
     const [isTeam, setIsTeam] = useState(false);
     const [showShuffleModal, setShowShuffleModal] = useState(false);
     const [delegateButtonClick, setDelegateButtonClick] = useState(false);
-    const [headerTitle, setHeaderTitle] = useState("Selected employees has Active tasks. Please delegate to another employee");
-    const [dropDownPlaceHolder, setDropDownPlaceHolder] = useState("Employees");
+    const [headerTitle, setHeaderTitle] = useState("Selected employee has Active tasks. Please delegate to another employee");
+    const [dropDownPlaceHolder, setDropDownPlaceHolder] = useState("Employee");
 
     const [employeeListDropdownItem, setEmployeeListDropdownItem] = useState(0);
     const [employeeDropdownList, setEmployeeDropdownList] = useState([]);
@@ -749,7 +749,18 @@ const TargetScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text style={{ fontSize: 12, fontWeight: "600" }}>
-                            {Number(item.achievment) >= 100000 ? Math.round(Number(item.achievment) / 100000) + "L" : (Number(item.achievment) >= 1000 ? Math.round(Number(item.achievment) / 1000) + "K" : item.achievment)}/{Number(item.target) >= 100000 ? Math.round(Number(item.target) / 100000) + "L" : (Number(item.target) >= 1000 ? Math.round(Number(item.target) / 1000) + "K" : item.target)}
+                            {Number(item.achievment) >= 100000
+                              ? Math.round(Number(item.achievment) / 100000) +
+                                "L"
+                              : Number(item.achievment) >= 1000
+                              ? Math.round(Number(item.achievment) / 1000) + "K"
+                              : item.achievment}
+                            /
+                            {Number(item.target) >= 100000
+                              ? Math.round(Number(item.target) / 100000) + "L"
+                              : Number(item.target) >= 1000
+                              ? Math.round(Number(item.target) / 1000) + "K"
+                              : item.target}
                           </Text>
                         </View>
                         <View
@@ -762,9 +773,13 @@ const TargetScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text style={{ fontSize: 12, fontWeight: "600" }}>
-                            {Number(item.achievment) > Number(item.target) ? 0 : (Math.abs(Number(item.shortfall)) >= 100000
-                              ? Math.round(Math.abs(Number(item.shortfall)) / 100000) + "L"
-                              : Math.round(Math.abs(Number(item.shortfall))))}
+                            {Number(item.achievment) > Number(item.target)
+                              ? 0
+                              : Math.abs(Number(item.shortfall)) >= 100000
+                              ? Math.round(
+                                  Math.abs(Number(item.shortfall)) / 100000
+                                ) + "L"
+                              : Math.round(Math.abs(Number(item.shortfall)))}
                           </Text>
                         </View>
                         <View
@@ -777,16 +792,19 @@ const TargetScreen = ({ route, navigation }) => {
                           }}
                         >
                           <Text style={{ fontSize: 12, fontWeight: "600" }}>
-                            {Number(item.achievment) > Number(item.target) ? 0 : (dateDiff > 0 && parseInt(item.shortfall) !== 0
-                              ? 
-                              (Math.round(
-                                parseInt(item.shortfall) / dateDiff
-                              ) >= 100000
-                                ? Math.round(parseInt(item.shortfall) / dateDiff / 100000) + "L"
-                                : (Math.round(
+                            {Number(item.achievment) > Number(item.target)
+                              ? 0
+                              : dateDiff > 0 && parseInt(item.shortfall) !== 0
+                              ? Math.round(
                                   parseInt(item.shortfall) / dateDiff
-                                )))
-                              : 0)}
+                                ) >= 100000
+                                ? Math.round(
+                                    parseInt(item.shortfall) / dateDiff / 100000
+                                  ) + "L"
+                                : Math.round(
+                                    parseInt(item.shortfall) / dateDiff
+                                  )
+                              : 0}
                           </Text>
                         </View>
                       </View>
@@ -833,7 +851,7 @@ const TargetScreen = ({ route, navigation }) => {
                           </View>
                           <View
                             style={{
-                              height: '100%',
+                              height: "100%",
                               justifyContent: "center",
                               marginLeft: 10,
                               width: 80,
@@ -841,11 +859,11 @@ const TargetScreen = ({ route, navigation }) => {
                           >
                             <Text
                               style={{
-                                fontSize: 14,
+                                fontSize: 12,
                                 color: color[index % color.length],
                                 fontWeight: "600",
                               }}
-                              numberOfLines={1}
+                              numberOfLines={2}
                             >
                               {item.empName}
                             </Text>
@@ -868,7 +886,6 @@ const TargetScreen = ({ route, navigation }) => {
                               <ShuffleIcon name="shuffle" color={Colors.WHITE} size={18} />
                             </TouchableOpacity>
                           </View>
-                          
                         </View>
                         <View style={{ flexDirection: "row", height: 30 }}>
                           <View
@@ -938,7 +955,26 @@ const TargetScreen = ({ route, navigation }) => {
                                       }}
                                     >
                                       {/* {innerItem.achievment}/{innerItem.target} */}
-                                      {Number(innerItem.achievment) >= 100000 ? Math.round(Number(innerItem.achievment) / 100000) + "L" : (Number(innerItem.achievment) >= 1000 ? Math.round(Number(innerItem.achievment) / 1000) + "K" : innerItem.achievment)}/{Number(innerItem.target) >= 100000 ? Math.round(Number(innerItem.target) / 100000) + "L" : (Number(innerItem.target) >= 1000 ? Math.round(Number(innerItem.target) / 1000) + "K" : innerItem.target)}
+                                      {Number(innerItem.achievment) >= 100000
+                                        ? Math.round(
+                                            Number(innerItem.achievment) /
+                                              100000
+                                          ) + "L"
+                                        : Number(innerItem.achievment) >= 1000
+                                        ? Math.round(
+                                            Number(innerItem.achievment) / 1000
+                                          ) + "K"
+                                        : innerItem.achievment}
+                                      /
+                                      {Number(innerItem.target) >= 100000
+                                        ? Math.round(
+                                            Number(innerItem.target) / 100000
+                                          ) + "L"
+                                        : Number(innerItem.target) >= 1000
+                                        ? Math.round(
+                                            Number(innerItem.target) / 1000
+                                          ) + "K"
+                                        : innerItem.target}
                                     </Text>
                                   </View>
                                   <View
@@ -956,14 +992,22 @@ const TargetScreen = ({ route, navigation }) => {
                                         fontWeight: "600",
                                       }}
                                     >
-                                      {Number(innerItem.achievment) > Number(innerItem.target) ? 0 : (Math.abs(Number(innerItem.shortfall)) >=
-                                      100000
-                                        ? Math.round(Math.abs(
-                                          Number(innerItem.shortfall)
-                                        ) /
-                                          100000) +
-                                          "L"
-                                        : Math.round(Math.abs(Number(innerItem.shortfall))))}
+                                      {Number(innerItem.achievment) >
+                                      Number(innerItem.target)
+                                        ? 0
+                                        : Math.abs(
+                                            Number(innerItem.shortfall)
+                                          ) >= 100000
+                                        ? Math.round(
+                                            Math.abs(
+                                              Number(innerItem.shortfall)
+                                            ) / 100000
+                                          ) + "L"
+                                        : Math.round(
+                                            Math.abs(
+                                              Number(innerItem.shortfall)
+                                            )
+                                          )}
                                     </Text>
                                   </View>
                                   <View
@@ -981,8 +1025,11 @@ const TargetScreen = ({ route, navigation }) => {
                                         fontWeight: "600",
                                       }}
                                     >
-                                      {Number(innerItem.achievment) > Number(innerItem.target) ? 0 : (dateDiff > 0 &&
-                                      parseInt(innerItem.shortfall) !== 0
+                                      {Number(innerItem.achievment) >
+                                      Number(innerItem.target)
+                                        ? 0
+                                        : dateDiff > 0 &&
+                                          parseInt(innerItem.shortfall) !== 0
                                         ? // ? (
                                           //     parseInt(innerItem.shortfall) /
                                           //     dateDiff
@@ -993,7 +1040,7 @@ const TargetScreen = ({ route, navigation }) => {
                                                 dateDiff
                                             )
                                           )
-                                        : 0)}
+                                        : 0}
                                     </Text>
                                   </View>
                                 </View>
@@ -1010,35 +1057,68 @@ const TargetScreen = ({ route, navigation }) => {
             )}
 
             <Modal isVisible={showShuffleModal}>
-              <View style={{ width: "95%", height: "65%", alignSelf: 'center', backgroundColor: 'white', borderRadius: 8 }}>
-                <View style={{
-                  flexDirection: 'row', justifyContent: 'space-between', borderWidth: 1,
-                  borderColor: "#d1d1d1",
-                  backgroundColor: "#d1d1d1",
-                  borderTopEndRadius: 8, borderTopStartRadius: 8
-                }}>
-                  <Text style={{ fontSize: 17, fontWeight: '500', margin: 10 }}>Team Shuffle</Text>
+              <View
+                style={{
+                  width: "95%",
+                  height: "30%",
+                  alignSelf: "center",
+                  backgroundColor: "white",
+                  borderRadius: 8,
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    borderWidth: 1,
+                    borderColor: "#d1d1d1",
+                    backgroundColor: "#d1d1d1",
+                    borderTopEndRadius: 8,
+                    borderTopStartRadius: 8,
+                  }}
+                >
+                  <Text style={{ fontSize: 17, fontWeight: "500", margin: 10 }}>
+                    Team Shuffle
+                  </Text>
 
-                  <TouchableOpacity activeOpacity={0.6} onPress={() => {
-                    setShowShuffleModal(false);
-                    setHeaderTitle('Selected employees has Active tasks. Please delegate to another employee');
-                    setDropDownPlaceHolder('Employees');
-                    setDelegateButtonClick(false);
-                    setEmployeeDropdownList([]);
-                    setReoprtingManagerDropdownList([]);
-                  }}>
-                    <CloseIcon style={{ margin: 10 }} name="close" color={Colors.BLACK} size={20} />
+                  <TouchableOpacity
+                    activeOpacity={0.6}
+                    onPress={() => {
+                      setShowShuffleModal(false);
+                      setHeaderTitle(
+                        "Selected employees has Active tasks. Please delegate to another employee"
+                      );
+                      setDropDownPlaceHolder("Employees");
+                      setDelegateButtonClick(false);
+                      setEmployeeDropdownList([]);
+                      setReoprtingManagerDropdownList([]);
+                    }}
+                  >
+                    <CloseIcon
+                      style={{ margin: 10 }}
+                      name="close"
+                      color={Colors.BLACK}
+                      size={20}
+                    />
                   </TouchableOpacity>
                 </View>
 
-                <Text style={{ color: Colors.GRAY, marginLeft: 8, marginTop: 5 }}>{headerTitle}</Text>
+                <Text
+                  style={{ color: Colors.GRAY, marginLeft: 12, marginTop: 5 }}
+                >
+                  {headerTitle}
+                </Text>
                 <Dropdown
                   style={styles.dropdownContainer}
                   placeholderStyle={styles.placeholderStyle}
                   selectedTextStyle={styles.selectedTextStyle}
                   inputSearchStyle={styles.inputSearchStyle}
                   iconStyle={styles.iconStyle}
-                  data={delegateButtonClick ? reoprtingManagerDropdownList : employeeDropdownList}
+                  data={
+                    delegateButtonClick
+                      ? reoprtingManagerDropdownList
+                      : employeeDropdownList
+                  }
                   search
                   maxHeight={300}
                   labelField="label"
@@ -1046,20 +1126,25 @@ const TargetScreen = ({ route, navigation }) => {
                   placeholder={dropDownPlaceHolder}
                   searchPlaceholder="Search..."
                   renderRightIcon={() => (
-                    <Image style={{ height: 5, width: 10 }} source={require('../../../../assets/images/Polygon.png')} />
+                    <Image
+                      style={{ height: 5, width: 10 }}
+                      source={require("../../../../assets/images/Polygon.png")}
+                    />
                   )}
                   onChange={async (item) => {
                     console.log("£££", item.value);
-                    if (delegateButtonClick) { setReoprtingManagerListDropdownItem(item.value);
-                      console.log(reoprtingManagerListDropdownItem)
+                    if (delegateButtonClick) {
+                      setReoprtingManagerListDropdownItem(item.value);
+                      console.log(reoprtingManagerListDropdownItem);
                     } else {
-                      setEmployeeListDropdownItem(item.value); }
+                      setEmployeeListDropdownItem(item.value);
+                    }
                   }}
                 />
 
                 <LoaderComponent
                   visible={selector.isLoading}
-                  onRequestClose={() => { }}
+                  onRequestClose={() => {}}
                 />
 
                 <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, marginBottom: 10, flexDirection: 'row', width: '95%', justifyContent: 'space-around' }}>
@@ -1067,7 +1152,7 @@ const TargetScreen = ({ route, navigation }) => {
                     <View style={{ flexDirection: 'row', width: '95%', justifyContent: 'space-around' }}>
                       <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 70, alignItems: 'center', justifyContent: 'center', marginLeft: 18, marginRight: 12, backgroundColor: Colors.RED }} onPress={() => {
                         // updateEmployeeData();
-                        if (employeeListDropdownItem !== 0){
+                        if (employeeListDropdownItem !== 0) {
                           setDelegateButtonClick(true);
                           setHeaderTitle('Reporting Managers');
                           setDropDownPlaceHolder(state => state = 'Reporting Manager');
@@ -1091,7 +1176,7 @@ const TargetScreen = ({ route, navigation }) => {
                     </View> :
                     <View style={{ position: 'absolute', right: 0, bottom: 0 }}>
                       <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 70, alignItems: 'center', justifyContent: 'center', marginLeft: 18, marginRight: 12, backgroundColor: Colors.RED }} onPress={() => {
-                        if (reoprtingManagerListDropdownItem !== 0){
+                        if (reoprtingManagerListDropdownItem !== 0) {
                           updateEmployeeData();
                           setShowShuffleModal(false);
                           setHeaderTitle('Selected employees has Active tasks. Please delegate to another employee');
@@ -1107,7 +1192,6 @@ const TargetScreen = ({ route, navigation }) => {
                 </View>
               </View>
             </Modal>
-
           </View>
         ) : (
           <>
@@ -1121,7 +1205,7 @@ const TargetScreen = ({ route, navigation }) => {
                 <Text style={{ fontSize: 14, fontWeight: "600" }}>AR/Day</Text>
               </View>
             </View>
-              {selector.self_target_parameters_data.map((item, index) => {
+            {selector.self_target_parameters_data.map((item, index) => {
               return (
                 <View
                   style={{ flexDirection: "row", marginLeft: 8 }}
@@ -1271,15 +1355,17 @@ const TargetScreen = ({ route, navigation }) => {
                         height: 25,
                         borderColor: color[index % color.length],
                         borderWidth: 1,
-                        borderRadius:8,
+                        borderRadius: 8,
                         justifyContent: "center",
                         alignItems: "center",
                       }}
                     >
                       <Text>
-                        {Number(item.achievment) > Number(item.target) ? 0 : (Math.abs(Number(item.shortfall)) >= 100000
+                        {Number(item.achievment) > Number(item.target)
+                          ? 0
+                          : Math.abs(Number(item.shortfall)) >= 100000
                           ? Math.abs(Number(item.shortfall)) / 100000 + "L"
-                          : Math.abs(item.shortfall))}
+                          : Math.abs(item.shortfall)}
                       </Text>
                     </View>
                     <View
@@ -1288,7 +1374,7 @@ const TargetScreen = ({ route, navigation }) => {
                         height: 25,
                         borderColor: color[index % color.length],
                         borderWidth: 1,
-                        borderRadius:8,
+                        borderRadius: 8,
                         justifyContent: "center",
                         alignItems: "center",
                         marginLeft: 20,
@@ -1318,8 +1404,8 @@ const TargetScreen = ({ route, navigation }) => {
                 <View style={styles.statWrap}>
                   <Text
                     style={{
-                        marginRight: "60%",
-                      marginLeft:10,
+                      marginRight: "60%",
+                      marginLeft: 10,
                       fontSize: 16,
                       fontWeight: "600",
                       flexDirection: "row",
@@ -1341,33 +1427,33 @@ const TargetScreen = ({ route, navigation }) => {
                         fontSize: 12,
                       }}
                     >
-                        {parseInt(bookingData?.achievment) === 0 ||
-                          parseInt(enqData?.achievment) === 0
+                      {parseInt(bookingData?.achievment) === 0 ||
+                      parseInt(enqData?.achievment) === 0
                         ? 0
                         : Math.floor(
-                          (parseInt(bookingData?.achievment) /
-                            parseInt(enqData?.achievment)) *
+                            (parseInt(bookingData?.achievment) /
+                              parseInt(enqData?.achievment)) *
                               100
                           )}
                       %
                     </Text>
-                    ) : (
-                      <Text
-                        style={{
-                          color:"#ff0000",
-                          fontSize: 12,
-                        }}
-                      >
-                        0%
-                      </Text>
-                    )}
+                  ) : (
+                    <Text
+                      style={{
+                        color: "#ff0000",
+                        fontSize: 12,
+                      }}
+                    >
+                      0%
+                    </Text>
+                  )}
                 </View>
                 <View style={{ height: 5 }}></View>
                 <View style={styles.statWrap}>
                   <Text
                     style={{
-                        marginRight: "60%",
-                      marginLeft:10,
+                      marginRight: "60%",
+                      marginLeft: 10,
                       fontSize: 16,
                       fontWeight: "600",
                     }}
@@ -1388,12 +1474,12 @@ const TargetScreen = ({ route, navigation }) => {
                         fontSize: 12,
                       }}
                     >
-                        {parseInt(retailData?.achievment) === 0 ||
-                          parseInt(enqData?.achievment) === 0
+                      {parseInt(retailData?.achievment) === 0 ||
+                      parseInt(enqData?.achievment) === 0
                         ? 0
                         : Math.floor(
-                          (parseInt(retailData?.achievment) /
-                            parseInt(enqData?.achievment)) *
+                            (parseInt(retailData?.achievment) /
+                              parseInt(enqData?.achievment)) *
                               100
                           )}
                       %
@@ -1404,15 +1490,15 @@ const TargetScreen = ({ route, navigation }) => {
                 <View style={styles.statWrap}>
                   <Text
                     style={{
-                        marginRight: "60%",
-                      marginLeft:10,
+                      marginRight: "60%",
+                      marginLeft: 10,
                       fontSize: 16,
                       fontWeight: "600",
                     }}
                   >
                     E2V
                   </Text>
-                    {enqData !== null && visitData !== null ? (
+                  {enqData !== null && visitData !== null ? (
                     <Text
                       style={{
                         color:
@@ -1426,26 +1512,26 @@ const TargetScreen = ({ route, navigation }) => {
                         fontSize: 12,
                       }}
                     >
-                        {parseInt(enqData?.achievment) === 0 ||
-                          parseInt(visitData?.achievment) === 0
+                      {parseInt(enqData?.achievment) === 0 ||
+                      parseInt(visitData?.achievment) === 0
                         ? 0
                         : Math.floor(
-                          (parseInt(visitData?.achievment) /
-                            parseInt(enqData?.achievment)) *
+                            (parseInt(visitData?.achievment) /
+                              parseInt(enqData?.achievment)) *
                               100
                           )}
                       %
                     </Text>
-                    ) : (
-                      <Text
-                        style={{
-                          color: "#ff0000",
-                          fontSize: 12,
-                        }}
-                      >
-                        0%
-                      </Text>
-                    )}
+                  ) : (
+                    <Text
+                      style={{
+                        color: "#ff0000",
+                        fontSize: 12,
+                      }}
+                    >
+                      0%
+                    </Text>
+                  )}
                 </View>
               </View>
 
@@ -1455,8 +1541,8 @@ const TargetScreen = ({ route, navigation }) => {
                 <View style={styles.statWrap}>
                   <Text
                     style={{
-                        marginRight: "50%",
-                      marginLeft:10,
+                      marginRight: "50%",
+                      marginLeft: 10,
                       fontSize: 16,
                       fontWeight: "600",
                     }}
@@ -1477,12 +1563,12 @@ const TargetScreen = ({ route, navigation }) => {
                         fontSize: 12,
                       }}
                     >
-                        {parseInt(bookingData?.achievment) === 0 ||
-                          parseInt(retailData?.achievment) === 0
+                      {parseInt(bookingData?.achievment) === 0 ||
+                      parseInt(retailData?.achievment) === 0
                         ? 0
                         : Math.floor(
-                          (parseInt(retailData?.achievment) /
-                            parseInt(bookingData?.achievment)) *
+                            (parseInt(retailData?.achievment) /
+                              parseInt(bookingData?.achievment)) *
                               100
                           )}
                       %
@@ -1492,9 +1578,9 @@ const TargetScreen = ({ route, navigation }) => {
                 <View style={{ height: 5 }}></View>
                 <View style={styles.statWrap}>
                   <Text
-                      style={{
-                        marginRight: "45%",
-                        marginLeft:10,
+                    style={{
+                      marginRight: "45%",
+                      marginLeft: 10,
                       fontSize: 16,
                       fontWeight: "600",
                     }}
@@ -1515,12 +1601,12 @@ const TargetScreen = ({ route, navigation }) => {
                         fontSize: 12,
                       }}
                     >
-                        {parseInt(TDData?.achievment) === 0 ||
-                          parseInt(enqData?.achievment) === 0
+                      {parseInt(TDData?.achievment) === 0 ||
+                      parseInt(enqData?.achievment) === 0
                         ? 0
                         : Math.floor(
-                          (parseInt(TDData?.achievment) /
-                            parseInt(enqData?.achievment)) *
+                            (parseInt(TDData?.achievment) /
+                              parseInt(enqData?.achievment)) *
                               100
                           )}
                       %

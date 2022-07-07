@@ -490,17 +490,17 @@ const styles = StyleSheet.create({
         overflow: 'hidden'
     },
     profilDetailes: {
-        marginLeft: 15,
+        marginLeft: 10,
         width: '75%'
     },
     nameStyle: {
-        fontSize: 17,
+        fontSize: 12,
         fontWeight: "bold",
         color: Colors.BLACK,
     },
     text1: {
         marginTop: 3,
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: "200",
         // textAlign: 'center',
         color: Colors.DARK_GRAY,
