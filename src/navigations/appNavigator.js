@@ -35,6 +35,8 @@ import MonthlyTargetScreen from "../scenes/mainScenes/monthlyTargetScreen";
 import HelpDeskScreen from "../scenes/mainScenes/helpDeskScreen";
 import taskManagementScreen from "../scenes/mainScenes/taskManagementScreen";
 import TaskTranferScreen from "../scenes/mainScenes/taskTransferScreen";
+import DropAnalysisScreen from "../scenes/mainScenes/dropAnalysisScreen";
+
 
 
 import EventManagementScreen from "../scenes/mainScenes/eventManagementScreen";
@@ -70,7 +72,9 @@ import ProceedToBookingScreen from "../scenes/mainScenes/MyTasks/proceedToBookin
 import { useSelector, useDispatch } from 'react-redux';
 import { updateModal, updateSearchKey, updateIsSearch } from '../redux/appReducer';
 import etvbrlReportScreen from "../scenes/mainScenes/etvbrlReportScreen";
-
+import webViewComp from "../scenes/mainScenes/EMS/components/webViewComp";
+import leaderBoardScreen from "../scenes/mainScenes/Home/leaderBoardScreen";
+import branchRankingScreen from "../scenes/mainScenes/Home/branchRankingScreen";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -164,7 +168,7 @@ const LeadAge = () => {
     const dispatch = useDispatch();
 
     return (
-        <View style={{ width: 110, height: 30, borderRadius: 15, backgroundColor: '#ff33ff', justifyContent: 'center', alignItems: 'center', marginRight: 5, flexDirection: 'row'}}>
+        <View style={{ width: 110, height: 30, borderRadius: 15, backgroundColor: Colors.RED, justifyContent: 'center', alignItems: 'center', marginRight: 5, flexDirection: 'row'}}>
             <Image source={require('../assets/images/calendar.png')} style={{width: 20, height: 20}} />
             <Text style={{ fontSize: 15, fontWeight: '600', color: '#fff', marginLeft: 5 }}>{`${selector.leadAge} ${selector.leadAge > 1 ? 'days' : 'day'}`}</Text>
             {/* <Text style={{ fontSize: 15, fontWeight: '600', color: '#fff' }}>200 days</Text> */}
@@ -217,7 +221,8 @@ export const DrawerStackIdentifiers = {
     helpdesk: "HELP_DESK",
     taskManagement: "TASK_MANAGEMENT",
     taskTransfer: "TASK_TRANSFER",
-    evtbrlReport: "EVTBRL_REPORT"
+    evtbrlReport: "EVTBRL_REPORT",
+    dropAnalysis:'DROP_ANALYSIS'
 };
 
 export const TabStackIdentifiers = {
@@ -231,7 +236,9 @@ export const TabStackIdentifiers = {
 export const HomeStackIdentifiers = {
     filter: "FILTER",
     select_branch: "SELECT_BRANCH",
-    test: "TEST"
+    test: "TEST",
+    leaderboard: "LEADERBOARD",
+    branchRanking: "BRANCH_RANKING"
 };
 
 export const EmsStackIdentifiers = {
@@ -251,6 +258,7 @@ export const EmsStackIdentifiers = {
     proceedToBooking: "PROCEED_TO_BOOKING_1",
     createEnquiry: "CREATE_ENQUIRY_1",
     bookingForm: "BOOKING_FORM",
+    webViewComp: 'webViewComp',
 };
 
 export const PreBookingStackIdentifiers = {
@@ -329,6 +337,16 @@ const HomeStackNavigator = ({ navigation }) => {
                 name={HomeStackIdentifiers.test}
                 component={TestScreen}
                 options={{ title: "Test Screen" }}
+            />
+            <HomeStack.Screen
+                name={HomeStackIdentifiers.leaderboard}
+                component={leaderBoardScreen}
+                options={{ title: "LeaderBoard" }}
+            />
+            <HomeStack.Screen
+                name={HomeStackIdentifiers.branchRanking}
+                component={branchRankingScreen}
+                options={{ title: "Branch ranking" }}
             />
         </HomeStack.Navigator>
     );
@@ -458,6 +476,11 @@ const EmsStackNavigator = ({ navigation }) => {
                 name={EmsStackIdentifiers.createEnquiry}
                 component={CreateEnquiryScreen}
                 options={{ title: "Create Enquiry" }}
+            />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.webViewComp}
+                component={webViewComp}
+                options={{ title: "Call Record" }}
             />
         </EmsStack.Navigator>
     );
@@ -782,6 +805,33 @@ const HelpDeskStackNavigator = ({ navigation }) => {
     );
 };
 
+const DropAnalysisStack = createStackNavigator();
+
+const DropAnalysisStackNavigator = ({ navigation }) => {
+    return (
+        <DropAnalysisStack.Navigator screenOptions={screeOptionStyle}>
+            <DropAnalysisStack.Screen
+                name={"DROP_ANALYSIS"}
+                component={DropAnalysisScreen}
+                options={{
+                    title: "Lead Drop List",
+                    headerLeft: () => <MenuIcon navigation={navigation} />,
+                    headerRight: () => {
+                        return (
+                            <View style={{ flexDirection: "row" }}>
+                                <SearchIcon />
+                                {/* <RefreshIcon /> */}
+                                {/* <MapIcon /> */}
+                               
+                            </View>
+                        );
+                    },
+                }}
+            />
+        </DropAnalysisStack.Navigator>
+    );
+};
+
 const TaskManagementStack = createStackNavigator();
 
 const TaskManagementStackNavigator = ({ navigation }) => {
@@ -956,6 +1006,10 @@ const MainStackDrawerNavigator = () => {
             <MainDrawerNavigator.Screen
                 name={DrawerStackIdentifiers.taskManagement}
                 component={TaskManagementStackNavigator}
+            />
+            <MainDrawerNavigator.Screen
+                name={DrawerStackIdentifiers.dropAnalysis}
+                component={DropAnalysisStackNavigator}
             />
             <MainDrawerNavigator.Screen
                 name={DrawerStackIdentifiers.taskTransfer}

@@ -722,6 +722,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         dmsAccountOrContactDto.phone = selector.mobile;
         dmsAccountOrContactDto.secondaryPhone = selector.alterMobile;
         dmsAccountOrContactDto.model = selector.carModel;
+        dmsAccountOrContactDto.company = selector.companyName,
 
         dmsAccountOrContactDto.customerType = selector.customerType;
         dmsAccountOrContactDto.enquirySource = selector.sourceOfEnquiryId;
@@ -1124,7 +1125,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                         <DropDownSelectionItem
                             label={"Source of Lead*"}
                             value={selector.sourceOfEnquiry}
-                            // disabled={fromEdit}
+                            disabled={fromEdit}
                             onPress={() =>
                                 showDropDownModelMethod(
                                     "SOURCE_OF_ENQUIRY",
@@ -1137,7 +1138,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                             <DropDownSelectionItem
                                 label={"Sub Source of Lead"}
                                 value={selector.subSourceOfEnquiry}
-                                // disabled={fromEdit}
+                                disabled={fromEdit}
                                 onPress={() =>
                                     showDropDownModelMethod(
                                         "SUB_SOURCE_OF_ENQUIRY",

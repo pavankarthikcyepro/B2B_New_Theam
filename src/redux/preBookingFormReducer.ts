@@ -378,6 +378,8 @@ const prebookingFormSlice = createSlice({
     color: "",
     fuel_type: "",
     transmission_type: "",
+    dmsLeadProducts: [],
+
     lead_product_id: "",
     model_drop_down_data_update_status: null,
     // financial details
@@ -507,6 +509,7 @@ const prebookingFormSlice = createSlice({
       state.fuel_type = "";
       state.transmission_type = "";
       state.lead_product_id = "";
+      state.dmsLeadProducts = [];
       state.model_drop_down_data_update_status = null;
       // financial details
       state.retail_finance = "";
@@ -1121,11 +1124,13 @@ const prebookingFormSlice = createSlice({
       state.p_urban_or_rural = 0
     },
     updateModelSelectionData: (state, action) => {
-
       const dmsLeadProducts = action.payload;
       let dataObj: any = {};
       if (dmsLeadProducts.length > 0) {
-        dataObj = { ...dmsLeadProducts[0] };
+        // dataObj = { ...dmsLeadProducts[0] };
+        let modelData = dmsLeadProducts.filter((item) => item.model === state.pre_booking_details_response?.dmsLeadDto?.model)
+        dataObj = { ...modelData[0] };
+        console.log("$$$$$$$$$ MODEL $$$$$$$$$$", modelData[0])
       }
       state.lead_product_id = dataObj.id ? dataObj.id : "";
       state.model = dataObj.model ? dataObj.model : "";
@@ -1133,7 +1138,14 @@ const prebookingFormSlice = createSlice({
       state.color = dataObj.color ? dataObj.color : "";
       state.fuel_type = dataObj.fuel ? dataObj.fuel : "";
       state.transmission_type = dataObj.transimmisionType ? dataObj.transimmisionType : "";
-      state.model_drop_down_data_update_status = "update";
+      try {
+        if (dmsLeadProducts && dmsLeadProducts.length != 0)
+          state.dmsLeadProducts = dmsLeadProducts;
+        state.model_drop_down_data_update_status = "update";
+      } catch (error) {
+        // alert(error)
+      }
+//state.model_drop_down_data_update_status = "update";
     },
     updateFinancialData: (state, action) => {
       const dmsfinancedetails = action.payload;

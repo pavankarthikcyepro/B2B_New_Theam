@@ -21,7 +21,6 @@
 // export const lostSubLost = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails"
 
 // Dev End Points
-
 export const hrms_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8088/hrms";
 export const sales_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales";
 export const roleManagement_url = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8089/role-management";
@@ -65,6 +64,12 @@ const URL = {
     VEHICLE_MODELS: (orgId) => {
         return vehicleInfoService_url + "/api/vehicle_details/?organizationId=" + orgId;
     },
+    GET_EMPID: (userName) => {
+        return roleManagement_url + '/user/' + userName;
+    },
+    GET_CALL_RECORDING_EXTENSIONID: (userName, orgId) => {
+        return sales_url + '/callrecording/getCallLoginDetails?orgId=' + orgId + '&empId=' + userName;
+    },
     CUSTOMER_TYPE: (orgId) => {
         return sales_url + `/master-data/customertype/${orgId}`
     },
@@ -86,7 +91,7 @@ const URL = {
     ENQUIRY_DETAILS: (universalId) => {
         return sales_url + "/enquiry/lead/id/" + `${universalId}`;
     },
-    
+
     ENQUIRY_DETAILS_BY_AUTOSAVE: (universalId) => {
         return downloadFile + "/autosave-get-uid/" + `${universalId}`;
     },
@@ -179,6 +184,15 @@ const URL = {
     EVENT_DATA: () => dashboard + "/v2/get_events_data",
     TASKS_DATA: () => dashboard + "/v2/get_todays_data",
     GET_LOST_DROP_CHART_DATA: () => dashboard + "/v2/get_lostdrop_data",
+    UPDATE_SINGLEAPPROVAL: () => {
+        return sales_url + '/lead-drop'
+    },
+    UPDATE_BULKAPPROVAL: () => {
+        return sales_url + '/lead-drop/bulkdrop'
+    },
+    GET_LEADDROP_LIST: (branchId, empName, orgId, offSet, limit) => {
+        return sales_url + '/lead-drop/details?branch=' + branchId + '&limit=' + limit + '&loginUser=' + empName + '&offset=' + offSet + '&orgId=' + orgId;
+    },
     GET_EMPLOYEES_DROP_DOWN_DATA: (orgId, employeeId) => {
 
         return orgnaizationHirarchy + `/active-dropdowns/${orgId}/${employeeId}`
@@ -194,7 +208,7 @@ const URL = {
     ADD_TARGET_MAPPING: () => salesGap + `/add_targetmapping_role`,
     EDIT_TARGET_MAPPING: () => salesGap + `/edit_targetmapping_role`,
     GET_ALL_TARGET_MAPPING: () => salesGap + `/get_all_targetmapping_role`,
-    GET_TARGET_PARAMS: () => dashboard + "/v4/get_target_params",
+    GET_TARGET_PARAMS: () => dashboard + "/v2/get_target_params",
     GET_TARGET_PARAMS_ALL: () => dashboard + "/v2/get_target_params_for_all_emps",
     GET_TARGET_PARAMS_EMP: () => dashboard + "/v2/get_target_params_for_emp",
     GET_SALES_DATA: () => dashboard + "/v2/get_sales_data",
@@ -247,7 +261,7 @@ const URL = {
     DOWNLOAD_REPORT: () => {
         return `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8093/dynamic-reports/etvbrl_report`;
     },
-    
+
     QR: (orgId, branchId) => {
         return sales_url + `/qrcode/get/${orgId}/${branchId}`;
     },
@@ -262,6 +276,12 @@ const URL = {
     },
     REASON_LIST: (orgId, taskName) => {
         return `${downloadFile}/get-followup/${orgId}/${taskName}`;
+    },
+    TARGET_DROPDOWN: (orgId, parent, child, parentId) => {
+        return `${tasktransfer}?orgId=${orgId}&parent=${parent}&child=${child}&parentId=${parentId}`;
+    },
+    GET_TASK_LIST: (taskId) => {
+        return `${getTaskList}/${taskId}`;
     },
     GET_TEAMS_TARGET_PARAMS: () => dashboard + "/v4/get_target_params_for_all_emps",
     GET_TOTAL_TARGET_PARAMS: () => dashboard + "/v4/get_target_params",
@@ -283,7 +303,32 @@ const URL = {
     GET_TASK_LIST: (taskId) => {
         return `${getTaskList}/${taskId}`;
     },
+    GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
+        return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
+    },
+    GET_LEADERBOARD_DATA: () => {
+        return `${getLeaderBoardData}`;
+    },
+    GET_BRANCH_RANKING_DATA: () => {
+        return `${getBranchRankingData}`;
+    },
+    EMPLOYEE_DATA_UPDATE: (empID, managerID) => {
+        return `${updateEmployeeTaskDelegate}/${empID}/reportingManager/${managerID}/update`;
+    },
+    TARGET_DROPDOWN: (orgId, parent, child, parentId) => {
+        return `${tasktransfer}?orgId=${orgId}&parent=${parent}&child=${child}&parentId=${parentId}`;
+    },
+    GET_TASK_LIST: (taskId) => {
+        return `${getTaskList}/${taskId}`;
+    },
+    GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
+        return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
+    },
+    TRANSFER_TASK: (fromUserId, toUserId) => {
+        return sales_url + `/task-delegation/process/selected?emplIdFrom=${fromUserId}&emplIdTo=${toUserId}`;
+    },
 }
+
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason
 // http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/df-get-all/1/%22Active%22/1/enqueryCategory

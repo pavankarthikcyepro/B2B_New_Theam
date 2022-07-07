@@ -11,19 +11,68 @@ import { showToastRedAlert } from "../utils/toast";
 
 export const getEnquiryDetailsApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/getEnquiryDetailsApi",
-  async (universalId, { rejectWithValue }) => {
-    const autoSaveResponse = await client.get(URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
-    const autoSavejson = await autoSaveResponse.json();
-    console.log("URL$$$: ", URL.ENQUIRY_DETAILS(universalId));
+  async ({universalId, leadStage, leadStatus}, { rejectWithValue }) => {
+    // // try {
+    //   const autoSaveResponse = await client.get(URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
+    //   const autoSavejson = await autoSaveResponse.json();
+    //   console.log("URL$$$: ", URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
+    //   console.log("ENQ DETAILS: ", JSON.stringify(autoSavejson));
+    // // } catch (error) {
+      
+    // // }
+    
 
     const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
     const json = await response.json();
+    
+    console.log("ENQ DETAILS @@@: ", URL.ENQUIRY_DETAILS(universalId), JSON.stringify(json));
+    
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    
+    return json.dmsEntity
+    // if (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY')
+    // {
+    //   // if (json.dmsEntity.hasOwnProperty("dmsLeadDto")) {
+    //   //   console.log("autoSavejson is true")
+    //   // }
+    //   if (!response.ok) {
+    //     return rejectWithValue(json);
+    //   }
+
+    //   // if (json.dmsEntity.hasOwnProperty("dmsLeadDto")) {
+    //   //   return json;
+    //   // } else {
+    //   //   return json.dmsEntity
+    //   // }
+    //   return json.dmsEntity
+    // }
+    // else{
+    //   // if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
+    //   //   console.log("autoSavejson is true")
+    //   // }
+    //   if (autoSaveResponse){
+    //     if (!autoSaveResponse.ok) {
+    //       return rejectWithValue(autoSavejson);
+    //     }
+
+    //     if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
+    //       return autoSavejson;
+    //     } else {
+    //       return json.dmsEntity
+    //     }
+    //   }
+    //   else{
+    //     json.dmsEntity
+    //   }
+    // }
     // console.log("enquirey lead", json);
     // console.log("autoSavejson", autoSavejson);
 
-    if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
-      console.log("autoSavejson is true")
-    }
+    // if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
+    //   console.log("autoSavejson is true")
+    // }
 
     // if (json.success) {
     //   console.log("came here")
@@ -32,16 +81,95 @@ export const getEnquiryDetailsApi = createAsyncThunk(
     //     // console.log("autoSavejson", autoSavejson);
     // }
 
-    if (!response.ok) {
-      return rejectWithValue(json);
-    }
+    // if (!response.ok) {
+    //   return rejectWithValue(json);
+    // }
 
-    if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
-      return autoSavejson;
-    } else {
+    // if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
+    //   return autoSavejson;
+    // } else {
+    //   return json.dmsEntity
+    // }
+    // return autoSavejson
+  }
+);
+
+export const getEnquiryDetailsApiAuto = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/getEnquiryDetailsApiAuto",
+  async ({ universalId, leadStage, leadStatus }, { rejectWithValue }) => {
+    // try {
+    const autoSaveResponse = await client.get(URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
+    const autoSavejson = await autoSaveResponse.json();
+    console.log("URL$$$: ", URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
+    console.log("ENQ DETAILS: ", JSON.stringify(autoSavejson));
+    // } catch (error) {
+
+    // }
+
+
+    const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
+    const json = await response.json();
+
+    console.log("ENQ DETAILS @@@: ", URL.ENQUIRY_DETAILS(universalId), JSON.stringify(json));
+
+    if (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY') {
+      // if (json.dmsEntity.hasOwnProperty("dmsLeadDto")) {
+      //   console.log("autoSavejson is true")
+      // }
+      if (!response.ok) {
+        return rejectWithValue(json);
+      }
+
+      // if (json.dmsEntity.hasOwnProperty("dmsLeadDto")) {
+      //   return json;
+      // } else {
+      //   return json.dmsEntity
+      // }
       return json.dmsEntity
     }
-    // return json
+    else {
+      // if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
+      //   console.log("autoSavejson is true")
+      // }
+      if (autoSaveResponse) {
+        if (!autoSaveResponse.ok) {
+          return rejectWithValue(autoSavejson);
+        }
+
+        if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
+          return autoSavejson;
+        } else {
+          return json.dmsEntity
+        }
+      }
+      else {
+        json.dmsEntity
+      }
+    }
+    // console.log("enquirey lead", json);
+    // console.log("autoSavejson", autoSavejson);
+
+    // if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
+    //   console.log("autoSavejson is true")
+    // }
+
+    // if (json.success) {
+    //   console.log("came here")
+    //    autoSaveResponse = await client.get(URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
+    //     autoSavejson = await autoSaveResponse.json();
+    //     // console.log("autoSavejson", autoSavejson);
+    // }
+
+    // if (!response.ok) {
+    //   return rejectWithValue(json);
+    // }
+
+    // if (autoSavejson.hasOwnProperty("dmsLeadDto")) {
+    //   return autoSavejson;
+    // } else {
+    //   return json.dmsEntity
+    // }
+    // return autoSavejson
   }
 );
 
@@ -276,6 +404,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     varient: "",
     color: "",
     fuel_type: "",
+    dmsLeadProducts:[],
     transmission_type: "",
     model_drop_down_data_update_statu: "",
     // financial details
@@ -406,6 +535,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.r_insurence_from_date = ""
       state.r_insurence_to_date = ""
       state.r_insurence_document_checked = false
+      state.dmsLeadProducts =[]
     },
     setEditable: (state, action) => {
       console.log("pressed");
@@ -605,6 +735,11 @@ const enquiryDetailsOverViewSlice = createSlice({
       }
       state.datePickerKeyId = action.payload;
       state.showDatepicker = !state.showDatepicker;
+    },
+    updatedmsLeadProduct:(state, action)=>{
+     // alert(JSON.stringify(action.payload))
+      const data = action.payload;
+      state.dmsLeadProducts = data
     },
     updateSelectedDate: (state, action: PayloadAction<PersonalIntroModel>) => {
       const { key, text } = action.payload;
@@ -1123,6 +1258,8 @@ const enquiryDetailsOverViewSlice = createSlice({
         "DD/MM/YYYY"
       );
       state.model = dmsLeadDto.model ? dmsLeadDto.model : "";
+      if (dmsLeadDto.dmsLeadProducts && dmsLeadDto.dmsLeadProducts.length != 0)
+      state.dmsLeadProducts = dmsLeadDto.dmsLeadProducts ;
 
       // documentType: dmsLeadDto.documentType === null ? '' : dmsLeadDto.documentType,
       // modeOfPayment: dmsLeadDto.modeOfPayment === null ? '' : dmsLeadDto.modeOfPayment,
@@ -1179,23 +1316,46 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.p_state = "";
       state.p_urban_or_rural = 0
     },
-    updateModelSelectionData: (state, action) => {
+    updateModelSelectionData: (state , action) => {
       const dmsLeadProducts = action.payload;
       let dataObj: any = {};
-      if (dmsLeadProducts.length > 0) {
-        dataObj = { ...dmsLeadProducts[0] };
+      // if (dmsLeadProducts.length > 0) {
+      //   dataObj = { ...dmsLeadProducts[0] };
+      //  // dmsLeadProducts[0] = dmsLeadProducts[0]
+      //  // dmsLeadProducts[1]= dmsLeadProducts[0]
+      //   // const dms = [{ "color": "Outback Bronze", "fuel": "Petrol", "id": 2704, "model": "Kwid",
+      //   //  "transimmisionType": "Manual", "variant": "KWID RXT 1.0L EASY- R BS6 ORVM MY22" },
+      //   //   { "color": "Caspian Blue", "fuel": "Petrol", "id": 1833, "model": "Kiger", "transimmisionType": "Automatic", 
+      //   //   "variant": "Rxt 1.0L Ece Easy-R Ece My22" }]
+      //   alert("hiii")
+      //   state.dmsLeadProducts = dmsLeadProducts
+      //   console.log("dmm model products------------", state.dmsLeadProducts)
+
+      //  // state.dmsLeadProducts[1] = dmsLeadProducts[0]
+      // }
+      // state.lead_product_id = dataObj.id ? dataObj.id : 0;
+      // if (dataObj.model) {
+      //   state.model = dataObj.model;
+      // }
+      // state.varient = dataObj.variant ? dataObj.variant : "";
+      // state.color = dataObj.color ? dataObj.color : "";
+      // state.fuel_type = dataObj.fuel ? dataObj.fuel : "";
+      // state.transmission_type = dataObj.transimmisionType
+      //   ? dataObj.transimmisionType
+      //   : "";
+      try{
+        if (dmsLeadProducts && dmsLeadProducts.length != 0){
+          state.dmsLeadProducts = dmsLeadProducts;
+        }
+        else {
+          state.dmsLeadProducts = []
+        }
+        state.model_drop_down_data_update_statu = "update";
+      }catch(error){
+       // alert(error)
       }
-      state.lead_product_id = dataObj.id ? dataObj.id : 0;
-      if (dataObj.model) {
-        state.model = dataObj.model;
-      }
-      state.varient = dataObj.variant ? dataObj.variant : "";
-      state.color = dataObj.color ? dataObj.color : "";
-      state.fuel_type = dataObj.fuel ? dataObj.fuel : "";
-      state.transmission_type = dataObj.transimmisionType
-        ? dataObj.transimmisionType
-        : "";
-      state.model_drop_down_data_update_statu = "update";
+     
+
     },
     updateFinancialData: (state, action) => {
       const dmsfinancedetails = action.payload;
@@ -1279,14 +1439,14 @@ const enquiryDetailsOverViewSlice = createSlice({
       if (dmsExchagedetails.length > 0) {
         dataObj = dmsExchagedetails[0];
       }
-
+      console.log("BUYER TYPE: ", JSON.stringify(dataObj));
       if (dataObj.buyerType === "Additional Buyer") {
         state.a_make = dataObj.brand ? dataObj.brand : "";
         state.a_model = dataObj.model ? dataObj.model : "";
         state.a_varient = dataObj.varient ? dataObj.varient : "";
         state.a_color = dataObj.color ? dataObj.color : "";
         state.a_reg_no = dataObj.regNo ? dataObj.regNo : "";
-      } else if (dataObj.buyerType === "Replacement Buyer") {
+      } else if (dataObj.buyerType === "Replacement Buyer" || dataObj.buyerType === "Exchange Buyer") {
         state.r_reg_no = dataObj.regNo ? dataObj.regNo : "";
         state.r_make = dataObj.brand ? dataObj.brand : "";
         state.r_model = dataObj.model ? dataObj.model : "";
@@ -1463,19 +1623,35 @@ const enquiryDetailsOverViewSlice = createSlice({
       // }
       state.isLoading = false;
     });
-    builder.addCase(getEnquiryDetailsApi.rejected, (state, action) => {
+    builder.addCase(getEnquiryDetailsApi.rejected, (state, action) => {      
+      state.isLoading = false;
+    });
+    builder.addCase(getEnquiryDetailsApiAuto.pending, (state) => {
+      state.isLoading = true;
+      state.enquiry_details_response = null;
+    });
+    builder.addCase(getEnquiryDetailsApiAuto.fulfilled, (state, action) => {
+      // if (action.payload.dmsEntity) {
+      //  state.enquiry_details_response = action.payload.dmsEntity;
+      console.log("action.payload auto", action.payload)
+      state.enquiry_details_response = action.payload;
+      state.isOpened = true
+      // }
+      state.isLoading = false;
+    });
+    builder.addCase(getEnquiryDetailsApiAuto.rejected, (state, action) => {
       state.isLoading = false;
     });
     // Update Enquiry Details
     builder.addCase(getAutoSaveEnquiryDetailsApi.pending, (state, action) => {
       state.isLoading = true;
-      state.enquiry_details_response = null;
+      // state.enquiry_details_response = null;
     });
     builder.addCase(getAutoSaveEnquiryDetailsApi.fulfilled, (state, action) => {
       // console.log("form reducers data", action.payload)
       if (action.payload) {
         // console.log("came here in enquiry form reducers", action.payload)
-        state.enquiry_details_response = action.payload;
+        // state.enquiry_details_response = action.payload;
       }
 
       // console.log("state", state)
@@ -1630,6 +1806,7 @@ export const {
   updateRefNo,
   updateStatus,
   clearPermanentAddr,
-  updateAddressByPincode2
+  updateAddressByPincode2,
+  updatedmsLeadProduct
 } = enquiryDetailsOverViewSlice.actions;
 export default enquiryDetailsOverViewSlice.reducer;

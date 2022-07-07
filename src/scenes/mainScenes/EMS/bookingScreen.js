@@ -146,6 +146,7 @@ const BookingScreen = ({ navigation }) => {
         const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
+            setEmployeeId(jsonObj.empId);
             getBookingListFromServer(jsonObj.empId, lastMonthFirstDate, currentDate);
         }
     }
@@ -389,6 +390,9 @@ const BookingScreen = ({ navigation }) => {
                                         <MyTaskNewItem
                                             from="BOOKING"
                                             name={item.firstName + " " + item.lastName}
+                                            navigator={navigation}
+                                            uniqueId={item.leadId} 
+                                            type='Book'
                                             status={""}
                                             created={item.createdDate}
                                             dmsLead={item.createdBy}

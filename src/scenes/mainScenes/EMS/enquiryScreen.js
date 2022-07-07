@@ -125,6 +125,7 @@ const EnquiryScreen = ({ navigation }) => {
         const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
+            setEmployeeId(jsonObj.empId);
             getEnquiryListFromServer(jsonObj.empId, lastMonthFirstDate, currentDate);
         }
     }
@@ -136,6 +137,7 @@ const EnquiryScreen = ({ navigation }) => {
     }
 
     const getEnquiryListFromServer = (empId, startDate, endDate) => {
+        console.log("DATE: ", empId, startDate, endDate);
         const payload = getPayloadData(empId, startDate, endDate, 0)
         dispatch(getEnquiryList(payload));
     }
@@ -329,6 +331,9 @@ const EnquiryScreen = ({ navigation }) => {
                                         <MyTaskNewItem
                                             from='PRE_ENQUIRY'
                                             name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
+                                            navigator={navigation} 
+                                            uniqueId={item.leadId} 
+                                            type='Enq'
                                             status={""}
                                             created={item.createdDate}
                                             dmsLead={item.createdBy}
@@ -343,7 +348,7 @@ const EnquiryScreen = ({ navigation }) => {
                                                 console.log("ENQ: ", JSON.stringify(item));
                                                 navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId, mobileNo: item.phone })
                                             }}
-                                            onDocPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.detailsOverview, { universalId: item.universalId, enqDetails: item })}
+                                            onDocPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.detailsOverview, { universalId: item.universalId, enqDetails: item, leadStatus: item.leadStatus, leadStage: item.leadStage })}
                                         />
                                     </View>
                                 </>

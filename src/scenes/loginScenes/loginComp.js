@@ -29,8 +29,9 @@ import {
   getMenuList,
   getCustomerTypeList,
   getCarModalList,
-  clearUserNameAndPass
+  clearUserNameAndPass, getEmpId
 } from "../../redux/loginReducer";
+import { getCallRecordingCredentials } from '../../../redux/callRecordingReducer';
 import { AuthNavigator } from "../../navigations";
 import { IconButton } from "react-native-paper";
 import { AuthContext } from "../../utils/authContext";
@@ -114,6 +115,14 @@ const LoginScreen = ({ navigation }) => {
 
       AsyncStore.storeData(AsyncStore.Keys.USER_TOKEN, selector.userData.idToken).then(() => {
         dispatch(getMenuList(selector.userData.userName));
+        dispatch(getEmpId(selector.userData.userName));
+
+
+        let data = {
+          userName : selector.userData.userName,
+          orgId: selector.userData.orgId
+        }
+       // dispatch(getCallRecordingCredentials(data))
         // dispatch(getCustomerTypeList());
         // dispatch(getCarModalList(selector.userData.orgId))
         // signIn(selector.authToken);

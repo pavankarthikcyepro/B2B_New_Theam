@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Colors } from '../../../../styles';
 import { convertTimeStampToDateString, callNumber, navigatetoCallWebView } from '../../../../utils/helperFunctions';
-import { IconButton } from "react-native-paper";
+import { Checkbox, IconButton } from "react-native-paper";
 import moment from "moment";
 import { AppNavigator, AuthNavigator } from "../../../../navigations";
 import * as AsyncStore from '../../../../asyncStore';
+import { CHECKBOX_SELECTED } from '../../../../assets/svg';
 
 
 
@@ -28,63 +29,50 @@ const statusBgColors = {
     },
 }
 
-const IconComp = ({ iconName, onPress }) => {
+const IconComp = ({ iconName, onPress,bgColor }) => {
     return (
         <TouchableOpacity onPress={onPress}>
-            <View style={{ width: 35, height: 35, justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: "#002C5F", borderRadius: 5 }}>
+            <View style={{ width: 35, height: 35, justifyContent: "center", alignItems: "center", borderWidth: 1, backgroundColor: bgColor, borderColor:bgColor,  borderRadius: 20 }}>
                 <IconButton
                     icon={iconName}
-                    color={Colors.GREEN}
-                    size={17}
+                    color={Colors.WHITE}
+                    size={20}
                 />
             </View>
         </TouchableOpacity>
     )
 }
 
- const callWebViewRecord = async({navigator,phone, uniqueId, type}) =>{
-    try{
-        let extensionId = await AsyncStore.getData(AsyncStore.Keys.EXTENSION_ID);
-        var password = await AsyncStore.getData(AsyncStore.Keys.EXTENSSION_PWD);        
-        password = await encodeURIComponent(password)
-       var uri = 'https://ardemoiipl.s3.ap-south-1.amazonaws.com/call/webphone/click2call.html?u=' + extensionId + '&p=' + password + '&c=' + phone + '&type=' + type + '&uniqueId=' + uniqueId 
 
-      // await alert("phone" + phone + "  type" + type + "  uniqueId" + uniqueId + "  userName" + extensionId + "  pwd " + password)
- //alert(uri)
- console.log("call recording uri=", uri)
-        if(extensionId && extensionId != null && extensionId != ''){
-            var granted = await navigatetoCallWebView();
-            console.log("granted status", granted)
 
-            if (granted)
+
+export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected,leadDropId, uniqueId, enqCat, leadStage, name, status, created, dmsLead, lostReason }) => {
+    const [isItemSelected, setisItemSelected ]= useState('unchecked')
+
+    const checkboxSelected = async () => {
+        try
+        {
+            if (isItemSelected === 'unchecked')
             {
-                    navigator.navigate(AppNavigator.EmsStackIdentifiers.webViewComp, {
-                    phone: phone,
-                    type: type,
-                    uniqueId: uniqueId,
-                    userName: extensionId,
-                    password:password,
-                    url: uri
-                })
+                onItemSelected(uniqueId, leadDropId,'multi','add')
+                await setisItemSelected('checked')
+
+            } else
+            {
+                onItemSelected(uniqueId, leadDropId, 'multi', 'delete')
+               await setisItemSelected('unchecked')
             }
-                
-
+        }catch(error){
+            alert(error)
         }
-        else callNumber(phone)
-       // alert(phone + uniqueId + "/" + type + "/" + password)
-       
-    }catch(error){
-      console.log("call record issue",error)
+        
+
     }
-    
 
-}
-
-export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, name, status, created, dmsLead, phone, source, model, leadStatus = '', leadStage = '', needStatus = '', enqCat = '', onItemPress, onDocPress }) => {
     let date = "";
-    if (from =="MY_TASKS") {
+    if (from == "MY_TASKS") {
         date = moment(created, "YYYY-MM-DD hh-mm-s").format("DD/MM/YYYY h:mm a");
-    }else {
+    } else {
         date = convertTimeStampToDateString(created);
     }
 
@@ -96,41 +84,52 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, na
     }
 
     return (
-        <TouchableOpacity onPress={onItemPress} style={styles.section}>
-            <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center", position: 'relative'}}>
-                
+        <TouchableOpacity  style={styles.section}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", position: 'relative' }}>
+
                 <View style={{ width: "70%" }}>
-                    <View style={{flexDirection: 'row'}}>
-                        <View style={{maxWidth: '73%',}}>
+                    <Checkbox
+                    onPress={()=>{
+                        checkboxSelected()
+                    }}
+                        status={isItemSelected}
+                    color={Colors.YELLOW}
+                    uncheckedColor={Colors.YELLOW}/>
+                    <View style={{ flexDirection: 'row', marginLeft:10 }}>
+                        <View style={{ maxWidth: '73%', }}>
                             <Text style={styles.text1}>{name}</Text>
                         </View>
                         <Text style={styles.catText}>{enqCat}</Text>
                     </View>
-                    <Text style={styles.text2}>{source + " - " + dmsLead}</Text>
+                    <Text style={styles.text2}>{lostReason + " - " + dmsLead}</Text>
                     <Text style={styles.text3}>{date}</Text>
-                    {needStatus === "YES" &&
+                    {/* {needStatus === "YES" &&
                         <View style={{ height: 15, width: 15, borderRadius: 10, backgroundColor: leadStatus === 'PREENQUIRYCOMPLETED' || (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY') || (leadStatus === 'PREBOOKINGCOMPLETED' && leadStage === 'PREBOOKING') || leadStatus === 'BOOKINGCOMPLETED' ? '#18a835' : '#f29a22', position: 'absolute', top: 0, right: 0 }}></View>
-                    }
+                    } */}
                 </View>
                 <View style={{ width: "30%", alignItems: "center" }}>
                     <View style={styles.modal}>
-                        <Text style={styles.text4}>{model}</Text>
+                        <Text style={styles.text4}>{leadStage}</Text>
                     </View>
                     {/* <View style={{ height: 8 }}></View> */}
                     <View style={{ flexDirection: "row", width: "100%", justifyContent: "space-evenly" }}>
+                        <View style={{ flexDirection: 'column' }}>
                         <IconComp
-                            iconName={'format-list-bulleted-square'}
-                            onPress={onDocPress}
+                            iconName={'window-close'}
+                            onPress={()=>onItemSelected(uniqueId, leadDropId,'single','reject')}
+                            bgColor='#FF0000'
                         />
+                            <Text style={{ color: Colors.BLUE, fontSize: 12, margin: 2 }}>Deny</Text>
+                        </View> 
+                            <View style={{ flexDirection: 'column' }}>
                         <IconComp
-                            iconName={'phone-outline'}
-                            onPress={() => callWebViewRecord({ navigator, phone, uniqueId,type})}
+                            iconName={'check'}
+                            onPress={()=>onItemSelected(uniqueId, leadDropId, 'single', 'approve')}
+                            bgColor='#008000'
                         />
-
-                        <IconComp
-                            iconName={'whatsapp'}
-                            onPress={() => sendWhatsApp(phone)}
-                        />
+                            <Text style={{ color: Colors.BLUE, fontSize: 12, margin: 2 }}>Deny</Text>
+                        </View> 
+                        
                     </View>
                 </View>
             </View>
@@ -149,12 +148,14 @@ const styles = StyleSheet.create({
         color: Colors.BLACK,
         fontSize: 14,
         fontWeight: '600',
-        marginBottom: 5
+        marginBottom: 5,
+        marginLeft: 10
     },
     text3: {
         color: Colors.DARK_GRAY,
         fontSize: 12,
         fontWeight: '600',
+        marginLeft: 10
     },
     text4: {
         color: Colors.WHITE,
@@ -163,7 +164,7 @@ const styles = StyleSheet.create({
         // textAlign: "center",
         // paddingHorizontal: 5
     },
-    section: { 
+    section: {
         // flex: 1, 
         // padding: 5, 
         backgroundColor: Colors.WHITE,

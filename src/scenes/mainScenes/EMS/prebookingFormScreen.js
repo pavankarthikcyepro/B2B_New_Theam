@@ -15,7 +15,7 @@ import {
     Image,
     TouchableOpacity,
     Modal,
-    Alert,
+    Alert, FlatList, RefreshControl
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,6 +24,8 @@ import {
     DropDownComponant,
     DatePickerComponent,
 } from "../../../components";
+import { ModelListitemCom } from "./components/ModelListitemCom";
+
 import {
     clearState,
     setDatePicker,
@@ -211,7 +213,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const dispatch = useDispatch();
     const selector = useSelector((state) => state.preBookingFormReducer);
     let scrollRef = useRef(null)
-    const { universalId, accessoriesList } = route.params;
+    const { universalId, accessoriesList, leadStatus, leadStage } = route.params;
     const [openAccordian, setOpenAccordian] = useState(0);
     const [componentAppear, setComponentAppear] = useState(false);
     const [userData, setUserData] = useState({
@@ -233,6 +235,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         varientList: [],
         varientListForDropDown: [],
     });
+    const [carModelsList, setCarModelsList] = useState([]);
+    const [updateModelList, setUpdateModelList] = useState(false);
+    const [isPrimaryCureentIndex, setIsPrimaryCurrentIndex] = useState(0);
+
+
     const [carColorsData, setCarColorsData] = useState([]);
     const [selectedModelId, setSelectedModelId] = useState(0);
     const [selectedVarientId, setSelectedVarientId] = useState(0);
@@ -557,8 +564,74 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             setSelectedBranchId(branchId);
         });
     }
+    
+    const modelOnclick = async (index, value, type) => {
+        try {
+            if (type == "update") {
+                let arr = await [...carModelsList]
+                arr[index] = value
+                // arr.splice(carModelsList, index, value);
+                await setCarModelsList([...arr])
+            }
+            else {
+                let arr = await [...carModelsList]
+                arr.splice(index, 1)
+                await setCarModelsList([...arr])
+                // carModelsList.splice(0, 1)
+            }
 
-    const getAsyncstoreData = async () => {
+            // console.log("onValueChangeonValueChange@@@@ ", value)
+        } catch (error) {
+            // alert(error)
+        }
+
+    }
+   
+    const isPrimaryOnclick = async(isPrimaryEnabled, index, item)=>{
+        try{
+            if(isPrimaryEnabled)
+            {
+                updateVariantModelsData(item.model, true, item.variant);
+            }
+            if (carModelsList && carModelsList.length > 0) {
+                let arr = await [...carModelsList]
+                var data = arr[isPrimaryCureentIndex]
+                const cardata = await {
+                    "color": data.color,
+                    "fuel": data.fuel,
+                    "id": data.id,
+                    "model": data.model,
+                    "transimmisionType": data.transimmisionType,
+                    "variant": data.variant,
+                    "isPrimary": false
+                }
+                const selecteditem = await {
+                    "color": item.color,
+                    "fuel": item.fuel,
+                    "id": item.id,
+                    "model": item.model,
+                    "transimmisionType": item.transimmisionType,
+                    "variant": item.variant,
+                    "isPrimary": true
+                }
+                await setCarModelsList([])
+                arr[isPrimaryCureentIndex] = cardata;
+                arr[index] =selecteditem
+                await setCarModelsList([...arr])
+                await setIsPrimaryCurrentIndex(index)
+
+           
+
+            } 
+        }catch(error)
+        {
+           // alert(error)
+        }
+       
+
+
+    }
+        const getAsyncstoreData = async () => {
         const employeeData = await AsyncStore.getData(
             AsyncStore.Keys.LOGIN_EMPLOYEE
         );
@@ -763,6 +836,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     useEffect(() => {
         if (selector.model_drop_down_data_update_status === "update") {
+            console.log("CALLED AAAAA");
             updateVariantModelsData(selector.model, true, selector.varient);
         }
     }, [selector.model_drop_down_data_update_status]);
@@ -1005,12 +1079,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         if (!selectedModelName || selectedModelName.length === 0) {
             return;
         }
-
-        console.log("coming..: ");
+        console.log("coming..: ", selectedModelName,
+            fromInitialize,
+            selectedVarientName);
         let arrTemp = carModelsData.filter(function (obj) {
             return obj.model === selectedModelName;
         });
-        console.log("arrTemp: ", arrTemp.length);
+        console.log("arrTemp: ", arrTemp);
 
         let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
         if (carModelObj !== undefined) {
@@ -1052,11 +1127,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         if (!selectedVarientName || selectedVarientName.length === 0) {
             return;
         }
-
+        
         let arrTemp = varientList.filter(function (obj) {
             return obj.name === selectedVarientName;
         });
-
+        console.log("VARIENT LIST: ", arrTemp[0]);
         let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
         if (carModelObj !== undefined) {
             let newArray = [];
@@ -1418,13 +1493,16 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 );
 
             if (dmsEntity.hasOwnProperty("dmsLeadDto"))
-                console.log("MODEL: ", selector.model);
                 dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
+                
+            let selectedModel = []
+            selectedModel = carModelsList.filter((item) => item.isPrimary === true)
+            console.log("MODEL: ", selector.model, carModelsList);
             dmsLeadDto.firstName = selector.first_name;
             dmsLeadDto.lastName = selector.last_name;
             dmsLeadDto.phone = selector.mobile;
             dmsLeadDto.email = selector.email;
-            dmsLeadDto.model = selector.model;
+            dmsLeadDto.model = selectedModel.length > 0 ? selectedModel[0].model : selector.model ;
             const employeeData = await AsyncStore.getData(
                 AsyncStore.Keys.LOGIN_EMPLOYEE
             );
@@ -1685,7 +1763,70 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             navigation.goBack();
         }
     }, [selector.update_pre_booking_details_response]);
+    useEffect(() => {
+        try {
+            if (selector.dmsLeadProducts && selector.dmsLeadProducts.length > 0)
+            {
+                addingIsPrimary()
+            }
+        } catch (error) {
+            // alert("useeffect"+error)
 
+        }
+
+    }, [selector.dmsLeadProducts])
+
+    const addingIsPrimary = async()=>{
+        try{
+            let array = await [...selector.dmsLeadProducts]
+            for (let i = 0; i < selector.dmsLeadProducts.length; i++) {
+                var item = await array[i]
+                // if (i == 0) {
+                //     item = await {
+                //         "color": item.color,
+                //         "fuel": item.fuel,
+                //         "id": item.id,
+                //         "model": item.model,
+                //         "transimmisionType": item.transimmisionType,
+                //         "variant": item.variant,
+                //         "isPrimary": true
+                //     }
+                //     // updateVariantModelsData(item.model, true, item.variant);
+                // }
+                // else {
+                //     item = await {
+                //         "color": item.color,
+                //         "fuel": item.fuel,
+                //         "id": item.id,
+                //         "model": item.model,
+                //         "transimmisionType": item.transimmisionType,
+                //         "variant": item.variant,
+                //         "isPrimary": false
+                //     }
+                // }
+                item = await {
+                    "color": item.color,
+                    "fuel": item.fuel,
+                    "id": item.id,
+                    "model": item.model,
+                    "transimmisionType": item.transimmisionType,
+                    "variant": item.variant,
+                    "isPrimary": false
+                }
+                array[i] = await item
+                if (i === selector.dmsLeadProducts.length - 1){
+                    let index = array.findIndex((item) => item.model === selector.pre_booking_details_response?.dmsLeadDto?.model);
+                    if(index !== -1){
+                        array[index].isPrimary = true
+                    }
+                }
+               // console.log(userObject.username);
+            }
+            await setCarModelsList(array)
+        } catch(error){
+        }
+        
+    }
     const mapContactOrAccountDto = (prevData) => {
         let dataObj = { ...prevData };
         dataObj.salutation = selector.salutation;
@@ -1770,15 +1911,22 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const mapLeadProducts = (prevDmsLeadProducts) => {
         let dmsLeadProducts = [...prevDmsLeadProducts];
         let dataObj = {};
-        if (dmsLeadProducts.length > 0) {
-            dataObj = { ...dmsLeadProducts[0] };
-        }
-        dataObj.model = selector.model;
-        dataObj.variant = selector.varient;
-        dataObj.color = selector.color;
-        dataObj.fuel = selector.fuel_type;
-        dataObj.transimmisionType = selector.transmission_type;
-        dmsLeadProducts[0] = dataObj;
+        // if (dmsLeadProducts.length > 0) {
+        //     dataObj = { ...dmsLeadProducts[0] };
+        // }
+        // dataObj.model = selector.model;
+        // dataObj.variant = selector.varient;
+        // dataObj.color = selector.color;
+        // dataObj.fuel = selector.fuel_type;
+        // dataObj.transimmisionType = selector.transmission_type;
+        // dmsLeadProducts[0] = dataObj;
+        let selectedModel = [], tempCarModels = [...carModelsList], index = -1;
+        selectedModel = carModelsList.filter((item) => item.isPrimary === true)
+        index = carModelsList.findIndex((item) => item.isPrimary === true)
+        tempCarModels.splice(index, 1);
+        tempCarModels.unshift(selectedModel[0])
+        console.log("ARRANGE MODEL: ", tempCarModels, dmsLeadProducts)
+        dmsLeadProducts = tempCarModels
         return dmsLeadProducts;
     };
 
@@ -2622,7 +2770,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     value={selector.mobile}
                                     // editable={false}
                                     label={"Mobile Number*"}
-                                    maxLength={13}
+                                    maxLength={10}
                                     onChangeText={(text) =>
                                         dispatch(setCustomerDetails({ key: "MOBILE", text: text }))
                                     }
@@ -3128,7 +3276,49 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     styles.accordianBorder,
                                 ]}
                             >
-                                <DropDownSelectionItem
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        const carmodeldata = {
+                                            "color": '',
+                                            "fuel": '',
+                                            "id": 0,
+                                            "model": "",
+                                            "transimmisionType": '',
+                                            "variant": '',
+                                            "isPrimary": false
+
+                                        }
+                                        let arr = [...carModelsList]
+                                        arr.push(carmodeldata)
+                                        setCarModelsList(arr)
+                                        // selector.dmsLeadProducts = [...selector.dmsLeadProducts, carmodeldata]
+                                    }}
+                                    style={{ width: '40%', margin: 5, borderRadius: 5, backgroundColor: Colors.PINK, height: 40, alignSelf: 'flex-end', alignContent: 'flex-end', alignItems: 'center', justifyContent: 'center' }}>
+                                    <Text style={{ fontSize: 16, textAlign: 'center', textAlignVertical: 'center', color: Colors.WHITE, width: '100%', }}>Add Model</Text>
+                                </TouchableOpacity>
+                                <FlatList
+                                    data={carModelsList}
+                                    extraData={carModelsList}
+                                    keyExtractor={(item, index) => index.toString()}
+                                    renderItem={({ item, index }) => {
+                                        return (
+                                            // <Pressable onPress={() => selectedItem(item, index)}>
+                                            < View >
+
+                                                <ModelListitemCom
+                                                    modelOnclick={modelOnclick}
+                                                    isPrimaryOnclick={isPrimaryOnclick}
+                                                    index={index}
+                                                    item={item}
+                                                    leadStage={leadStage} />
+
+                                                {/* <Divider /> */}
+                                            </View>
+                                            // </Pressable>
+                                        )
+                                    }}
+                                />
+                                {/* <DropDownSelectionItem
                                     label={"Model"}
                                     value={selector.model}
                                     onPress={() => showDropDownModelMethod("MODEL", "Model")}
@@ -3156,7 +3346,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     label={"Transmission Type"}
                                     editable={false}
                                 />
-                                <Text style={GlobalStyle.underline}></Text>
+                                <Text style={GlobalStyle.underline}></Text> */}
                             </List.Accordion>
                             <View style={styles.space}></View>
 
@@ -4643,6 +4833,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                                 value={selector.transfer_from_mobile}
                                                 label={"Transfer From Mobile"}
                                                 keyboardType={"number-pad"}
+                                                maxLength={10}
                                                 onChangeText={(text) =>
                                                     dispatch(
                                                         setPreBookingPaymentDetials({
@@ -4658,6 +4849,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                                 value={selector.transfer_to_mobile}
                                                 label={"Transfer To Mobile"}
                                                 keyboardType={"number-pad"}
+                                                maxLength={10}
                                                 onChangeText={(text) =>
                                                     dispatch(
                                                         setPreBookingPaymentDetials({

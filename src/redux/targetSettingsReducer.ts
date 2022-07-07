@@ -33,7 +33,9 @@ export const addTargetMapping = createAsyncThunk("TARGET_SETTINGS/addTargetMappi
     
     const json = await response.json()
     console.log("$$$$%%%$$ ADD:", JSON.stringify(json));
-    showToast(json.message)
+    if (json?.message) {
+        showToast(json.message)
+    }
     if (!response.ok) {
         return rejectWithValue(json);
     }
@@ -45,7 +47,9 @@ export const editTargetMapping = createAsyncThunk("TARGET_SETTINGS/editTargetMap
     const response = await client.post(URL.EDIT_TARGET_MAPPING(), payload)
     const json = await response.json()
     console.log("$$$$%%%$$ EDIT:", JSON.stringify(json));
-    showToast(json.message)
+    if (json?.message){
+        showToast(json.message)
+    }
     if (!response.ok) {
         return rejectWithValue(json);
     }
@@ -226,7 +230,7 @@ export const targetSettingsSlice = createSlice({
                 
             })
             .addCase(addTargetMapping.fulfilled, (state, action) => {
-                if (action.payload?.message !== null){
+                if (action.payload?.message){
                     showToast(action.payload.message)
                 }
             })
@@ -237,7 +241,7 @@ export const targetSettingsSlice = createSlice({
 
             })
             .addCase(editTargetMapping.fulfilled, (state, action) => {
-                if (action.payload?.message !== null) {
+                if (action.payload?.message) {
                     showToast(action.payload.message)
                 }
             })

@@ -5,7 +5,8 @@ import * as AsyncStore from '../asyncStore';
 import empData from '../get_target_params_for_emp.json'
 import allData from '../get_target_params_for_all_emps.json'
 import targetData from '../get_target_params.json'
-
+import { showToast } from "../utils/toast";
+ 
 const data = [
     {
         title: "Pre-Enquiry",
@@ -182,7 +183,7 @@ export const getNewTargetParametersAllData = createAsyncThunk("HOME/getNewTarget
     const response = await client.post(URL.GET_TEAMS_TARGET_PARAMS(), payload)
     const json = await response.json()
 
-    // console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
+    console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
 
     if (!response.ok) {
         return rejectWithValue(json);
@@ -219,7 +220,7 @@ export const getUserWiseTargetParameters = createAsyncThunk("HOME/getUserWiseTar
 })
 
 export const getTargetParametersEmpData = createAsyncThunk("HOME/getTargetParametersEmpData", async (payload: any, { rejectWithValue }) => {
-    // console.log("PAYLOAD:", URL.GET_TARGET_PARAMS_EMP(), payload);
+    console.log("PAYLOAD:", URL.GET_TARGET_PARAMS_EMP(), payload);
 
     const response = await client.post(URL.GET_TARGET_PARAMS_EMP(), payload)
     const json = await response.json()
@@ -249,7 +250,7 @@ export const getDealerRanking = createAsyncThunk("HOME/getDealerRanking", async 
     console.log("%%%BRANCH", URL.GET_TARGET_RANKING(payload.orgId, payload.branchId), payload.payload);
     const response = await client.post(URL.GET_TARGET_RANKING(payload.orgId, payload.branchId), payload.payload)
     const json = await response.json()
-    console.log("&&&&&& DATA GET_TARGET_RANKING:", json);
+    // console.log("&&&&&& DATA GET_TARGET_RANKING:", json);
 
     if (!response.ok) {
         return rejectWithValue(json);
@@ -471,7 +472,7 @@ export const homeSlice = createSlice({
         leaderboard_list: [],
         branchrank_list: [],
         designationList: [],
-        deptList: [],
+        deptList: []
     },
     reducers: {
         dateSelected: (state, action) => {
@@ -863,6 +864,7 @@ export const homeSlice = createSlice({
                     // state.employee_list = dataObj ? dataObj.dmsEntity.employees : [];
                     state.employee_list = dataObj ? dataObj : [];
                     state.isLoading = false;
+                    console.log("IS LOADING: ", state.isLoading);                    
                 }
             })
             .addCase(getEmployeesList.rejected, (state, action) => {
@@ -891,7 +893,10 @@ export const homeSlice = createSlice({
             .addCase(updateEmployeeDataBasedOnDelegate.fulfilled, (state, action) => {
                 // console.log("res2: ", action.payload);
                 const dataObj = action.payload;
-                state.isLoading = false;
+                    state.isLoading = false;
+                if (action.payload.success){
+                    showToast("Successfully updated")
+                }
             })
             .addCase(updateEmployeeDataBasedOnDelegate.rejected, (state, action) => {
                 state.isLoading = false;

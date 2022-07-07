@@ -37,6 +37,7 @@ import {
     getNewTargetParametersAllData,
     getTotalTargetParametersData
 } from '../../../redux/homeReducer';
+import { getCallRecordingCredentials } from '../../../redux/callRecordingReducer'
 import {
     updateData,
     updateIsManager,
@@ -176,9 +177,9 @@ const HomeScreen = ({ route, navigation }) => {
     }
 
     useEffect(() => {
-        if (selector.target_parameters_data.length > 0) {
+        if (selector.self_target_parameters_data.length > 0) {
             let tempRetail = [];
-            tempRetail = selector.target_parameters_data.filter((item) => {
+            tempRetail = selector.self_target_parameters_data.filter((item) => {
                 return item.paramName.toLowerCase() === 'invoice'
             })
             if (tempRetail.length > 0) {
@@ -186,7 +187,7 @@ const HomeScreen = ({ route, navigation }) => {
             }
         } else {
         }
-    }, [selector.target_parameters_data])
+    }, [selector.self_target_parameters_data])
 
     useEffect(async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -327,6 +328,16 @@ const HomeScreen = ({ route, navigation }) => {
     }
 
     const checkLoginUserAndEnableReportButton = async () => {
+        let empId = await AsyncStore.getData(AsyncStore.Keys.EMP_ID);
+        let orgId = await AsyncStore.getData(AsyncStore.Keys.ORG_ID);
+        let data = {
+            empId: empId,
+            orgId: orgId
+        }
+
+        dispatch(getCallRecordingCredentials(data))
+
+
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
          console.log("SSSSSSSSSSSSSSSSSSSSS$$$$$ LOGIN EMP:", employeeData);
         if (employeeData) {
@@ -897,7 +908,9 @@ const HomeScreen = ({ route, navigation }) => {
                                                 <View style={{
                                                     flexDirection: 'row'
                                                 }}>
-                                                    <View style={styles.rankIconBox}>
+                                                    <TouchableOpacity style={styles.rankIconBox} onPress={() => { 
+                                                        navigation.navigate(AppNavigator.HomeStackIdentifiers.leaderboard)
+                                                     }}>
                                                         {/* <VectorImage
                                                     width={25}
                                                     height={16}
@@ -905,7 +918,7 @@ const HomeScreen = ({ route, navigation }) => {
                                                 // style={{ tintColor: Colors.DARK_GRAY }}
                                                 /> */}
                                                         <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
-                                                    </View>
+                                                    </TouchableOpacity>
                                                     <View style={{
                                                         marginTop: 5,
                                                         marginLeft: 3
@@ -928,15 +941,17 @@ const HomeScreen = ({ route, navigation }) => {
                                                 <View style={{
                                                     flexDirection: 'row'
                                                 }}>
-                                                    <View style={styles.rankIconBox}>
-                                                        {/* <VectorImage
+                                                    <TouchableOpacity style={styles.rankIconBox} onPress={() => {
+                                                        navigation.navigate(AppNavigator.HomeStackIdentifiers.branchRanking)
+                                                    }}>                                                        
+                                                    {/* <VectorImage
                                                     width={25}
                                                     height={16}
                                                     source={SPEED}
                                                 // style={{ tintColor: Colors.DARK_GRAY }}
                                                 /> */}
                                                         <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
-                                                    </View>
+                                                    </TouchableOpacity>
                                                     <View style={{
                                                         marginTop: 5,
                                                         marginLeft: 3,

@@ -51,6 +51,8 @@ const receptionMenu = [
     "Monthly Target Planning",
     "Helpdesk",
     "Task Management",
+    "Drop Analysis",
+
     "Task Transfer",
     "Sign Out"
 ];
@@ -61,7 +63,29 @@ const teleCollerMenu = [
     "Monthly Target Planning",
     "Helpdesk",
     "Task Management",
+    "Drop Analysis",
+
+    "Sign Out"
+];
+const ShowRoomMenu = [
+    "Home",
+    "Settings",
+    "Digital Payment",
+    "Monthly Target Planning",
+    "Helpdesk",
+    "Task Management",
+    "Drop Analysis",
+    "Sign Out"
+];
+const MDMenu = [
+    "Home",
+    "Settings",
+    "Digital Payment",
+    "Monthly Target Planning",
+    "Helpdesk",
+    "Task Management",
     "Task Transfer",
+    "Drop Analysis",
     "Sign Out"
 ];
 
@@ -82,13 +106,29 @@ const SideMenuScreen = ({ navigation }) => {
     const [newTableData, setNewTableData] = useState([]);
     const [imageUri, setImageUri] = useState(null);
     const [dataList, setDataList] = useState([]);
-    const [userData, setUserData] = useState({});
+    const [userData, setUserData] = useState(null);
+    const [hrmsRole, setHrmsRole] = useState('');
 
 
     useEffect(() => {
         getLoginEmployeeData();
         // getProfilePic();
     }, [])
+
+    useEffect(() => {
+        navigation.addListener('focus', () => {
+            getUserRole();
+        })
+    }, [navigation])
+
+    const getUserRole = async () => {
+        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        // console.log("$$$$$ LOGIN EMP:", employeeData);
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            setHrmsRole(jsonObj.hrmsRole)
+        }
+    }
 
     // useEffect(() => {
     //     if(userData){
@@ -97,7 +137,6 @@ const SideMenuScreen = ({ navigation }) => {
     // }, [userData])
 
     useEffect(() => {
-
         if (homeSelector.login_employee_details) {
             const jsonObj = homeSelector.login_employee_details;
             updateUserData(jsonObj);
@@ -112,7 +151,6 @@ const SideMenuScreen = ({ navigation }) => {
             const jsonObj = JSON.parse(jsonString);
             updateUserData(jsonObj);
             getProfilePic(jsonObj);
-
         }
     }
 
@@ -144,13 +182,18 @@ const SideMenuScreen = ({ navigation }) => {
         // setUserData(jsonObj)
         getProfilePic(jsonObj);
 
-
         let newFilterData = [];
         if (jsonObj.hrmsRole === "Reception") {
             newFilterData = selector.tableData.filter(item => receptionMenu.includes(item.title))
         }
         else if (jsonObj.hrmsRole === "Tele Caller") {
             newFilterData = selector.tableData.filter(item => teleCollerMenu.includes(item.title))
+        }
+        else if (jsonObj.hrmsRole === "Showroom DSE") {
+            newFilterData = selector.tableData.filter(item => ShowRoomMenu.includes(item.title))
+        }
+        else if (jsonObj.hrmsRole === "MD") {
+            newFilterData = selector.tableData.filter(item => MDMenu.includes(item.title))
         }
         else {
             newFilterData = selector.tableData;
@@ -201,6 +244,9 @@ const SideMenuScreen = ({ navigation }) => {
             case 111:
                 navigation.navigate(AppNavigator.DrawerStackIdentifiers.evtbrlReport);
                 break;
+            case 113:
+                navigation.navigate(AppNavigator.DrawerStackIdentifiers.dropAnalysis);
+                break;
             case 112:
                 signOutClicked();
                 break;
@@ -217,6 +263,8 @@ const SideMenuScreen = ({ navigation }) => {
         AsyncStore.storeData(AsyncStore.Keys.LOGIN_EMPLOYEE, "");
         AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_ID, "");
         AsyncStore.storeData(AsyncStore.Keys.SELECTED_BRANCH_NAME, "");
+        AsyncStore.storeData(AsyncStore.Keys.EXTENSION_ID, "")
+        AsyncStore.storeData(AsyncStore.Keys.EXTENSSION_PWD, "")
         AsyncStore.storeData(AsyncStore.Keys.IS_LOGIN, 'false');
         navigation.closeDrawer()
         //realm.close();
@@ -347,28 +395,49 @@ const SideMenuScreen = ({ navigation }) => {
                 </View>
             </View>
             <Divider />
-            <FlatList
-                data={newTableData}
-                keyExtractor={(item, index) => index}
-                renderItem={({ item, index }) => {
-                    return (
-                        <Pressable onPress={() => itemSelected(item)}>
-                            <View
-                                style={{
-                                    paddingLeft: 10,
-                                    height: 55,
-                                    justifyContent: "center",
-                                }}
-                            >
-                                {/* <List.Item
+            {/* {userData !== null && */}
+                <FlatList
+                    data={newTableData}
+                    keyExtractor={(item, index) => index}
+                    renderItem={({ item, index }) => {
+                        return (
+                            <>
+                                {item.title === 'Task Transfer' ?
+                                    (!hrmsRole.toLowerCase().includes('dse') ?
+                                        <Pressable onPress={() => itemSelected(item)}>
+                                            <View
+                                                style={{
+                                                    paddingLeft: 10,
+                                                    height: 55,
+                                                    justifyContent: "center",
+                                                }}
+                                            >
+                                                <View style={{ flexDirection: "row", height: 25, alignItems: "center", paddingLeft: 10, marginBottom: 5 }}>
+                                                    <Image style={{ height: 20, width: 20 }} source={item.pngIcon} />
+                                                    <Text style={{ fontSize: 15, fontWeight: "bold", marginLeft: 25, color: "gray" }}>{item.title}</Text>
+                                                </View>
+                                            </View>
+                                        </Pressable> :
+                                        null
+                                    )
+                                    :
+                                    <Pressable onPress={() => itemSelected(item)}>
+                                        <View
+                                            style={{
+                                                paddingLeft: 10,
+                                                height: 55,
+                                                justifyContent: "center",
+                                            }}
+                                        >
+                                            {/* <List.Item
                   title={item.title}
                   titleStyle={{ fontSize: 16, fontWeight: "600" }}
                   left={(props) => <List.Icon {...props} icon="folder" style={{ margin: 0 }} />}
                 /> */}
-                                <View style={{ flexDirection: "row", height: 25, alignItems: "center", paddingLeft: 10, marginBottom: 5 }}>
-                                    {/* <VectorImage source={item.icon} width={20} height={20} /> */}
-                                    <Image style={{ height: 20, width: 20 }} source={item.pngIcon}/>
-                                    {/* {item.icon === EVENT_MANAGEMENT_STR && <EVENT_MANAGEMENT width={20} height={20} color='green' />}
+                                            <View style={{ flexDirection: "row", height: 25, alignItems: "center", paddingLeft: 10, marginBottom: 5 }}>
+                                                {/* <VectorImage source={item.icon} width={20} height={20} /> */}
+                                                <Image style={{ height: 20, width: 20 }} source={item.pngIcon} />
+                                                {/* {item.icon === EVENT_MANAGEMENT_STR && <EVENT_MANAGEMENT width={20} height={20} color='green' />}
                                     {item.icon === CUSTOMER_RELATIONSHIP_STR && <CUSTOMER_RELATIONSHIP width={20} height={20} color={'black'} />}
                                     {item.icon === DOCUMENT_WALLET_STR && <DOCUMENT_WALLET width={20} height={20} color={'black'} />}
                                     {item.icon === HOME_LINE_STR && <HOME_LINE width={20} height={20} color={'black'} />}
@@ -376,14 +445,17 @@ const SideMenuScreen = ({ navigation }) => {
                                     {item.icon === QR_CODE_STR && <QR_CODE width={20} height={20} color={'black'} />}
                                     {item.icon === GROUP_STR && <GROUP width={20} height={20} color={'black'} />}
                                     {item.icon === TRANSFER_STR && <TRANSFER width={20} height={20} color={'black'} />} */}
-                                    <Text style={{ fontSize: 15, fontWeight: "bold", marginLeft: 25, color: "gray" }}>{item.title}</Text>
-                                </View>
-                                {/* <Divider /> */}
-                            </View>
-                        </Pressable>
-                    );
-                }}
-            />
+                                                <Text style={{ fontSize: 15, fontWeight: "bold", marginLeft: 25, color: "gray" }}>{item.title}</Text>
+                                            </View>
+                                            {/* <Divider /> */}
+                                        </View>
+                                    </Pressable>
+                                }
+                            </>
+                        );
+                    }}
+                />
+            {/* } */}
             {/* <View style={styles.bottomVw}>
                 <Button
                     icon="logout"
@@ -418,17 +490,17 @@ const styles = StyleSheet.create({
         overflow: 'hidden'
     },
     profilDetailes: {
-        marginLeft: 15,
+        marginLeft: 10,
         width: '75%'
     },
     nameStyle: {
-        fontSize: 17,
+        fontSize: 12,
         fontWeight: "bold",
         color: Colors.BLACK,
     },
     text1: {
         marginTop: 3,
-        fontSize: 14,
+        fontSize: 12,
         fontWeight: "200",
         // textAlign: 'center',
         color: Colors.DARK_GRAY,

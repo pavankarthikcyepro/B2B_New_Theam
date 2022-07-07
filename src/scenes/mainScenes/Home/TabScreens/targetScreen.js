@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, FlatList, Dimensions, Text, TouchableOpacity, Modal, Image } from "react-native";
+import { View, StyleSheet, FlatList, Dimensions, Text, TouchableOpacity, Image, Alert } from "react-native";
 import { Colors } from "../../../../styles";
 import { TargetListComp } from "../../../../components";
 import { DropDownSelectionItem, DateSelectItem, ChartNameList, EmptyListView } from "../../../../pureComponents";
@@ -23,14 +23,11 @@ import { ScrollView } from "react-native-gesture-handler";
 import ShuffleIcon from "react-native-vector-icons/Entypo";
 import { Dropdown } from 'react-native-element-dropdown';
 import CloseIcon from "react-native-vector-icons/MaterialIcons";
+import Modal from "react-native-modal";
 import { LoaderComponent } from '../../../../components';
 
-// import {
-//   getUserWiseTargetParameters
-// } from '../../../../redux/homeReducer';
+import { getEmployeesList, getReportingManagerList, updateEmployeeDataBasedOnDelegate, getDeptDropdown, getDesignationDropdown, delegateTask, getUserWiseTargetParameters } from "../../../../redux/homeReducer";
 
-import { getEmployeesList, getReportingManagerList, updateEmployeeDataBasedOnDelegate, getDeptDropdown, getDesignationDropdown, getUserWiseTargetParameters, delegateTask } from "../../../../redux/homeReducer";
-import { showToast } from "../../../../utils/toast";
 
 //const paramtersTitlesData = ["Parameter", "E", "TD", "HV", "VC", "B", "Ex", "R", "F", "I", "Ex-W", "Acc.", "Ev"]
 const paramtersTitlesData = ["Parameter", "Target", "Achivement", "Achivement %", "ShortFall", "ShortFall %"]
@@ -416,6 +413,7 @@ const color = [
 const TargetScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
   const dispatch = useDispatch();
+
   const [retailData, setRetailData] = useState(null);
   const [bookingData, setBookingData] = useState(null);
   const [enqData, setEnqData] = useState(null);
@@ -425,19 +423,97 @@ const TargetScreen = ({ route, navigation }) => {
   const [dateDiff, setDateDiff] = useState(null);
   const [isTeamPresent, setIsTeamPresent] = useState(false);
   const [isTeam, setIsTeam] = useState(false);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedName, setSelectedName] = useState('');
-  const [allParameters, setAllParameters] = useState([])
   const [showShuffleModal, setShowShuffleModal] = useState(false);
   const [delegateButtonClick, setDelegateButtonClick] = useState(false);
-  const [headerTitle, setHeaderTitle] = useState("Selected employees has Active tasks. Please delegate to another employee");
+  const [headerTitle, setHeaderTitle] = useState("Selected employee has Active tasks. Please delegate to another employee");
   const [dropDownPlaceHolder, setDropDownPlaceHolder] = useState("Employees");
+  const [allParameters, setAllParameters] = useState([])
+  const [selectedName, setSelectedName] = useState('');
 
   const [employeeListDropdownItem, setEmployeeListDropdownItem] = useState(0);
   const [employeeDropdownList, setEmployeeDropdownList] = useState([]);
   const [reoprtingManagerListDropdownItem, setReoprtingManagerListDropdownItem] = useState(0);
   const [reoprtingManagerDropdownList, setReoprtingManagerDropdownList] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
+
+  const getEmployeeListFromServer = async (user) => {
+    // dispatch(getEmployeesList(424));
+    // const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    // console.log("EMP DTLS: ", employeeData);
+    // if (employeeData) {
+    //   const jsonObj = JSON.parse(employeeData);
+    //   const payloadDept = {
+    //     "orgId": user.orgId,
+    //     "parent": "branch",
+    //     "child": "department",
+    //     "parentId": user.branchId
+    //   }
+    //   Promise.all([dispatch(getDeptDropdown(payloadDept))]).then((res1) => {
+    //     console.log("TTTRRR: ", JSON.stringify(res1));
+    //     let dept = [];
+    //     dept = res1[0].payload.filter((item) => item.value === jsonObj.primaryDepartment)
+    //     const payloadDesig = {
+    //       "orgId": user.orgId,
+    //       "parent": "department",
+    //       "child": "designation",
+    //       "parentId": dept ? dept[0].id : 0
+    //     }
+
+    //     Promise.all([dispatch(getDesignationDropdown(payloadDesig))]).then((res1) => {
+    //       let desig = [];
+    //       desig = res1[0].payload.filter((item) => item.value === jsonObj.primaryDesignation)
+    //       const payload = {
+    //         "empId": user.orgId,
+    //         "branchId": user.branchId,
+    //         "deptId": dept ? dept[0].id : 0,
+    //         "desigId": desig ? desig[0].id : 0
+    //       }
+    //       console.log("EMP PAYLOAD: ", payload);
+    //       dispatch(getEmployeesList(payload));
+    //     })
+    //   })
+
+    // }
+
+    const payload = {
+      "empId": user.empId
+    }
+    console.log("EMP PAYLOAD: ", payload);
+    dispatch(getEmployeesList(payload));
+  }
+
+  const getReportingManagerListFromServer = async (user) => {
+    const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+    console.log("EMP DTLS: ", employeeData);
+    if (employeeData) {
+      const jsonObj = JSON.parse(employeeData);
+      dispatch(delegateTask({
+        fromUserId: jsonObj.empId,
+        toUserId: user.empId
+      }))
+    }
+    dispatch(getReportingManagerList(user.orgId));
+  }
+
+  const updateEmployeeData = async () => {
+    if (employeeListDropdownItem !== 0 && reoprtingManagerListDropdownItem !== 0) {
+      const payload = {
+        empID: employeeListDropdownItem,
+        managerID: reoprtingManagerListDropdownItem
+      }
+      Promise.all([dispatch(updateEmployeeDataBasedOnDelegate(payload))]).then(() => {
+        setDelegateButtonClick(false);
+        setHeaderTitle("Selected employees has Active tasks. Please delegate to another employee");
+        setDropDownPlaceHolder("Employees");
+
+        setEmployeeListDropdownItem(0);
+        setEmployeeDropdownList([]);
+        setReoprtingManagerListDropdownItem(0);
+        setReoprtingManagerDropdownList([]);
+        setSelectedUser(null);
+      })
+    }
+  }
 
   useEffect(() => {
     const dateFormat = "YYYY-MM-DD";
@@ -517,30 +593,6 @@ const TargetScreen = ({ route, navigation }) => {
 
   }, [selector.login_employee_details])
 
-  useEffect(async () => {
-    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-    if (employeeData) {
-      const jsonObj = JSON.parse(employeeData);
-      if (selector.all_emp_parameters_data.length > 0) {
-        let tempParams = [...selector.all_emp_parameters_data.filter((item) => item.empId !== jsonObj.empId)];
-        for (let i = 0; i < tempParams.length; i++) {
-          tempParams[i] = {
-            ...tempParams[i],
-            isOpenInner: false,
-            employeeTargetAchievements: []
-          }
-          // tempParams[i]["isOpenInner"] = false;
-          // tempParams[i]["employeeTargetAchievements"] = [];
-          console.log("%%%%^^^:", tempParams[i]);
-          if (i === tempParams.length - 1) {
-            console.log("MODIFIED DATA: ", JSON.stringify(tempParams));
-            setAllParameters([...tempParams]);
-          }
-        }
-      }
-    }
-  }, [selector.all_emp_parameters_data])
-
   useEffect(() => {
     setIsTeam(selector.isTeam)
   }, [selector.isTeam])
@@ -593,15 +645,8 @@ const TargetScreen = ({ route, navigation }) => {
     return total;
   }
 
-  useEffect(() => {
-    setEmployeeDropdownList(selector.employee_list.map(({ name: label, id: value, ...rest }) => ({ value, label, ...rest })));
-  }, [selector.employee_list])
-
-  useEffect(() => {
-    setReoprtingManagerDropdownList(selector.reporting_manager_list.map(({ name: label, id: value, ...rest }) => ({ value, label, ...rest })));
-  }, [selector.reporting_manager_list])
-
   const handleModalDropdownDataForShuffle = (user) => {
+    console.log("USER: ", user);
     if (delegateButtonClick) {
       getReportingManagerListFromServer(user);
       setShowShuffleModal(true);
@@ -613,89 +658,37 @@ const TargetScreen = ({ route, navigation }) => {
     }
   }
 
-  const getReportingManagerListFromServer = async (user) => {
-    const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-    console.log("EMP DTLS: ", employeeData);
+  useEffect(() => {
+    setEmployeeDropdownList(selector.employee_list.map(({ name: label, id: value, ...rest }) => ({ value, label, ...rest })));
+  }, [selector.employee_list])
+
+  useEffect(() => {
+    setReoprtingManagerDropdownList(selector.reporting_manager_list.map(({ name: label, id: value, ...rest }) => ({ value, label, ...rest })));
+  }, [selector.reporting_manager_list])
+
+  useEffect(async () => {
+    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
-      dispatch(delegateTask({
-        fromUserId: jsonObj.empId,
-        toUserId: user.empId
-      }))
-    }
-    dispatch(getReportingManagerList(user.orgId));
-  }
-
-  const getEmployeeListFromServer = async (user) => {
-    // dispatch(getEmployeesList(424));
-    // const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-    // console.log("EMP DTLS: ", employeeData);
-    // if (employeeData) {
-    //   const jsonObj = JSON.parse(employeeData);
-    //   const payloadDept = {
-    //     "orgId": jsonObj.orgId,
-    //     "parent": "branch",
-    //     "child": "department",
-    //     "parentId": jsonObj.branchId
-    //   }
-    //   Promise.all([dispatch(getDeptDropdown(payloadDept))]).then((res1) => {
-    //     console.log("TTTRRR: ", JSON.stringify(res1));
-    //     let dept = [];
-    //     dept = res1[0].payload.filter((item) => item.value === jsonObj.primaryDepartment)
-    //     const payloadDesig = {
-    //       "orgId": jsonObj.orgId,
-    //       "parent": "department",
-    //       "child": "designation",
-    //       "parentId": dept ? dept[0].id : 0
-    //     }
-
-    //     Promise.all([dispatch(getDesignationDropdown(payloadDesig))]).then((res1) => {
-    //       let desig = [];
-    //       desig = res1[0].payload.filter((item) => item.value === jsonObj.primaryDesignation)
-    //       const payload = {
-    //         "orgId": jsonObj.orgId,
-    //         "branchId": jsonObj.branchId,
-    //         "deptId": dept ? dept[0].id : 0,
-    //         "desigId": desig ? desig[0].id : 0
-    //         // "orgId": 16,
-    //         // "branchId": 267,
-    //         // "deptId": 180,
-    //         // "desigId": 56
-    //       }
-    //       console.log("EMP PAYLOAD: ", payload);
-    //       dispatch(getEmployeesList(payload));
-    //     })
-    //   })
-
-    // }
-
-    const payload = {
-      "empId": user.empId
-    }
-    console.log("EMP PAYLOAD: ", payload);
-    dispatch(getEmployeesList(payload));
-  }
-
-  const updateEmployeeData = async () => {
-    if (employeeListDropdownItem !== 0 && reoprtingManagerListDropdownItem !== 0) {
-      const payload = {
-        empID: employeeListDropdownItem,
-        managerID: reoprtingManagerListDropdownItem
+      if (selector.all_emp_parameters_data.length > 0) {
+        let tempParams = [...selector.all_emp_parameters_data.filter((item) => item.empId !== jsonObj.empId)];
+        for (let i = 0; i < tempParams.length; i++) {
+          tempParams[i] = {
+            ...tempParams[i],
+            isOpenInner: false,
+            employeeTargetAchievements: []
+          }
+          // tempParams[i]["isOpenInner"] = false;
+          // tempParams[i]["employeeTargetAchievements"] = [];
+          console.log("%%%%^^^:", tempParams[i]);
+          if (i === tempParams.length - 1) {
+            console.log("MODIFIED DATA: ", JSON.stringify(tempParams));
+            setAllParameters([...tempParams]);
+          }
+        }
       }
-      Promise.all([dispatch(updateEmployeeDataBasedOnDelegate(payload))]).then(() => {
-        showToast("Successfully updated")
-        setDelegateButtonClick(false);
-        setHeaderTitle("Selected employees has Active tasks. Please delegate to another employee");
-        setDropDownPlaceHolder("Employees");
-
-        setEmployeeListDropdownItem(0);
-        setEmployeeDropdownList([]);
-        setReoprtingManagerListDropdownItem(0);
-        setReoprtingManagerDropdownList([]);
-        setSelectedUser(null);
-      })
     }
-  }
+  }, [selector.all_emp_parameters_data])
 
   const renderData = (item, color) => {
     return (
@@ -768,9 +761,8 @@ const TargetScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-
-      <Modal 
-      visible={showShuffleModal}
+      <Modal
+        visible={showShuffleModal}
         animationType={'fade'}
         transparent={true}
         onRequestClose={() => setShowShuffleModal(false)}
@@ -917,9 +909,9 @@ const TargetScreen = ({ route, navigation }) => {
             </View>
           </View>
         </View>
-        
-      </Modal>
 
+      </Modal>
+      
       <Modal
         animationType={'fade'}
         transparent={true}
@@ -938,367 +930,8 @@ const TargetScreen = ({ route, navigation }) => {
           </View>
         </View>
       </Modal>
-      {/* {!selector.isTeam &&
-                
-            } */}
 
       {selector.isTeam ? (
-        // <View>
-        //   <View style={{ flexDirection: "row", marginLeft: 8 }}>
-        //     <View
-        //       style={{ width: "10%", justifyContent: "center", marginTop: 5 }}
-        //     ></View>
-
-        //     <View
-        //       style={{
-        //         width: "40%",
-        //         justifyContent: "center",
-        //         marginTop: 5,
-        //         alignItems: "center",
-        //       }}
-        //     >
-        //       <View
-        //         style={{
-        //           width: "100%",
-        //           justifyContent: "center",
-        //           alignItems: "center",
-        //           height: 40,
-        //           borderWidth: 1,
-        //           borderColor: "#d1d1d1",
-        //         }}
-        //       >
-        //         <Text
-        //           style={{
-        //             fontSize: 14,
-        //             color: "#0600FF",
-        //             fontWeight: "600",
-        //           }}
-        //         >
-        //           Team Total
-        //         </Text>
-        //       </View>
-        //       <View style={{ flexDirection: "row", height: 30 }}>
-        //         <View
-        //           style={{
-        //             width: "33%",
-        //             justifyContent: "center",
-        //             alignItems: "center",
-        //             borderWidth: 1,
-        //             borderColor: "#d1d1d1",
-        //             backgroundColor: "#d1d1d1",
-        //           }}
-        //         >
-        //           <Text style={{ fontSize: 14, fontWeight: "600" }}>Ach</Text>
-        //         </View>
-        //         <View
-        //           style={{
-        //             width: "33%",
-        //             justifyContent: "center",
-        //             alignItems: "center",
-        //             borderWidth: 1,
-        //             borderColor: "#d1d1d1",
-        //             backgroundColor: "#d1d1d1",
-        //           }}
-        //         >
-        //           <Text style={{ fontSize: 14, fontWeight: "600" }}>Bal</Text>
-        //         </View>
-        //         <View
-        //           style={{
-        //             width: "33%",
-        //             justifyContent: "center",
-        //             alignItems: "center",
-        //             borderWidth: 1,
-        //             borderColor: "#d1d1d1",
-        //             backgroundColor: "#d1d1d1",
-        //           }}
-        //         >
-        //           <Text style={{ fontSize: 14, fontWeight: "600" }}>
-        //             AR/D
-        //           </Text>
-        //         </View>
-        //       </View>
-        //     </View>
-
-        //   </View>
-        //   {selector.all_target_parameters_data.length > 0 && (
-        //     <View style={{ flexDirection: "row", marginLeft: 8 }}>
-        //       <View style={{ width: "10%", marginTop: 5 }}>
-        //         {selector.all_target_parameters_data.map((item, index) => {
-        //           return (
-        //             <View style={{ height: 30 }} key={index}>
-        //               <Text
-        //                 style={{
-        //                   color: color[index % color.length],
-        //                   fontSize: 14,
-        //                   fontWeight: "600",
-        //                 }}
-        //               >
-        //                 {item.paramShortName}
-        //               </Text>
-        //             </View>
-        //           );
-        //         })}
-
-        //       </View>
-
-
-        //       <View style={{ width: "40%" }}>
-        //         {selector.all_target_parameters_data.map((item, index) => {
-        //           return (
-        //             <View
-        //               style={{ flexDirection: "row", height: 30 }}
-        //               key={index}
-        //             >
-        //               <View
-        //                 style={{
-        //                   width: "33%",
-        //                   justifyContent: "center",
-        //                   alignItems: "center",
-        //                   borderWidth: 1,
-        //                   borderColor: "#d1d1d1",
-        //                 }}
-        //               >
-        //                 <Text style={{ fontSize: 12, fontWeight: "600" }}>
-        //                   {Number(item.achievment) >= 100000 ? Math.round(Number(item.achievment) / 100000) + "L" : (Number(item.achievment) >= 1000 ? Math.round(Number(item.achievment) / 1000) + "K" : item.achievment)}/{Number(item.target) >= 100000 ? Math.round(Number(item.target) / 100000) + "L" : (Number(item.target) >= 1000 ? Math.round(Number(item.target) / 1000) + "K" : item.target)}
-        //                 </Text>
-        //               </View>
-        //               <View
-        //                 style={{
-        //                   width: "33%",
-        //                   justifyContent: "center",
-        //                   alignItems: "center",
-        //                   borderWidth: 1,
-        //                   borderColor: "#d1d1d1",
-        //                 }}
-        //               >
-        //                 <Text style={{ fontSize: 12, fontWeight: "600" }}>
-        //                   {Number(item.achievment) > Number(item.target) ? 0 : (Math.abs(Number(item.shortfall)) >= 100000
-        //                     ? Math.round(Math.abs(Number(item.shortfall)) / 100000) + "L"
-        //                     : Math.round(Math.abs(Number(item.shortfall))))}
-        //                 </Text>
-        //               </View>
-        //               <View
-        //                 style={{
-        //                   width: "33%",
-        //                   justifyContent: "center",
-        //                   alignItems: "center",
-        //                   borderWidth: 1,
-        //                   borderColor: "#d1d1d1",
-        //                 }}
-        //               >
-        //                 <Text style={{ fontSize: 12, fontWeight: "600" }}>
-        //                   {Number(item.achievment) > Number(item.target) ? 0 : (dateDiff > 0 && parseInt(item.shortfall) !== 0
-        //                     ? 
-        //                     (Math.round(
-        //                       parseInt(item.shortfall) / dateDiff
-        //                     ) >= 100000
-        //                       ? Math.round(parseInt(item.shortfall) / dateDiff / 100000) + "L"
-        //                       : (Math.round(
-        //                         parseInt(item.shortfall) / dateDiff
-        //                       )))
-        //                     : 0)}
-        //                 </Text>
-        //               </View>
-        //             </View>
-        //           );
-        //         })}
-        //       </View>
-
-        //       <ScrollView
-        //         style={{ marginBottom: 0, marginTop: -80 }}
-        //         contentContainerStyle={{ alignItems: "center" }}
-        //         horizontal={true}
-        //       >
-        //         {selector.all_emp_parameters_data.map((item, index) => {
-        //           return (
-        //             <View
-        //               style={{ flexDirection: "column", marginTop: 5 }}
-        //               key={index}
-        //             >
-        //               <View
-        //                 style={{
-        //                   flexDirection: "row",
-        //                   height: 40,
-        //                   borderWidth: 1,
-        //                   borderColor: "#d1d1d1",
-        //                   width: 150,
-        //                   justifyContent: "center",
-        //                   alignItems: "center",
-        //                 }}
-        //               >
-        //                 <View
-        //                   style={{
-        //                     width: 30,
-        //                     height: 30,
-        //                     borderRadius: 50,
-        //                     justifyContent: "center",
-        //                     alignItems: "center",
-        //                     backgroundColor: color[index % color.length],
-        //                   }}
-        //                 >
-        //                   <Text style={{ color: "#fff" }}>
-        //                     {item.empName.charAt(0)}
-        //                   </Text>
-        //                 </View>
-        //                 <View
-        //                   style={{
-        //                     height: 30,
-        //                     justifyContent: "center",
-        //                     alignItems: "center",
-        //                     marginLeft: 10,
-        //                     width: 80,
-        //                   }}
-        //                 >
-        //                   <Text
-        //                     style={{
-        //                       fontSize: 14,
-        //                       color: color[index % color.length],
-        //                       fontWeight: "600",
-        //                     }}
-        //                     numberOfLines={1}
-        //                   >
-        //                     {item.empName}
-        //                   </Text>
-        //                 </View>
-        //               </View>
-        //               <View style={{ flexDirection: "row", height: 30 }}>
-        //                 <View
-        //                   style={{
-        //                     width: 50,
-        //                     justifyContent: "center",
-        //                     alignItems: "center",
-        //                     borderWidth: 1,
-        //                     borderColor: "#d1d1d1",
-        //                     backgroundColor: "#d1d1d1",
-        //                   }}
-        //                 >
-        //                   <Text style={{ fontSize: 14, fontWeight: "600" }}>
-        //                     Ach
-        //                   </Text>
-        //                 </View>
-        //                 <View
-        //                   style={{
-        //                     width: 50,
-        //                     justifyContent: "center",
-        //                     alignItems: "center",
-        //                     borderWidth: 1,
-        //                     borderColor: "#d1d1d1",
-        //                     backgroundColor: "#d1d1d1",
-        //                   }}
-        //                 >
-        //                   <Text style={{ fontSize: 14, fontWeight: "600" }}>
-        //                     Bal
-        //                   </Text>
-        //                 </View>
-        //                 <View
-        //                   style={{
-        //                     width: 50,
-        //                     justifyContent: "center",
-        //                     alignItems: "center",
-        //                     borderWidth: 1,
-        //                     borderColor: "#d1d1d1",
-        //                     backgroundColor: "#d1d1d1",
-        //                   }}
-        //                 >
-        //                   <Text style={{ fontSize: 14, fontWeight: "600" }}>
-        //                     AR/D
-        //                   </Text>
-        //                 </View>
-        //               </View>
-        //               {item.targetAchievements.map(
-        //                 (innerItem, innerIndex) => {
-        //                   return (
-        //                     <>
-        //                       <View
-        //                         style={{ flexDirection: "row", height: 30 }}
-        //                         key={innerIndex}
-        //                       >
-        //                         <View
-        //                           style={{
-        //                             width: 50,
-        //                             justifyContent: "center",
-        //                             alignItems: "center",
-        //                             borderWidth: 1,
-        //                             borderColor: "#d1d1d1",
-        //                           }}
-        //                         >
-        //                           <Text
-        //                             style={{
-        //                               fontSize: 12,
-        //                               fontWeight: "600",
-        //                             }}
-        //                           >
-        //                             {Number(innerItem.achievment) >= 100000 ? Math.round(Number(innerItem.achievment) / 100000) + "L" : (Number(innerItem.achievment) >= 1000 ? Math.round(Number(innerItem.achievment) / 1000) + "K" : innerItem.achievment)}/{Number(innerItem.target) >= 100000 ? Math.round(Number(innerItem.target) / 100000) + "L" : (Number(innerItem.target) >= 1000 ? Math.round(Number(innerItem.target) / 1000) + "K" : innerItem.target)}
-        //                           </Text>
-        //                         </View>
-        //                         <View
-        //                           style={{
-        //                             width: 50,
-        //                             justifyContent: "center",
-        //                             alignItems: "center",
-        //                             borderWidth: 1,
-        //                             borderColor: "#d1d1d1",
-        //                           }}
-        //                         >
-        //                           <Text
-        //                             style={{
-        //                               fontSize: 12,
-        //                               fontWeight: "600",
-        //                             }}
-        //                           >
-        //                             {Number(innerItem.achievment) > Number(innerItem.target) ? 0 : (Math.abs(Number(innerItem.shortfall)) >=
-        //                             100000
-        //                               ? Math.round(Math.abs(
-        //                                 Number(innerItem.shortfall)
-        //                               ) /
-        //                                 100000) +
-        //                                 "L"
-        //                               : Math.round(Math.abs(Number(innerItem.shortfall))))}
-        //                           </Text>
-        //                         </View>
-        //                         <View
-        //                           style={{
-        //                             width: 50,
-        //                             justifyContent: "center",
-        //                             alignItems: "center",
-        //                             borderWidth: 1,
-        //                             borderColor: "#d1d1d1",
-        //                           }}
-        //                         >
-        //                           <Text
-        //                             style={{
-        //                               fontSize: 12,
-        //                               fontWeight: "600",
-        //                             }}
-        //                           >
-        //                             {Number(innerItem.achievment) > Number(innerItem.target) ? 0 : (dateDiff > 0 &&
-        //                             parseInt(innerItem.shortfall) !== 0
-        //                               ? // ? (
-        //                                 //     parseInt(innerItem.shortfall) /
-        //                                 //     dateDiff
-        //                                 //   ).toFixed(1)
-        //                                 Math.abs(
-        //                                   Math.round(
-        //                                     parseInt(innerItem.shortfall) /
-        //                                       dateDiff
-        //                                   )
-        //                                 )
-        //                               : 0)}
-        //                           </Text>
-        //                         </View>
-        //                       </View>
-        //                       {}
-        //                     </>
-        //                   );
-        //                 }
-        //               )}
-        //             </View>
-        //           );
-        //         })}
-        //       </ScrollView>
-        //     </View>
-        //   )}
-        // </View>
         <View >
           <ScrollView contentContainerStyle={{ paddingRight: 20, flexDirection: 'column' }} horizontal={true} directionalLockEnabled={true}>
             <View style={{ flexDirection: 'row' }}>
@@ -1338,6 +971,9 @@ const TargetScreen = ({ route, navigation }) => {
                 </View>
                 <View style={styles.itemBox}>
                   <Text style={{ color: '#EC3466' }}>Total</Text>
+                </View>
+                <View style={styles.itemBox}>
+                  <Text style={{ color: '#000000' }}>Shuffle</Text>
                 </View>
               </View>
             </View>
@@ -2016,12 +1652,16 @@ const TargetScreen = ({ route, navigation }) => {
                   <View style={styles.itemBox}>
                     <Text style={{ color: '#000000', fontWeight: '600' }}>{Number(selector.totalParameters.filter((item) => item.paramName === 'Exchange')[0].achievment) > 99999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Exchange')[0].achievment) / 100000) + 'L' : (Number(selector.totalParameters.filter((item) => item.paramName === 'Exchange')[0].achievment) > 999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Exchange')[0].achievment) / 1000) + 'K' : Number(selector.totalParameters.filter((item) => item.paramName === 'Exchange')[0].achievment))}/{Number(selector.totalParameters.filter((item) => item.paramName === 'Exchange')[0].target) > 99999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Exchange')[0].target) / 100000) + 'L' : (Number(selector.totalParameters.filter((item) => item.paramName === 'Exchange')[0].target) > 999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Exchange')[0].target) / 1000) + 'K' : selector.totalParameters.filter((item) => item.paramName === 'Exchange')[0].target)}</Text>
                   </View>
+
+                  <View style={styles.itemBox}>
+                    <Text style={{ color: '#000000', fontWeight: '600' }}>{Number(selector.totalParameters.filter((item) => item.paramName === 'EXTENDEDWARRANTY')[0].achievment) > 99999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'EXTENDEDWARRANTY')[0].achievment) / 100000) + 'L' : (Number(selector.totalParameters.filter((item) => item.paramName === 'EXTENDEDWARRANTY')[0].achievment) > 999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'EXTENDEDWARRANTY')[0].achievment) / 1000) + 'K' : Number(selector.totalParameters.filter((item) => item.paramName === 'EXTENDEDWARRANTY')[0].achievment))}/{Number(selector.totalParameters.filter((item) => item.paramName === 'EXTENDEDWARRANTY')[0].target) > 99999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'EXTENDEDWARRANTY')[0].target) / 100000) + 'L' : (Number(selector.totalParameters.filter((item) => item.paramName === 'EXTENDEDWARRANTY')[0].target) > 999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'EXTENDEDWARRANTY')[0].target) / 1000) + 'K' : selector.totalParameters.filter((item) => item.paramName === 'EXTENDEDWARRANTY')[0].target)}</Text>
+                  </View>
                 </View>
               </View>
             </View>
           </ScrollView>
         </View>
-      ) : (
+        ) : (
         <>
           <View style={{ flexDirection: "row" }}>
             <View
@@ -2189,14 +1829,16 @@ const TargetScreen = ({ route, navigation }) => {
                     }}
                   >
                     <Text>
-                      {Number(item.achievment) > Number(item.target) ? 0 : (Math.abs(Number(item.shortfall)) >= 100000
-                        ? Math.abs(Number(item.shortfall)) / 100000 + "L"
-                        : Math.abs(item.shortfall))}
+                      {Number(item.achievment) > Number(item.target)
+                        ? 0
+                        : Math.abs(Number(item.shortfall)) >= 100000
+                          ? Math.abs(Number(item.shortfall)) / 100000 + "L"
+                          : Math.abs(item.shortfall)}
                     </Text>
                   </View>
                   <View
                     style={{
-                      width: 40,
+                      width: 45,
                       height: 25,
                       borderColor: color[index % color.length],
                       borderWidth: 1,
@@ -2209,9 +1851,13 @@ const TargetScreen = ({ route, navigation }) => {
                   >
                     <Text>
                       {parseInt(item.achievment) > parseInt(item.target) ? 0 : (dateDiff > 0 && parseInt(item.shortfall) !== 0
-                        ? Math.abs(
+                        ? (Math.abs(
                           Math.round(parseInt(item.shortfall) / dateDiff)
-                        )
+                        ) >= 100000 ? Math.abs(
+                          Math.round(parseInt(item.shortfall) / dateDiff)
+                        ) / 100000 + "L" : Math.abs(
+                          Math.round(parseInt(item.shortfall) / dateDiff)
+                        ))
                         : 0)}
                     </Text>
                   </View>
@@ -2617,7 +2263,7 @@ export { SupportingScreen };
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.WHITE,
+    backgroundColor: Colors.WHITE
   },
   statWrap: {
     flexDirection: 'row',
