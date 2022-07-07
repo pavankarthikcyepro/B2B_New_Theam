@@ -177,6 +177,48 @@ export const getTargetParametersAllData = createAsyncThunk("HOME/getTargetParame
     return json;
 })
 
+export const getNewTargetParametersAllData = createAsyncThunk("HOME/getNewTargetParametersAllData", async (payload: any, { rejectWithValue }) => {
+    // console.log("PAYLOAD:", payload);
+
+    const response = await client.post(URL.GET_TEAMS_TARGET_PARAMS(), payload)
+    const json = await response.json()
+
+    console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
+
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const getTotalTargetParametersData = createAsyncThunk("HOME/getTotalTargetParametersData", async (payload: any, { rejectWithValue }) => {
+    // console.log("PAYLOAD:", payload);
+
+    const response = await client.post(URL.GET_TOTAL_TARGET_PARAMS(), payload)
+    const json = await response.json()
+
+    // console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
+
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const getUserWiseTargetParameters = createAsyncThunk("HOME/getUserWiseTargetParameters", async (payload: any, { rejectWithValue }) => {
+    // console.log("PAYLOAD:", payload);
+
+    const response = await client.post(URL.GET_TEAMS_TARGET_PARAMS(), payload)
+    const json = await response.json()
+
+    // console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
+
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
 export const getTargetParametersEmpData = createAsyncThunk("HOME/getTargetParametersEmpData", async (payload: any, { rejectWithValue }) => {
     console.log("PAYLOAD:", URL.GET_TARGET_PARAMS_EMP(), payload);
 
@@ -350,7 +392,7 @@ export const delegateTask = createAsyncThunk("HOME/delegateTask", async (payload
 });
 
 export const updateEmployeeDataBasedOnDelegate = createAsyncThunk("HOME/updateEmployeeDataBasedOnDelegate", async (body, { rejectWithValue }) => {
-    const response = await client.put(URL.EMPLOYEE_DATA_UPDATE(body["empID"], body["managerID"]))  
+    const response = await client.put(URL.EMPLOYEE_DATA_UPDATE(body["empID"], body["managerID"]))
     const json = await response.json()
     if (!response.ok) {
         return rejectWithValue(json);
@@ -409,7 +451,8 @@ export const homeSlice = createSlice({
         employees_drop_down_data: {},
         target_parameters_data: targetData,
         all_target_parameters_data: allData.overallTargetAchivements,
-        all_emp_parameters_data: allData.employeeTargetAchievements,
+        // all_emp_parameters_data: allData.employeeTargetAchievements,
+        all_emp_parameters_data: [],
         org_is_loading: false,
         emp_is_loading: false,
         sales_data: {},
@@ -422,6 +465,7 @@ export const homeSlice = createSlice({
         isMD: false,
         isDSE: false,
         self_target_parameters_data: empData,
+        totalParameters: [],
         employee_list: [],
         reporting_manager_list: [],
         isLoading: false,
@@ -451,7 +495,7 @@ export const homeSlice = createSlice({
             
             state.target_parameters_data = action.payload.targetData;
             state.all_target_parameters_data = action.payload.allTargetData;
-            state.all_emp_parameters_data = action.payload.allEmpData;
+            // state.all_emp_parameters_data = action.payload.allEmpData;
             state.self_target_parameters_data = action.payload.empData;
         },
         clearState: (state, action) => {
@@ -474,7 +518,8 @@ export const homeSlice = createSlice({
             state.employees_drop_down_data = {}
             state.target_parameters_data = targetData
             state.all_target_parameters_data = allData.overallTargetAchivements
-            state.all_emp_parameters_data = allData.employeeTargetAchievements
+            // state.all_emp_parameters_data = allData.employeeTargetAchievements
+            state.all_emp_parameters_data = []
             state.org_is_loading = false
             state.emp_is_loading = false
             state.sales_data = {}
@@ -770,6 +815,44 @@ export const homeSlice = createSlice({
             .addCase(getTargetParametersEmpData.rejected, (state, action) => {
                 // state.self_target_parameters_data = [];
             })
+
+            .addCase(getNewTargetParametersAllData.pending, (state, action) => {
+                // state.all_target_parameters_data = [];
+                // state.all_emp_parameters_data = [];
+            })
+            .addCase(getNewTargetParametersAllData.fulfilled, (state, action) => {
+                if (action.payload) {
+                    // console.log("^%$%&*^&*^&*&*& SET %&&&*%^$%&*&^%", JSON.stringify(action.payload.overallTargetAchivements));
+
+                    // state.all_target_parameters_data = [];
+                    // state.all_emp_parameters_data = [];
+                    // console.log(action.payload.employeeTargetAchievements, "dashboard")
+                    state.isTeamPresent = action.payload.employeeTargetAchievements.length > 1;
+                    state.all_target_parameters_data = action.payload.overallTargetAchivements;
+                    state.all_emp_parameters_data = action.payload.employeeTargetAchievements;
+                    AsyncStore.storeData('TARGET_ALL', JSON.stringify(action.payload.overallTargetAchivements))
+                    AsyncStore.storeData('TARGET_EMP_ALL', JSON.stringify(action.payload.employeeTargetAchievements))
+                }
+            })
+            .addCase(getNewTargetParametersAllData.rejected, (state, action) => {
+                // state.all_target_parameters_data = [];
+                // state.all_emp_parameters_data = [];
+            })
+
+            .addCase(getTotalTargetParametersData.pending, (state, action) => {
+                
+            })
+            .addCase(getTotalTargetParametersData.fulfilled, (state, action) => {
+                if (action.payload) {
+                    console.log("TOTAL DATA: ", JSON.stringify(action.payload));
+                    
+                    state.totalParameters = action.payload;
+                }
+            })
+            .addCase(getTotalTargetParametersData.rejected, (state, action) => {
+                
+            })
+
             .addCase(getEmployeesList.pending, (state, action) => {
                 // state.employee_list = [];
                 state.isLoading = true;
@@ -781,6 +864,7 @@ export const homeSlice = createSlice({
                     // state.employee_list = dataObj ? dataObj.dmsEntity.employees : [];
                     state.employee_list = dataObj ? dataObj : [];
                     state.isLoading = false;
+                    console.log("IS LOADING: ", state.isLoading);                    
                 }
             })
             .addCase(getEmployeesList.rejected, (state, action) => {
@@ -870,7 +954,7 @@ export const homeSlice = createSlice({
         builder.addCase(getDesignationDropdown.rejected, (state, action) => {
             state.isLoading = false;
         })
-        }
+    }
 });
 
 export const { dateSelected, updateFilterDropDownData, updateIsTeamPresent, updateIsMD, updateIsDSE, clearState, updateTargetData } = homeSlice.actions;

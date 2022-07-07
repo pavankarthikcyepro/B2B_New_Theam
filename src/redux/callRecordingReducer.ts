@@ -47,8 +47,8 @@ export const callrecordingSlice = createSlice({
              console.log("S  callrecording data: ", action.payload);
             if (action.payload) {
                 const dataObj = action.payload;
-                state.user_name = dataObj[0].extensionId ? dataObj[0].extensionId : "";
-                state.password = dataObj[0].sipIaxPassword ? dataObj[0].sipIaxPassword : "";
+                state.user_name = dataObj[0]?.extensionId ? dataObj[0]?.extensionId : "";
+                state.password = dataObj[0]?.sipIaxPassword ? dataObj[0]?.sipIaxPassword : "";
                 AsyncStore.storeData(AsyncStore.Keys.EXTENSION_ID, state.user_name.toString())
                 AsyncStore.storeData(AsyncStore.Keys.EXTENSSION_PWD, state.password.toString())
 

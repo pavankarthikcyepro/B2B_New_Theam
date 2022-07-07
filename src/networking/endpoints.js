@@ -68,7 +68,7 @@ const URL = {
         return roleManagement_url + '/user/' + userName;
     },
     GET_CALL_RECORDING_EXTENSIONID: (userName, orgId) => {
-        return sales_url + '/callrecording/getCallLoginDetails?orgId=' + orgId  +'&empId='+userName;
+        return sales_url + '/callrecording/getCallLoginDetails?orgId=' + orgId + '&empId=' + userName;
     },
     CUSTOMER_TYPE: (orgId) => {
         return sales_url + `/master-data/customertype/${orgId}`
@@ -91,7 +91,7 @@ const URL = {
     ENQUIRY_DETAILS: (universalId) => {
         return sales_url + "/enquiry/lead/id/" + `${universalId}`;
     },
-    
+
     ENQUIRY_DETAILS_BY_AUTOSAVE: (universalId) => {
         return downloadFile + "/autosave-get-uid/" + `${universalId}`;
     },
@@ -184,14 +184,14 @@ const URL = {
     EVENT_DATA: () => dashboard + "/v2/get_events_data",
     TASKS_DATA: () => dashboard + "/v2/get_todays_data",
     GET_LOST_DROP_CHART_DATA: () => dashboard + "/v2/get_lostdrop_data",
-    UPDATE_SINGLEAPPROVAL : () =>{
-        return sales_url + '/lead-drop' 
+    UPDATE_SINGLEAPPROVAL: () => {
+        return sales_url + '/lead-drop'
     },
     UPDATE_BULKAPPROVAL: () => {
         return sales_url + '/lead-drop/bulkdrop'
     },
     GET_LEADDROP_LIST: (branchId, empName, orgId, offSet, limit) => {
-        return sales_url + '/lead-drop/details?branch=' + branchId + '&limit='+limit+'&loginUser=' + empName + '&offset='+offSet+'&orgId=' + orgId;
+        return sales_url + '/lead-drop/details?branch=' + branchId + '&limit=' + limit + '&loginUser=' + empName + '&offset=' + offSet + '&orgId=' + orgId;
     },
     GET_EMPLOYEES_DROP_DOWN_DATA: (orgId, employeeId) => {
 
@@ -261,7 +261,7 @@ const URL = {
     DOWNLOAD_REPORT: () => {
         return `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8093/dynamic-reports/etvbrl_report`;
     },
-    
+
     QR: (orgId, branchId) => {
         return sales_url + `/qrcode/get/${orgId}/${branchId}`;
     },
@@ -283,16 +283,18 @@ const URL = {
     GET_TASK_LIST: (taskId) => {
         return `${getTaskList}/${taskId}`;
     },
+    GET_TEAMS_TARGET_PARAMS: () => dashboard + "/v4/get_target_params_for_all_emps",
+    GET_TOTAL_TARGET_PARAMS: () => dashboard + "/v4/get_target_params",
     GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
         return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
     },
     GET_EMPLOYEE_LIST: (empId) => {
         return `${getEmployeeList}/${empId}`;
     },
-    GET_REPORTING_MANAGER_LIST : (orgId) => {
+    GET_REPORTING_MANAGER_LIST: (orgId) => {
         return `${getReportingMangerList}/${orgId}/for/dropdown`;
     },
-    EMPLOYEE_DATA_UPDATE : (empID, managerID) => {
+    EMPLOYEE_DATA_UPDATE: (empID, managerID) => {
         return `${updateEmployeeTaskDelegate}/${empID}/reportingManager/${managerID}/update`;
     },
     TARGET_DROPDOWN: (orgId, parent, child, parentId) => {
@@ -310,7 +312,7 @@ const URL = {
     GET_BRANCH_RANKING_DATA: () => {
         return `${getBranchRankingData}`;
     },
-    EMPLOYEE_DATA_UPDATE : (empID, managerID) => {
+    EMPLOYEE_DATA_UPDATE: (empID, managerID) => {
         return `${updateEmployeeTaskDelegate}/${empID}/reportingManager/${managerID}/update`;
     },
     TARGET_DROPDOWN: (orgId, parent, child, parentId) => {
@@ -325,7 +327,7 @@ const URL = {
     TRANSFER_TASK: (fromUserId, toUserId) => {
         return sales_url + `/task-delegation/process/selected?emplIdFrom=${fromUserId}&emplIdTo=${toUserId}`;
     },
-    }
+}
 
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason
