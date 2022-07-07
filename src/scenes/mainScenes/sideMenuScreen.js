@@ -106,13 +106,29 @@ const SideMenuScreen = ({ navigation }) => {
     const [newTableData, setNewTableData] = useState([]);
     const [imageUri, setImageUri] = useState(null);
     const [dataList, setDataList] = useState([]);
-    const [userData, setUserData] = useState({});
+    const [userData, setUserData] = useState(null);
+    const [hrmsRole, setHrmsRole] = useState('');
 
 
     useEffect(() => {
         getLoginEmployeeData();
         // getProfilePic();
     }, [])
+
+    useEffect(() => {
+        navigation.addListener('focus', () => {
+            getUserRole();
+        })
+    }, [navigation])
+
+    const getUserRole = async () => {
+        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        // console.log("$$$$$ LOGIN EMP:", employeeData);
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            setHrmsRole(jsonObj.hrmsRole)
+        }
+    }
 
     // useEffect(() => {
     //     if(userData){
@@ -379,28 +395,49 @@ const SideMenuScreen = ({ navigation }) => {
                 </View>
             </View>
             <Divider />
-            <FlatList
-                data={newTableData}
-                keyExtractor={(item, index) => index}
-                renderItem={({ item, index }) => {
-                    return (
-                        <Pressable onPress={() => itemSelected(item)}>
-                            <View
-                                style={{
-                                    paddingLeft: 10,
-                                    height: 55,
-                                    justifyContent: "center",
-                                }}
-                            >
-                                {/* <List.Item
+            {/* {userData !== null && */}
+                <FlatList
+                    data={newTableData}
+                    keyExtractor={(item, index) => index}
+                    renderItem={({ item, index }) => {
+                        return (
+                            <>
+                                {item.title === 'Task Transfer' ?
+                                    (!hrmsRole.toLowerCase().includes('dse') ?
+                                        <Pressable onPress={() => itemSelected(item)}>
+                                            <View
+                                                style={{
+                                                    paddingLeft: 10,
+                                                    height: 55,
+                                                    justifyContent: "center",
+                                                }}
+                                            >
+                                                <View style={{ flexDirection: "row", height: 25, alignItems: "center", paddingLeft: 10, marginBottom: 5 }}>
+                                                    <Image style={{ height: 20, width: 20 }} source={item.pngIcon} />
+                                                    <Text style={{ fontSize: 15, fontWeight: "bold", marginLeft: 25, color: "gray" }}>{item.title}</Text>
+                                                </View>
+                                            </View>
+                                        </Pressable> :
+                                        null
+                                    )
+                                    :
+                                    <Pressable onPress={() => itemSelected(item)}>
+                                        <View
+                                            style={{
+                                                paddingLeft: 10,
+                                                height: 55,
+                                                justifyContent: "center",
+                                            }}
+                                        >
+                                            {/* <List.Item
                   title={item.title}
                   titleStyle={{ fontSize: 16, fontWeight: "600" }}
                   left={(props) => <List.Icon {...props} icon="folder" style={{ margin: 0 }} />}
                 /> */}
-                                <View style={{ flexDirection: "row", height: 25, alignItems: "center", paddingLeft: 10, marginBottom: 5 }}>
-                                    {/* <VectorImage source={item.icon} width={20} height={20} /> */}
-                                    <Image style={{ height: 20, width: 20 }} source={item.pngIcon}/>
-                                    {/* {item.icon === EVENT_MANAGEMENT_STR && <EVENT_MANAGEMENT width={20} height={20} color='green' />}
+                                            <View style={{ flexDirection: "row", height: 25, alignItems: "center", paddingLeft: 10, marginBottom: 5 }}>
+                                                {/* <VectorImage source={item.icon} width={20} height={20} /> */}
+                                                <Image style={{ height: 20, width: 20 }} source={item.pngIcon} />
+                                                {/* {item.icon === EVENT_MANAGEMENT_STR && <EVENT_MANAGEMENT width={20} height={20} color='green' />}
                                     {item.icon === CUSTOMER_RELATIONSHIP_STR && <CUSTOMER_RELATIONSHIP width={20} height={20} color={'black'} />}
                                     {item.icon === DOCUMENT_WALLET_STR && <DOCUMENT_WALLET width={20} height={20} color={'black'} />}
                                     {item.icon === HOME_LINE_STR && <HOME_LINE width={20} height={20} color={'black'} />}
@@ -408,14 +445,17 @@ const SideMenuScreen = ({ navigation }) => {
                                     {item.icon === QR_CODE_STR && <QR_CODE width={20} height={20} color={'black'} />}
                                     {item.icon === GROUP_STR && <GROUP width={20} height={20} color={'black'} />}
                                     {item.icon === TRANSFER_STR && <TRANSFER width={20} height={20} color={'black'} />} */}
-                                    <Text style={{ fontSize: 15, fontWeight: "bold", marginLeft: 25, color: "gray" }}>{item.title}</Text>
-                                </View>
-                                {/* <Divider /> */}
-                            </View>
-                        </Pressable>
-                    );
-                }}
-            />
+                                                <Text style={{ fontSize: 15, fontWeight: "bold", marginLeft: 25, color: "gray" }}>{item.title}</Text>
+                                            </View>
+                                            {/* <Divider /> */}
+                                        </View>
+                                    </Pressable>
+                                }
+                            </>
+                        );
+                    }}
+                />
+            {/* } */}
             {/* <View style={styles.bottomVw}>
                 <Button
                     icon="logout"

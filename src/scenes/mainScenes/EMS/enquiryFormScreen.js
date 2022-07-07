@@ -286,6 +286,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   // }, [])
 
   const clearLocalData = () => {
+    console.log("CALLED CLEAR DATA");
     setOpenAccordian("0");
     setComponentAppear(false);
     setShowDropDownModel(false);
@@ -517,6 +518,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     try {
+      console.log("$$$$$$$$$ DMS LEAD PROD: ", selector.dmsLeadProducts);
       if (selector.dmsLeadProducts && selector.dmsLeadProducts.length > 0) {
         // setCarModelsList(selector.dmsLeadProducts)
         addingIsPrimary()
