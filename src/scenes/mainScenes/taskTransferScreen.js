@@ -57,6 +57,7 @@ const TaskTranferScreen = () => {
 
     const [taskList, setTaskList] = useState([]);
     const [selectedTaskList, setSelectedTaskList] = useState([]);
+    const [childTaskList, setChildTaskList] = useState([]);
 
     //task trasnfer from status
     const [branchTransferFromDropDownItem, setbranchTransferFromDropDownItem] = useState("");
@@ -68,6 +69,9 @@ const TaskTranferScreen = () => {
     const [employeeTransferFromDropDownItem, setEmployeeTransferFromDropDownItem] = useState(null);
     const [employeeTransferFromDropDownList, setEmployeeTransferFromDropDownList] = useState([]);
     const [isAllSelect, setIsAllSelect] = useState(false);
+
+    const [allTasks, setAllTasks] = useState([]);
+    const [isDataLoaded, setIsDataLoaded] = useState(false);
     // const [taskList, setTaskList] = useState([]);
 
     useEffect(() => {
@@ -133,7 +137,29 @@ const TaskTranferScreen = () => {
 
     useEffect(() => {
         if (selector.taskList.length > 0) {
-            setTaskList(selector.taskList);
+            // setTaskList(selector.taskList);
+            let tempTaksList = [];
+            for (let i = 0; i < selector.taskList.length; i++){
+                let index = tempTaksList.findIndex((item) => item.name === selector.taskList[i].taskName);
+                if(index === -1){
+                    tempTaksList.push({
+                        name: selector.taskList[i].taskName,
+                        taskList: [selector.taskList[i]]
+                    })
+                }
+                else{
+                    let allTasks = [...tempTaksList[index].taskList]
+                    allTasks.push(selector.taskList[i])
+                    tempTaksList[index].taskList = [...allTasks]
+                }
+                if (i === selector.taskList.length - 1){
+                    console.log("MODIFIED TASK LIST: ", JSON.stringify(tempTaksList));
+                    setTaskList([...tempTaksList])
+                }
+            }
+        }
+        else{
+            setTaskList([])
         }
     }, [selector.taskList]);
 
@@ -147,6 +173,7 @@ const TaskTranferScreen = () => {
         setEmployeeDropDownList([]);
 
         setTaskList([]);
+        setChildTaskList([])
 
         //task trasnfer from status
         setbranchTransferFromDropDownItem("");
@@ -157,13 +184,21 @@ const TaskTranferScreen = () => {
         setEmployeeTransferFromDropDownItem(null);
         setEmployeeTransferFromDropDownList([]);
         setShowTrasnferFromDropdowns(false)
-        setShowTaskFlatlist(false)
         setSelectedTaskList([])
+        setShowTaskList(false);
+        setShowTaskFlatlist(false);
+        setTasklistHeader(false);
+        setIsDataLoaded(false)
     }
 
-    const getTaskListFromServer = async () => {
-        dispatch(getTaskList(119));
-        setShowTaskList(true);
+    const getTaskListFromServer = async (empId) => {
+        Promise.all([dispatch(getTaskList(empId))]).then(() => {
+            setShowTaskList(true);
+            setIsDataLoaded(true)
+            setShowTrasnferFromDropdowns(false)
+            setShowTaskFlatlist(false)
+            setTaskNameHeader("Task Name")
+        })        
     }
 
     const getTargetbranchDropDownListFromServer = async () => {
@@ -294,7 +329,8 @@ const TaskTranferScreen = () => {
         return (
             <TouchableOpacity onPress={() => {
                 setShowTrasnferFromDropdowns(true);
-                setTaskNameHeader(item.item.taskName);
+                setChildTaskList(item.item.taskList)
+                setTaskNameHeader(item.item.name);
                 setShowTaskFlatlist(true);
                 setShowTaskList(false);
             }} style={{
@@ -304,7 +340,7 @@ const TaskTranferScreen = () => {
                 borderColor: "#333",
                 padding: 10
             }}>
-                <Text>{item.item.taskName}</Text>
+                <Text>{item.item.name}</Text>
             </TouchableOpacity>
         );
     };
@@ -343,7 +379,7 @@ const TaskTranferScreen = () => {
                                     console.log("INSIDE IF");
                                     let tempArr = [...selectedTaskList];
                                     tempArr.push(item.taskId)
-                                    if(tempArr.length === taskList.length){
+                                    if(tempArr.length === childTaskList.length){
                                         setIsAllSelect(true)
                                     }
                                     else{
@@ -359,7 +395,7 @@ const TaskTranferScreen = () => {
                                     console.log("INSIDE ELSE ", taskIndex);
                                     if (taskIndex !== -1) {
                                         tempArr.splice(taskIndex, 1)
-                                        if (tempArr.length === taskList.length) {
+                                        if (tempArr.length === childTaskList.length) {
                                             setIsAllSelect(true)
                                         }
                                         else {
@@ -433,6 +469,7 @@ const TaskTranferScreen = () => {
                             valueField="value"
                             placeholder={'Select Branch'}
                             searchPlaceholder="Search..."
+                            value={branchDropDownItem}
                             renderRightIcon={() => (
                                 <Image style={{ height: 5, width: 10 }} source={require('../../assets/images/Polygon.png')} />
                             )}
@@ -523,7 +560,7 @@ const TaskTranferScreen = () => {
                             onChange={async (item) => {
                                 console.log("£££", item);
                                 setEmployeeDropDownItem(item)
-                                getTaskListFromServer();
+                                getTaskListFromServer(item.value);
                                 setTasklistHeader(true);
                             }}
                         />
@@ -544,10 +581,10 @@ const TaskTranferScreen = () => {
                                         if(!preveState){
                                             let obj = {};
                                             let tempSelectTask = [];
-                                            for(let i = 0; i < taskList.length; i++){
+                                            for(let i = 0; i < childTaskList.length; i++){
                                                 obj[i] = true;
-                                                tempSelectTask.push(taskList[i].taskId);
-                                                if(i === taskList.length - 1){
+                                                tempSelectTask.push(childTaskList[i].taskId);
+                                                if (i === childTaskList.length - 1){
                                                     setChecked({ ...obj, index: true });
                                                     setSelectedTaskList([...tempSelectTask])
                                                 }
@@ -566,7 +603,13 @@ const TaskTranferScreen = () => {
                         }
                     </View> : null}
 
-                    {showTaskList ? <View style={{ paddingVertical: 18, height: 350 }}>
+                    {isDataLoaded && taskList.length === 0 && 
+                        <View style={{width: '100%', height: 80, justifyContent: 'center', alignItems: 'center'}}>
+                            <Text style={{fontSize: 16, fontWeight: 'bold'}}>No tasks available</Text>
+                        </View>
+                    }
+
+                    {showTaskList ? <View style={{ paddingVertical: 18, maxHeight: 350 }}>
                         <FlatList
                             data={taskList}
                             nestedScrollEnabled={true}
@@ -575,10 +618,10 @@ const TaskTranferScreen = () => {
                         />
                     </View> : null}
 
-                    {showTaskFlatlist ? <ScrollView horizontal={true} style={{ paddingVertical: 5, height: 350, marginLeft: 8, marginRight: 8 }}>
+                    {showTaskFlatlist ? <ScrollView horizontal={true} style={{ paddingVertical: 5, maxHeight: 350, marginLeft: 8, marginRight: 8 }}>
                         <View style={{ width: 800 }}>
                             <FlatList
-                                data={taskList}
+                                data={childTaskList}
                                 nestedScrollEnabled={true}
                                 keyExtractor={(item, index) => index.toString()}
                                 extraData={checked}

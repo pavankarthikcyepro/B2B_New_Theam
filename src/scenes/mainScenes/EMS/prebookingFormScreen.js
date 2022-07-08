@@ -4910,6 +4910,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                                 style={styles.textInputStyle}
                                                 value={selector.cheque_number}
                                                 label={"Cheque Number"}
+                                                // keyboardType={"number-pad"}
+                                                // maxLength={9}
                                                 onChangeText={(text) =>
                                                     dispatch(
                                                         setPreBookingPaymentDetials({

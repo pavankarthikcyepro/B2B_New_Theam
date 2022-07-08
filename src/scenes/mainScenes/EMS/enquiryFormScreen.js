@@ -2087,31 +2087,44 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         const universalId = dataObj.universalId;
         const taskStatus = dataObj.taskStatus;
 
-        Alert.alert(
-          "Below tasks are pending, do you want to continue to proceed pre-booking",
-          taskNames,
-          [
+        if(taskNames === ''){
+          navigation.navigate(
+            AppNavigator.EmsStackIdentifiers.proceedToPreBooking,
             {
-              text: "Cancel",
-              onPress: () => console.log("Cancel Pressed"),
-              style: "cancel",
-            },
-            {
-              text: "Proceed",
-              onPress: () => {
-                navigation.navigate(
-                  AppNavigator.EmsStackIdentifiers.proceedToPreBooking,
-                  {
-                    identifier: "PROCEED_TO_PRE_BOOKING",
-                    taskId,
-                    universalId,
-                    taskStatus,
-                  }
-                );
+              identifier: "PROCEED_TO_PRE_BOOKING",
+              taskId,
+              universalId,
+              taskStatus,
+            }
+          );
+        }
+        else{
+          Alert.alert(
+            "Below tasks are pending, do you want to continue to proceed pre-booking",
+            taskNames,
+            [
+              {
+                text: "Cancel",
+                onPress: () => console.log("Cancel Pressed"),
+                style: "cancel",
               },
-            },
-          ]
-        );
+              {
+                text: "Proceed",
+                onPress: () => {
+                  navigation.navigate(
+                    AppNavigator.EmsStackIdentifiers.proceedToPreBooking,
+                    {
+                      identifier: "PROCEED_TO_PRE_BOOKING",
+                      taskId,
+                      universalId,
+                      taskStatus,
+                    }
+                  );
+                },
+              },
+            ]
+          );
+        }
       } else {
         showAlertMessage("Below tasks are pending...", taskNames);
       }

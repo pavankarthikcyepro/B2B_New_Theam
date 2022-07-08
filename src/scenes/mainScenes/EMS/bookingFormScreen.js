@@ -644,10 +644,11 @@ const BookingFormScreen = ({ route, navigation }) => {
             if (dmsLeadDto.leadStatus === "SENTFORAPPROVAL") {
                 setShowApproveRejectBtn(true);
             }
-            if (dmsLeadDto.leadStatus === "BOOKINGCOMPLETED") {
+            if (dmsLeadDto.leadStatus === "PREBOOKINGCOMPLETED") {
+                console.log("INSIDE dmsLeadDto.leadStatus === PREBOOKINGCOMPLETED");
                 setShowPrebookingPaymentSection(true);
                 // Get Payment Details
-                // dispatch(getPaymentDetailsApi(dmsLeadDto.id));
+                dispatch(getPaymentDetailsApi(dmsLeadDto.id));
                 // dispatch(getBookingAmountDetailsApi(dmsLeadDto.id));
             }
 
@@ -2813,9 +2814,9 @@ const BookingFormScreen = ({ route, navigation }) => {
                                                 }
                                             />
                                         </View>
-                                        {uploadedImagesDataObj.empId?.fileName ? (
+                                            {uploadedImagesDataObj.employeeId?.fileName ? (
                                             <DisplaySelectedImage
-                                                fileName={uploadedImagesDataObj.empId.fileName}
+                                                    fileName={uploadedImagesDataObj.employeeId.fileName}
                                                 from={"EMPLOYEE_ID"}
                                             />
                                         ) : null}
@@ -2836,9 +2837,9 @@ const BookingFormScreen = ({ route, navigation }) => {
                                                 }
                                             />
                                         </View>
-                                        {uploadedImagesDataObj.payslip ? (
+                                            {uploadedImagesDataObj.payslips ? (
                                             <DisplaySelectedImage
-                                                fileName={uploadedImagesDataObj.payslip.fileName}
+                                                    fileName={uploadedImagesDataObj.payslips?.fileName}
                                                 from={"3_MONTHS_PAYSLIP"}
                                             />
                                         ) : null}
@@ -4036,7 +4037,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                             {showPrebookingPaymentSection ? (
                                 <List.Accordion
                                     id={"12"}
-                                    title={"PreBooking Payment Details"}
+                                    title={"Booking Payment Details"}
                                     titleStyle={{
                                         color: openAccordian === "12" ? Colors.BLACK : Colors.BLACK,
                                         fontSize: 16,
@@ -4056,6 +4057,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         <View style={styles.select_image_bck_vw}>
                                             <ImageSelectItem
                                                 name={"Receipt Doc"}
+                                                disabled={true}
                                                 onPress={() => dispatch(setImagePicker("RECEIPT_DOC"))}
                                             />
                                         </View>

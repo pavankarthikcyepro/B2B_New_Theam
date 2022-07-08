@@ -61,7 +61,7 @@ const EnquiryScreen = ({ navigation }) => {
 
     useEffect(() => {
         if (selector.enquiry_list.length > 0) {
-            console.log("ENQ DATA: ", JSON.stringify(selector.enquiry_list));
+            console.log("ENQ LENGTH: ", selector.enquiry_list.length);
             setSearchedData(selector.enquiry_list)
         }
         else{
@@ -173,6 +173,7 @@ const EnquiryScreen = ({ navigation }) => {
     const getMoreEnquiryListFromServer = async () => {
         if (selector.isLoadingExtraData) { return }
         if (employeeId && ((selector.pageNumber + 1) < selector.totalPages)) {
+            console.log("GET MORE: ", selectedFromDate, selectedToDate);
             const payload = getPayloadData(employeeId, selectedFromDate, selectedToDate, (selector.pageNumber + 1))
             dispatch(getMoreEnquiryList(payload));
         }
