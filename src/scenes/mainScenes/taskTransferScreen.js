@@ -13,11 +13,12 @@ import { SettingsScreenItem } from "../../pureComponents/settingScreenItem";
 const screenWidth = Dimensions.get("window").width;
 import { Dropdown } from 'react-native-element-dropdown';
 import { useDispatch, useSelector } from "react-redux";
-import { getTaskList, getBranchDropdown, getDeptDropdown, getDesignationDropdown, getEmployeeDetails, getDeptDropdownTrans, getDesignationDropdownTrans, getEmployeeDetailsTrans } from "../../redux/taskTransferReducer";
+import { getTaskList, getBranchDropdown, getDeptDropdown, getDesignationDropdown, getEmployeeDetails, getDeptDropdownTrans, getDesignationDropdownTrans, getEmployeeDetailsTrans, updateStatus, submitTaskTransfer } from "../../redux/taskTransferReducer";
 import { useIsFocused } from '@react-navigation/native';
 import { Checkbox, IconButton } from 'react-native-paper';
 import moment from "moment";
 import * as AsyncStore from "../../asyncStore";
+import { showToast } from "../../utils/toast";
 
 const datalist = [
     {
@@ -51,10 +52,11 @@ const TaskTranferScreen = () => {
     const [deptDropDownList, setDeptDropDownList] = useState([]);
     const [designationDropDownItem, setDesignationDropDownItem] = useState("");
     const [designationDropDownList, setDesignationDropDownList] = useState([]);
-    const [employeeDropDownItem, setEmployeeDropDownItem] = useState("");
+    const [employeeDropDownItem, setEmployeeDropDownItem] = useState(null);
     const [employeeDropDownList, setEmployeeDropDownList] = useState([]);
 
     const [taskList, setTaskList] = useState([]);
+    const [selectedTaskList, setSelectedTaskList] = useState([]);
 
     //task trasnfer from status
     const [branchTransferFromDropDownItem, setbranchTransferFromDropDownItem] = useState("");
@@ -63,9 +65,9 @@ const TaskTranferScreen = () => {
     const [deptTransferFromDropDownList, setDeptTransferFromDropDownList] = useState([]);
     const [designationTransferFromDropDownItem, setDesignationTransferFromDropDownItem] = useState("");
     const [designationTransferFromDropDownList, setDesignationTransferFromDropDownList] = useState([]);
-    const [employeeTransferFromDropDownItem, setEmployeeTransferFromDropDownItem] = useState("");
+    const [employeeTransferFromDropDownItem, setEmployeeTransferFromDropDownItem] = useState(null);
     const [employeeTransferFromDropDownList, setEmployeeTransferFromDropDownList] = useState([]);
-
+    const [isAllSelect, setIsAllSelect] = useState(false);
     // const [taskList, setTaskList] = useState([]);
 
     useEffect(() => {
@@ -73,6 +75,18 @@ const TaskTranferScreen = () => {
         // setbranchDropDownList(selector.branchList.map(({ id: value, value: label, ...rest }) => ({ value, label, ...rest })));
         // setbranchTransferFromDropDownList(selector.branchList.map(({ id: value, value: label, ...rest }) => ({ value, label, ...rest })));
     }, []);
+
+    useEffect(() => {
+        if (selector.taskTransferStatus === 'success') {
+            showToast("Transferred Successfully")
+            dispatch(updateStatus(''))
+            clearData()
+        }
+        if (selector.taskTransferStatus === 'faild') {
+            showToast("Transferred Failed")
+            dispatch(updateStatus(''))
+        }
+    }, [selector.taskTransferStatus]);
 
     useEffect(() => {
         if (selector.branchList.length > 0) {
@@ -123,6 +137,30 @@ const TaskTranferScreen = () => {
         }
     }, [selector.taskList]);
 
+    const clearData = () => {
+        setbranchDropDownItem("");
+        setDeptDropDownItem("");
+        setDeptDropDownList([]);
+        setDesignationDropDownItem("");
+        setDesignationDropDownList([]);
+        setEmployeeDropDownItem(null);
+        setEmployeeDropDownList([]);
+
+        setTaskList([]);
+
+        //task trasnfer from status
+        setbranchTransferFromDropDownItem("");
+        setDeptTransferFromDropDownItem("");
+        setDeptTransferFromDropDownList([]);
+        setDesignationTransferFromDropDownItem("");
+        setDesignationTransferFromDropDownList([]);
+        setEmployeeTransferFromDropDownItem(null);
+        setEmployeeTransferFromDropDownList([]);
+        setShowTrasnferFromDropdowns(false)
+        setShowTaskFlatlist(false)
+        setSelectedTaskList([])
+    }
+
     const getTaskListFromServer = async () => {
         dispatch(getTaskList(119));
         setShowTaskList(true);
@@ -164,7 +202,7 @@ const TaskTranferScreen = () => {
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             const payload = {
-                "orgId": jsonObj.orgId,
+                "orgId": employeeDropDownItem.orgId,
                 "parent": "branch",
                 "child": "department",
                 "parentId": item.value
@@ -194,7 +232,7 @@ const TaskTranferScreen = () => {
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             const payload = {
-                "orgId": jsonObj.orgId,
+                "orgId": employeeDropDownItem.orgId,
                 "parent": "department",
                 "child": "designation",
                 "parentId": item.value
@@ -229,16 +267,26 @@ const TaskTranferScreen = () => {
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             const payload = {
-                // "orgId": jsonObj.orgId,
-                // "branchId": branchDropDownItem,
-                // "deptId": deptDropDownItem,
-                // "desigId": item.value
-                "orgId": 16,
-                "branchId": 267,
-                "deptId": 180,
-                "desigId": 56
+                "orgId": jsonObj.orgId,
+                "branchId": branchTransferFromDropDownItem,
+                "deptId": deptTransferFromDropDownItem,
+                "desigId": item.value
             }
             dispatch(getEmployeeDetailsTrans(payload));
+        }
+    }
+
+    const submitTransfer = () => {
+        if (!employeeDropDownItem || !employeeTransferFromDropDownItem || selectedTaskList.length === 0) {
+            showToast("Please select all value")
+        }
+        else {
+            const payload = {
+                "fromUserId": employeeDropDownItem.value,
+                "toUserId": employeeTransferFromDropDownItem.value,
+                "taskIdList": selectedTaskList
+            }
+            dispatch(submitTaskTransfer(payload));
         }
     }
 
@@ -287,13 +335,53 @@ const TaskTranferScreen = () => {
                         uncheckedColor={Colors.DARK_GRAY}
                         color={Colors.RED}
                         onPress={() => {
+                            console.log("ITEM $$$", item);
                             if (checked.hasOwnProperty(index)) {
                                 const temp = checked;
                                 temp[index] = !temp[index];
+                                if (temp[index]) {
+                                    console.log("INSIDE IF");
+                                    let tempArr = [...selectedTaskList];
+                                    tempArr.push(item.taskId)
+                                    if(tempArr.length === taskList.length){
+                                        setIsAllSelect(true)
+                                    }
+                                    else{
+                                        setIsAllSelect(false)
+                                    }
+                                    setSelectedTaskList(tempArr)
+                                }
+                                else {
+                                    let tempArr = [...selectedTaskList];
+                                    let taskIndex = -1;
+                                    console.log("Temp arr", tempArr);
+                                    taskIndex = tempArr.findIndex((taskId) => taskId === item.taskId)
+                                    console.log("INSIDE ELSE ", taskIndex);
+                                    if (taskIndex !== -1) {
+                                        tempArr.splice(taskIndex, 1)
+                                        if (tempArr.length === taskList.length) {
+                                            setIsAllSelect(true)
+                                        }
+                                        else {
+                                            setIsAllSelect(false)
+                                        }
+                                        setSelectedTaskList(tempArr)
+                                    }
+                                }
                                 setChecked({ ...temp, index: temp[index] });
                             } else {
+                                console.log("INSIDE ELSE out");
                                 const temp = checked;
                                 temp[index] = true;
+                                let tempArr = [...selectedTaskList];
+                                tempArr.push(item.taskId)
+                                setSelectedTaskList(tempArr)
+                                if (tempArr.length === taskList.length) {
+                                    setIsAllSelect(true)
+                                }
+                                else {
+                                    setIsAllSelect(false)
+                                }
                                 setChecked({ ...temp, index: temp[index] });
                             }
                         }}
@@ -434,7 +522,7 @@ const TaskTranferScreen = () => {
                             )}
                             onChange={async (item) => {
                                 console.log("£££", item);
-                                setEmployeeDropDownItem(item.value)
+                                setEmployeeDropDownItem(item)
                                 getTaskListFromServer();
                                 setTasklistHeader(true);
                             }}
@@ -442,7 +530,40 @@ const TaskTranferScreen = () => {
                     </View>
 
                     {tasklistHeader ? <View style={{ width: '100%', paddingHorizontal: 15, height: 60, justifyContent: 'center' }}>
-                        <Text style={{ fontSize: 18, fontWeight: 'bold' }} >{taskNameHeader}</Text>
+                        {showTaskFlatlist ?
+
+                            <View style={{ flexDirection: 'row', alignItems: 'center',  }}>
+                                <Checkbox.Android
+                                    status={isAllSelect ? 'checked' : 'unchecked'}
+                                    uncheckedColor={Colors.DARK_GRAY}
+                                    color={Colors.RED}
+                                    onPress={() => {
+                                        console.log("IS ALL", isAllSelect, checked, selectedTaskList);
+                                        let preveState = isAllSelect;
+                                        setIsAllSelect(!isAllSelect)
+                                        if(!preveState){
+                                            let obj = {};
+                                            let tempSelectTask = [];
+                                            for(let i = 0; i < taskList.length; i++){
+                                                obj[i] = true;
+                                                tempSelectTask.push(taskList[i].taskId);
+                                                if(i === taskList.length - 1){
+                                                    setChecked({ ...obj, index: true });
+                                                    setSelectedTaskList([...tempSelectTask])
+                                                }
+                                            }
+                                        }
+                                        else{
+                                            setChecked({});
+                                            setSelectedTaskList([])
+                                        }
+                                    }}
+                                />
+                                <Text style={{ fontSize: 18, fontWeight: 'bold' }} >{taskNameHeader}</Text>
+                            </View>
+                            :
+                            <Text style={{ fontSize: 18, fontWeight: 'bold' }} >{taskNameHeader}</Text>
+                        }
                     </View> : null}
 
                     {showTaskList ? <View style={{ paddingVertical: 18, height: 350 }}>
@@ -574,7 +695,7 @@ const TaskTranferScreen = () => {
                                 )}
                                 onChange={async (item) => {
                                     console.log("£££", item);
-                                    setEmployeeTransferFromDropDownItem(item.value);
+                                    setEmployeeTransferFromDropDownItem(item);
                                     // getTaskListFromServer();
                                 }}
                             />
@@ -583,9 +704,9 @@ const TaskTranferScreen = () => {
                 </View>
 
                 <View style={styles.nextBtnWrap}>
-                    <View style={styles.nextBtn}>
-                        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#FFFFFF' }}>Next</Text>
-                    </View>
+                    <TouchableOpacity style={styles.nextBtn} onPress={submitTransfer}>
+                        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#FFFFFF' }}>Submit</Text>
+                    </TouchableOpacity>
                 </View>
             </ScrollView>
         </SafeAreaView>

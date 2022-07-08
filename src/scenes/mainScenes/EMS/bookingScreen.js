@@ -108,13 +108,22 @@ const BookingScreen = ({ navigation }) => {
         }
     }, [appSelector.isSearch])
 
-    useEffect(() => {
+    useEffect(async () => {
 
         // Get Data From Server
         // let isMounted = true;
         setFromDateState(lastMonthFirstDate);
         const tomorrowDate = moment().add(1, "day").format(dateFormat)
         setToDateState(currentDate);
+
+        const employeeData = await AsyncStore.getData(
+            AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            setEmployeeId(jsonObj.empId);
+            setOrgId(jsonObj.orgId);
+        }
         // getAsyncData().then(data => {
         //     if (isMounted) {
         //         setMyState(data);
@@ -128,6 +137,9 @@ const BookingScreen = ({ navigation }) => {
     // Navigation Listner to Auto Referesh
     useEffect(() => {
         navigation.addListener('focus', () => {
+            setFromDateState(lastMonthFirstDate);
+            const tomorrowDate = moment().add(1, "day").format(dateFormat)
+            setToDateState(currentDate);
             console.log("$$$$$$$$$$$$$ BOOKING SCREEN $$$$$$$$$$$$$$$");
             getDataFromDB()
         });
@@ -146,7 +158,7 @@ const BookingScreen = ({ navigation }) => {
         const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
-            setEmployeeId(jsonObj.empId);
+            // setEmployeeId(jsonObj.empId);
             getBookingListFromServer(jsonObj.empId, lastMonthFirstDate, currentDate);
         }
     }
@@ -180,7 +192,7 @@ const BookingScreen = ({ navigation }) => {
             empId: empId,
             status: "BOOKING",
             offset: offSet,
-            limit: 1000,
+            limit: 10,
         };
         return payload;
     };

@@ -40,6 +40,7 @@ import {
   getReasonList
 } from "../../../redux/enquiryFollowUpReducer";
 import moment from "moment";
+import { ScrollView } from "react-native-gesture-handler";
 
 const otpStyles = StyleSheet.create({
   root: { flex: 1, padding: 20 },
@@ -352,7 +353,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
       enabled
       keyboardVerticalOffset={100}
     >
-      <SafeAreaView style={[styles.container]}>
+      <ScrollView style={[styles.container]}>
         <DatePickerComponent
           visible={selector.showDatepicker}
           mode={"date"}
@@ -621,7 +622,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
             </Button>
           </View>
         ) : null}
-      </SafeAreaView>
+      </ScrollView>
       <LoaderComponent visible={loading} />
     </KeyboardAvoidingView>
   );
