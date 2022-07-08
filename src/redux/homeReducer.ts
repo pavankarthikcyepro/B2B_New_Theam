@@ -178,7 +178,7 @@ export const getTargetParametersAllData = createAsyncThunk("HOME/getTargetParame
 })
 
 export const getNewTargetParametersAllData = createAsyncThunk("HOME/getNewTargetParametersAllData", async (payload: any, { rejectWithValue }) => {
-    // console.log("PAYLOAD:", payload);
+    console.log("TEAM PAYLOAD:", URL.GET_TEAMS_TARGET_PARAMS(), payload);
 
     const response = await client.post(URL.GET_TEAMS_TARGET_PARAMS(), payload)
     const json = await response.json()

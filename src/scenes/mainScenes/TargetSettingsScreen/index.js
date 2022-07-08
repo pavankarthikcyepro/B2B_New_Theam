@@ -357,7 +357,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                                         </View>
                                     </View>
                                     <View style={{ alignItems: 'center', width: '100%', paddingBottom: 10 }}>
-                                        <View style={styles.radioGroupBcVw}>
+                                        {/* <View style={styles.radioGroupBcVw}>
                                             <RadioTextItem
                                                 label={"Monthly"}
                                                 value={"MONTHLY"}
@@ -378,7 +378,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                                                     dispatch(updateTargetType("SPECIAL"))
                                                 }}
                                             />
-                                        </View>
+                                        </View> */}
                                         <TargetDropdown
                                             // disabled={selector.targetType === "SPECIAL"}
                                             label={"Select Target"}

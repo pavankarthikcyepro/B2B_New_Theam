@@ -88,13 +88,22 @@ const EnquiryScreen = ({ navigation }) => {
         }
     }, [appSelector.isSearch])
 
-    useEffect(() => {
+    useEffect(async () => {
 
         // Get Data From Server
         let isMounted = true;
         setFromDateState(lastMonthFirstDate);
         const tomorrowDate = moment().add(1, "day").format(dateFormat)
         setToDateState(currentDate);
+
+        const employeeData = await AsyncStore.getData(
+            AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            setEmployeeId(jsonObj.empId);
+            setOrgId(jsonObj.orgId);
+        }
         // getAsyncData().then(data => {
         //     if (isMounted) {
         //         setMyState(data);
@@ -108,6 +117,9 @@ const EnquiryScreen = ({ navigation }) => {
     // Navigation Listner to Auto Referesh
     useEffect(() => {
         navigation.addListener('focus', () => {
+            setFromDateState(lastMonthFirstDate);
+            const tomorrowDate = moment().add(1, "day").format(dateFormat)
+            setToDateState(currentDate);
             getDataFromDB()
         });
 
@@ -125,7 +137,7 @@ const EnquiryScreen = ({ navigation }) => {
         const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
-            setEmployeeId(jsonObj.empId);
+            // setEmployeeId(jsonObj.empId);
             getEnquiryListFromServer(jsonObj.empId, lastMonthFirstDate, currentDate);
         }
     }
@@ -139,6 +151,7 @@ const EnquiryScreen = ({ navigation }) => {
     const getEnquiryListFromServer = (empId, startDate, endDate) => {
         console.log("DATE: ", empId, startDate, endDate);
         const payload = getPayloadData(empId, startDate, endDate, 0)
+        console.log("payload called", payload)
         dispatch(getEnquiryList(payload));
     }
 
