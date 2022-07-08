@@ -33,6 +33,8 @@ import {
   DatePickerComponent,
 } from "../../../components";
 import { ModelListitemCom } from "./components/ModelListitemCom";
+import { ProformaComp } from "./components/ProformComp";
+
 import {
   clearState,
   setEditable,
@@ -2820,7 +2822,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   },
                   styles.accordianBorder,
                 ]}
-              ></List.Accordion>
+              >
+                <ProformaComp 
+                branchId={selectedBranchId}/>
+              </List.Accordion>
             <List.AccordionGroup
               expandedId={openAccordian}
               onAccordionPress={(expandedId) => updateAccordian(expandedId)}

@@ -186,7 +186,51 @@ export const getAutoSaveEnquiryDetailsApi = createAsyncThunk(
     return json;
   }
 );
+export const getLogoNameApi = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/getLogoNameApi",
+  async (data, { rejectWithValue }) => {
+    console.log("proforma", URL.PROFORMA_LOGO_NAME(data.orgId, data.branchId));
 
+    const response = await client.get(URL.PROFORMA_LOGO_NAME(data.orgId, data.branchId));
+    const json = await response.json();
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+export const getProformaModelApi = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/getProformaModelApi",
+  async (universalId, { rejectWithValue }) => {
+    const response = await client.get(URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
+    const json = await response.json();
+    console.log("auto save details", json);
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
+export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk("ENQUIRY_FORM_SLICE/getOnRoadPriceAndInsurenceDetailsApi", async (payload, { rejectWithValue }) => {
+  console.log("PAYLOAD:", URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(payload["varientId"], payload["orgId"]), JSON.stringify(payload));
+
+  const response = await client.get(URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(payload["varientId"], payload["orgId"]));
+  try {
+    const json = await response.json();
+    // console.log("INSURANCE:", JSON.stringify(json));
+
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  } catch (error) {
+    showToastRedAlert(`Value not found for varient id: ${payload["varientId"]} and org id: ${payload["orgId"]}`)
+    console.error("PRE-BOOKING getOnRoadPriceAndInsurenceDetailsApi JSON parse error: ", error + " : " + JSON.stringify(response));
+    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
+  }
+})
 export const updateEnquiryDetailsApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/updateEnquiryDetailsApi",
   async (payload, { rejectWithValue }) => {
@@ -335,6 +379,13 @@ const enquiryDetailsOverViewSlice = createSlice({
     minDate: null,
     maxDate: null,
 
+    //Proforma Invoice
+    proforma_orgName:"",
+    proforma_logo:"",
+    proforma_city:"",
+    proforma_branch:"",
+    proforma_state:"",
+    proforma_model:"",
     //personal Intro
     gender_types_data: [],
     relation_types_data: [],
@@ -1624,6 +1675,31 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.isLoading = false;
     });
     builder.addCase(getEnquiryDetailsApi.rejected, (state, action) => {      
+      state.isLoading = false;
+    });
+    builder.addCase(getLogoNameApi.pending, (state) => {
+      console.log("proforma pending")
+      state.isLoading = true;
+    });
+    builder.addCase(getLogoNameApi.fulfilled, (state, action) => {
+      // if (action.payload.dmsEntity) {
+      //  state.enquiry_details_response = action.payload.dmsEntity;
+      console.log("proforma action.payload", action.payload)
+      const data = action.payload
+      if (data && data.orgName)
+      {
+        state.proforma_orgName = data.orgName
+        state.proforma_logo = data.url
+        state.proforma_branch = data.branchName
+        state.proforma_city = data.city
+        state.proforma_state = data.state
+      }
+      state.isLoading = false;
+
+    });
+    builder.addCase(getLogoNameApi.rejected, (state, action) => {
+      console.log("proforma rejected", action)
+
       state.isLoading = false;
     });
     builder.addCase(getEnquiryDetailsApiAuto.pending, (state) => {

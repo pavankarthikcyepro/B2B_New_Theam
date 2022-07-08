@@ -91,7 +91,9 @@ const URL = {
     ENQUIRY_DETAILS: (universalId) => {
         return sales_url + "/enquiry/lead/id/" + `${universalId}`;
     },
-    
+    PROFORMA_LOGO_NAME: (orgId, branchId) => {
+        return sales_url + "/enquiry/performa/orgId/"+orgId+"/branchId/"+branchId ;
+    },
     ENQUIRY_DETAILS_BY_AUTOSAVE: (universalId) => {
         return downloadFile + "/autosave-get-uid/" + `${universalId}`;
     },
