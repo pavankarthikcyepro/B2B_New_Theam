@@ -7,9 +7,14 @@ import { showToast } from "../../../../utils/toast";
 import { useDispatch, useSelector } from "react-redux";
 import { Checkbox, List, Button, IconButton } from "react-native-paper";
 import * as AsyncStore from "../../../../asyncStore";
-import { getLogoNameApi } from "../../../../redux/enquiryFormReducer";
+import {
+    getLogoNameApi, getOnRoadPriceAndInsurenceDetailsApi, setDropDownData, postProformaInvoiceDetails
+ } from "../../../../redux/enquiryFormReducer";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
-
+import {
+    GetCarModelList,
+} from "../../../../utils/helperFunctions";
+import { PriceStackIdentifiers } from "../../../../navigations/appNavigator";
 
 const lostToCompetitor = "Lost to Competitor".replace(/\s/g, "").toLowerCase();
 const lostToUsedCarsFromCoDelear = "Lost to Used Cars from Co-Dealer".replace(/\s/g, "").toLowerCase();
@@ -62,15 +67,19 @@ const CheckboxTextAndAmountComp = ({
 const TextAndAmountComp = ({
     title,
     amount,
+    text,
     titleStyle = {},
     amoutStyle = {},
 }) => {
     return (
         <View style={styles.textAndAmountView}>
             <Text style={[styles.leftLabel, titleStyle]}>{title}</Text>
-            <Text style={[{ fontSize: 14, fontWeight: "400" }, amoutStyle]}>
+            
+            {text && text != '' ? <Text style={[{ fontSize: 16, fontWeight: "400", width:'50%' }, amoutStyle]}>
+                {text}
+            </Text> : <Text style={[{ fontSize: 14, fontWeight: "400" }, amoutStyle]}>
                 {rupeeSymbol + " " + amount}
-            </Text>
+            </Text>}
         </View>
     );
 };
@@ -103,10 +112,14 @@ const PaidAccessoriesTextAndAmountComp = ({
         </View>
     );
 };
-export const ProformaComp = ({branchId}) => {
+export const ProformaComp = ({ branchId, modelDetails, universalId }) => {
     const dispatch = useDispatch();
 
     const selector = useSelector((state) => state.enquiryFormReducer);
+    const [orgId, setOrgId] = useState("");
+    const [selectedVarientId, setSelectedVarientId] = useState(0);
+    const [warrentyTypes, setWarrentyTypes] = useState([]);
+
     const [handlingChargSlctd, setHandlingChargSlctd] = useState(false);
 
     const [priceInfomationData, setPriceInformationData] = useState({
@@ -120,6 +133,12 @@ export const ProformaComp = ({branchId}) => {
         fast_tag: 0,
         vehicle_road_tax: 0,
     });
+    const [showDropDownModel, setShowDropDownModel] = useState(false);
+    const [showMultipleDropDownData, setShowMultipleDropDownData] =
+        useState(false);
+    const [dataForDropDown, setDataForDropDown] = useState([]);
+    const [dropDownKey, setDropDownKey] = useState("");
+    const [dropDownTitle, setDropDownTitle] = useState("Select Data");
     const [essentialKitSlctd, setEssentialKitSlctd] = useState(false);
 
     const [fastTagSlctd, setFastTagSlctd] = useState(false);
@@ -140,6 +159,8 @@ export const ProformaComp = ({branchId}) => {
         useState(0);
     const [taxPercent, setTaxPercent] = useState('');
     const [insuranceDiscount, setInsuranceDiscount] = useState('');
+    const [insurenceVarientTypes, setInsurenceVarientTypes] = useState([]);
+
     const [accDiscount, setAccDiscount] = useState('');
     const [initialTotalAmt, setInitialTotalAmt] = useState(0);
 
@@ -154,6 +175,9 @@ export const ProformaComp = ({branchId}) => {
     const [showSubmitDropBtn, setShowSubmitDropBtn] = useState(false);
     const [uploadedImagesDataObj, setUploadedImagesDataObj] = useState({});
     const [isRejectSelected, setIsRejectSelected] = useState(false);
+
+    const [carModelsData, setCarModelsData] = useState([]);
+
     const [userToken, setUserToken] = useState("");
     useEffect(()=>{
       getUserData()
@@ -161,6 +185,10 @@ export const ProformaComp = ({branchId}) => {
     const getUserData = async()=>{
         try{
             let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+            AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
+                setUserToken(token);
+               
+            });
             // console.log("$$$$$ LOGIN EMP:", employeeData);
             if (employeeData) {
                 const jsonObj = JSON.parse(employeeData);
@@ -168,7 +196,9 @@ export const ProformaComp = ({branchId}) => {
                     branchId: branchId,
                     orgId: jsonObj.orgId
                 }
+                await setOrgId(jsonObj.orgId)
                 dispatch(getLogoNameApi(data));
+                getCarModelListFromServer(jsonObj.orgId)
             }
         }catch(error){
             alert(error)
@@ -187,6 +217,95 @@ export const ProformaComp = ({branchId}) => {
         selector.vechicle_registration,
         taxPercent,
     ]);
+    useEffect(() => {
+        if (selector.vehicle_on_road_price_insurence_details_response) {
+            console.log("ON ROAD PRICE INFO:", JSON.stringify(selector.vehicle_on_road_price_insurence_details_response));
+            const varientTypes =
+                selector.vehicle_on_road_price_insurence_details_response
+                    .insurance_vareint_mapping || [];
+            if (varientTypes.length > 0) {
+                let newFormatVarientTypes = [];
+                varientTypes.forEach((item) => {
+                    newFormatVarientTypes.push({
+                        ...item,
+                        name: item.policy_name,
+                    });
+                    if (selector.insurance_type === item.policy_name) {
+                        setSelectedInsurencePrice(item.cost);
+                    }
+                });
+                setInsurenceVarientTypes([...newFormatVarientTypes]);
+            }
+
+            const allWarrentyTypes =
+                selector.vehicle_on_road_price_insurence_details_response
+                    .extended_waranty || [];
+            if (allWarrentyTypes.length > 0) {
+                for (const object of allWarrentyTypes) {
+                    if (object.varient_id === selectedVarientId) {
+                        const matchedWarrentyTypes = object.warranty || [];
+                        if (matchedWarrentyTypes.length > 0) {
+                            let newFormatWarrentyTypes = [];
+                            matchedWarrentyTypes.forEach((item) => {
+                                if (Number(item.cost) !== 0) {
+                                    newFormatWarrentyTypes.push({
+                                        ...item,
+                                        name: item.document_name,
+                                    });
+                                }
+                            });
+                            setWarrentyTypes([...newFormatWarrentyTypes]);
+                        }
+                        break;
+                    }
+                }
+            }
+
+            const allInsuranceAddOnTypes =
+                selector.vehicle_on_road_price_insurence_details_response
+                    .insuranceAddOn || [];
+            if (allInsuranceAddOnTypes.length > 0) {
+                for (const object of allInsuranceAddOnTypes) {
+                    if (object.varient_id === selectedVarientId) {
+                        const matchedInsurenceAddOnTypes = object.add_on_price || [];
+                        let newFormatAddOnTypes = [];
+                        matchedInsurenceAddOnTypes.forEach((item) => {
+                            newFormatAddOnTypes.push({
+                                ...item,
+                                selected: false,
+                                name: item.document_name,
+                            });
+                        });
+                        setInsurenceAddOnTypes([...newFormatAddOnTypes]);
+                        break;
+                    }
+                }
+            }
+
+            setPriceInformationData({
+                ...selector.vehicle_on_road_price_insurence_details_response,
+            });
+        }
+    }, [selector.vehicle_on_road_price_insurence_details_response]);
+
+    const saveProformaDetails = async(from)=>{
+        var proformaStatus = ''
+        if(from === 'save')
+            proformaStatus = 'ENQUIRYCOMPLETED'
+        else proformaStatus = 'SENTFORAPPROVAL'
+        const data = await {
+            "crmUniversalId": universalId, 
+        "id": null, "performa_status": proformaStatus, 
+        "performa_comments": "xyz", 
+           "oth_performa_column": {
+               "ex_showroom_price": priceInfomationData.ex_showroom_price, 
+               "lifeTaxPercentage": taxPercent, "life_tax": lifeTaxAmount, "registration_charges": priceInfomationData.registration_charges,
+        "insurance_type": selector.insurance_type, "insurance_value": selectedInsurencePrice, "add_on_covers": selectedAddOnsPrice, "waranty_name": selector.waranty_name,
+         "waranty_value": selectedWarrentyPrice, "handling_charges":priceInfomationData.handling_charges, "essential_kit": priceInfomationData.essential_kit, 
+         "tcs_amount": tcsAmount, 
+         "paid_access": selectedPaidAccessoriesPrice, "fast_tag": priceInfomationData.fast_tag, "on_road_price": totalOnRoadPrice } }
+        await dispatch(postProformaInvoiceDetails(data))
+        }
     const showDropDownModelMethod = (key, headerText) => {
         Keyboard.dismiss();
 
@@ -234,6 +353,101 @@ export const ProformaComp = ({branchId}) => {
         setDropDownKey(key);
         setDropDownTitle(headerText);
         setShowDropDownModel(true);
+    };
+    const getCarModelListFromServer = async(orgId) => {
+        // Call Api
+        GetCarModelList(orgId)
+            .then(
+                (resolve) => {
+                    let modalList = [];
+                    if (resolve.length > 0) {
+                        resolve.forEach((item) => {
+                            modalList.push({
+                                id: item.vehicleId,
+                                name: item.model,
+                                isChecked: false,
+                                ...item,
+                            });
+                        });
+                    }
+                    setCarModelsData([...modalList]);
+                    updateVariantModelsData(modelDetails.model, true, modelDetails.variant)
+                    //  alert("entry---------",JSON.stringify(selector.dmsLeadProducts))
+                  
+                },
+                (rejected) => {
+                    console.log("getCarModelListFromServer Failed");
+                }
+            )
+            .finally(() => {
+            });
+    };
+    const updateVariantModelsData = (
+        selectedModelName,
+        fromInitialize,
+        selectedVarientName
+    ) => {
+        if (!selectedModelName || selectedModelName.length === 0) {
+            return;
+        }
+        console.log("coming..: ", selectedModelName,
+            fromInitialize,
+            selectedVarientName);
+        let arrTemp = carModelsData.filter(function (obj) {
+            return obj.model === selectedModelName;
+        });
+        console.log("arrTemp: ", arrTemp);
+
+        let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
+        if (carModelObj !== undefined) {
+            let newArray = [];
+            let mArray = carModelObj.varients;
+            if (mArray.length) {
+                mArray.forEach((item) => {
+                    newArray.push({
+                        id: item.id,
+                        name: item.name,
+                    });
+                });
+             
+             
+                    updateColorsDataForSelectedVarient(
+                        modelDetails.variant,
+                        [...mArray],
+                        carModelObj.vehicleId
+                    );
+            }
+        }
+    };
+    const updateColorsDataForSelectedVarient = (
+        selectedVarientName,
+        varientList,
+        modelId
+    ) => {
+        if (!selectedVarientName || selectedVarientName.length === 0) {
+            return;
+        }
+
+        let arrTemp = varientList.filter(function (obj) {
+            return obj.name === selectedVarientName;
+        });
+        console.log("VARIENT LIST: ", arrTemp[0]);
+        let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
+        if (carModelObj !== undefined) {
+            let newArray = [];
+            let mArray = carModelObj.vehicleImages;
+            const varientId = carModelObj.id;
+            setSelectedVarientId(varientId);
+
+           // alert("success" + orgId + " varientId" + varientId)
+            dispatch(
+                getOnRoadPriceAndInsurenceDetailsApi({
+                    orgId: orgId,
+                    varientId: varientId,
+                })
+            );
+           
+        }
     };
     const calculateOnRoadPrice = (
         handleSelected,
@@ -313,7 +527,61 @@ export const ProformaComp = ({branchId}) => {
 
     return (
         <View>
-
+            <DropDownComponant
+                visible={showDropDownModel}
+                headerTitle={dropDownTitle}
+                data={dataForDropDown}
+                multiple={showMultipleDropDownData}
+                onRequestClose={() => setShowDropDownModel(false)}
+                selectedItems={(item) => {
+                    setShowDropDownModel(false);
+                    setShowMultipleDropDownData(false);
+                    if (dropDownKey === "MODEL") {
+                        updateVariantModelsData(item.name, false);
+                    } else if (dropDownKey === "VARIENT") {
+                        updateColorsDataForSelectedVarient(
+                            item.name,
+                            selectedCarVarientsData.varientList,
+                            selectedModelId
+                        );
+                    } else if (dropDownKey === "INSURANCE_TYPE") {
+                        setSelectedInsurencePrice(item.cost);
+                    } else if (dropDownKey === "WARRANTY") {
+                        setSelectedWarrentyPrice(Number(item.cost));
+                    } else if (dropDownKey === "DROP_REASON") {
+                        const payload = {
+                            bu: userData.orgId,
+                            dropdownType: "PreBook_Lost_Com_Sub_Reas",
+                            parentId: item.id,
+                        };
+                        dispatch(getDropSubReasonDataApi(payload));
+                    } else if (dropDownKey === "INSURENCE_ADD_ONS") {
+                        let totalCost = 0;
+                        let names = "";
+                        let insurenceAddOns = [];
+                        console.log("ADD-ON ITEM:", JSON.stringify(item));
+                        if (item.length > 0) {
+                            item.forEach((obj, index) => {
+                                totalCost += Number(obj.cost);
+                                names += obj.name + (index + 1 < item.length ? ", " : "");
+                                insurenceAddOns.push({
+                                    insuranceAmount: obj.cost,
+                                    insuranceAddonName: obj.name,
+                                });
+                            });
+                        }
+                        setSelectedAddOnsPrice(totalCost);
+                        setSelectedInsurenceAddons([...insurenceAddOns]);
+                        dispatch(
+                            setDropDownData({ key: dropDownKey, value: names, id: "" })
+                        );
+                        return;
+                    }
+                    dispatch(
+                        setDropDownData({ key: dropDownKey, value: item.name, id: item.id })
+                    );
+                }}
+            />
         <View style={{flexDirection:'row', alignItems:'center', justifyContent:'center', padding:5}}>
                 <Image
                     style={styles.ImageStyleS}
@@ -321,28 +589,33 @@ export const ProformaComp = ({branchId}) => {
                 />
                 <Text style={{ fontSize: 18, color: Colors.PINK, textAlign: 'center', marginLeft: 10 }}>{selector.proforma_orgName}</Text>
         </View>
-            <Text style={{ fontSize: 14, color: Colors.BLACK, textAlign: 'center', marginLeft: 10 }}>{selector.proforma_branch + ", " + selector.proforma_city + ", " + selector.proforma_state}</Text>
+            <Text style={{ fontSize: 14, color: Colors.BLACK, textAlign: 'center', marginLeft: 10, marginBottom:10 }}>{selector.proforma_branch + ", " + selector.proforma_city + ", " + selector.proforma_state}</Text>
+            <View style={{margin:10, borderRadius:5, borderWidth:1, borderColor: Colors.BLACK, paddingBottom:10}}>
             <Text style={{ fontSize: 18, color: Colors.PINK, textAlign: 'center', margin: 10 }}>Proforma Invoice</Text>
             <TextAndAmountComp
                 title={"Name"}
-                amount={"Kwid"}
+                text={modelDetails.model}
             /> 
             <TextAndAmountComp
                 title={"Date"}
-                amount={"02/12/12"}
+                text={"02/12/12"}
             />   
             <TextAndAmountComp
                 title={"Model"}
-                amount={"Kwid"}
+                text={modelDetails.variant}
             />    
             <TextAndAmountComp
                 title={"Color"}
-                amount={"Kwid"}
+                text={modelDetails.color}
             />  
             <TextAndAmountComp
                 title={"Amount"}
-                amount={"Kwid"}
+                text={" "}
             />  
+            </View>
+
+            <View style={{ margin: 10, borderRadius: 5, borderWidth: 1, borderColor: Colors.BLACK, paddingBottom: 10 }}>
+
             <Text style={{ fontSize: 18, color: Colors.PINK, textAlign: 'center', margin: 10 }}>Description</Text>
 
             <TextAndAmountComp
@@ -581,7 +854,29 @@ export const ProformaComp = ({branchId}) => {
                 titleStyle={{ fontSize: 18, fontWeight: "800" }}
                 amoutStyle={{ fontSize: 18, fontWeight: "800" }}
             />
-            <Text style={GlobalStyle.underline}></Text>
+            {/* <Text style={GlobalStyle.underline}></Text> */}
+            </View>
+            <View style={{flexDirection:'row', justifyContent:'space-between', margin:15}}>
+                <Button
+                    mode="contained"
+                    style={{ width: 120 }}
+                    color={Colors.PINK}
+                    labelStyle={{ textTransform: "none" }}
+                    onPress={() => saveProformaDetails('save')}
+                >
+                    Save
+                </Button>
+                <Button
+                    mode="contained"
+                    style={{ width: 160 }}
+                    color={Colors.PINK}
+                    labelStyle={{ textTransform: "none" }}
+                    onPress={() => saveProformaDetails('approval')}
+                >
+                    Sent For Approval
+                </Button>
+            </View>
+           
         </View>
     )
 }

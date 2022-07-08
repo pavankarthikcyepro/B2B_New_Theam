@@ -189,7 +189,6 @@ export const getAutoSaveEnquiryDetailsApi = createAsyncThunk(
 export const getLogoNameApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/getLogoNameApi",
   async (data, { rejectWithValue }) => {
-    console.log("proforma", URL.PROFORMA_LOGO_NAME(data.orgId, data.branchId));
 
     const response = await client.get(URL.PROFORMA_LOGO_NAME(data.orgId, data.branchId));
     const json = await response.json();
@@ -213,8 +212,23 @@ export const getProformaModelApi = createAsyncThunk(
     return json;
   }
 );
+export const postProformaInvoiceDetails = createAsyncThunk(
+  "ENQUIRY_FORM_SLICE/postProformaInvoiceDetails",
+  async (payload, { rejectWithValue }) => {
+    console.log("Proforma", JSON.stringify(payload))
+    const response = await client.post(URL.SAVE_PROFORMA_DETAILS(), payload);
+    const json = await response.json();
+    console.log("auto save details", json);
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
 export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk("ENQUIRY_FORM_SLICE/getOnRoadPriceAndInsurenceDetailsApi", async (payload, { rejectWithValue }) => {
-  console.log("PAYLOAD:", URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(payload["varientId"], payload["orgId"]), JSON.stringify(payload));
+  console.log("proforma:", URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(payload["varientId"], payload["orgId"]), JSON.stringify(payload));
+  //console.log("proforma", URL.PROFORMA_LOGO_NAME(data.orgId, data.branchId));
 
   const response = await client.get(URL.GET_ON_ROAD_PRICE_AND_INSURENCE_DETAILS(payload["varientId"], payload["orgId"]));
   try {
@@ -386,6 +400,11 @@ const enquiryDetailsOverViewSlice = createSlice({
     proforma_branch:"",
     proforma_state:"",
     proforma_model:"",
+    vehicle_on_road_price_insurence_details_response: null,
+    insurance_type: "",
+    add_on_insurance: "",
+    addOnPrice: 0,
+
     //personal Intro
     gender_types_data: [],
     relation_types_data: [],
@@ -651,6 +670,12 @@ const enquiryDetailsOverViewSlice = createSlice({
         case "TRANSMISSION_TYPE":
           state.transmission_type = value;
           break;
+        case "INSURANCE_TYPE":
+          state.insurance_type = value;
+          break;
+     
+        case "INSURENCE_ADD_ONS":
+          state.add_on_insurance = value;
         case "SOURCE_OF_ENQUIRY":
           state.source_of_enquiry = value;
           break;
@@ -1684,7 +1709,6 @@ const enquiryDetailsOverViewSlice = createSlice({
     builder.addCase(getLogoNameApi.fulfilled, (state, action) => {
       // if (action.payload.dmsEntity) {
       //  state.enquiry_details_response = action.payload.dmsEntity;
-      console.log("proforma action.payload", action.payload)
       const data = action.payload
       if (data && data.orgName)
       {
@@ -1698,9 +1722,55 @@ const enquiryDetailsOverViewSlice = createSlice({
 
     });
     builder.addCase(getLogoNameApi.rejected, (state, action) => {
-      console.log("proforma rejected", action)
 
       state.isLoading = false;
+    });
+    builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.pending, (state, action) => {
+      state.vehicle_on_road_price_insurence_details_response = null;
+      state.isLoading = true;
+    })
+    builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.fulfilled, (state, action) => {
+      console.log("proforma action.payload", action.payload)
+
+      if (action.payload) {
+        state.vehicle_on_road_price_insurence_details_response = action.payload;
+        if (action.payload.insuranceAddOn.length > 0) {
+          let addOnNames = "", price = 0;
+          console.log('ADD-ONS: ', JSON.stringify(action.payload.insuranceAddOn));
+
+          action.payload.insuranceAddOn.forEach((element, index) => {
+            addOnNames += element.add_on_price[0].document_name + ((index + 1) < action.payload.insuranceAddOn.length ? ", " : "");
+            price += Number(element.add_on_price[0].cost)
+          });
+          // state.add_on_insurance = addOnNames;
+          if (state.insurance_type !== '' && state.add_on_insurance) {
+            state.addOnPrice = price;
+          }
+
+        }
+      }
+      state.isLoading = false;
+    })
+    builder.addCase(getOnRoadPriceAndInsurenceDetailsApi.rejected, (state, action) => {
+
+      state.vehicle_on_road_price_insurence_details_response = null;
+      state.isLoading = false;
+    })
+    builder.addCase(postProformaInvoiceDetails.pending, (state) => {
+      console.log("proforma on road pending")
+
+    });
+    builder.addCase(postProformaInvoiceDetails.fulfilled, (state, action) => {
+      // if (action.payload.dmsEntity) {
+      //  state.enquiry_details_response = action.payload.dmsEntity;
+      console.log("action.payload auto", action.payload)
+     // state.enquiry_details_response = action.payload;
+     // state.isOpened = true
+      // }
+    });
+    builder.addCase(postProformaInvoiceDetails.rejected, (state, action) => {
+      console.log("proforma rejected", action)
+
     });
     builder.addCase(getEnquiryDetailsApiAuto.pending, (state) => {
       state.isLoading = true;

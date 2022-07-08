@@ -113,6 +113,9 @@ const URL = {
     GET_ON_ROAD_PRICE_DTO_LIST: (leadId) => {
         return sales_url + `/on-road-price/lead/${leadId}`
     },
+    SAVE_PROFORMA_DETAILS: () => {
+        return sales_url + `/enquiry/performaDetails`
+    },
     SEND_ON_ROAD_PRICE_DETAILS: () => sales_url + "/on-road-price",
     GET_ALL_OFFERS: (varientId, vehicleId) => {
         return ops_url + "/api/allofferdetail" + `?varientId=${varientId}&vehicleId=${vehicleId}`

@@ -2610,7 +2610,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       </View>
     );
   };
-
+  const navigateToProforma = () =>{
+    navigation.navigate(AppNavigator.EmsStackIdentifiers.ProformaScreen, {
+         modelDetails: selector.dmsLeadProducts[0] ,
+         branchId: selectedBranchId ,
+      universalId: universalId
+    })
+  }
   const updateAddressDetails = (pincode) => {
     if (pincode.length != 6) {
       return;
@@ -2803,20 +2809,26 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           ref={scrollRef}
         >
           <View style={styles.baseVw}>
-            <Button style={{height:40, width:200,marginBottom:15, alignSelf:'flex-end', alignContent:'center', backgroundColor:Colors.PINK, color: Colors.WHITE}}
-              labelStyle={{ textTransform: "none",fontSize:16, color: Colors.WHITE }}>Proforma Invoice</Button>
-           <List.Accordion
-                id={"1"}
+            {(leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY') ? <Button style={{height:40, width:200,marginBottom:15, alignSelf:'flex-end', alignContent:'center', backgroundColor:Colors.PINK, color: Colors.WHITE}}
+              labelStyle={{ textTransform: "none",fontSize:16, color: Colors.WHITE }}
+              onPress={()=> navigateToProforma()}>Proforma Invoice</Button> : null}
+          
+            <List.AccordionGroup
+              expandedId={openAccordian}
+              onAccordionPress={(expandedId) => updateAccordian(expandedId)}
+            >
+              { (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY') ? <List.Accordion
+                id={"10"}
                 title={"Proforma Invoice"}
                 titleStyle={{
-                  color: openAccordian === "1" ? Colors.BLACK : Colors.BLACK,
+                  color: openAccordian === "10" ? Colors.BLACK : Colors.BLACK,
                   fontSize: 16,
                   fontWeight: "600",
                 }}
                 style={[
                   {
                     backgroundColor:
-                      openAccordian === "1"
+                      openAccordian === "10"
                         ? Colors.RED
                         : Colors.WHITE,
                     height: 60,
@@ -2825,13 +2837,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   styles.accordianBorder,
                 ]}
               >
-                <ProformaComp 
-                branchId={selectedBranchId}/>
-              </List.Accordion>
-            <List.AccordionGroup
-              expandedId={openAccordian}
-              onAccordionPress={(expandedId) => updateAccordian(expandedId)}
-            >
+                <ProformaComp
+                  modelDetails={selector.dmsLeadProducts[0]}
+                  branchId={selectedBranchId} />
+              </List.Accordion> : null}
+              <View style={styles.space}></View> 
+
               {/* 1. Personal Intro */}
               <List.Accordion
                 id={"2"}

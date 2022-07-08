@@ -73,6 +73,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { updateModal, updateSearchKey, updateIsSearch } from '../redux/appReducer';
 import etvbrlReportScreen from "../scenes/mainScenes/etvbrlReportScreen";
 import webViewComp from "../scenes/mainScenes/EMS/components/webViewComp";
+import ProformaScreen from "../scenes/mainScenes/EMS/ProformaScreen";
+
 import leaderBoardScreen from "../scenes/mainScenes/Home/leaderBoardScreen";
 import branchRankingScreen from "../scenes/mainScenes/Home/branchRankingScreen";
 
@@ -259,6 +261,7 @@ export const EmsStackIdentifiers = {
     createEnquiry: "CREATE_ENQUIRY_1",
     bookingForm: "BOOKING_FORM",
     webViewComp: 'webViewComp',
+    ProformaScreen:'PROFORMA_SCREEN'
 };
 
 export const PreBookingStackIdentifiers = {
@@ -481,6 +484,11 @@ const EmsStackNavigator = ({ navigation }) => {
                 name={EmsStackIdentifiers.webViewComp}
                 component={webViewComp}
                 options={{ title: "Call Record" }}
+            />
+            <EmsStack.Screen
+                name={EmsStackIdentifiers.ProformaScreen}
+                component={ProformaScreen}
+                options={{ title: "Proforma Invoice" }}
             />
         </EmsStack.Navigator>
     );
