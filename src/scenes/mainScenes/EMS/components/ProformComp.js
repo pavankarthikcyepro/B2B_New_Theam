@@ -443,7 +443,7 @@ export const ProformaComp = ({ branchId, modelDetails, universalId }) => {
             const varientId = carModelObj.id;
             setSelectedVarientId(varientId);
 
-           // alert("success" + orgId + " varientId" + varientId)
+            //alert("success" + orgId + " varientId" + varientId)
             dispatch(
                 getOnRoadPriceAndInsurenceDetailsApi({
                     orgId: orgId,

@@ -165,7 +165,7 @@ const PreBookingScreen = ({ navigation }) => {
             "empId": empId,
             "status": "PREBOOKING",
             "offset": offSet,
-            "limit": 10,
+            "limit": 500,
         }
         return payload;
     }
@@ -325,11 +325,11 @@ const PreBookingScreen = ({ navigation }) => {
                         )}
                         showsVerticalScrollIndicator={false}
                         onEndReachedThreshold={0}
-                        onEndReached={() => {
-                            if (appSelector.searchKey === '') {
-                                getMorePreBookingListFromServer()
-                            }
-                        }}
+                        // onEndReached={() => {
+                        //     if (appSelector.searchKey === '') {
+                        //         getMorePreBookingListFromServer()
+                        //     }
+                        // }}
                         ListFooterComponent={renderFooter}
                         renderItem={({ item, index }) => {
 

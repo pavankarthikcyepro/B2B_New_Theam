@@ -165,7 +165,7 @@ const EnquiryScreen = ({ navigation }) => {
             "empId": empId,
             "status": "ENQUIRY",
             "offset": offSet,
-            "limit": 10,
+            "limit": 500,
         }
         return payload;
     }
@@ -327,11 +327,11 @@ const EnquiryScreen = ({ navigation }) => {
                         )}
                         showsVerticalScrollIndicator={false}
                         onEndReachedThreshold={0}
-                        onEndReached={() => {
-                            if (appSelector.searchKey === '') {
-                                getMoreEnquiryListFromServer()
-                            }
-                        }}
+                        // onEndReached={() => {
+                        //     if (appSelector.searchKey === '') {
+                        //         getMoreEnquiryListFromServer()
+                        //     }
+                        // }}
                         ListFooterComponent={renderFooter}
                         renderItem={({ item, index }) => {
 
