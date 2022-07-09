@@ -7,7 +7,7 @@ import {
 } from "../jsonData/enquiryFormScreenJsonData";
 import { convertTimeStampToDateString } from "../utils/helperFunctions";
 import moment from "moment";
-import { showToastRedAlert } from "../utils/toast";
+import { showToastRedAlert, showToast } from "../utils/toast";
 
 export const getEnquiryDetailsApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/getEnquiryDetailsApi",
@@ -1764,6 +1764,8 @@ const enquiryDetailsOverViewSlice = createSlice({
       // if (action.payload.dmsEntity) {
       //  state.enquiry_details_response = action.payload.dmsEntity;
       console.log("action.payload auto", action.payload)
+      if (action.payload && action.payload.crmUniversalId)
+      showToast("Successfully updated")
      // state.enquiry_details_response = action.payload;
      // state.isOpened = true
       // }

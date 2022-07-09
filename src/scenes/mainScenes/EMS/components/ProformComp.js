@@ -6,6 +6,8 @@ import { GlobalStyle, Colors } from "../../../../styles";
 import { showToast } from "../../../../utils/toast";
 import { useDispatch, useSelector } from "react-redux";
 import { Checkbox, List, Button, IconButton } from "react-native-paper";
+import moment from "moment";
+
 import * as AsyncStore from "../../../../asyncStore";
 import {
     getLogoNameApi, getOnRoadPriceAndInsurenceDetailsApi, setDropDownData, postProformaInvoiceDetails
@@ -160,6 +162,7 @@ export const ProformaComp = ({ branchId, modelDetails, universalId }) => {
     const [taxPercent, setTaxPercent] = useState('');
     const [insuranceDiscount, setInsuranceDiscount] = useState('');
     const [insurenceVarientTypes, setInsurenceVarientTypes] = useState([]);
+    const [insurenceAddOnTypes, setInsurenceAddOnTypes] = useState([]);
 
     const [accDiscount, setAccDiscount] = useState('');
     const [initialTotalAmt, setInitialTotalAmt] = useState(0);
@@ -267,6 +270,7 @@ export const ProformaComp = ({ branchId, modelDetails, universalId }) => {
             if (allInsuranceAddOnTypes.length > 0) {
                 for (const object of allInsuranceAddOnTypes) {
                     if (object.varient_id === selectedVarientId) {
+
                         const matchedInsurenceAddOnTypes = object.add_on_price || [];
                         let newFormatAddOnTypes = [];
                         matchedInsurenceAddOnTypes.forEach((item) => {
@@ -598,7 +602,7 @@ export const ProformaComp = ({ branchId, modelDetails, universalId }) => {
             /> 
             <TextAndAmountComp
                 title={"Date"}
-                text={"02/12/12"}
+                    text={moment().format("DD/MM/YYYY")}
             />   
             <TextAndAmountComp
                 title={"Model"}
@@ -610,7 +614,7 @@ export const ProformaComp = ({ branchId, modelDetails, universalId }) => {
             />  
             <TextAndAmountComp
                 title={"Amount"}
-                text={" "}
+                    text={totalOnRoadPrice.toFixed(2)}
             />  
             </View>
 

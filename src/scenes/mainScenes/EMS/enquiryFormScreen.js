@@ -2817,7 +2817,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               expandedId={openAccordian}
               onAccordionPress={(expandedId) => updateAccordian(expandedId)}
             >
-              { (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY') ? <List.Accordion
+              {/* { (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY') ? <List.Accordion
                 id={"10"}
                 title={"Proforma Invoice"}
                 titleStyle={{
@@ -2840,7 +2840,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <ProformaComp
                   modelDetails={selector.dmsLeadProducts[0]}
                   branchId={selectedBranchId} />
-              </List.Accordion> : null}
+              </List.Accordion> : null} */}
               <View style={styles.space}></View> 
 
               {/* 1. Personal Intro */}
