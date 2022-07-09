@@ -32,6 +32,7 @@ export default function leaderBoardScreen() {
     const [bottom5RankList, setBottom5RankList] = useState([]);
     const [reversebottomRankList, setReverseBottomRankList] = useState([]);
 
+    
     useEffect(async () => {
         LogBox.ignoreAllLogs();
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -56,12 +57,14 @@ export default function leaderBoardScreen() {
 
     const getLeaderboardListFromServer = async () => {
         var date = new Date();
+       let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+       const jsonObj = JSON.parse(employeeData);
         var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
         var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
         let payload = {
             "endDate": moment.utc(lastDay).format('YYYY-MM-DD'),
             "levelSelected": null,
-            "loggedInEmpId": 146,
+            "loggedInEmpId": jsonObj.empId,
             "pageNo": 0,
             "size": 0,
             "startDate": moment.utc(firstDay).format('YYYY-MM-DD')

@@ -6,162 +6,6 @@ import { getBranchRanksList } from "../../../redux/homeReducer";
 import { LoaderComponent } from '../../../components';
 import moment from 'moment';
 
-const toprankList = [
-    {
-        "empId": 146,
-        "orgId": 1,
-        "rank": 1,
-        "targetAchivements": 23,
-        "branchId": 242,
-        "empName": "E Ravi",
-        "achivementPerc": 26
-    },
-    {
-        "empId": 102,
-        "orgId": 1,
-        "rank": 2,
-        "targetAchivements": 1,
-        "branchId": 244,
-        "empName": "GUDIPATI LAXMIKANTH",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 97,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 244,
-        "empName": "M Rakesh",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 100,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 244,
-        "empName": "Mohammed Saarvar Ali",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 101,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 244,
-        "empName": "V Vinay ",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 174,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 244,
-        "empName": "GEETHA",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 182,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 242,
-        "empName": "Rekha",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 682,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 242,
-        "empName": "Vidhya Sagar",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 685,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 242,
-        "empName": "Babu Rao Dhesha",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 699,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 244,
-        "empName": "Masthan Reddy Kalluri",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 700,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 244,
-        "empName": "Mujtaba Shaik Mohammed",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 731,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 245,
-        "empName": "Sayanna",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 732,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 245,
-        "empName": "Anil",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 733,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 266,
-        "empName": "Sai Krishna Vulvila",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 734,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 266,
-        "empName": "Manibushan Gangaram",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 735,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 266,
-        "empName": "Udaya Bhargavi Ayancha",
-        "achivementPerc": 0
-    },
-    {
-        "empId": 741,
-        "orgId": 1,
-        "rank": 3,
-        "targetAchivements": 0,
-        "branchId": 242,
-        "empName": "Charjun",
-        "achivementPerc": 0
-    }
-];
-
 export default function branchRankingScreen() {
     const selector = useSelector((state) => state.homeReducer);
     const dispatch = useDispatch();
@@ -170,13 +14,15 @@ export default function branchRankingScreen() {
     const [branchList, setBranchList] = useState([]);
 
     const getBranchRankListFromServer = async () => {
+        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        const jsonObj = JSON.parse(employeeData);
         var date = new Date();
         var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
         var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
         let payload = {
             "endDate": moment.utc(lastDay).format('YYYY-MM-DD'),
             "levelSelected": null,
-            "loggedInEmpId": 146,
+            "loggedInEmpId": jsonObj.empId,
             "pageNo": 0,
             "size": 0,
             "startDate": moment.utc(firstDay).format('YYYY-MM-DD')
