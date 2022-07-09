@@ -210,8 +210,8 @@ export default function branchRankingScreen() {
                 </View> : null}
                 <View style={{ flexDirection: 'row', width: '100%' }}>
                     <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{extraIndex + 1}</Text>
-                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{branchName}</Text>
-                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{branchCode}</Text>
+                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchName}</Text>
+                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchCode}</Text>
                     <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.achivementPerc}</Text>
                     <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.targetAchivements}</Text>
                 </View>

@@ -99,8 +99,8 @@ export default function leaderBoardScreen() {
                 </View> : null}
                 <View style={{ flexDirection: 'row', width: '100%' }}>
                     <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.rank}</Text>
-                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchId}</Text>
-                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchId}</Text>
+                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchName}</Text>
+                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchCode}</Text>
                     <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.achivementPerc}</Text>
                     <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.targetAchivements}</Text>
                 </View>
@@ -120,8 +120,8 @@ export default function leaderBoardScreen() {
                 </View> : null}
                 <View style={{ flexDirection: 'row', width: '100%' }}>
                     <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.rank}</Text>
-                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchId}</Text>
-                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchId}</Text>
+                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchName}</Text>
+                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchCode}</Text>
                     <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.achivementPerc}</Text>
                     <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.targetAchivements}</Text>
                 </View>
@@ -151,7 +151,7 @@ export default function leaderBoardScreen() {
                     </View>
                 </View>
 
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20, justifyContent: 'space-around', width: '100%', padding: 10 }}>
+               {/*} <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20, justifyContent: 'space-around', width: '100%', padding: 10 }}>
                     <View style={styles.dropWrap} pointerEvents="none">
                         <Dropdown
                             style={[styles.dropdownContainer,]}
@@ -198,7 +198,7 @@ export default function leaderBoardScreen() {
                         />
                     </View>
                 </View>
-
+            */}
                 {top5RankList.length && bottom5RankList.length ? null : <LoaderComponent
                     visible={selector.isLoading}
                     onRequestClose={() => { }}
