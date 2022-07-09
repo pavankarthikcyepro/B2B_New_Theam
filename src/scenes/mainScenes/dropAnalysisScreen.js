@@ -110,13 +110,23 @@ const DropAnalysisScreen = ({ navigation }) => {
         }
     }, [appSelector.isSearch])
 
-    useEffect(() => {
+    useEffect(async() => {
 
         // Get Data From Server
         let isMounted = true;
         setFromDateState(lastMonthFirstDate);
         const tomorrowDate = moment().add(1, "day").format(dateFormat)
         setToDateState(currentDate);
+
+        const employeeData = await AsyncStore.getData(
+            AsyncStore.Keys.LOGIN_EMPLOYEE
+        );
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            setEmployeeId(jsonObj.empId);
+            setOrgId(jsonObj.orgId);
+            setEmployeeName(jsonObj.empName)
+        }
         // getAsyncData().then(data => {
         //     if (isMounted) {
         //         setMyState(data);
@@ -151,10 +161,10 @@ const DropAnalysisScreen = ({ navigation }) => {
         const lastMonthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
         if (employeeData) {
             const jsonObj = await JSON.parse(employeeData);
-            await setOrgId(jsonObj.orgId)
+            // await setOrgId(jsonObj.orgId)
 
-            await setEmployeeName(jsonObj.empName)
-            await setEmployeeId(jsonObj.empId)
+            // await setEmployeeName(jsonObj.empName)
+            // await setEmployeeId(jsonObj.empId)
             getDropListFromServer(jsonObj.empId, jsonObj.empName, branchId, jsonObj.orgId, lastMonthFirstDate, currentDate);
         }
     }

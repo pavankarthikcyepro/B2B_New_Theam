@@ -43,12 +43,12 @@ const data = [
   //   screen: 103,
   //   pngIcon: require('../assets/images/Event_Management-01.png')
   // },
-  {
-    title: "Task Transfer",
-    icon: TRANSFER_STR,
-    screen: 109,
-    pngIcon: require('../assets/images/Task_Trasnfer-01.png')
-  },
+  // {
+  //   title: "Task Transfer",
+  //   icon: TRANSFER_STR,
+  //   screen: 109,
+  //   pngIcon: require('../assets/images/Task_Trasnfer-01.png')
+  // },
   // {
   //   title: "Team Shuffle",
   //   icon: GROUP_STR,

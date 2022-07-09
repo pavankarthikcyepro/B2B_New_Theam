@@ -292,7 +292,7 @@ export const getPaymentDetailsApi = createAsyncThunk(
   "PREBOONING_FORMS_SLICE/getPaymentDetailsApi",
   async (leadId, { rejectWithValue }) => {
     const response = await client.get(
-      URL.GET_BOOKING_PAYMENT_DETAILS(leadId)
+      URL.GET_PRE_BOOKING_PAYMENT_DETAILS(leadId)
     );
     try {
       const json = await response.json();
@@ -554,7 +554,7 @@ const bookingFormSlice = createSlice({
       state.marital_status = "";
       // Communication Address
       state.pincode = "";
-      state.urban_or_rural = 0; // 1: urban, 2:
+      state.urban_or_rural = 1; // 1: urban, 2:
       state.house_number = "";
       state.street_name = "";
       state.village = "";
@@ -565,7 +565,7 @@ const bookingFormSlice = createSlice({
 
       state.is_permanent_address_same = "";
       state.p_pincode = "";
-      state.p_urban_or_rural = 0; // 1: urban, 2:
+      state.p_urban_or_rural = 1; // 1: urban, 2:
       state.p_houseNum = "";
       state.p_streetName = "";
       state.p_village = "";
@@ -1087,7 +1087,16 @@ const bookingFormSlice = createSlice({
         "DD/MM/YYYY"
       );
       state.gender = dms_C_Or_A_Dto.gender ? dms_C_Or_A_Dto.gender : "";
-      state.age = dms_C_Or_A_Dto.age ? dms_C_Or_A_Dto.age.toString() : "0";
+      // state.age = dms_C_Or_A_Dto.age ? dms_C_Or_A_Dto.age.toString() : "0";
+      const dob = convertTimeStampToDateString(dateOfBirth, "DD/MM/YYYY");
+      const given = moment(dob, "DD/MM/YYYY");
+      const current = moment().startOf('day');
+      const total = Number(moment.duration(current.diff(given)).asYears()).toFixed(0);
+      console.log("DOB:", given, total);
+
+      if (Number(total) > 0) {
+        state.age = total.toString();
+      }
       state.customer_type = dms_C_Or_A_Dto.customerType
         ? dms_C_Or_A_Dto.customerType
         : "";
@@ -1167,7 +1176,7 @@ const bookingFormSlice = createSlice({
             state.district = address.district ? address.district : "";
             state.state = address.state ? address.state : "";
 
-            let urbanOrRural = 0;
+            let urbanOrRural = 1;
             if (address.urban) {
               urbanOrRural = 1;
             } else if (address.rural) {
@@ -1257,6 +1266,7 @@ const bookingFormSlice = createSlice({
         ? dataObj.bookingAmount.toString()
         : "";
       state.payment_at = dataObj.paymentAt ? dataObj.paymentAt : "";
+      console.log("BOOKING PAYMENT MODE: ", dataObj.modeOfPayment);
       state.booking_payment_mode = dataObj.modeOfPayment
         ? dataObj.modeOfPayment
         : "";
@@ -1632,6 +1642,7 @@ const bookingFormSlice = createSlice({
     });
     builder.addCase(getPaymentDetailsApi.fulfilled, (state, action) => {
       if (action.payload) {
+        console.log("DATA TTTTT: ", JSON.stringify(action.payload));
         state.existing_payment_details_response = action.payload;
         state.type_of_upi = action.payload.typeUpi
           ? action.payload.typeUpi

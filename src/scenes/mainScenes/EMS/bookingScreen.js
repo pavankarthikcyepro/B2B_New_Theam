@@ -416,7 +416,7 @@ const BookingScreen = ({ navigation }) => {
                                             onItemPress={() =>
                                                 navigation.navigate(
                                                     AppNavigator.EmsStackIdentifiers.task360,
-                                                    { universalId: item.universalId }
+                                                    { universalId: item.universalId, mobileNo: item.phone }
                                                 )
                                             }
                                             onDocPress={() => {

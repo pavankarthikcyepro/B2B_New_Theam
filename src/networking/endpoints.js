@@ -324,8 +324,8 @@ const URL = {
     TARGET_DROPDOWN: (orgId, parent, child, parentId) => {
         return `${tasktransfer}?orgId=${orgId}&parent=${parent}&child=${child}&parentId=${parentId}`;
     },
-    GET_TASK_LIST: (taskId) => {
-        return `${getTaskList}/${taskId}`;
+    GET_TASK_LIST: (empId) => {
+        return `${getTaskList}/${empId}`;
     },
     GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
         return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;

@@ -32,6 +32,7 @@ export default function leaderBoardScreen() {
     const [bottom5RankList, setBottom5RankList] = useState([]);
     const [reversebottomRankList, setReverseBottomRankList] = useState([]);
 
+    
     useEffect(async () => {
         LogBox.ignoreAllLogs();
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -56,12 +57,14 @@ export default function leaderBoardScreen() {
 
     const getLeaderboardListFromServer = async () => {
         var date = new Date();
+       let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+       const jsonObj = JSON.parse(employeeData);
         var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
         var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
         let payload = {
             "endDate": moment.utc(lastDay).format('YYYY-MM-DD'),
             "levelSelected": null,
-            "loggedInEmpId": 146,
+            "loggedInEmpId": jsonObj.empId,
             "pageNo": 0,
             "size": 0,
             "startDate": moment.utc(firstDay).format('YYYY-MM-DD')
@@ -99,8 +102,8 @@ export default function leaderBoardScreen() {
                 </View> : null}
                 <View style={{ flexDirection: 'row', width: '100%' }}>
                     <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.rank}</Text>
-                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchId}</Text>
-                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchId}</Text>
+                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchName}</Text>
+                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchCode}</Text>
                     <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.achivementPerc}</Text>
                     <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.targetAchivements}</Text>
                 </View>
@@ -120,8 +123,8 @@ export default function leaderBoardScreen() {
                 </View> : null}
                 <View style={{ flexDirection: 'row', width: '100%' }}>
                     <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.rank}</Text>
-                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchId}</Text>
-                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchId}</Text>
+                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchName}</Text>
+                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchCode}</Text>
                     <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.achivementPerc}</Text>
                     <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.targetAchivements}</Text>
                 </View>
@@ -151,7 +154,7 @@ export default function leaderBoardScreen() {
                     </View>
                 </View>
 
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20, justifyContent: 'space-around', width: '100%', padding: 10 }}>
+               {/*} <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 20, justifyContent: 'space-around', width: '100%', padding: 10 }}>
                     <View style={styles.dropWrap} pointerEvents="none">
                         <Dropdown
                             style={[styles.dropdownContainer,]}
@@ -198,7 +201,7 @@ export default function leaderBoardScreen() {
                         />
                     </View>
                 </View>
-
+            */}
                 {top5RankList.length && bottom5RankList.length ? null : <LoaderComponent
                     visible={selector.isLoading}
                     onRequestClose={() => { }}
