@@ -173,7 +173,8 @@ const EnquiryScreen = ({ navigation }) => {
     const getMoreEnquiryListFromServer = async () => {
         if (selector.isLoadingExtraData) { return }
         if (employeeId && ((selector.pageNumber + 1) < selector.totalPages)) {
-            console.log("GET MORE: ", selectedFromDate, selectedToDate);
+            console.log("GET MORE: ", selector.pageNumber, selector.totalPages);
+
             const payload = getPayloadData(employeeId, selectedFromDate, selectedToDate, (selector.pageNumber + 1))
             dispatch(getMoreEnquiryList(payload));
         }

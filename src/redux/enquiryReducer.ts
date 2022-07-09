@@ -66,18 +66,24 @@ const enquirySlice = createSlice({
       state.status = "failed";
     })
     builder.addCase(getMoreEnquiryList.pending, (state) => {
+      state.totalPages = 1
+      state.pageNumber = 0
       state.isLoadingExtraData = true;
     })
     builder.addCase(getMoreEnquiryList.fulfilled, (state, action) => {
       // console.log('res: ', action.payload);
       const dmsEntityObj = action.payload?.dmsEntity;
+      state.totalPages = 1
+      state.pageNumber = 0
       if (dmsEntityObj) {
+        state.totalPages = dmsEntityObj.leadDtoPage.totalPages;
         state.pageNumber = dmsEntityObj.leadDtoPage.pageable.pageNumber;
         const content = dmsEntityObj.leadDtoPage.content;
         state.enquiry_list = [...state.enquiry_list, ...content];
       }
-      state.isLoadingExtraData = false;
       state.status = "sucess";
+      state.isLoadingExtraData = false;
+
     })
     builder.addCase(getMoreEnquiryList.rejected, (state, action) => {
       state.isLoadingExtraData = false;
