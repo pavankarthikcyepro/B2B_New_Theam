@@ -625,6 +625,7 @@ const TargetScreen = ({ route, navigation }) => {
   }, [selector.isTeam])
 
   const getTotalAchivent = (params) => {
+    console.log("USER DATA: ", JSON.stringify(params));
     let total = 0;
     for (let i = 0; i < params.length; i++) {
       total += Number(params[i].achievment);
@@ -637,6 +638,18 @@ const TargetScreen = ({ route, navigation }) => {
     for (let i = 0; i < params.length; i++) {
       total += Number(params[i].target);
     }
+    return total;
+  }
+
+  const getGrandTotalTarget = (data) => {
+    let total = 0;
+    total += getTotalTargetByParam(data, 'Enquiry') + getTotalTargetByParam(data, 'Test Drive') + getTotalTargetByParam(data, 'Home Visit') + getTotalTargetByParam(data, 'Booking') + getTotalTargetByParam(data, 'Finance') + getTotalTargetByParam(data, 'Insurance') + getTotalTargetByParam(data, 'Accessories') + getTotalTargetByParam(data, 'INVOICE') + getTotalTargetByParam(data, 'Exchange') + getTotalTargetByParam(data, 'EXTENDEDWARRANTY')
+    return total;
+  }
+
+  const getGrandTotalAchievement = (data) => {
+    let total = 0;
+    total += getTotalAchiventByParam(data, 'Enquiry') + getTotalAchiventByParam(data, 'Test Drive') + getTotalAchiventByParam(data, 'Home Visit') + getTotalAchiventByParam(data, 'Booking') + getTotalAchiventByParam(data, 'Finance') + getTotalAchiventByParam(data, 'Insurance') + getTotalAchiventByParam(data, 'Accessories') + getTotalAchiventByParam(data, 'INVOICE') + getTotalAchiventByParam(data, 'Exchange') + getTotalAchiventByParam(data, 'EXTENDEDWARRANTY')
     return total;
   }
 
@@ -739,7 +752,7 @@ const TargetScreen = ({ route, navigation }) => {
 
   const renderData = (item, color) => {
     return (
-      <View style={{ width: '90%', minHeight: 40, flexDirection: 'row' }}>
+      <View style={{ width: '92%', minHeight: 40, flexDirection: 'row' }}>
         <View style={styles.itemBox}>
           <Text style={{ color: getColor(Number(item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].achievment), Number(item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].target)) }}>{Number(item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].achievment) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].achievment) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].achievment) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].achievment) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].achievment)}/{Number(item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].target) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].target) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].target) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].target) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'Enquiry')[0].target)}</Text>
         </View>
@@ -968,12 +981,12 @@ const TargetScreen = ({ route, navigation }) => {
             <View style={{
               flex: 1,
               justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              alignItems: "flex-start",
+              // backgroundColor: 'rgba(0, 0, 0, 0.5)',
               paddingHorizontal: 20
             }}>
-          <View style={{ width: '90%', minHeight: 50, justifyContent: 'center', alignItems: 'center', backgroundColor: '#0c0c0c', borderRadius: 10, paddingVertical: 10 }}>
-                <Text style={{ fontSize: 18, color: '#fff', fontWeight: 'bold', textAlign: 'center' }}>{selectedName}</Text>
+          <View style={{ maxWidth: '90%', minHeight: 50, justifyContent: 'center', alignItems: 'center', backgroundColor: '#0c0c0c', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 15 }}>
+                <Text style={{ fontSize: 16, color: '#fff', fontWeight: 'bold', textAlign: 'center' }}>{selectedName}</Text>
               </View>
             </View>
           </Modal>
@@ -1551,10 +1564,10 @@ const TargetScreen = ({ route, navigation }) => {
         <View >
           <ScrollView contentContainerStyle={{ paddingRight: 20, flexDirection: 'column' }} horizontal={true} directionalLockEnabled={true}>
             <View style={{ flexDirection: 'row' }}>
-              <View style={{ width: '10%', height: 40, }}>
+              <View style={{ width: '8%', height: 40, marginRight: 5}}>
 
               </View>
-              <View style={{ width: '90%', height: 40, flexDirection: 'row' }}>
+              <View style={{ width: '92%', height: 40, flexDirection: 'row' }}>
                 <View style={styles.itemBox}>
                     <Text style={{ color: '#C62159' }}>Enq</Text>
                 </View>
@@ -1597,7 +1610,7 @@ const TargetScreen = ({ route, navigation }) => {
             {allParameters.length > 0 && allParameters.map((item, index) => {
               return (
                 <View style={{ flexDirection: 'row' }}>
-                  <View style={{ width: '10%', minHeight: 40, justifyContent: 'center', alignItems: 'center', flexDirection: 'column', }}>
+                  <View style={{ width: '8%', minHeight: 40, justifyContent: 'center', alignItems: 'center', flexDirection: 'column', }}>
                     <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#C62159', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 5, marginBottom: item.isOpenInner ? 5 : 5 }} onPress={async () => {
                       setSelectedName(item.empName);
                       setTimeout(() => {
@@ -1667,6 +1680,14 @@ const TargetScreen = ({ route, navigation }) => {
                     }}>
                       <Text style={{ fontSize: 14, color: '#fff' }}>{item.empName.charAt(0)}</Text>
                     </TouchableOpacity>
+                    {/* <View style={{ position: 'absolute', left: 10, top: 5 }}>
+                      <View style={{ alignSelf: 'center', minWidth: 80, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#C62159', borderRadius: 20, paddingHorizontal: 5}}>
+                        <Text style={{ fontSize: 14, color: '#fff' }}>{item.empName}</Text>
+                      </View>
+                    </View> */}
+                    {/* <View style={{height: 30, minWidth: 50 , paddingHorizontal: 5, position: 'absolute' , borderWidth: 1, top: 0, left: 50, backgroundColor: '#fff', borderRadius: 3, justifyContent: 'center', }}>
+                      <Text>{item.empName}</Text>
+                    </View> */}
                     {item.isOpenInner && item.employeeTargetAchievements.length > 0 && item.employeeTargetAchievements.map((innerItem1, innerIndex1) => {
                       return (
                         <>
@@ -2116,11 +2137,13 @@ const TargetScreen = ({ route, navigation }) => {
                       )
                     })
                     }
-                    <View style={{ marginTop: 7, marginBottom: 7, }}>
-                      <Text style={{ fontSize: 14, color: '#000', fontWeight: '600' }}>Team Total</Text>
-                    </View>
+                    {item.employeeTargetAchievements.length > 0 && 
+                      <View style={{ marginTop: 7, marginBottom: 7, }}>
+                        <Text style={{ fontSize: 14, color: '#000', fontWeight: '600' }}>Total</Text>
+                      </View>
+                    }
                   </View>
-                  <View style={[{ width: '90%', minHeight: 40, flexDirection: 'column', paddingHorizontal: 5, }, item.isOpenInner && { backgroundColor: '#EEEEEE', borderRadius: 10, borderWidth: 1, borderColor: '#C62159', }]}>
+                  <View style={[{ width: '94%', minHeight: 40, flexDirection: 'column', paddingHorizontal: 5, }, item.isOpenInner && { backgroundColor: '#EEEEEE', borderRadius: 10, borderWidth: 1, borderColor: '#C62159', }]}>
                     <View style={{ width: '100%', minHeight: 40, flexDirection: 'row' }}>
                       {renderData(item, '#C62159')}
                     </View>
@@ -2190,49 +2213,54 @@ const TargetScreen = ({ route, navigation }) => {
                       //   }
                       // </View>
                     }
-                    <View style={{ width: '90%', minHeight: 40, flexDirection: 'row', backgroundColor: '#ECF0F1' }}>
+                    {item.employeeTargetAchievements.length > 0 &&
+                      <View style={{ width: '92%', minHeight: 40, flexDirection: 'row', backgroundColor: '#ECF0F1' }}>
+                        <View style={styles.itemBox}>
+                          <Text style={{ color: '#000000', fontWeight: '600' }}>{getTotalAchiventByParam(item, 'Enquiry') > 99999 ? Math.round(getTotalAchiventByParam(item, 'Enquiry') / 100000) + 'L' : (getTotalAchiventByParam(item, 'Enquiry') > 999 ? Math.round(getTotalAchiventByParam(item, 'Enquiry') / 1000) + 'K' : getTotalAchiventByParam(item, 'Enquiry'))}/{getTotalTargetByParam(item, 'Enquiry') > 99999 ? Math.round(getTotalTargetByParam(item, 'Enquiry') / 100000) + 'L' : (getTotalTargetByParam(item, 'Enquiry') > 999 ? Math.round(getTotalTargetByParam(item, 'Enquiry') / 1000) + 'K' : getTotalTargetByParam(item, 'Enquiry'))}</Text>
+                        </View>
+                        <View style={styles.itemBox}>
+                          <Text style={{ color: '#000000', fontWeight: '600' }}>{getTotalAchiventByParam(item, 'Test Drive') > 99999 ? Math.round(getTotalAchiventByParam(item, 'Test Drive') / 100000) + 'L' : (getTotalAchiventByParam(item, 'Test Drive') > 999 ? Math.round(getTotalAchiventByParam(item, 'Test Drive') / 1000) + 'K' : getTotalAchiventByParam(item, 'Test Drive'))}/{getTotalTargetByParam(item, 'Test Drive') > 99999 ? Math.round(getTotalTargetByParam(item, 'Test Drive') / 100000) + 'L' : (getTotalTargetByParam(item, 'Test Drive') > 999 ? Math.round(getTotalTargetByParam(item, 'Test Drive') / 1000) + 'K' : getTotalTargetByParam(item, 'Test Drive'))}</Text>
+                        </View>
+                        <View style={styles.itemBox}>
+                          <Text style={{ color: '#000000', fontWeight: '600' }}>{getTotalAchiventByParam(item, 'Home Visit') > 99999 ? Math.round(getTotalAchiventByParam(item, 'Home Visit') / 100000) + 'L' : (getTotalAchiventByParam(item, 'Home Visit') > 999 ? Math.round(getTotalAchiventByParam(item, 'Home Visit') / 1000) + 'K' : getTotalAchiventByParam(item, 'Home Visit'))}/{getTotalTargetByParam(item, 'Home Visit') > 99999 ? Math.round(getTotalTargetByParam(item, 'Home Visit') / 100000) + 'L' : (getTotalTargetByParam(item, 'Home Visit') > 999 ? Math.round(getTotalTargetByParam(item, 'Home Visit') / 1000) + 'K' : getTotalTargetByParam(item, 'Home Visit'))}</Text>
+                        </View>
+                        <View style={styles.itemBox}>
+                          <Text style={{ color: '#000000', fontWeight: '600' }}>{getTotalAchiventByParam(item, 'Booking') > 99999 ? Math.round(getTotalAchiventByParam(item, 'Booking') / 100000) + 'L' : (getTotalAchiventByParam(item, 'Booking') > 999 ? Math.round(getTotalAchiventByParam(item, 'Booking') / 1000) + 'K' : getTotalAchiventByParam(item, 'Booking'))}/{getTotalTargetByParam(item, 'Booking') > 99999 ? Math.round(getTotalTargetByParam(item, 'Booking') / 100000) + 'L' : (getTotalTargetByParam(item, 'Booking') > 999 ? Math.round(getTotalTargetByParam(item, 'Booking') / 1000) + 'K' : getTotalTargetByParam(item, 'Booking'))}</Text>
+                        </View>
+                        <View style={styles.itemBox}>
+                          <Text style={{ color: '#000000', fontWeight: '600' }}>{getTotalAchiventByParam(item, 'Finance') > 99999 ? Math.round(getTotalAchiventByParam(item, 'Finance') / 100000) + 'L' : (getTotalAchiventByParam(item, 'Finance') > 999 ? Math.round(getTotalAchiventByParam(item, 'Finance') / 1000) + 'K' : getTotalAchiventByParam(item, 'Finance'))}/{getTotalTargetByParam(item, 'Finance') > 99999 ? Math.round(getTotalTargetByParam(item, 'Finance') / 100000) + 'L' : (getTotalTargetByParam(item, 'Finance') > 999 ? Math.round(getTotalTargetByParam(item, 'Finance') / 1000) + 'K' : getTotalTargetByParam(item, 'Finance'))}</Text>
+                        </View>
+                        <View style={styles.itemBox}>
+                          <Text style={{ color: '#000000', fontWeight: '600' }}>{getTotalAchiventByParam(item, 'Insurance') > 99999 ? Math.round(getTotalAchiventByParam(item, 'Insurance') / 100000) + 'L' : (getTotalAchiventByParam(item, 'Insurance') > 999 ? Math.round(getTotalAchiventByParam(item, 'Insurance') / 1000) + 'K' : getTotalAchiventByParam(item, 'Insurance'))}/{getTotalTargetByParam(item, 'Insurance') > 99999 ? Math.round(getTotalTargetByParam(item, 'Insurance') / 100000) + 'L' : (getTotalTargetByParam(item, 'Insurance') > 999 ? Math.round(getTotalTargetByParam(item, 'Insurance') / 1000) + 'K' : getTotalTargetByParam(item, 'Insurance'))}</Text>
+                        </View>
+                        <View style={styles.itemBox}>
+                          <Text style={{ color: '#000000', fontWeight: '600' }}>{getTotalAchiventByParam(item, 'Accessories') > 99999 ? Math.round(getTotalAchiventByParam(item, 'Accessories') / 100000) + 'L' : (getTotalAchiventByParam(item, 'Accessories') > 999 ? Math.round(getTotalAchiventByParam(item, 'Accessories') / 1000) + 'K' : getTotalAchiventByParam(item, 'Accessories'))}/{getTotalTargetByParam(item, 'Accessories') > 99999 ? Math.round(getTotalTargetByParam(item, 'Accessories') / 100000) + 'L' : (getTotalTargetByParam(item, 'Accessories') > 999 ? Math.round(getTotalTargetByParam(item, 'Accessories') / 1000) + 'K' : getTotalTargetByParam(item, 'Accessories'))}</Text>
+                        </View>
+                        <View style={styles.itemBox}>
+                          <Text style={{ color: '#000000', fontWeight: '600' }}>{getTotalAchiventByParam(item, 'INVOICE') > 99999 ? Math.round(getTotalAchiventByParam(item, 'INVOICE') / 100000) + 'L' : (getTotalAchiventByParam(item, 'INVOICE') > 999 ? Math.round(getTotalAchiventByParam(item, 'INVOICE') / 1000) + 'K' : getTotalAchiventByParam(item, 'INVOICE'))}/{getTotalTargetByParam(item, 'INVOICE') > 99999 ? Math.round(getTotalTargetByParam(item, 'INVOICE') / 100000) + 'L' : (getTotalTargetByParam(item, 'INVOICE') > 999 ? Math.round(getTotalTargetByParam(item, 'INVOICE') / 1000) + 'K' : getTotalTargetByParam(item, 'INVOICE'))}</Text>
+                        </View>
+                        <View style={styles.itemBox}>
+                          <Text style={{ color: '#000000', fontWeight: '600' }}>{getTotalAchiventByParam(item, 'Exchange') > 99999 ? Math.round(getTotalAchiventByParam(item, 'Exchange') / 100000) + 'L' : (getTotalAchiventByParam(item, 'Exchange') > 999 ? Math.round(getTotalAchiventByParam(item, 'Exchange') / 1000) + 'K' : getTotalAchiventByParam(item, 'Exchange'))}/{getTotalTargetByParam(item, 'Exchange') > 99999 ? Math.round(getTotalTargetByParam(item, 'Exchange') / 100000) + 'L' : (getTotalTargetByParam(item, 'Exchange') > 999 ? Math.round(getTotalTargetByParam(item, 'Exchange') / 1000) + 'K' : getTotalTargetByParam(item, 'Exchange'))}</Text>
+                        </View>
+                        <View style={styles.itemBox}>
+                          <Text style={{ color: '#000000', fontWeight: '600' }}>{getTotalAchiventByParam(item, 'EXTENDEDWARRANTY') > 99999 ? Math.round(getTotalAchiventByParam(item, 'EXTENDEDWARRANTY') / 100000) + 'L' : (getTotalAchiventByParam(item, 'EXTENDEDWARRANTY') > 999 ? Math.round(getTotalAchiventByParam(item, 'EXTENDEDWARRANTY') / 1000) + 'K' : getTotalAchiventByParam(item, 'EXTENDEDWARRANTY'))}/{getTotalTargetByParam(item, 'EXTENDEDWARRANTY') > 99999 ? Math.round(getTotalTargetByParam(item, 'EXTENDEDWARRANTY') / 100000) + 'L' : (getTotalTargetByParam(item, 'EXTENDEDWARRANTY') > 999 ? Math.round(getTotalTargetByParam(item, 'EXTENDEDWARRANTY') / 1000) + 'K' : getTotalTargetByParam(item, 'EXTENDEDWARRANTY'))}</Text>
+                        </View>
                       <View style={styles.itemBox}>
-                        <Text style={{ color: '#000000', fontWeight: '600' }}>{getTotalAchiventByParam(item, 'Enquiry') > 99999 ? Math.round(getTotalAchiventByParam(item, 'Enquiry') / 100000) + 'L' : (getTotalAchiventByParam(item, 'Enquiry') > 999 ? Math.round(getTotalAchiventByParam(item, 'Enquiry') / 1000) + 'K' : getTotalAchiventByParam(item, 'Enquiry'))}/{getTotalTargetByParam(item, 'Enquiry') > 99999 ? Math.round(getTotalTargetByParam(item, 'Enquiry') / 100000) + 'L' : (getTotalTargetByParam(item, 'Enquiry') > 999 ? Math.round(getTotalTargetByParam(item, 'Enquiry') / 1000) + 'K' : getTotalTargetByParam(item, 'Enquiry'))}</Text>
+                        <Text style={{ color: '#000000', fontWeight: '600' }}>{getGrandTotalAchievement(item) > 99999 ? Math.round(getGrandTotalAchievement(item) / 100000) + 'L' : (getGrandTotalAchievement(item) > 999 ? Math.round(ggetGrandTotalAchievement(item) / 1000) + 'K' : getGrandTotalAchievement(item))}/{getGrandTotalTarget(item) > 99999 ? Math.round(getGrandTotalTarget(item) / 100000) + 'L' : (getGrandTotalTarget(item) > 999 ? Math.round(getGrandTotalTarget(item) / 1000) + 'K' : getGrandTotalTarget(item))}</Text>
                       </View>
-                      <View style={styles.itemBox}>
-                        <Text style={{ color: '#000000', fontWeight: '600' }}>{getTotalAchiventByParam(item, 'Test Drive') > 99999 ? Math.round(getTotalAchiventByParam(item, 'Test Drive') / 100000) + 'L' : (getTotalAchiventByParam(item, 'Test Drive') > 999 ? Math.round(getTotalAchiventByParam(item, 'Test Drive') / 1000) + 'K' : getTotalAchiventByParam(item, 'Test Drive'))}/{getTotalTargetByParam(item, 'Test Drive') > 99999 ? Math.round(getTotalTargetByParam(item, 'Test Drive') / 100000) + 'L' : (getTotalTargetByParam(item, 'Test Drive') > 999 ? Math.round(getTotalTargetByParam(item, 'Test Drive') / 1000) + 'K' : getTotalTargetByParam(item, 'Test Drive'))}</Text>
                       </View>
-                      <View style={styles.itemBox}>
-                        <Text style={{ color: '#000000', fontWeight: '600' }}>{getTotalAchiventByParam(item, 'Home Visit') > 99999 ? Math.round(getTotalAchiventByParam(item, 'Home Visit') / 100000) + 'L' : (getTotalAchiventByParam(item, 'Home Visit') > 999 ? Math.round(getTotalAchiventByParam(item, 'Home Visit') / 1000) + 'K' : getTotalAchiventByParam(item, 'Home Visit'))}/{getTotalTargetByParam(item, 'Home Visit') > 99999 ? Math.round(getTotalTargetByParam(item, 'Home Visit') / 100000) + 'L' : (getTotalTargetByParam(item, 'Home Visit') > 999 ? Math.round(getTotalTargetByParam(item, 'Home Visit') / 1000) + 'K' : getTotalTargetByParam(item, 'Home Visit'))}</Text>
-                      </View>
-                      <View style={styles.itemBox}>
-                        <Text style={{ color: '#000000', fontWeight: '600' }}>{getTotalAchiventByParam(item, 'Booking') > 99999 ? Math.round(getTotalAchiventByParam(item, 'Booking') / 100000) + 'L' : (getTotalAchiventByParam(item, 'Booking') > 999 ? Math.round(getTotalAchiventByParam(item, 'Booking') / 1000) + 'K' : getTotalAchiventByParam(item, 'Booking'))}/{getTotalTargetByParam(item, 'Booking') > 99999 ? Math.round(getTotalTargetByParam(item, 'Booking') / 100000) + 'L' : (getTotalTargetByParam(item, 'Booking') > 999 ? Math.round(getTotalTargetByParam(item, 'Booking') / 1000) + 'K' : getTotalTargetByParam(item, 'Booking'))}</Text>
-                      </View>
-                      <View style={styles.itemBox}>
-                        <Text style={{ color: '#000000', fontWeight: '600' }}>{getTotalAchiventByParam(item, 'Finance') > 99999 ? Math.round(getTotalAchiventByParam(item, 'Finance') / 100000) + 'L' : (getTotalAchiventByParam(item, 'Finance') > 999 ? Math.round(getTotalAchiventByParam(item, 'Finance') / 1000) + 'K' : getTotalAchiventByParam(item, 'Finance'))}/{getTotalTargetByParam(item, 'Finance') > 99999 ? Math.round(getTotalTargetByParam(item, 'Finance') / 100000) + 'L' : (getTotalTargetByParam(item, 'Finance') > 999 ? Math.round(getTotalTargetByParam(item, 'Finance') / 1000) + 'K' : getTotalTargetByParam(item, 'Finance'))}</Text>
-                      </View>
-                      <View style={styles.itemBox}>
-                        <Text style={{ color: '#000000', fontWeight: '600' }}>{getTotalAchiventByParam(item, 'Insurance') > 99999 ? Math.round(getTotalAchiventByParam(item, 'Insurance') / 100000) + 'L' : (getTotalAchiventByParam(item, 'Insurance') > 999 ? Math.round(getTotalAchiventByParam(item, 'Insurance') / 1000) + 'K' : getTotalAchiventByParam(item, 'Insurance'))}/{getTotalTargetByParam(item, 'Insurance') > 99999 ? Math.round(getTotalTargetByParam(item, 'Insurance') / 100000) + 'L' : (getTotalTargetByParam(item, 'Insurance') > 999 ? Math.round(getTotalTargetByParam(item, 'Insurance') / 1000) + 'K' : getTotalTargetByParam(item, 'Insurance'))}</Text>
-                      </View>
-                      <View style={styles.itemBox}>
-                        <Text style={{ color: '#000000', fontWeight: '600' }}>{getTotalAchiventByParam(item, 'Accessories') > 99999 ? Math.round(getTotalAchiventByParam(item, 'Accessories') / 100000) + 'L' : (getTotalAchiventByParam(item, 'Accessories') > 999 ? Math.round(getTotalAchiventByParam(item, 'Accessories') / 1000) + 'K' : getTotalAchiventByParam(item, 'Accessories'))}/{getTotalTargetByParam(item, 'Accessories') > 99999 ? Math.round(getTotalTargetByParam(item, 'Accessories') / 100000) + 'L' : (getTotalTargetByParam(item, 'Accessories') > 999 ? Math.round(getTotalTargetByParam(item, 'Accessories') / 1000) + 'K' : getTotalTargetByParam(item, 'Accessories'))}</Text>
-                      </View>
-                      <View style={styles.itemBox}>
-                        <Text style={{ color: '#000000', fontWeight: '600' }}>{getTotalAchiventByParam(item, 'INVOICE') > 99999 ? Math.round(getTotalAchiventByParam(item, 'INVOICE') / 100000) + 'L' : (getTotalAchiventByParam(item, 'INVOICE') > 999 ? Math.round(getTotalAchiventByParam(item, 'INVOICE') / 1000) + 'K' : getTotalAchiventByParam(item, 'INVOICE'))}/{getTotalTargetByParam(item, 'INVOICE') > 99999 ? Math.round(getTotalTargetByParam(item, 'INVOICE') / 100000) + 'L' : (getTotalTargetByParam(item, 'INVOICE') > 999 ? Math.round(getTotalTargetByParam(item, 'INVOICE') / 1000) + 'K' : getTotalTargetByParam(item, 'INVOICE'))}</Text>
-                      </View>
-                      <View style={styles.itemBox}>
-                        <Text style={{ color: '#000000', fontWeight: '600' }}>{getTotalAchiventByParam(item, 'Exchange') > 99999 ? Math.round(getTotalAchiventByParam(item, 'Exchange') / 100000) + 'L' : (getTotalAchiventByParam(item, 'Exchange') > 999 ? Math.round(getTotalAchiventByParam(item, 'Exchange') / 1000) + 'K' : getTotalAchiventByParam(item, 'Exchange'))}/{getTotalTargetByParam(item, 'Exchange') > 99999 ? Math.round(getTotalTargetByParam(item, 'Exchange') / 100000) + 'L' : (getTotalTargetByParam(item, 'Exchange') > 999 ? Math.round(getTotalTargetByParam(item, 'Exchange') / 1000) + 'K' : getTotalTargetByParam(item, 'Exchange'))}</Text>
-                      </View>
-                      <View style={styles.itemBox}>
-                        <Text style={{ color: '#000000', fontWeight: '600' }}>{getTotalAchiventByParam(item, 'EXTENDEDWARRANTY') > 99999 ? Math.round(getTotalAchiventByParam(item, 'EXTENDEDWARRANTY') / 100000) + 'L' : (getTotalAchiventByParam(item, 'EXTENDEDWARRANTY') > 999 ? Math.round(getTotalAchiventByParam(item, 'EXTENDEDWARRANTY') / 1000) + 'K' : getTotalAchiventByParam(item, 'EXTENDEDWARRANTY'))}/{getTotalTargetByParam(item, 'EXTENDEDWARRANTY') > 99999 ? Math.round(getTotalTargetByParam(item, 'EXTENDEDWARRANTY') / 100000) + 'L' : (getTotalTargetByParam(item, 'EXTENDEDWARRANTY') > 999 ? Math.round(getTotalTargetByParam(item, 'EXTENDEDWARRANTY') / 1000) + 'K' : getTotalTargetByParam(item, 'EXTENDEDWARRANTY'))}</Text>
-                      </View>
-                    </View>
+                    }
                   </View>
                 </View>
               )
             })}
 
             <View style={{ flexDirection: 'row', height: 40, backgroundColor: Colors.DARK_GRAY }}>
-              <View style={{ width: '10%', minHeight: 40, justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
-                  <Text style={styles.totalText}>Total</Text>
+              <View style={{ width: '8%', minHeight: 40, justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+                  <Text style={[styles.totalText, {textAlign: 'center'}]}>Grand Total</Text>
               </View>
-              <View style={{ width: '90%', minHeight: 40, flexDirection: 'column', marginRight: 5, paddingHorizontal: 5, }}>
-                <View style={{ width: '90%', minHeight: 40, flexDirection: 'row' }}>
+              <View style={{ width: '92%', minHeight: 40, flexDirection: 'column', marginRight: 5, paddingHorizontal: 5, }}>
+                <View style={{ width: '92%', minHeight: 40, flexDirection: 'row' }}>
                   <View style={styles.itemBox}>
                       <Text style={styles.totalText}>{Number(selector.totalParameters.filter((item) => item.paramName === 'Enquiry')[0].achievment) > 99999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Enquiry')[0].achievment) / 100000) + 'L' : (Number(selector.totalParameters.filter((item) => item.paramName === 'Enquiry')[0].achievment) > 999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Enquiry')[0].achievment) / 1000) + 'K' : Number(selector.totalParameters.filter((item) => item.paramName === 'Enquiry')[0].achievment))}/{Number(selector.totalParameters.filter((item) => item.paramName === 'Enquiry')[0].target) > 99999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Enquiry')[0].target) / 100000) + 'L' : (Number(selector.totalParameters.filter((item) => item.paramName === 'Enquiry')[0].target) > 999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Enquiry')[0].target) / 1000) + 'K' : selector.totalParameters.filter((item) => item.paramName === 'Enquiry')[0].target)}</Text>
                   </View>
@@ -2886,7 +2914,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start', alignItems: 'center', height: 30, marginLeft: 10, backgroundColor: "#F5F5F5"
   },
-  itemBox: { width: 60, height: 40, justifyContent: 'center', alignItems: 'center' },
+  itemBox: { width: 50, height: 40, justifyContent: 'center', alignItems: 'center' },
   shuffleBGView: {
     width: 30,
     height: 30,
@@ -2922,5 +2950,5 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
   },
-  totalText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
+  totalText: { color: '#fff', fontWeight: 'bold', fontSize: 15 },
 })

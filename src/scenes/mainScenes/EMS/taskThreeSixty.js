@@ -109,6 +109,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
         const finalTaskName = trimName.replace(/ /g, "");
         let navigationId = ""
         let taskNameNew = ''
+        console.log("FINAL TASK NAME: ", finalTaskName);
         switch (finalTaskName) {
             case "testdrive":
                 navigationId = AppNavigator.EmsStackIdentifiers.testDrive;
@@ -147,6 +148,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                 taskNameNew = ''
                 break;
         }
+        console.log("NAVIGATION ID: ", navigationId);
         if (!navigationId) { return }
         if (navigationId === AppNavigator.EmsStackIdentifiers.confirmedPreEnq) {
             console.log("ITEM DATA:", JSON.stringify(itemData));

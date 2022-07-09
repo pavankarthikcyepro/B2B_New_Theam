@@ -186,6 +186,8 @@ export const getOnRoadPriceDtoListApi = createAsyncThunk("PREBOONING_FORMS_SLICE
 
 export const preBookingPaymentApi = createAsyncThunk("PREBOONING_FORMS_SLICE/preBookingPaymentApi", async (payload, { rejectWithValue }) => {
 
+  console.log("URL PPP", URL.PRE_BOOKING_PAYMENT(), JSON.stringify(payload));
+  
   const response = await client.post(URL.PRE_BOOKING_PAYMENT(), payload);
   try {
     const json = await response.json();
@@ -1174,6 +1176,8 @@ const prebookingFormSlice = createSlice({
       }
       state.booking_amount = dataObj.bookingAmount ? dataObj.bookingAmount.toString() : "";
       state.payment_at = dataObj.paymentAt ? dataObj.paymentAt : "";
+      console.log("BOOKING MODE: ", dataObj.modeOfPayment);
+      
       state.booking_payment_mode = dataObj.modeOfPayment ? dataObj.modeOfPayment : "";
       state.delivery_location = dataObj.deliveryLocation ? dataObj.deliveryLocation : "";
       state.vechicle_registration = dataObj.otherVehicle ? dataObj.otherVehicle : false;
@@ -1513,6 +1517,8 @@ const prebookingFormSlice = createSlice({
     })
     builder.addCase(getPaymentDetailsApi.fulfilled, (state, action) => {
       if (action.payload) {
+        console.log("PAYMENT DATA: ", JSON.stringify(action.payload));
+        
         state.existing_payment_details_response = action.payload;
         state.type_of_upi = action.payload.typeUpi ? action.payload.typeUpi : "";
         state.transfer_from_mobile = action.payload.transferFromMobile ? action.payload.transferFromMobile : "";

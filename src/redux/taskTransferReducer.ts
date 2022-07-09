@@ -4,6 +4,8 @@ import URL from "../networking/endpoints";
 
 
 export const getTaskList = createAsyncThunk("TASK_TRANSFER/getTaskList", async (payload, { rejectWithValue }) => {
+    console.log("TASK URL: ", URL.GET_TASK_LIST(payload));
+    
     const response = await client.get(URL.GET_TASK_LIST(payload));
     const json = await response.json()
     if (!response.ok) {
@@ -320,6 +322,7 @@ export const taskTransferSlice = createSlice({
         // Get Tasj=k List
         builder.addCase(getTaskList.pending, (state, action) => {
             state.isLoading = true;
+            state.taskList = []
         })
         builder.addCase(getTaskList.fulfilled, (state, action) => {
             if (action.payload) {
@@ -330,6 +333,7 @@ export const taskTransferSlice = createSlice({
         })
         builder.addCase(getTaskList.rejected, (state, action) => {
             state.isLoading = false;
+            state.taskList = []
         })
 
         builder.addCase(submitTaskTransfer.pending, (state, action) => {
