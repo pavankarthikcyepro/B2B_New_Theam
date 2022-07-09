@@ -375,7 +375,8 @@ export const ProformaComp = ({ branchId, modelDetails, universalId }) => {
                         });
                     }
                     setCarModelsData([...modalList]);
-                    updateVariantModelsData(modelDetails.model, true, modelDetails.variant)
+                    updateVariantModelsData(modelDetails.model, orgId, modalList)
+
                     //  alert("entry---------",JSON.stringify(selector.dmsLeadProducts))
                   
                 },
@@ -388,16 +389,15 @@ export const ProformaComp = ({ branchId, modelDetails, universalId }) => {
     };
     const updateVariantModelsData = (
         selectedModelName,
-        fromInitialize,
-        selectedVarientName
+        orgId,
+        modalList
     ) => {
+
         if (!selectedModelName || selectedModelName.length === 0) {
             return;
         }
-        console.log("coming..: ", selectedModelName,
-            fromInitialize,
-            selectedVarientName);
-        let arrTemp = carModelsData.filter(function (obj) {
+      
+        let arrTemp = modalList.filter(function (obj) {
             return obj.model === selectedModelName;
         });
         console.log("arrTemp: ", arrTemp);
@@ -414,11 +414,10 @@ export const ProformaComp = ({ branchId, modelDetails, universalId }) => {
                     });
                 });
              
-             
+
                     updateColorsDataForSelectedVarient(
                         modelDetails.variant,
-                        [...mArray],
-                        carModelObj.vehicleId
+                        [...mArray],orgId
                     );
             }
         }
@@ -426,7 +425,7 @@ export const ProformaComp = ({ branchId, modelDetails, universalId }) => {
     const updateColorsDataForSelectedVarient = (
         selectedVarientName,
         varientList,
-        modelId
+        orgId
     ) => {
         if (!selectedVarientName || selectedVarientName.length === 0) {
             return;
@@ -442,6 +441,8 @@ export const ProformaComp = ({ branchId, modelDetails, universalId }) => {
             let mArray = carModelObj.vehicleImages;
             const varientId = carModelObj.id;
             setSelectedVarientId(varientId);
+            console.log("data ", orgId , " varientId" ,varientId )
+           // alert("variant id")
 
             //alert("success" + orgId + " varientId" + varientId)
             dispatch(
