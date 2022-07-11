@@ -571,11 +571,20 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 let arr = await [...carModelsList]
                 arr[index] = value
                 // arr.splice(carModelsList, index, value);
+                console.log("MODELS IF: ", arr);
+                let primaryModel = [];
+                primaryModel = arr.filter((item) => item.isPrimary === true);
+                if(primaryModel.length > 0){
+                    if (primaryModel[0].variant !== '' && primaryModel[0].model !== ''){
+                        updateVariantModelsData(primaryModel[0].model, true, primaryModel[0].variant);
+                    }
+                }
                 await setCarModelsList([...arr])
             }
             else {
                 let arr = await [...carModelsList]
                 arr.splice(index, 1)
+                console.log("MODELS ELSE: ", arr);
                 await setCarModelsList([...arr])
                 // carModelsList.splice(0, 1)
             }
@@ -591,6 +600,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         try{
             if(isPrimaryEnabled)
             {
+                console.log("CALLED UPDATE");
                 updateVariantModelsData(item.model, true, item.variant);
             }
             if (carModelsList && carModelsList.length > 0) {
@@ -617,19 +627,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 await setCarModelsList([])
                 arr[isPrimaryCureentIndex] = cardata;
                 arr[index] =selecteditem
+                console.log("MODELS IS PRIMARY: ", arr);
                 await setCarModelsList([...arr])
                 await setIsPrimaryCurrentIndex(index)
-
-           
-
             } 
         }catch(error)
         {
            // alert(error)
         }
-       
-
-
     }
         const getAsyncstoreData = async () => {
         const employeeData = await AsyncStore.getData(
@@ -653,7 +658,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             }
             setUserData({
                 orgId: jsonObj.orgId,
-                employeeId: jsonObj.employeeId,
+                employeeId: jsonObj.empId,
                 employeeName: jsonObj.empName,
                 isManager: isManager,
                 editEnable: editEnable,
@@ -1124,6 +1129,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         varientList,
         modelId
     ) => {
+        console.log("CALLED updateColorsDataForSelectedVarient", selectedVarientName,
+            varientList,
+            modelId);
         if (!selectedVarientName || selectedVarientName.length === 0) {
             return;
         }
@@ -1749,8 +1757,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         if (selector.update_pre_booking_details_response === "success") {
             dispatch(updateResponseStatus(''))
             if (typeOfActionDispatched === "DROP_ENQUIRY") {
-                showToastSucess("Successfully Pre-Booking Dropped");
-                getPreBookingListFromServer();
+                // showToastSucess("Successfully Pre-Booking Dropped");
+                // getPreBookingListFromServer();
             } else if (typeOfActionDispatched === "UPDATE_PRE_BOOKING") {
                 showToastSucess("Successfully Sent for Manager Approval");
             } else if (typeOfActionDispatched === "APPROVE") {
@@ -1822,6 +1830,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 }
                // console.log(userObject.username);
             }
+            console.log("MODELS ADD PRIMARY: ", array);
             await setCarModelsList(array)
         } catch(error){
         }
@@ -2029,13 +2038,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
         if (dropRemarks.length === 0 || dropReason.length === 0) {
             showToastRedAlert("Please enter details for drop");
+            scrollToPos(10)
+            setOpenAccordian('10')
             return;
         }
-
+        console.log("CALLED BEFORE", selector.pre_booking_details_response);
         if (!selector.pre_booking_details_response) {
             return;
         }
-
+        console.log("CALLED AFTER")
         let enquiryDetailsObj = { ...selector.pre_booking_details_response };
         let dmsLeadDto = { ...enquiryDetailsObj.dmsLeadDto };
         dmsLeadDto.leadStage = "DROPPED";
@@ -2050,7 +2061,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         const payload = {
             dmsLeadDropInfo: {
                 additionalRemarks: dropRemarks,
-                branchId: selectedBranchId,
+                branchId: Number(selectedBranchId),
                 brandName: dropBrandName,
                 dealerName: dropDealerName,
                 location: dropLocation,
@@ -2070,6 +2081,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         dispatch(dropPreBooingApi(payload));
         dispatch(updatePrebookingDetailsApi(enquiryDetailsObj));
     };
+
+    useEffect(() => {
+        if (selector.pre_booking_drop_response_status === "success"){
+            Alert.alert(
+                "Sent For Approval",
+                `Pre Booking Number: ${selector.refNo}`,
+                [
+                    {
+                        text: "OK",
+                        onPress: () => {
+                            goParentScreen()
+                        },
+                    },
+                ]
+            );
+        }
+    }, [selector.pre_booking_drop_response_status])
 
     const proceedToBookingClicked = async () => {
         const employeeData = await AsyncStore.getData(
@@ -2620,6 +2648,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     if (dropDownKey === "MODEL") {
                         updateVariantModelsData(item.name, false);
                     } else if (dropDownKey === "VARIENT") {
+                        console.log("SELECT $$$$$$$", item,
+                            selectedCarVarientsData.varientList,
+                            selectedModelId);
                         updateColorsDataForSelectedVarient(
                             item.name,
                             selectedCarVarientsData.varientList,
@@ -3286,7 +3317,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             "transimmisionType": '',
                                             "variant": '',
                                             "isPrimary": false
-
                                         }
                                         let arr = [...carModelsList]
                                         arr.push(carmodeldata)
@@ -4910,8 +4940,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                                 style={styles.textInputStyle}
                                                 value={selector.cheque_number}
                                                 label={"Cheque Number"}
-                                                // keyboardType={"number-pad"}
-                                                // maxLength={9}
+                                                keyboardType={"number-pad"}
+                                                maxLength={9}
                                                 onChangeText={(text) =>
                                                     dispatch(
                                                         setPreBookingPaymentDetials({
@@ -5081,7 +5111,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     onPress={proceedToCancelPreBooking}
                                 >
                                     Proceed To Cancellation
-                </Button>
+                                </Button>
                             </View>
                         )}
                     </View>

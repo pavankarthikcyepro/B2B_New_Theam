@@ -69,7 +69,7 @@ export const getEmployeesDropDownData = createAsyncThunk("TARGET_SETTINGS/getEmp
 })
 
 export const getAllTargetMapping = createAsyncThunk("TARGET_SETTINGS/getAllTargetMapping", async (payload: any, { rejectWithValue }) => {
-    console.log("PAYLOAD:", JSON.stringify(payload));
+    console.log("PAYLOAD TARGET:", URL.GET_ALL_TARGET_MAPPING(), JSON.stringify(payload));
     
     const response = await client.post(URL.GET_ALL_TARGET_MAPPING(), payload)
     const json = await response.json()

@@ -288,6 +288,10 @@ const BookingScreen = ({ navigation }) => {
         dispatch(getPreBookingData(payload2));
     };
 
+    const getFirstLetterUpperCase = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
     const renderFooter = () => {
         if (!selector.isLoadingExtraData) {
             return null;
@@ -401,7 +405,7 @@ const BookingScreen = ({ navigation }) => {
                                     <View>
                                         <MyTaskNewItem
                                             from="BOOKING"
-                                            name={item.firstName + " " + item.lastName}
+                                            name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
                                             navigator={navigation}
                                             uniqueId={item.leadId} 
                                             type='Book'

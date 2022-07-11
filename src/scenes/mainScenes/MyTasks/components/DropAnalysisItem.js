@@ -46,7 +46,7 @@ const IconComp = ({ iconName, onPress,bgColor }) => {
 
 
 
-export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected,leadDropId, uniqueId, enqCat, leadStage, name, status, created, dmsLead, lostReason }) => {
+export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId, uniqueId, enqCat, leadStage, name, status, created, dmsLead, lostReason, isManager = false, dropStatus = '' }) => {
     const [isItemSelected, setisItemSelected ]= useState('unchecked')
 
     const checkboxSelected = async () => {
@@ -112,25 +112,53 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected,leadDropId,
                         <Text style={styles.text4}>{leadStage}</Text>
                     </View>
                     {/* <View style={{ height: 8 }}></View> */}
-                    <View style={{ flexDirection: "row", width: "100%", justifyContent: "space-evenly" }}>
-                        <View style={{ flexDirection: 'column' }}>
-                        <IconComp
-                            iconName={'window-close'}
-                            onPress={()=>onItemSelected(uniqueId, leadDropId,'single','reject')}
-                            bgColor='#FF0000'
-                        />
-                            <Text style={{ color: Colors.BLUE, fontSize: 12, margin: 2 }}>Deny</Text>
-                        </View> 
+                    {isManager && dropStatus === 'DROPPED' &&
+                        <View style={{ flexDirection: "row", width: "100%", justifyContent: "space-evenly" }}>
                             <View style={{ flexDirection: 'column' }}>
-                        <IconComp
-                            iconName={'check'}
-                            onPress={()=>onItemSelected(uniqueId, leadDropId, 'single', 'approve')}
-                            bgColor='#008000'
-                        />
-                            <Text style={{ color: Colors.BLUE, fontSize: 12, margin: 2 }}>Deny</Text>
-                        </View> 
-                        
-                    </View>
+                                <IconComp
+                                    iconName={'window-close'}
+                                    onPress={() => onItemSelected(uniqueId, leadDropId, 'single', 'reject')}
+                                    bgColor='#FF0000'
+                                />
+                                <Text style={{ color: Colors.BLUE, fontSize: 12, margin: 2 }}>Deny</Text>
+                            </View>
+                            <View style={{ flexDirection: 'column' }}>
+                                <IconComp
+                                    iconName={'check'}
+                                    onPress={() => onItemSelected(uniqueId, leadDropId, 'single', 'approve')}
+                                    bgColor='#008000'
+                                />
+                                <Text style={{ color: Colors.BLUE, fontSize: 12, margin: 2 }}>Approve</Text>
+                            </View>
+
+                        </View>
+                    }
+                    {isManager && dropStatus === 'APPROVED' &&
+                        <View style={{ flexDirection: "row", width: "100%", justifyContent: "space-evenly" }}>
+                            {/* <View style={{ flexDirection: 'column' }}>
+                                <IconComp
+                                    iconName={'window-close'}
+                                    onPress={() => onItemSelected(uniqueId, leadDropId, 'single', 'reject')}
+                                    bgColor='#FF0000'
+                                />
+                                <Text style={{ color: Colors.BLUE, fontSize: 12, margin: 2 }}>Deny</Text>
+                            </View> */}
+                            <View style={{ flexDirection: 'column' }}>
+                                <IconComp
+                                    iconName={'check'}
+                                    onPress={() => onItemSelected(uniqueId, leadDropId, 'single', 'revoke')}
+                                    bgColor='#008000'
+                                />
+                                <Text style={{ color: Colors.BLUE, fontSize: 12, margin: 2 }}>Revoke</Text>
+                            </View>
+
+                        </View>
+                    }
+                    {(!isManager || (isManager && dropStatus === 'REJECTED')) &&
+                        <View style={{ flexDirection: "row", width: "100%", justifyContent: "space-evenly" }}>
+                        <Text style={{ color: dropStatus === 'DROPPED' ? '#18a835' : '#f29a22', fontSize: 16, fontWeight: 'bold'}}>{dropStatus}</Text>
+                        </View>
+                    }
                 </View>
             </View>
         </TouchableOpacity>

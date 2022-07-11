@@ -4053,7 +4053,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         styles.accordianBorder,
                                     ]}
                                 >
-                                    <View>
+                                    {/* <View>
                                         <View style={styles.select_image_bck_vw}>
                                             <ImageSelectItem
                                                 name={"Receipt Doc"}
@@ -4068,7 +4068,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                             />
                                         ) : null}
                                         <Text style={GlobalStyle.underline}></Text>
-                                    </View>
+                                    </View> */}
                                     {selector.booking_payment_mode === "UPI" && (
                                         <View>
                                             <TextinputComp
