@@ -398,6 +398,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     proforma_logo:"",
     proforma_city:"",
     proforma_branch:"",
+     proforma_pincode: 0,
     proforma_state:"",
     proforma_model:"",
     vehicle_on_road_price_insurence_details_response: null,
@@ -1772,6 +1773,7 @@ const enquiryDetailsOverViewSlice = createSlice({
         state.proforma_branch = data.branchName
         state.proforma_city = data.city
         state.proforma_state = data.state
+        state.proforma_pincode = data.pincode
       }
       state.isLoading = false;
 
