@@ -607,6 +607,57 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.r_insurence_document_checked = false
       state.dmsLeadProducts =[]
     },
+    clearState2: (state, action) => {
+      state.enableEdit = false;
+      state.enquiry_details_response = null;
+      state.update_enquiry_details_response = null;
+      state.get_pending_tasks_response_status = "";
+      state.get_pending_tasks_response_list = [];
+
+      state.customer_types_data = [];
+      state.enquiry_drop_response_status = "";
+      state.get_pending_tasks_response_status = "";
+      state.get_pending_tasks_response_list = [];
+      state.enquiry_details_response = null;
+      state.update_enquiry_details_response = null;
+      state.customer_types_response = null;
+      state.employee_id = "";
+      state.gstin_number = "";
+      state.expected_delivery_date = ''
+      state.a_make = ""
+      state.a_model = ""
+      state.a_make_other_name = ""
+      state.a_model_other_name = ""
+      state.a_varient = ""
+      state.a_color = ""
+      state.a_reg_no = ""
+      // Replacement Buyer
+      state.r_reg_no = ""
+      state.r_varient = ""
+      state.r_color = ""
+      state.r_make = ""
+      state.r_model = ""
+      state.r_make_other_name = ""
+      state.r_model_other_name = ""
+      state.r_fuel_type = ""
+      state.r_transmission_type = ""
+      state.r_mfg_year = ""
+      state.r_kms_driven_or_odometer_reading = ""
+      state.r_expected_price = ""
+      state.r_registration_date = ""
+      state.r_registration_validity_date = ""
+      state.r_hypothication_checked = false
+      state.r_hypothication_name = ""
+      state.r_hypothication_branch = ""
+      state.r_insurence_checked = false
+      state.r_insurence_company_name = ""
+      state.r_insurence_expiry_date = ""
+      state.r_insurence_type = ""
+      state.r_insurence_from_date = ""
+      state.r_insurence_to_date = ""
+      state.r_insurence_document_checked = false
+      state.dmsLeadProducts = []
+    },
     setEditable: (state, action) => {
       console.log("pressed");
       state.enableEdit = !state.enableEdit;
@@ -815,6 +866,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     updatedmsLeadProduct:(state, action)=>{
      // alert(JSON.stringify(action.payload))
       const data = action.payload;
+      console.log("updatedmsLeadProduct: ", JSON.stringify(action.payload));
       state.dmsLeadProducts = data
     },
     updateSelectedDate: (state, action: PayloadAction<PersonalIntroModel>) => {
@@ -1305,6 +1357,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     },
     updateDmsLeadDtoData: (state, action) => {
       const dmsLeadDto = action.payload;
+      console.log("updateDmsLeadDtoData: ", JSON.stringify(action.payload));
       state.buyer_type = dmsLeadDto.buyerType ? dmsLeadDto.buyerType : "";
       state.enquiry_category = dmsLeadDto.enquiryCategory
         ? dmsLeadDto.enquiryCategory
@@ -1394,6 +1447,8 @@ const enquiryDetailsOverViewSlice = createSlice({
     },
     updateModelSelectionData: (state , action) => {
       const dmsLeadProducts = action.payload;
+      console.log("updateModelSelectionData: ", JSON.stringify(action.payload));
+      
       let dataObj: any = {};
       // if (dmsLeadProducts.length > 0) {
       //   dataObj = { ...dmsLeadProducts[0] };
@@ -1927,6 +1982,7 @@ const enquiryDetailsOverViewSlice = createSlice({
 
 export const {
   clearState,
+  clearState2,
   setDatePicker,
   setEditable,
   setPersonalIntro,

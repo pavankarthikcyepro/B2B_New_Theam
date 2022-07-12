@@ -43,6 +43,20 @@ export const updateSingleApproval = createAsyncThunk('DROPANALYSIS/updateSingleA
     }
     return json;
 })
+
+export const revokeDrop = createAsyncThunk('DROPANALYSIS/revokeDrop', async (payload, { rejectWithValue }) => {
+
+    console.log("PAYLOAD EN: ", JSON.stringify(payload));
+
+    const response = await client.get(URL.REVOKE(payload["leadId"]));
+    const json = await response.json()
+
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
 export const updateBulkApproval = createAsyncThunk('DROPANALYSIS/updateBulkApproval', async (payload, { rejectWithValue }) => {
 
     console.log("PAYLOAD EN: ", JSON.stringify(payload));

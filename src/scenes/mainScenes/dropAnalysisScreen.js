@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Colors, GlobalStyle } from "../../styles";
 import { AppNavigator } from '../../navigations';
 import * as AsyncStore from '../../asyncStore';
-import { getLeadDropList, getMoreLeadDropList, updateSingleApproval,updateBulkApproval } from "../../redux/leaddropReducer";
+import { getLeadDropList, getMoreLeadDropList, updateSingleApproval, updateBulkApproval, revokeDrop } from "../../redux/leaddropReducer";
 import { callNumber } from "../../utils/helperFunctions";
 import moment from "moment";
 import { Category_Type_List_For_Filter } from '../../jsonData/enquiryFormScreenJsonData';
@@ -41,7 +41,7 @@ const DropAnalysisScreen = ({ navigation }) => {
     const [orgId, setOrgId] = useState("");
     const [selectedItemIds, setSelectedItemIds] = useState([]);
     const [isApprovalUIVisible, setisApprovalUIVisible] = useState(false);
-
+    const [isManager, setIsManager] = useState(false);
 
 
     const orgIdStateRef = React.useRef(orgId);
@@ -162,6 +162,9 @@ const DropAnalysisScreen = ({ navigation }) => {
         if (employeeData) {
             const jsonObj = await JSON.parse(employeeData);
             // await setOrgId(jsonObj.orgId)
+            if (jsonObj?.hrmsRole.toLowerCase().includes('manager')) {
+                setIsManager(true)
+            }
 
             // await setEmployeeName(jsonObj.empName)
             // await setEmployeeId(jsonObj.empId)
@@ -327,10 +330,10 @@ const DropAnalysisScreen = ({ navigation }) => {
                             "status": "APPROVED"
                         }
                     }
-                    dispatch(updateSingleApproval(data));
-
-
-                 } else { 
+                    Promise.all([dispatch(updateSingleApproval(data))]).then(() => {
+                        getDataFromDB();
+                    })
+                } else if (operation === 'reject') {
 
                     //reject api
                     const data = {
@@ -340,8 +343,23 @@ const DropAnalysisScreen = ({ navigation }) => {
                             "status": "REJECTED"
                         }
                     }
-                    dispatch(updateSingleApproval(data));
-                 }
+                    Promise.all([dispatch(updateSingleApproval(data))]).then(() => {
+                        getDataFromDB();
+                    })
+                }
+                else {
+                    //reject api
+                    const data = {
+                        "dmsLeadDropInfo": {
+                            "leadId": uniqueId,
+                            "leadDropId": leadDropId,
+                            "status": "REJECTED"
+                        }
+                    }
+                    Promise.all([dispatch(revokeDrop(data))]).then(() => {
+                        getDataFromDB();
+                    })
+                }
             }
         }catch(error)
         {
@@ -411,7 +429,7 @@ const DropAnalysisScreen = ({ navigation }) => {
        
             <SafeAreaView style={styles.container}>
 
-                <DatePickerComponent
+                {/* <DatePickerComponent
                     visible={showDatePicker}
                     mode={"date"}
                     value={new Date(Date.now())}
@@ -459,7 +477,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                             <IconButton icon={'filter-outline'} size={20} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
                         </View>
                     </Pressable>
-                </View>
+                </View> */}
 
                 {searchedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
                     <View style={[{ backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 }]}>
@@ -505,6 +523,8 @@ const DropAnalysisScreen = ({ navigation }) => {
                                                 lostReason={item.lostReason}
                                                 leadStatus={item.status}
                                                 leadStage={item.stage}
+                                                isManager={isManager}
+                                                dropStatus={item.status}
                                             />
                                         </View>
                                     </>

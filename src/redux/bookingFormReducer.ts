@@ -1647,12 +1647,13 @@ const bookingFormSlice = createSlice({
         state.type_of_upi = action.payload.typeUpi
           ? action.payload.typeUpi
           : "";
-        state.transfer_from_mobile = action.payload.transferFromMobile
-          ? action.payload.transferFromMobile
-          : "";
-        state.transfer_to_mobile = action.payload.transferToMobile
-          ? action.payload.transferToMobile
-          : "";
+        if (action.payload.transferFromMobile){
+          state.transfer_from_mobile = action.payload.transferFromMobile.toString();
+        }
+        
+        if (action.payload.transferToMobile){
+          state.transfer_to_mobile = action.payload.transferToMobile.toString();
+        }
         state.utr_no = action.payload.utrNo ? action.payload.utrNo : "";
         state.comapany_bank_name = action.payload.bankName
           ? action.payload.bankName

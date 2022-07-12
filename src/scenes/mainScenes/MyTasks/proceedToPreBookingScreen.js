@@ -18,6 +18,8 @@ import {
     getDropDataApi,
     getDropSubReasonDataApi
 } from "../../../redux/proceedToPreBookingReducer";
+
+import { clearState2 } from "../../../redux/enquiryFormReducer";
 import {
     updateStatus
 } from "../../../redux/enquiryFormReducer";
@@ -357,6 +359,7 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
             navigation.popToTop();
         }
         dispatch(clearState());
+        dispatch(clearState2());
     }
 
     const showDropDownMethod = (key, title) => {

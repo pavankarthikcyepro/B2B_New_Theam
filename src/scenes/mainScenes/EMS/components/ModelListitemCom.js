@@ -144,8 +144,7 @@ export const ModelListitemCom = ({ modelOnclick,isPrimaryOnclick ,item, index, l
             case "COLOR":
                 setDataForDropDown([...carColorsData]);
                 break;
-
-                 }
+            }
         setDropDownKey(key);
         setDropDownTitle(headerText);
         setShowDropDownModel(true);
@@ -175,7 +174,16 @@ export const ModelListitemCom = ({ modelOnclick,isPrimaryOnclick ,item, index, l
             );
             setCarColor(item?.color)
             setCarModel(item?.model)
+            if (item?.model){
+                updateVariantModelsData(item?.model, false)
+            }
             
+            if (item?.variant){
+                updateColorsDataForSelectedVarient(
+                    item?.variant,
+                    selectedCarVarientsData.varientList
+                );
+            }
             setCarFuelType(item?.fuel)
             // if (leadStage === 'PREBOOKING')
             setisPrimary(item?.isPrimary)
@@ -294,6 +302,40 @@ export const ModelListitemCom = ({ modelOnclick,isPrimaryOnclick ,item, index, l
         }
     };
 
+    const setInitialValients = async(
+        selectedModelName
+    ) => {
+        if (!selectedModelName || selectedModelName.length === 0) {
+            return;
+        }
+        console.log("CALLED MODEL: ", selectedModelName, carModelsData);
+        let arrTemp = carModelsData.filter(function (obj) {
+            return obj.model === selectedModelName;
+        });
+
+        let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
+        if (carModelObj !== undefined) {
+            let newArray = [];
+            // setCarModel(selectedModelName)
+           
+           // selector.dmsLeadProducts[index] = carmodeldata
+            let mArray = carModelObj.varients;
+            if (mArray.length) {
+                mArray.forEach((item) => {
+                    newArray.push({
+                        id: item.id,
+                        name: item.name,
+                    });
+                });
+                setSelectedCarVarientsData({
+                    varientList: [...mArray],
+                    varientListForDropDown: [...newArray],
+                });
+                // updateColorsDataForSelectedVarient(selectedVarientName, [...mArray]);
+            }
+        }
+    };
+
     const updateColorsDataForSelectedVarient = (
         selectedVarientName,
         varientList
@@ -360,18 +402,68 @@ export const ModelListitemCom = ({ modelOnclick,isPrimaryOnclick ,item, index, l
         }
     };
 
+    const setInitialColors = (
+        selectedVarientName,
+        varientList
+    ) => {
+        if (!selectedVarientName || selectedVarientName.length === 0) {
+            return;
+        }
+
+        let arrTemp = varientList.filter(function (obj) {
+            return obj.name === selectedVarientName;
+        });
+
+        let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
+        if (carModelObj !== undefined) {
+            let newArray = [];
+            let mArray = carModelObj.vehicleImages;
+            if (mArray.length) {
+                mArray.map((item) => {
+                    newArray.push({
+                        id: item.id,
+                        name: item.color,
+                    });
+                });
+                const obj = {
+                    fuelType: carModelObj.fuelType,
+                    transmissionType: carModelObj.transmission_type,
+                };
+                setCarFuelType(carModelObj.fuelType)
+                setCarTransmissionType(carModelObj.transmission_type)
+                var carmodeldata;
+
+                const modelsarr = selector.dmsLeadProducts
+                modelsarr[index] = carmodeldata
+                modelOnclick(index, carmodeldata, "update")
+
+                dispatch(updatedmsLeadProduct(modelsarr))
+                dispatch(updateFuelAndTransmissionType(obj));
+                setCarColorsData([...newArray]);
+            }
+        }
+    };
+
     useEffect(() => {
         console.log("UPDATE CAR MODEL", carModelsData);
         if (carModelsData.length > 0){
             console.log("CALLED$$$$$$$$");
-            if (!item?.variant){
-                updateVariantModelsData(item.model, false)
+            if (item?.model) {
+                setInitialValients(item?.model)
             }
         }
     }, [carModelsData])
 
     useEffect(() => {
         console.log("VARIENTS: ", selectedCarVarientsData);
+        if (selectedCarVarientsData.varientList.length > 0){
+            if (item?.variant) {
+                    setInitialColors(
+                        item?.variant,
+                        selectedCarVarientsData.varientList
+                    );
+                }
+        }
     }, [selectedCarVarientsData])
 
     const getCarModelListFromServer = (orgId) => {

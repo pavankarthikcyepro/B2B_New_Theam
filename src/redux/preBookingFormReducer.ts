@@ -89,9 +89,13 @@ export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk("PREBOONING
 
 export const dropPreBooingApi = createAsyncThunk("PREBOONING_FORMS_SLICE/dropPreBooingApi", async (payload, { rejectWithValue }) => {
 
+  console.log("DROP PAYLOAD: ", URL.DROP_ENQUIRY(), payload);
+  
   const response = await client.post(URL.DROP_ENQUIRY(), payload);
   try {
     const json = await response.json();
+    console.log("DROP RES: ", JSON.stringify(json));
+    
     if (response.status != 200) {
       return rejectWithValue(json);
     }

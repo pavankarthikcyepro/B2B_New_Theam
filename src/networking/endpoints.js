@@ -196,6 +196,9 @@ const URL = {
     UPDATE_BULKAPPROVAL: () => {
         return sales_url + '/lead-drop/bulkdrop'
     },
+    REVOKE: (id) => {
+        return sales_url + '/lead-drop/updateStatusEnquire/ENQUIRY/' + id
+    },
     GET_LEADDROP_LIST: (branchId, empName, orgId, offSet, limit) => {
         return sales_url + '/lead-drop/details?branch=' + branchId + '&limit=' + limit + '&loginUser=' + empName + '&offset=' + offSet + '&orgId=' + orgId;
     },
