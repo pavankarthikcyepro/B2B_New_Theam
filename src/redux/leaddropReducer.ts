@@ -46,15 +46,17 @@ export const updateSingleApproval = createAsyncThunk('DROPANALYSIS/updateSingleA
 
 export const revokeDrop = createAsyncThunk('DROPANALYSIS/revokeDrop', async (payload, { rejectWithValue }) => {
 
-    console.log("PAYLOAD EN: ", JSON.stringify(payload));
+    console.log("PAYLOAD REVOKE: ", URL.REVOKE(payload["leadId"]));
 
     const response = await client.get(URL.REVOKE(payload["leadId"]));
-    const json = await response.json()
+    // const json = await response.json()
 
+    console.log("REVOKE RES: ", response);
+    
     if (!response.ok) {
-        return rejectWithValue(json);
+        return rejectWithValue(response);
     }
-    return json;
+    return response;
 })
 
 export const updateBulkApproval = createAsyncThunk('DROPANALYSIS/updateBulkApproval', async (payload, { rejectWithValue }) => {
@@ -146,15 +148,25 @@ const leaddropListSlice = createSlice({
         builder.addCase(updateSingleApproval.fulfilled, (state, action) => {
             // console.log('res: ', action.payload);
             const status = action.payload?.status;
-            if (status === 'SUCCESS') {
-                showToast("Successfully updated");
+            // if (status === 'SUCCESS') {
+            //     showToast("Successfully updated");
 
-            }
+            // }
             state.isLoadingExtraData = false;
             state.approvalStatus = "sucess";
         })
         builder.addCase(updateSingleApproval.rejected, (state, action) => {
-            state.approvalStatus = "failed";
+            
+        })
+
+        builder.addCase(revokeDrop.pending, (state) => {
+        })
+        builder.addCase(revokeDrop.fulfilled, (state, action) => {
+            // console.log('res: ', action.payload);
+           
+        })
+        builder.addCase(revokeDrop.rejected, (state, action) => {
+            
         })
 
         builder.addCase(updateBulkApproval.pending, (state) => {

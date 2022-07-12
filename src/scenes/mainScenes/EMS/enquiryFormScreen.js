@@ -412,7 +412,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       const jsonObj = JSON.parse(employeeData);
       setUserData({
         orgId: jsonObj.orgId,
-        employeeId: jsonObj.employeeId,
+        employeeId: jsonObj.empId,
         employeeName: jsonObj.empName,
       });
       getCarModelListFromServer(jsonObj.orgId);
@@ -548,9 +548,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   }, [selector.dmsLeadProducts, selector.enquiry_details_response])
 
-  useEffect(()=> {
+  useEffect(() => {
     console.log("PROCEED TTTT:", proceedToPreSelector.update_enquiry_details_response_status);
-    if (proceedToPreSelector.update_enquiry_details_response_status === "success"){
+    if (proceedToPreSelector.update_enquiry_details_response_status === "success") {
       clearState();
       clearLocalData();
     }
@@ -698,43 +698,43 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   // let dmsEntity = selector.enquiry_details_response;
   // console.log({ dmsEntity })
 
-  const addingIsPrimary = async()=>{
-        try{
-            let array = await [...selector.dmsLeadProducts]
-            for (let i = 0; i < selector.dmsLeadProducts.length; i++) {
-                var item = await array[i]
-                if (i == 0) {
-                    item = await {
-                        "color": item.color,
-                        "fuel": item.fuel,
-                        "id": item.id,
-                        "model": item.model,
-                        "transimmisionType": item.transimmisionType,
-                        "variant": item.variant,
-                        "isPrimary": true
-                    }
-                    updateVariantModelsData(item.model, true, item.variant);
-                }
-                else {
-                    item = await {
-                        "color": item.color,
-                        "fuel": item.fuel,
-                        "id": item.id,
-                        "model": item.model,
-                        "transimmisionType": item.transimmisionType,
-                        "variant": item.variant,
-                        "isPrimary": false
-                    }
-                }
-                array[i] = await item
-               // console.log(userObject.username);
-            }
-          console.log("SET THREE", array);
-            await setCarModelsList(array)
-        } catch(error){
+  const addingIsPrimary = async () => {
+    try {
+      let array = await [...selector.dmsLeadProducts]
+      for (let i = 0; i < selector.dmsLeadProducts.length; i++) {
+        var item = await array[i]
+        if (i == 0) {
+          item = await {
+            "color": item.color,
+            "fuel": item.fuel,
+            "id": item.id,
+            "model": item.model,
+            "transimmisionType": item.transimmisionType,
+            "variant": item.variant,
+            "isPrimary": true
+          }
+          updateVariantModelsData(item.model, true, item.variant);
         }
-        
+        else {
+          item = await {
+            "color": item.color,
+            "fuel": item.fuel,
+            "id": item.id,
+            "model": item.model,
+            "transimmisionType": item.transimmisionType,
+            "variant": item.variant,
+            "isPrimary": false
+          }
+        }
+        array[i] = await item
+        // console.log(userObject.username);
+      }
+      console.log("SET THREE", array);
+      await setCarModelsList(array)
+    } catch (error) {
     }
+
+  }
 
   const updateEnquiry = async () => {
     console.log("CALLED AUTO UPDATE");
@@ -1100,6 +1100,23 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
     // Model Selection
     if (carModelsList.length == 0) {
+      scrollToPos(4)
+      setOpenAccordian('4')
+      showToast("Please fill model details");
+      return;
+    }
+    let tempCars = [];
+    tempCars = carModelsList.filter((item) => {
+      return item.color !== '' &&
+        item.fuel !== '' &&
+        // item.id !== 0 &&
+        item.model !== "" &&
+        item.transimmisionType !== '' &&
+        item.variant !== ''
+    })
+
+    console.log("MODELS: ", tempCars, carModelsList);
+    if (tempCars.length < carModelsList.length) {
       scrollToPos(4)
       setOpenAccordian('4')
       showToast("Please fill model details");
@@ -1607,10 +1624,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       convertDateStringToMillisecondsUsingMoment(
         selector.expected_delivery_date
       );
-    dataObj.model = selector.model;
     dataObj.leadStatus = "ENQUIRYCOMPLETED";
     dataObj.dmsAddresses = mapDMSAddress(dataObj.dmsAddresses);
     dataObj.dmsLeadProducts = mapLeadProducts(dataObj.dmsLeadProducts);
+    dataObj.model = carModelsList[0].model;
     dataObj.dmsfinancedetails = mapDmsFinanceDetails(dataObj.dmsfinancedetails);
     dataObj.dmsLeadScoreCards = mapDmsLeadScoreCards(dataObj.dmsLeadScoreCards);
     dataObj.dmsExchagedetails = mapExchangeDetails(dataObj.dmsExchagedetails);
@@ -1932,7 +1949,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         const universalId = dataObj.universalId;
         const taskStatus = dataObj.taskStatus;
 
-        if(taskNames === ''){
+        if (taskNames === '') {
           navigation.navigate(
             AppNavigator.EmsStackIdentifiers.proceedToPreBooking,
             {
@@ -1943,7 +1960,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             }
           );
         }
-        else{
+        else {
           Alert.alert(
             "Below tasks are pending, do you want to continue to proceed pre-booking",
             taskNames,
@@ -2060,14 +2077,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   useEffect(() => {
     if (selector.update_enquiry_details_response === "success") {
       if (typeOfActionDispatched === "DROP_ENQUIRY") {
-        showToastSucess("Successfully Enquiry Dropped");
-        getEnquiryListFromServer();
+        // showToastSucess("Successfully Enquiry Dropped");
+        // getEnquiryListFromServer();
       } else if (typeOfActionDispatched === "UPDATE_ENQUIRY") {
         showToastSucess("Successfully Enquiry Updated");
+        clearLocalData();
+        dispatch(clearState());
+        navigation.goBack();
       }
-      clearLocalData();
-      dispatch(clearState());
-      navigation.goBack();
     }
   }, [selector.update_enquiry_details_response]);
 
@@ -2110,7 +2127,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     const payload = {
       dmsLeadDropInfo: {
         additionalRemarks: dropRemarks,
-        branchId: selectedBranchId,
+        branchId: Number(selectedBranchId),
         brandName: dropBrandName,
         dealerName: dropDealerName,
         location: dropLocation,
@@ -2130,6 +2147,23 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dispatch(dropEnquiryApi(payload));
     dispatch(updateEnquiryDetailsApi(enquiryDetailsObj));
   };
+
+  useEffect(() => {
+    if (selector.enquiry_drop_response_status === "success" && selector.refNo !== '') {
+      Alert.alert(
+        "Sent For Approval",
+        `Enquery Number: ${selector.refNo}`,
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              goParentScreen()
+            },
+          },
+        ]
+      );
+    }
+  }, [selector.enquiry_drop_response_status, selector.refNo])
 
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
@@ -2466,10 +2500,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       </View>
     );
   };
-  const navigateToProforma = () =>{
+  const navigateToProforma = () => {
     navigation.navigate(AppNavigator.EmsStackIdentifiers.ProformaScreen, {
-         modelDetails: selector.dmsLeadProducts[0] ,
-         branchId: selectedBranchId ,
+      modelDetails: selector.dmsLeadProducts[0],
+      branchId: selectedBranchId,
       universalId: universalId
     })
   }
@@ -2665,10 +2699,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           ref={scrollRef}
         >
           <View style={styles.baseVw}>
-            {(leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY' && carModelsList && carModelsList.length > 0) ? <Button style={{height:40, width:200,marginBottom:15, alignSelf:'flex-end', alignContent:'center', backgroundColor:Colors.PINK, color: Colors.WHITE}}
-              labelStyle={{ textTransform: "none",fontSize:16, color: Colors.WHITE }}
-              onPress={()=> navigateToProforma()}>Proforma Invoice</Button> : null}
-          
+            {(leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY' && carModelsList && carModelsList.length > 0) ? <Button style={{ height: 40, width: 200, marginBottom: 15, alignSelf: 'flex-end', alignContent: 'center', backgroundColor: Colors.PINK, color: Colors.WHITE }}
+              labelStyle={{ textTransform: "none", fontSize: 16, color: Colors.WHITE }}
+              onPress={() => navigateToProforma()}>Proforma Invoice</Button> : null}
+
             <List.AccordionGroup
               expandedId={openAccordian}
               onAccordionPress={(expandedId) => updateAccordian(expandedId)}
@@ -2697,7 +2731,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   modelDetails={selector.dmsLeadProducts[0]}
                   branchId={selectedBranchId} />
               </List.Accordion> : null} */}
-              <View style={styles.space}></View> 
+              <View style={styles.space}></View>
 
               {/* 1. Personal Intro */}
               <List.Accordion
@@ -3741,6 +3775,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       style={{ height: 65, width: "100%" }}
                       label={"Bank/Finance Name"}
                       keyboardType={"default"}
+                      autoCapitalize="words"
                       value={selector.bank_or_finance_name}
                       onChangeText={(text) =>
                         dispatch(
@@ -3757,6 +3792,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       style={{ height: 65, width: "100%" }}
                       label={"Location"}
                       keyboardType={"default"}
+                      autoCapitalize="words"
                       value={selector.location}
                       onChangeText={(text) =>
                         dispatch(
@@ -3774,6 +3810,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       style={{ height: 65, width: "100%" }}
                       label={"Leasing Name"}
                       maxLength={50}
+                      autoCapitalize="words"
                       value={selector.leashing_name}
                       onChangeText={(text) =>
                         dispatch(
@@ -4405,6 +4442,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       label={"Variant"}
                       editable={true}
                       maxLength={40}
+                      autoCapitalize="words"
                       value={selector.c_variant}
                       onChangeText={(text) =>
                         dispatch(
@@ -4633,6 +4671,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     value={selector.a_varient}
                     label={"Variant"}
                     maxLength={50}
+                    autoCapitalize="words"
                     onChangeText={(text) =>
                       dispatch(
                         setAdditionalBuyerDetails({
@@ -4647,6 +4686,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     style={styles.textInputStyle}
                     value={selector.a_color}
                     label={"Color"}
+                    autoCapitalize="words"
                     maxLength={50}
                     onChangeText={(text) =>
                       dispatch(
@@ -4797,6 +4837,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     editable={true}
                     value={selector.r_varient}
                     maxLength={50}
+                    autoCapitalize="words"
                     onChangeText={(text) =>
                       dispatch(
                         setReplacementBuyerDetails({
@@ -4814,6 +4855,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     editable={true}
                     maxLength={50}
                     value={selector.r_color}
+                    autoCapitalize="words"
                     onChangeText={(text) =>
                       dispatch(
                         setReplacementBuyerDetails({
@@ -4907,6 +4949,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         value={selector.r_hypothication_name}
                         label={"Hypothication Name"}
                         keyboardType={"default"}
+                        autoCapitalize="words"
                         maxLength={50}
                         onChangeText={(text) =>
                           dispatch(
@@ -4923,6 +4966,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         value={selector.r_hypothication_branch}
                         label={"Hypothication Branch"}
                         keyboardType={"default"}
+                        autoCapitalize="words"
                         maxLength={50}
                         onChangeText={(text) =>
                           dispatch(

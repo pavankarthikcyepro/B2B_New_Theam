@@ -446,6 +446,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
               <TextinputComp
                 style={styles.textInputStyle}
                 label={"Other reason"}
+              autoCapitalize="words"
                 value={otherReason}
                 maxLength={50}
                 onChangeText={(text) => {
@@ -457,6 +458,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
             <TextinputComp
               style={styles.textInputStyle}
               label={"Customer Remarks*"}
+              autoCapitalize="words"
               maxLength={50}
               value={selector.customer_remarks}
               onChangeText={(text) =>
@@ -469,6 +471,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
             <TextinputComp
               style={styles.textInputStyle}
               label={"Employee Remarks*"}
+              autoCapitalize="words"
               maxLength={50}
               value={selector.employee_remarks}
               onChangeText={(text) =>

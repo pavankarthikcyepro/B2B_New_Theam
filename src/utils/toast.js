@@ -5,53 +5,58 @@ import { Platform, Linking, Alert } from 'react-native';
 import { Colors } from '../styles';
 
 export const showToast = (title) => {
+    let msg = title.charAt(0).toUpperCase() + title.slice(1)
     if (Platform.OS === 'ios') {
         Snackbar.show({
-            text: title,
+            text: msg,
             textColor: Colors.WHITE,
             backgroundColor: Colors.GRAY,
             duration: Snackbar.LENGTH_LONG,
 
         });
     } else {
-        Toast.show(title, 6000);
+        Toast.show(msg, 6000);
     }
 }
 
 // ----------------------------------------
 
 export const showToastSucess = (title) => {
+    let msg = title.charAt(0).toUpperCase() + title.slice(1)
     if (Platform.OS === 'ios') {
         Snackbar.show({
-            text: title,
+            text: msg,
             textColor: Colors.WHITE,
             backgroundColor: Colors.BLUE,
             duration: Snackbar.LENGTH_LONG,
         });
     } else {
-        Toast.show(title, 6000);
+        Toast.show(msg, 6000);
     }
 }
 
 // ----------------------------------------
 
 export const showToastRedAlert = (title) => {
+    let msg = title.charAt(0).toUpperCase() + title.slice(1)
     if (Platform.OS === 'ios') {
         Snackbar.show({
-            text: title,
+            text: msg,
             textColor: Colors.WHITE,
             backgroundColor: Colors.RED,
             duration: Snackbar.LENGTH_LONG,
         });
     } else {
-        Toast.show(title, 6000);
+        Toast.show(msg, 6000);
     }
 }
 
 export const showAlertMessage = (title = "", message = "") => {
+    let msg = message.charAt(0).toUpperCase() + message.slice(1)
+    let ttl = title.charAt(0).toUpperCase() + title.slice(1)
     Alert.alert(
-        title,
-        message,
+        ttl,
+        msg,
         [
             {
                 text: "Ok",
