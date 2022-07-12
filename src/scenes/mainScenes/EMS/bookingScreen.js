@@ -413,7 +413,7 @@ const BookingScreen = ({ navigation }) => {
                                             uniqueId={item.leadId} 
                                             type='Book'
                                             status={""}
-                                            created={item.createdDate}
+                                            created={item.modifiedDate}
                                             dmsLead={item.createdBy}
                                             phone={item.phone}
                                             source={item.enquirySource}

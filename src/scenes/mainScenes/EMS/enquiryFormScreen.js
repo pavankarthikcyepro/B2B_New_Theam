@@ -1936,6 +1936,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       let taskNames = "";
       let enableProceedToPrebooking = false;
       data.forEach((item) => {
+        console.log("$$$$$$$$$", item);
         if (item === "Proceed to Pre Booking") {
           enableProceedToPrebooking = true;
         } else {
@@ -2024,7 +2025,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         }
         if (
           element.taskName === "Proceed to Pre Booking" &&
-          element.assignee.employeeId === userData.employeeId &&
+          element.assignee.empId === userData.employeeId &&
           element.universalId === universalId
         ) {
           pendingTaskNames.push("Proceed to Pre Booking");
@@ -2045,7 +2046,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       console.log("%%%%%", jsonObj, JSON.stringify(selector.enquiry_details_response.dmsLeadDto));
-      if (selector.enquiry_details_response.dmsLeadDto.salesConsultant == jsonObj.empName) {
+      if (selector.enquiry_details_response.dmsLeadDto.salesConsultant == jsonObj.empName || selector.enquiry_details_response.dmsLeadDto.createdBy == jsonObj.empName) {
         if (universalId) {
           const endUrl = universalId + "?" + "stage=Enquiry";
           dispatch(getPendingTasksApi(endUrl));

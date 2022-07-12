@@ -347,8 +347,8 @@ const PreBookingScreen = ({ navigation }) => {
                                             navigator={navigation} 
                                             uniqueId={item.leadId}  
                                             type='PreBook'                          
-                                                           status={""}
-                                            created={item.createdDate}
+                                            status={""}
+                                            created={item.modifiedDate}
                                             dmsLead={item.createdBy}
                                             phone={item.phone}
                                             source={item.enquirySource}
