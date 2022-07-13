@@ -2701,7 +2701,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         >
           <View style={styles.baseVw}>
 
-            {(leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY' && carModelsList && carModelsList.length > 0) ? <Button style={{ height: 40, width: 200, marginBottom: 15, alignSelf: 'flex-end', alignContent: 'center', backgroundColor: Colors.PINK, color: Colors.WHITE }}
+     {/*}       {(leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY' && carModelsList && carModelsList.length > 0) ? <Button style={{ height: 40, width: 200, marginBottom: 15, alignSelf: 'flex-end', alignContent: 'center', backgroundColor: Colors.PINK, color: Colors.WHITE }}
               labelStyle={{ textTransform: "none", fontSize: 16, color: Colors.WHITE }}
               onPress={() => navigateToProforma()}>Proforma Invoice</Button> : null}
 
@@ -2710,7 +2710,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             <Button style={{height:40, width:200,marginBottom:15, alignSelf:'flex-end', alignContent:'center', backgroundColor:Colors.PINK, color: Colors.WHITE}}
               labelStyle={{ textTransform: "none",fontSize:16, color: Colors.WHITE }}
         onPress={()=> navigateToProforma()}>Proforma Invoice</Button> : null}
-          
+        */}   
 
             <List.AccordionGroup
               expandedId={openAccordian}
