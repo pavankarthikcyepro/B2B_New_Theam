@@ -14,6 +14,7 @@ import moment from "moment";
 import { Category_Type_List_For_Filter } from '../../jsonData/enquiryFormScreenJsonData';
 import { DropAnalysisItem } from './MyTasks/components/DropAnalysisItem';
 import { updateTAB, updateIsSearch, updateSearchKey } from '../../redux/appReducer';
+import { showToast } from "../../utils/toast";
 
 const dateFormat = "YYYY-MM-DD";
 const currentDate = moment().add(0, "day").format(dateFormat)
@@ -331,6 +332,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                         }
                     }
                     Promise.all([dispatch(updateSingleApproval(data))]).then(() => {
+                        showToast("Successfully approved")
                         getDataFromDB();
                     })
                 } else if (operation === 'reject') {
@@ -344,19 +346,17 @@ const DropAnalysisScreen = ({ navigation }) => {
                         }
                     }
                     Promise.all([dispatch(updateSingleApproval(data))]).then(() => {
+                        showToast("Successfully rejected")
                         getDataFromDB();
                     })
                 }
                 else {
                     //reject api
                     const data = {
-                        "dmsLeadDropInfo": {
-                            "leadId": uniqueId,
-                            "leadDropId": leadDropId,
-                            "status": "REJECTED"
-                        }
+                        "leadId": uniqueId,
                     }
                     Promise.all([dispatch(revokeDrop(data))]).then(() => {
+                        showToast("Successfully revoked")
                         getDataFromDB();
                     })
                 }

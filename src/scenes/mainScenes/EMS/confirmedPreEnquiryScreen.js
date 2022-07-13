@@ -106,7 +106,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         const payload = {
             dmsLeadDropInfo: {
                 additionalRemarks: dropRemarks,
-                branchId: branchId,
+                branchId: Number(branchId),
                 brandName: dropBrandName,
                 dealerName: dropDealerName,
                 leadId: leadId,
@@ -126,7 +126,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     };
 
     const DropPreEnquiryLead = async (payload, enquiryDetailsObj) => {
-
+        console.log("DROP PAY: ", URL.DROP_ENQUIRY(), payload);
         setIsLoading(true);
         await fetch(URL.DROP_ENQUIRY(), {
             method: "POST",
@@ -157,6 +157,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     const UpdateRecord = async (enquiryDetailsObj) => {
 
         setIsLoading(true);
+        console.log("UPDATE PAY: ", URL.UPDATE_ENQUIRY_DETAILS(), userToken, enquiryDetailsObj);
         await fetch(URL.UPDATE_ENQUIRY_DETAILS(), {
             method: "POST",
             headers: {
@@ -170,7 +171,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
             .then(response => {
                 if (response.success === true) {
                     // go to parent screen
-                    showToastSucess("Pre-Enquiry Successfully Dropped");
+                    showToastSucess("Sent for Manager Approval");
                     goToParentScreen();
                 } else {
                     showToast("Update Drop Lead Failed")

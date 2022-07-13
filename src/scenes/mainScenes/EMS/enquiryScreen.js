@@ -350,7 +350,7 @@ const EnquiryScreen = ({ navigation }) => {
                                             uniqueId={item.leadId} 
                                             type='Enq'
                                             status={""}
-                                            created={item.createdDate}
+                                            created={item.modifiedDate}
                                             dmsLead={item.createdBy}
                                             phone={item.phone} 
                                             source={item.enquirySource}

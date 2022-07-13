@@ -41,6 +41,7 @@ import {
     isPincode,
     convertToDate,
     GetCarModelList,
+    PincodeDetailsNew
 } from "../../../utils/helperFunctions";
 import { sales_url } from "../../../networking/endpoints";
 import realm from "../../../database/realm";
@@ -243,6 +244,32 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             { cancelable: false }
         );
     };
+
+    const checkPincode = (pincode) => {
+        return new Promise((resolve, reject) => {
+            PincodeDetailsNew(pincode).then(
+                (res) => {
+                    console.log("PINCODE DETAILS 1", JSON.stringify(res));
+                    if (res) {
+                        if (res.length > 0) {
+                            if (res[0]?.Status === 'Error') {
+                                resolve(false);
+                            }
+                            else {
+                                resolve(true);
+                            }
+                        }
+                        else {
+                            resolve(false);
+                        }
+                    }
+                    else {
+                        resolve(false);
+                    }
+                }
+            )
+        })
+    }
 
     const getBranchId = () => {
         AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then((branchId) => {
@@ -452,6 +479,14 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                 return;
             }
         }
+
+        checkPincode(selector.pincode).then((status) => {
+            console.log("IS VALID: ", status);
+            if(!status){
+                showToastRedAlert("Please enter valid pincode");
+                return;
+            }
+        })
 
         const enquirySegmentName = selector.enquiryType
             .replace(/\s/g, "")

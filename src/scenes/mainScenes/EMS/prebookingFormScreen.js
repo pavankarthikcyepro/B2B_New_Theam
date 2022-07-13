@@ -585,6 +585,22 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 let arr = await [...carModelsList]
                 arr.splice(index, 1)
                 console.log("MODELS ELSE: ", arr);
+                let item = {
+                    "color": arr[0].color,
+                    "fuel": arr[0].fuel,
+                    "id": arr[0].id,
+                    "model": arr[0].model,
+                    "transimmisionType": arr[0].transimmisionType,
+                    "variant": arr[0].variant,
+                    "isPrimary": true
+                }
+                // arr[0] = item;
+                arr.splice(0, 1);
+                arr.unshift(item)
+                if (arr[0].variant !== '' && arr[0].model !== '') {
+                    updateVariantModelsData(arr[0].model, true, arr[0].variant);
+                }
+                setCarModelsList([])
                 await setCarModelsList([...arr])
                 // carModelsList.splice(0, 1)
             }
@@ -1761,14 +1777,20 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 // getPreBookingListFromServer();
             } else if (typeOfActionDispatched === "UPDATE_PRE_BOOKING") {
                 showToastSucess("Successfully Sent for Manager Approval");
+                dispatch(clearState());
+                clearLocalData();
+                navigation.goBack();
             } else if (typeOfActionDispatched === "APPROVE") {
                 showToastSucess("Pre-Booking Approved");
+                dispatch(clearState());
+                clearLocalData();
+                navigation.goBack();
             } else if (typeOfActionDispatched === "REJECT") {
                 showToastSucess("Pre-Booking Rejected");
+                dispatch(clearState());
+                clearLocalData();
+                navigation.goBack();
             }
-            dispatch(clearState());
-            clearLocalData();
-            navigation.goBack();
         }
     }, [selector.update_pre_booking_details_response]);
     useEffect(() => {
@@ -4716,48 +4738,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             </List.Accordion>
                             <View style={styles.space}></View>
                             {/* // 10.Drop */}
-                            {isDropSelected ? <View style={styles.space}></View> : null}
-                            {isDropSelected ? (
-                                <List.Accordion
-                                    id={"10"}
-                                    title={"Pre Booking Lost Section"}
-                                    titleStyle={{
-                                        color: openAccordian === "10" ? Colors.BLACK : Colors.BLACK,
-                                        fontSize: 16,
-                                        fontWeight: "600",
-                                    }}
-                                    style={[
-                                        {
-                                            backgroundColor:
-                                                openAccordian === "10" ? Colors.RED : Colors.WHITE,
-                                        },
-                                        styles.accordianBorder,
-                                    ]}
-                                >
-
-                                    <DropComponent
-                                        from="PRE_BOOKING"
-                                        data={dropData}
-                                        reason={dropReason}
-                                        setReason={(text => setDropReason(text))}
-                                        subReason={dropSubReason}
-                                        setSubReason={(text => setDropSubReason(text))}
-                                        brandName={dropBrandName}
-                                        setBrandName={text => setDropBrandName(text)}
-                                        dealerName={dropDealerName}
-                                        setDealerName={text => setDropDealerName(text)}
-                                        location={dropLocation}
-                                        setLocation={text => setDropLocation(text)}
-                                        model={dropModel}
-                                        setModel={text => setDropModel(text)}
-                                        priceDiff={dropPriceDifference}
-                                        setPriceDiff={text => setDropPriceDifference(text)}
-                                        remarks={dropRemarks}
-                                        setRemarks={(text) => setDropRemarks(text)}
-                                    />
-                                </List.Accordion>
-                            ) : null}
-                            {/* // 11.Reject */}
                             {isRejectSelected ? <View style={styles.space}></View> : null}
                             {isRejectSelected && (
                                 <List.Accordion
@@ -4795,6 +4775,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 </List.Accordion>
                             )}
                             {/* // 12.Payment Details */}
+
                             {showPrebookingPaymentSection ? (
                                 <View style={styles.space}></View>
                             ) : null}
@@ -4985,6 +4966,50 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     )}
                                 </List.Accordion>
                             ) : null}
+
+                            {isDropSelected ? <View style={styles.space}></View> : null}
+                            {isDropSelected ? (
+                                <List.Accordion
+                                    id={"10"}
+                                    title={"Pre Booking Lost Section"}
+                                    titleStyle={{
+                                        color: openAccordian === "10" ? Colors.BLACK : Colors.BLACK,
+                                        fontSize: 16,
+                                        fontWeight: "600",
+                                    }}
+                                    style={[
+                                        {
+                                            backgroundColor:
+                                                openAccordian === "10" ? Colors.RED : Colors.WHITE,
+                                        },
+                                        styles.accordianBorder,
+                                    ]}
+                                >
+
+                                    <DropComponent
+                                        from="PRE_BOOKING"
+                                        data={dropData}
+                                        reason={dropReason}
+                                        setReason={(text => setDropReason(text))}
+                                        subReason={dropSubReason}
+                                        setSubReason={(text => setDropSubReason(text))}
+                                        brandName={dropBrandName}
+                                        setBrandName={text => setDropBrandName(text)}
+                                        dealerName={dropDealerName}
+                                        setDealerName={text => setDropDealerName(text)}
+                                        location={dropLocation}
+                                        setLocation={text => setDropLocation(text)}
+                                        model={dropModel}
+                                        setModel={text => setDropModel(text)}
+                                        priceDiff={dropPriceDifference}
+                                        setPriceDiff={text => setDropPriceDifference(text)}
+                                        remarks={dropRemarks}
+                                        setRemarks={(text) => setDropRemarks(text)}
+                                    />
+                                </List.Accordion>
+                            ) : null}
+                            {/* // 11.Reject */}
+                            
                         </List.AccordionGroup>
 
                         {!isDropSelected && showSubmitDropBtn && !userData.isManager && !userData.isPreBookingApprover && selector.booking_amount !== '' && (
@@ -5069,7 +5094,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             >EDIT</Button>
                                         </View>
                                     }
-                                    {isReciptDocUpload && 
+                                {!isEdit && uploadedImagesDataObj.receipt?.fileName &&
                                     <View style={styles.actionBtnView}>
                                         <Button
                                             mode="contained"

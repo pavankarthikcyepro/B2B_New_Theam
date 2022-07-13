@@ -87,6 +87,9 @@ const BookingScreen = ({ navigation }) => {
         if (selector.pre_booking_list.length > 0) {
             setSearchedData(selector.pre_booking_list)
         }
+        else {
+            setSearchedData([])
+        }
     }, [selector.pre_booking_list])
 
     useEffect(() => {
@@ -410,7 +413,7 @@ const BookingScreen = ({ navigation }) => {
                                             uniqueId={item.leadId} 
                                             type='Book'
                                             status={""}
-                                            created={item.createdDate}
+                                            created={item.modifiedDate}
                                             dmsLead={item.createdBy}
                                             phone={item.phone}
                                             source={item.enquirySource}

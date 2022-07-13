@@ -426,7 +426,7 @@ export const Fuel_Types = [
   },
   {
     id: "2",
-    name: "Disel",
+    name: "Diesel",
   },
   {
     id: "3",

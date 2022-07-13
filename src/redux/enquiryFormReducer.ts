@@ -326,6 +326,8 @@ export const dropEnquiryApi = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     const response = await client.post(URL.DROP_ENQUIRY(), payload);
     const json = await response.json();
+    console.log("DROP RES: ", JSON.stringify(json));
+    
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -606,7 +608,8 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.r_insurence_from_date = ""
       state.r_insurence_to_date = ""
       state.r_insurence_document_checked = false
-      state.dmsLeadProducts =[]
+      state.dmsLeadProducts =[];
+      state.refNo = ''
     },
     clearState2: (state, action) => {
       state.enableEdit = false;
@@ -657,7 +660,8 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.r_insurence_from_date = ""
       state.r_insurence_to_date = ""
       state.r_insurence_document_checked = false
-      state.dmsLeadProducts = []
+      state.dmsLeadProducts = [];
+      state.refNo = '';
     },
     setEditable: (state, action) => {
       console.log("pressed");
@@ -1898,6 +1902,8 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(dropEnquiryApi.fulfilled, (state, action) => {
+      console.log("STATUS TT: ", action.payload.status);
+      
       if (action.payload.status === "SUCCESS") {
         state.enquiry_drop_response_status = "success";
       }

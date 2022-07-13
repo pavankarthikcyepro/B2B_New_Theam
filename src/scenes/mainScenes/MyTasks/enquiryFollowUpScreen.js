@@ -477,6 +477,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
               <TextinputComp
                 style={styles.textInputStyle}
                 label={"Other reason"}
+              autoCapitalize="sentences"
                 value={otherReason}
                 maxLength={50}
                 onChangeText={(text) => {

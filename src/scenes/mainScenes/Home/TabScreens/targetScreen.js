@@ -927,7 +927,7 @@ const TargetScreen = ({ route, navigation }) => {
             <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, marginBottom: 10, flexDirection: 'row', width: '95%', justifyContent: 'space-around' }}>
               {dropDownPlaceHolder === 'Employees' ?
                 <View style={{ flexDirection: 'row', width: '95%', justifyContent: 'space-around' }}>
-                  <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 70, alignItems: 'center', justifyContent: 'center', marginLeft: 18, marginRight: 12, backgroundColor: Colors.RED }} onPress={() => {
+                  <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: '43%', alignItems: 'center', justifyContent: 'center', marginLeft: 18, marginRight: 12, backgroundColor: Colors.RED, height: 40 }} onPress={() => {
                     // updateEmployeeData();
                     if (employeeListDropdownItem !== 0) {
                       setDelegateButtonClick(true);
@@ -937,10 +937,10 @@ const TargetScreen = ({ route, navigation }) => {
                       getReportingManagerListFromServer(selectedUser);
                     }
                   }}>
-                    <Text style={{ fontSize: 13, fontWeight: '300', color: Colors.WHITE }}>NEXT</Text>
+                    <Text style={{ fontSize: 13, fontWeight: '300', color: Colors.WHITE }}>DELEGATE</Text>
                   </TouchableOpacity>
 
-                  <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 220, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.RED }} onPress={() => {
+                  <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: '43%', alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.RED, height: 40 }} onPress={() => {
                     if (employeeListDropdownItem !== 0) {
                       setHeaderTitle('Reporting Managers');
                       setDropDownPlaceHolder('Reporting Manager');
@@ -948,11 +948,11 @@ const TargetScreen = ({ route, navigation }) => {
                       getReportingManagerListFromServer(selectedUser);
                     }
                   }}>
-                    <Text style={{ fontSize: 13, fontWeight: '300', color: Colors.WHITE }}>CONTINUE WITHOUT DELEGATING</Text>
+                    <Text style={{ fontSize: 13, fontWeight: '300', color: Colors.WHITE }}>NEXT</Text>
                   </TouchableOpacity>
                 </View> :
                 <View style={{ position: 'absolute', right: 0, bottom: 0 }}>
-                  <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 70, alignItems: 'center', justifyContent: 'center', marginLeft: 18, marginRight: 12, backgroundColor: Colors.RED }} onPress={() => {
+                  <TouchableOpacity activeOpacity={0.6} style={{ padding: 5, borderRadius: 6, borderColor: Colors.RED, borderWidth: 0.8, width: 80, alignItems: 'center', justifyContent: 'center', marginLeft: 18, marginRight: 12, backgroundColor: Colors.RED, height: 40 }} onPress={() => {
                     if (reoprtingManagerListDropdownItem !== 0) {
                       updateEmployeeData();
                       setShowShuffleModal(false);
@@ -985,8 +985,8 @@ const TargetScreen = ({ route, navigation }) => {
           // backgroundColor: 'rgba(0, 0, 0, 0.5)',
           paddingHorizontal: 20
         }}>
-          <View style={{ maxWidth: '90%', minHeight: 50, justifyContent: 'center', alignItems: 'center', backgroundColor: '#0c0c0c', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 15 }}>
-            <Text style={{ fontSize: 16, color: '#fff', fontWeight: 'bold', textAlign: 'center' }}>{selectedName}</Text>
+          <View style={{ maxWidth: '90%', minHeight: 50, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff', borderRadius: 10, paddingVertical: 10, paddingHorizontal: 15, borderWidth: 1, borderColor: '#0c0c0c' }}>
+            <Text style={{ fontSize: 16, color: '#0c0c0c', fontWeight: 'bold', textAlign: 'center' }}>{selectedName}</Text>
           </View>
         </View>
       </Modal>
