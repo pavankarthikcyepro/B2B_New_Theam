@@ -908,6 +908,8 @@ export const homeSlice = createSlice({
                 // console.log("res2: ", action.payload);
                 const dataObj = action.payload;
                 state.leaderboard_list = dataObj ? dataObj : [];
+                if(!dataObj || dataObj.length === 0)
+                showToast('No data available') 
                 state.isLoading = false;
             })
             .addCase(getLeaderBoardList.rejected, (state, action) => {
@@ -920,6 +922,8 @@ export const homeSlice = createSlice({
                 // console.log("res2: ", action.payload);
                 const dataObj = action.payload;
                 state.branchrank_list = dataObj ? dataObj : [];
+                if (!dataObj || dataObj.length === 0)
+                    showToast('No data available') 
                 state.isLoading = false;
             })
             .addCase(getBranchRanksList.rejected, (state, action) => {

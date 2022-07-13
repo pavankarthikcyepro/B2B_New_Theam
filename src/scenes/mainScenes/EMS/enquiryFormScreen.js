@@ -1759,13 +1759,36 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         let arr = await [...carModelsList]
         arr[index] = value
         // arr.splice(carModelsList, index, value);
+        console.log("MODELS IF: ", arr);
+        let primaryModel = [];
+        primaryModel = arr.filter((item) => item.isPrimary === true);
+        if (primaryModel.length > 0) {
+          if (primaryModel[0].variant !== '' && primaryModel[0].model !== '') {
+            updateVariantModelsData(primaryModel[0].model, true, primaryModel[0].variant);
+          }
+        }
         await setCarModelsList([...arr])
-        // alert(JSON.stringify(carModelsList))
       }
       else {
         let arr = await [...carModelsList]
         arr.splice(index, 1)
-        //alert(JSON.stringify(arr))
+        console.log("MODELS ELSE: ", arr);
+        let item = {
+          "color": arr[0].color,
+          "fuel": arr[0].fuel,
+          "id": arr[0].id,
+          "model": arr[0].model,
+          "transimmisionType": arr[0].transimmisionType,
+          "variant": arr[0].variant,
+          "isPrimary": true
+        }
+        // arr[0] = item;
+        arr.splice(0, 1);
+        arr.unshift(item)
+        if (arr[0].variant !== '' && arr[0].model !== '') {
+          updateVariantModelsData(arr[0].model, true, arr[0].variant);
+        }
+        setCarModelsList([])
         await setCarModelsList([...arr])
         // carModelsList.splice(0, 1)
       }

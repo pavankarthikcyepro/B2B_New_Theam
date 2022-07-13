@@ -23,8 +23,8 @@ export default function branchRankingScreen() {
             "endDate": moment.utc(lastDay).format('YYYY-MM-DD'),
             "levelSelected": null,
             "loggedInEmpId": jsonObj.empId,
-            "pageNo": 0,
-            "size": 0,
+            "pageNo": 1,
+            "size": 50,
             "startDate": moment.utc(firstDay).format('YYYY-MM-DD')
         };
         dispatch(getBranchRanksList(payload));
@@ -42,7 +42,15 @@ export default function branchRankingScreen() {
         setTimeout(() => {
             setBranchList(selector.branchrank_list);
         }, 2000);
-    }, [branchList]);
+    }, []);
+    useEffect(()=>{
+        if (selector.branchrank_list && selector.branchrank_list.length > 0){
+            setTimeout(() => {
+                setBranchList(selector.branchrank_list);
+            }, 2000);
+        }
+
+    }, [selector.branchrank_list])
 
     const renderItemLeaderTopList = (item, extraIndex) => {
         return (

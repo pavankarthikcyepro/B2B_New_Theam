@@ -433,6 +433,7 @@ const MainParamScreen = ({ route, navigation }) => {
                     // "targetName": selector.targetType === 'MONTHLY' ? selector.selectedMonth.value : selector.selectedSpecial.keyId
                     "targetName": targetName !== '' ? targetName : "DEFAULT"
                 }
+
                 console.log("PAYLOAD EDIT:", payload);
                 Promise.all([
                     dispatch(editTargetMapping(payload))
@@ -851,16 +852,19 @@ const MainParamScreen = ({ route, navigation }) => {
                             // else {
                             //     setAddOrEdit('E')
                             // }
-                            if (ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate) {
-                                setSelectedBranch({ label: ownData.branchName, value: ownData.branch })
-                                setDefaultBranch(Number(ownData.branch))
-                                setAddOrEdit('E')
-                            }
-                            else {
-                                setAddOrEdit('A')
-                            }
-                            (ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate) ? setRetail(ownData.retailTarget.toString()) : setRetail('')
-                            setOpenRetail(true)
+                            if(loggedInEmpDetails.primaryDepartment === 'Sales'){
+                                if (ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate) {
+                                    setSelectedBranch({ label: ownData.branchName, value: ownData.branch })
+                                    setDefaultBranch(Number(ownData.branch))
+                                    setAddOrEdit('E')
+                                }
+                                else {
+                                    setAddOrEdit('A')
+                                }
+                                (ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate) ? setRetail(ownData.retailTarget.toString()) : setRetail('')
+                                setOpenRetail(true)
+                            } else showToast('Access Denied')
+                            
                         }}>
                             <Text style={styles.textInput}>{ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.retailTarget : 0}</Text>
                         </TouchableOpacity>
@@ -978,19 +982,24 @@ const MainParamScreen = ({ route, navigation }) => {
                                 // else {
                                 //     setAddOrEdit('E')
                                 // }
-                                if (ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate) {
-                                    setSelectedBranch({ label: ownData.branchName, value: ownData.branch })
-                                    setDefaultBranch(Number(ownData.branch))
-                                    setAddOrEdit('E')
-                                }
-                                else {
-                                    setAddOrEdit('A')
-                                }
-                                setSelectedUser(loggedInEmpDetails)
-                                console.log("OWN DATA", ownData, ownData.retailTarget !== null);
-                                (ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate) ? setRetail(ownData.retailTarget.toString()) : setRetail('')
+                                if (loggedInEmpDetails.primaryDepartment === 'Sales')
+                                {
+                                    if (ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate) {
+                                        setSelectedBranch({ label: ownData.branchName, value: ownData.branch })
+                                        setDefaultBranch(Number(ownData.branch))
+                                        setAddOrEdit('E')
+                                    }
+                                    else {
+                                        setAddOrEdit('A')
+                                    }
+                                    setSelectedUser(loggedInEmpDetails)
+                                    console.log("OWN DATA", ownData, ownData.retailTarget !== null);
+                                    (ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate) ? setRetail(ownData.retailTarget.toString()) : setRetail('')
 
-                                setOpenRetail(true)
+                                    setOpenRetail(true)
+                                }
+                                else showToast('Access Denied')
+                               
                             }}>
                                 <Text style={styles.textInput}>{ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.retailTarget : 0}</Text>
                             </TouchableOpacity>
