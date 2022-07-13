@@ -7,6 +7,10 @@ import { showToast } from "../../../../utils/toast";
 import { useDispatch, useSelector } from "react-redux";
 import { Checkbox, List, Button, IconButton } from "react-native-paper";
 import moment from "moment";
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import Mailer from 'react-native-mail';
+var RNFS = require('react-native-fs');
+
 
 import * as AsyncStore from "../../../../asyncStore";
 import {
@@ -292,6 +296,155 @@ export const ProformaComp = ({ branchId, modelDetails, universalId }) => {
         }
     }, [selector.vehicle_on_road_price_insurence_details_response]);
 
+    const downloadPdf = async (from)=>{
+        try{
+            let siteTypeName = await '<div >'+
+                '<div style="border: 1px solid black;color: black;font-weight: bold;" id="invoice">'+
+                    '<div class="row align-items-center">'+
+                '<div class="col-md-1">' +
+                '<img style="background: #fff;width: 120px;" src='+selector.proforma_logo+'>' +
+                '</div>' +
+                '<div class="col-md-8 orgname" style="font-size: 18px; font-weight: bold;  margin-left: 30px; border-left: 1px solid black;">' +
+                '<p >'+selector.proforma_orgName+'</p>' +
+                // '<p class="orgname-pad">(Authorised Dealer for HYUNDAI MOTOR INDIA LTD.)</p>' +
+                // '<p class="orgname-pad">GSTN: 36AAFCB6312A1ZA</p>' +
+                '</div>' +
+                '<div class="col-md-3" class="orgaddr">' +
+                '<P style="margin-top: -10px;">' + selector.proforma_branch +'</P>' +
+                '<P style="margin-top: -10px;">' + selector.proforma_city +'</P>' +
+                '<P style="margin-top: -10px;">' + selector.proforma_state +'</P>' +
+            '</div>' +
+            '</div>' +
+            '<div class="col-md-12">' +
+            '<table class="ttable">' +
+            '<colgroup>' +
+            '<col style="width:10%;">' +
+            '<col style="width:60%;">' +
+            '<col style="width:5%;">' +
+            '<col style="width:25%;">' +
+            '</colgroup>' +
+                '<tr>' +
+                '<td style="background-color:rgb(185, 200, 241);" colspan="4" ><strong>PROFORMA INVOICE</strong></td>' +
+                '</tr>' +
+                '<tr class="tCenter">' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;" >NAME :</td>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;">'+modelDetails.model+'</td>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;" >DATE</td>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;">' + moment().format("DD/MM/YYYY") +'</td>' +
+                '</tr>' +
+                '<tr class="tCenter">' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;"colspan="2" rowspan="4"></td>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;">MODEL</td>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;">'+modelDetails.model+'</td>' +
+                '</tr>' +
+                '<tr class="tCenter">' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;" >VARIANT</td>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;">'+modelDetails.variant+'</td>' +
+     ' </tr > '+
+    '< tr class="tCenter" > '+
+          '<td style=" border: 1px solid black; border-collapse: collapse;">COLOUR</td>'+
+                '<td style=" border: 1px solid black; border-collapse: collapse;">' + modelDetails.color +'</td>'+
+    '</tr>'+
+        '< tr > '+
+          '<td style=" border: 1px solid black; border-collapse: collapse;"   colspan="2" class="tCenter">AMOUNT</td>'+
+      '</tr > '+
+          '< tr > '+
+         '<td style=" border: 1px solid black; border-collapse: collapse;"colspan="4" style="text-align:center"><strong> DESCRIPTION</strong></td>' +
+            '</tr>' +
+                '<tr>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;"colspan="2">EX SHOWROOM</td>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;" colspan="2" class="talign">' + priceInfomationData.ex_showroom_price+'</td>' +
+            '</tr>' +
+            '<tr>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;"colspan="2">LIFE TAX @ 14%</td>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;"colspan="2"class="talign">' + lifeTaxAmount +'</td>' +
+         '</tr>' +
+            '<tr>' +
+            '<td style=" border: 1px solid black; border-collapse: collapse;" colspan="2">INSURANCE</td>' +
+                ' <td style=" border: 1px solid black; border-collapse: collapse;" colspan="2"class="talign">' + selectedInsurencePrice +'</td>' +
+            '</tr>' +
+            '<tr>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;" colspan="2">ESSENTIAL KIT</td>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;" colspan="2"class="talign">' + priceInfomationData.essential_kit +'</td>' +
+      '</tr > '+
+         '<tr>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;" colspan="2">WARRANTY</td>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;" colspan="2" class="talign">' + selectedWarrentyPrice +'</td>'+
+      '</tr > '+
+          '<tr>'+
+          '<td style=" border: 1px solid black; border-collapse: collapse;"colspan="2">TR CHARGES</td>'+
+                '<td style=" border: 1px solid black; border-collapse: collapse;" colspan="2"class="talign">' + tcsAmount +'</td>'+
+    '</tr>'+
+      '<tr>'+
+          '<td style=" border: 1px solid black; border-collapse: collapse;"colspan="2">FASTAG</td>'+
+                '<td style=" border: 1px solid black; border-collapse: collapse;" colspan="2"class="talign">' + priceInfomationData.fast_tag +'</td>'+
+         '</tr>' +
+         '<tr>' +
+         '<td style=" border: 1px solid black; border-collapse: collapse;" colspan="2" class="tCenter"style="background-color:rgb(228, 212, 190)"><strong>NET ON ROAD PRICE</strong> </td>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;"colspan="2"class="talign" style="background-color:rgb(228, 212, 190)"><strong>' + totalOnRoadPrice +'</strong> </td>' +
+      '</tr > '+
+          '<tr>'+
+          '<td style=" border: 1px solid black; border-collapse: collapse;"colspan="4"><p style="text-decoration:underline">TERMS AND CONDITIONS</p>'+""+'</td > '+
+      '</tr > '+
+      '</table > '+
+       
+        '<div class="row">'+
+          '<div class="col-md-10">'+
+    
+          '</div>'+
+          '<div class="col-md-2">'+
+            '<p style="float: right; margin-bottom: 50px;"><b>for BHARAT HYUNDAI</b></p><br>'+
+            '<p style="float: right;"><b>Authorised Signatory</b></p>'+
+          '</div>'+
+         '</div > '+
+     
+          '<div  style="padding-bottom: 10px; padding-left: 0px;padding-top: 10px;float: right;" data-html2canvas-ignore="true">' +
+'<ul style="list-style-type: none;display:flex">' +
+    //'<li style="margin-right:10px"> <button class="btn btn-primary" (click)="submit()">back</button></li>' +
+//'<li><button class="btn btn-primary" (click)="download()">Download</button></li>' +
+'</ul>' +
+'</div>' +
+'</div>' +
+    
+'</div>' +
+    '</div >' ;
+            let bottomPitch = await '<div style="padding-top:10px;" >' + '<p>' + 'Thank you for using our LED Savings Calculator. Energy Lighting Services is based in Nashville, Tennessee, and has been retrofitting commercial buildings all over North America with LED lighting systems since 2010. We would be honored to help you with your project needs.Please reach out to us if you have any questions.www.energylightingservices.com  855.270.3300  info@elsco.org' + '<p>' + '</div>'
+            let finalHtmlText = await siteTypeName 
+
+            let options = {
+                html: finalHtmlText, 
+                fileName: 'ProformaInvoice',
+                directory: 'B2B',
+            };
+            let file = await RNHTMLtoPDF.convert(options)
+            var PdfData = await RNFS.readFile(file.filePath, 'base64').then();
+            if (from === 'email'){
+                await Mailer.mail({
+                    subject: 'Invoice',
+                  //  recipients: ['radhadevi8958@gmail.com'],
+                    body: '',
+                    attachments: [{
+                        path: file.filePath,  // The absolute path of the file from which to read data.
+                        type: 'pdf',   // Mime Type: jpg, png, doc, ppt, html, pdf
+                        name: 'ProformaInvoice.pdf',   // Optional: Custom filename for attachment
+                    }]
+                }, (error, event) => {
+                    if (error) {
+                        AlertIOS.alert('Error', 'Could not send mail. Please send a mail to support@example.com');
+                    }
+                });
+            }
+         
+
+                 
+            alert(file.filePath);
+
+        }catch(error){
+            alert(error)
+        }
+       
+
+    }
     const saveProformaDetails = async(from)=>{
         var proformaStatus = ''
         if(from === 'save')
@@ -587,6 +740,27 @@ export const ProformaComp = ({ branchId, modelDetails, universalId }) => {
                     );
                 }}
             />
+            <View style={{flexDirection:'row', alignSelf:'flex-end'}}>
+                <Button
+                    mode="contained"
+                    style={{ width: 100, marginRight:10 }}
+                    color={Colors.PINK}
+                    labelStyle={{ textTransform: "none" }}
+                    onPress={() => downloadPdf('downlaod')}
+                >
+                    Download
+                </Button>
+                <Button
+                    mode="contained"
+                    style={{ width: 80 , marginRight:10}}
+                    color={Colors.PINK}
+                    labelStyle={{ textTransform: "none" }}
+                    onPress={() => downloadPdf('email')}
+                >
+                    Email
+                </Button>
+            </View>
+           
         <View style={{flexDirection:'row', alignItems:'center', justifyContent:'center', padding:5}}>
                 <Image
                     style={styles.ImageStyleS}
