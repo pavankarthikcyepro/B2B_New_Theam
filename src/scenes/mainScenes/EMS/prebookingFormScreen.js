@@ -774,7 +774,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             }
             const dmsLeadDto = selector.pre_booking_details_response.dmsLeadDto;
             dispatch(getOnRoadPriceDtoListApi(dmsLeadDto.id));
-            if (dmsLeadDto.leadStatus === "ENQUIRYCOMPLETED" || dmsLeadDto.leadStatus === "SENTFORAPPROVAL" || dmsLeadDto.leadStatus === "REJECTED") {
+            // if (dmsLeadDto.leadStatus === "ENQUIRYCOMPLETED" || dmsLeadDto.leadStatus === "SENTFORAPPROVAL" || dmsLeadDto.leadStatus === "REJECTED") {
+            //     console.log("INSIDE ", dmsLeadDto.leadStatus);
+            //     setShowSubmitDropBtn(true);
+            // }
+            if (dmsLeadDto.leadStatus === "ENQUIRYCOMPLETED" || dmsLeadDto.leadStatus === "REJECTED") {
                 console.log("INSIDE ", dmsLeadDto.leadStatus);
                 setShowSubmitDropBtn(true);
             }

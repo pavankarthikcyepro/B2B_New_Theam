@@ -133,6 +133,7 @@ const MainParamScreen = ({ route, navigation }) => {
                         }
                     }
                     else {
+                        setTargetName('')
                         setIsNoTargetAvailable(true)
                         setOwnData({
                             "retailTarget": null,
@@ -154,6 +155,7 @@ const MainParamScreen = ({ route, navigation }) => {
                     }
                 }
                 else {
+                    setTargetName('')
                     setIsNoTargetAvailable(true)
                     setOwnData({
                         "retailTarget": null,
@@ -175,6 +177,7 @@ const MainParamScreen = ({ route, navigation }) => {
                 }
             }
             if (selector.isDataLoaded && selector.targetMapping.length === 0) {
+                setTargetName('')
                 setIsNoTargetAvailable(true)
                 setOwnData({
                     "retailTarget": null,
@@ -383,7 +386,7 @@ const MainParamScreen = ({ route, navigation }) => {
                     // "teamLeadId": otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead')[0].value.value : '',
                     "targetType": selector.targetType,
                     // "targetName": selector.targetType === 'MONTHLY' ? selector.selectedMonth.value : selector.selectedSpecial.keyId
-                    "targetName": targetName !== '' ? targetName : "DEFAULT"
+                    "targetName": targetName !== '' ? targetName : (selector.targetType === 'MONTHLY' ? selector.selectedMonth.value : selector.selectedSpecial.keyId)
                 }
                 console.log("PAYLOAD:", payload);
                 Promise.all([
@@ -431,7 +434,7 @@ const MainParamScreen = ({ route, navigation }) => {
                     // "teamLeadId": otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead')[0].value.value : '',
                     "targetType": selector.targetType,
                     // "targetName": selector.targetType === 'MONTHLY' ? selector.selectedMonth.value : selector.selectedSpecial.keyId
-                    "targetName": targetName !== '' ? targetName : "DEFAULT"
+                    "targetName": targetName !== '' ? targetName : (selector.targetType === 'MONTHLY' ? selector.selectedMonth.value : selector.selectedSpecial.keyId)
                 }
                 console.log("PAYLOAD EDIT:", payload);
                 Promise.all([

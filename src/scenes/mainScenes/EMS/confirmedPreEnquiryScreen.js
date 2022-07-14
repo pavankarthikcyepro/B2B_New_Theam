@@ -302,6 +302,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     useEffect(() => {
         if (selector.all_pre_enquiry_tasks.length > 0 && employeeId) {
             let arrTemp = selector.all_pre_enquiry_tasks.filter((obj, index) => {
+                console.log("EMP ID ASSIGN: ", obj?.assignee?.empId , employeeId);
                 return obj.taskName === 'Create Enquiry' && obj.assignee.empId == employeeId;
             })
             let filteredObj = arrTemp.length > 0 ? { ...arrTemp[0] } : undefined;
@@ -309,7 +310,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                 filteredObj.taskStatus = "CLOSED";
                 filteredObj.lat = currentLocation ? currentLocation.lat.toString() : null;
                 filteredObj.lon = currentLocation ? currentLocation.long.toString() : null;
-                // console.log("filteredObj: ", filteredObj);
+                console.log("filteredObj: ", filteredObj);
                 dispatch(assignTaskApi(filteredObj));
             }
         }

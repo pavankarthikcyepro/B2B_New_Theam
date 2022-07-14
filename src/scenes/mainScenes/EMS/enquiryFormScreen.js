@@ -253,7 +253,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   useEffect(() => {
     const interval = setInterval(() => {
       // if (enqDetails?.leadStage === "ENQUIRY" && enqDetails?.leadStatus === null) {
-      updateEnquiry()
+      // updateEnquiry()
       // }
     }, 10000);
     return () => {
@@ -2025,7 +2025,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         }
         if (
           element.taskName === "Proceed to Pre Booking" &&
-          element.assignee.empId === userData.employeeId &&
+          (element.assignee.empId === userData.employeeId || element.assignee.employeeId === userData.employeeId) &&
           element.universalId === universalId
         ) {
           pendingTaskNames.push("Proceed to Pre Booking");
@@ -3698,7 +3698,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           modelOnclick={modelOnclick}
                           isPrimaryOnclick={isPrimaryOnclick}
                           index={index}
-                          item={item} />
+                          item={item} 
+                          leadStage={''}/>
 
                         {/* <Divider /> */}
                       </View>

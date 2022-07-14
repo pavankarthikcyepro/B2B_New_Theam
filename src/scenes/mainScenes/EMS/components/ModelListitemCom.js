@@ -239,39 +239,39 @@ export const ModelListitemCom = ({ modelOnclick,isPrimaryOnclick ,item, index, l
             setCarTransmissionType('')
             try{
                 var carmodeldata;
-                // if (leadStage === 'PREBOOKING') {
-                //      carmodeldata = {
-                //         "color": '',
-                //         "fuel": '',
-                //         "id": item.id,
-                //         "model": selectedModelName,
-                //         "transimmisionType": '',
-                //         "variant": '',
-                //          "isPrimary": item.isPrimary
+                if (leadStage === 'PREBOOKING') {
+                     carmodeldata = {
+                        "color": '',
+                        "fuel": '',
+                        "id": item.id,
+                        "model": selectedModelName,
+                        "transimmisionType": '',
+                        "variant": '',
+                         "isPrimary": item.isPrimary
 
-                //     }
-                // }
-                // else {
-                //      carmodeldata = {
-                //         "color": '',
-                //         "fuel": '',
-                //         "id": item.id,
-                //         "model": selectedModelName,
-                //         "transimmisionType": '',
-                //         "variant": '',
-                //         "isPrimary":item.isPrimary
-
-                //     }
-                // }
-                carmodeldata = {
-                    "color": '',
-                    "fuel": '',
-                    "id": item.id,
-                    "model": selectedModelName,
-                    "transimmisionType": '',
-                    "variant": '',
-                    "isPrimary": item.isPrimary
+                    }
                 }
+                else {
+                     carmodeldata = {
+                        "color": '',
+                        "fuel": '',
+                        "id": item.id,
+                        "model": selectedModelName,
+                        "transimmisionType": '',
+                        "variant": '',
+                        "isPrimary":item.isPrimary
+
+                    }
+                }
+                // carmodeldata = {
+                //     "color": '',
+                //     "fuel": '',
+                //     "id": item.id,
+                //     "model": selectedModelName,
+                //     "transimmisionType": '',
+                //     "variant": '',
+                //     "isPrimary": item.isPrimary
+                // }
                 var modelsarr = await selector.dmsLeadProducts
                 modelsarr[index] = await carmodeldata
                 modelOnclick(index, carmodeldata, "update")
@@ -568,7 +568,7 @@ export const ModelListitemCom = ({ modelOnclick,isPrimaryOnclick ,item, index, l
                         <Text style={{ color: Colors.WHITE, fontSize: 18, marginLeft: 10, textAlignVertical: 'center' }} numberOfLines={2}>{carModel}</Text>
                     </View>
                    
-                    {/* {leadStage === 'PREBOOKING' ?
+                    {leadStage === 'PREBOOKING' ?
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Text style={{ color: Colors.WHITE, fontSize: 16, marginRight: 10 }}>Is Primary</Text>
                             <Switch
@@ -582,8 +582,8 @@ export const ModelListitemCom = ({ modelOnclick,isPrimaryOnclick ,item, index, l
                                 size={35} />
                         </View> : null
                     } 
-                     */}
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    
+                    {/* <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Text style={{ color: Colors.WHITE, fontSize: 16, marginRight: 10 }}>Is Primary</Text>
                         <Switch
                             icon=" toggle-switch-off-outline"
@@ -595,7 +595,7 @@ export const ModelListitemCom = ({ modelOnclick,isPrimaryOnclick ,item, index, l
                             }}
                             color={Colors.PINK}
                             size={35} />
-                    </View>
+                    </View> */}
                    <TouchableOpacity 
                         onPress={(value) => modelOnclick(index, item, "delete")}>               
                           <IconButton

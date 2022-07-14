@@ -33,8 +33,12 @@ export const noThanksApi = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/noThanksApi",
 })
 
 export const getEmployeesListApi = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/getEmployeesListApi", async (data: any, { rejectWithValue }) => {
+    console.log("getEmployeesListApi", URL.SOURCE_OF_ENQUIRY_ENQUIRY(data.sourceId, data.orgId, data.branchId));
+    
     const response = await client.get(URL.SOURCE_OF_ENQUIRY_ENQUIRY(data.sourceId, data.orgId, data.branchId))
     const json = await response.json()
+    console.log("getEmployeesListApi RES: ", JSON.stringify(json));
+    
     if (!response.ok) {
         return rejectWithValue(json);
     }
@@ -43,8 +47,12 @@ export const getEmployeesListApi = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/getEm
 
 export const getaAllTasks = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/getaAllTasks", async (endUrl, { rejectWithValue }) => {
     const url = URL.TASKS_PRE_ENQUIRY() + endUrl;
+    console.log("ALL TASKS URL: ", url);
+    
     const response = await client.get(url)
     const json = await response.json()
+    console.log("TSTSTSTSTS: ",JSON.stringify(json));
+    
     if (!response.ok) {
         return rejectWithValue(json);
     }
@@ -54,6 +62,8 @@ export const getaAllTasks = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/getaAllTasks
 export const assignTaskApi = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/assignTaskApi", async (body, { rejectWithValue }) => {
     const response = await client.put(URL.ASSIGN_TASK(), body)
     const json = await response.json()
+    console.log("assignTaskApi", URL.ASSIGN_TASK(), body, json);
+    
     if (!response.ok) {
         return rejectWithValue(json);
     }
@@ -64,6 +74,8 @@ export const changeEnquiryStatusApi = createAsyncThunk("CONFIRMED_PRE_ENQUIRY/ch
     const url = URL.CHANGE_ENQUIRY_STATUS() + endUrl;
     const response = await client.post(url, {})
     const json = await response.json()
+    console.log("changeEnquiryStatusApi", url, json);
+    
     if (!response.ok) {
         return rejectWithValue(json);
     }
