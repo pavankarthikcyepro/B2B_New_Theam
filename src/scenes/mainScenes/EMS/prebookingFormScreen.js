@@ -2825,7 +2825,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 <TextinputComp
                                     style={{ height: 65, width: "100%" }}
                                     value={selector.mobile}
-                                    // editable={false}
+                                    editable={false}
                                     label={"Mobile Number*"}
                                     maxLength={10}
                                     onChangeText={(text) =>

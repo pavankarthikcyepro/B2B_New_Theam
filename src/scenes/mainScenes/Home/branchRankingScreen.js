@@ -15,7 +15,10 @@ export default function branchRankingScreen() {
 
     const getBranchRankListFromServer = async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        const jsonObj = JSON.parse(employeeData);
+        const jsonObj = await JSON.parse(employeeData);
+        const branchId = await AsyncStore.getData(
+            AsyncStore.Keys.SELECTED_BRANCH_ID
+        );
         var date = new Date();
         var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
         var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
@@ -25,7 +28,11 @@ export default function branchRankingScreen() {
             "loggedInEmpId": jsonObj.empId,
             "pageNo": 1,
             "size": 50,
-            "startDate": moment.utc(firstDay).format('YYYY-MM-DD')
+            "startDate": moment.utc(firstDay).format('YYYY-MM-DD'),
+            //not for payload, just to add in params
+            "orgId":jsonObj.orgId,
+            "branchId":jsonObj.branchId
+
         };
         dispatch(getBranchRanksList(payload));
     }

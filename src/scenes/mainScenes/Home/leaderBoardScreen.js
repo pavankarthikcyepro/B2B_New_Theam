@@ -86,9 +86,10 @@ export default function leaderBoardScreen() {
             "endDate": moment.utc(lastDay).format('YYYY-MM-DD'),
             "levelSelected": null,
             "loggedInEmpId": jsonObj.empId,
-            "pageNo": 1,
+            "pageNo": 0,
             "size": 50,
-            "startDate": moment.utc(firstDay).format('YYYY-MM-DD')
+            "startDate": moment.utc(firstDay).format('YYYY-MM-DD'),
+            "orgId": jsonObj.orgId
         };
         console.log("leader board"+JSON.stringify(payload))
        // alert(JSON.stringify(payload))

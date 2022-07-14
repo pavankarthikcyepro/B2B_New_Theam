@@ -1654,6 +1654,7 @@ const TargetScreen = ({ route, navigation }) => {
                               if (tempRawData.length > 0) {
 
                                 for (let i = 0; i < tempRawData.length; i++) {
+                                  tempRawData[i].empName = tempRawData[i].empName,
                                   tempRawData[i] = {
                                     ...tempRawData[i],
                                     isOpenInner: false,
@@ -1664,6 +1665,7 @@ const TargetScreen = ({ route, navigation }) => {
                                   }
                                 }
                               }
+                             // alert(JSON.stringify(localData))
                               setAllParameters([...localData])
                             })
 

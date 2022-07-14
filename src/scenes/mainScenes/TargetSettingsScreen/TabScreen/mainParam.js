@@ -10,6 +10,7 @@ import { AppNavigator } from '../../../navigations';
 import * as AsyncStore from '../../../../asyncStore';
 import { TargetDropdown } from "../../../../pureComponents";
 import { Dropdown } from 'react-native-element-dropdown';
+import { LoaderComponent } from '../../../../components';
 
 import {
     getEmployeesDropDownData,
@@ -1194,6 +1195,10 @@ const MainParamScreen = ({ route, navigation }) => {
                             </TouchableOpacity>
                         </View>
                     </ScrollView>
+                    {!selector.isLoading ? null : <LoaderComponent
+                        visible={selector.isLoading}
+                        onRequestClose={() => { }}
+                    />}
                 </View>
             </Modal>
         </>

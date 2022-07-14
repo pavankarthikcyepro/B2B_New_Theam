@@ -38,6 +38,7 @@ import {
     updateIsTeamPresent,
 } from '../../../redux/homeReducer';
 import { showToast } from '../../../utils/toast';
+import { LoaderComponent } from '../../../components';
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 30) / 2;
@@ -435,7 +436,10 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                     }}
                 />
             </View>
-
+            {!selector.isLoading ? null : <LoaderComponent
+                visible={selector.isLoading}
+                onRequestClose={() => { }}
+            />}
         </SafeAreaView>
     );
 };
