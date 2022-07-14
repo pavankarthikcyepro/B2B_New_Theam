@@ -25,6 +25,7 @@ import {
     DatePickerComponent,
 } from "../../../components";
 import { ModelListitemCom } from "./components/ModelListitemCom";
+import { LoaderComponent } from '../../../components';
 
 import {
     clearState,
@@ -5165,6 +5166,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     </TouchableOpacity>
                 </View>
             </Modal>
+            {!selector.isLoading ? null : <LoaderComponent
+                visible={selector.isLoading}
+                onRequestClose={() => { }}
+            />}
         </SafeAreaView>
     );
 };

@@ -10,6 +10,8 @@ import {
   Alert,
 } from "react-native";
 import { Colors, GlobalStyle } from "../../../styles";
+import { LoaderComponent } from '../../../components';
+
 import { TextinputComp, DropDownComponant } from "../../../components";
 import { DropDownSelectionItem } from "../../../pureComponents";
 import { Button, IconButton } from "react-native-paper";
@@ -607,6 +609,10 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
             </Button>
           </View>
         )}
+        {!selector.isLoading ? null : <LoaderComponent
+          visible={selector.isLoading}
+          onRequestClose={() => { }}
+        />}
       </SafeAreaView>
     </KeyboardAvoidingView>
   );
