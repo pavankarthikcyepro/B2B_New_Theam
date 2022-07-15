@@ -598,6 +598,10 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
+            {!selector.isLoading ? null : <LoaderComponent
+                visible={selector.isLoading}
+                onRequestClose={() => { }}
+            />}
       </SafeAreaView>
     );
 }
