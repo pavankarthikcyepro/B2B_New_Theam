@@ -574,7 +574,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 // arr.splice(carModelsList, index, value);
                 console.log("MODELS IF: ", arr);
                 let primaryModel = [];
-                primaryModel = arr.filter((item) => item.isPrimary === true);
+                primaryModel = arr.filter((item) => item.isPrimary === "Y");
                 if(primaryModel.length > 0){
                     if (primaryModel[0].variant !== '' && primaryModel[0].model !== ''){
                         updateVariantModelsData(primaryModel[0].model, true, primaryModel[0].variant);
@@ -593,7 +593,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     "model": arr[0].model,
                     "transimmisionType": arr[0].transimmisionType,
                     "variant": arr[0].variant,
-                    "isPrimary": true
+                    "isPrimary": "Y"
                 }
                 // arr[0] = item;
                 arr.splice(0, 1);
@@ -615,7 +615,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
    
     const isPrimaryOnclick = async(isPrimaryEnabled, index, item)=>{
         try{
-            if(isPrimaryEnabled)
+            if(isPrimaryEnabled === "Y")
             {
                 console.log("CALLED UPDATE");
                 updateVariantModelsData(item.model, true, item.variant);
@@ -630,7 +630,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     "model": data.model,
                     "transimmisionType": data.transimmisionType,
                     "variant": data.variant,
-                    "isPrimary": false
+                    "isPrimary": "N"
                 }
                 const selecteditem = await {
                     "color": item.color,
@@ -639,7 +639,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     "model": item.model,
                     "transimmisionType": item.transimmisionType,
                     "variant": item.variant,
-                    "isPrimary": true
+                    "isPrimary": "Y"
                 }
                 await setCarModelsList([])
                 arr[isPrimaryCureentIndex] = cardata;
@@ -1524,7 +1524,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
                 
             let selectedModel = []
-            selectedModel = carModelsList.filter((item) => item.isPrimary === true)
+            selectedModel = carModelsList.filter((item) => item.isPrimary === "Y")
             console.log("MODEL: ", selector.model, carModelsList);
             dmsLeadDto.firstName = selector.first_name;
             dmsLeadDto.lastName = selector.last_name;
@@ -1838,20 +1838,23 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 //         "isPrimary": false
                 //     }
                 // }
+                var isPrimary = "N"
+                if (item.isPrimary && item.isPrimary != null)
+                isPrimary = item.isPrimary
                 item = await {
                     "color": item.color,
                     "fuel": item.fuel,
                     "id": item.id,
                     "model": item.model,
                     "transimmisionType": item.transimmisionType,
-                    "variant": item.variant,
-                    "isPrimary": false
+                    "variant": item.variant,                   
+                    "isPrimary": isPrimary
                 }
                 array[i] = await item
                 if (i === selector.dmsLeadProducts.length - 1){
                     let index = array.findIndex((item) => item.model === selector.pre_booking_details_response?.dmsLeadDto?.model);
                     if(index !== -1){
-                        array[index].isPrimary = true
+                       // array[index].isPrimary = "Y"
                     }
                 }
                // console.log(userObject.username);
@@ -1956,8 +1959,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         // dataObj.transimmisionType = selector.transmission_type;
         // dmsLeadProducts[0] = dataObj;
         let selectedModel = [], tempCarModels = [...carModelsList], index = -1;
-        selectedModel = carModelsList.filter((item) => item.isPrimary === true)
-        index = carModelsList.findIndex((item) => item.isPrimary === true)
+        selectedModel = carModelsList.filter((item) => item.isPrimary === "Y")
+        index = carModelsList.findIndex((item) => item.isPrimary === "Y")
         tempCarModels.splice(index, 1);
         tempCarModels.unshift(selectedModel[0])
         console.log("ARRANGE MODEL: ", tempCarModels, dmsLeadProducts)
@@ -3342,7 +3345,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             "model": "",
                                             "transimmisionType": '',
                                             "variant": '',
-                                            "isPrimary": false
+                                            "isPrimary": "N"
                                         }
                                         let arr = [...carModelsList]
                                         arr.push(carmodeldata)

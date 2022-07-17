@@ -1207,7 +1207,13 @@ const bookingFormSlice = createSlice({
       const dmsLeadProducts = action.payload;
       let dataObj: any = {};
       if (dmsLeadProducts.length > 0) {
-        dataObj = { ...dmsLeadProducts[0] };
+        for (let i = 0; i < dmsLeadProducts.length; i++) {
+          var item = dmsLeadProducts[i]
+        if (dmsLeadProducts[i].isPrimary != null && dmsLeadProducts[i].isPrimary === "Y") {
+          dataObj = { ...dmsLeadProducts[i] };
+        }
+       
+      }
       }
       state.lead_product_id = dataObj.id ? dataObj.id : "";
       state.model = dataObj.model ? dataObj.model : "";
