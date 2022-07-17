@@ -218,6 +218,13 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
             BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
         })
     }, [navigation]);
+    // useEffect(() => {
+    //     if (selector.lead_reference_data && selector.lead_reference_data.referencenumber ){
+    //        // alert("hi")
+           
+    //     }
+    // }, [selector.lead_reference_data]);
+
 
     const getBranchId = () => {
 
@@ -339,6 +346,8 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
             [
                 {
                     text: 'OK', onPress: () => {
+                       
+                       
                         goToParentScreen();
                     }
                 }
@@ -348,7 +357,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     }
 
 
-    const updateEnquiryDetailsCreateEnquiry = () => {
+    const updateEnquiryDetailsCreateEnquiry = (leadRefIdForEnq) => {
         //SarathKumarUppuluri
         let enquiryDetailsObj = { ...selector.pre_enquiry_details };
         let dmsLeadDto = { ...enquiryDetailsObj.dmsLeadDto };
@@ -481,7 +490,8 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                         "universalId": itemData.universalId
                     }
                     console.log("PAYLOAD LEAD REF:", payload);
-                    dispatch(customerLeadRef(payload))
+                    customerLeadReference(payload)
+                   // dispatch(customerLeadRef(payload))
 
                     {/*}       .then((jsonRes) => {
                             if (jsonRes.success === true) {
@@ -493,12 +503,37 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                             }
                     });
                 */}
-                  dispatch(updateEnquiryDetailsCreateEnquiry());
+                 
                 }
             });
         }
     }
+    const customerLeadReference = async (enquiryDetailsObj) => {
 
+        setIsLoading(true);
+        console.log("<<<<<<<WE ARE DONE>>>>>>>>>>>: ", URL.UPDATE_ENQUIRY_DETAILS(), userToken, enquiryDetailsObj);
+        await fetch(URL.CUSTOMER_LEAD_REFERENCE(), {
+            method: "POST",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                "auth-token": userToken
+            },
+            body: JSON.stringify(enquiryDetailsObj)
+        })
+            .then(json => json.json())
+            .then(response => {
+                if (response && response.dmsEntity && response.dmsEntity.leadCustomerReference)
+                {
+                    dispatch(updateEnquiryDetailsCreateEnquiry(response.dmsEntity.leadCustomerReference.referencenumber));
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                showToastRedAlert(err);
+                setIsLoading(false);
+            })
+    }
     const noThanksClicked = () => {
         dispatch(noThanksApi(itemData.leadId));
         navigation.popToTop();
