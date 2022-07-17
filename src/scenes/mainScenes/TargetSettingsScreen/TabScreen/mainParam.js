@@ -356,7 +356,7 @@ const MainParamScreen = ({ route, navigation }) => {
                 "targetType": selector.targetType
             }
             console.log("PAYLOAD", payload);
-            dispatch(getAllTargetMapping(payload))
+            //dispatch(getAllTargetMapping(payload))
         }
     }, [selector.targetType])
 

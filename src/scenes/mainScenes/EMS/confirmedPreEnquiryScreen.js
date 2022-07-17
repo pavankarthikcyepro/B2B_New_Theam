@@ -56,7 +56,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     const [dropPriceDifference, setDropPriceDifference] = useState("");
     const [dropRemarks, setDropRemarks] = useState("");
     const [currentLocation, setCurrentLocation] = useState(null);
-
+    const [leadRefIdForEnq, setleadRefIdForEnq] = useState(null);
 
     React.useLayoutEffect(() => {
         navigation.setOptions({
@@ -347,6 +347,78 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         );
     }
 
+
+    const updateEnquiryDetailsCreateEnquiry = () => {
+        //SarathKumarUppuluri
+        let enquiryDetailsObj = { ...selector.pre_enquiry_details };
+        let dmsLeadDto = { ...enquiryDetailsObj.dmsLeadDto };
+        dmsLeadDto.leadStage = "ENQUIRY";
+        dmsLeadDto.referencenumber = leadRefIdForEnq;
+        enquiryDetailsObj.dmsLeadDto = dmsLeadDto;
+
+        let leadId = selector.pre_enquiry_details.dmsLeadDto.id;
+        if (!leadId) {
+            showToast("lead id not found");
+            return;
+        }
+
+
+        UpdateRecord007(enquiryDetailsObj)
+    };
+
+    {/*  const PostPreEnquiryLead = async (enquiryDetailsObj) => {
+        console.log("DROP PAY: ", URL.DROP_ENQUIRY(), payload);
+        setIsLoading(true);
+        await fetch(URL.DROP_ENQUIRY(), {
+            method: "POST",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                "auth-token": userToken
+            },
+            body: JSON.stringify(payload)
+        })
+            .then(json => json.json())
+            .then(response => {
+                if (response.status === "SUCCESS") {
+                    // Update Record
+                    UpdateRecord(enquiryDetailsObj);
+                } else {
+                    showToast("Drop Lead Failed")
+                }
+                setIsLoading(false);
+            })
+            .catch(err => {
+                console.error(err);
+                showToastRedAlert(err);
+                setIsLoading(false);
+            })
+    } */}
+
+    const UpdateRecord007 = async (enquiryDetailsObj) => {
+
+        setIsLoading(true);
+        console.log("<<<<<<<WE ARE DONE>>>>>>>>>>>: ", URL.UPDATE_ENQUIRY_DETAILS(), userToken, enquiryDetailsObj);
+        await fetch(URL.UPDATE_ENQUIRY_DETAILS(), {
+            method: "POST",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                "auth-token": userToken
+            },
+            body: JSON.stringify(enquiryDetailsObj)
+        })
+            .then(json => json.json())
+            .then(response => {
+
+            })
+            .catch(err => {
+                console.error(err);
+                showToastRedAlert(err);
+                setIsLoading(false);
+            })
+    }
+
     const goToParentScreen = () => {
         getPreEnquiryListFromServer();
         navigation.navigate(EmsTopTabNavigatorIdentifiers.enquiry);
@@ -410,6 +482,18 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                     }
                     console.log("PAYLOAD LEAD REF:", payload);
                     dispatch(customerLeadRef(payload))
+
+                    {/*}       .then((jsonRes) => {
+                            if (jsonRes.success === true) {
+                                if (jsonRes.dmsEntity?.leadCustomerReference) {
+                                    setleadRefIdForEnq =  jsonRes.dmsEntity?.leadCustomerReference.referencenumber;
+                                    console.log("OUR PRIDE>>>>>>>>>>>>>>>>>" + setleadRefIdForEnq);
+                        //refNo: res[1].payload.dmsEntity.leadCustomerReference.referencenumber,
+                                }
+                            }
+                    });
+                */}
+                  dispatch(updateEnquiryDetailsCreateEnquiry());
                 }
             });
         }
