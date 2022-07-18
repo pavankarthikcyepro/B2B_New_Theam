@@ -1310,6 +1310,16 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             showToast("Please select customer type");
             return;
         }
+        let primaryTempCars = []
+        primaryTempCars = carModelsList.filter((item) => {
+            return item.isPrimary === 'Y'
+        })
+        if (!primaryTempCars.length > 0) {
+            scrollToPos(4)
+            setOpenAccordian('4')
+            showToast("Select is Primary for atleast one vehicle");
+            return;
+        }
         if (selector.pincode.length === 0 ||
             selector.house_number.length === 0 ||
             selector.street_name.length === 0 ||
