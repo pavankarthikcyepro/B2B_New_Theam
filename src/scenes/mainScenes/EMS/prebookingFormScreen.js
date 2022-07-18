@@ -57,6 +57,7 @@ import {
     updatePrebookingDetailsApi,
     getOnRoadPriceDtoListApi,
     sendOnRoadPriceDetails,
+    sendEditedOnRoadPriceDetails,
     setPreBookingPaymentDetials,
     getDropDataApi,
     getDropSubReasonDataApi,
@@ -1480,7 +1481,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         postOnRoadPriceTable.form_or_pan = selector.form_or_pan;
 
         console.log("PAYLOAD:", JSON.stringify(postOnRoadPriceTable));
-        dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable))
+        if(isEdit)
+        {
+            postOnRoadPriceTable.id = selector.on_road_price_dto_list_response[0].id
+            dispatch(sendEditedOnRoadPriceDetails(postOnRoadPriceTable))
+        } else   dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable))
         // Promise.all([
         //     dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable))
         // ]).then(async (res) => {
