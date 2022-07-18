@@ -362,6 +362,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         let enquiryDetailsObj = { ...selector.pre_enquiry_details };
         let dmsLeadDto = { ...enquiryDetailsObj.dmsLeadDto };
         dmsLeadDto.leadStage = "ENQUIRY";
+        dmsLeadDto.salesConsultant = selector.change_enquiry_response.dmsEntity.task?.assignee?.empName
         dmsLeadDto.referencenumber = leadRefIdForEnq;
         enquiryDetailsObj.dmsLeadDto = dmsLeadDto;
 
