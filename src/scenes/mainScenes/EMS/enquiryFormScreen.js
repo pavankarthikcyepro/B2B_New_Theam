@@ -1121,11 +1121,22 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         item.variant !== ''
     })
 
+    let primaryTempCars = []
+    primaryTempCars = carModelsList.filter((item) => {
+      return item.isPrimary === 'Y' })
+
     console.log("MODELS: ", tempCars, carModelsList);
     if (tempCars.length < carModelsList.length) {
       scrollToPos(4)
       setOpenAccordian('4')
       showToast("Please fill model details");
+      return;
+    }
+
+    if (!primaryTempCars.length > 0) {
+      scrollToPos(4)
+      setOpenAccordian('4')
+      showToast("Select is Primary for atleast one vehicle");
       return;
     }
     // if (
