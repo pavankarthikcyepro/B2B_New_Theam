@@ -401,7 +401,7 @@ export const updateEmployeeDataBasedOnDelegate = createAsyncThunk("HOME/updateEm
 })
 
 export const getLeaderBoardList = createAsyncThunk("HOME/getLeaderBoardList", async (payload: any, { rejectWithValue }) => {
-    const response = await client.post(URL.GET_LEADERBOARD_DATA(), payload)
+    const response = await client.post(URL.GET_LEADERBOARD_DATA(payload.orgId), payload)
     const json = await response.json();
     if (!response.ok) {
         return rejectWithValue(json);
@@ -410,7 +410,7 @@ export const getLeaderBoardList = createAsyncThunk("HOME/getLeaderBoardList", as
 })
 
 export const getBranchRanksList = createAsyncThunk("HOME/getBranchRanksList", async (payload, { rejectWithValue }) => {
-    const response = await client.post(URL.GET_BRANCH_RANKING_DATA(), payload);
+    const response = await client.post(URL.GET_BRANCH_RANKING_DATA(payload.orgId, payload.branchId), payload);
     const json = await response.json();
     if (!response.ok) {
         return rejectWithValue(json);
@@ -908,6 +908,8 @@ export const homeSlice = createSlice({
                 // console.log("res2: ", action.payload);
                 const dataObj = action.payload;
                 state.leaderboard_list = dataObj ? dataObj : [];
+                if(!dataObj || dataObj.length === 0)
+                showToast('No data available') 
                 state.isLoading = false;
             })
             .addCase(getLeaderBoardList.rejected, (state, action) => {
@@ -920,6 +922,8 @@ export const homeSlice = createSlice({
                 // console.log("res2: ", action.payload);
                 const dataObj = action.payload;
                 state.branchrank_list = dataObj ? dataObj : [];
+                if (!dataObj || dataObj.length === 0)
+                    showToast('No data available') 
                 state.isLoading = false;
             })
             .addCase(getBranchRanksList.rejected, (state, action) => {

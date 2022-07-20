@@ -96,6 +96,7 @@ export const targetSettingsSlice = createSlice({
     initialState: {
         startDate: "",
         endDate: "",
+        isLoading: false,
         isTeam: false,
         activeBranches: [],
         roles: [],
@@ -194,76 +195,112 @@ export const targetSettingsSlice = createSlice({
         builder
             .addCase(getEmployeesActiveBranch.pending, (state, action) => {
                 state.activeBranches = [];
+                state.isLoading = true;
             })
             .addCase(getEmployeesActiveBranch.fulfilled, (state, action) => {
                 // console.log('menu_list: ', JSON.stringify(action.payload));
+                state.isLoading = false;
+
                 state.activeBranches = action.payload;
             })
             .addCase(getEmployeesActiveBranch.rejected, (state, action) => {
+                state.isLoading = false;
+
                 state.activeBranches = [];
             })
             .addCase(getEmployeesRolls.pending, (state, action) => {
+                state.isLoading = true;
+
                 state.roles = [];
             })
             .addCase(getEmployeesRolls.fulfilled, (state, action) => {
+                state.isLoading = false;
+
                 // console.log('menu_list: ', JSON.stringify(action.payload));
                 state.roles = action.payload;
             })
             .addCase(getEmployeesRolls.rejected, (state, action) => {
+                state.isLoading = false;
+
                 state.roles = [];
             })
             .addCase(getAllTargetMapping.pending, (state, action) => {
+                state.isLoading = true;
+
                 state.isDataLoaded = false
                 state.targetMapping = [];
             })
             .addCase(getAllTargetMapping.fulfilled, (state, action) => {
+                state.isLoading = false;
+
                 // console.log('menu_list: ', JSON.stringify(action.payload));
                 state.targetMapping = []
                 state.targetMapping = action.payload.data ? action.payload.data : [];
                 state.isDataLoaded = true
             })
             .addCase(getAllTargetMapping.rejected, (state, action) => {
+                state.isLoading = false;
+
                 state.targetMapping = [];
                 state.isDataLoaded = true
             })
             .addCase(addTargetMapping.pending, (state, action) => {
+                state.isLoading = true;
+
                 
             })
             .addCase(addTargetMapping.fulfilled, (state, action) => {
+                state.isLoading = false;
+
                 if (action.payload?.message){
                     showToast(action.payload.message)
                 }
             })
             .addCase(addTargetMapping.rejected, (state, action) => {
-                
+                state.isLoading = false;
+
             })
             .addCase(editTargetMapping.pending, (state, action) => {
+                state.isLoading = true;
 
             })
             .addCase(editTargetMapping.fulfilled, (state, action) => {
+                state.isLoading = false;
+
                 if (action.payload?.message) {
                     showToast(action.payload.message)
                 }
             })
             .addCase(editTargetMapping.rejected, (state, action) => {
+                state.isLoading = false;
 
             })
             .addCase(getEmployeesDropDownData.pending, (state, action) => {
+                state.isLoading = true;
+
                 state.employees_drop_down_data = {};
             })
             .addCase(getEmployeesDropDownData.fulfilled, (state, action) => {
+                state.isLoading = false;
+
                 console.log("S getEmployeesDropDownData: ", JSON.stringify(action.payload));
                 if (action.payload) {
                     state.employees_drop_down_data = action.payload;
                 }
             })
             .addCase(getEmployeesDropDownData.rejected, (state, action) => {
+                state.isLoading = false;
+
                 state.employees_drop_down_data = {};
             })
             .addCase(getSpecialDropValue.pending, (state, action) => {
+                state.isLoading = true;
+
                 // state.employees_drop_down_data = {};
             })
             .addCase(getSpecialDropValue.fulfilled, (state, action) => {
+                state.isLoading = false;
+
                 console.log("$$$$$$$$$ SPECIAL1:", JSON.stringify(action.payload));
                 if (action.payload.length > 0) {
                     let temp = [];
@@ -281,6 +318,8 @@ export const targetSettingsSlice = createSlice({
                 }
             })
             .addCase(getSpecialDropValue.rejected, (state, action) => {
+                state.isLoading = false;
+
                 // state.employees_drop_down_data = {};
             })
     }

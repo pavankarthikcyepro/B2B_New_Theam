@@ -7,6 +7,8 @@ import { DropDownSelectionItem } from "../../../pureComponents";
 import { Button, IconButton } from "react-native-paper";
 import * as AsyncStore from "../../../asyncStore";
 import { useDispatch, useSelector } from "react-redux";
+import { LoaderComponent } from '../../../components';
+
 import {
     clearState,
     getEnquiryDetailsApi,
@@ -530,6 +532,10 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
                     </View>
                 )}
             </SafeAreaView>
+            {!selector.isLoading ? null : <LoaderComponent
+                visible={selector.isLoading}
+                onRequestClose={() => { }}
+            />}
         </KeyboardAvoidingView>
     );
 };

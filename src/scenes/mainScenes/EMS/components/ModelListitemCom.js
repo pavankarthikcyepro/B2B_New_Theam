@@ -107,7 +107,7 @@ export const ModelListitemCom = ({ modelOnclick,isPrimaryOnclick ,item, index, l
     const [carFuelType, setCarFuelType] = useState('');
     const [carTransmissionType, setCarTransmissionType] = useState('');
     const [carColor, setCarColor] = useState('');
-    const [isPrimary, setisPrimary] = useState(false);
+    const [isPrimary, setisPrimary] = useState("N");
 
 
 
@@ -587,11 +587,16 @@ export const ModelListitemCom = ({ modelOnclick,isPrimaryOnclick ,item, index, l
                         <Text style={{ color: Colors.WHITE, fontSize: 16, marginRight: 10 }}>Is Primary</Text>
                         <Switch
                             icon=" toggle-switch-off-outline"
-                            value={isPrimary}
+                            value={ isPrimary === "Y" ? true : false }
                             onValueChange={() => {
-
-                                isPrimaryOnclick(!isPrimary, index, item);
-                                setisPrimary(!isPrimary)
+                                if(isPrimary === "N"){
+                                    isPrimaryOnclick("Y", index, item);
+                                    setisPrimary("Y")
+                                }else {
+                                    isPrimaryOnclick("N", index, item);
+                                    setisPrimary("N")
+                                }
+                              
                             }}
                             color={Colors.PINK}
                             size={35} />

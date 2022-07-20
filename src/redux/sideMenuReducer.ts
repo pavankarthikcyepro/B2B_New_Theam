@@ -84,13 +84,13 @@ const data = [
   //   screen: 111,
   //   pngIcon: require('../assets/images/Reports-01.png')
   // },
-  {
-    title: "Drop Analysis",
-    icon: DROP_ANALYSIS,
-    screen: 113,
-    pngIcon: require('../assets/images/Settings-01.png')
+  // {
+  //   title: "Drop Analysis",
+  //   icon: DROP_ANALYSIS,
+  //   screen: 113,
+  //   pngIcon: require('../assets/images/Settings-01.png')
 
-  },
+  // },
   {
     title: "Sign Out",
     icon: CUSTOMER_RELATIONSHIP_STR,
@@ -155,11 +155,11 @@ const dataForManager = [
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 102,
   },
-  {
-    title: "Drop Analysis",
-    icon: DROP_ANALYSIS,
-    screen: 113,
-  },
+  // {
+  //   title: "Drop Analysis",
+  //   icon: DROP_ANALYSIS,
+  //   screen: 113,
+  // },
 {title: "Sign Out",
   icon: CUSTOMER_RELATIONSHIP_STR,
   screen: 112

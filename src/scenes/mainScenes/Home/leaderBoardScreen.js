@@ -8,6 +8,7 @@ import ArrowIcon from "react-native-vector-icons/FontAwesome";
 import { getLeaderBoardList } from "../../../redux/homeReducer";
 import { LoaderComponent } from '../../../components';
 import moment from 'moment';
+import { showToast } from '../../../utils/toast';
 
 const dropdownData = [
     { label: 'Item 1', value: '1' },
@@ -52,13 +53,33 @@ export default function leaderBoardScreen() {
                 }
             }
         };
-    }, [selector.allGroupDealerData]);
+    }, []);
+    useEffect(()=>{
+
+        if(selector.leaderboard_list && selector.leaderboard_list.length > 0)
+        {
+            let top = selector.leaderboard_list;
+            let bottom = [];
+            bottom = selector.leaderboard_list;
+            setTimeout(() => {
+                setTopRankList(top);
+                setTop5RankList(top.slice(0, 5));
+            }, 2000);
+
+            setTimeout(() => {
+                setBottom5RankList([...bottom].reverse().slice(0, 5));
+                setReverseBottomRankList([...bottom].reverse());
+            }, 2000);
+        }
+        
+
+    }, [selector.leaderboard_list])
 
 
     const getLeaderboardListFromServer = async () => {
         var date = new Date();
        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-       const jsonObj = JSON.parse(employeeData);
+       const jsonObj = await JSON.parse(employeeData);
         var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
         var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
         let payload = {
@@ -66,14 +87,19 @@ export default function leaderBoardScreen() {
             "levelSelected": null,
             "loggedInEmpId": jsonObj.empId,
             "pageNo": 0,
-            "size": 0,
-            "startDate": moment.utc(firstDay).format('YYYY-MM-DD')
+            "size": 50,
+            "startDate": moment.utc(firstDay).format('YYYY-MM-DD'),
+            "orgId": jsonObj.orgId
         };
+        console.log("leader board"+JSON.stringify(payload))
+       // alert(JSON.stringify(payload))
         dispatch(getLeaderBoardList(payload));
     }
 
     useEffect(async () => {
         LogBox.ignoreAllLogs();
+       // alert(JSON.stringify(topRankList))
+       // if(topRankList && topRankList.length > 1)
         getLeaderboardListFromServer();
 
         let top = selector.leaderboard_list;
@@ -88,7 +114,7 @@ export default function leaderBoardScreen() {
             setBottom5RankList([...bottom].reverse().slice(0, 5));
             setReverseBottomRankList([...bottom].reverse());
         }, 2000);
-    }, [top5RankList]);
+    }, []);
 
     const renderItemLeaderTopList = (item, extraIndex) => {
         return (

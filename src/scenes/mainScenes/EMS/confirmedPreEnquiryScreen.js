@@ -56,7 +56,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     const [dropPriceDifference, setDropPriceDifference] = useState("");
     const [dropRemarks, setDropRemarks] = useState("");
     const [currentLocation, setCurrentLocation] = useState(null);
-
+    const [leadRefIdForEnq, setleadRefIdForEnq] = useState(null);
 
     React.useLayoutEffect(() => {
         navigation.setOptions({
@@ -218,6 +218,13 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
             BackHandler.removeEventListener('hardwareBackPress', handleBackButtonClick);
         })
     }, [navigation]);
+    // useEffect(() => {
+    //     if (selector.lead_reference_data && selector.lead_reference_data.referencenumber ){
+    //        // alert("hi")
+           
+    //     }
+    // }, [selector.lead_reference_data]);
+
 
     const getBranchId = () => {
 
@@ -340,12 +347,87 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
             [
                 {
                     text: 'OK', onPress: () => {
+                       
+                       
                         goToParentScreen();
                     }
                 }
             ],
             { cancelable: false }
         );
+    }
+
+
+    const updateEnquiryDetailsCreateEnquiry = (leadRefIdForEnq) => {
+        //SarathKumarUppuluri
+        let enquiryDetailsObj = { ...selector.pre_enquiry_details };
+        let dmsLeadDto = { ...enquiryDetailsObj.dmsLeadDto };
+        dmsLeadDto.leadStage = "ENQUIRY";
+        dmsLeadDto.salesConsultant = selector.change_enquiry_response.dmsEntity.task?.assignee?.empName
+        dmsLeadDto.referencenumber = leadRefIdForEnq;
+        enquiryDetailsObj.dmsLeadDto = dmsLeadDto;
+
+        let leadId = selector.pre_enquiry_details.dmsLeadDto.id;
+        if (!leadId) {
+            showToast("lead id not found");
+            return;
+        }
+
+
+        UpdateRecord007(enquiryDetailsObj)
+    };
+
+    {/*  const PostPreEnquiryLead = async (enquiryDetailsObj) => {
+        console.log("DROP PAY: ", URL.DROP_ENQUIRY(), payload);
+        setIsLoading(true);
+        await fetch(URL.DROP_ENQUIRY(), {
+            method: "POST",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                "auth-token": userToken
+            },
+            body: JSON.stringify(payload)
+        })
+            .then(json => json.json())
+            .then(response => {
+                if (response.status === "SUCCESS") {
+                    // Update Record
+                    UpdateRecord(enquiryDetailsObj);
+                } else {
+                    showToast("Drop Lead Failed")
+                }
+                setIsLoading(false);
+            })
+            .catch(err => {
+                console.error(err);
+                showToastRedAlert(err);
+                setIsLoading(false);
+            })
+    } */}
+
+    const UpdateRecord007 = async (enquiryDetailsObj) => {
+
+        setIsLoading(true);
+        console.log("<<<<<<<WE ARE DONE>>>>>>>>>>>: ", URL.UPDATE_ENQUIRY_DETAILS(), userToken, enquiryDetailsObj);
+        await fetch(URL.UPDATE_ENQUIRY_DETAILS(), {
+            method: "POST",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                "auth-token": userToken
+            },
+            body: JSON.stringify(enquiryDetailsObj)
+        })
+            .then(json => json.json())
+            .then(response => {
+
+            })
+            .catch(err => {
+                console.error(err);
+                showToastRedAlert(err);
+                setIsLoading(false);
+            })
     }
 
     const goToParentScreen = () => {
@@ -410,12 +492,50 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                         "universalId": itemData.universalId
                     }
                     console.log("PAYLOAD LEAD REF:", payload);
-                    dispatch(customerLeadRef(payload))
+                    customerLeadReference(payload)
+                   // dispatch(customerLeadRef(payload))
+
+                    {/*}       .then((jsonRes) => {
+                            if (jsonRes.success === true) {
+                                if (jsonRes.dmsEntity?.leadCustomerReference) {
+                                    setleadRefIdForEnq =  jsonRes.dmsEntity?.leadCustomerReference.referencenumber;
+                                    console.log("OUR PRIDE>>>>>>>>>>>>>>>>>" + setleadRefIdForEnq);
+                        //refNo: res[1].payload.dmsEntity.leadCustomerReference.referencenumber,
+                                }
+                            }
+                    });
+                */}
+                 
                 }
             });
         }
     }
+    const customerLeadReference = async (enquiryDetailsObj) => {
 
+        setIsLoading(true);
+        console.log("<<<<<<<WE ARE DONE>>>>>>>>>>>: ", URL.UPDATE_ENQUIRY_DETAILS(), userToken, enquiryDetailsObj);
+        await fetch(URL.CUSTOMER_LEAD_REFERENCE(), {
+            method: "POST",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                "auth-token": userToken
+            },
+            body: JSON.stringify(enquiryDetailsObj)
+        })
+            .then(json => json.json())
+            .then(response => {
+                if (response && response.dmsEntity && response.dmsEntity.leadCustomerReference)
+                {
+                    dispatch(updateEnquiryDetailsCreateEnquiry(response.dmsEntity.leadCustomerReference.referencenumber));
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                showToastRedAlert(err);
+                setIsLoading(false);
+            })
+    }
     const noThanksClicked = () => {
         dispatch(noThanksApi(itemData.leadId));
         navigation.popToTop();
@@ -599,6 +719,10 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
+            {!selector.isLoading ? null : <LoaderComponent
+                visible={selector.isLoading}
+                onRequestClose={() => { }}
+            />}
       </SafeAreaView>
     );
 }

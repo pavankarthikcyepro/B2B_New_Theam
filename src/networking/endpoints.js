@@ -48,8 +48,8 @@ export const getEmployeeData = "http://automatestaging-724985329.ap-south-1.elb.
 export const getEmployeeList = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/reporting/all/emp"
 export const getReportingMangerList = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/all/reportingManagers/orgId"
 export const updateEmployeeTaskDelegate = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employees/emp"
-export const getLeaderBoardData = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard/v2/get_emp_target_ranking/org/1"
-export const getBranchRankingData = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard/v2/get_emp_target_ranking/org/1/branch/242"
+export const getLeaderBoardData = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard/v2/get_emp_target_ranking/org"
+export const getBranchRankingData = "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8092/dashboard/v2/get_emp_target_ranking"
 
 const URL = {
     LOGIN: () => hrms_url + "/emplogin",
@@ -315,11 +315,11 @@ const URL = {
     GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
         return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
     },
-    GET_LEADERBOARD_DATA: () => {
-        return `${getLeaderBoardData}`;
+    GET_LEADERBOARD_DATA: (orgId) => {
+        return `${getLeaderBoardData}/${orgId}`;
     },
-    GET_BRANCH_RANKING_DATA: () => {
-        return `${getBranchRankingData}`;
+    GET_BRANCH_RANKING_DATA: (orgId, branchId) => {
+        return getBranchRankingData+'/org/'+ orgId+ '/branch/'+branchId;
     },
     EMPLOYEE_DATA_UPDATE: (empID, managerID) => {
         return `${updateEmployeeTaskDelegate}/${empID}/reportingManager/${managerID}/update`;

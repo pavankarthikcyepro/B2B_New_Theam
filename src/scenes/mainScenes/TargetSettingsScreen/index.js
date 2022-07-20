@@ -37,6 +37,8 @@ import {
 import {
     updateIsTeamPresent,
 } from '../../../redux/homeReducer';
+import { showToast } from '../../../utils/toast';
+import { LoaderComponent } from '../../../components';
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 30) / 2;
@@ -69,6 +71,8 @@ const TargetSettingsScreen = ({ route, navigation }) => {
     const dispatch = useDispatch();
     const [salesDataAry, setSalesDataAry] = useState([]);
     const [selectedBranchName, setSelectedBranchName] = useState("");
+    const [primaryDepartment, setPrimaryDepartment] = useState("");
+    const [hrmsRole, sethrmsRole] = useState("");
 
     const [dropDownKey, setDropDownKey] = useState("");
     const [dropDownTitle, setDropDownTitle] = useState("Select Data");
@@ -123,6 +127,10 @@ const TargetSettingsScreen = ({ route, navigation }) => {
         // console.log("$$$$$ LOGIN EMP:", employeeData);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
+            let hrmsRole = await jsonObj.hrmsRole
+            let primaryDepartment = await jsonObj.primaryDepartment
+           await setPrimaryDepartment(primaryDepartment)
+            await sethrmsRole(hrmsRole)
             const payload = {
                 orgId: jsonObj.orgId,
                 empId: jsonObj.empId,
@@ -292,7 +300,9 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                                             <View style={{ width: '50%', justifyContent: 'center', flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, marginTop: 10, }}>
                                                 <TouchableOpacity onPress={() => {
                                                     // setIsTeam(true)
+                                                   // if(primaryDepartment === 'Sales')
                                                     dispatch(updateIsTeam(false))
+                                                   // else showToast('Access Denied')
                                                 }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: selector.isTeam ? Colors.WHITE : Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
                                                     <Text style={{ fontSize: 16, color: selector.isTeam ? Colors.BLACK : Colors.WHITE, fontWeight: '600' }}>Self</Text>
                                                 </TouchableOpacity>
@@ -310,7 +320,9 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                                             <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, marginTop: 10, justifyContent: 'center', width: '80%' }}>
                                                 <TouchableOpacity onPress={() => {
                                                     // setIsTeam(true)
-                                                    dispatch(updateIsTeam(false))
+                                                   // if (primaryDepartment === 'Sales')
+                                                        dispatch(updateIsTeam(false))
+                                                   // else showToast('Access Denied')
                                                 }} style={{ width: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
                                                     <Text style={{ fontSize: 16, color: Colors.WHITE, fontWeight: '600' }}>Self</Text>
                                                 </TouchableOpacity>
@@ -415,6 +427,8 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                                         marginHorizontal: 20
                                     }}>
                                         <TargetSettingsTab />
+                                        {/* {homeSelector.isDSE && primaryDepartment === 'Sales' ? <TargetSettingsTab /> : 
+                                        <Text style={{fontSize:16, color: Colors.BLACK, textAlign:'center'}}>Access Denied</Text>} */}
                                     </View>
                                 </View>
                             )
@@ -422,7 +436,10 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                     }}
                 />
             </View>
-
+            {!selector.isLoading ? null : <LoaderComponent
+                visible={selector.isLoading}
+                onRequestClose={() => { }}
+            />}
         </SafeAreaView>
     );
 };

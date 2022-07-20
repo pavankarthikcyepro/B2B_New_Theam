@@ -467,7 +467,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               "model": selector.enquiry_details_response?.dmsLeadDto?.model,
               "transimmisionType": '',
               "variant": '',
-              "isPrimary": false
+              "isPrimary": "N"
             }
             console.log("TEMP MODEL:", tempModelObj);
             setCarModelsList([tempModelObj])
@@ -536,7 +536,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           "model": selector.enquiry_details_response?.dmsLeadDto?.model,
           "transimmisionType": '',
           "variant": '',
-          "isPrimary": false
+          "isPrimary": "N"
         }
         console.log("SET TWO:", tempModelObj);
         setCarModelsList([tempModelObj])
@@ -704,6 +704,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       for (let i = 0; i < selector.dmsLeadProducts.length; i++) {
         var item = await array[i]
         if (i == 0) {
+          var isPrimary = "Y"
+          if (item.isPrimary && item.isPrimary != null)
+            isPrimary = item.isPrimary
           item = await {
             "color": item.color,
             "fuel": item.fuel,
@@ -711,11 +714,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             "model": item.model,
             "transimmisionType": item.transimmisionType,
             "variant": item.variant,
-            "isPrimary": true
+            "isPrimary": isPrimary
           }
           updateVariantModelsData(item.model, true, item.variant);
         }
         else {
+          var isPrimary = "N"
+          if (item.isPrimary && item.isPrimary != null)
+            isPrimary = item.isPrimary
           item = await {
             "color": item.color,
             "fuel": item.fuel,
@@ -723,7 +729,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             "model": item.model,
             "transimmisionType": item.transimmisionType,
             "variant": item.variant,
-            "isPrimary": false
+            "isPrimary": isPrimary
           }
         }
         array[i] = await item
@@ -1759,13 +1765,36 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         let arr = await [...carModelsList]
         arr[index] = value
         // arr.splice(carModelsList, index, value);
+        console.log("MODELS IF: ", arr);
+        let primaryModel = [];
+        primaryModel = arr.filter((item) => item.isPrimary === "Y");
+        if (primaryModel.length > 0) {
+          if (primaryModel[0].variant !== '' && primaryModel[0].model !== '') {
+            updateVariantModelsData(primaryModel[0].model, true, primaryModel[0].variant);
+          }
+        }
         await setCarModelsList([...arr])
-        // alert(JSON.stringify(carModelsList))
       }
       else {
         let arr = await [...carModelsList]
         arr.splice(index, 1)
-        //alert(JSON.stringify(arr))
+        console.log("MODELS ELSE: ", arr);
+        let item = {
+          "color": arr[0].color,
+          "fuel": arr[0].fuel,
+          "id": arr[0].id,
+          "model": arr[0].model,
+          "transimmisionType": arr[0].transimmisionType,
+          "variant": arr[0].variant,
+          "isPrimary": "Y"
+        }
+        // arr[0] = item;
+        arr.splice(0, 1);
+        arr.unshift(item)
+        if (arr[0].variant !== '' && arr[0].model !== '') {
+          updateVariantModelsData(arr[0].model, true, arr[0].variant);
+        }
+        setCarModelsList([])
         await setCarModelsList([...arr])
         // carModelsList.splice(0, 1)
       }
@@ -1780,7 +1809,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const isPrimaryOnclick = async (isPrimaryEnabled, index, item) => {
 
     try {
-      if (isPrimaryEnabled) {
+      if (isPrimaryEnabled === "Y") {
         updateVariantModelsData(item.model, true, item.variant);
       }
       if (carModelsList && carModelsList.length > 0) {
@@ -1793,7 +1822,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           "model": data.model,
           "transimmisionType": data.transimmisionType,
           "variant": data.variant,
-          "isPrimary": false
+          "isPrimary": "N"
         }
         const selecteditem = await {
           "color": item.color,
@@ -1802,7 +1831,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           "model": item.model,
           "transimmisionType": item.transimmisionType,
           "variant": item.variant,
-          "isPrimary": true
+          "isPrimary": "Y"
         }
         await setCarModelsList([])
         arr[isPrimaryCureentIndex] = cardata;
@@ -2829,7 +2858,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.mobile}
                   label={"Mobile Number*"}
-                  // editable={false}
+                   editable={false}
                   maxLength={10}
                   keyboardType={"phone-pad"}
                   onChangeText={(text) =>
@@ -3674,7 +3703,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       "model": "",
                       "transimmisionType": '',
                       "variant": '',
-                      "isPrimary": false
+                      "isPrimary": 'N'
                     }
                     let arr = [...carModelsList]
                     arr.push(carmodeldata)

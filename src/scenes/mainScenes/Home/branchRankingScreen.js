@@ -15,7 +15,10 @@ export default function branchRankingScreen() {
 
     const getBranchRankListFromServer = async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        const jsonObj = JSON.parse(employeeData);
+        const jsonObj = await JSON.parse(employeeData);
+        const branchId = await AsyncStore.getData(
+            AsyncStore.Keys.SELECTED_BRANCH_ID
+        );
         var date = new Date();
         var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
         var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
@@ -23,9 +26,13 @@ export default function branchRankingScreen() {
             "endDate": moment.utc(lastDay).format('YYYY-MM-DD'),
             "levelSelected": null,
             "loggedInEmpId": jsonObj.empId,
-            "pageNo": 0,
-            "size": 0,
-            "startDate": moment.utc(firstDay).format('YYYY-MM-DD')
+            "pageNo": 1,
+            "size": 50,
+            "startDate": moment.utc(firstDay).format('YYYY-MM-DD'),
+            //not for payload, just to add in params
+            "orgId":jsonObj.orgId,
+            "branchId":jsonObj.branchId
+
         };
         dispatch(getBranchRanksList(payload));
     }
@@ -42,7 +49,15 @@ export default function branchRankingScreen() {
         setTimeout(() => {
             setBranchList(selector.branchrank_list);
         }, 2000);
-    }, [branchList]);
+    }, []);
+    useEffect(()=>{
+        if (selector.branchrank_list && selector.branchrank_list.length > 0){
+            setTimeout(() => {
+                setBranchList(selector.branchrank_list);
+            }, 2000);
+        }
+
+    }, [selector.branchrank_list])
 
     const renderItemLeaderTopList = (item, extraIndex) => {
         return (

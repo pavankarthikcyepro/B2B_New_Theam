@@ -105,6 +105,24 @@ export const dropPreBooingApi = createAsyncThunk("PREBOONING_FORMS_SLICE/dropPre
     return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
   }
 })
+export const sendEditedOnRoadPriceDetails = createAsyncThunk("PREBOONING_FORMS_SLICE/sendEditedOnRoadPriceDetails", async (payload, { rejectWithValue }) => {
+
+  console.log("PPPTTT:", URL.SEND_ON_ROAD_PRICE_DETAILS(), JSON.stringify(payload));
+
+  const response = await client.put(URL.SEND_ON_ROAD_PRICE_DETAILS(), payload);
+  try {
+    const json = await response.json();
+    console.log("DATA:", JSON.stringify(json));
+
+    if (response.status != 200) {
+      return rejectWithValue(json);
+    }
+    return json;
+  } catch (error) {
+    console.error("sendOnRoadPriceDetails JSON parse error: ", error + " : " + JSON.stringify(response));
+    return rejectWithValue({ message: "Json parse error: " + JSON.stringify(response) });
+  }
+})
 
 export const sendOnRoadPriceDetails = createAsyncThunk("PREBOONING_FORMS_SLICE/sendOnRoadPriceDetails", async (payload, { rejectWithValue }) => {
 
@@ -1345,6 +1363,24 @@ const prebookingFormSlice = createSlice({
       state.isLoading = false;
     })
     builder.addCase(sendOnRoadPriceDetails.rejected, (state, action) => {
+      state.send_onRoad_price_details_response = null
+      state.isLoading = false;
+      // if (action.payload["errorMessage"]) {
+      //   showToastRedAlert(action.payload["errorMessage"] || "Something went wrong");
+      // }
+    })
+    // Send edited On Road Price Details
+    builder.addCase(sendEditedOnRoadPriceDetails.pending, (state, action) => {
+      state.send_onRoad_price_details_response = null
+      state.isLoading = true;
+    })
+    builder.addCase(sendEditedOnRoadPriceDetails.fulfilled, (state, action) => {
+      if (action.payload.dmsEntity) {
+        state.send_onRoad_price_details_response = action.payload.dmsEntity.dmsOnRoadPriceDto;
+      }
+      state.isLoading = false;
+    })
+    builder.addCase(sendEditedOnRoadPriceDetails.rejected, (state, action) => {
       state.send_onRoad_price_details_response = null
       state.isLoading = false;
       // if (action.payload["errorMessage"]) {
