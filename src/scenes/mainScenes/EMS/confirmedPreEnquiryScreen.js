@@ -221,7 +221,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     // useEffect(() => {
     //     if (selector.lead_reference_data && selector.lead_reference_data.referencenumber ){
     //        // alert("hi")
-           
+
     //     }
     // }, [selector.lead_reference_data]);
 
@@ -337,7 +337,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         }
     }, [selector.change_enquiry_status, selector.change_enquiry_response])
 
-    displayCreateEnquiryAlert = (data) => {
+    const displayCreateEnquiryAlert = async (data) => {
 
         // "Enquiry Number: " + itemData.universalId
         Alert.alert(
@@ -346,9 +346,8 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
             [
                 {
                     text: 'OK', onPress: () => {
-                       
-                       
-                        goToParentScreen();
+
+                        updateRefNumber()
                     }
                 }
             ],
@@ -356,7 +355,22 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         );
     }
 
+    const updateRefNumber = async () => {
+        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            const payload = {
+                "branchid": Number(branchId),
+                "leadstage": "ENQUIRY",
+                "orgid": jsonObj.orgId,
+                "universalId": itemData.universalId
+            }
+            console.log("PAYLOAD LEAD REF:", payload);
+            customerLeadReference(payload)
+        }
 
+        goToParentScreen();
+    }
     const updateEnquiryDetailsCreateEnquiry = (leadRefIdForEnq) => {
         //SarathKumarUppuluri
         let enquiryDetailsObj = { ...selector.pre_enquiry_details };
@@ -365,6 +379,8 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         dmsLeadDto.salesConsultant = selector.change_enquiry_response.dmsEntity.task?.assignee?.empName
         dmsLeadDto.referencenumber = leadRefIdForEnq;
         enquiryDetailsObj.dmsLeadDto = dmsLeadDto;
+
+        //     alert("lead id" + leadRefIdForEnq + "\n" + dmsLeadDto.salesConsultant)
 
         let leadId = selector.pre_enquiry_details.dmsLeadDto.id;
         if (!leadId) {
@@ -476,36 +492,25 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                 orgId: organizationId,
                 branchId: branchId
             }
-            
+
             Promise.all([
                 dispatch(getEmployeesListApi(data))
             ]).then(async (res) => {
-                
-                let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-                if (employeeData) {
-                    const jsonObj = JSON.parse(employeeData);
-                    const payload = {
-                        "branchid": Number(branchId),
-                        "leadstage": "ENQUIRY",
-                        "orgid": jsonObj.orgId,
-                        "universalId": itemData.universalId
-                    }
-                    console.log("PAYLOAD LEAD REF:", payload);
-                    customerLeadReference(payload)
-                   // dispatch(customerLeadRef(payload))
 
-                    {/*}       .then((jsonRes) => {
-                            if (jsonRes.success === true) {
-                                if (jsonRes.dmsEntity?.leadCustomerReference) {
-                                    setleadRefIdForEnq =  jsonRes.dmsEntity?.leadCustomerReference.referencenumber;
-                                    console.log("OUR PRIDE>>>>>>>>>>>>>>>>>" + setleadRefIdForEnq);
-                        //refNo: res[1].payload.dmsEntity.leadCustomerReference.referencenumber,
-                                }
-                            }
-                    });
-                */}
-                 
-                }
+                //  let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+                // if (employeeData) {
+                //     const jsonObj = JSON.parse(employeeData);
+                //     const payload = {
+                //         "branchid": Number(branchId),
+                //         "leadstage": "ENQUIRY",
+                //         "orgid": jsonObj.orgId,
+                //         "universalId": itemData.universalId
+                //     }
+                //     console.log("PAYLOAD LEAD REF:", payload);
+                //     customerLeadReference(payload)
+                //    // dispatch(customerLeadRef(payload))              
+
+                // }
             });
         }
     }
@@ -524,8 +529,8 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         })
             .then(json => json.json())
             .then(response => {
-                if (response && response.dmsEntity && response.dmsEntity.leadCustomerReference)
-                {
+                console.log("Customer Refernce=====", response)
+                if (response && response.dmsEntity && response.dmsEntity.leadCustomerReference) {
                     dispatch(updateEnquiryDetailsCreateEnquiry(response.dmsEntity.leadCustomerReference.referencenumber));
                 }
             })
@@ -549,180 +554,180 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     }
 
     return (
-      <SafeAreaView style={styles.container}>
-        {/* <LoaderComponent
+        <SafeAreaView style={styles.container}>
+            {/* <LoaderComponent
                 visible={selector.create_enquiry_loading}
                 onRequestClose={() => { }}
             /> */}
 
-        <SelectEmployeeComponant
-          visible={showEmployeeSelectModel}
-          headerTitle={"Select Employee"}
-          data={employeesData}
-          selectedEmployee={(employee) => updateEmployee(employee)}
-          onRequestClose={() => setEmployeeSelectModel(false)}
-        />
+            <SelectEmployeeComponant
+                visible={showEmployeeSelectModel}
+                headerTitle={"Select Employee"}
+                data={employeesData}
+                selectedEmployee={(employee) => updateEmployee(employee)}
+                onRequestClose={() => setEmployeeSelectModel(false)}
+            />
 
-        <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS == "ios" ? "padding" : "height"}
-          enabled
-          keyboardVerticalOffset={100}
-        >
-          <ScrollView
-            automaticallyAdjustContentInsets={true}
-            bounces={true}
-            contentContainerStyle={{ padding: 10 }}
-            style={{ flex: 1 }}
-          >
-            <View style={styles.view1}>
-              <Text style={styles.text1}>{"Pre-Enquiry"}</Text>
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS == "ios" ? "padding" : "height"}
+                enabled
+                keyboardVerticalOffset={100}
+            >
+                <ScrollView
+                    automaticallyAdjustContentInsets={true}
+                    bounces={true}
+                    contentContainerStyle={{ padding: 10 }}
+                    style={{ flex: 1 }}
+                >
+                    <View style={styles.view1}>
+                        <Text style={styles.text1}>{"Pre-Enquiry"}</Text>
 
-              <IconButton
-                icon="square-edit-outline"
-                color={Colors.DARK_GRAY}
-                size={25}
-                onPress={editButton}
-              />
-            </View>
+                        <IconButton
+                            icon="square-edit-outline"
+                            color={Colors.DARK_GRAY}
+                            size={25}
+                            onPress={editButton}
+                        />
+                    </View>
 
-            <View style={[{ borderRadius: 6 }]}>
-              <TextinputComp
-                style={{ height: 70 }}
-                value={itemData.firstName + " " + itemData.lastName}
-                label={"Customer Name"}
-                editable={false}
-              />
-              <Text style={styles.devider}></Text>
-              <TextinputComp
-                style={{ height: 70 }}
-                value={itemData.phone}
-                label={"Mobile Number"}
-                editable={false}
-              />
-              <Text style={styles.devider}></Text>
+                    <View style={[{ borderRadius: 6 }]}>
+                        <TextinputComp
+                            style={{ height: 70 }}
+                            value={itemData.firstName + " " + itemData.lastName}
+                            label={"Customer Name"}
+                            editable={false}
+                        />
+                        <Text style={styles.devider}></Text>
+                        <TextinputComp
+                            style={{ height: 70 }}
+                            value={itemData.phone}
+                            label={"Mobile Number"}
+                            editable={false}
+                        />
+                        <Text style={styles.devider}></Text>
 
-              <TextinputComp
-                style={{ height: 70 }}
-                value={convertTimeStampToDateString(itemData.createdDate)}
-                label={"Date Created"}
-                editable={false}
-              />
-              <Text style={styles.devider}></Text>
+                        <TextinputComp
+                            style={{ height: 70 }}
+                            value={convertTimeStampToDateString(itemData.createdDate)}
+                            label={"Date Created"}
+                            editable={false}
+                        />
+                        <Text style={styles.devider}></Text>
 
-              <TextinputComp
-                style={{ height: 70 }}
-                value={itemData.enquirySource}
-                label={"Source of Pre-Enquiry"}
-                editable={false}
-              />
-              <Text style={styles.devider}></Text>
+                        <TextinputComp
+                            style={{ height: 70 }}
+                            value={itemData.enquirySource}
+                            label={"Source of Pre-Enquiry"}
+                            editable={false}
+                        />
+                        <Text style={styles.devider}></Text>
 
-              <TextinputComp
-                style={{ height: 70 }}
-                value={itemData.model}
-                label={"Model"}
-                editable={false}
-              />
-              <Text style={styles.devider}></Text>
+                        <TextinputComp
+                            style={{ height: 70 }}
+                            value={itemData.model}
+                            label={"Model"}
+                            editable={false}
+                        />
+                        <Text style={styles.devider}></Text>
 
-              <TextinputComp
-                style={{ height: 70 }}
-                value={itemData.leadStage}
-                label={"Status"}
-                editable={false}
-              />
-              <Text style={styles.devider}></Text>
+                        <TextinputComp
+                            style={{ height: 70 }}
+                            value={itemData.leadStage}
+                            label={"Status"}
+                            editable={false}
+                        />
+                        <Text style={styles.devider}></Text>
 
-              {isDropSelected && (
-                <DropComponent
-                  from="PRE_ENQUIRY"
-                  data={dropData}
-                  reason={dropReason}
-                  setReason={(text) => setDropReason(text)}
-                  subReason={dropSubReason}
-                  setSubReason={(text) => setDropSubReason(text)}
-                  brandName={dropBrandName}
-                  setBrandName={(text) => setDropBrandName(text)}
-                  dealerName={dropDealerName}
-                  setDealerName={(text) => setDropDealerName(text)}
-                  location={dropLocation}
-                  setLocation={(text) => setDropLocation(text)}
-                  model={dropModel}
-                  setModel={(text) => setDropModel(text)}
-                  priceDiff={dropPriceDifference}
-                  setPriceDiff={(text) => setDropPriceDifference(text)}
-                  remarks={dropRemarks}
-                  setRemarks={(text) => setDropRemarks(text)}
-                />
-              )}
+                        {isDropSelected && (
+                            <DropComponent
+                                from="PRE_ENQUIRY"
+                                data={dropData}
+                                reason={dropReason}
+                                setReason={(text) => setDropReason(text)}
+                                subReason={dropSubReason}
+                                setSubReason={(text) => setDropSubReason(text)}
+                                brandName={dropBrandName}
+                                setBrandName={(text) => setDropBrandName(text)}
+                                dealerName={dropDealerName}
+                                setDealerName={(text) => setDropDealerName(text)}
+                                location={dropLocation}
+                                setLocation={(text) => setDropLocation(text)}
+                                model={dropModel}
+                                setModel={(text) => setDropModel(text)}
+                                priceDiff={dropPriceDifference}
+                                setPriceDiff={(text) => setDropPriceDifference(text)}
+                                remarks={dropRemarks}
+                                setRemarks={(text) => setDropRemarks(text)}
+                            />
+                        )}
 
-              {!isDropSelected && (
-                <View style={styles.view2}>
-                  <Text style={[styles.text2, { color: Colors.GRAY }]}>
-                    {"Allocated DSE"}
-                  </Text>
+                        {!isDropSelected && (
+                            <View style={styles.view2}>
+                                <Text style={[styles.text2, { color: Colors.GRAY }]}>
+                                    {"Allocated DSE"}
+                                </Text>
 
-                  <View style={styles.view3}>
-                    <Button
-                      mode="contained"
-                      color={Colors.RED}
-                      labelStyle={{
-                        textTransform: "none",
-                        color: Colors.WHITE,
-                      }}
-                      onPress={createEnquiryClicked}
-                    >
-                      Create Enquiry
-                    </Button>
+                                <View style={styles.view3}>
+                                    <Button
+                                        mode="contained"
+                                        color={Colors.RED}
+                                        labelStyle={{
+                                            textTransform: "none",
+                                            color: Colors.WHITE,
+                                        }}
+                                        onPress={createEnquiryClicked}
+                                    >
+                                        Create Enquiry
+                                    </Button>
 
-                    <Button
-                      mode="contained"
-                      style={{ width: 120 }}
-                      color={Colors.GRAY}
-                    //   disabled={selector.isLoading}
-                      labelStyle={{
-                        textTransform: "none",
-                        color: Colors.WHITE,
-                      }}
-                      onPress={() => setIsDropSelected(true)}
-                    >
-                      Drop
-                    </Button>
-                  </View>
-                </View>
-              )}
+                                    <Button
+                                        mode="contained"
+                                        style={{ width: 120 }}
+                                        color={Colors.GRAY}
+                                        //   disabled={selector.isLoading}
+                                        labelStyle={{
+                                            textTransform: "none",
+                                            color: Colors.WHITE,
+                                        }}
+                                        onPress={() => setIsDropSelected(true)}
+                                    >
+                                        Drop
+                                    </Button>
+                                </View>
+                            </View>
+                        )}
 
-              {isDropSelected && (
-                <View style={styles.view4}>
-                  <Button
-                    mode="contained"
-                    color={Colors.BLACK}
-                    labelStyle={{ textTransform: "none", color: Colors.WHITE }}
-                    onPress={() => setIsDropSelected(false)}
-                  >
-                    Cancel
-                  </Button>
+                        {isDropSelected && (
+                            <View style={styles.view4}>
+                                <Button
+                                    mode="contained"
+                                    color={Colors.BLACK}
+                                    labelStyle={{ textTransform: "none", color: Colors.WHITE }}
+                                    onPress={() => setIsDropSelected(false)}
+                                >
+                                    Cancel
+                                </Button>
 
-                  <Button
-                    mode="contained"
-                    color={Colors.RED}
-                    disabled={isLoading}
-                    labelStyle={{ textTransform: "none" }}
-                    onPress={proceedToCancelPreEnquiry}
-                  >
-                    Proceed To Cancellation
-                  </Button>
-                </View>
-              )}
-            </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
+                                <Button
+                                    mode="contained"
+                                    color={Colors.RED}
+                                    disabled={isLoading}
+                                    labelStyle={{ textTransform: "none" }}
+                                    onPress={proceedToCancelPreEnquiry}
+                                >
+                                    Proceed To Cancellation
+                                </Button>
+                            </View>
+                        )}
+                    </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
             {!selector.isLoading ? null : <LoaderComponent
                 visible={selector.isLoading}
                 onRequestClose={() => { }}
             />}
-      </SafeAreaView>
+        </SafeAreaView>
     );
 }
 
