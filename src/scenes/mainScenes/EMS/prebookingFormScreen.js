@@ -24,7 +24,7 @@ import {
     DropDownComponant,
     DatePickerComponent,
 } from "../../../components";
-import { ModelListitemCom } from "./components/ModelListitemCom";
+import { PreBookingModelListitemCom } from "./components/PreBookingModelListItem";
 import { LoaderComponent } from '../../../components';
 
 import {
@@ -3379,7 +3379,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             // <Pressable onPress={() => selectedItem(item, index)}>
                                             < View >
 
-                                                <ModelListitemCom
+                                                <PreBookingModelListitemCom
                                                     modelOnclick={modelOnclick}
                                                     isPrimaryOnclick={isPrimaryOnclick}
                                                     index={index}
