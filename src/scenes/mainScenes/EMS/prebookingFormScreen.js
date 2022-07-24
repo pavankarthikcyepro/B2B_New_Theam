@@ -1866,6 +1866,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     "isPrimary": isPrimary
                 }
                 array[i] = await item
+                if (item.isPrimary && item.isPrimary != null && item.isPrimary === 'Y')
+                setIsPrimaryCurrentIndex(i)
                 if (i === selector.dmsLeadProducts.length - 1){
                     let index = array.findIndex((item) => item.model === selector.pre_booking_details_response?.dmsLeadDto?.model);
                     if(index !== -1){
