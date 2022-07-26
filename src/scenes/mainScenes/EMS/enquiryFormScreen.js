@@ -716,6 +716,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             "variant": item.variant,
             "isPrimary": isPrimary
           }
+          if (item.isPrimary && item.isPrimary != null && item.isPrimary === 'Y')
+            setIsPrimaryCurrentIndex(i)
           updateVariantModelsData(item.model, true, item.variant);
         }
         else {
@@ -733,6 +735,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           }
         }
         array[i] = await item
+        if (item.isPrimary && item.isPrimary != null && item.isPrimary === 'Y')
+          setIsPrimaryCurrentIndex(i)
         // console.log(userObject.username);
       }
       console.log("SET THREE", array);
@@ -1121,11 +1125,22 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         item.variant !== ''
     })
 
+    let primaryTempCars = []
+    primaryTempCars = carModelsList.filter((item) => {
+      return item.isPrimary === 'Y' })
+
     console.log("MODELS: ", tempCars, carModelsList);
     if (tempCars.length < carModelsList.length) {
       scrollToPos(4)
       setOpenAccordian('4')
       showToast("Please fill model details");
+      return;
+    }
+
+    if (!primaryTempCars.length > 0) {
+      scrollToPos(4)
+      setOpenAccordian('4')
+      showToast("Select is Primary for atleast one vehicle");
       return;
     }
     // if (
@@ -1832,6 +1847,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           "transimmisionType": item.transimmisionType,
           "variant": item.variant,
           "isPrimary": "Y"
+
         }
         await setCarModelsList([])
         arr[isPrimaryCureentIndex] = cardata;

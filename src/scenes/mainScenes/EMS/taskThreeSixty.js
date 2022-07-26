@@ -23,7 +23,7 @@ const mytasksIdentifires = {
 
 const TaskThreeSixtyScreen = ({ route, navigation }) => {
 
-    const { universalId, mobileNo, itemData } = route.params;
+    const { universalId, mobileNo, itemData, leadStatus } = route.params;
     const dispatch = useDispatch();
     const selector = useSelector(state => state.taskThreeSixtyReducer);
     const [plannedTasks, setPlannedTasks] = useState([]);
@@ -120,11 +120,15 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                 taskNameNew = 'Test Drive'
                 break;
             case "proceedtoprebooking":
+                if (leadStatus === 'ENQUIRYCOMPLETED')
                 navigationId = AppNavigator.EmsStackIdentifiers.proceedToPreBooking;
+                else showToast('Please submit the enquiry form')
                 taskNameNew = ''
                 break;
             case "proceedtobooking":
+                if (leadStatus === 'PREBOOKINGCOMPLETED')
                 navigationId = AppNavigator.EmsStackIdentifiers.proceedToPreBooking;
+                else showToast('Please complete the prebooking process')
                 taskNameNew = ''
                 break;
             case "homevisit":

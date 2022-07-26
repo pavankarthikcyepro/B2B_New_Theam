@@ -361,7 +361,7 @@ const EnquiryScreen = ({ navigation }) => {
                                             enqCat={item.enquiryCategory}
                                             onItemPress={() => {
                                                 console.log("ENQ: ", JSON.stringify(item));
-                                                navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId, mobileNo: item.phone })
+                                                navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId, mobileNo: item.phone, leadStatus: item.leadStatus })
                                             }}
                                             onDocPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.detailsOverview, { universalId: item.universalId, enqDetails: item, leadStatus: item.leadStatus, leadStage: item.leadStage })}
                                         />

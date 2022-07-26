@@ -24,7 +24,7 @@ import {
     DropDownComponant,
     DatePickerComponent,
 } from "../../../components";
-import { ModelListitemCom } from "./components/ModelListitemCom";
+import { PreBookingModelListitemCom } from "./components/PreBookingModelListItem";
 import { LoaderComponent } from '../../../components';
 
 import {
@@ -599,7 +599,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 // arr[0] = item;
                 arr.splice(0, 1);
                 arr.unshift(item)
-                if (arr[0].variant !== '' && arr[0].model !== '') {
+                if (arr[0].variant !== '' && arr[0].model !== '' &&  arr[0].isPrimary === 'Y') {
                     updateVariantModelsData(arr[0].model, true, arr[0].variant);
                 }
                 setCarModelsList([])
@@ -619,6 +619,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             if(isPrimaryEnabled === "Y")
             {
                 console.log("CALLED UPDATE");
+                await setIsPrimaryCurrentIndex(index)
                 updateVariantModelsData(item.model, true, item.variant);
             }
             if (carModelsList && carModelsList.length > 0) {
@@ -861,10 +862,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     };
 
     useEffect(() => {
-        if (selector.model_drop_down_data_update_status === "update") {
-            console.log("CALLED AAAAA");
-            updateVariantModelsData(selector.model, true, selector.varient);
-        }
+        // if (selector.model_drop_down_data_update_status === "update") {
+        //     console.log("CALLED AAAAA");
+        //     updateVariantModelsData(selector.model, true, selector.varient);
+        // }
     }, [selector.model_drop_down_data_update_status]);
 
     const getPreBookingListFromServer = async () => {
@@ -1308,6 +1309,16 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             scrollToPos(0)
             setOpenAccordian('1')
             showToast("Please select customer type");
+            return;
+        }
+        let primaryTempCars = []
+        primaryTempCars = carModelsList.filter((item) => {
+            return item.isPrimary === 'Y'
+        })
+        if (!primaryTempCars.length > 0) {
+            scrollToPos(4)
+            setOpenAccordian('4')
+            showToast("Select is Primary for atleast one vehicle");
             return;
         }
         if (selector.pincode.length === 0 ||
@@ -1856,6 +1867,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     "isPrimary": isPrimary
                 }
                 array[i] = await item
+                if (item.isPrimary && item.isPrimary != null && item.isPrimary === 'Y')
+                {
+                   
+                    await setIsPrimaryCurrentIndex(i)
+                    updateVariantModelsData(item.model, true, item.variant);
+                }
+               
                 if (i === selector.dmsLeadProducts.length - 1){
                     let index = array.findIndex((item) => item.model === selector.pre_booking_details_response?.dmsLeadDto?.model);
                     if(index !== -1){
@@ -3369,7 +3387,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             // <Pressable onPress={() => selectedItem(item, index)}>
                                             < View >
 
-                                                <ModelListitemCom
+                                                <PreBookingModelListitemCom
                                                     modelOnclick={modelOnclick}
                                                     isPrimaryOnclick={isPrimaryOnclick}
                                                     index={index}
