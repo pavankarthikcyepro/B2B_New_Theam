@@ -351,6 +351,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     getBranchId();
     setComponentAppear(true);
     getCustomerType();
+   
     //  const dms = [{ "color": "Outback Bronze", "fuel": "Petrol", "id": 2704, "model": "Kwid",
     //           "transimmisionType": "Manual", "variant": "KWID RXT 1.0L EASY- R BS6 ORVM MY22" },
     //            { "color": "Caspian Blue", "fuel": "Petrol", "id": 1833, "model": "Kiger", "transimmisionType": "Automatic", 
@@ -507,6 +508,30 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       });
   };
 
+  const deleteModalFromServer = async (token, orgId) => {
+    await fetch(URL.DEALER_CODE_LIST(orgId), {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "auth-token": token,
+      },
+    })
+      .then((json) => json.json())
+      .then((res) => {
+        // console.log("insurance : ", res);
+        if (res != null && res.length > 0) {
+          const companyList = res.map((item, index) => {
+            return { ...item, name: item.company_name };
+          });
+          //serInsurenceCompanyList([...companyList]);
+        }
+      })
+      .catch((error) => {
+        showToastRedAlert(error.message);
+      });
+  };
+
   const getBanksListFromServer = (orgId, token) => {
     GetFinanceBanksList(orgId, token).then(
       (resp) => {
@@ -546,7 +571,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
     }
 
-  }, [selector.dmsLeadProducts, selector.enquiry_details_response])
+  }, []) //selector.dmsLeadProducts, selector.enquiry_details_response
 
   useEffect(() => {
     console.log("PROCEED TTTT:", proceedToPreSelector.update_enquiry_details_response_status);
@@ -623,9 +648,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dispatch(updateDmsAddressData(dmsLeadDto.dmsAddresses));
       // Updaet Model Selection
       dispatch(updateModelSelectionData(dmsLeadDto.dmsLeadProducts));
+      // console.log('DMS----------->>>>',dmsLeadDto.dmsLeadProducts[0]?.id)
       //   alert("reponse---------", JSON.stringify(dmsLeadDto.dmsLeadProducts))
       //  setCarModelsList(selector.dmsLeadProducts)
       // Update Finance Details
+       console.log("DMSPRODUCTS============>", selector.dmsLeadProducts);
       dispatch(updateFinancialData(dmsLeadDto.dmsfinancedetails));
       // Update Customer Need Analysys
       dispatch(updateCustomerNeedAnalysisData(dmsLeadDto.dmsLeadScoreCards));
@@ -639,7 +666,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dispatch(updateDmsAttachmentDetails(dmsLeadDto.dmsAttachments));
 
     }
-  }, [selector.enquiry_details_response]);
+  }, []); //selector.enquiry_details_response
 
   const saveAttachmentDetailsInLocalObject = (dmsAttachments) => {
     console.log("ATTACHMENTS:", JSON.stringify(dmsAttachments));
@@ -1777,7 +1804,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const modelOnclick = async (index, value, type) => {
     try {
       if (type == "update") {
-        let arr = await [...carModelsList]
+        let arr = [...carModelsList]
         arr[index] = value
         // arr.splice(carModelsList, index, value);
         console.log("MODELS IF: ", arr);
@@ -1791,28 +1818,33 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         await setCarModelsList([...arr])
       }
       else {
-        let arr = await [...carModelsList]
-        arr.splice(index, 1)
-        console.log("MODELS ELSE: ", arr);
-        let item = {
-          "color": arr[0].color,
-          "fuel": arr[0].fuel,
-          "id": arr[0].id,
-          "model": arr[0].model,
-          "transimmisionType": arr[0].transimmisionType,
-          "variant": arr[0].variant,
-          "isPrimary": "Y"
+
+        if (type == "delete") {
+          let arr = await [...carModelsList];
+          arr.splice(index, 1);
+
+          console.log("MODELS ELSE: ", arr);
+          let item = {
+            color: arr[0].color,
+            fuel: arr[0].fuel,
+            id: arr[0].id,
+            model: arr[0].model,
+            transimmisionType: arr[0].transimmisionType,
+            variant: arr[0].variant,
+            isPrimary: "Y",
+          };
+          // arr[0] = item;
+          arr.unshift(item);
+          arr.splice(0, 1);
+
+          if (arr[0].variant !== "" && arr[0].model !== "") {
+            updateVariantModelsData(arr[0].model, true, arr[0].variant);
+          }
+          //setCarModelsList([])
+          await setCarModelsList([...arr]);
+          // carModelsList.splice(0, 1)
         }
-        // arr[0] = item;
-        arr.splice(0, 1);
-        arr.unshift(item)
-        if (arr[0].variant !== '' && arr[0].model !== '') {
-          updateVariantModelsData(arr[0].model, true, arr[0].variant);
-        }
-        setCarModelsList([])
-        await setCarModelsList([...arr])
-        // carModelsList.splice(0, 1)
-      }
+              }
 
       // console.log("onValueChangeonValueChange@@@@ ", value)
     } catch (error) {
@@ -3732,9 +3764,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <FlatList
                   //  style={{ height: faltListHeight }}
                   data={carModelsList}
-                  extraData={carModelsList}
+                  //extraData={carModelsList}
                   keyExtractor={(item, index) => index.toString()}
                   renderItem={({ item, index }) => {
+                    //console.log("HERE IS LIST----->",carModelsList)
                     return (
                       // <Pressable onPress={() => selectedItem(item, index)}>
                       < View >

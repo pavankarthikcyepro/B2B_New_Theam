@@ -246,6 +246,7 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
                 var modelsarr = await selector.dmsLeadProducts
                 modelsarr[index] = await carmodeldata
                 modelOnclick(index, carmodeldata, "update")
+                
 
                 await dispatch(updatedmsLeadProduct(modelsarr))
             }catch(error){
