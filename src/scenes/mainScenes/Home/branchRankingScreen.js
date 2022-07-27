@@ -64,15 +64,15 @@ export default function branchRankingScreen() {
             <View style={{ backgroundColor: "white", padding: 10, width: '100%' }}>
                 {extraIndex == 0 ? <View style={{ flexDirection: 'row', width: '100%', marginBottom: 5 }}>
                     <Text style={{ color: '#F59D44', textAlign: 'center', flex: 1 }}>Rank</Text>
-                    <Text style={{ color: '#D81F9F', textAlign: 'center', flex: 1 }}>Branch</Text>
-                    <Text style={{ color: '#983AAA', textAlign: 'center', flex: 1 }}>Code</Text>
+                    <Text style={{ color: '#D81F9F', textAlign: 'center', flex: 1 }}>Employee Name</Text>
+                    <Text style={{ color: '#983AAA', textAlign: 'center', flex: 1 }}>Branch</Text>
                     <Text style={{ color: '#328B91', textAlign: 'center', flex: 1 }}>Ret T/A%</Text>
                     <Text style={{ color: '#E54875', textAlign: 'center', flex: 1 }}>Retails</Text>
                 </View> : null}
                 <View style={{ flexDirection: 'row', width: '100%' }}>
                     <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{extraIndex + 1}</Text>
+                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.empName}</Text>
                     <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchName}</Text>
-                    <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.branchCode}</Text>
                     <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.achivementPerc}</Text>
                     <Text style={{ color: 'black', textAlign: 'center', flex: 1 }}>{item.targetAchivements}</Text>
                 </View>

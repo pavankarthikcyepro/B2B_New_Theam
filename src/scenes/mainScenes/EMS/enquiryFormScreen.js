@@ -3162,7 +3162,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   }
                 />
 
-                <DropDownSelectionItem
+                {/* <DropDownSelectionItem
                   label={"Enquiry Category"}
                   disabled={true}
                   value={selector.enquiry_category.length == 0 ? "Hot" : selector.enquiry_category}
@@ -3172,7 +3172,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       "Enquiry Category"
                     )
                   }
-                />
+                /> */}
 
                 <DropDownSelectionItem
                   label={"Buyer Type*"}
@@ -3324,7 +3324,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   value={selector.houseNum}
                   label={"H.No*"}
                   maxLength={50}
-                  keyboardType={"number-pad"}
+                  // keyboardType={"number-pad"}
+keyboardType={"default"}
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({ key: "HOUSE_NO", text: text })
@@ -4756,7 +4757,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     style={styles.textInputStyle}
                     value={selector.a_reg_no}
                     label={"Reg. No."}
-                    maxLength={50}
+                    maxLength={15}
                     keyboardType={"default"}
                     autoCapitalize={"characters"}
                     onChangeText={(text) =>

@@ -1153,8 +1153,10 @@ const TestDriveScreen = ({ route, navigation }) => {
                                         label={"Customer Address"}
                                         multiline={true}
                                         numberOfLines={4}
-                                        editable={isRecordEditable}
-                                        disabled={!isRecordEditable}
+                                        // editable={isRecordEditable}
+                                        // disabled={!isRecordEditable}
+                                        editable={true}
+                                        disabled={false}
                                         onChangeText={(text) => setCustomerAddress(text)}
                                     />
                                     <Text style={GlobalStyle.underline}></Text>
