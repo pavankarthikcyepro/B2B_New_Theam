@@ -64,6 +64,7 @@ const DatePickerComponent = ({ visible = false, onRequestClose, value, mode = "d
                             maximumDate={maximumDate}
                             minimumDate={minimumDate}
                             textColor={Colors.RED}
+                            
                         />
                     </View>
                 </SafeAreaView>
