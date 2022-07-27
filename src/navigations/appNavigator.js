@@ -240,7 +240,9 @@ export const HomeStackIdentifiers = {
     select_branch: "SELECT_BRANCH",
     test: "TEST",
     leaderboard: "LEADERBOARD",
-    branchRanking: "BRANCH_RANKING"
+    branchRanking: "BRANCH_RANKING",
+    home: "HOME_SCREEN",
+
 };
 
 export const EmsStackIdentifiers = {

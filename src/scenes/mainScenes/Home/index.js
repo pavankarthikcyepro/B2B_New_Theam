@@ -877,7 +877,7 @@ const HomeScreen = ({ route, navigation }) => {
                 // title={roles.length > 0 ? roles[0] : ''}
                 title={headerText}
                 branchName={selectedBranchName}
-                menuClicked={() => navigation.openDrawer()}
+              menuClicked={() => navigation.openDrawer()}
                 branchClicked={() => moveToSelectBranch()}
                 filterClicked={() => moveToFilter()}
             />
