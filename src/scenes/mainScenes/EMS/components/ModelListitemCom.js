@@ -280,7 +280,7 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
         if (!selectedModelName || selectedModelName.length === 0) {
             return;
         }
-        console.log("CALLED MODEL: ", selectedModelName, carModelsData);
+       // console.log("CALLED MODEL: ", selectedModelName, carModelsData);
         let arrTemp = carModelsData.filter(function (obj) {
             return obj.model === selectedModelName;
         });
@@ -312,6 +312,8 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
         selectedVarientName,
         varientList
     ) => {
+
+        
         if (!selectedVarientName || selectedVarientName.length === 0) {
             return;
         }

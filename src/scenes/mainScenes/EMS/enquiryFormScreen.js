@@ -1129,13 +1129,79 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("Please fill district ");
       return;
     }
-    // Model Selection
-    if (carModelsList.length == 0) {
-      scrollToPos(4)
-      setOpenAccordian('4')
-      showToast("Please fill model details");
+    if (
+      selector.p_pincode.length == 0 ||
+      selector.p_urban_or_rural.length == 0 ||
+      selector.p_houseNum.length == 0 ||
+      selector.p_streetName.length == 0 ||
+      selector.p_village.length == 0 ||
+      selector.p_mandal.length == 0 ||
+      selector.p_city.length == 0 ||
+      selector.p_district.length == 0 ||
+      selector.p_state.length == 0
+    ) {
+      scrollToPos(14);
+      setOpenAccordian("3");
+      showToast("Please fill permanent address ");
       return;
     }
+    //  if (selector.p_pincode.length == 0) {
+    //    scrollToPos(14);
+    //    setOpenAccordian("3");
+    //    showToast("Please fill Permanent pincode");
+    //    return;
+    //  }
+    //   if (selector.p_houseNum.length == 0) {
+    //     scrollToPos(14);
+    //     setOpenAccordian("3");
+    //     showToast("Please fill Permanent house number");
+    //     return;
+    //   }
+    // if (selector.p_streetName.length == 0) {
+    //   scrollToPos(14);
+    //   setOpenAccordian("3");
+    //   showToast("Please fill Permanent street");
+    //   return;
+    // }
+    //  if (selector.p_village.length == 0) {
+    //    scrollToPos(14);
+    //    setOpenAccordian("3");
+    //    showToast("Please fill Permanent village");
+    //    return;
+    //  }
+    //   if (selector.p_mandal.length == 0) {
+    //     scrollToPos(14);
+    //     setOpenAccordian("3");
+    //     showToast("Please fill Permanent mandal");
+    //     return;
+    //   }
+    
+    // Model Selection
+    // if (carModelsList.length == 0) {
+    //   scrollToPos(4)
+    //   setOpenAccordian('4')
+    //   showToast("Please fill model details");
+    //   return;
+    // }
+    if (carModelsList[0].model.length == 0) {
+      scrollToPos(4);
+      setOpenAccordian("4");
+      showToast("Please fill model");
+      return;
+    }
+    if (carModelsList[0].variant.length == 0) {
+      scrollToPos(4);
+      setOpenAccordian("4");
+      showToast("Please fill model variant");
+      return;
+    }
+     if (carModelsList[0].color.length == 0) {
+       scrollToPos(4);
+       setOpenAccordian("4");
+       showToast("Please fill model Color");
+       return;
+     }
+
     let tempCars = [];
     tempCars = carModelsList.filter((item) => {
       return item.color !== '' &&
@@ -1145,6 +1211,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         item.transimmisionType !== '' &&
         item.variant !== ''
     })
+
+    
+
+    
 
     let primaryTempCars = []
     primaryTempCars = carModelsList.filter((item) => {
@@ -1157,6 +1227,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("Please fill model details");
       return;
     }
+    
 
     if (!primaryTempCars.length > 0) {
       scrollToPos(4)
@@ -1183,20 +1254,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   showToast("Please fill color");
     //   return;
     // }
-    if (selector.p_pincode.length == 0 ||
-      selector.p_urban_or_rural.length == 0 ||
-      selector.p_houseNum.length == 0 ||
-      selector.p_streetName.length == 0 ||
-      selector.p_village.length == 0 ||
-      selector.p_mandal.length == 0 ||
-      selector.p_city.length == 0 ||
-      selector.p_district.length == 0 ||
-      selector.p_state.length == 0) {
-      scrollToPos(3)
-      setOpenAccordian('3')
-      showToast("Please fill permanet address ");
-      return;
-    }
+    
     //Finance Details
     if (selector.retail_finance.length == 0) {
       scrollToPos(5)
@@ -3749,11 +3807,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       "variant": '',
                       "isPrimary": 'N'
                     }
-                    selector.dmsLeadProducts.map((item, id)=>{
-                      
-                        console.log("DEMSID--------->",item.id)
-                  
-                    })
+                    
                     let arr = [...carModelsList]
                     arr.push(carmodeldata)
                     setCarModelsList(arr)
@@ -3768,7 +3822,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   //extraData={carModelsList}
                   keyExtractor={(item, index) => index.toString()}
                   renderItem={({ item, index }) => {
-                    console.log("HERE IS LIST----->",carModelsList)
+                    //console.log("HERE IS LIST----->",carModelsList)
                     return (
                       // <Pressable onPress={() => selectedItem(item, index)}>
                       < View >
