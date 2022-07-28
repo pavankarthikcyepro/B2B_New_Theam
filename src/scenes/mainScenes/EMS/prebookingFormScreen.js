@@ -608,19 +608,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             }
             else {
                 if (type == "delete") {
-                  let arr = await [...carModelsList];
-                  arr.splice(index, 1);
-                  deleteModalFromServer({ value });
-                  console.log("MODELS ELSE: ", arr);
-                  let item = {
-                    color: arr[0].color,
-                    fuel: arr[0].fuel,
-                    id: arr[0].id,
-                    model: arr[0].model,
-                    transimmisionType: arr[0].transimmisionType,
-                    variant: arr[0].variant,
-                    isPrimary: "Y",
-                  };
+                  //let arr = await [...carModelsList];
+                 
+                 
                   // arr[0] = item;
                   // arr.splice(0, 1);
                   // arr.unshift(item)
@@ -628,12 +618,34 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   //     updateVariantModelsData(arr[0].model, true, arr[0].variant);
                   // }
                   // setCarModelsList([])
-                  await setCarModelsList([...arr]);
+                 
                   // carModelsList.splice(0, 1)
-                }
-                
-            }
 
+                let arr = await [...carModelsList]
+                arr.splice(index, 1)
+                 deleteModalFromServer({ value });
+                console.log("MODELS ELSE: ", arr);
+                let primaryModel = [];
+                primaryModel = arr.filter((item) => item.isPrimary === "Y");
+                var isPrimary = arr[0].isPrimary;
+                if (primaryModel.length === 0) {
+                    await setIsPrimaryCurrentIndex(0)
+                    isPrimary = "Y"
+                }
+              //  alert(primaryModel.length)
+                let item = {
+                    "color": arr[0].color,
+                    "fuel": arr[0].fuel,
+                    "id": arr[0].id,
+                    "model": arr[0].model,
+                    "transimmisionType": arr[0].transimmisionType,
+                    "variant": arr[0].variant,
+                    "isPrimary": isPrimary,
+
+                }
+                 await setCarModelsList([...arr]);
+            }
+        }
             // console.log("onValueChangeonValueChange@@@@ ", value)
         } catch (error) {
             // alert(error)
