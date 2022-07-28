@@ -508,8 +508,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       });
   };
 
-  const deleteModalFromServer = async (token, orgId) => {
-    await fetch(URL.DEALER_CODE_LIST(orgId), {
+  const deleteModalFromServer = async ({token, value}) => {
+    //alert(value.id)
+    await fetch(URL.DELETE_MODEL_CARD(value.id), {
       method: "DELETE",
       headers: {
         Accept: "application/json",
@@ -517,15 +518,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         "auth-token": token,
       },
     })
-      .then((json) => json.json())
+      .then((json) => {
+        //console.log('JSON----------->',json)
+        json.json()})
       .then((res) => {
-        // console.log("insurance : ", res);
-        if (res != null && res.length > 0) {
-          const companyList = res.map((item, index) => {
-            return { ...item, name: item.company_name };
-          });
-          //serInsurenceCompanyList([...companyList]);
-        }
+        //alert("delete : ", res.status);
+       //alert(res)
       })
       .catch((error) => {
         showToastRedAlert(error.message);
@@ -551,27 +549,24 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       console.log("$$$$$$$$$ DMS LEAD PROD: ", selector.dmsLeadProducts);
       if (selector.dmsLeadProducts && selector.dmsLeadProducts.length > 0) {
         // setCarModelsList(selector.dmsLeadProducts)
-        addingIsPrimary()
-      }
-      else {
+        addingIsPrimary();
+      } else {
         let tempModelObj = {
-          "color": '',
-          "fuel": '',
-          "id": 0,
-          "model": selector.enquiry_details_response?.dmsLeadDto?.model,
-          "transimmisionType": '',
-          "variant": '',
-          "isPrimary": "N"
-        }
+          color: "",
+          fuel: "",
+          id: 0,
+          model: selector.enquiry_details_response?.dmsLeadDto?.model,
+          transimmisionType: "",
+          variant: "",
+          isPrimary: "N",
+        };
         console.log("SET TWO:", tempModelObj);
-        setCarModelsList([tempModelObj])
+        setCarModelsList([tempModelObj]);
       }
     } catch (error) {
       // alert("useeffect"+error)
-
     }
-
-  }, []) //selector.dmsLeadProducts, selector.enquiry_details_response
+  }, [selector.dmsLeadProducts, selector.enquiry_details_response]); //selector.dmsLeadProducts, selector.enquiry_details_response
 
   useEffect(() => {
     console.log("PROCEED TTTT:", proceedToPreSelector.update_enquiry_details_response_status);
@@ -614,7 +609,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     if (selector.enquiry_details_response) {
-      setShowPreBookingBtn(false)
+      setShowPreBookingBtn(false);
       let dmsContactOrAccountDto;
       if (selector.enquiry_details_response.hasOwnProperty("dmsAccountDto")) {
         dmsContactOrAccountDto =
@@ -652,7 +647,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       //   alert("reponse---------", JSON.stringify(dmsLeadDto.dmsLeadProducts))
       //  setCarModelsList(selector.dmsLeadProducts)
       // Update Finance Details
-       console.log("DMSPRODUCTS============>", selector.dmsLeadProducts);
+      console.log("DMSPRODUCTS============>", selector.dmsLeadProducts);
       dispatch(updateFinancialData(dmsLeadDto.dmsfinancedetails));
       // Update Customer Need Analysys
       dispatch(updateCustomerNeedAnalysisData(dmsLeadDto.dmsLeadScoreCards));
@@ -664,9 +659,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
       saveAttachmentDetailsInLocalObject(dmsLeadDto.dmsAttachments);
       dispatch(updateDmsAttachmentDetails(dmsLeadDto.dmsAttachments));
-
     }
-  }, []); //selector.enquiry_details_response
+  }, [selector.enquiry_details_response]); //selector.enquiry_details_response
 
   const saveAttachmentDetailsInLocalObject = (dmsAttachments) => {
     console.log("ATTACHMENTS:", JSON.stringify(dmsAttachments));
@@ -1803,6 +1797,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
   const modelOnclick = async (index, value, type) => {
     try {
+    
       if (type == "update") {
         let arr = [...carModelsList]
         arr[index] = value
@@ -1822,6 +1817,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         if (type == "delete") {
           let arr = await [...carModelsList];
           arr.splice(index, 1);
+         deleteModalFromServer({value})
 
           console.log("MODELS ELSE: ", arr);
           let item = {
@@ -1834,12 +1830,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             isPrimary: "Y",
           };
           // arr[0] = item;
-          arr.unshift(item);
-          arr.splice(0, 1);
+          //arr.unshift(item);
+          //arr.splice(0, 1);
 
-          if (arr[0].variant !== "" && arr[0].model !== "") {
-            updateVariantModelsData(arr[0].model, true, arr[0].variant);
-          }
+          // if (arr[0].variant !== "" && arr[0].model !== "") {
+          //   updateVariantModelsData(arr[0].model, true, arr[0].variant);
+          // }
           //setCarModelsList([])
           await setCarModelsList([...arr]);
           // carModelsList.splice(0, 1)
@@ -3753,10 +3749,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       "variant": '',
                       "isPrimary": 'N'
                     }
+                    selector.dmsLeadProducts.map((item, id)=>{
+                      
+                        console.log("DEMSID--------->",item.id)
+                  
+                    })
                     let arr = [...carModelsList]
                     arr.push(carmodeldata)
                     setCarModelsList(arr)
-                    // selector.dmsLeadProducts = [...selector.dmsLeadProducts, carmodeldata]
+                    //selector.dmsLeadProducts = [...selector.dmsLeadProducts, carmodeldata]
                   }}
                   style={{ width: '40%', margin: 5, borderRadius: 5, backgroundColor: Colors.PINK, height: 40, alignSelf: 'flex-end', alignContent: 'flex-end', alignItems: 'center', justifyContent: 'center' }}>
                   <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.WHITE, }}>Add Model</Text>
@@ -3767,7 +3768,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   //extraData={carModelsList}
                   keyExtractor={(item, index) => index.toString()}
                   renderItem={({ item, index }) => {
-                    //console.log("HERE IS LIST----->",carModelsList)
+                    console.log("HERE IS LIST----->",carModelsList)
                     return (
                       // <Pressable onPress={() => selectedItem(item, index)}>
                       < View >

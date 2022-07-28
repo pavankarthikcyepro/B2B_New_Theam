@@ -566,6 +566,29 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             setSelectedBranchId(branchId);
         });
     }
+
+    const deleteModalFromServer = async ({ token, value }) => {
+      //alert(value.id)
+      await fetch(URL.DELETE_MODEL_CARD(value.id), {
+        method: "DELETE",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "auth-token": token,
+        },
+      })
+        .then((json) => {
+          //console.log('JSON----------->',json)
+          json.json();
+        })
+        .then((res) => {
+          //alert("delete : ", res.status);
+          //alert(res)
+        })
+        .catch((error) => {
+          showToastRedAlert(error.message);
+        });
+    };
     
     const modelOnclick = async (index, value, type) => {
         try {
@@ -584,27 +607,31 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 await setCarModelsList([...arr])
             }
             else {
-                let arr = await [...carModelsList]
-                arr.splice(index, 1)
-                console.log("MODELS ELSE: ", arr);
-                let item = {
-                    "color": arr[0].color,
-                    "fuel": arr[0].fuel,
-                    "id": arr[0].id,
-                    "model": arr[0].model,
-                    "transimmisionType": arr[0].transimmisionType,
-                    "variant": arr[0].variant,
-                    "isPrimary": "Y"
+                if (type == "delete") {
+                  let arr = await [...carModelsList];
+                  arr.splice(index, 1);
+                  deleteModalFromServer({ value });
+                  console.log("MODELS ELSE: ", arr);
+                  let item = {
+                    color: arr[0].color,
+                    fuel: arr[0].fuel,
+                    id: arr[0].id,
+                    model: arr[0].model,
+                    transimmisionType: arr[0].transimmisionType,
+                    variant: arr[0].variant,
+                    isPrimary: "Y",
+                  };
+                  // arr[0] = item;
+                  // arr.splice(0, 1);
+                  // arr.unshift(item)
+                  // if (arr[0].variant !== '' && arr[0].model !== '' &&  arr[0].isPrimary === 'Y') {
+                  //     updateVariantModelsData(arr[0].model, true, arr[0].variant);
+                  // }
+                  // setCarModelsList([])
+                  await setCarModelsList([...arr]);
+                  // carModelsList.splice(0, 1)
                 }
-                // arr[0] = item;
-                arr.splice(0, 1);
-                arr.unshift(item)
-                if (arr[0].variant !== '' && arr[0].model !== '' &&  arr[0].isPrimary === 'Y') {
-                    updateVariantModelsData(arr[0].model, true, arr[0].variant);
-                }
-                setCarModelsList([])
-                await setCarModelsList([...arr])
-                // carModelsList.splice(0, 1)
+                
             }
 
             // console.log("onValueChangeonValueChange@@@@ ", value)
