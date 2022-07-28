@@ -587,6 +587,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 let arr = await [...carModelsList]
                 arr.splice(index, 1)
                 console.log("MODELS ELSE: ", arr);
+                let primaryModel = [];
+                primaryModel = arr.filter((item) => item.isPrimary === "Y");
+                var isPrimary = arr[0].isPrimary;
+                if (primaryModel.length === 0) {
+                    await setIsPrimaryCurrentIndex(0)
+                    isPrimary = "Y"
+                }
+              //  alert(primaryModel.length)
                 let item = {
                     "color": arr[0].color,
                     "fuel": arr[0].fuel,
@@ -594,7 +602,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     "model": arr[0].model,
                     "transimmisionType": arr[0].transimmisionType,
                     "variant": arr[0].variant,
-                    "isPrimary": "Y"
+                    "isPrimary": isPrimary,
                 }
                 // arr[0] = item;
                 arr.splice(0, 1);
