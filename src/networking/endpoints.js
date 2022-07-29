@@ -293,7 +293,8 @@ const URL = {
         return `${getTaskList}/${taskId}`;
     },
     GET_TEAMS_TARGET_PARAMS: () => dashboard + "/v4/get_target_params_for_all_emps",
-    GET_TOTAL_TARGET_PARAMS: () => dashboard + "/v4/get_target_params",
+    // GET_TOTAL_TARGET_PARAMS: () => dashboard + "/v4/get_target_params",
+    GET_TOTAL_TARGET_PARAMS: () => dashboard + "/v2/get_target_params",
     GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
         return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
     },

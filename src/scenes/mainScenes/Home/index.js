@@ -284,10 +284,10 @@ const HomeScreen = ({ route, navigation }) => {
             updateBranchNameInHeader()
             getMenuListFromServer();
             getLoginEmployeeDetailsFromAsyn();
-        getCustomerType()
+            getCustomerType()
             checkLoginUserAndEnableReportButton();
         // }
-        
+
         const unsubscribe = navigation.addListener('focus', () => {
             updateBranchNameInHeader()
             getLoginEmployeeDetailsFromAsyn();
@@ -343,7 +343,7 @@ const HomeScreen = ({ route, navigation }) => {
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             let findMdArr = [];
-            
+
             findMdArr = jsonObj.roles.filter((item) => {
                 return item === 'MD'
             })
@@ -453,7 +453,7 @@ const HomeScreen = ({ route, navigation }) => {
             }
             console.log("<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+jsonObj?.hrmsRole);
 
-            
+
 
             if (jsonObj?.roles.length > 0) {
                 let rolesArr = [], mdArr = [], dseArr = [];
@@ -615,7 +615,8 @@ const HomeScreen = ({ route, navigation }) => {
         const payload1 = {
             ...payload,
             "pageNo": 0,
-            "size": 5
+            "size": 5,
+            isTeamPresent
         }
         const payload2 = {
             "orgId": orgId,
@@ -908,7 +909,7 @@ const HomeScreen = ({ route, navigation }) => {
                                                 <View style={{
                                                     flexDirection: 'row'
                                                 }}>
-                                                    <TouchableOpacity style={styles.rankIconBox} onPress={() => { 
+                                                    <TouchableOpacity style={styles.rankIconBox} onPress={() => {
                                                         navigation.navigate(AppNavigator.HomeStackIdentifiers.leaderboard)
                                                      }}>
                                                         {/* <VectorImage
@@ -943,7 +944,7 @@ const HomeScreen = ({ route, navigation }) => {
                                                 }}>
                                                     <TouchableOpacity style={styles.rankIconBox} onPress={() => {
                                                         navigation.navigate(AppNavigator.HomeStackIdentifiers.branchRanking)
-                                                    }}>                                                        
+                                                    }}>
                                                     {/* <VectorImage
                                                     width={25}
                                                     height={16}
@@ -1047,7 +1048,7 @@ const HomeScreen = ({ route, navigation }) => {
                                                 </View>
                                                 <Text style={{ fontSize: 12, color: '#aaa3a3' }}>Last updated March 29 2020 11:40 am</Text>
                                             </View>
-                                         
+
                                         </View>
                                         {!isTeamPresent &&
                                             <View >
@@ -1070,7 +1071,7 @@ const HomeScreen = ({ route, navigation }) => {
                                                     // setIsTeam(true)
                                                     dispatch(updateIsTeam(false))
                                                 }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: selector.isTeam ? Colors.WHITE : Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
-                                                    <Text style={{ fontSize: 16, color: selector.isTeam ? Colors.BLACK : Colors.WHITE, fontWeight: '600' }}>Self</Text>
+                                                    <Text style={{ fontSize: 16, color: selector.isTeam ? Colors.BLACK : Colors.WHITE, fontWeight: '600' }}>Insights</Text>
                                                 </TouchableOpacity>
                                                 <TouchableOpacity onPress={() => {
                                                     // setIsTeam(false)

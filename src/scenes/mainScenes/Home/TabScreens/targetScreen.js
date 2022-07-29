@@ -792,9 +792,9 @@ const TargetScreen = ({ route, navigation }) => {
         <View style={styles.itemBox}>
           <Text style={{ color: getColor(Number(item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].achievment), Number(item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].target)) }}>{Number(item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].achievment) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].achievment) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].achievment) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].achievment) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].achievment)}/{Number(item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].target) > 99999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].target) / 100000) + 'L' : (Number(item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].target) > 999 ? Math.round(Number(item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].target) / 1000) + 'K' : item.targetAchievements.filter((param) => param.paramName === 'EXTENDEDWARRANTY')[0].target)}</Text>
         </View>
-        <View style={styles.itemBox}>
-          <Text style={{ color: getColor(getTotalAchivent(item.targetAchievements), getTotalTarget(item.targetAchievements)) }}>{getTotalAchivent(item.targetAchievements) > 99999 ? Math.round(getTotalAchivent(item.targetAchievements) / 100000) + 'L' : (getTotalAchivent(item.targetAchievements) > 999 ? Math.round(getTotalAchivent(item.targetAchievements) / 1000) + 'K' : getTotalAchivent(item.targetAchievements))}/{getTotalTarget(item.targetAchievements) > 99999 ? Math.round(getTotalTarget(item.targetAchievements) / 100000) + 'L' : (getTotalTarget(item.targetAchievements) > 999 ? Math.round(getTotalTarget(item.targetAchievements) / 1000) + 'K' : getTotalTarget(item.targetAchievements))}</Text>
-        </View>
+        {/*<View style={styles.itemBox}>*/}
+        {/*  <Text style={{ color: getColor(getTotalAchivent(item.targetAchievements), getTotalTarget(item.targetAchievements)) }}>{getTotalAchivent(item.targetAchievements) > 99999 ? Math.round(getTotalAchivent(item.targetAchievements) / 100000) + 'L' : (getTotalAchivent(item.targetAchievements) > 999 ? Math.round(getTotalAchivent(item.targetAchievements) / 1000) + 'K' : getTotalAchivent(item.targetAchievements))}/{getTotalTarget(item.targetAchievements) > 99999 ? Math.round(getTotalTarget(item.targetAchievements) / 100000) + 'L' : (getTotalTarget(item.targetAchievements) > 999 ? Math.round(getTotalTarget(item.targetAchievements) / 1000) + 'K' : getTotalTarget(item.targetAchievements))}</Text>*/}
+        {/*</View>*/}
 
         <View style={styles.itemBox}>
           <View
@@ -1598,9 +1598,9 @@ const TargetScreen = ({ route, navigation }) => {
                   <View style={styles.itemBox}>
                     <Text style={{ color: '#1C95A6' }}>ExW</Text>
                   </View>
-                  <View style={styles.itemBox}>
-                    <Text style={{ color: '#EC3466' }}>Total</Text>
-                  </View>
+                  {/*<View style={styles.itemBox}>*/}
+                  {/*  <Text style={{ color: '#EC3466' }}>Total</Text>*/}
+                  {/*</View>*/}
                   <View style={styles.itemBox}>
                     <Text style={{ color: '#0c0c0c' }}>Action</Text>
                   </View>
