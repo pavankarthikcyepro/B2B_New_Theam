@@ -1860,12 +1860,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         let arr = [...carModelsList]
         arr[index] = value
         // arr.splice(carModelsList, index, value);
-        console.log("MODELS IF: ", arr);
+        //console.log("MODELS IF: ", arr);
         let primaryModel = [];
         primaryModel = arr.filter((item) => item.isPrimary === "Y");
         if (primaryModel.length > 0) {
-          if (primaryModel[0].variant !== '' && primaryModel[0].model !== '') {
-            updateVariantModelsData(primaryModel[0].model, true, primaryModel[0].variant);
+          if (primaryModel[0].variant !== '' && primaryModel[0].model !== '' && primaryModel[0].color!=='') {
+            updateVariantModelsData(primaryModel[0].model, true, primaryModel[0].variant, primaryModel[0].color);
           }
         }
         await setCarModelsList([...arr])
@@ -1888,13 +1888,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             isPrimary: "Y",
           };
           // arr[0] = item;
-          //arr.unshift(item);
-          //arr.splice(0, 1);
+          // arr.unshift(item);
+          // arr.splice(0, 1);
 
           // if (arr[0].variant !== "" && arr[0].model !== "") {
           //   updateVariantModelsData(arr[0].model, true, arr[0].variant);
           // }
-          //setCarModelsList([])
+          // setCarModelsList([])
           await setCarModelsList([...arr]);
           // carModelsList.splice(0, 1)
         }
@@ -1911,13 +1911,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
     try {
       if (isPrimaryEnabled === "Y") {
-        updateVariantModelsData(item.model, true, item.variant);
+        console.log('YES=========>>>>>')
+        
+        updateVariantModelsData(item.model, true, item.variant, item.color); //item.variant, item.color
       }
       if (carModelsList && carModelsList.length > 0) {
+        console.log('NO===============>')
         let arr = await [...carModelsList]
         var data = arr[isPrimaryCureentIndex]
+        console.log('DATAS================>>>', data)
         const cardata = await {
-          "color": data.color,
+          "color": item.color,
           "fuel": data.fuel,
           "id": data.id,
           "model": data.model,
@@ -1935,7 +1939,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           "isPrimary": "Y"
 
         }
-        await setCarModelsList([])
+        //await setCarModelsList([])
         arr[isPrimaryCureentIndex] = cardata;
         arr[index] = selecteditem
         console.log("SET FOUR", arr);

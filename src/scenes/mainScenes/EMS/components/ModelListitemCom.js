@@ -155,11 +155,13 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
                     selectedCarVarientsData.varientList
                 );
             }
+           
             setCarFuelType(item?.fuel)
             // if (leadStage === 'PREBOOKING')
             setisPrimary(item?.isPrimary)
             setCarTransmissionType(item?.transimmisionType)
             setCarVariant(item?.variant)
+            setCarColor(item?.color)
             if (employeeData) {
 
                 const jsonObj = JSON.parse(employeeData);
@@ -270,7 +272,7 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
                     updateColorsDataForSelectedVarient(selectedVarientName, [...mArray]);
                 }
             }
-            console.log("MARRAY: ", mArray);
+            //console.log("MARRAY: ", mArray);
         }
     };
 

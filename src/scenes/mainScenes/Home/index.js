@@ -339,7 +339,7 @@ const HomeScreen = ({ route, navigation }) => {
 
 
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-         console.log("SSSSSSSSSSSSSSSSSSSSS$$$$$ LOGIN EMP:", employeeData);
+         //console.log("SSSSSSSSSSSSSSSSSSSSS$$$$$ LOGIN EMP:", employeeData);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             let findMdArr = [];
