@@ -235,7 +235,11 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                 data={dataForDropDown}
                 onRequestClose={() => setShowDropDownModel(false)}
                 selectedItems={(item) => {
-                    console.log("ITEM:", item);
+                    console.log("ITEM:", item, ', : moment: ', moment().month() + 1);
+                    if (item && item.id < moment().month() + 1) {
+                        showToast('Targets cannot be set for previous months.');
+                        return;
+                    }
                     setShowDropDownModel(false);
                     setDropDownData({ key: dropDownKey, value: item.name, id: item.id })
                     if (selector.targetType === "MONTHLY") {
@@ -427,7 +431,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                                         marginHorizontal: 20
                                     }}>
                                         <TargetSettingsTab />
-                                        {/* {homeSelector.isDSE && primaryDepartment === 'Sales' ? <TargetSettingsTab /> : 
+                                        {/* {homeSelector.isDSE && primaryDepartment === 'Sales' ? <TargetSettingsTab /> :
                                         <Text style={{fontSize:16, color: Colors.BLACK, textAlign:'center'}}>Access Denied</Text>} */}
                                     </View>
                                 </View>

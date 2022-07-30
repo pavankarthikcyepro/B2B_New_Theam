@@ -283,11 +283,11 @@ const HomeScreen = ({ route, navigation }) => {
         // if (await AsyncStore.getData(AsyncStore.Keys.IS_LOGIN) === 'true'){
             updateBranchNameInHeader()
             getMenuListFromServer();
-            getLoginEmployeeDetailsFromAsyn();
-        getCustomerType()
+            getCustomerType()
             checkLoginUserAndEnableReportButton();
+            getLoginEmployeeDetailsFromAsyn();
         // }
-        
+
         const unsubscribe = navigation.addListener('focus', () => {
             updateBranchNameInHeader()
             getLoginEmployeeDetailsFromAsyn();
@@ -343,7 +343,7 @@ const HomeScreen = ({ route, navigation }) => {
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             let findMdArr = [];
-            
+
             findMdArr = jsonObj.roles.filter((item) => {
                 return item === 'MD'
             })
@@ -355,7 +355,6 @@ const HomeScreen = ({ route, navigation }) => {
 
     const getLoginEmployeeDetailsFromAsyn = async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        // console.log("$$$$$ LOGIN EMP:", employeeData);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             const payload = {
@@ -429,9 +428,9 @@ const HomeScreen = ({ route, navigation }) => {
                     "loggedInEmpId": jsonObj.empId,
                     "startDate": monthFirstDate,
                     "levelSelected": null,
-                    "empId": jsonObj.empId
+                    "empId": jsonObj.empId,
+                    isTeamPresent: true,
                 }
-                // console.log("PAYLOAD:", payload);
                 getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
             }
             if (jsonObj?.hrmsRole.toLowerCase().includes('manager')) {
@@ -451,9 +450,8 @@ const HomeScreen = ({ route, navigation }) => {
                 // dispatch(updateData(sidemenuSelector.normalData))
                 dispatch(updateIsDSE(false))
             }
-            console.log("<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+jsonObj?.hrmsRole);
 
-            
+
 
             if (jsonObj?.roles.length > 0) {
                 let rolesArr = [], mdArr = [], dseArr = [];
@@ -541,17 +539,18 @@ const HomeScreen = ({ route, navigation }) => {
                 "levelSelected": null,
                 "empId": jsonObj.empId
             }
-            if(isTeamPresent){
-                dispatch(getTargetParametersData({
-                    ...payload,
-                    "pageNo": 0,
-                    "size": 5
-                })),
-                getAllTargetParametersDataFromServer(payload, jsonObj.orgId);
-            }
-            else{
-                getTargetParametersDataFromServer(payload);
-            }
+                if(isTeamPresent){
+                    dispatch(getTargetParametersData({
+                        ...payload,
+                        "pageNo": 0,
+                        "size": 5,
+                        isTeamPresent: true
+                    })),
+                        getAllTargetParametersDataFromServer(payload, jsonObj.orgId);
+                }
+                else{
+                    getTargetParametersDataFromServer(payload);
+                }
         }
     }
 
@@ -597,11 +596,21 @@ const HomeScreen = ({ route, navigation }) => {
         });
     }
 
-    const getTargetParametersDataFromServer = (payload) => {
+    const getTargetParametersDataFromServer = async (payload) => {
+        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        let isTeamPresentLocal = false;
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            if (jsonObj?.hrmsRole === "Admin" || jsonObj?.hrmsRole === "Admin Prod" || jsonObj?.hrmsRole === "App Admin" || jsonObj?.hrmsRole === "Manager" || jsonObj?.hrmsRole === "TL" || jsonObj?.hrmsRole === "General Manager" || jsonObj?.hrmsRole === "branch manager" || jsonObj?.hrmsRole === "Testdrive_Manager" || jsonObj?.hrmsRole === "MD" || jsonObj?.hrmsRole === "Business Head" || jsonObj?.hrmsRole === "Sales Manager") {
+                isTeamPresentLocal = true;
+            }
+        }
+
         const payload1 = {
             ...payload,
             "pageNo": 0,
-            "size": 5
+            "size": 5,
+            isTeamPresent: isTeamPresentLocal
         }
         Promise.allSettled([
             dispatch(getTargetParametersData(payload1)),
@@ -611,11 +620,20 @@ const HomeScreen = ({ route, navigation }) => {
         });
     }
 
-    const getAllTargetParametersDataFromServer = (payload, orgId) => {
+    const getAllTargetParametersDataFromServer = async (payload, orgId) => {
+        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        let isTeamPresentLocal = false;
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            if (jsonObj?.hrmsRole === "Admin" || jsonObj?.hrmsRole === "Admin Prod" || jsonObj?.hrmsRole === "App Admin" || jsonObj?.hrmsRole === "Manager" || jsonObj?.hrmsRole === "TL" || jsonObj?.hrmsRole === "General Manager" || jsonObj?.hrmsRole === "branch manager" || jsonObj?.hrmsRole === "Testdrive_Manager" || jsonObj?.hrmsRole === "MD" || jsonObj?.hrmsRole === "Business Head" || jsonObj?.hrmsRole === "Sales Manager") {
+                isTeamPresentLocal = true;
+            }
+        }
+
         const payload1 = {
             ...payload,
             "pageNo": 0,
-            "size": 5
+            "size": 5,
         }
         const payload2 = {
             "orgId": orgId,
@@ -626,9 +644,9 @@ const HomeScreen = ({ route, navigation }) => {
             "startDate": payload.startDate,
             "levelSelected": null,
             "pageNo": 0,
-            "size": 100
+            "size": 100,
+            isTeamPresent: isTeamPresentLocal
         }
-        console.log("$$$$PAYLOAD:", payload2);
         Promise.allSettled([
             // dispatch(getTargetParametersAllData(payload1)),
             dispatch(getNewTargetParametersAllData(payload2)),
@@ -908,7 +926,7 @@ const HomeScreen = ({ route, navigation }) => {
                                                 <View style={{
                                                     flexDirection: 'row'
                                                 }}>
-                                                    <TouchableOpacity style={styles.rankIconBox} onPress={() => { 
+                                                    <TouchableOpacity style={styles.rankIconBox} onPress={() => {
                                                         navigation.navigate(AppNavigator.HomeStackIdentifiers.leaderboard)
                                                      }}>
                                                         {/* <VectorImage
@@ -943,7 +961,7 @@ const HomeScreen = ({ route, navigation }) => {
                                                 }}>
                                                     <TouchableOpacity style={styles.rankIconBox} onPress={() => {
                                                         navigation.navigate(AppNavigator.HomeStackIdentifiers.branchRanking)
-                                                    }}>                                                        
+                                                    }}>
                                                     {/* <VectorImage
                                                     width={25}
                                                     height={16}
@@ -1047,7 +1065,7 @@ const HomeScreen = ({ route, navigation }) => {
                                                 </View>
                                                 <Text style={{ fontSize: 12, color: '#aaa3a3' }}>Last updated March 29 2020 11:40 am</Text>
                                             </View>
-                                         
+
                                         </View>
                                         {!isTeamPresent &&
                                             <View >
@@ -1070,7 +1088,7 @@ const HomeScreen = ({ route, navigation }) => {
                                                     // setIsTeam(true)
                                                     dispatch(updateIsTeam(false))
                                                 }} style={{ width: '50%', justifyContent: 'center', alignItems: 'center', backgroundColor: selector.isTeam ? Colors.WHITE : Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
-                                                    <Text style={{ fontSize: 16, color: selector.isTeam ? Colors.BLACK : Colors.WHITE, fontWeight: '600' }}>Self</Text>
+                                                    <Text style={{ fontSize: 16, color: selector.isTeam ? Colors.BLACK : Colors.WHITE, fontWeight: '600' }}>Insights</Text>
                                                 </TouchableOpacity>
                                                 <TouchableOpacity onPress={() => {
                                                     // setIsTeam(false)
