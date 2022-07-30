@@ -34,6 +34,7 @@ const TopTabNavigator = ({ titles, data }) => {
         >
             {titles.map((title, index) => {
                 console.log("titles: ", title)
+                console.log("titles data: ", data[title].length)
                 return (
                     <TopTab.Screen
                         name={title}
@@ -56,7 +57,7 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
     const [defaultContext, setDefaultContext] = useState({});
 
     useEffect(() => {
-        console.log("accessorylist: ", selectedAccessoryList, accessorylist)
+        console.log("accessorylist: ", selectedAccessoryList.length, accessorylist.length);
         const titleNames = [];
         const dataObj = {};
         accessorylist.forEach((item) => {
@@ -83,32 +84,55 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
         setAccessoriesData({ names: titleNames, data: dataObj });
         removeExistingKeysFromAsync(titleNames);
     }, [])
-
+    
     const removeExistingKeysFromAsync = async (keys) => {
         await AsyncStorage.multiRemove(keys);
     }
 
     const addItemInAsyncStorage = async (key, item) => {
 
-        const existingData = await AsyncStorage.getData(key);
-        // console.log("exis: ", existingData);
-        // let data = [];
-        // if (!existingData) {
-        //     data = [item];
-        // } else {
-        //     data = [...JSON.parse(existingData), item];
-        // }
-        await AsyncStorage.storeData(key, JSON.stringify([item]))
+try {
+    const asyncStorageData = await AsyncStorage.getData(key);
+    let existingData;
+    console.log('>>>>>>>>>><<<<<<<<<<<, main: ', asyncStorageData);
+    if (asyncStorageData && asyncStorageData.length && typeof (asyncStorageData) === 'string') {
+        console.log('>>>>>>>>>><<<<<<<<<<<, Async: ', asyncStorageData)
+        existingData = JSON.parse(asyncStorageData);
+    }
+    console.log(">>>>>>>>>><<<<<<<<<<<, exis???????: ", existingData);
+    const itemExists = existingData.findIndex(x => x.id === item.id);
+    let data = [];
+    if (itemExists === -1) {
+        console.log("exis??????? DATA NA: ", existingData, ' :key: ', key);
+
+        data = [item];
+    } else {
+        console.log("exis??????? DATA AV: ", existingData, ' :key: ', key);
+
+        data = [...existingData, item];
+    }
+
+    console.log("exis??????? final: ", key);
+    data.map((item) => {
+        const findItem = uniqueTags.find((x) => x.id === item.id);
+        if (!findItem) uniqueTags.push(item);
+    });
+    await AsyncStorage.storeData(key, JSON.stringify(uniqueTags))
+} catch (e) {
+    console.log('>>>>>>>>>><<<<<<<<<<<, ', e)
+}
     }
 
     const addSelected = async () => {
 
         const data = await AsyncStorage.multiGetData(accessoriesData.names);
-        // console.log("data: ", data)
+        console.log("data......: ACC. NAMES ", accessoriesData.names)
         let allData = [];
         accessoriesData.names.forEach((item, index) => {
+            console.log("data......: ACC. NAMES item ", item)
+
             const selectedData = data[index][1];
-            console.log("selectedData: ", selectedData)
+            console.log("selectedData: ", selectedData?.length)
             if (selectedData) {
                 allData = allData.concat(JSON.parse(selectedData));
             }
