@@ -283,9 +283,9 @@ const HomeScreen = ({ route, navigation }) => {
         // if (await AsyncStore.getData(AsyncStore.Keys.IS_LOGIN) === 'true'){
             updateBranchNameInHeader()
             getMenuListFromServer();
-            getLoginEmployeeDetailsFromAsyn();
             getCustomerType()
             checkLoginUserAndEnableReportButton();
+            getLoginEmployeeDetailsFromAsyn();
         // }
 
         const unsubscribe = navigation.addListener('focus', () => {
@@ -355,7 +355,6 @@ const HomeScreen = ({ route, navigation }) => {
 
     const getLoginEmployeeDetailsFromAsyn = async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        // console.log("$$$$$ LOGIN EMP:", employeeData);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             const payload = {
@@ -429,9 +428,9 @@ const HomeScreen = ({ route, navigation }) => {
                     "loggedInEmpId": jsonObj.empId,
                     "startDate": monthFirstDate,
                     "levelSelected": null,
-                    "empId": jsonObj.empId
+                    "empId": jsonObj.empId,
+                    isTeamPresent: true,
                 }
-                // console.log("PAYLOAD:", payload);
                 getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
             }
             if (jsonObj?.hrmsRole.toLowerCase().includes('manager')) {
@@ -451,7 +450,6 @@ const HomeScreen = ({ route, navigation }) => {
                 // dispatch(updateData(sidemenuSelector.normalData))
                 dispatch(updateIsDSE(false))
             }
-            console.log("<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+jsonObj?.hrmsRole);
 
 
 
@@ -541,17 +539,17 @@ const HomeScreen = ({ route, navigation }) => {
                 "levelSelected": null,
                 "empId": jsonObj.empId
             }
-            if(isTeamPresent){
-                dispatch(getTargetParametersData({
-                    ...payload,
-                    "pageNo": 0,
-                    "size": 5
-                })),
-                getAllTargetParametersDataFromServer(payload, jsonObj.orgId);
-            }
-            else{
-                getTargetParametersDataFromServer(payload);
-            }
+                if(isTeamPresent){
+                    dispatch(getTargetParametersData({
+                        ...payload,
+                        "pageNo": 0,
+                        "size": 5
+                    })),
+                        getAllTargetParametersDataFromServer(payload, jsonObj.orgId);
+                }
+                else{
+                    getTargetParametersDataFromServer(payload);
+                }
         }
     }
 
@@ -611,12 +609,20 @@ const HomeScreen = ({ route, navigation }) => {
         });
     }
 
-    const getAllTargetParametersDataFromServer = (payload, orgId) => {
+    const getAllTargetParametersDataFromServer = async (payload, orgId) => {
+        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        let isTeamPresentLocal = false;
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            if (jsonObj?.hrmsRole === "Admin" || jsonObj?.hrmsRole === "Admin Prod" || jsonObj?.hrmsRole === "App Admin" || jsonObj?.hrmsRole === "Manager" || jsonObj?.hrmsRole === "TL" || jsonObj?.hrmsRole === "General Manager" || jsonObj?.hrmsRole === "branch manager" || jsonObj?.hrmsRole === "Testdrive_Manager" || jsonObj?.hrmsRole === "MD" || jsonObj?.hrmsRole === "Business Head" || jsonObj?.hrmsRole === "Sales Manager") {
+                isTeamPresentLocal = true;
+            }
+        }
+
         const payload1 = {
             ...payload,
             "pageNo": 0,
             "size": 5,
-            isTeamPresent
         }
         const payload2 = {
             "orgId": orgId,
@@ -627,9 +633,9 @@ const HomeScreen = ({ route, navigation }) => {
             "startDate": payload.startDate,
             "levelSelected": null,
             "pageNo": 0,
-            "size": 100
+            "size": 100,
+            isTeamPresent: isTeamPresentLocal
         }
-        console.log("$$$$PAYLOAD:", payload2);
         Promise.allSettled([
             // dispatch(getTargetParametersAllData(payload1)),
             dispatch(getNewTargetParametersAllData(payload2)),
