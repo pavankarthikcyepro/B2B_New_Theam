@@ -339,7 +339,7 @@ const HomeScreen = ({ route, navigation }) => {
 
 
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-         console.log("SSSSSSSSSSSSSSSSSSSSS$$$$$ LOGIN EMP:", employeeData);
+         //console.log("SSSSSSSSSSSSSSSSSSSSS$$$$$ LOGIN EMP:", employeeData);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             let findMdArr = [];
@@ -877,7 +877,7 @@ const HomeScreen = ({ route, navigation }) => {
                 // title={roles.length > 0 ? roles[0] : ''}
                 title={headerText}
                 branchName={selectedBranchName}
-                menuClicked={() => navigation.openDrawer()}
+              menuClicked={() => navigation.openDrawer()}
                 branchClicked={() => moveToSelectBranch()}
                 filterClicked={() => moveToFilter()}
             />

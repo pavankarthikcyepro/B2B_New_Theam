@@ -155,11 +155,13 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
                     selectedCarVarientsData.varientList
                 );
             }
+           
             setCarFuelType(item?.fuel)
             // if (leadStage === 'PREBOOKING')
             setisPrimary(item?.isPrimary)
             setCarTransmissionType(item?.transimmisionType)
             setCarVariant(item?.variant)
+            setCarColor(item?.color)
             if (employeeData) {
 
                 const jsonObj = JSON.parse(employeeData);
@@ -246,6 +248,7 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
                 var modelsarr = await selector.dmsLeadProducts
                 modelsarr[index] = await carmodeldata
                 modelOnclick(index, carmodeldata, "update")
+                
 
                 await dispatch(updatedmsLeadProduct(modelsarr))
             }catch(error){
@@ -269,7 +272,7 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
                     updateColorsDataForSelectedVarient(selectedVarientName, [...mArray]);
                 }
             }
-            console.log("MARRAY: ", mArray);
+            //console.log("MARRAY: ", mArray);
         }
     };
 
@@ -279,7 +282,7 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
         if (!selectedModelName || selectedModelName.length === 0) {
             return;
         }
-        console.log("CALLED MODEL: ", selectedModelName, carModelsData);
+       // console.log("CALLED MODEL: ", selectedModelName, carModelsData);
         let arrTemp = carModelsData.filter(function (obj) {
             return obj.model === selectedModelName;
         });
@@ -311,6 +314,8 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
         selectedVarientName,
         varientList
     ) => {
+
+        
         if (!selectedVarientName || selectedVarientName.length === 0) {
             return;
         }

@@ -685,6 +685,7 @@ const TestDriveScreen = ({ route, navigation }) => {
         };
         console.log("TD PAYLOAD:", JSON.stringify(payload));
         dispatch(bookTestDriveAppointmentApi(payload));
+        navigation.goBack()
     };
 
     const closeTask = () => {

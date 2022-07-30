@@ -351,6 +351,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     getBranchId();
     setComponentAppear(true);
     getCustomerType();
+   
     //  const dms = [{ "color": "Outback Bronze", "fuel": "Petrol", "id": 2704, "model": "Kwid",
     //           "transimmisionType": "Manual", "variant": "KWID RXT 1.0L EASY- R BS6 ORVM MY22" },
     //            { "color": "Caspian Blue", "fuel": "Petrol", "id": 1833, "model": "Kiger", "transimmisionType": "Automatic", 
@@ -507,6 +508,28 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       });
   };
 
+  const deleteModalFromServer = async ({token, value}) => {
+    //alert(value.id)
+    await fetch(URL.DELETE_MODEL_CARD(value.id), {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "auth-token": token,
+      },
+    })
+      .then((json) => {
+        //console.log('JSON----------->',json)
+        json.json()})
+      .then((res) => {
+        //alert("delete : ", res.status);
+       //alert(res)
+      })
+      .catch((error) => {
+        showToastRedAlert(error.message);
+      });
+  };
+
   const getBanksListFromServer = (orgId, token) => {
     GetFinanceBanksList(orgId, token).then(
       (resp) => {
@@ -526,27 +549,24 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       console.log("$$$$$$$$$ DMS LEAD PROD: ", selector.dmsLeadProducts);
       if (selector.dmsLeadProducts && selector.dmsLeadProducts.length > 0) {
         // setCarModelsList(selector.dmsLeadProducts)
-        addingIsPrimary()
-      }
-      else {
+        addingIsPrimary();
+      } else {
         let tempModelObj = {
-          "color": '',
-          "fuel": '',
-          "id": 0,
-          "model": selector.enquiry_details_response?.dmsLeadDto?.model,
-          "transimmisionType": '',
-          "variant": '',
-          "isPrimary": "N"
-        }
+          color: "",
+          fuel: "",
+          id: 0,
+          model: selector.enquiry_details_response?.dmsLeadDto?.model,
+          transimmisionType: "",
+          variant: "",
+          isPrimary: "N",
+        };
         console.log("SET TWO:", tempModelObj);
-        setCarModelsList([tempModelObj])
+        setCarModelsList([tempModelObj]);
       }
     } catch (error) {
       // alert("useeffect"+error)
-
     }
-
-  }, [selector.dmsLeadProducts, selector.enquiry_details_response])
+  }, [selector.dmsLeadProducts, selector.enquiry_details_response]); //selector.dmsLeadProducts, selector.enquiry_details_response
 
   useEffect(() => {
     console.log("PROCEED TTTT:", proceedToPreSelector.update_enquiry_details_response_status);
@@ -589,7 +609,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     if (selector.enquiry_details_response) {
-      setShowPreBookingBtn(false)
+      setShowPreBookingBtn(false);
       let dmsContactOrAccountDto;
       if (selector.enquiry_details_response.hasOwnProperty("dmsAccountDto")) {
         dmsContactOrAccountDto =
@@ -623,9 +643,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dispatch(updateDmsAddressData(dmsLeadDto.dmsAddresses));
       // Updaet Model Selection
       dispatch(updateModelSelectionData(dmsLeadDto.dmsLeadProducts));
+      // console.log('DMS----------->>>>',dmsLeadDto.dmsLeadProducts[0]?.id)
       //   alert("reponse---------", JSON.stringify(dmsLeadDto.dmsLeadProducts))
       //  setCarModelsList(selector.dmsLeadProducts)
       // Update Finance Details
+      console.log("DMSPRODUCTS============>", selector.dmsLeadProducts);
       dispatch(updateFinancialData(dmsLeadDto.dmsfinancedetails));
       // Update Customer Need Analysys
       dispatch(updateCustomerNeedAnalysisData(dmsLeadDto.dmsLeadScoreCards));
@@ -637,9 +659,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
       saveAttachmentDetailsInLocalObject(dmsLeadDto.dmsAttachments);
       dispatch(updateDmsAttachmentDetails(dmsLeadDto.dmsAttachments));
-
     }
-  }, [selector.enquiry_details_response]);
+  }, [selector.enquiry_details_response]); //selector.enquiry_details_response
 
   const saveAttachmentDetailsInLocalObject = (dmsAttachments) => {
     console.log("ATTACHMENTS:", JSON.stringify(dmsAttachments));
@@ -1108,13 +1129,79 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("Please fill district ");
       return;
     }
-    // Model Selection
-    if (carModelsList.length == 0) {
-      scrollToPos(4)
-      setOpenAccordian('4')
-      showToast("Please fill model details");
+    if (
+      selector.p_pincode.length == 0 ||
+      selector.p_urban_or_rural.length == 0 ||
+      selector.p_houseNum.length == 0 ||
+      selector.p_streetName.length == 0 ||
+      selector.p_village.length == 0 ||
+      selector.p_mandal.length == 0 ||
+      selector.p_city.length == 0 ||
+      selector.p_district.length == 0 ||
+      selector.p_state.length == 0
+    ) {
+      scrollToPos(14);
+      setOpenAccordian("3");
+      showToast("Please fill permanent address ");
       return;
     }
+    //  if (selector.p_pincode.length == 0) {
+    //    scrollToPos(14);
+    //    setOpenAccordian("3");
+    //    showToast("Please fill Permanent pincode");
+    //    return;
+    //  }
+    //   if (selector.p_houseNum.length == 0) {
+    //     scrollToPos(14);
+    //     setOpenAccordian("3");
+    //     showToast("Please fill Permanent house number");
+    //     return;
+    //   }
+    // if (selector.p_streetName.length == 0) {
+    //   scrollToPos(14);
+    //   setOpenAccordian("3");
+    //   showToast("Please fill Permanent street");
+    //   return;
+    // }
+    //  if (selector.p_village.length == 0) {
+    //    scrollToPos(14);
+    //    setOpenAccordian("3");
+    //    showToast("Please fill Permanent village");
+    //    return;
+    //  }
+    //   if (selector.p_mandal.length == 0) {
+    //     scrollToPos(14);
+    //     setOpenAccordian("3");
+    //     showToast("Please fill Permanent mandal");
+    //     return;
+    //   }
+    
+    // Model Selection
+    // if (carModelsList.length == 0) {
+    //   scrollToPos(4)
+    //   setOpenAccordian('4')
+    //   showToast("Please fill model details");
+    //   return;
+    // }
+    if (carModelsList[0].model.length == 0) {
+      scrollToPos(4);
+      setOpenAccordian("4");
+      showToast("Please fill model");
+      return;
+    }
+    if (carModelsList[0].variant.length == 0) {
+      scrollToPos(4);
+      setOpenAccordian("4");
+      showToast("Please fill model variant");
+      return;
+    }
+     if (carModelsList[0].color.length == 0) {
+       scrollToPos(4);
+       setOpenAccordian("4");
+       showToast("Please fill model Color");
+       return;
+     }
+
     let tempCars = [];
     tempCars = carModelsList.filter((item) => {
       return item.color !== '' &&
@@ -1124,6 +1211,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         item.transimmisionType !== '' &&
         item.variant !== ''
     })
+
+    
+
+    
 
     let primaryTempCars = []
     primaryTempCars = carModelsList.filter((item) => {
@@ -1136,6 +1227,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("Please fill model details");
       return;
     }
+    
 
     if (!primaryTempCars.length > 0) {
       scrollToPos(4)
@@ -1162,20 +1254,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   showToast("Please fill color");
     //   return;
     // }
-    if (selector.p_pincode.length == 0 ||
-      selector.p_urban_or_rural.length == 0 ||
-      selector.p_houseNum.length == 0 ||
-      selector.p_streetName.length == 0 ||
-      selector.p_village.length == 0 ||
-      selector.p_mandal.length == 0 ||
-      selector.p_city.length == 0 ||
-      selector.p_district.length == 0 ||
-      selector.p_state.length == 0) {
-      scrollToPos(3)
-      setOpenAccordian('3')
-      showToast("Please fill permanet address ");
-      return;
-    }
+    
     //Finance Details
     if (selector.retail_finance.length == 0) {
       scrollToPos(5)
@@ -1776,43 +1855,50 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
   const modelOnclick = async (index, value, type) => {
     try {
+    
       if (type == "update") {
-        let arr = await [...carModelsList]
+        let arr = [...carModelsList]
         arr[index] = value
         // arr.splice(carModelsList, index, value);
-        console.log("MODELS IF: ", arr);
+        //console.log("MODELS IF: ", arr);
         let primaryModel = [];
         primaryModel = arr.filter((item) => item.isPrimary === "Y");
         if (primaryModel.length > 0) {
-          if (primaryModel[0].variant !== '' && primaryModel[0].model !== '') {
-            updateVariantModelsData(primaryModel[0].model, true, primaryModel[0].variant);
+          if (primaryModel[0].variant !== '' && primaryModel[0].model !== '' && primaryModel[0].color!=='') {
+            updateVariantModelsData(primaryModel[0].model, true, primaryModel[0].variant, primaryModel[0].color);
           }
         }
         await setCarModelsList([...arr])
       }
       else {
-        let arr = await [...carModelsList]
-        arr.splice(index, 1)
-        console.log("MODELS ELSE: ", arr);
-        let item = {
-          "color": arr[0].color,
-          "fuel": arr[0].fuel,
-          "id": arr[0].id,
-          "model": arr[0].model,
-          "transimmisionType": arr[0].transimmisionType,
-          "variant": arr[0].variant,
-          "isPrimary": "Y"
+
+        if (type == "delete") {
+          let arr = await [...carModelsList];
+          arr.splice(index, 1);
+         deleteModalFromServer({value})
+
+          console.log("MODELS ELSE: ", arr);
+          let item = {
+            color: arr[0].color,
+            fuel: arr[0].fuel,
+            id: arr[0].id,
+            model: arr[0].model,
+            transimmisionType: arr[0].transimmisionType,
+            variant: arr[0].variant,
+            isPrimary: "Y",
+          };
+          // arr[0] = item;
+          // arr.unshift(item);
+          // arr.splice(0, 1);
+
+          // if (arr[0].variant !== "" && arr[0].model !== "") {
+          //   updateVariantModelsData(arr[0].model, true, arr[0].variant);
+          // }
+          // setCarModelsList([])
+          await setCarModelsList([...arr]);
+          // carModelsList.splice(0, 1)
         }
-        // arr[0] = item;
-        arr.splice(0, 1);
-        arr.unshift(item)
-        if (arr[0].variant !== '' && arr[0].model !== '') {
-          updateVariantModelsData(arr[0].model, true, arr[0].variant);
-        }
-        setCarModelsList([])
-        await setCarModelsList([...arr])
-        // carModelsList.splice(0, 1)
-      }
+              }
 
       // console.log("onValueChangeonValueChange@@@@ ", value)
     } catch (error) {
@@ -1825,13 +1911,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
     try {
       if (isPrimaryEnabled === "Y") {
-        updateVariantModelsData(item.model, true, item.variant);
+        console.log('YES=========>>>>>')
+        
+        updateVariantModelsData(item.model, true, item.variant, item.color); //item.variant, item.color
       }
       if (carModelsList && carModelsList.length > 0) {
+        console.log('NO===============>')
         let arr = await [...carModelsList]
         var data = arr[isPrimaryCureentIndex]
+        console.log('DATAS================>>>', data)
         const cardata = await {
-          "color": data.color,
+          "color": item.color,
           "fuel": data.fuel,
           "id": data.id,
           "model": data.model,
@@ -1849,7 +1939,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           "isPrimary": "Y"
 
         }
-        await setCarModelsList([])
+        //await setCarModelsList([])
         arr[isPrimaryCureentIndex] = cardata;
         arr[index] = selecteditem
         console.log("SET FOUR", arr);
@@ -3721,10 +3811,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       "variant": '',
                       "isPrimary": 'N'
                     }
+                    
                     let arr = [...carModelsList]
                     arr.push(carmodeldata)
                     setCarModelsList(arr)
-                    // selector.dmsLeadProducts = [...selector.dmsLeadProducts, carmodeldata]
+                    //selector.dmsLeadProducts = [...selector.dmsLeadProducts, carmodeldata]
                   }}
                   style={{ width: '40%', margin: 5, borderRadius: 5, backgroundColor: Colors.PINK, height: 40, alignSelf: 'flex-end', alignContent: 'flex-end', alignItems: 'center', justifyContent: 'center' }}>
                   <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.WHITE, }}>Add Model</Text>
@@ -3732,9 +3823,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <FlatList
                   //  style={{ height: faltListHeight }}
                   data={carModelsList}
-                  extraData={carModelsList}
+                  //extraData={carModelsList}
                   keyExtractor={(item, index) => index.toString()}
                   renderItem={({ item, index }) => {
+                    //console.log("HERE IS LIST----->",carModelsList)
                     return (
                       // <Pressable onPress={() => selectedItem(item, index)}>
                       < View >
