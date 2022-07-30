@@ -6,7 +6,7 @@ import empData from '../get_target_params_for_emp.json'
 import allData from '../get_target_params_for_all_emps.json'
 import targetData from '../get_target_params.json'
 import { showToast } from "../utils/toast";
- 
+
 const data = [
     {
         title: "Pre-Enquiry",
@@ -150,7 +150,9 @@ export const getLostDropChartData = createAsyncThunk("HOME/getLostDropChartData"
 
 export const getTargetParametersData = createAsyncThunk("HOME/getTargetParametersData", async (payload: any, { rejectWithValue }) => {
     // console.log("PAYLOAD:", payload);
-
+    if (payload.isTeamPresent) {
+        delete payload.isTeamPresent;
+    }
     const response = await client.post(URL.GET_TARGET_PARAMS(), payload)
     const json = await response.json()
     console.log("homeReducer", payload, URL.GET_TARGET_PARAMS());
@@ -193,7 +195,6 @@ export const getNewTargetParametersAllData = createAsyncThunk("HOME/getNewTarget
 
 export const getTotalTargetParametersData = createAsyncThunk("HOME/getTotalTargetParametersData", async (payload: any, { rejectWithValue }) => {
     // console.log("PAYLOAD:", payload);
-
     const response = await client.post(URL.GET_TOTAL_TARGET_PARAMS(), payload)
     const json = await response.json()
 
@@ -220,9 +221,11 @@ export const getUserWiseTargetParameters = createAsyncThunk("HOME/getUserWiseTar
 })
 
 export const getTargetParametersEmpData = createAsyncThunk("HOME/getTargetParametersEmpData", async (payload: any, { rejectWithValue }) => {
-    console.log("PAYLOAD:", URL.GET_TARGET_PARAMS_EMP(), payload);
-
-    const response = await client.post(URL.GET_TARGET_PARAMS_EMP(), payload)
+    const url = `${payload.isTeamPresent ? URL.GET_TOTAL_TARGET_PARAMS() : URL.GET_TARGET_PARAMS_EMP()}`;
+    if (payload.isTeamPresent) {
+        delete payload.isTeamPresent;
+    }
+    const response = await client.post(url, payload)
     const json = await response.json()
 
     // console.log("&&&&&& DATA SELF $$$$$$$:", JSON.stringify(json));
@@ -492,7 +495,7 @@ export const homeSlice = createSlice({
         },
         updateTargetData: (state, action) => {
             console.log("CALLED REDUX:", action.payload);
-            
+
             state.target_parameters_data = action.payload.targetData;
             state.all_target_parameters_data = action.payload.allTargetData;
             // state.all_emp_parameters_data = action.payload.allEmpData;
@@ -840,17 +843,17 @@ export const homeSlice = createSlice({
             })
 
             .addCase(getTotalTargetParametersData.pending, (state, action) => {
-                
+
             })
             .addCase(getTotalTargetParametersData.fulfilled, (state, action) => {
                 if (action.payload) {
                     console.log("TOTAL DATA: ", JSON.stringify(action.payload));
-                    
+
                     state.totalParameters = action.payload;
                 }
             })
             .addCase(getTotalTargetParametersData.rejected, (state, action) => {
-                
+
             })
 
             .addCase(getEmployeesList.pending, (state, action) => {
@@ -864,7 +867,7 @@ export const homeSlice = createSlice({
                     // state.employee_list = dataObj ? dataObj.dmsEntity.employees : [];
                     state.employee_list = dataObj ? dataObj : [];
                     state.isLoading = false;
-                    console.log("IS LOADING: ", state.isLoading);                    
+                    console.log("IS LOADING: ", state.isLoading);
                 }
             })
             .addCase(getEmployeesList.rejected, (state, action) => {
@@ -909,7 +912,7 @@ export const homeSlice = createSlice({
                 const dataObj = action.payload;
                 state.leaderboard_list = dataObj ? dataObj : [];
                 if(!dataObj || dataObj.length === 0)
-                showToast('No data available') 
+                showToast('No data available')
                 state.isLoading = false;
             })
             .addCase(getLeaderBoardList.rejected, (state, action) => {
@@ -923,7 +926,7 @@ export const homeSlice = createSlice({
                 const dataObj = action.payload;
                 state.branchrank_list = dataObj ? dataObj : [];
                 if (!dataObj || dataObj.length === 0)
-                    showToast('No data available') 
+                    showToast('No data available')
                 state.isLoading = false;
             })
             .addCase(getBranchRanksList.rejected, (state, action) => {

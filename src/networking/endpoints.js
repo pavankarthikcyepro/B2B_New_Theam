@@ -328,80 +328,75 @@ const URL = {
   },
 
   QR: (orgId, branchId) => {
-    return sales_url + `/qrcode/get/${orgId}/${branchId}`;
+      return sales_url + `/qrcode/get/${orgId}/${branchId}`;
   },
   GET_VEHICAL_MODAL: () => {
-    return vehicleInfoService_url + `/api/vehicle_details/vehicle_models`;
+      return vehicleInfoService_url + `/api/vehicle_details/vehicle_models`;
   },
   GET_SPECIAL_DROP_VALUE: () => {
-    return dynamicForms + `/dropdown`;
+      return dynamicForms + `/dropdown`;
   },
   AUTO_SAVE: () => {
-    return downloadFile + `/autosave`;
+      return downloadFile + `/autosave`;
   },
   REASON_LIST: (orgId, taskName) => {
-    return `${downloadFile}/get-followup/${orgId}/${taskName}`;
+      return `${downloadFile}/get-followup/${orgId}/${taskName}`;
   },
   TARGET_DROPDOWN: (orgId, parent, child, parentId) => {
-    return `${tasktransfer}?orgId=${orgId}&parent=${parent}&child=${child}&parentId=${parentId}`;
+      return `${tasktransfer}?orgId=${orgId}&parent=${parent}&child=${child}&parentId=${parentId}`;
   },
   GET_TASK_LIST: (taskId) => {
-    return `${getTaskList}/${taskId}`;
+      return `${getTaskList}/${taskId}`;
   },
-  GET_TEAMS_TARGET_PARAMS: () =>
-    dashboard + "/v4/get_target_params_for_all_emps",
-  GET_TOTAL_TARGET_PARAMS: () => dashboard + "/v4/get_target_params",
+  GET_TEAMS_TARGET_PARAMS: () => dashboard + "/v4/get_target_params_for_all_emps",
+  // GET_TOTAL_TARGET_PARAMS: () => dashboard + "/v4/get_target_params",
+  GET_TOTAL_TARGET_PARAMS: () => dashboard + "/v2/get_target_params",
   GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
-    return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
+      return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
   },
   GET_EMPLOYEE_LIST: (empId) => {
-    return `${getEmployeeList}/${empId}`;
+      return `${getEmployeeList}/${empId}`;
   },
   GET_REPORTING_MANAGER_LIST: (orgId) => {
-    return `${getReportingMangerList}/${orgId}/for/dropdown`;
+      return `${getReportingMangerList}/${orgId}/for/dropdown`;
   },
   EMPLOYEE_DATA_UPDATE: (empID, managerID) => {
-    return `${updateEmployeeTaskDelegate}/${empID}/reportingManager/${managerID}/update`;
+      return `${updateEmployeeTaskDelegate}/${empID}/reportingManager/${managerID}/update`;
   },
   TARGET_DROPDOWN: (orgId, parent, child, parentId) => {
-    return `${tasktransfer}?orgId=${orgId}&parent=${parent}&child=${child}&parentId=${parentId}`;
+      return `${tasktransfer}?orgId=${orgId}&parent=${parent}&child=${child}&parentId=${parentId}`;
   },
   GET_TASK_LIST: (taskId) => {
-    return `${getTaskList}/${taskId}`;
+      return `${getTaskList}/${taskId}`;
   },
   GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
-    return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
+      return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
   },
   GET_LEADERBOARD_DATA: (orgId) => {
-    return `${getLeaderBoardData}/${orgId}`;
+      return `${getLeaderBoardData}/${orgId}`;
   },
   GET_BRANCH_RANKING_DATA: (orgId, branchId) => {
-    return getBranchRankingData + "/org/" + orgId + "/branch/" + branchId;
+      return getBranchRankingData+'/org/'+ orgId+ '/branch/'+branchId;
   },
   EMPLOYEE_DATA_UPDATE: (empID, managerID) => {
-    return `${updateEmployeeTaskDelegate}/${empID}/reportingManager/${managerID}/update`;
+      return `${updateEmployeeTaskDelegate}/${empID}/reportingManager/${managerID}/update`;
   },
   TARGET_DROPDOWN: (orgId, parent, child, parentId) => {
-    return `${tasktransfer}?orgId=${orgId}&parent=${parent}&child=${child}&parentId=${parentId}`;
+      return `${tasktransfer}?orgId=${orgId}&parent=${parent}&child=${child}&parentId=${parentId}`;
   },
   GET_TASK_LIST: (empId) => {
-    return `${getTaskList}/${empId}`;
+      return `${getTaskList}/${empId}`;
   },
   GET_EMPLOYEE_DETAILS: (orgId, branchId, deptId, desigId) => {
-    return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
+      return `${getEmployeeData}?orgId=${orgId}&branchId=${branchId}&deptId=${deptId}&desigId=${desigId}`;
   },
   TRANSFER_TASK: (fromUserId, toUserId) => {
-    return (
-      sales_url +
-      `/task-delegation/process/selected?emplIdFrom=${fromUserId}&emplIdTo=${toUserId}`
-    );
+      return sales_url + `/task-delegation/process/selected?emplIdFrom=${fromUserId}&emplIdTo=${toUserId}`;
   },
-};
-
+}
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason
-// http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/df-get-all/1/%22Active%22/1/enqueryCategory
+// http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/df-get-all/1/%22Active%22/1/enqueryCategory
 
 // http://ec2-3-109-65-7.ap-south-1.compute.amazonaws.com:8083/oh/active-dropdowns/13/412
-
 export default URL;
