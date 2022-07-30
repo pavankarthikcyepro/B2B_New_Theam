@@ -38,7 +38,7 @@ import {
     TextinputComp,
     DropDownComponant,
     DatePickerComponent,
-} from "../../../../components"; 
+} from "../../../../components";
 import {
     convertDateStringToMilliseconds,
     convertDateStringToMillisecondsUsingMoment,
@@ -113,6 +113,7 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
                 setDataForDropDown([...selectedCarVarientsData.varientListForDropDown]);
                 break;
             case "COLOR":
+                console.log("TTTTT: ", carColorsData);
                 setDataForDropDown([...carColorsData]);
                 break;
             }
@@ -148,7 +149,7 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
             if (item?.model){
                 updateVariantModelsData(item?.model, false)
             }
-            
+
             if (item?.variant){
                 updateColorsDataForSelectedVarient(
                     item?.variant,
@@ -184,7 +185,7 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
         }catch(error){
         // alert(error)
         }
-       
+
     };
     const updateVariantModelsData = async(
         selectedModelName,
@@ -208,7 +209,7 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
             setCarColor("")
             setCarVariant('')
             setCarFuelType('')
-           
+
             setCarTransmissionType('')
             try{
                 var carmodeldata;
@@ -254,7 +255,7 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
             }catch(error){
                // alert(error)
             }
-           
+
            // selector.dmsLeadProducts[index] = carmodeldata
             let mArray = carModelObj.varients;
             if (mArray.length) {
@@ -291,7 +292,7 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
         if (carModelObj !== undefined) {
             let newArray = [];
             // setCarModel(selectedModelName)
-           
+
            // selector.dmsLeadProducts[index] = carmodeldata
             let mArray = carModelObj.varients;
             if (mArray.length) {
@@ -323,7 +324,7 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
         let arrTemp = varientList.filter(function (obj) {
             return obj.name === selectedVarientName;
         });
-       
+
         let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
         if (carModelObj !== undefined) {
             let newArray = [];
@@ -343,7 +344,7 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
                 setCarColor("")
                 const selectedVarList = await addVariantsName(selector.dmsLeadProducts)
                // selectedVarList =  await selectedVariants
-               if(selectedVarList && selectedVarList.length >= 0 && !selectedVarList.includes(selectedVarientName))            
+               if(selectedVarList && selectedVarList.length >= 0 && !selectedVarList.includes(selectedVarientName))
                {
                    await setisVariantUpdated(true)
                    setCarVariant(selectedVarientName)
@@ -388,7 +389,7 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
                 // if (selectedVarList && selectedVarList.length >= 0 && !selectedVarList.includes(selectedVarientName))
                 // showToast("please procced")
                 // else showToast("else")
-               
+
             }
         }
     };
@@ -411,7 +412,7 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
         }
 
     }
-   
+
     const setInitialColors = (
         selectedVarientName,
         varientList
@@ -479,12 +480,12 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
                         );
                     }
                // }
-               
+
             }catch( error)
             {
-                
+
             }
-            
+
         }
     }, [selectedCarVarientsData])
 
@@ -532,7 +533,7 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
                 "variant": carVariant,
                  "isPrimary": item.isPrimary
             }
-           
+
         }
         else {
             carmodeldata = {
@@ -546,8 +547,9 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
             }
         }
 
-        const modelsarr = selector.dmsLeadProducts
-        modelsarr[index] = carmodeldata
+        const modelsarr = [...selector.dmsLeadProducts]
+        modelsarr[index] = {...carmodeldata}
+
         modelOnclick(index, carmodeldata, "update")
         dispatch(updatedmsLeadProduct(modelsarr))
     }
@@ -563,14 +565,14 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
                     if (dropDownKey === "MODEL") {
                         updateVariantModelsData(item.name, false);
                     } else if (dropDownKey === "VARIENT") {
-                       
+
                         updateColorsDataForSelectedVarient(
                             item.name,
                             selectedCarVarientsData.varientList
                         );
                     } else if (dropDownKey === "COLOR") {
                       updateColor(item)
-                        
+
                     }
                     else if (
                         dropDownKey === "C_MAKE" ||
@@ -590,7 +592,7 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
                     <View style={{height: 50, width: '46%', justifyContent: 'center'}}>
                         <Text style={{ color: Colors.WHITE, fontSize: 18, marginLeft: 10, textAlignVertical: 'center' }} numberOfLines={2}>{carModel}</Text>
                     </View>
-                   
+
                     {/* {leadStage === 'PREBOOKING' ?
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Text style={{ color: Colors.WHITE, fontSize: 16, marginRight: 10 }}>Is Primary</Text>
@@ -598,13 +600,13 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
                                 icon=" toggle-switch-off-outline"
                                 value={isPrimary}
                                 onValueChange={() => {
-                                    
+
                                     isPrimaryOnclick(!isPrimary, index, item);
                                     setisPrimary(!isPrimary)}}
                                 color={Colors.PINK}
                                 size={35} />
                         </View> : null
-                    } 
+                    }
                      */}
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Text style={{ color: Colors.WHITE, fontSize: 16, marginRight: 10 }}>Is Primary</Text>
@@ -619,13 +621,13 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
                                     isPrimaryOnclick("N", index, item);
                                     setisPrimary("N")
                                 }
-                              
+
                             }}
                             color={Colors.PINK}
                             size={35} />
                     </View>
-                   <TouchableOpacity 
-                        onPress={(value) => modelOnclick(index, item, "delete")}>               
+                   <TouchableOpacity
+                        onPress={(value) => modelOnclick(index, item, "delete")}>
                           <IconButton
                         icon="trash-can-outline"
                         color={Colors.PINK}
@@ -635,8 +637,8 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
                     </TouchableOpacity>
 
                 </View>
-               
-           
+
+
             <DropDownSelectionItem
                 label={"Model*"}
                     value={carModel}
