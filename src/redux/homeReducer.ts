@@ -150,7 +150,9 @@ export const getLostDropChartData = createAsyncThunk("HOME/getLostDropChartData"
 
 export const getTargetParametersData = createAsyncThunk("HOME/getTargetParametersData", async (payload: any, { rejectWithValue }) => {
     // console.log("PAYLOAD:", payload);
-
+    if (payload.isTeamPresent) {
+        delete payload.isTeamPresent;
+    }
     const response = await client.post(URL.GET_TARGET_PARAMS(), payload)
     const json = await response.json()
     console.log("homeReducer", payload, URL.GET_TARGET_PARAMS());
@@ -193,7 +195,6 @@ export const getNewTargetParametersAllData = createAsyncThunk("HOME/getNewTarget
 
 export const getTotalTargetParametersData = createAsyncThunk("HOME/getTotalTargetParametersData", async (payload: any, { rejectWithValue }) => {
     // console.log("PAYLOAD:", payload);
-
     const response = await client.post(URL.GET_TOTAL_TARGET_PARAMS(), payload)
     const json = await response.json()
 

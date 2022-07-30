@@ -543,7 +543,8 @@ const HomeScreen = ({ route, navigation }) => {
                     dispatch(getTargetParametersData({
                         ...payload,
                         "pageNo": 0,
-                        "size": 5
+                        "size": 5,
+                        isTeamPresent: true
                     })),
                         getAllTargetParametersDataFromServer(payload, jsonObj.orgId);
                 }
@@ -595,11 +596,21 @@ const HomeScreen = ({ route, navigation }) => {
         });
     }
 
-    const getTargetParametersDataFromServer = (payload) => {
+    const getTargetParametersDataFromServer = async (payload) => {
+        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+        let isTeamPresentLocal = false;
+        if (employeeData) {
+            const jsonObj = JSON.parse(employeeData);
+            if (jsonObj?.hrmsRole === "Admin" || jsonObj?.hrmsRole === "Admin Prod" || jsonObj?.hrmsRole === "App Admin" || jsonObj?.hrmsRole === "Manager" || jsonObj?.hrmsRole === "TL" || jsonObj?.hrmsRole === "General Manager" || jsonObj?.hrmsRole === "branch manager" || jsonObj?.hrmsRole === "Testdrive_Manager" || jsonObj?.hrmsRole === "MD" || jsonObj?.hrmsRole === "Business Head" || jsonObj?.hrmsRole === "Sales Manager") {
+                isTeamPresentLocal = true;
+            }
+        }
+
         const payload1 = {
             ...payload,
             "pageNo": 0,
-            "size": 5
+            "size": 5,
+            isTeamPresent: isTeamPresentLocal
         }
         Promise.allSettled([
             dispatch(getTargetParametersData(payload1)),
