@@ -16,6 +16,7 @@ const ChildComp = ({ route, navigation, }) => {
 
     const { accessorylist, key } = route.params;
     const myContext = useContext(AccessoriesContext);
+    console.log('KEY========>', route.params.key)
 
     useEffect(() => {
         // console.log("AA: ", accessorylist, key);
@@ -49,7 +50,7 @@ const ChildComp = ({ route, navigation, }) => {
     const addItemInAsyncStorage = async (key, item) => {
 
         const existingData = await AsyncStorage.getData(key);
-        console.log("exis: ", existingData);
+        console.log("exis=======>: ", existingData);
         let data = [];
         if (!existingData) {
             data = [item];

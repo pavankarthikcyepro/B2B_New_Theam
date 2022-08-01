@@ -212,12 +212,14 @@ const PaidAccessoriesTextAndAmountComp = ({
 };
 
 const PrebookingFormScreen = ({ route, navigation }) => {
+    
     const dispatch = useDispatch();
     const selector = useSelector((state) => state.preBookingFormReducer);
     let scrollRef = useRef(null)
     const { universalId, accessoriesList, leadStatus, leadStage } = route.params;
     const [openAccordian, setOpenAccordian] = useState(0);
     const [componentAppear, setComponentAppear] = useState(false);
+    console.log("LOADING=-=-=-=-=>", selector.isLoading);
     const [userData, setUserData] = useState({
         orgId: "",
         employeeId: "",
@@ -5231,10 +5233,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     </TouchableOpacity>
                 </View>
             </Modal>
-            {!selector.isLoading ? null : <LoaderComponent
-                visible={selector.isLoading}
+            {selector.isLoading ? <LoaderComponent
+                visible={true}
                 onRequestClose={() => { }}
-            />}
+            /> :null }
         </SafeAreaView>
     );
 };

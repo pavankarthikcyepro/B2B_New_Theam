@@ -72,9 +72,11 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
             }
             const newItem = { ...item, selected: isSelected };
             if (titleNames.includes(item.item)) {
+              
                 const oldData = dataObj[item.item];
                 const newData = [...oldData, newItem];
                 dataObj[item.item] = newData;
+                  console.log("OLD=============>", oldData);
             } else {
                 titleNames.push(item.item);
                 dataObj[item.item] = [newItem];
@@ -124,7 +126,7 @@ try {
     }
 
     const addSelected = async () => {
-
+    console.log('WORKING')
         const data = await AsyncStorage.multiGetData(accessoriesData.names);
         console.log("data......: ACC. NAMES ", accessoriesData.names)
         let allData = [];
