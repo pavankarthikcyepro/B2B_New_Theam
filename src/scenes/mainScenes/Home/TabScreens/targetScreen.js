@@ -414,7 +414,7 @@ const color = [
 
 const TargetScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
-console.log("ACHIEVE========>", selector.totalParameters[0].target);
+// console.log("ACHIEVE========>", selector.totalParameters[0].target);
   // console.log(
   //   "ACC==--=-=-=-==-=>>",
   //   selector.self_target_parameters_data
