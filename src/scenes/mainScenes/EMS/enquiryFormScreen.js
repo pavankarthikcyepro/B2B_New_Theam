@@ -1162,69 +1162,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   showToast("Please fill color");
     //   return;
     // }
-
-    // Permanent Address
-    // if (selector.p_pincode.length == 0 ||
-    //   selector.p_urban_or_rural.length == 0 ||
-    //   selector.p_houseNum.length == 0 ||
-    //   selector.p_streetName.length == 0 ||
-    //   selector.p_village.length == 0 ||
-    //   selector.p_mandal.length == 0 ||
-    //   selector.p_city.length == 0 ||
-    //   selector.p_district.length == 0 ||
-    //   selector.p_state.length == 0) {
-      if(selector.p_pincode.length == 0){
-        scrollToPos(3)
-        setOpenAccordian('3')
-        showToast("Please fill permanent pincode ");
-        return;
-      }
-      if(selector.p_urban_or_rural == 0){
-        scrollToPos(3)
-        setOpenAccordian('3')
-        showToast("Please fill permanent urban or rural");
-        return;
-      }
-    if(selector.p_houseNum.length == 0){
+    if (selector.p_pincode.length == 0 ||
+      selector.p_urban_or_rural.length == 0 ||
+      selector.p_houseNum.length == 0 ||
+      selector.p_streetName.length == 0 ||
+      selector.p_village.length == 0 ||
+      selector.p_mandal.length == 0 ||
+      selector.p_city.length == 0 ||
+      selector.p_district.length == 0 ||
+      selector.p_state.length == 0) {
       scrollToPos(3)
       setOpenAccordian('3')
-      showToast("Please fill permanent H.No ");
+      showToast("Please fill permanet address ");
       return;
     }
-    if(selector.p_streetName.length == 0){
-      scrollToPos(3)
-      setOpenAccordian('3')
-      showToast("Please fill permanent Street Name");
-      return;
-    }
-    if(selector.p_village.length == 0 ){
-      scrollToPos(3)
-      setOpenAccordian('3')
-      showToast("Please fill permanent Village");
-      return;
-    }   
-    if(selector.p_mandal.length == 0){
-      scrollToPos(3)
-      setOpenAccordian('3')
-      showToast("Please fill permanent Mandal");
-      return;
-    }
-    if(selector.p_city.length==0){
-      scrollToPos(3)
-      setOpenAccordian("3")
-      showToast("Please fill permanent City");
-    }
-    if(selector.p_state.length==0){
-      scrollToPos(3)
-     setOpenAccordian("3")
-      showToast("Please fill permanent State");
-   }
-    if(selector.p_district.length==0){
-      scrollToPos(3)
-      setOpenAccordian("3")
-      showToast("Please fill permanent District");
-    }
-
     //Finance Details
     if (selector.retail_finance.length == 0) {
       scrollToPos(5)
@@ -5553,4 +5504,3 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-
