@@ -5233,10 +5233,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     </TouchableOpacity>
                 </View>
             </Modal>
-            {selector.isLoading ? <LoaderComponent
+            {/* {selector.isLoading ? <LoaderComponent
                 visible={true}
                 onRequestClose={() => { }}
-            /> :null }
+            /> :null } */}
         </SafeAreaView>
     );
 };

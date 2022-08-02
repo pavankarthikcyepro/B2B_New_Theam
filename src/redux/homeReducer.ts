@@ -222,9 +222,10 @@ export const getUserWiseTargetParameters = createAsyncThunk("HOME/getUserWiseTar
 
 export const getTargetParametersEmpData = createAsyncThunk("HOME/getTargetParametersEmpData", async (payload: any, { rejectWithValue }) => {
     const url = `${payload.isTeamPresent ? URL.GET_TOTAL_TARGET_PARAMS() : URL.GET_TARGET_PARAMS_EMP()}`;
-    if (payload.isTeamPresent) {
-        delete payload.isTeamPresent;
-    }
+    console.log("ADMIN=======>", payload)
+    // if (payload.isTeamPresent) {
+    //     delete payload.isTeamPresent;
+    // }
     const response = await client.post(url, payload)
     const json = await response.json()
 

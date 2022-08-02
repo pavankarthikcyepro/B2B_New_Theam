@@ -607,7 +607,7 @@ const TargetScreen = ({ route, navigation }) => {
 
     return unsubscribe;
 
-  }, [selector.self_target_parameters_data])
+  }, [selector.self_target_parameters_data]) //selector.self_target_parameters_data]
 
   useEffect(async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);

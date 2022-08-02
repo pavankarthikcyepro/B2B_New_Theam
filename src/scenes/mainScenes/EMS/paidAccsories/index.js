@@ -84,10 +84,12 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
         })
         console.log("DATAOBJ: ", JSON.stringify(dataObj));
         setAccessoriesData({ names: titleNames, data: dataObj });
-        removeExistingKeysFromAsync(titleNames);
+
+            //removeExistingKeysFromAsync(titleNames);
     }, [])
     
     const removeExistingKeysFromAsync = async (keys) => {
+        
         await AsyncStorage.multiRemove(keys);
     }
 
@@ -106,12 +108,12 @@ try {
     let data = [];
     if (itemExists === -1) {
         console.log("exis??????? DATA NA: ", existingData, ' :key: ', key);
-
         data = [item];
+        
     } else {
         console.log("exis??????? DATA AV: ", existingData, ' :key: ', key);
 
-        data = [...existingData, item];
+        data = [...existingData, ...item];
     }
 
     console.log("exis??????? final: ", key);
@@ -138,6 +140,7 @@ try {
             if (selectedData) {
                 allData = allData.concat(JSON.parse(selectedData));
             }
+            
         })
         console.log("allData: ", JSON.stringify(allData))
 
