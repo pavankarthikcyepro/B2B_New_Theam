@@ -1912,7 +1912,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     try {
       if (isPrimaryEnabled === "Y") {
         console.log('YES=========>>>>>')
-        
+        await setIsPrimaryCurrentIndex(index);
+        await setCarModelsList([]);
         updateVariantModelsData(item.model, true, item.variant, item.color); //item.variant, item.color
       }
       if (carModelsList && carModelsList.length > 0) {
@@ -1921,7 +1922,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         var data = arr[isPrimaryCureentIndex]
         console.log('DATAS================>>>', data)
         const cardata = await {
-          "color": item.color,
+          "color": data.color,
           "fuel": data.fuel,
           "id": data.id,
           "model": data.model,

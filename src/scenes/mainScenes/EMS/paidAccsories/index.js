@@ -72,9 +72,11 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
             }
             const newItem = { ...item, selected: isSelected };
             if (titleNames.includes(item.item)) {
+              
                 const oldData = dataObj[item.item];
                 const newData = [...oldData, newItem];
                 dataObj[item.item] = newData;
+                  console.log("OLD=============>", oldData);
             } else {
                 titleNames.push(item.item);
                 dataObj[item.item] = [newItem];
@@ -82,10 +84,12 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
         })
         console.log("DATAOBJ: ", JSON.stringify(dataObj));
         setAccessoriesData({ names: titleNames, data: dataObj });
-        removeExistingKeysFromAsync(titleNames);
+
+            //removeExistingKeysFromAsync(titleNames);
     }, [])
     
     const removeExistingKeysFromAsync = async (keys) => {
+        
         await AsyncStorage.multiRemove(keys);
     }
 
@@ -104,12 +108,12 @@ try {
     let data = [];
     if (itemExists === -1) {
         console.log("exis??????? DATA NA: ", existingData, ' :key: ', key);
-
         data = [item];
+        
     } else {
         console.log("exis??????? DATA AV: ", existingData, ' :key: ', key);
 
-        data = [...existingData, item];
+        data = [...existingData, ...item];
     }
 
     console.log("exis??????? final: ", key);
@@ -124,7 +128,7 @@ try {
     }
 
     const addSelected = async () => {
-
+    console.log('WORKING')
         const data = await AsyncStorage.multiGetData(accessoriesData.names);
         console.log("data......: ACC. NAMES ", accessoriesData.names)
         let allData = [];
@@ -136,6 +140,7 @@ try {
             if (selectedData) {
                 allData = allData.concat(JSON.parse(selectedData));
             }
+            
         })
         console.log("allData: ", JSON.stringify(allData))
 
