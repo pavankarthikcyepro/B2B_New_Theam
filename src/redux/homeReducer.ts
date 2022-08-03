@@ -194,11 +194,11 @@ export const getNewTargetParametersAllData = createAsyncThunk("HOME/getNewTarget
 })
 
 export const getTotalTargetParametersData = createAsyncThunk("HOME/getTotalTargetParametersData", async (payload: any, { rejectWithValue }) => {
-    // console.log("PAYLOAD:", payload);
-    const response = await client.post(URL.GET_TOTAL_TARGET_PARAMS(), payload)
+   console.log("PAYLOAD=========>:", payload);
+    const response = await client.post(URL.GET_TARGET_PARAMS(), payload);
     const json = await response.json()
 
-    // console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
+    console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
 
     if (!response.ok) {
         return rejectWithValue(json);
@@ -222,9 +222,10 @@ export const getUserWiseTargetParameters = createAsyncThunk("HOME/getUserWiseTar
 
 export const getTargetParametersEmpData = createAsyncThunk("HOME/getTargetParametersEmpData", async (payload: any, { rejectWithValue }) => {
     const url = `${payload.isTeamPresent ? URL.GET_TOTAL_TARGET_PARAMS() : URL.GET_TARGET_PARAMS_EMP()}`;
-    if (payload.isTeamPresent) {
-        delete payload.isTeamPresent;
-    }
+    console.log("ADMIN=======>", payload)
+    // if (payload.isTeamPresent) {
+    //     delete payload.isTeamPresent;
+    // }
     const response = await client.post(url, payload)
     const json = await response.json()
 
@@ -843,12 +844,15 @@ export const homeSlice = createSlice({
             })
 
             .addCase(getTotalTargetParametersData.pending, (state, action) => {
+ if (action.payload) {
+   console.log("TOTAL DATA PEN: ", JSON.stringify(action.payload));
 
+   state.totalParameters = action.payload;
+ }
             })
             .addCase(getTotalTargetParametersData.fulfilled, (state, action) => {
                 if (action.payload) {
                     console.log("TOTAL DATA: ", JSON.stringify(action.payload));
-
                     state.totalParameters = action.payload;
                 }
             })
