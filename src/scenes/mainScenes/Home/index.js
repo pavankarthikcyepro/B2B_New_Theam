@@ -136,9 +136,12 @@ const HomeScreen = ({ route, navigation }) => {
 
     }, [navigation]);
 
-    // useEffect(() => {
-    //     setTargetData()
+    // useEffect(async() => {
+    //     let abc = AsyncStore.getData("TARGET_EMP");
+    //     console.log("STORE=====>", JSON.parse(abc));
     // }, [])
+
+    
 
     const setTargetData = async () => {
         // let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -187,7 +190,7 @@ const HomeScreen = ({ route, navigation }) => {
             }
         } else {
         }
-    }, [selector.self_target_parameters_data])
+    }, []) //selector.self_target_parameters_data
 
     useEffect(async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -213,8 +216,10 @@ const HomeScreen = ({ route, navigation }) => {
 
     useEffect(async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+     
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
+
             // const dateFormat = "YYYY-MM-DD";
             // const currentDate = moment().format(dateFormat)
             // const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
@@ -573,7 +578,7 @@ const HomeScreen = ({ route, navigation }) => {
             dispatch(getEventTableList(payload)),
             // dispatch(getLostDropChartData(payload))
         ]).then(() => {
-            console.log('I did everything!');
+            console.log("getDashboadTableDataFromServer");
         });
 
         getTaskTableDataFromServer(empId, payload);
@@ -592,7 +597,7 @@ const HomeScreen = ({ route, navigation }) => {
             dispatch(getSalesData(payload)),
             dispatch(getSalesComparisonData(payload))
         ]).then(() => {
-            console.log('I did everything!');
+            console.log("getTaskTableDataFromServer");
         });
     }
 
@@ -601,8 +606,21 @@ const HomeScreen = ({ route, navigation }) => {
         let isTeamPresentLocal = false;
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
-            if (jsonObj?.hrmsRole === "Admin" || jsonObj?.hrmsRole === "Admin Prod" || jsonObj?.hrmsRole === "App Admin" || jsonObj?.hrmsRole === "Manager" || jsonObj?.hrmsRole === "TL" || jsonObj?.hrmsRole === "General Manager" || jsonObj?.hrmsRole === "branch manager" || jsonObj?.hrmsRole === "Testdrive_Manager" || jsonObj?.hrmsRole === "MD" || jsonObj?.hrmsRole === "Business Head" || jsonObj?.hrmsRole === "Sales Manager") {
-                isTeamPresentLocal = true;
+            console.log("EMP========>", jsonObj)
+            if (
+              jsonObj?.hrmsRole === "Admin" ||
+              jsonObj?.hrmsRole === "Admin Prod" ||
+              jsonObj?.hrmsRole === "App Admin" ||
+              jsonObj?.hrmsRole === "Manager" ||
+              jsonObj?.hrmsRole === "TL" ||
+              jsonObj?.hrmsRole === "General Manager" ||
+              jsonObj?.hrmsRole === "branch manager" ||
+              jsonObj?.hrmsRole === "Testdrive_Manager" ||
+              jsonObj?.hrmsRole === "MD" ||
+              jsonObj?.hrmsRole === "Business Head" ||
+              jsonObj?.hrmsRole === "Sales Manager"
+            ) {
+              isTeamPresentLocal = true;
             }
         }
 
@@ -616,7 +634,7 @@ const HomeScreen = ({ route, navigation }) => {
             dispatch(getTargetParametersData(payload1)),
             dispatch(getTargetParametersEmpData(payload1))
         ]).then(() => {
-            console.log('I did everything!');
+            console.log("getTargetParametersDataFromServer");
         });
     }
 

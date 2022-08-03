@@ -14,3 +14,4 @@ export const UNIVERSAL_ID = "UNIVERSAL_ID"
 export const IS_LOGIN = "IS_LOGIN"
 export const EXTENSION_ID = "EXTENSION_ID"
 export const EXTENSSION_PWD ="EXTENSSION_PWD"
+export const TARGET = "TARGET_EMP";
