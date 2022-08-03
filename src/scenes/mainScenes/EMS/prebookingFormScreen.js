@@ -3864,6 +3864,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             style={styles.textInputStyle}
                                             value={selector.gstin_number}
                                             label={"GSTIN Number"}
+                                            maxLength={15}
                                             onChangeText={(text) =>
                                                 dispatch(
                                                     setDocumentUploadDetails({
