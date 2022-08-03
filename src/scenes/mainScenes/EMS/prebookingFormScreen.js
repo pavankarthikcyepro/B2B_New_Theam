@@ -213,7 +213,7 @@ const PaidAccessoriesTextAndAmountComp = ({
 };
 
 const PrebookingFormScreen = ({ route, navigation }) => {
-    
+
     const dispatch = useDispatch();
     const selector = useSelector((state) => state.preBookingFormReducer);
     let scrollRef = useRef(null)
@@ -602,7 +602,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           showToastRedAlert(error.message);
         });
     };
-    
+
     const modelOnclick = async (index, value, type) => {
         try {
             if (type == "update") {
@@ -622,8 +622,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             else {
                 if (type == "delete") {
                   //let arr = await [...carModelsList];
-                 
-                 
+
+
                   // arr[0] = item;
                   // arr.splice(0, 1);
                   // arr.unshift(item)
@@ -631,7 +631,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   //     updateVariantModelsData(arr[0].model, true, arr[0].variant);
                   // }
                   // setCarModelsList([])
-                 
+
                   // carModelsList.splice(0, 1)
 
                 let arr = await [...carModelsList]
@@ -665,7 +665,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         }
 
     }
-   
+
     const isPrimaryOnclick = async(isPrimaryEnabled, index, item)=>{
         try{
             if(isPrimaryEnabled === "Y")
@@ -701,7 +701,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 console.log("MODELS IS PRIMARY: ", arr);
                 await setCarModelsList([...arr])
                 await setIsPrimaryCurrentIndex(index)
-            } 
+            }
         }catch(error)
         {
            // alert(error)
@@ -835,7 +835,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 console.log("INSIDE ", dmsLeadDto.leadStatus);
                 setShowSubmitDropBtn(true);
             }
-            
+
             if (dmsLeadDto.leadStatus === "SENTFORAPPROVAL") {
                 setShowApproveRejectBtn(true);
             }
@@ -1209,7 +1209,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         if (!selectedVarientName || selectedVarientName.length === 0) {
             return;
         }
-        
+
         let arrTemp = varientList.filter(function (obj) {
             return obj.name === selectedVarientName;
         });
@@ -1565,7 +1565,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         //         dispatch(updateRef(payload))
         //     }
         // });
-        removeExistingKeysFromAsync(route?.params?.lists.names)
+        if (route?.params?.lists && route?.params?.lists.names) {
+            removeExistingKeysFromAsync(route?.params?.lists.names);
+        }
     };
 
       const removeExistingKeysFromAsync = async (keys) => {
@@ -1595,7 +1597,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
             if (dmsEntity.hasOwnProperty("dmsLeadDto"))
                 dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
-                
+
             let selectedModel = []
             selectedModel = carModelsList.filter((item) => item.isPrimary === "Y")
             console.log("MODEL: ", selector.model, carModelsList);
@@ -1920,17 +1922,17 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     "id": item.id,
                     "model": item.model,
                     "transimmisionType": item.transimmisionType,
-                    "variant": item.variant,                   
+                    "variant": item.variant,
                     "isPrimary": isPrimary
                 }
                 array[i] = await item
                 if (item.isPrimary && item.isPrimary != null && item.isPrimary === 'Y')
                 {
-                   
+
                     await setIsPrimaryCurrentIndex(i)
                     updateVariantModelsData(item.model, true, item.variant);
                 }
-               
+
                 if (i === selector.dmsLeadProducts.length - 1){
                     let index = array.findIndex((item) => item.model === selector.pre_booking_details_response?.dmsLeadDto?.model);
                     if(index !== -1){
@@ -1943,7 +1945,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             await setCarModelsList(array)
         } catch(error){
         }
-        
+
     }
     const mapContactOrAccountDto = (prevData) => {
         let dataObj = { ...prevData };
@@ -2367,7 +2369,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         taskData: taskData,
                     }
                 );
-                
+
             }
         } else if (selector.assigned_tasks_list_status === "failed") {
             showToastRedAlert("Something went wrong");
@@ -5096,7 +5098,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 </List.Accordion>
                             ) : null}
                             {/* // 11.Reject */}
-                            
+
                         </List.AccordionGroup>
 
                         {!isDropSelected && showSubmitDropBtn && !userData.isManager && !userData.isPreBookingApprover && selector.booking_amount !== '' && (
