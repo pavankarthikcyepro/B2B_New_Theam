@@ -223,18 +223,41 @@ export const getUserWiseTargetParameters = createAsyncThunk("HOME/getUserWiseTar
 export const getTargetParametersEmpData = createAsyncThunk("HOME/getTargetParametersEmpData", async (payload: any, { rejectWithValue }) => {
     const url = `${payload.isTeamPresent ? URL.GET_TOTAL_TARGET_PARAMS() : URL.GET_TARGET_PARAMS_EMP()}`;
     console.log("ADMIN=======>", payload)
-    // if (payload.isTeamPresent) {
-    //     delete payload.isTeamPresent;
-    // }
-    const response = await client.post(url, payload)
-    const json = await response.json()
+    const response = await client.post(url, payload);
+    const json = await response.json();
+      if (payload.isTeamPresent) {
+        delete payload.isTeamPresent;
+      }
+ if (!response.ok) {
+   return rejectWithValue(json);
+ }
+ return json;
+
+
+// if(payload.isTeamPresent == true){
+//   const url1 = URL.GET_TOTAL_TARGET_PARAMS();
+//   const response = await client.post(url1, payload);
+//   const json = await response.json();
+ 
+//       delete payload.isTeamPresent;
+  
+//   if (!response.ok) {
+//     return rejectWithValue(json);
+//   }
+//   return json;
+// }
+// else if(payload.isTeamPresent == false){
+//  const url1 = URL.GET_TARGET_PARAMS_EMP();
+//  const response = await client.post(url1, payload);
+//  const json = await response.json();
+//  delete payload.isTeamPresent;
+//  if (!response.ok) {
+//    return rejectWithValue(json);
+//  }
+//  return json;
+// }
 
     // console.log("&&&&&& DATA SELF $$$$$$$:", JSON.stringify(json));
-
-    if (!response.ok) {
-        return rejectWithValue(json);
-    }
-    return json;
 })
 
 export const getGroupDealerRanking = createAsyncThunk("HOME/getGroupDealerRanking", async (payload: any, { rejectWithValue }) => {
@@ -540,6 +563,7 @@ export const homeSlice = createSlice({
             state.isLoading = false
             state.leaderboard_list = []
             state.branchrank_list = []
+            state.self_target_parameters_data =empData
         },
     },
     extraReducers: (builder) => {
@@ -807,17 +831,22 @@ export const homeSlice = createSlice({
                 state.sales_comparison_data = [];
             })
             .addCase(getTargetParametersEmpData.pending, (state, action) => {
-                // state.self_target_parameters_data = [];
+                //state.self_target_parameters_data = [];
             })
             .addCase(getTargetParametersEmpData.fulfilled, (state, action) => {
                 //console.log("S getSalesComparisonData: ", JSON.stringify(action.payload));
+                //console.log("ACT=======>",action.payload)
                 if (action.payload) {
                     state.self_target_parameters_data = action.payload;
                     AsyncStore.storeData('TARGET_EMP', JSON.stringify(action.payload))
                 }
+                
+                // else{
+                //     state.self_target_parameters_data = empData
+                // }
             })
             .addCase(getTargetParametersEmpData.rejected, (state, action) => {
-                // state.self_target_parameters_data = [];
+                //state.self_target_parameters_data = [];
             })
 
             .addCase(getNewTargetParametersAllData.pending, (state, action) => {

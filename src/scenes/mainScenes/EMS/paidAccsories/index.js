@@ -57,35 +57,52 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
     const [defaultContext, setDefaultContext] = useState({});
 
     useEffect(() => {
-        console.log("accessorylist: ", selectedAccessoryList.length, accessorylist.length);
-        const titleNames = [];
-        const dataObj = {};
-        accessorylist.forEach((item) => {
-            let isSelected = false;
-            let find = [];
-            find = selectedAccessoryList.filter((innerItem) => {
-                return innerItem.accessoriesName === item.partName && Number(innerItem.amount) === Number(item.cost) && innerItem?.dmsAccessoriesType === item.item
-            })
-            if (find.length > 0) {
-                isSelected = true;
-                addItemInAsyncStorage(find[0].dmsAccessoriesType, { ...item, selected: isSelected })
-            }
-            const newItem = { ...item, selected: isSelected };
-            if (titleNames.includes(item.item)) {
-              
-                const oldData = dataObj[item.item];
-                const newData = [...oldData, newItem];
-                dataObj[item.item] = newData;
-                  console.log("OLD=============>", oldData);
-            } else {
-                titleNames.push(item.item);
-                dataObj[item.item] = [newItem];
-            }
-        })
-        console.log("DATAOBJ: ", JSON.stringify(dataObj));
-        setAccessoriesData({ names: titleNames, data: dataObj });
+      console.log(
+        "accessorylist: ",
+        selectedAccessoryList.length,
+        accessorylist.length
+      );
+      const titleNames = [];
+      const dataObj = {};
+      
+      accessorylist.forEach((item) => {
+        let isSelected = false;
+        let find = [];
+        find = selectedAccessoryList.filter((innerItem) => {
+          return (
+            innerItem.accessoriesName === item.partName &&
+            Number(innerItem.amount) === Number(item.cost) &&
+            innerItem?.dmsAccessoriesType === item.item
+          );
+        });
+        if (find.length > 0) {
+          isSelected = true;
+          addItemInAsyncStorage(find[0].dmsAccessoriesType, {
+            ...item,
+            selected: isSelected,
+          });
+        }
+        const newItem = { ...item, selected: isSelected };
 
-            //removeExistingKeysFromAsync(titleNames);
+        if (titleNames.includes(item.item)) {
+          const oldData = dataObj[item.item];
+          const newData = [...oldData, newItem];
+          dataObj[item.item] = newData;
+          //console.log('RUNNNNN=====>', item.item)
+          //console.log("RUNNNNN")
+          //console.log("OLD=============>", oldData);
+        } else {
+          //   removeExistingKeysFromAsync(titleNames);
+          titleNames.push(item.item);
+          dataObj[item.item] = [newItem];
+        }
+      });
+      //console.log("DATAOBJ: ", JSON.stringify(dataObj));
+      setAccessoriesData({ names: titleNames, data: dataObj });
+
+      console.log('RUNNN====>', titleNames)
+
+     removeExistingKeysFromAsync(titleNames);
     }, [])
     
     const removeExistingKeysFromAsync = async (keys) => {
@@ -113,7 +130,7 @@ try {
     } else {
         console.log("exis??????? DATA AV: ", existingData, ' :key: ', key);
 
-        data = [...existingData, ...item];
+        data = [...existingData, item];
     }
 
     console.log("exis??????? final: ", key);
@@ -128,27 +145,27 @@ try {
     }
 
     const addSelected = async () => {
-    console.log('WORKING')
-        const data = await AsyncStorage.multiGetData(accessoriesData.names);
-        console.log("data......: ACC. NAMES ", accessoriesData.names)
-        let allData = [];
-        accessoriesData.names.forEach((item, index) => {
-            console.log("data......: ACC. NAMES item ", item)
+      //console.log("WORKING");
+      const data = await AsyncStorage.multiGetData(accessoriesData.names);
+      console.log("data......: ACC. NAMES ", accessoriesData.names);
+      let allData = [];
+      accessoriesData.names.forEach((item, index) => {
+        console.log("data......: ACC. NAMES item ", item);
 
-            const selectedData = data[index][1];
-            console.log("selectedData: ", selectedData?.length)
-            if (selectedData) {
-                allData = allData.concat(JSON.parse(selectedData));
-            }
-            
-        })
-        console.log("allData: ", JSON.stringify(allData))
+        const selectedData = data[index][1];
+        console.log("selectedData: ", selectedData?.length);
+        if (selectedData) {
+          allData = allData.concat(JSON.parse(selectedData));
+        }
+      });
+      console.log("allData==========>: ", JSON.stringify(allData));
 
-        navigation.navigate({
-            name: AppNavigator.EmsStackIdentifiers.preBookingForm,
-            params: { accessoriesList: allData },
-            merge: true,
-        });
+      navigation.navigate({
+        name: AppNavigator.EmsStackIdentifiers.preBookingForm,
+        params: { accessoriesList: allData , lists : accessoriesData},
+        merge: true,
+      });
+
     }
 
     return (

@@ -414,11 +414,11 @@ const color = [
 
 const TargetScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
-// console.log("ACHIEVE========>", selector.totalParameters[0].target);
-  // console.log(
-  //   "ACC==--=-=-=-==-=>>",
-  //   selector.self_target_parameters_data
-  // );
+ //console.log("ACHIEVE========>", selector.totalParameters);
+  console.log(
+    "ACC==--=-=-=-==-=>>",
+    selector.self_target_parameters_data
+  );
   const dispatch = useDispatch();
 
   const [retailData, setRetailData] = useState(null);
@@ -2255,7 +2255,7 @@ const TargetScreen = ({ route, navigation }) => {
                             <Text style={{ color: '#000000', fontWeight: '600' }}>{getTotalAchiventByParam(item, 'EXTENDEDWARRANTY') > 99999 ? Math.round(getTotalAchiventByParam(item, 'EXTENDEDWARRANTY') / 100000) + 'L' : (getTotalAchiventByParam(item, 'EXTENDEDWARRANTY') > 999 ? Math.round(getTotalAchiventByParam(item, 'EXTENDEDWARRANTY') / 1000) + 'K' : getTotalAchiventByParam(item, 'EXTENDEDWARRANTY'))}/{getTotalTargetByParam(item, 'EXTENDEDWARRANTY') > 99999 ? Math.round(getTotalTargetByParam(item, 'EXTENDEDWARRANTY') / 100000) + 'L' : (getTotalTargetByParam(item, 'EXTENDEDWARRANTY') > 999 ? Math.round(getTotalTargetByParam(item, 'EXTENDEDWARRANTY') / 1000) + 'K' : getTotalTargetByParam(item, 'EXTENDEDWARRANTY'))}</Text>
                           </View>
                           <View style={styles.itemBox}>
-                            <Text style={{ color: '#000000', fontWeight: '600' }}>{getGrandTotalAchievement(item) > 99999 ? Math.round(getGrandTotalAchievement(item) / 100000) + 'L' : (getGrandTotalAchievement(item) > 999 ? Math.round(ggetGrandTotalAchievement(item) / 1000) + 'K' : getGrandTotalAchievement(item))}/{getGrandTotalTarget(item) > 99999 ? Math.round(getGrandTotalTarget(item) / 100000) + 'L' : (getGrandTotalTarget(item) > 999 ? Math.round(getGrandTotalTarget(item) / 1000) + 'K' : getGrandTotalTarget(item))}</Text>
+                            {/* <Text style={{ color: '#000000', fontWeight: '600' }}>{getGrandTotalAchievement(item) > 99999 ? Math.round(getGrandTotalAchievement(item) / 100000) + 'L' : (getGrandTotalAchievement(item) > 999 ? Math.round(ggetGrandTotalAchievement(item) / 1000) + 'K' : getGrandTotalAchievement(item))}/{getGrandTotalTarget(item) > 99999 ? Math.round(getGrandTotalTarget(item) / 100000) + 'L' : (getGrandTotalTarget(item) > 999 ? Math.round(getGrandTotalTarget(item) / 1000) + 'K' : getGrandTotalTarget(item))}</Text> */}
                           </View>
                         </View>
                       }
@@ -2297,7 +2297,7 @@ const TargetScreen = ({ route, navigation }) => {
                       </View>
 
                       <View style={styles.itemBox}>
-                        <Text style={styles.totalText}>{Number(selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].achievment) > 99999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].achievment) / 100000) + 'L' : (Number(selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].achievment) > 999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].achievment) / 1000) + 'K' : Number(selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].achievment))}/{Number(selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].target) > 99999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].target) / 100000) + 'L' : (Number(selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].target) > 999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].target) / 1000) + 'K' : selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].target)}</Text>
+                        <Text style={styles.totalText}>{Number(selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].achievment) > 99999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].achievment) / 100000) + 'L' : (Number(selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].achievment) > 999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].achievment) / 1000) + 'K' : Number(selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].achievment))}/{Number(selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].target) > 99999 ?(selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].target) : (Number(selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].target) > 999 ? Math.round(Number(selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].target) / 1000) + 'K' : selector.totalParameters.filter((item) => item.paramName === 'Accessories')[0].target)}</Text>
                       </View>
 
                       <View style={styles.itemBox}>

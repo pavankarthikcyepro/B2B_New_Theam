@@ -124,6 +124,7 @@ import {
 import URL from "../../../networking/endpoints";
 import uuid from "react-native-uuid";
 import { DropComponent } from "./components/dropComp";
+import * as AsyncStorage from "../../../asyncStore";
 
 const rupeeSymbol = "\u20B9";
 
@@ -365,6 +366,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }, [navigation]);
 
     // useEffect(() => {
+    //   navigation.addListener("focus", () => {
+    //     BackHandler.removeEventListener(
+    //       "hardwareBackPress",
+    //       removeExistingKeysFromAsync(route?.params?.lists?.names)
+    //     );
+    //   });
+    // }, [navigation]);
+
+    // useEffect(() => {
     //     navigation.addListener('blur', () => {
     //         setTotalOnRoadPriceAfterDiscount(0);
     //         setTotalOnRoadPrice(0)
@@ -451,7 +461,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
 
     useEffect(() => {
-        console.log("accessoriesList: ", accessoriesList);
+        //console.log("accessoriesList======>: ", route?.params?.lists.names);
         if (route.params?.accessoriesList) {
             updatePaidAccessroies(route.params?.accessoriesList);
         }
@@ -459,6 +469,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     const handleBackButtonClick = () => {
         goParentScreen();
+        setPaidAccessoriesListNew([])
         return true;
     };
 
@@ -1554,7 +1565,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         //         dispatch(updateRef(payload))
         //     }
         // });
+        removeExistingKeysFromAsync(route?.params?.lists.names)
     };
+
+      const removeExistingKeysFromAsync = async (keys) => {
+        await AsyncStorage.multiRemove(keys);
+      };
 
     // Handle On Road Price Response
     useEffect(async () => {
