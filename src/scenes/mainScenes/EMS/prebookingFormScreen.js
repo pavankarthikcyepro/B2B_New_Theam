@@ -1566,7 +1566,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         //     }
         // });
         if (route?.params?.lists && route?.params?.lists.names) {
-            removeExistingKeysFromAsync(route?.params?.lists.names);
+            removeExistingKeysFromAsync(route?.params?.lists?.names);
         }
     };
 
