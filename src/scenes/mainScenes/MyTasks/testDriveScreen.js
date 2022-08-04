@@ -292,6 +292,12 @@ const TestDriveScreen = ({ route, navigation }) => {
             if (findModel.length > 0) {
                 tempObj.vehicleId = findModel[0].vehicleId;
                 tempObj.varientId = findModel[0].varientId;
+
+                if (selector.test_drive_varients_obj_for_drop_down[findModel[0].model]) {
+                    const varientsData =
+                        selector.test_drive_varients_obj_for_drop_down[findModel[0].model];
+                    setVarientListForDropDown(varientsData);
+                }
             }
             else{
                 tempObj.fuelType = '';
