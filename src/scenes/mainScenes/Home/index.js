@@ -182,16 +182,18 @@ const HomeScreen = ({ route, navigation }) => {
 
     useEffect(() => {
         if (selector.self_target_parameters_data.length > 0) {
+            console.log("@@@@@@@@@@@@@@@@@@selector.self_target_parameters_data.length$$$$$$", selector.self_target_parameters_data.length);
             let tempRetail = [];
             tempRetail = selector.self_target_parameters_data.filter((item) => {
                 return item.paramName.toLowerCase() === 'invoice'
             })
             if (tempRetail.length > 0) {
                 setRetailData(tempRetail[0])
+                console.log("tempRetail[0]>>>>>>>>>>>>>>>>>>>>>>", tempRetail[0]);
             }
         } else {
         }
-    }, []) //selector.self_target_parameters_data
+    }, [selector.self_target_parameters_data]) //selector.self_target_parameters_data
 
     useEffect(async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -1048,10 +1050,17 @@ const HomeScreen = ({ route, navigation }) => {
                                                         marginTop: 5,
                                                         marginLeft: 5,
                                                     }}>
-                                                        <View style={{ flexDirection: 'row' }}>
+
+                                                    {/*    {retailData !== null && */}
+                                                            <View style={{ flexDirection: 'row' }}>
+                                                                <Text style={[styles.rankText, { color: 'red' }]}>{retailData?.achievment}</Text>
+                                                                <Text style={[styles.rankText]}>/{retailData?.target}</Text>
+                                                            </View>
+                                                     {/*   } */}
+                                                     {/*   <View style={{ flexDirection: 'row' }}>
                                                             <Text style={[styles.rankText, { color: 'red' }]}>{retailData?.achievment} </Text>
                                                             <Text style={styles.rankText}>/{retailData?.target}</Text>
-                                                        </View>
+                                                    </View> */}
                                                         <View style={{
                                                             marginTop: 5
                                                         }}>

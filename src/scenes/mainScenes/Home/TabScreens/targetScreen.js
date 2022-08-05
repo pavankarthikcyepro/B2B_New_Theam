@@ -1704,7 +1704,7 @@ const TargetScreen = ({ route, navigation }) => {
                         setSelectedName(item.empName);
                         setTimeout(() => {
                           setSelectedName('')
-                        }, 5000);
+                        }, 900);
                         let localData = [...allParameters];
                         let current = localData[index].isOpenInner;
                         for (let i = 0; i < localData.length; i++) {
@@ -1786,7 +1786,7 @@ const TargetScreen = ({ route, navigation }) => {
                               setSelectedName(innerItem1.empName);
                               setTimeout(() => {
                                 setSelectedName('')
-                              }, 5000);
+                              }, 900);
                               let localData = [...allParameters];
                               let current = localData[index].employeeTargetAchievements[innerIndex1].isOpenInner;
                               for (let i = 0; i < localData[index].employeeTargetAchievements.length; i++) {
@@ -1863,7 +1863,7 @@ const TargetScreen = ({ route, navigation }) => {
                                       setSelectedName(innerItem2.empName);
                                       setTimeout(() => {
                                         setSelectedName('')
-                                      }, 5000);
+                                      }, 900);
                                       let localData = [...allParameters];
                                       let current = localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].isOpenInner;
                                       for (let i = 0; i < localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements.length; i++) {
@@ -1944,7 +1944,7 @@ const TargetScreen = ({ route, navigation }) => {
                                               setSelectedName(innerItem3.empName);
                                               setTimeout(() => {
                                                 setSelectedName('')
-                                              }, 5000);
+                                              }, 900);
                                               let localData = [...allParameters];
                                               let current = localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].isOpenInner;
                                               for (let i = 0; i < localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements.length; i++) {
@@ -2013,7 +2013,7 @@ const TargetScreen = ({ route, navigation }) => {
                                                       setSelectedName(innerItem4.empName);
                                                       setTimeout(() => {
                                                         setSelectedName('')
-                                                      }, 5000);
+                                                      }, 900);
                                                       let localData = [...allParameters];
                                                       let current = localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].isOpenInner;
                                                       for (let i = 0; i < localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements.length; i++) {
@@ -2082,7 +2082,7 @@ const TargetScreen = ({ route, navigation }) => {
                                                               setSelectedName(innerItem5.empName);
                                                               setTimeout(() => {
                                                                 setSelectedName('')
-                                                              }, 5000);
+                                                              }, 900);
                                                               let localData = [...allParameters];
                                                               let current = localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].isOpenInner;
                                                               for (let i = 0; i < localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements.length; i++) {
@@ -2151,7 +2151,7 @@ const TargetScreen = ({ route, navigation }) => {
                                                                       setSelectedName(innerItem6.empName);
                                                                       setTimeout(() => {
                                                                         setSelectedName('')
-                                                                      }, 5000);
+                                                                      }, 900);
                                                                       let localData = [...allParameters];
                                                                       let current = localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].employeeTargetAchievements[innerIndex6].isOpenInner;
                                                                       for (let i = 0; i < localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].employeeTargetAchievements.length; i++) {
