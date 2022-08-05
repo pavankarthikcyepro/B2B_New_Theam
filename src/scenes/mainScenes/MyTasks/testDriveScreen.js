@@ -332,28 +332,26 @@ const TestDriveScreen = ({ route, navigation }) => {
         }
     };
 
-    // useEffect(() => {
-    //     if (selector.test_drive_appointment_details_response) {
-    //         const taskStatus =
-    //             selector.test_drive_appointment_details_response.status;
-    //         const taskName = selector.task_details_response.taskName;
-    //         console.log("TASK STATUS:", taskStatus, taskName);
-    //         if (taskStatus === "SENT_FOR_APPROVAL" && taskName === "Test Drive") {
-    //             setHandleActionButtons(2);
-    //         } else if (
-    //             taskStatus === "SENT_FOR_APPROVAL" &&
-    //             taskName === "Test Drive Approval"
-    //         ) {
-    //             setHandleActionButtons(3);
-    //         } else if (taskStatus === "APPROVED" && taskName === "Test Drive") {
-    //             setHandleActionButtons(4);
-    //         } else if (taskStatus === "CANCELLED") {
-    //             setHandleActionButtons(5);
-    //         }
-    //         setIsRecordEditable(false);
-    //         updateTaskDetails(selector.test_drive_appointment_details_response);
-    //     }
-    // }, [selector.test_drive_appointment_details_response]);
+    useEffect(() => {
+        if (selector.test_drive_appointment_details_response) {
+            const {status, taskName, vehicleId, varientId} = selector.test_drive_appointment_details_response;
+            console.log("TASK STATUS variant:", vehicleId, varientId);
+            console.log("TASK STATUS:", status, taskName);
+            if (status === "SENT_FOR_APPROVAL") {
+                const allVehiclesData = selector.test_drive_vehicle_list_for_drop_down;
+                if (allVehiclesData.length > 0) {
+                    const matchingVariantIndex =  allVehiclesData.findIndex(x => x.varientId === varientId);
+                    if (matchingVariantIndex !== -1) {
+                        console.log("TASK STATUS --> :", selectedVehicleDetails);
+                        const {fuelType, model, transType, varient, varientId, vehicleId} = selectedVehicleDetails;
+                        setSelectedVehicleDetails({varient: allVehiclesData[matchingVariantIndex].varientName, fuelType, model, transType, varientId, vehicleId});
+                    }
+                }
+            }
+            setIsRecordEditable(false);
+            // updateTaskDetails(selector.test_drive_appointment_details_response);
+        }
+    }, [selector.test_drive_appointment_details_response]);
 
     useEffect(() => {
         if (selector.task_details_response) {
@@ -610,8 +608,8 @@ const TestDriveScreen = ({ route, navigation }) => {
             return;
         }
 
-        let varientId = selectedVehicleDetails.vehicleId;
-        let vehicleId = selectedVehicleDetails.varientId;
+        let varientId = selectedVehicleDetails.varientId;
+        let vehicleId = selectedVehicleDetails.vehicleId;
         // selector.test_drive_vehicle_list.forEach(element => {
         //   if (element.vehicleInfo.vehicleId == selectedVehicleDetails.vehicleId && element.vehicleInfo.varientId == selectedVehicleDetails.varientId) {
         //     varientId = element.vehicleInfo.varientId;
