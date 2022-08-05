@@ -166,7 +166,7 @@ export const getTargetParametersData = createAsyncThunk("HOME/getTargetParameter
 })
 
 export const getTargetParametersAllData = createAsyncThunk("HOME/getTargetParametersAllData", async (payload: any, { rejectWithValue }) => {
-    // console.log("PAYLOAD:", payload);
+     console.log("PAYLOAD==--=-=>:", payload);
 
     const response = await client.post(URL.GET_TARGET_PARAMS_ALL(), payload)
     const json = await response.json()
@@ -194,7 +194,7 @@ export const getNewTargetParametersAllData = createAsyncThunk("HOME/getNewTarget
 })
 
 export const getTotalTargetParametersData = createAsyncThunk("HOME/getTotalTargetParametersData", async (payload: any, { rejectWithValue }) => {
-   console.log("PAYLOAD=========>:", payload);
+   //console.log("PAYLOAD=========>:", payload);
     const response = await client.post(URL.GET_TARGET_PARAMS(), payload);
     const json = await response.json()
 
@@ -205,6 +205,22 @@ export const getTotalTargetParametersData = createAsyncThunk("HOME/getTotalTarge
     }
     return json;
 })
+
+export const getTotalTargetCounts= createAsyncThunk(
+  "HOME/getTotalTarget",
+  async (payload: any, { rejectWithValue }) => {
+    console.log("PAYLOAD=========>:", payload);
+    const response = await client.post(URL.GET_TARGET_PARAMS(), payload);
+    const json = await response.json();
+
+    console.log("&&&&&& DATA $$$$$$$:======>", JSON.stringify(json));
+
+    if (!response.ok) {
+      return rejectWithValue(json);
+    }
+    return json;
+  }
+);
 
 export const getUserWiseTargetParameters = createAsyncThunk("HOME/getUserWiseTargetParameters", async (payload: any, { rejectWithValue }) => {
     // console.log("PAYLOAD:", payload);
@@ -520,6 +536,7 @@ export const homeSlice = createSlice({
         designationList: [],
         deptList: [],
         totalTarget:[]
+
     },
     reducers: {
         dateSelected: (state, action) => {
@@ -930,18 +947,25 @@ export const homeSlice = createSlice({
           })
           .addCase(getTotalTargetParametersData.fulfilled, (state, action) => {
             if (action.payload) {
-              console.log("TOTAL DATA: ", JSON.stringify(action.payload));
+              console.log("TOTAL DATA:======> ", JSON.stringify(action.payload));
               state.totalParameters = action.payload;
             }
           })
-          .addCase(getTotalTargetParametersData.rejected, (state, action) => {})
-
-          .addCase(getUserWiseTarget.fulfilled, (state, action) => {
+ .addCase(getTotalTargetCounts.fulfilled, (state, action) => {
             if (action.payload) {
-              console.log("TOTAL DATA========>: ", JSON.stringify(action.payload));
+              console.log("TOTAL DATA:======> ", JSON.stringify(action.payload));
               state.totalTarget = action.payload;
             }
           })
+
+          .addCase(getTotalTargetParametersData.rejected, (state, action) => {})
+
+          // .addCase(getUserWiseTarget.fulfilled, (state, action) => {
+          //   if (action.payload) {
+          //     console.log("TOTAL DATA========>: ", JSON.stringify(action.payload));
+          //     state.totalTarget = action.payload;
+          //   }
+          // })
 
           .addCase(getEmployeesList.pending, (state, action) => {
             // state.employee_list = [];

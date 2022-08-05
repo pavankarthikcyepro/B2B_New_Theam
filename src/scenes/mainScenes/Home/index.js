@@ -35,7 +35,8 @@ import {
     updateIsDSE,
     updateTargetData,
     getNewTargetParametersAllData,
-    getTotalTargetParametersData
+    getTotalTargetParametersData,
+    getTotalTarget
 } from '../../../redux/homeReducer';
 import { getCallRecordingCredentials } from '../../../redux/callRecordingReducer'
 import {
@@ -666,7 +667,8 @@ const HomeScreen = ({ route, navigation }) => {
             isTeamPresent: isTeamPresentLocal
         }
         Promise.allSettled([
-          // dispatch(getTargetParametersAllData(payload1)),
+          // dispatch(getTargetParametersAllData(payload1))
+         // dispatch(getTotalTarget(payload2)),
           dispatch(getTotalTargetParametersData(payload2)),
           dispatch(getNewTargetParametersAllData(payload2)),
          
