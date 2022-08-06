@@ -263,12 +263,23 @@ const TestDriveScreen = ({ route, navigation }) => {
                     //   name: taskData.assignee.empName,
                     //   id: taskData.assignee.empId,
                     // });
-                    if (resp.dmsEntity?.dmsLeadDto?.dmsLeadProducts.length > 0) {
+                    const dmsLeadProducts = resp.dmsEntity?.dmsLeadDto?.dmsLeadProducts;
+                    if (dmsLeadProducts.length > 0) {
+                        let primaryModel;
+                        if (dmsLeadProducts.length > 1) {
+                            const primaryProductIndex = dmsLeadProducts.findIndex(x => x.isPrimary === 'Y') !== -1;
+                            if (primaryProductIndex) {
+                                primaryModel = dmsLeadProducts[primaryProductIndex];
+                            }
+                        } else {
+                            primaryModel = dmsLeadProducts[0];
+                        }
+                        const {model, variant, fuel, transimmisionType} = primaryModel;
                         setSelectedVehicleDetails({
-                            model: resp.dmsEntity?.dmsLeadDto?.dmsLeadProducts[0].model,
-                            varient: resp.dmsEntity?.dmsLeadDto?.dmsLeadProducts[0].variant,
-                            fuelType: resp.dmsEntity?.dmsLeadDto?.dmsLeadProducts[0].fuel,
-                            transType: resp.dmsEntity?.dmsLeadDto?.dmsLeadProducts[0].transimmisionType,
+                            model,
+                            varient: variant,
+                            fuelType: fuel,
+                            transType: transimmisionType,
                             vehicleId: 0,
                             varientId: 0,
                         });
@@ -290,6 +301,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 return item.varientName === selectedVehicleDetails.varient || item.model === selectedVehicleDetails.model
             })
             if (findModel.length > 0) {
+                console.log('find model: ', findModel)
                 tempObj.vehicleId = findModel[0].vehicleId;
                 tempObj.varientId = findModel[0].varientId;
 
