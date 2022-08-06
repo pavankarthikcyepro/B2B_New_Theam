@@ -334,26 +334,17 @@ const TestDriveScreen = ({ route, navigation }) => {
 
     useEffect(() => {
         if (selector.test_drive_appointment_details_response) {
-            const {status, taskName, vehicleId, varientId} = selector.test_drive_appointment_details_response;
-            console.log("TASK STATUS variant:", vehicleId, varientId);
-            console.log("TASK STATUS:", status, taskName);
+            const {status, vehicleId, varientId} = selector.test_drive_appointment_details_response; // /testdrive/history?branchId
             if (status === "SENT_FOR_APPROVAL") {
-                const selectedModel = selector.test_drive_vehicle_list_for_drop_down.filter((item) => {
-                    return item.varientName === selectedVehicleDetails.varient || item.model === selectedVehicleDetails.model
+                const selectedModel = selector.test_drive_vehicle_list.filter((item) => { // demoVehicle/vehicles?branchId
+                    return item.varientId === varientId && item.vehicleId === vehicleId
                 })
                 if (selectedModel.length > 0) {
-                    const allVehiclesData = selector.test_drive_varients_obj_for_drop_down[selectedModel[0].model];
-                    if (allVehiclesData.length > 0) {
-                        const matchingVariantIndex =  allVehiclesData.findIndex(x => x.varientId === varientId);
-                        if (matchingVariantIndex !== -1) {
-                            const {fuelType, model, transType, varient, varientId, vehicleId} = selectedVehicleDetails;
-                            setSelectedVehicleDetails({varient: allVehiclesData[matchingVariantIndex].varientName, fuelType, model, transType, varientId, vehicleId});
-                        }
-                    }
+                        const {fuelType, model, transType, varientName, varientId, vehicleId} = selectedModel[0].vehicleInfo;
+                        setSelectedVehicleDetails({varient: varientName, fuelType, model, transType, varientId, vehicleId});
                 }
             }
             setIsRecordEditable(false);
-            // updateTaskDetails(selector.test_drive_appointment_details_response);
         }
     }, [selector.test_drive_appointment_details_response]);
 
