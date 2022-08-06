@@ -309,9 +309,9 @@ const TestDriveScreen = ({ route, navigation }) => {
 
     useEffect(() => {
         if (selector.task_details_response) {
-            getTestDriveAppointmentDetailsFromServer()
+            getTestDriveAppointmentDetailsFromServer().then(x=> console.log('>>>> ', x)).catch(e => console.log('>>>><<<< ', e));
         }
-    }, [selector.task_details_response]);
+    }, [selector.task_details_response])
 
     const getTestDriveAppointmentDetailsFromServer = async () => {
         if (selector.task_details_response.entityModuleId) {
@@ -338,13 +338,17 @@ const TestDriveScreen = ({ route, navigation }) => {
             console.log("TASK STATUS variant:", vehicleId, varientId);
             console.log("TASK STATUS:", status, taskName);
             if (status === "SENT_FOR_APPROVAL") {
-                const allVehiclesData = selector.test_drive_vehicle_list_for_drop_down;
-                if (allVehiclesData.length > 0) {
-                    const matchingVariantIndex =  allVehiclesData.findIndex(x => x.varientId === varientId);
-                    if (matchingVariantIndex !== -1) {
-                        console.log("TASK STATUS --> :", selectedVehicleDetails);
-                        const {fuelType, model, transType, varient, varientId, vehicleId} = selectedVehicleDetails;
-                        setSelectedVehicleDetails({varient: allVehiclesData[matchingVariantIndex].varientName, fuelType, model, transType, varientId, vehicleId});
+                const selectedModel = selector.test_drive_vehicle_list_for_drop_down.filter((item) => {
+                    return item.varientName === selectedVehicleDetails.varient || item.model === selectedVehicleDetails.model
+                })
+                if (selectedModel.length > 0) {
+                    const allVehiclesData = selector.test_drive_varients_obj_for_drop_down[selectedModel[0].model];
+                    if (allVehiclesData.length > 0) {
+                        const matchingVariantIndex =  allVehiclesData.findIndex(x => x.varientId === varientId);
+                        if (matchingVariantIndex !== -1) {
+                            const {fuelType, model, transType, varient, varientId, vehicleId} = selectedVehicleDetails;
+                            setSelectedVehicleDetails({varient: allVehiclesData[matchingVariantIndex].varientName, fuelType, model, transType, varientId, vehicleId});
+                        }
                     }
                 }
             }
