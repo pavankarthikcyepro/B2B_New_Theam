@@ -263,12 +263,23 @@ const TestDriveScreen = ({ route, navigation }) => {
                     //   name: taskData.assignee.empName,
                     //   id: taskData.assignee.empId,
                     // });
-                    if (resp.dmsEntity?.dmsLeadDto?.dmsLeadProducts.length > 0) {
+                    const dmsLeadProducts = resp.dmsEntity?.dmsLeadDto?.dmsLeadProducts;
+                    if (dmsLeadProducts.length > 0) {
+                        let primaryModel;
+                        if (dmsLeadProducts.length > 1) {
+                            const primaryProductIndex = dmsLeadProducts.findIndex(x => x.isPrimary === 'Y') !== -1;
+                            if (primaryProductIndex) {
+                                primaryModel = dmsLeadProducts[primaryProductIndex];
+                            }
+                        } else {
+                            primaryModel = dmsLeadProducts[0];
+                        }
+                        const {model, variant, fuel, transimmisionType} = primaryModel;
                         setSelectedVehicleDetails({
-                            model: resp.dmsEntity?.dmsLeadDto?.dmsLeadProducts[0].model,
-                            varient: resp.dmsEntity?.dmsLeadDto?.dmsLeadProducts[0].variant,
-                            fuelType: resp.dmsEntity?.dmsLeadDto?.dmsLeadProducts[0].fuel,
-                            transType: resp.dmsEntity?.dmsLeadDto?.dmsLeadProducts[0].transimmisionType,
+                            model,
+                            varient: variant,
+                            fuelType: fuel,
+                            transType: transimmisionType,
                             vehicleId: 0,
                             varientId: 0,
                         });
@@ -290,6 +301,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 return item.varientName === selectedVehicleDetails.varient || item.model === selectedVehicleDetails.model
             })
             if (findModel.length > 0) {
+                console.log('find model: ', findModel)
                 tempObj.vehicleId = findModel[0].vehicleId;
                 tempObj.varientId = findModel[0].varientId;
 
@@ -309,9 +321,9 @@ const TestDriveScreen = ({ route, navigation }) => {
 
     useEffect(() => {
         if (selector.task_details_response) {
-            getTestDriveAppointmentDetailsFromServer()
+            getTestDriveAppointmentDetailsFromServer().then(x=> console.log('>>>> ', x)).catch(e => console.log('>>>><<<< ', e));
         }
-    }, [selector.task_details_response]);
+    }, [selector.task_details_response])
 
     const getTestDriveAppointmentDetailsFromServer = async () => {
         if (selector.task_details_response.entityModuleId) {
@@ -332,28 +344,21 @@ const TestDriveScreen = ({ route, navigation }) => {
         }
     };
 
-    // useEffect(() => {
-    //     if (selector.test_drive_appointment_details_response) {
-    //         const taskStatus =
-    //             selector.test_drive_appointment_details_response.status;
-    //         const taskName = selector.task_details_response.taskName;
-    //         console.log("TASK STATUS:", taskStatus, taskName);
-    //         if (taskStatus === "SENT_FOR_APPROVAL" && taskName === "Test Drive") {
-    //             setHandleActionButtons(2);
-    //         } else if (
-    //             taskStatus === "SENT_FOR_APPROVAL" &&
-    //             taskName === "Test Drive Approval"
-    //         ) {
-    //             setHandleActionButtons(3);
-    //         } else if (taskStatus === "APPROVED" && taskName === "Test Drive") {
-    //             setHandleActionButtons(4);
-    //         } else if (taskStatus === "CANCELLED") {
-    //             setHandleActionButtons(5);
-    //         }
-    //         setIsRecordEditable(false);
-    //         updateTaskDetails(selector.test_drive_appointment_details_response);
-    //     }
-    // }, [selector.test_drive_appointment_details_response]);
+    useEffect(() => {
+        if (selector.test_drive_appointment_details_response) {
+            const {status, vehicleId, varientId} = selector.test_drive_appointment_details_response; // /testdrive/history?branchId
+            if (status === "SENT_FOR_APPROVAL") {
+                const selectedModel = selector.test_drive_vehicle_list.filter((item) => { // demoVehicle/vehicles?branchId
+                    return item.varientId === varientId && item.vehicleId === vehicleId
+                })
+                if (selectedModel.length > 0) {
+                        const {fuelType, model, transType, varientName, varientId, vehicleId} = selectedModel[0].vehicleInfo;
+                        setSelectedVehicleDetails({varient: varientName, fuelType, model, transType, varientId, vehicleId});
+                }
+            }
+            setIsRecordEditable(false);
+        }
+    }, [selector.test_drive_appointment_details_response]);
 
     useEffect(() => {
         if (selector.task_details_response) {
@@ -610,8 +615,8 @@ const TestDriveScreen = ({ route, navigation }) => {
             return;
         }
 
-        let varientId = selectedVehicleDetails.vehicleId;
-        let vehicleId = selectedVehicleDetails.varientId;
+        let varientId = selectedVehicleDetails.varientId;
+        let vehicleId = selectedVehicleDetails.vehicleId;
         // selector.test_drive_vehicle_list.forEach(element => {
         //   if (element.vehicleInfo.vehicleId == selectedVehicleDetails.vehicleId && element.vehicleInfo.varientId == selectedVehicleDetails.varientId) {
         //     varientId = element.vehicleInfo.varientId;
@@ -691,7 +696,7 @@ const TestDriveScreen = ({ route, navigation }) => {
         };
         console.log("TD PAYLOAD:", JSON.stringify(payload));
         dispatch(bookTestDriveAppointmentApi(payload));
-        navigation.goBack()
+        // navigation.goBack()
     };
 
     const closeTask = () => {
@@ -801,22 +806,22 @@ const TestDriveScreen = ({ route, navigation }) => {
         } else if (selector.test_drive_update_task_response === "failed") {
             showAlertMsg(false);
         }
-        else if (selector.test_drive_update_task_response !== null) {
-            Alert.alert(
-                "",
-                selector.test_drive_update_task_response,
-                [
-                    {
-                        text: "OK",
-                        onPress: () => {
-                            dispatch(clearState());
-                            navigation.goBack();
-                        },
-                    },
-                ],
-                { cancelable: false }
-            );
-        }
+        // else if (selector.test_drive_update_task_response !== null) {
+        //     Alert.alert(
+        //         "",
+        //         selector.test_drive_update_task_response,
+        //         [
+        //             {
+        //                 text: "OK",
+        //                 onPress: () => {
+        //                     dispatch(clearState());
+        //                     navigation.goBack();
+        //                 },
+        //             },
+        //         ],
+        //         { cancelable: false }
+        //     );
+        // }
     }, [selector.test_drive_update_task_response]);
 
     const showAlertMsg = (isSucess) => {
