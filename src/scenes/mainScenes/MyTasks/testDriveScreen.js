@@ -267,8 +267,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                     if (dmsLeadProducts.length > 0) {
                         let primaryModel;
                         if (dmsLeadProducts.length > 1) {
-                            const primaryProductIndex = dmsLeadProducts.findIndex(x => x.isPrimary === 'Y') !== -1;
-                            if (primaryProductIndex) {
+                            const primaryProductIndex = dmsLeadProducts.findIndex(x => x.isPrimary === 'Y');
+                            if (primaryProductIndex !== -1) {
                                 primaryModel = dmsLeadProducts[primaryProductIndex];
                             }
                         } else {
@@ -321,7 +321,7 @@ const TestDriveScreen = ({ route, navigation }) => {
 
     useEffect(() => {
         if (selector.task_details_response) {
-            getTestDriveAppointmentDetailsFromServer().then(x=> console.log('>>>> ', x)).catch(e => console.log('>>>><<<< ', e));
+            getTestDriveAppointmentDetailsFromServer();
         }
     }, [selector.task_details_response])
 
@@ -352,8 +352,8 @@ const TestDriveScreen = ({ route, navigation }) => {
                     return item.varientId === varientId && item.vehicleId === vehicleId
                 })
                 if (selectedModel.length > 0) {
-                        const {fuelType, model, transType, varientName, varientId, vehicleId} = selectedModel[0].vehicleInfo;
-                        setSelectedVehicleDetails({varient: varientName, fuelType, model, transType, varientId, vehicleId});
+                        const {fuelType, model, transmission_type, varientName, varientId, vehicleId} = selectedModel[0].vehicleInfo;
+                        setSelectedVehicleDetails({varient: varientName, fuelType, model, transType: transmission_type, varientId, vehicleId});
                 }
             }
             setIsRecordEditable(false);
