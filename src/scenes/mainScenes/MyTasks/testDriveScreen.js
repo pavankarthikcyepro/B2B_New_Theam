@@ -696,7 +696,7 @@ const TestDriveScreen = ({ route, navigation }) => {
         };
         console.log("TD PAYLOAD:", JSON.stringify(payload));
         dispatch(bookTestDriveAppointmentApi(payload));
-        navigation.goBack()
+        // navigation.goBack()
     };
 
     const closeTask = () => {
@@ -806,22 +806,22 @@ const TestDriveScreen = ({ route, navigation }) => {
         } else if (selector.test_drive_update_task_response === "failed") {
             showAlertMsg(false);
         }
-        else if (selector.test_drive_update_task_response !== null) {
-            Alert.alert(
-                "",
-                selector.test_drive_update_task_response,
-                [
-                    {
-                        text: "OK",
-                        onPress: () => {
-                            dispatch(clearState());
-                            navigation.goBack();
-                        },
-                    },
-                ],
-                { cancelable: false }
-            );
-        }
+        // else if (selector.test_drive_update_task_response !== null) {
+        //     Alert.alert(
+        //         "",
+        //         selector.test_drive_update_task_response,
+        //         [
+        //             {
+        //                 text: "OK",
+        //                 onPress: () => {
+        //                     dispatch(clearState());
+        //                     navigation.goBack();
+        //                 },
+        //             },
+        //         ],
+        //         { cancelable: false }
+        //     );
+        // }
     }, [selector.test_drive_update_task_response]);
 
     const showAlertMsg = (isSucess) => {
