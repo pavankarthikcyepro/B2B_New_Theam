@@ -669,8 +669,11 @@ const HomeScreen = ({ route, navigation }) => {
             isTeamPresent: isTeamPresentLocal
         }
         Promise.allSettled([
-          // dispatch(getTargetParametersAllData(payload1))
-         // dispatch(getTotalTarget(payload2)),
+
+         
+
+           //dispatch(getTargetParametersAllData(payload1)),
+
           dispatch(getTotalTargetParametersData(payload2)),
           dispatch(getNewTargetParametersAllData(payload2)),
          
