@@ -797,28 +797,15 @@ const TestDriveScreen = ({ route, navigation }) => {
 
     // Handle Update Test Drive Task response
     useEffect(() => {
+        console.log('repsonse: ', selector.test_drive_update_task_response, ', task status: ', taskStatusAndName)
         if (selector.test_drive_update_task_response === "success" && taskStatusAndName.status === 'SENT_FOR_APPROVAL') {
             showAlertMsg(true);
         } else if (selector.test_drive_update_task_response === "success" && taskStatusAndName.status === 'CANCELLED') {
             showCancelAlertMsg();
         } else if (selector.test_drive_update_task_response === "failed") {
             showAlertMsg(false);
-        }  else if (selector.test_drive_update_task_response === "success" && taskStatusAndName.name==='Test Drive Approval') {
-            Alert.alert(
-                    selector.test_drive_update_task_response,
-                    taskStatusAndName.status,
-                    [
-                        {
-                            text: "OK",
-                            onPress: () => {
-                                dispatch(clearState());
-                                navigation.goBack();
-                            },
-                        },
-                    ],
-                    { cancelable: false }
-                );
-        }  else if (selector.test_drive_update_task_response === "success" && taskStatusAndName.status === 'RESCHEDULED') {
+        }  else if (selector.test_drive_update_task_response === "success" &&
+            (taskStatusAndName.name==='Test Drive Approval' || taskStatusAndName.status === 'RESCHEDULED' || taskStatusAndName.status === 'CLOSED')) {
             Alert.alert(
                     selector.test_drive_update_task_response,
                     taskStatusAndName.status,
