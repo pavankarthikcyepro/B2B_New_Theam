@@ -694,7 +694,6 @@ const TestDriveScreen = ({ route, navigation }) => {
         const payload = {
             appointment: appointmentObj,
         };
-        console.log("TD PAYLOAD:", JSON.stringify(payload));
         dispatch(bookTestDriveAppointmentApi(payload));
         // navigation.goBack()
     };
@@ -792,7 +791,6 @@ const TestDriveScreen = ({ route, navigation }) => {
                 expectedStarttime: startTime,
                 expectedEndTime: endTime,
             };
-            console.log("UPDATE PAYLOAD:", JSON.stringify(payload));
             dispatch(updateTestDriveTaskApi(payload));
         }
     }, [selector.book_test_drive_appointment_response]);
@@ -805,6 +803,36 @@ const TestDriveScreen = ({ route, navigation }) => {
             showCancelAlertMsg();
         } else if (selector.test_drive_update_task_response === "failed") {
             showAlertMsg(false);
+        }  else if (selector.test_drive_update_task_response === "success" && taskStatusAndName.name==='Test Drive Approval') {
+            Alert.alert(
+                    selector.test_drive_update_task_response,
+                    taskStatusAndName.status,
+                    [
+                        {
+                            text: "OK",
+                            onPress: () => {
+                                dispatch(clearState());
+                                navigation.goBack();
+                            },
+                        },
+                    ],
+                    { cancelable: false }
+                );
+        }  else if (selector.test_drive_update_task_response === "success" && taskStatusAndName.status === 'RESCHEDULED') {
+            Alert.alert(
+                    selector.test_drive_update_task_response,
+                    taskStatusAndName.status,
+                    [
+                        {
+                            text: "OK",
+                            onPress: () => {
+                                dispatch(clearState());
+                                navigation.goBack();
+                            },
+                        },
+                    ],
+                    { cancelable: false }
+                );
         }
         // else if (selector.test_drive_update_task_response !== null) {
         //     Alert.alert(
