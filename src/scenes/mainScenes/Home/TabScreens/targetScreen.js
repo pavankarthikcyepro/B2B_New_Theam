@@ -1493,13 +1493,21 @@ const TargetScreen = ({ route, navigation }) => {
                                 )
                               })
                             }
+                            {/* <=== INNER ITEM 1 TOTAL ===> */}
+                            {innerItem1.employeeTargetAchievements.length > 0 &&
+                                <View style={{ marginTop: 7, marginBottom: 7, }}>
+                                  <Text style={{ fontSize: 14, color: '#000', fontWeight: '500' }}>Total</Text>
+                                </View>
+                            }
                           </>
                         )
                       })
                       }
+                      {/*main item close*/}
                       {item.employeeTargetAchievements.length > 0 &&
                         <View style={{ marginTop: 7, marginBottom: 7, }}>
                           <Text style={{ fontSize: 14, color: '#000', fontWeight: '600' }}>Total</Text>
+                          <Text style={{ fontSize: 12, color: '#000', fontWeight: '400' }}>{item.employeeTargetAchievements[0].branchId}</Text>
                         </View>
                       }
                     </View>
@@ -1566,6 +1574,21 @@ const TargetScreen = ({ route, navigation }) => {
                                   //   }
                                   // </View>
                                 }
+                                {/* GET EMPLOYEE TOTAL INNER ITEM 1 ITEM */}
+                                {innerItem1.employeeTargetAchievements.length > 0 &&
+                                    <View style={{ width: '92%', minHeight: 40, flexDirection: 'row', backgroundColor: '#FFFFFF' }}>
+                                      <RenderEmployeeTotal item={innerItem1} parameterType={'INVOICE'} />
+                                      <RenderEmployeeTotal item={innerItem1} parameterType={'Enquiry'} />
+                                      <RenderEmployeeTotal item={innerItem1} parameterType={'Test Drive'} />
+                                      <RenderEmployeeTotal item={innerItem1} parameterType={'Home Visit'} />
+                                      <RenderEmployeeTotal item={innerItem1} parameterType={'Booking'} />
+                                      <RenderEmployeeTotal item={innerItem1} parameterType={'Finance'} />
+                                      <RenderEmployeeTotal item={innerItem1} parameterType={'Insurance'} />
+                                      <RenderEmployeeTotal item={innerItem1} parameterType={'Exchange'} />
+                                      <RenderEmployeeTotal item={innerItem1} parameterType={'EXTENDEDWARRANTY'} />
+                                      <RenderEmployeeTotal item={innerItem1} parameterType={'Accessories'} />
+                                    </View>
+                                }
                               </View>
                             </View>
                           )
@@ -1573,7 +1596,7 @@ const TargetScreen = ({ route, navigation }) => {
                         //   }
                         // </View>
                       }
-                      {/* GET EMPLOYEE TOTAL */}
+                      {/* GET EMPLOYEE TOTAL MAIN ITEM */}
                       {item.employeeTargetAchievements.length > 0 &&
                         <View style={{ width: '92%', minHeight: 40, flexDirection: 'row', backgroundColor: '#ECF0F1' }}>
                           <RenderEmployeeTotal item={item} parameterType={'INVOICE'} />
