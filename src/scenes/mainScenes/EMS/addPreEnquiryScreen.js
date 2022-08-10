@@ -81,6 +81,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     const [showDropDownModel, setShowDropDownModel] = useState(false);
     const [dataForDropDown, setDataForDropDown] = useState([]);
     const [dropDownKey, setDropDownKey] = useState("");
+    const [oId, setOid] = useState("")
     const [dropDownTitle, setDropDownTitle] = useState("Select Data");
     const [showEventModel, setShowEventModel] = useState(false);
     const [showDatePicker, setShowDatePicker] = useState(false);
@@ -807,9 +808,9 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         dispatch(updatePreEnquiry(dataObj));
     };
 
-    const showDropDownModelMethod = (key, headerText) => {
+    const showDropDownModelMethod = (key, headerText, oid) => {
         Keyboard.dismiss();
-
+console.log({oid})
         switch (key) {
             case "CAR_MODEL":
                 setDataForDropDown([...dataForCarModels]);
@@ -819,14 +820,29 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                     showToast("No Enquiry Types found");
                     return;
                 }
-                setDataForDropDown([...selector.enquiry_type_list]);
+                 if (organizationId == 21){
+                     setDataForDropDown([...selector.enquiry_type_list21]);
+                     
+                     //console.log("SELECTOR====>", selector.customer_type_list);
+             }
+            //  else if(organizationId ==22){
+            //         setDataForDropDown([...selector.enquiry_type_list22]);
+            //  }
+                else{
+                        setDataForDropDown([...selector.enquiry_type_list]);
+               }  
                 break;
+
             case "CUSTOMER_TYPE":
+                console.log("CUSTOMER_TYPE", selector.customer_type_list);
                 if (selector.customer_type_list.length === 0) {
                     showToast("No Customer Types found");
                     return;
                 }
+
                 setDataForDropDown([...selector.customer_type_list]);
+            
+                
                 break;
             case "SOURCE_OF_ENQUIRY":
                 if (homeSelector.source_of_enquiry_list.length === 0) {
@@ -995,7 +1011,8 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                             onPress={() =>
                                 showDropDownModelMethod(
                                     "ENQUIRY_SEGMENT",
-                                    "Select Enquiry Segment"
+                                    "Select Enquiry Segment",
+                                    organizationId
                                 )
                             }
                         />
