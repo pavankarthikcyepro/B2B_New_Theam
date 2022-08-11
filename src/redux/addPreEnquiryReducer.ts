@@ -4,11 +4,18 @@ import {
   EnquiryTypes,
   SourceOfEnquiryTypes,
   CustomerTypesObj,
+  EnquiryTypes21,
+  CustomerTypesObj21,
+  EnquiryTypes22,
+  CustomerTypesObj22
 } from "../jsonData/preEnquiryScreenJsonData";
 import { showToast } from "../utils/toast";
 import URL from "../networking/endpoints";
 import { convertToDate } from "../utils/helperFunctions";
 import moment from "moment";
+import * as AsyncStore from "../asyncStore";
+import {loginSlice} from '../redux/loginReducer'
+import {useSelector} from 'react-redux'
 
 interface TextModel {
   key: string;
@@ -19,12 +26,15 @@ interface DropDownModel {
   key: string;
   value: string;
   id: string;
+  orgId:string
 }
 
 interface Item {
   name: string;
   id: string;
 }
+
+
 
 export const getPreEnquiryDetails = createAsyncThunk("ADD_PRE_ENQUIRY_SLICE/getPreEnquiryDetails", async (universalId, { rejectWithValue }) => {
   console.log("PAYLOAD EDIT ENQ: ", URL.CONTACT_DETAILS(universalId));
@@ -104,6 +114,7 @@ export const getEventListApi = createAsyncThunk(
       URL.GET_EVENT_LIST(payload.startDate, payload.endDate, payload.empId),
       customConfig
     );
+     
     try {
       const json = await response.json();
       if (response.status != 200) {
@@ -116,6 +127,9 @@ export const getEventListApi = createAsyncThunk(
     }
   }
 );
+ const getAsyncstoreData = async () => {
+        const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+ }
 
 export const addPreEnquirySlice = createSlice({
   name: "ADD_PRE_ENQUIRY_SLICE",
@@ -143,6 +157,8 @@ export const addPreEnquirySlice = createSlice({
     drop_down_data: [],
     drop_down_key_id: "",
     show_drop_down: false,
+    enquiry_type_list22: EnquiryTypes22,
+    enquiry_type_list21: EnquiryTypes21,
     enquiry_type_list: EnquiryTypes,
     source_of_enquiry_type_list: SourceOfEnquiryTypes,
     show_model_drop_down: false,
@@ -153,6 +169,8 @@ export const addPreEnquirySlice = createSlice({
     status: "",
     errorMsg: "",
     customer_type_list: [],
+    customer_type_list21: [],
+    //customer_type_list21: [],
     createEnquiryStatus: "",
     updateEnquiryStatus: "",
     create_enquiry_response_obj: {},
@@ -197,12 +215,35 @@ export const addPreEnquirySlice = createSlice({
       state.updateEnquiryStatus = action.payload;
     },
     setDropDownData: (state, action: PayloadAction<DropDownModel>) => {
-      const { key, value, id } = action.payload; 
+      const { key, value, id, orgId } = action.payload;
+
+      
+
+      console.log("VLUEEEEE=====>",action.payload);
+
       switch (key) {
         case "ENQUIRY_SEGMENT":
           state.enquiryType = value;
-          state.customer_type_list = CustomerTypesObj[value.toLowerCase()];
-          state.customerType = "";
+if(orgId == '21'){
+ state.customer_type_list = CustomerTypesObj21[value.toLowerCase()];
+ state.customerType = "";
+}
+else if( orgId == '22'){
+state.customer_type_list = CustomerTypesObj22[value.toLowerCase()];
+state.customerType = "";
+}
+else{
+state.customer_type_list = CustomerTypesObj[value.toLowerCase()];
+state.customerType = "";
+}
+      
+
+          
+          console.log("VLUEEEEE3=====>", state.customer_type_list);
+          
+          //state.customer_type_list = CustomerTypesObj22[value.toLowerCase()];
+
+          //state.customerType = "";
           break;
         case "CAR_MODEL":
           state.carModel = value;
@@ -279,9 +320,12 @@ export const addPreEnquirySlice = createSlice({
     },
     setCustomerTypeList: (state, action) => {
       state.customer_type_list = JSON.parse(action.payload);
+      //console.log("TYPES===>", JSON.parse(action.payload));
+      //state.customer_type_list21 = JSON.parse(action.payload);
     },
     setExistingDetails: (state, action) => {
       const preEnquiryDetails = action.payload.dmsLeadDto;
+      console.log("REDUENQ------>>", preEnquiryDetails);
       let dmsAccountOrContactObj = {};
       if (action.payload.dmsAccountDto) {
         dmsAccountOrContactObj = action.payload.dmsAccountDto;
@@ -295,12 +339,23 @@ export const addPreEnquirySlice = createSlice({
       state.alterMobile = dmsAccountOrContactObj["secondaryPhone"] || "";
       state.email = preEnquiryDetails.email;
       console.log("PINCODE:", JSON.stringify(preEnquiryDetails));
-      
-      state.pincode = action.payload.dmsAddressList.length > 0 ? action.payload.dmsAddressList[0].pincode : '';
+
+      state.pincode =
+        action.payload.dmsAddressList.length > 0
+          ? action.payload.dmsAddressList[0].pincode
+          : "";
       state.carModel = preEnquiryDetails.model;
       state.enquiryType = preEnquiryDetails.enquirySegment;
-      state.customer_type_list = CustomerTypesObj[preEnquiryDetails.enquirySegment.toLowerCase()];
+      state.customer_type_list =
+        CustomerTypesObj[preEnquiryDetails.enquirySegment.toLowerCase()];
+      state.customer_type_list =
+        CustomerTypesObj21[preEnquiryDetails.enquirySegment.toLowerCase()];
+      state.customer_type_list =
+        CustomerTypesObj22[preEnquiryDetails.enquirySegment.toLowerCase()];
+
       state.enquiry_type_list = EnquiryTypes;
+      state.enquiry_type_list21 = EnquiryTypes21;
+      state.enquiry_type_list22 = EnquiryTypes22;
       state.customerType = dmsAccountOrContactObj["customerType"] || "";
       state.sourceOfEnquiry = preEnquiryDetails.enquirySource;
       state.sourceOfEnquiryId = preEnquiryDetails.sourceOfEnquiry;
@@ -324,7 +379,7 @@ export const addPreEnquirySlice = createSlice({
         state.createEnquiryStatus = "success";
       })
       .addCase(createPreEnquiry.rejected, (state, action) => {
-        console.log('res3: ', action.payload);
+        console.log("res3: ", action.payload);
         state.isLoading = false;
         state.create_enquiry_response_obj = action.payload;
         state.createEnquiryStatus = "failed";
@@ -365,7 +420,10 @@ export const addPreEnquirySlice = createSlice({
         state.isLoading = true;
       })
       .addCase(getEventListApi.fulfilled, (state, action) => {
-        console.log("S getEventListApi: ", JSON.stringify(action.payload));
+        console.log(
+          "S getEventListApi-------==->>>: ",
+          JSON.stringify(action.payload)
+        );
         if (action.payload) {
           state.event_list = action.payload;
         }
@@ -377,15 +435,9 @@ export const addPreEnquirySlice = createSlice({
         state.event_list_response_status = "failed";
         state.isLoading = false;
       })
-      .addCase(getPreEnquiryDetails.pending, (state, action) => {
-        
-      })
-      .addCase(getPreEnquiryDetails.fulfilled, (state, action) => {
-        
-      })
-      .addCase(getPreEnquiryDetails.rejected, (state, action) => {
-        
-      });
+      .addCase(getPreEnquiryDetails.pending, (state, action) => {})
+      .addCase(getPreEnquiryDetails.fulfilled, (state, action) => {})
+      .addCase(getPreEnquiryDetails.rejected, (state, action) => {});
   },
 });
 
