@@ -825,8 +825,11 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                      
                      //console.log("SELECTOR====>", selector.customer_type_list);
              }
+             else if(organizationId ==22){
+                    setDataForDropDown([...selector.enquiry_type_list22]);
+             }
             //  else if(organizationId ==22){
-            //         setDataForDropDown([...selector.enquiry_type_list22]);
+            //        
             //  }
                 else{
                         setDataForDropDown([...selector.enquiry_type_list]);
@@ -938,7 +941,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                     }
                     setShowDropDownModel(false);
                     dispatch(
-                        setDropDownData({ key: dropDownKey, value: item.name, id: item.id })
+                        setDropDownData({ key: dropDownKey, value: item.name, id: item.id ,orgId:item.orgId })
                     );
                 }}
             />

@@ -1508,6 +1508,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             return;
         }
 
+        
+
         let postOnRoadPriceTable = {};
         postOnRoadPriceTable.additionalOffer1 = selector.additional_offer_1;
         postOnRoadPriceTable.additionalOffer2 = selector.additional_offer_2;
@@ -1578,6 +1580,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         if (route?.params?.lists && route?.params?.lists.names) {
             removeExistingKeysFromAsync(route?.params?.lists.names);
         }
+//         if(selector.loading){
+                    
+// setIsSubmitPress(false)
+//         }
     };
 
       const removeExistingKeysFromAsync = async (keys) => {
@@ -5133,7 +5139,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 <Button
                                     mode="contained"
                                     color={Colors.RED}
-                                    // disabled={selector.isLoading}
+                                    disabled={selector.isLoading}
                                     labelStyle={{ textTransform: "none" }}
                                     onPress={submitClicked}
                                 >SUBMIT</Button>
@@ -5187,7 +5193,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             <Button
                                                 mode="contained"
                                                 color={Colors.RED}
-                                                // disabled={selector.isLoading}
+                                                 disabled={selector.isLoading}
                                                 labelStyle={{ textTransform: "none" }}
                                                 onPress={submitClicked}
                                             >SUBMIT</Button>
@@ -5196,7 +5202,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             <Button
                                                 mode="contained"
                                                 color={Colors.RED}
-                                                // disabled={selector.isLoading}
+                                                disabled={selector.isLoading}
                                                 labelStyle={{ textTransform: "none" }}
                                                 onPress={() => setIsEdit(true)}
                                             >EDIT</Button>
