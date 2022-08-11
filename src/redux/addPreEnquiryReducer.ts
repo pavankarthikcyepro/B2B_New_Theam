@@ -26,7 +26,7 @@ interface DropDownModel {
   key: string;
   value: string;
   id: string;
-  oid:string
+  orgId:string
 }
 
 interface Item {
@@ -215,25 +215,35 @@ export const addPreEnquirySlice = createSlice({
       state.updateEnquiryStatus = action.payload;
     },
     setDropDownData: (state, action: PayloadAction<DropDownModel>) => {
-      const { key, value, id, oid } = action.payload;
+      const { key, value, id, orgId } = action.payload;
 
       
 
-      console.log("VLUEEEEE=====>", );
+      console.log("VLUEEEEE=====>",action.payload);
 
       switch (key) {
         case "ENQUIRY_SEGMENT":
           state.enquiryType = value;
-          console.log("VLUEEEEE2=====>", CustomerTypesObj[value.toLowerCase()]);
+if(orgId == '21'){
+ state.customer_type_list = CustomerTypesObj21[value.toLowerCase()];
+ state.customerType = "";
+}
+else if( orgId == '22'){
+state.customer_type_list = CustomerTypesObj22[value.toLowerCase()];
+state.customerType = "";
+}
+else{
+state.customer_type_list = CustomerTypesObj[value.toLowerCase()];
+state.customerType = "";
+}
+      
 
-       state.customer_type_list = CustomerTypesObj21[value.toLowerCase()];
-
-          state.customer_type_list = CustomerTypesObj[value.toLowerCase()];
+          
           console.log("VLUEEEEE3=====>", state.customer_type_list);
           
           //state.customer_type_list = CustomerTypesObj22[value.toLowerCase()];
 
-          state.customerType = "";
+          //state.customerType = "";
           break;
         case "CAR_MODEL":
           state.carModel = value;

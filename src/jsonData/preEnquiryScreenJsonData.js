@@ -19,35 +19,42 @@ export const EnquiryTypes21 = [
   {
     id: "1",
     name: "Captive",
+    orgId: "21",
   },
   {
     id: "2",
     name: "Fleet Owner",
+    orgId: "21",
   },
   {
     id: "3",
     name: "Hire",
+    orgId: "21",
   },
   {
     id: "4",
     name: "Institution",
+    orgId: "21",
   },
   {
     id: "5",
     name: "Institution Govt",
+    orgId: "21",
   },
 ];
 
-export const EnquiryTypes22 =[
+export const EnquiryTypes22 = [
   {
-"id":1,
-"name":'Individual'
+    id: 1,
+    name: "Individual",
+    orgId: "22",
   },
   {
-"id":2,
-"name":"Institutional"
+    id: 2,
+    name: "Institutional",
+    orgId: "22",
   },
-]
+];
 
 export const CustomerTypesObj22 = {
   individual: [
