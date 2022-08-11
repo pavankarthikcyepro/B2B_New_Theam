@@ -810,7 +810,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
 
     const showDropDownModelMethod = (key, headerText, oid) => {
         Keyboard.dismiss();
-console.log({oid})
+//console.log({oid})
         switch (key) {
             case "CAR_MODEL":
                 setDataForDropDown([...dataForCarModels]);

@@ -26,7 +26,7 @@ interface DropDownModel {
   key: string;
   value: string;
   id: string;
-  oid:string
+  oid:string;
 }
 
 interface Item {
@@ -219,14 +219,15 @@ export const addPreEnquirySlice = createSlice({
 
       
 
-      console.log("VLUEEEEE=====>", );
+      
 
       switch (key) {
         case "ENQUIRY_SEGMENT":
           state.enquiryType = value;
+          console.log("VLUEEEEE1=====>", oid);
           console.log("VLUEEEEE2=====>", CustomerTypesObj[value.toLowerCase()]);
 
-       state.customer_type_list = CustomerTypesObj21[value.toLowerCase()];
+          state.customer_type_list = CustomerTypesObj21[value.toLowerCase()]
 
           state.customer_type_list = CustomerTypesObj[value.toLowerCase()];
           console.log("VLUEEEEE3=====>", state.customer_type_list);
