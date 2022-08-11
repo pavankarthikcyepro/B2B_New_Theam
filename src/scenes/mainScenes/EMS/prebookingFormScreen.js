@@ -5114,7 +5114,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 <Button
                                     mode="contained"
                                     color={Colors.RED}
-                                    // disabled={selector.isLoading}
+                                    disabled={selector.isLoading}
                                     labelStyle={{ textTransform: "none" }}
                                     onPress={submitClicked}
                                 >SUBMIT</Button>
@@ -5168,7 +5168,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             <Button
                                                 mode="contained"
                                                 color={Colors.RED}
-                                                // disabled={selector.isLoading}
+                                                 disabled={selector.isLoading}
                                                 labelStyle={{ textTransform: "none" }}
                                                 onPress={submitClicked}
                                             >SUBMIT</Button>
@@ -5177,7 +5177,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             <Button
                                                 mode="contained"
                                                 color={Colors.RED}
-                                                // disabled={selector.isLoading}
+                                                disabled={selector.isLoading}
                                                 labelStyle={{ textTransform: "none" }}
                                                 onPress={() => setIsEdit(true)}
                                             >EDIT</Button>
