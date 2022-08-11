@@ -373,6 +373,7 @@ const prebookingFormSlice = createSlice({
     gender: "",
     salutation: "",
     enquiry_segment: "",
+    buyer_type:"",
     customer_type: "",
     marital_status: "",
     // Communication Address
@@ -503,6 +504,7 @@ const prebookingFormSlice = createSlice({
       state.gender = "";
       state.salutation = "";
       state.enquiry_segment = "";
+      state.buyer_type= "";
       state.customer_type = "";
       state.marital_status = "";
       // Communication Address
@@ -628,6 +630,13 @@ const prebookingFormSlice = createSlice({
             state.customer_types_data = state.customer_types_response[value.toLowerCase()];
           }
           break;
+          case "BUYER_TYPE":
+            state.buyer_type = value;
+            //state.customer_type ="";
+//             if(state.customer_types_response){
+// state.customer_types_data = state.customer_types_response[value.toLowerCase()]
+//             }
+            break;
         case "CUSTOMER_TYPE":
           state.customer_type = value;
           break;
@@ -1055,15 +1064,23 @@ const prebookingFormSlice = createSlice({
         state.age = total.toString();
       }
       state.customer_type = dms_C_Or_A_Dto.customerType ? dms_C_Or_A_Dto.customerType : "";
+      ///state.buyer_type = dms_C_Or_A_Dto.buyerType? dms_C_Or_A_Dto.buyerType:"";
     },
     updateDmsLeadDtoData: (state, action) => {
-      console.log("updateDmsLeadDtoData: ", JSON.stringify(action.payload));
+      console.log("updateDmsLeadDtoData=-=-=-=-==-=>: ", JSON.stringify(action.payload));
 
       const dmsLeadDto = action.payload;
       state.enquiry_segment = dmsLeadDto.enquirySegment ? dmsLeadDto.enquirySegment : "";
       if (state.customer_types_response && state.enquiry_segment) {
         state.customer_types_data = state.customer_types_response[state.enquiry_segment.toLowerCase()];
       }
+      // state.buyer_type = dmsLeadDto.enquiry_segment ? dmsLeadDto.buyerType :"";
+      // if(state.customer_types_response && state){
+      //   state.customer_types_data = state.customer_types_response[state.buyer_type.toLowerCase()]
+      // }
+       state.buyer_type = dmsLeadDto.buyerType
+         ? dmsLeadDto.buyerType
+         : "";
       state.marital_status = dmsLeadDto.maritalStatus ? dmsLeadDto.maritalStatus : "";
       state.vehicle_type = dmsLeadDto.otherVehicleType ? dmsLeadDto.otherVehicleType : "";
       state.registration_number = dmsLeadDto.otherVehicleRcNo ? dmsLeadDto.otherVehicleRcNo : "";

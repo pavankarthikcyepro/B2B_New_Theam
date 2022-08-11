@@ -93,6 +93,7 @@ import {
     Finance_Types,
     Finance_Category_Types,
     Approx_Auual_Income_Types,
+    Buyer_Type_Data
 } from "../../../jsonData/enquiryFormScreenJsonData";
 import {
     Payment_At_Types,
@@ -1074,6 +1075,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             case "ENQUIRY_SEGMENT":
                 setDataForDropDown([...Enquiry_Segment_Data]);
                 break;
+                case "BUYER_TYPE":
+                    setDataForDropDown([...Buyer_Type_Data]);
+                break;
             case "CUSTOMER_TYPE":
                 setDataForDropDown([...selector.customer_types_data]);
                 break;
@@ -1354,7 +1358,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         if (selector.enquiry_segment.length == 0) {
             scrollToPos(0)
             setOpenAccordian('1')
-            showToast("Please select enquery segment");
+            showToast("Please select enquiry segment");
+            return;
+        }
+        if(selector.buyer_type.length ==0){
+            scrollToPos(0)
+            setOpenAccordian('1')
+            showToast("Please select buyer type");
             return;
         }
         if (selector.customer_type.length == 0) {
@@ -1498,6 +1508,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             return;
         }
 
+        
+
         let postOnRoadPriceTable = {};
         postOnRoadPriceTable.additionalOffer1 = selector.additional_offer_1;
         postOnRoadPriceTable.additionalOffer2 = selector.additional_offer_2;
@@ -1568,6 +1580,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         if (route?.params?.lists && route?.params?.lists.names) {
             removeExistingKeysFromAsync(route?.params?.lists.names);
         }
+//         if(selector.loading){
+                    
+// setIsSubmitPress(false)
+//         }
     };
 
       const removeExistingKeysFromAsync = async (keys) => {
@@ -1960,12 +1976,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         );
         dataObj.age = selector.age ? Number(selector.age) : 0;
         dataObj.customerType = selector.customer_type;
+        dataObj.buyerType = selector.buyer_type;
         return dataObj;
     };
 
     const mapLeadDto = (prevData) => {
         let dataObj = { ...prevData };
         dataObj.enquirySegment = selector.enquiry_segment;
+        dataObj.buyerType = selector.buyer_type;
         dataObj.maritalStatus = selector.marital_status;
         dataObj.occasion = selector.occasion;
 
@@ -2939,6 +2957,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     }
                                 />
                                 <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.enquiry_segment === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+                                <DropDownSelectionItem label={"Buyer Type*"} value={selector.buyer_type} 
+                                onPress={()=> showDropDownModelMethod(
+                                    "BUYER_TYPE",
+                                    "Buyer Type"
+                                )}/>
+                                  <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.buyer_type === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
                                 <DropDownSelectionItem
                                     label={"Customer Type*"}
                                     value={selector.customer_type}
@@ -4207,8 +4231,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
                                 <CheckboxTextAndAmountComp
                                     title={"Fast Tag:"}
-                                    amount={fastTagSlctd ? priceInfomationData.fast_tag.toFixed(2) : 0}
-                                    // amount={fastTagSlctd ? priceInfomationData.fast_tag.toFixed(2) : "0.00"}
+                                    amount={fastTagSlctd? priceInfomationData.fast_tag === null? 0:priceInfomationData.fast_tag.toFixed(2) :0 }
+                                    //amount={fastTagSlctd ? priceInfomationData.fast_tag.toFixed(2) : 0}
+                                    // \\\\amount={fastTagSlctd ? priceInfomationData.fast_tag.toFixed(2) : "0.00"}
                                     isChecked={fastTagSlctd}
                                     onPress={() => {
                                         setFastTagSlctd(!fastTagSlctd);
