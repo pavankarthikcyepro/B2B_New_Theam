@@ -36,6 +36,6 @@ export const RenderEmployeeParameters = (parameter) => {
 
 
 const styles = StyleSheet.create({
-    itemBox: {width: 60, height: 40, justifyContent: 'center', alignItems: 'center',},
+    itemBox: {width: 60, height: 40, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 2},
     totalText: { textAlign: 'center', fontSize: 12},
 })

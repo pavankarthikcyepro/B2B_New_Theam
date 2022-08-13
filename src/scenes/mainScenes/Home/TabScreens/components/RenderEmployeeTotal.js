@@ -7,7 +7,7 @@ import moment from "moment";
 import * as AsyncStore from "../../../../../asyncStore";
 
 export const RenderEmployeeTotal = (userData) => {
-    const paramsData = ['INVOICE', 'Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'Finance', 'Insurance', 'Exchange', 'EXTENDEDWARRANTY', 'Accessories'];
+    const paramsData = ['Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Finance', 'Insurance', 'Exchange', 'EXTENDEDWARRANTY', 'Accessories'];
     const {empId, branchId, level} = userData;
     const [empParams, setEmpParams] = useState([]);
     const [branches, setBranches] = useState([]);

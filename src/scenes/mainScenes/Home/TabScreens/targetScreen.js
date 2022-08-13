@@ -709,11 +709,11 @@ const TargetScreen = ({ route, navigation }) => {
   const renderData = (item, color) => {
     return (
       <View style={{ flexDirection: 'row' }}>
-        <RenderEmployeeParameters item={item} parameterType={'INVOICE'} />
         <RenderEmployeeParameters item={item} parameterType={'Enquiry'} />
         <RenderEmployeeParameters item={item} parameterType={'Test Drive'} />
         <RenderEmployeeParameters item={item} parameterType={'Home Visit'} />
         <RenderEmployeeParameters item={item} parameterType={'Booking'} />
+        <RenderEmployeeParameters item={item} parameterType={'INVOICE'} />
         <RenderEmployeeParameters item={item} parameterType={'Finance'} />
         <RenderEmployeeParameters item={item} parameterType={'Insurance'} />
         <RenderEmployeeParameters item={item} parameterType={'Exchange'} />
@@ -925,9 +925,6 @@ const TargetScreen = ({ route, navigation }) => {
                 </View>
                 <View style={{ width: '92%', height: 40, flexDirection: 'row' }}>
                   <View style={styles.itemBox}>
-                    <Text style={{ color: '#C62159' }}>Retail</Text>
-                  </View>
-                  <View style={styles.itemBox}>
                     <Text style={{ color: '#FA03B9' }}>Enq</Text>
                   </View>
                   <View style={styles.itemBox}>
@@ -938,6 +935,9 @@ const TargetScreen = ({ route, navigation }) => {
                   </View>
                   <View style={styles.itemBox}>
                     <Text style={{ color: '#1C95A6' }}>Bkg</Text>
+                  </View>
+                  <View style={styles.itemBox}>
+                    <Text style={{ color: '#C62159' }}>Retail</Text>
                   </View>
                   <View style={styles.itemBox}>
                     <Text style={{ color: '#EC3466' }}>Fin</Text>
@@ -1598,11 +1598,11 @@ const TargetScreen = ({ route, navigation }) => {
                   </View>
                   <View style={{ width: '92%', minHeight: 40, flexDirection: 'column', marginRight: 5, paddingHorizontal: 5, }}>
                     <View style={{ width: '92%', minHeight: 40, flexDirection: 'row' }}>
-                      <RenderGrandTotal parameterType={'INVOICE'} totalParams={selector.totalParameters}/>
                       <RenderGrandTotal parameterType={'Enquiry'} totalParams={selector.totalParameters}/>
                       <RenderGrandTotal parameterType={'Test Drive'} totalParams={selector.totalParameters}/>
                       <RenderGrandTotal parameterType={'Home Visit'} totalParams={selector.totalParameters}/>
                       <RenderGrandTotal parameterType={'Booking'} totalParams={selector.totalParameters}/>
+                      <RenderGrandTotal parameterType={'INVOICE'} totalParams={selector.totalParameters}/>
                       <RenderGrandTotal parameterType={'Finance'} totalParams={selector.totalParameters}/>
                       <RenderGrandTotal parameterType={'Insurance'} totalParams={selector.totalParameters}/>
                       <RenderGrandTotal parameterType={'Exchange'} totalParams={selector.totalParameters}/>
