@@ -708,7 +708,7 @@ const TargetScreen = ({ route, navigation }) => {
   // Main Dashboard params Data
   const renderData = (item, color) => {
     return (
-      <View style={{ width: '92%', minHeight: 40, flexDirection: 'row' }}>
+      <View style={{ flexDirection: 'row' }}>
         <RenderEmployeeParameters item={item} parameterType={'INVOICE'} />
         <RenderEmployeeParameters item={item} parameterType={'Enquiry'} />
         <RenderEmployeeParameters item={item} parameterType={'Test Drive'} />
@@ -1490,16 +1490,17 @@ const TargetScreen = ({ route, navigation }) => {
                                                   )
                                                 })
                                             }
+                                                <View style={{ marginTop: 20, marginBottom: 5, }}>
+                                                  <Text style={{ fontSize: 12, color: '#000', fontWeight: '500' }}>Total</Text>
+                                                </View>
                                           </>
                                       )
                                     })
                                 }
                                 {/* <=== INNER ITEM 1 TOTAL ===> */}
-                                {innerItem1.isOpenInner && innerItem1.employeeTargetAchievements.length > 0 &&
-                                    <View style={{ marginTop: 7, marginBottom: 7, }}>
-                                      <Text style={{ fontSize: 14, color: '#000', fontWeight: '500' }}>Total</Text>
+                                    <View style={{ marginTop: 20, marginBottom: 5, }}>
+                                      <Text style={{ fontSize: 12, color: '#000', fontWeight: '500' }}>Total</Text>
                                     </View>
-                                }
                               </>
                           )
                         })
@@ -1562,18 +1563,19 @@ const TargetScreen = ({ route, navigation }) => {
                                                         )
                                                       })
                                                   }
+
+                                                      <View style={{ flexDirection: 'row' }}>
+                                                        <RenderEmployeeTotal empId={innerItem2.empId} branchId={innerItem2.branchId} level={2}/>
+                                                      </View>
+
                                                 </View>
                                             )
                                           })
-                                        //   }
-                                        // </View>
                                       }
                                       {/* GET EMPLOYEE TOTAL INNER ITEM 1 ITEM - LEVEL 1 */}
-                                      {innerItem1.isOpenInner && innerItem1.employeeTargetAchievements.length > 0 &&
-                                          <View style={{ width: '92%', minHeight: 40, flexDirection: 'row', backgroundColor: '#FFFFFF' }}>
-                                            <RenderEmployeeTotal empId={innerItem1.empId} branchId={item.branchId} level={1}/>
+                                          <View style={{ flexDirection: 'row'}}>
+                                            <RenderEmployeeTotal empId={innerItem1.empId} branchId={innerItem1.branchId} level={1}/>
                                           </View>
-                                      }
                                     </View>
                                   </View>
                               )
