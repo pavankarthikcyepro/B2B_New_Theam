@@ -1578,8 +1578,6 @@ const TargetScreen = ({ route, navigation }) => {
                                   </View>
                               )
                             })
-                          //   }
-                          // </View>
                         }
                         {/* GET EMPLOYEE TOTAL MAIN ITEM */}
                       </View>
@@ -1772,7 +1770,7 @@ const TargetScreen = ({ route, navigation }) => {
                   >
                     <View
                       style={{
-                        maxWidth: item.target && item.target.length > 6 ? 70 : 45,
+                        maxWidth: item.target && item.target.length >= 6 ? 70 : 45,
                         minWidth: 45,
                         height: 25,
                         borderColor: color[index % color.length],
@@ -1788,7 +1786,7 @@ const TargetScreen = ({ route, navigation }) => {
                     </View>
                     <View
                       style={{
-                        maxWidth: item.target && item.target.length > 6 ? 70 : 45,
+                        maxWidth: item.target && item.target.length >= 6 ? 70 : 45,
                         minWidth: 45,
                         height: 25,
                         borderColor: color[index % color.length],
@@ -1796,7 +1794,7 @@ const TargetScreen = ({ route, navigation }) => {
                         borderRadius: 8,
                         justifyContent: "center",
                         alignItems: "center",
-                        marginLeft: item.target.length > 6 ? 5 : 20
+                        marginLeft: item.target.length >= 6 ? 5 : 20
                       }}
                     >
                       <Text style={{padding: 2}}>
@@ -1841,7 +1839,7 @@ const TargetScreen = ({ route, navigation }) => {
                       {parseInt(bookingData?.achievment) === 0 ||
                         parseInt(enqData?.achievment) === 0
                         ? 0
-                        : Math.floor(
+                        : Math.round(
                           (parseInt(bookingData?.achievment) /
                             parseInt(enqData?.achievment)) *
                           100
@@ -1888,7 +1886,7 @@ const TargetScreen = ({ route, navigation }) => {
                       {parseInt(retailData?.achievment) === 0 ||
                         parseInt(enqData?.achievment) === 0
                         ? 0
-                        : Math.floor(
+                        : Math.round(
                           (parseInt(retailData?.achievment) /
                             parseInt(enqData?.achievment)) *
                           100
@@ -1926,7 +1924,7 @@ const TargetScreen = ({ route, navigation }) => {
                       {parseInt(enqData?.achievment) === 0 ||
                         parseInt(visitData?.achievment) === 0
                         ? 0
-                        : Math.floor(
+                        : Math.round(
                           (parseInt(visitData?.achievment) /
                             parseInt(enqData?.achievment)) *
                           100
@@ -1977,7 +1975,7 @@ const TargetScreen = ({ route, navigation }) => {
                       {parseInt(bookingData?.achievment) === 0 ||
                         parseInt(retailData?.achievment) === 0
                         ? 0
-                        : Math.floor(
+                        : Math.round(
                           (parseInt(retailData?.achievment) /
                             parseInt(bookingData?.achievment)) *
                           100
@@ -2002,7 +2000,7 @@ const TargetScreen = ({ route, navigation }) => {
                     <Text
                       style={{
                         color:
-                          Math.floor(
+                          Math.round(
                             (parseInt(TDData?.achievment) /
                               parseInt(enqData?.achievment)) *
                             100
