@@ -7,7 +7,7 @@ import moment from "moment";
 import * as AsyncStore from "../../../../../asyncStore";
 
 export const RenderEmployeeTotal = (userData) => {
-    const paramsData = ['INVOICE', 'Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'Finance', 'Insurance', 'Exchange', 'EXTENDEDWARRANTY', 'Accessories'];
+    const paramsData = ['Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Finance', 'Insurance', 'Exchange', 'EXTENDEDWARRANTY', 'Accessories'];
     const {empId, branchId, level} = userData;
     const [empParams, setEmpParams] = useState([]);
     const [branches, setBranches] = useState([]);
@@ -18,7 +18,6 @@ export const RenderEmployeeTotal = (userData) => {
             if (branchData) {
                 const branchesList = JSON.parse(branchData);
                 setBranches([...branchesList]);
-                console.log('------~~~~~~======: ', branches.length, branchData)
             }
         } catch (e) {
             Alert.alert('Error occurred - Employee total', `${JSON.stringify(e)}`);
@@ -41,7 +40,7 @@ export const RenderEmployeeTotal = (userData) => {
         const json = await response.json()
 
         if (!response.ok) {
-            Alert.alert('Error occurred', `${response}`);
+            // Alert.alert('Error occurred', `${JSON.stringify(response)}`);
         }
         setEmpParams(json);
     }, [empId]);
@@ -50,20 +49,18 @@ export const RenderEmployeeTotal = (userData) => {
             { level === 0 &&
                 <View style={{width: '8%', minHeight: 40, justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
                     {
-                        <View style={{marginTop: 7, marginBottom: 7,}}>
+                        <View style={{marginTop: 7, marginBottom: 7, alignItems: 'center'}}>
                             <Text style={{fontSize: 14, color: '#000', fontWeight: '600'}}>Total</Text>
-                            <Text style={{
-                                fontSize: 8,
-                                color: '#000',
-                            }}>{branches.length > 0 && (branches.find(x => +x.branchId === +branchId).branchName.split(' - ')[0])}</Text>
+                            <Text style={{ fontSize: 8, color: '#000',}} numberOfLines={1}>
+                                {branches.length > 0 && (branches.find(x => +x.branchId === +branchId).branchName.split(' - ')[0])}</Text>
                         </View>
                     }
                 </View>
             }
-            <View style={[{width: '92%', minHeight: 40, flexDirection: 'column', paddingHorizontal: 5,}]}>
-                <View style={{width: '94%', minHeight: 40, flexDirection: 'row', backgroundColor: level === 0 ? '#ECF0F1' : Colors.WHITE}}>
+            <View style={[{width: '92%', minHeight: 40, flexDirection: 'column', paddingHorizontal: 5}]}>
+                <View style={{width: '94%', minHeight: 40, flexDirection: 'row', backgroundColor: level === 0 ? '#ECF0F1' : Colors.LIGHT_GRAY}}>
                     {paramsData.map((param) => {
-                        const selectedParameter = empParams && empParams.filter((item) => item.paramName === param)[0];
+                        const selectedParameter = (empParams && empParams.length) && empParams.filter((item) => item.paramName === param)[0];
                         return (
                             <TotalView item={selectedParameter} parameterType={param}/>
                         )
@@ -89,5 +86,5 @@ export const TotalView = (parameter) => {
 
 const styles = StyleSheet.create({
     itemBox: {width: 50, height: 40, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 2},
-    totalText: {color: '#000000', textAlign: "center"},
+    totalText: {color: '#000000', fontSize: 12, textAlign: "center"},
 })

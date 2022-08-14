@@ -708,12 +708,12 @@ const TargetScreen = ({ route, navigation }) => {
   // Main Dashboard params Data
   const renderData = (item, color) => {
     return (
-      <View style={{ width: '92%', minHeight: 40, flexDirection: 'row' }}>
-        <RenderEmployeeParameters item={item} parameterType={'INVOICE'} />
+      <View style={{ flexDirection: 'row' }}>
         <RenderEmployeeParameters item={item} parameterType={'Enquiry'} />
         <RenderEmployeeParameters item={item} parameterType={'Test Drive'} />
         <RenderEmployeeParameters item={item} parameterType={'Home Visit'} />
         <RenderEmployeeParameters item={item} parameterType={'Booking'} />
+        <RenderEmployeeParameters item={item} parameterType={'INVOICE'} />
         <RenderEmployeeParameters item={item} parameterType={'Finance'} />
         <RenderEmployeeParameters item={item} parameterType={'Insurance'} />
         <RenderEmployeeParameters item={item} parameterType={'Exchange'} />
@@ -925,9 +925,6 @@ const TargetScreen = ({ route, navigation }) => {
                 </View>
                 <View style={{ width: '92%', height: 40, flexDirection: 'row' }}>
                   <View style={styles.itemBox}>
-                    <Text style={{ color: '#C62159' }}>Retail</Text>
-                  </View>
-                  <View style={styles.itemBox}>
                     <Text style={{ color: '#FA03B9' }}>Enq</Text>
                   </View>
                   <View style={styles.itemBox}>
@@ -938,6 +935,9 @@ const TargetScreen = ({ route, navigation }) => {
                   </View>
                   <View style={styles.itemBox}>
                     <Text style={{ color: '#1C95A6' }}>Bkg</Text>
+                  </View>
+                  <View style={styles.itemBox}>
+                    <Text style={{ color: '#C62159' }}>Retail</Text>
                   </View>
                   <View style={styles.itemBox}>
                     <Text style={{ color: '#EC3466' }}>Fin</Text>
@@ -1490,16 +1490,17 @@ const TargetScreen = ({ route, navigation }) => {
                                                   )
                                                 })
                                             }
+                                                <View style={{ marginTop: 20, marginBottom: 5, }}>
+                                                  <Text style={{ fontSize: 12, color: '#000', fontWeight: '500' }}>Total</Text>
+                                                </View>
                                           </>
                                       )
                                     })
                                 }
                                 {/* <=== INNER ITEM 1 TOTAL ===> */}
-                                {innerItem1.isOpenInner && innerItem1.employeeTargetAchievements.length > 0 &&
-                                    <View style={{ marginTop: 7, marginBottom: 7, }}>
-                                      <Text style={{ fontSize: 14, color: '#000', fontWeight: '500' }}>Total</Text>
+                                    <View style={{ marginTop: 20, marginBottom: 5, }}>
+                                      <Text style={{ fontSize: 12, color: '#000', fontWeight: '500' }}>Total</Text>
                                     </View>
-                                }
                               </>
                           )
                         })
@@ -1562,24 +1563,23 @@ const TargetScreen = ({ route, navigation }) => {
                                                         )
                                                       })
                                                   }
+
+                                                      <View style={{ flexDirection: 'row' }}>
+                                                        <RenderEmployeeTotal empId={innerItem2.empId} branchId={innerItem2.branchId} level={2}/>
+                                                      </View>
+
                                                 </View>
                                             )
                                           })
-                                        //   }
-                                        // </View>
                                       }
                                       {/* GET EMPLOYEE TOTAL INNER ITEM 1 ITEM - LEVEL 1 */}
-                                      {innerItem1.isOpenInner && innerItem1.employeeTargetAchievements.length > 0 &&
-                                          <View style={{ width: '92%', minHeight: 40, flexDirection: 'row', backgroundColor: '#FFFFFF' }}>
-                                            <RenderEmployeeTotal empId={innerItem1.empId} branchId={item.branchId} level={1}/>
+                                          <View style={{ flexDirection: 'row'}}>
+                                            <RenderEmployeeTotal empId={innerItem1.empId} branchId={innerItem1.branchId} level={1}/>
                                           </View>
-                                      }
                                     </View>
                                   </View>
                               )
                             })
-                          //   }
-                          // </View>
                         }
                         {/* GET EMPLOYEE TOTAL MAIN ITEM */}
                       </View>
@@ -1598,11 +1598,11 @@ const TargetScreen = ({ route, navigation }) => {
                   </View>
                   <View style={{ width: '92%', minHeight: 40, flexDirection: 'column', marginRight: 5, paddingHorizontal: 5, }}>
                     <View style={{ width: '92%', minHeight: 40, flexDirection: 'row' }}>
-                      <RenderGrandTotal parameterType={'INVOICE'} totalParams={selector.totalParameters}/>
                       <RenderGrandTotal parameterType={'Enquiry'} totalParams={selector.totalParameters}/>
                       <RenderGrandTotal parameterType={'Test Drive'} totalParams={selector.totalParameters}/>
                       <RenderGrandTotal parameterType={'Home Visit'} totalParams={selector.totalParameters}/>
                       <RenderGrandTotal parameterType={'Booking'} totalParams={selector.totalParameters}/>
+                      <RenderGrandTotal parameterType={'INVOICE'} totalParams={selector.totalParameters}/>
                       <RenderGrandTotal parameterType={'Finance'} totalParams={selector.totalParameters}/>
                       <RenderGrandTotal parameterType={'Insurance'} totalParams={selector.totalParameters}/>
                       <RenderGrandTotal parameterType={'Exchange'} totalParams={selector.totalParameters}/>
@@ -1767,12 +1767,13 @@ const TargetScreen = ({ route, navigation }) => {
                       height: 25,
                       alignItems: "center",
                       marginTop: 8,
-                      marginLeft: 23,
+                      marginLeft: 20,
                     }}
                   >
                     <View
                       style={{
-                        width: 45,
+                        maxWidth: item.target && item.target.length >= 6 ? 70 : 45,
+                        minWidth: 45,
                         height: 25,
                         borderColor: color[index % color.length],
                         borderWidth: 1,
@@ -1781,36 +1782,26 @@ const TargetScreen = ({ route, navigation }) => {
                         alignItems: "center",
                       }}
                     >
-                      <Text>
-                        {Number(item.achievment) > Number(item.target)
-                          ? 0
-                          : Math.abs(Number(item.shortfall)) >= 100000
-                            ? Math.abs(Number(item.shortfall)) / 100000 + "L"
-                            : Math.abs(item.shortfall)}
+                      <Text style={{padding: 2}}>
+                        {Number(item.achievment) > Number(item.target) ? 0 : item.shortfall}
                       </Text>
                     </View>
                     <View
                       style={{
-                        width: 45,
+                        maxWidth: item.target && item.target.length >= 6 ? 70 : 45,
+                        minWidth: 45,
                         height: 25,
                         borderColor: color[index % color.length],
                         borderWidth: 1,
                         borderRadius: 8,
                         justifyContent: "center",
                         alignItems: "center",
-                        marginLeft: 20
+                        marginLeft: item.target.length >= 6 ? 5 : 20
                       }}
                     >
-                      <Text>
+                      <Text style={{padding: 2}}>
                         {parseInt(item.achievment) > parseInt(item.target) ? 0 : (dateDiff > 0 && parseInt(item.shortfall) !== 0
-                          ? (Math.abs(
-                            Math.round(parseInt(item.shortfall) / dateDiff)
-                          ) >= 100000 ? Math.abs(
-                            Math.round(parseInt(item.shortfall) / dateDiff)
-                          ) / 100000 + "L" : Math.abs(
-                            Math.round(parseInt(item.shortfall) / dateDiff)
-                          ))
-                          : 0)}
+                          ? Math.abs(Math.round(parseInt(item.shortfall) / dateDiff)) : 0)}
                       </Text>
                     </View>
                   </View>
@@ -1850,7 +1841,7 @@ const TargetScreen = ({ route, navigation }) => {
                       {parseInt(bookingData?.achievment) === 0 ||
                         parseInt(enqData?.achievment) === 0
                         ? 0
-                        : Math.floor(
+                        : Math.round(
                           (parseInt(bookingData?.achievment) /
                             parseInt(enqData?.achievment)) *
                           100
@@ -1897,7 +1888,7 @@ const TargetScreen = ({ route, navigation }) => {
                       {parseInt(retailData?.achievment) === 0 ||
                         parseInt(enqData?.achievment) === 0
                         ? 0
-                        : Math.floor(
+                        : Math.round(
                           (parseInt(retailData?.achievment) /
                             parseInt(enqData?.achievment)) *
                           100
@@ -1935,7 +1926,7 @@ const TargetScreen = ({ route, navigation }) => {
                       {parseInt(enqData?.achievment) === 0 ||
                         parseInt(visitData?.achievment) === 0
                         ? 0
-                        : Math.floor(
+                        : Math.round(
                           (parseInt(visitData?.achievment) /
                             parseInt(enqData?.achievment)) *
                           100
@@ -1986,7 +1977,7 @@ const TargetScreen = ({ route, navigation }) => {
                       {parseInt(bookingData?.achievment) === 0 ||
                         parseInt(retailData?.achievment) === 0
                         ? 0
-                        : Math.floor(
+                        : Math.round(
                           (parseInt(retailData?.achievment) /
                             parseInt(bookingData?.achievment)) *
                           100
@@ -2011,7 +2002,7 @@ const TargetScreen = ({ route, navigation }) => {
                     <Text
                       style={{
                         color:
-                          Math.floor(
+                          Math.round(
                             (parseInt(TDData?.achievment) /
                               parseInt(enqData?.achievment)) *
                             100
