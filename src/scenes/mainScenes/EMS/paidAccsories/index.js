@@ -64,7 +64,7 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
       );
       const titleNames = [];
       const dataObj = {};
-      
+
       accessorylist.forEach((item) => {
         let isSelected = false;
         let find = [];
@@ -104,9 +104,9 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
 
      removeExistingKeysFromAsync(titleNames);
     }, [])
-    
+
     const removeExistingKeysFromAsync = async (keys) => {
-        
+
         await AsyncStorage.multiRemove(keys);
     }
 
@@ -126,7 +126,7 @@ try {
     if (itemExists === -1) {
         console.log("exis??????? DATA NA: ", existingData, ' :key: ', key);
         data = [item];
-        
+
     } else {
         console.log("exis??????? DATA AV: ", existingData, ' :key: ', key);
 
@@ -134,6 +134,7 @@ try {
     }
 
     console.log("exis??????? final: ", key);
+    const uniqueTags = [];
     data.map((item) => {
         const findItem = uniqueTags.find((x) => x.id === item.id);
         if (!findItem) uniqueTags.push(item);
