@@ -38,12 +38,14 @@ export const DropComponent = ({
     const [dropDownKey, setDropDownKey] = useState("");
     const [dropDownTitle, setDropDownTitle] = useState("Select Data");
     const [dataForDropDown, setDataForDropDown] = useState([]);
+    const [isSubmitPress, setIsSubmitPress] = useState(false);
 
     const reasonInLowerCase = reason.replace(/\s/g, "").toLowerCase();
 
 
     const showDropDownModelMethod = (key, headerText) => {
         Keyboard.dismiss();
+        setIsSubmitPress(true);
 
         switch (key) {
             case "DROP_REASON":
@@ -78,120 +80,156 @@ export const DropComponent = ({
     };
 
     return (
+      <View>
+        <DropDownComponant
+          visible={showDropDownModel}
+          headerTitle={dropDownTitle}
+          data={dataForDropDown}
+          onRequestClose={() => setShowDropDownModel(false)}
+          selectedItems={(item) => {
+            if (dropDownKey === "DROP_REASON") {
+              setReason(item.name);
+            } else if (dropDownKey === "DROP_SUB_REASON") {
+              setSubReason(item.name);
+            }
+            setShowDropDownModel(false);
+          }}
+        />
         <View>
+          <DropDownSelectionItem
+            label={"Drop Reasons*"}
+            value={reason}
+            onPress={() =>
+              showDropDownModelMethod("DROP_REASON", "Drop Reason")
+            }
+          />
+          <Text style={GlobalStyle.underline}></Text>
 
-            <DropDownComponant
-                visible={showDropDownModel}
-                headerTitle={dropDownTitle}
-                data={dataForDropDown}
-                onRequestClose={() => setShowDropDownModel(false)}
-                selectedItems={(item) => {
-                    if (dropDownKey === "DROP_REASON") {
-                        setReason(item.name)
-                    } else if (dropDownKey === "DROP_SUB_REASON") {
-                        setSubReason(item.name)
-                    }
-                    setShowDropDownModel(false);
-                }}
-            />
-            <View>
+          {
+            //reasonInLowerCase === lostToCompetitor || reasonInLowerCase === lostToCoDealer ||
+            reasonInLowerCase === NoProperResponse ||
+            reasonInLowerCase === casualEnquiry ||
+            reasonInLowerCase == lostToSameDealer ? (
+              <View>
                 <DropDownSelectionItem
-                    label={"Drop Reasons"}
-                    value={reason}
-                    onPress={() =>
-                        showDropDownModelMethod("DROP_REASON", "Drop Reason")
-                    }
+                  label={"Drop Sub Reason"}
+                  value={subReason}
+                  onPress={() =>
+                    showDropDownModelMethod(
+                      "DROP_SUB_REASON",
+                      "Drop Sub Reason"
+                    )
+                  }
                 />
-                <Text style={GlobalStyle.underline}></Text>
+                {/* <Text style={GlobalStyle.underline}></Text> */}
 
-                {(
-                    //reasonInLowerCase === lostToCompetitor || reasonInLowerCase === lostToCoDealer || 
-                reasonInLowerCase === NoProperResponse || reasonInLowerCase === casualEnquiry || reasonInLowerCase == lostToSameDealer) ? (
-                    <View>
-                        <DropDownSelectionItem
-                            label={"Drop Sub Reason"}
-                            value={subReason}
-                            onPress={() => showDropDownModelMethod("DROP_SUB_REASON", "Drop Sub Reason")}
-                        />
-                        <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                ) : null}
+                <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && reason === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text>
+              </View>
+            ) : null
+          }
 
-                {
-                //reasonInLowerCase === lostToCompetitor || 
-                reasonInLowerCase === lostToUsedCarsFromCoDelear || reasonInLowerCase === lostToCometitorName ? (
-                    <View>
-                        <TextinputComp
-                            style={styles.textInputStyle}
-                            value={brandName}
-                            label={"Brand Name"}
-                            maxLength={50}
-                            onChangeText={(text) => setBrandName(text)}
-                        />
-                        <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                ) : null}
-
-                {reasonInLowerCase === lostToCompetitor || reasonInLowerCase === lostToUsedCarsFromCoDelear || reasonInLowerCase === lostToCoDealer || reasonInLowerCase === lostToCometitorName ? (
-                    <View>
-                        <TextinputComp
-                            style={styles.textInputStyle}
-                            value={dealerName}
-                            label={"Dealer Name"}
-                            maxLength={50}
-                            onChangeText={(text) => setDealerName(text)}
-                        />
-                        <Text style={GlobalStyle.underline}></Text>
-                        <TextinputComp
-                            style={styles.textInputStyle}
-                            value={location}
-                            label={"Location"}
-                            maxLength={50}
-                            onChangeText={(text) => setLocation(text)}
-                        />
-                        <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                ) : null}
-
-                {reasonInLowerCase === lostToCompetitor || reasonInLowerCase === lostToUsedCarsFromCoDelear || reasonInLowerCase === lostToCoDealer || reasonInLowerCase === lostToCometitorName ? (
-                    <View>
-                        <TextinputComp
-                            style={styles.textInputStyle}
-                            value={model}
-                            label={"Model"}
-                            maxLength={50}
-                            onChangeText={(text) => setModel(text)}
-                        />
-                        <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                ) : null}
-
-                {reasonInLowerCase === lostToCometitorName ? (
-                    <View>
-                        <TextinputComp
-                            style={styles.textInputStyle}
-                            value={priceDiff}
-                            label={"Price Diffrencess"}
-                            maxLength={50}
-                            onChangeText={(text) =>
-                                setPriceDiff(text)
-                            }
-                        />
-                        <Text style={GlobalStyle.underline}></Text>
-                    </View>
-                ) : null}
-
+          {
+            //reasonInLowerCase === lostToCompetitor ||
+            reasonInLowerCase === lostToUsedCarsFromCoDelear ||
+            reasonInLowerCase === lostToCometitorName ? (
+              <View>
                 <TextinputComp
-                    style={styles.textInputStyle}
-                    value={remarks}
-                    label={"Remarks"}
-                    maxLength={50}
-                    onChangeText={(text) => setRemarks(text)}
+                  style={styles.textInputStyle}
+                  value={brandName}
+                  label={"Brand Name"}
+                  maxLength={50}
+                  onChangeText={(text) => setBrandName(text)}
                 />
                 <Text style={GlobalStyle.underline}></Text>
+              </View>
+            ) : null
+          }
+
+          {reasonInLowerCase === lostToCompetitor ||
+          reasonInLowerCase === lostToUsedCarsFromCoDelear ||
+          reasonInLowerCase === lostToCoDealer ||
+          reasonInLowerCase === lostToCometitorName ? (
+            <View>
+              <TextinputComp
+                style={styles.textInputStyle}
+                value={dealerName}
+                label={"Dealer Name"}
+                maxLength={50}
+                onChangeText={(text) => setDealerName(text)}
+              />
+              <Text style={GlobalStyle.underline}></Text>
+              <TextinputComp
+                style={styles.textInputStyle}
+                value={location}
+                label={"Location"}
+                maxLength={50}
+                onChangeText={(text) => setLocation(text)}
+              />
+              <Text style={GlobalStyle.underline}></Text>
             </View>
+          ) : null}
+
+          {reasonInLowerCase === lostToCompetitor ||
+          reasonInLowerCase === lostToUsedCarsFromCoDelear ||
+          reasonInLowerCase === lostToCoDealer ||
+          reasonInLowerCase === lostToCometitorName ? (
+            <View>
+              <TextinputComp
+                style={styles.textInputStyle}
+                value={model}
+                label={"Model"}
+                maxLength={50}
+                onChangeText={(text) => setModel(text)}
+              />
+              <Text style={GlobalStyle.underline}></Text>
+            </View>
+          ) : null}
+
+          {reasonInLowerCase === lostToCometitorName ? (
+            <View>
+              <TextinputComp
+                style={styles.textInputStyle}
+                value={priceDiff}
+                label={"Price Diffrencess"}
+                maxLength={50}
+                onChangeText={(text) => setPriceDiff(text)}
+              />
+              <Text style={GlobalStyle.underline}></Text>
+            </View>
+          ) : null}
+
+          <TextinputComp
+            style={styles.textInputStyle}
+            value={remarks}
+            label={"Remarks*"}
+            maxLength={50}
+            onChangeText={(text) => setRemarks(text)}
+          />
+          {/* <Text style={GlobalStyle.underline}></Text> */}
+          <Text
+            style={[
+              GlobalStyle.underline,
+              {
+                backgroundColor:
+                  isSubmitPress && remarks === ""
+                    ? "red"
+                    : "rgba(208, 212, 214, 0.7)",
+              },
+            ]}
+          ></Text>
         </View>
-    )
+      </View>
+    );
 }
 
 const styles = StyleSheet.create({
