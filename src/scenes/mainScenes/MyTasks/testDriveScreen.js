@@ -357,6 +357,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 }
             }
             setIsRecordEditable(false);
+            updateTaskDetails(selector.test_drive_appointment_details_response)
         }
     }, [selector.test_drive_appointment_details_response]);
 
@@ -423,7 +424,7 @@ const TestDriveScreen = ({ route, navigation }) => {
 
         if (selector.drivers_list.length > 0 && taskDetailsObj.driverId) {
             const filterAry = selector.drivers_list.filter(
-                (object) => object.id == taskDetailsObj.driverId
+                (object) => object.id === taskDetailsObj.driverId
             );
             if (filterAry.length > 0) {
                 driverName = filterAry[0].name;
@@ -1179,8 +1180,6 @@ const TestDriveScreen = ({ route, navigation }) => {
                                         label={"Customer Address"}
                                         multiline={true}
                                         numberOfLines={4}
-                                        editable={isRecordEditable}
-                                        disabled={!isRecordEditable}
                                         onChangeText={(text) => setCustomerAddress(text)}
                                     />
                                     <Text style={GlobalStyle.underline}></Text>
@@ -1200,13 +1199,13 @@ const TestDriveScreen = ({ route, navigation }) => {
                                 <RadioTextItem
                                     label={"Yes"}
                                     value={"Yes"}
-                                    status={customerHavingDrivingLicense === 1 ? true : false}
+                                    status={customerHavingDrivingLicense === 1}
                                     onPress={() => setCustomerHavingDrivingLicense(1)}
                                 />
                                 <RadioTextItem
                                     label={"No"}
                                     value={"No"}
-                                    status={customerHavingDrivingLicense === 2 ? true : false}
+                                    status={customerHavingDrivingLicense === 2}
                                     onPress={() => setCustomerHavingDrivingLicense(2)}
                                 />
                             </View>
@@ -1467,12 +1466,12 @@ const styles = StyleSheet.create({
     space: {
         height: 10,
     },
-    view1: {
-        marginVertical: 30,
-        flexDirection: "row",
-        justifyContent: "space-evenly",
-        alignItems: "center",
-    },
+    // view1: {
+    //     marginVertical: 30,
+    //     flexDirection: "row",
+    //     justifyContent: "space-evenly",
+    //     alignItems: "center",
+    // },
     chooseAddressTextStyle: {
         padding: 10,
         justifyContent: "center",

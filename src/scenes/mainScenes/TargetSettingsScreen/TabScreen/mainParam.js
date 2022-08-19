@@ -865,7 +865,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                 (ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate) ? setRetail(ownData.retailTarget.toString()) : setRetail('')
                                 setOpenRetail(true)
                             } else showToast('Access Denied')
-                            
+
                         }}>
                             <Text style={styles.textInput}>{ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.retailTarget : 0}</Text>
                         </TouchableOpacity>
@@ -1000,7 +1000,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                     setOpenRetail(true)
                                 }
                                 else showToast('Access Denied')
-                               
+
                             }}>
                                 <Text style={styles.textInput}>{ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.retailTarget : 0}</Text>
                             </TouchableOpacity>
@@ -1050,7 +1050,7 @@ const MainParamScreen = ({ route, navigation }) => {
 
                         <View style={styles.textBoxWrap}>
                             <View style={styles.textBox2}>
-                                <Text style={styles.textInput}>{ownData.exchange !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.exWarranty : 0}</Text>
+                                <Text style={styles.textInput}>{ownData.exchange !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate ? ownData.exchange : 0}</Text>
                             </View>
                         </View>
 
