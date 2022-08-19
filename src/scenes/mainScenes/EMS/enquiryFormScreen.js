@@ -1129,52 +1129,76 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("Please fill district ");
       return;
     }
-    if (
-      selector.p_pincode.length == 0 ||
-      selector.p_urban_or_rural.length == 0 ||
-      selector.p_houseNum.length == 0 ||
-      selector.p_streetName.length == 0 ||
-      selector.p_village.length == 0 ||
-      selector.p_mandal.length == 0 ||
-      selector.p_city.length == 0 ||
-      selector.p_district.length == 0 ||
-      selector.p_state.length == 0
-    ) {
-      scrollToPos(14);
-      setOpenAccordian("3");
-      showToast("Please fill permanent address ");
-      return;
-    }
-    //  if (selector.p_pincode.length == 0) {
-    //    scrollToPos(14);
-    //    setOpenAccordian("3");
-    //    showToast("Please fill Permanent pincode");
-    //    return;
-    //  }
-    //   if (selector.p_houseNum.length == 0) {
-    //     scrollToPos(14);
-    //     setOpenAccordian("3");
-    //     showToast("Please fill Permanent house number");
-    //     return;
-    //   }
-    // if (selector.p_streetName.length == 0) {
+    // if (
+    //   selector.p_pincode.length == 0 ||
+    //   selector.p_urban_or_rural.length == 0 ||
+    //   selector.p_houseNum.length == 0 ||
+    //   selector.p_streetName.length == 0 ||
+    //   selector.p_village.length == 0 ||
+    //   selector.p_mandal.length == 0 ||
+    //   selector.p_city.length == 0 ||
+    //   selector.p_district.length == 0 ||
+    //   selector.p_state.length == 0
+    // ) {
     //   scrollToPos(14);
     //   setOpenAccordian("3");
-    //   showToast("Please fill Permanent street");
+    //   showToast("Please fill permanent address ");
     //   return;
     // }
-    //  if (selector.p_village.length == 0) {
-    //    scrollToPos(14);
-    //    setOpenAccordian("3");
-    //    showToast("Please fill Permanent village");
-    //    return;
-    //  }
-    //   if (selector.p_mandal.length == 0) {
-    //     scrollToPos(14);
-    //     setOpenAccordian("3");
-    //     showToast("Please fill Permanent mandal");
-    //     return;
-    //   }
+     if (selector.p_pincode.length == 0) {
+       scrollToPos(14);
+       setOpenAccordian("3");
+       showToast("Please fill Permanent pincode");
+       return;
+     }
+      if (selector.p_urban_or_rural.length == 0) {
+        scrollToPos(14);
+        setOpenAccordian("3");
+        showToast("Please fill Permanent Urban or Rural");
+        return;
+      }
+      if (selector.p_houseNum.length == 0) {
+        scrollToPos(14);
+        setOpenAccordian("3");
+        showToast("Please fill Permanent house number");
+        return;
+      }
+    if (selector.p_streetName.length == 0) {
+      scrollToPos(14);
+      setOpenAccordian("3");
+      showToast("Please fill Permanent street");
+      return;
+    }
+     if (selector.p_village.length == 0) {
+       scrollToPos(14);
+       setOpenAccordian("3");
+       showToast("Please fill Permanent village");
+       return;
+     }
+      if (selector.p_mandal.length == 0) {
+        scrollToPos(14);
+        setOpenAccordian("3");
+        showToast("Please fill Permanent mandal");
+        return;
+      }
+      if (selector.p_city.length == 0) {
+        scrollToPos(14);
+        setOpenAccordian("3");
+        showToast("Please fill Permanent City");
+        return;
+      }
+      if (selector.p_district.length == 0) {
+        scrollToPos(14);
+        setOpenAccordian("3");
+        showToast("Please fill Permanent District");
+        return;
+      }
+      if (selector.p_state.length == 0) {
+        scrollToPos(14);
+        setOpenAccordian("3");
+        showToast("Please fill Permanent state");
+        return;
+      }
     
     // Model Selection
     // if (carModelsList.length == 0) {
@@ -3253,7 +3277,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   }
                 />
 
-                <DropDownSelectionItem
+                {/* <DropDownSelectionItem
                   label={"Enquiry Category"}
                   disabled={true}
                   value={selector.enquiry_category.length == 0 ? "Hot" : selector.enquiry_category}
@@ -3263,7 +3287,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       "Enquiry Category"
                     )
                   }
-                />
+                /> */}
 
                 <DropDownSelectionItem
                   label={"Buyer Type*"}
@@ -3415,7 +3439,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   value={selector.houseNum}
                   label={"H.No*"}
                   maxLength={50}
-                  keyboardType={"number-pad"}
+                  // keyboardType={"number-pad"}
                   onChangeText={(text) =>
                     dispatch(
                       setCommunicationAddress({ key: "HOUSE_NO", text: text })
@@ -3661,7 +3685,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <TextinputComp
                     style={styles.textInputStyle}
                     label={"H.No*"}
-                    keyboardType={"number-pad"}
+                    // keyboardType={"number-pad"}
                     maxLength={50}
                     value={selector.p_houseNum}
                     onChangeText={(text) =>
@@ -4849,7 +4873,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     style={styles.textInputStyle}
                     value={selector.a_reg_no}
                     label={"Reg. No."}
-                    maxLength={50}
+                    maxLength={15}
                     keyboardType={"default"}
                     autoCapitalize={"characters"}
                     onChangeText={(text) =>
