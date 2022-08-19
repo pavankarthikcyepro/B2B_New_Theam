@@ -24,7 +24,7 @@ export const getTaskDetailsApi = createAsyncThunk(
     const response = await client.get(URL.GET_TASK_DETAILS(taskId));
     const json = await response.json();
     console.log("TASK DTLS:", JSON.stringify(json));
-    
+
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -56,11 +56,11 @@ export const getEnquiryDetailsApi = createAsyncThunk("ENQUIRY_FOLLOW_UP_SLICE/ge
 
 export const getReasonList = createAsyncThunk("ENQUIRY_FOLLOW_UP_SLICE/getReasonList", async (payload: any, { rejectWithValue }) => {
   console.log("REASON URL:", URL.REASON_LIST(payload.orgId, payload.taskName));
-  
+
   const response = await client.get(URL.REASON_LIST(payload.orgId, payload.taskName));
   const json = await response.json()
   console.log("REASON: ", JSON.stringify(json));
-  
+
   if (!response.ok) {
     return rejectWithValue(json);
   }
@@ -208,6 +208,8 @@ const slice = createSlice({
     // Get Prebooking Details
     builder.addCase(getEnquiryDetailsApi.pending, (state, action) => {
       state.enquiry_details_response = null;
+      state.model = '';
+      state.varient = '';
     })
     builder.addCase(getEnquiryDetailsApi.fulfilled, (state, action) => {
       if (action.payload.dmsEntity) {
