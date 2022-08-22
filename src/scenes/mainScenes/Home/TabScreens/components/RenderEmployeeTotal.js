@@ -76,10 +76,8 @@ export const TotalView = (parameter) => {
     return (
         <View style={[styles.itemBox, {width: parameterType === 'Accessories' ? 65 : 50}]}>
             <Text
-                style={[styles.totalText1]}>{item ? Number(item.achievment) : 0}</Text>
-            <View style={{height: 1, backgroundColor: Colors.BLACK, 
-              // alignSelf: 'stretch'
-              }}/>
+                style={[styles.totalText]}>{item ? Number(item.achievment) : 0}</Text>
+            <View style={{height: 1, backgroundColor: Colors.BLACK, alignSelf: 'stretch'}}/>
             <Text
                 style={[styles.totalText, {width: parameterType === 'Accessories' ? 80 : 50}]}>{item ? Number(item.target) : 0}</Text>
         </View>
@@ -87,18 +85,6 @@ export const TotalView = (parameter) => {
 }
 
 const styles = StyleSheet.create({
-  itemBox: {
-    width: 50,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 2,
-  },
-  totalText1: {
-    color: "black",
-    fontSize: 12,
-    textAlign: "center",
-    textDecorationLine: "underline",
-  },
-  totalText: { color: "#FA03B9", fontSize: 12, textAlign: "center" },
-});
+    itemBox: {width: 50, height: 40, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 2},
+    totalText: {color: '#000000', fontSize: 12, textAlign: "center"},
+})
