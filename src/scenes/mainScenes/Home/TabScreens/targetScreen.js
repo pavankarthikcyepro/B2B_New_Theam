@@ -452,6 +452,11 @@ const TargetScreen = ({ route, navigation }) => {
   const [reoprtingManagerDropdownList, setReoprtingManagerDropdownList] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
 
+  const [isLevel2Available, setIsLevel2Available] = useState(false);
+  const [isLevel3Available, setIsLevel3Available] = useState(false);
+  const [isLevel4Available, setIsLevel4Available] = useState(false);
+  const [isLevel5Available, setIsLevel5Available] = useState(false);
+
   const getEmployeeListFromServer = async (user) => {
     // dispatch(getEmployeesList(424));
     // const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -740,6 +745,14 @@ const TargetScreen = ({ route, navigation }) => {
           </View>
         </View>
       </View>
+    )
+  }
+
+  const renderTotalView = () => {
+    return (
+        <View style={styles.totalView}>
+          <Text style={styles.totalText}>Total</Text>
+        </View>
     )
   }
 
@@ -1179,6 +1192,7 @@ const TargetScreen = ({ route, navigation }) => {
                                                           localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements = tempRawData;
                                                         }
                                                       }
+                                                      setIsLevel2Available(true);
                                                     }
                                                     setAllParameters([...localData])
                                                   })
@@ -1255,6 +1269,7 @@ const TargetScreen = ({ route, navigation }) => {
                                                                       localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements = tempRawData;
                                                                     }
                                                                   }
+                                                                  setIsLevel3Available(true);
                                                                 }
                                                                 setAllParameters([...localData])
                                                               })
@@ -1324,6 +1339,7 @@ const TargetScreen = ({ route, navigation }) => {
                                                                                   localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements = tempRawData;
                                                                                 }
                                                                               }
+                                                                              setIsLevel4Available(true);
                                                                             }
                                                                             setAllParameters([...localData])
                                                                           })
@@ -1393,6 +1409,7 @@ const TargetScreen = ({ route, navigation }) => {
                                                                                               localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].employeeTargetAchievements = tempRawData;
                                                                                             }
                                                                                           }
+                                                                                          setIsLevel5Available(true);
                                                                                         }
                                                                                         setAllParameters([...localData])
                                                                                       })
@@ -1478,34 +1495,35 @@ const TargetScreen = ({ route, navigation }) => {
                                                                                       )
                                                                                     })
                                                                                 }
+
+                                                                                {isLevel5Available && <View>{renderTotalView()}</View>}
                                                                               </>
                                                                           )
                                                                         })
                                                                     }
+                                                                    {isLevel4Available && <View>{renderTotalView()}</View>}
                                                                   </>
                                                               )
                                                             })
                                                         }
+                                                        {isLevel3Available && <View>{renderTotalView()}</View>}
                                                       </>
                                                   )
                                                 })
                                             }
-                                                <View style={{ marginTop: 20, marginBottom: 5, }}>
-                                                  <Text style={{ fontSize: 12, color: '#000', fontWeight: '500' }}>Total</Text>
-                                                </View>
+                                            {isLevel2Available && <View>{renderTotalView()}</View>}
                                           </>
                                       )
                                     })
                                 }
                                 {/* <=== INNER ITEM 1 TOTAL ===> */}
-                                    <View style={{ marginTop: 20, marginBottom: 5, }}>
-                                      <Text style={{ fontSize: 12, color: '#000', fontWeight: '500' }}>Total</Text>
-                                    </View>
+                                <View>{renderTotalView()}</View>
                               </>
                           )
                         })
                         }
                       </View>
+                      {/*RIGHT SIDE VIEW*/}
                       <View style={[{ width: '94%', minHeight: 40, flexDirection: 'column', paddingHorizontal: 5, }, item.isOpenInner && { backgroundColor: '#EEEEEE', borderRadius: 10, borderWidth: 1, borderColor: '#C62159', }]}>
                         <View style={{ width: '100%', minHeight: 40, flexDirection: 'row' }}>
                           {renderData(item, '#C62159')}
@@ -1551,22 +1569,43 @@ const TargetScreen = ({ route, navigation }) => {
                                                                                             )
                                                                                           })
                                                                                       }
+                                                                                      {isLevel5Available &&
+                                                                                          <View style={{flexDirection: 'row'}}>
+                                                                                            <RenderEmployeeTotal empId={innerItem5.empId}
+                                                                                                                 branchId={innerItem5.branchId} level={5}/>
+                                                                                          </View>
+                                                                                      }
                                                                                     </View>
                                                                                 )
                                                                               })
                                                                           }
+                                                                          {isLevel4Available &&
+                                                                              <View style={{flexDirection: 'row'}}>
+                                                                                <RenderEmployeeTotal empId={innerItem4.empId}
+                                                                                                     branchId={innerItem4.branchId} level={4}/>
+                                                                              </View>
+                                                                          }
                                                                         </View>
                                                                     )
                                                                   })
+                                                              }
+                                                              {isLevel3Available &&
+                                                                  <View style={{flexDirection: 'row'}}>
+                                                                    <RenderEmployeeTotal empId={innerItem3.empId}
+                                                                                         branchId={innerItem3.branchId} level={3}/>
+                                                                  </View>
                                                               }
                                                             </View>
                                                         )
                                                       })
                                                   }
 
-                                                      <View style={{ flexDirection: 'row' }}>
-                                                        <RenderEmployeeTotal empId={innerItem2.empId} branchId={innerItem2.branchId} level={2}/>
+                                                  {isLevel2Available &&
+                                                      <View style={{flexDirection: 'row'}}>
+                                                          <RenderEmployeeTotal empId={innerItem2.empId}
+                                                                         branchId={innerItem2.branchId} level={2}/>
                                                       </View>
+                                                  }
 
                                                 </View>
                                             )
@@ -1594,7 +1633,7 @@ const TargetScreen = ({ route, navigation }) => {
               {selector.totalParameters.length > 0 &&
                 <View style={{ flexDirection: 'row', height: 40, backgroundColor: Colors.DARK_GRAY }}>
                   <View style={{ width: '8%', minHeight: 40, justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
-                    <Text style={[styles.totalText, { textAlign: 'center' }]}>Grand Total</Text>
+                    <Text style={[styles.grandTotalText, { textAlign: 'center' }]}>Grand Total</Text>
                   </View>
                   <View style={{ width: '92%', minHeight: 40, flexDirection: 'column', marginRight: 5, paddingHorizontal: 5, }}>
                     <View style={{ width: '92%', minHeight: 40, flexDirection: 'row' }}>
@@ -2239,5 +2278,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
   },
-  totalText: { color: '#fff', fontWeight: 'bold', fontSize: 15 }
+  grandTotalText: { color: '#fff', fontWeight: 'bold', fontSize: 15 },
+  totalView: {minHeight: 40, alignItems: 'center', justifyContent: 'center'},
+  totalText: { fontSize: 12, color: '#000', fontWeight: '500', textAlign: 'center' }
 })
