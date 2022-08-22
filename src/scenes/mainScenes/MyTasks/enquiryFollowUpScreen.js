@@ -91,6 +91,9 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       case "PRE_BOOKING_FOLLOW_UP":
         title = "Pre Booking Follow Up";
         break;
+        case "BOOKING_FOLLOW_UP":
+          title ="Booking follow up";
+          break;
     }
 
     navigation.setOptions({

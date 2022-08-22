@@ -427,15 +427,10 @@ const BookingScreen = ({ navigation }) => {
                                     leadStage={item.leadStage}
                                     enqCat={item.enquiryCategory}
                                     onItemPress={() =>
-                                      navigation.navigate(
-                                        AppNavigator.EmsStackIdentifiers
-                                          .task360,
                                         {
-                                          universalId: item.universalId,
-                                          mobileNo: item.phone,
-                                          leadStatus: item.leadStatus,
-                                        }
-                                      )
+                                                console.log("PBK: ", JSON.stringify(item));
+                                                navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId, leadStatus: item.leadStatus })
+                                            }
                                     }
                                     onDocPress={() => {
                                       console.log("BK DTLS:", item);

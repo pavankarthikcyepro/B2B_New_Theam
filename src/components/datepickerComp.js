@@ -53,7 +53,7 @@ const DatePickerComponent = ({ visible = false, onRequestClose, value, mode = "d
                                 Done
                             </Button>
                         </View>
-                        <DateTimePicker
+                        <DateTimePicker 
                             testID="dateTimePicker"
                             value={value}
                             mode={mode}
@@ -64,6 +64,7 @@ const DatePickerComponent = ({ visible = false, onRequestClose, value, mode = "d
                             maximumDate={maximumDate}
                             minimumDate={minimumDate}
                             textColor={Colors.RED}
+                           
                             
                         />
                     </View>
