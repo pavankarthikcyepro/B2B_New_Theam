@@ -25,35 +25,13 @@ export const RenderEmployeeParameters = (parameter) => {
     const elementColor = getColor(Number(selectedParameter.achievment), Number(selectedParameter.target));
 
     return (
-      <View
-        style={[
-          styles.itemBox,
-          { width: parameterType === "Accessories" ? 60 : 50 },
-        ]}
-      >
-        <Text style={{ color: "black", textDecorationLine: "underline" }}>
-          {Number(selectedParameter.achievment)}
-        </Text>
-        <View
-          style={{
-            height: 1,
-            backgroundColor: elementColor,
-            // alignSelf: 'stretch'
-          }}
-        />
-        <Text
-          style={[
-            styles.totalText,
-            {
-              width: parameterType === "Accessories" ? 80 : 50,
-              color: "#FA03B9",
-            },
-          ]}
-        >
-          {Number(selectedParameter.target)}
-        </Text>
-      </View>
-    );
+        <View style={[styles.itemBox, {width: parameterType === 'Accessories' ? 60 : 50}]}>
+            <Text style={{color: elementColor}}>{Number(selectedParameter.achievment)}</Text>
+            <View style={{height: 1, backgroundColor: elementColor, alignSelf: 'stretch'}}/>
+            <Text
+                style={[styles.totalText, {width: parameterType === 'Accessories' ? 80 : 50, color: elementColor}]}>{Number(selectedParameter.target)}</Text>
+        </View>
+    )
 }
 
 
