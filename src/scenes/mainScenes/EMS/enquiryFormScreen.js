@@ -999,6 +999,30 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dispatch(updateEnquiryDetailsApiAutoSave(payload))
   }
 
+  const checkModelSelection = () => {
+    let error = false;
+    for (let i = 0; i < carModelsList.length; i++) {
+      if (carModelsList[i].model.length == 0) {
+        error = true;
+        showToast("Please fill model");
+        break;
+      } else if (carModelsList[i].variant.length == 0) {
+        error = true;
+        showToast("Please fill model variant");
+        break;
+      } else if (carModelsList[i].color.length == 0) {
+        error = true;
+        showToast("Please fill model Color");
+        break;
+      }
+    }
+
+    if (error) {
+      return true;
+    }
+    return false;
+  }
+
   const submitClicked = async () => {
     //Personal Intro
     setIsSubmitPress(true)
@@ -1207,51 +1231,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   showToast("Please fill model details");
     //   return;
     // }
-    if (carModelsList[0].model.length == 0) {
+
+    if(checkModelSelection()){
       scrollToPos(4);
       setOpenAccordian("4");
-      showToast("Please fill model");
       return;
     }
-    if (carModelsList[0].variant.length == 0) {
-      scrollToPos(4);
-      setOpenAccordian("4");
-      showToast("Please fill model variant");
-      return;
-    }
-     if (carModelsList[0].color.length == 0) {
-       scrollToPos(4);
-       setOpenAccordian("4");
-       showToast("Please fill model Color");
-       return;
-     }
-
-    let tempCars = [];
-    tempCars = carModelsList.filter((item) => {
-      return item.color !== '' &&
-        item.fuel !== '' &&
-        // item.id !== 0 &&
-        item.model !== "" &&
-        item.transimmisionType !== '' &&
-        item.variant !== ''
-    })
-
-    
-
-    
 
     let primaryTempCars = []
     primaryTempCars = carModelsList.filter((item) => {
       return item.isPrimary === 'Y' })
 
-    console.log("MODELS: ", tempCars, carModelsList);
-    if (tempCars.length < carModelsList.length) {
-      scrollToPos(4)
-      setOpenAccordian('4')
-      showToast("Please fill model details");
-      return;
-    }
-    
 
     if (!primaryTempCars.length > 0) {
       scrollToPos(4)
@@ -3827,6 +3817,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 {/* <View style={{marginHorizontal:5}}> */}
                 <TouchableOpacity
                   onPress={() => {
+                    
+                    if (checkModelSelection()) {
+                      scrollToPos(4);
+                      setOpenAccordian("4");
+                      return;
+                    }
+
                     const carmodeldata = {
                       "color": '',
                       "fuel": '',
@@ -3836,11 +3833,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       "variant": '',
                       "isPrimary": 'N'
                     }
-                    
+                      
                     let arr = [...carModelsList]
                     arr.push(carmodeldata)
                     setCarModelsList(arr)
-                    //selector.dmsLeadProducts = [...selector.dmsLeadProducts, carmodeldata]
+                    //selector.dmsLeadProducts = [...selector.dmsLeadProducts, carmodeldata]      
                   }}
                   style={{ width: '40%', margin: 5, borderRadius: 5, backgroundColor: Colors.PINK, height: 40, alignSelf: 'flex-end', alignContent: 'flex-end', alignItems: 'center', justifyContent: 'center' }}>
                   <Text style={{ fontSize: 16, textAlign: 'center', color: Colors.WHITE, }}>Add Model</Text>
