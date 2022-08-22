@@ -18,7 +18,8 @@ const mytasksIdentifires = {
     homevisit: "HOME_VISIT",
     enquiryfollowup: "ENQUIRY_FOLLOW_UP",
     preenquiryfollowup: "PRE_ENQUIRY_FOLLOW_UP",
-    createenquiry: "CREATE_ENQUIRY"
+    createenquiry: "CREATE_ENQUIRY",
+    bookingfollowup:'BOOKING_FOLLOW_UP'
 }
 
 const TaskThreeSixtyScreen = ({ route, navigation }) => {
@@ -143,6 +144,10 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                 navigationId = AppNavigator.EmsStackIdentifiers.enquiryFollowUp;
                 taskNameNew = 'Pre Enquiry Followup'
                 break;
+                case "bookingfollowup":
+                    navigationId = AppNavigator.EmsStackIdentifiers.enquiryFollowUp;
+                    taskNameNew = "Booking Followup"
+                    break;
             case "prebookingfollowup":
                 navigationId = AppNavigator.EmsStackIdentifiers.enquiryFollowUp;
                 taskNameNew = 'Prebooking Followup'

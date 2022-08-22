@@ -404,42 +404,54 @@ const BookingScreen = ({ navigation }) => {
                             }
 
                             return (
-                                <>
-                                    <View>
-                                        <MyTaskNewItem
-                                            from="BOOKING"
-                                            name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
-                                            navigator={navigation}
-                                            uniqueId={item.leadId} 
-                                            type='Book'
-                                            status={""}
-                                            created={item.modifiedDate}
-                                            dmsLead={item.createdBy}
-                                            phone={item.phone}
-                                            source={item.enquirySource}
-                                            model={item.model}
-                                            leadStatus={item.leadStatus}
-                                            enqCat={item.enquiryCategory}
-                                            onItemPress={() =>
-                                                navigation.navigate(
-                                                    AppNavigator.EmsStackIdentifiers.task360,
-                                                    { universalId: item.universalId, mobileNo: item.phone }
-                                                )
-                                            }
-                                            onDocPress={() => {
-                                                console.log("BK DTLS:", item);
-                                                navigation.navigate(
-                                                    AppNavigator.EmsStackIdentifiers.bookingForm,
-                                                    { universalId: item.universalId }
-                                                )
-                                                // navigation.navigate(
-                                                //     AppNavigator.EmsStackIdentifiers.bookingForm                                            
-                                                // )
-                                                // alert(AppNavigator.EmsStackIdentifiers.bookingForm)
-                                            }}
-                                        />
-                                    </View>
-                                </>
+                              <>
+                                <View>
+                                  <MyTaskNewItem
+                                    from="BOOKING"
+                                    name={
+                                      getFirstLetterUpperCase(item.firstName) +
+                                      " " +
+                                      getFirstLetterUpperCase(item.lastName)
+                                    }
+                                    navigator={navigation}
+                                    uniqueId={item.leadId}
+                                    type="Book"
+                                    status={""}
+                                    created={item.modifiedDate}
+                                    dmsLead={item.createdBy}
+                                    phone={item.phone}
+                                    source={item.enquirySource}
+                                    model={item.model}
+                                    leadStatus={item.leadStatus}
+                                    needStatus={'YES'}
+                                    leadStage={item.leadStage}
+                                    enqCat={item.enquiryCategory}
+                                    onItemPress={() =>
+                                      navigation.navigate(
+                                        AppNavigator.EmsStackIdentifiers
+                                          .task360,
+                                        {
+                                          universalId: item.universalId,
+                                          mobileNo: item.phone,
+                                          leadStatus: item.leadStatus,
+                                        }
+                                      )
+                                    }
+                                    onDocPress={() => {
+                                      console.log("BK DTLS:", item);
+                                      navigation.navigate(
+                                        AppNavigator.EmsStackIdentifiers
+                                          .bookingForm,
+                                        { universalId: item.universalId }
+                                      );
+                                      // navigation.navigate(
+                                      //     AppNavigator.EmsStackIdentifiers.bookingForm
+                                      // )
+                                      // alert(AppNavigator.EmsStackIdentifiers.bookingForm)
+                                    }}
+                                  />
+                                </View>
+                              </>
                             );
                         }}
                     />
