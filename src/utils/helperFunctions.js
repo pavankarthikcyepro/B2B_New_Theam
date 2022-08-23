@@ -182,19 +182,21 @@ export const convertToTime = (isoDate) => {
 };
 
 export const convertToDate = (isoDate, format = "DD/MM/YYYY") => {
-  const date = moment(isoDate).format(format);
+  const date = moment(isoDate).format(format)
   return date;
 };
 
 export const convertTimeStampToDateString = (timeStamp, format) => {
   if (!timeStamp || timeStamp.length === 0) return "";
   format = format ? format : "DD/MM/YYYY h:mm a";
+  
   const date = moment(Number(timeStamp)).format(format);
+  
   return date;
 };
 
 export const convertDateStringToMilliseconds = (dateString) => {
-  console.log("dateString: ", dateString);
+  console.log("dateString:-=-=-=-=-> ", dateString);
   if (!dateString) {
     return null;
   }
