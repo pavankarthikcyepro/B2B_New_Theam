@@ -126,6 +126,7 @@ import URL from "../../../networking/endpoints";
 import uuid from "react-native-uuid";
 import { DropComponent } from "./components/dropComp";
 import * as AsyncStorage from "../../../asyncStore";
+import moment from "moment";
 
 const rupeeSymbol = "\u20B9";
 
@@ -350,6 +351,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         getAsyncstoreData();
         getBranchId();
         getCustomerType();
+        
 
         BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
         // return () => {
@@ -815,6 +817,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             setShowSubmitDropBtn(false)
             setIsEdit(false)
             setIsReciptDocUpload(false)
+            console.log("MAXXXXX=>>>>", selector.maxDate);
             console.log("DDDDD", JSON.stringify(selector.pre_booking_details_response));
             let dmsContactOrAccountDto;
             if (
@@ -2753,737 +2756,1016 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     }
 
     return (
-        <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
-            <ImagePickerComponent
-                visible={selector.showImagePicker}
-                keyId={selector.imagePickerKeyId}
-                onDismiss={() => dispatch(setImagePicker(""))}
-                selectedImage={(data, keyId) => {
-                    console.log("imageObj: ", data, keyId);
-                    uploadSelectedImage(data, keyId);
-                }}
-            // onDismiss={() => dispatch(setImagePicker(""))}
-            />
+      <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
+        <ImagePickerComponent
+          visible={selector.showImagePicker}
+          keyId={selector.imagePickerKeyId}
+          onDismiss={() => dispatch(setImagePicker(""))}
+          selectedImage={(data, keyId) => {
+            console.log("imageObj: ", data, keyId);
+            uploadSelectedImage(data, keyId);
+          }}
+          // onDismiss={() => dispatch(setImagePicker(""))}
+        />
 
-            <DropDownComponant
-                visible={showDropDownModel}
-                headerTitle={dropDownTitle}
-                data={dataForDropDown}
-                multiple={showMultipleDropDownData}
-                onRequestClose={() => setShowDropDownModel(false)}
-                selectedItems={(item) => {
-                    setShowDropDownModel(false);
-                    setShowMultipleDropDownData(false);
-                    if (dropDownKey === "MODEL") {
-                        updateVariantModelsData(item.name, false);
-                    } else if (dropDownKey === "VARIENT") {
-                        console.log("SELECT $$$$$$$", item,
-                            selectedCarVarientsData.varientList,
-                            selectedModelId);
-                        updateColorsDataForSelectedVarient(
-                            item.name,
-                            selectedCarVarientsData.varientList,
-                            selectedModelId
-                        );
-                    } else if (dropDownKey === "INSURANCE_TYPE") {
-                        setSelectedInsurencePrice(item.cost);
-                    } else if (dropDownKey === "WARRANTY") {
-                        setSelectedWarrentyPrice(Number(item.cost));
-                    } else if (dropDownKey === "DROP_REASON") {
-                        const payload = {
-                            bu: userData.orgId,
-                            dropdownType: "PreBook_Lost_Com_Sub_Reas",
-                            parentId: item.id,
-                        };
-                        dispatch(getDropSubReasonDataApi(payload));
-                    } else if (dropDownKey === "INSURENCE_ADD_ONS") {
-                        let totalCost = 0;
-                        let names = "";
-                        let insurenceAddOns = [];
-                        console.log("ADD-ON ITEM:", JSON.stringify(item));
-                        if (item.length > 0) {
-                            item.forEach((obj, index) => {
-                                totalCost += Number(obj.cost);
-                                names += obj.name + (index + 1 < item.length ? ", " : "");
-                                insurenceAddOns.push({
-                                    insuranceAmount: obj.cost,
-                                    insuranceAddonName: obj.name,
-                                });
-                            });
-                        }
-                        setSelectedAddOnsPrice(totalCost);
-                        setSelectedInsurenceAddons([...insurenceAddOns]);
-                        dispatch(
-                            setDropDownData({ key: dropDownKey, value: names, id: "" })
-                        );
-                        return;
-                    }
-                    dispatch(
-                        setDropDownData({ key: dropDownKey, value: item.name, id: item.id })
-                    );
-                }}
-            />
+        <DropDownComponant
+          visible={showDropDownModel}
+          headerTitle={dropDownTitle}
+          data={dataForDropDown}
+          multiple={showMultipleDropDownData}
+          onRequestClose={() => setShowDropDownModel(false)}
+          selectedItems={(item) => {
+            setShowDropDownModel(false);
+            setShowMultipleDropDownData(false);
+            if (dropDownKey === "MODEL") {
+              updateVariantModelsData(item.name, false);
+            } else if (dropDownKey === "VARIENT") {
+              console.log(
+                "SELECT $$$$$$$",
+                item,
+                selectedCarVarientsData.varientList,
+                selectedModelId
+              );
+              updateColorsDataForSelectedVarient(
+                item.name,
+                selectedCarVarientsData.varientList,
+                selectedModelId
+              );
+            } else if (dropDownKey === "INSURANCE_TYPE") {
+              setSelectedInsurencePrice(item.cost);
+            } else if (dropDownKey === "WARRANTY") {
+              setSelectedWarrentyPrice(Number(item.cost));
+            } else if (dropDownKey === "DROP_REASON") {
+              const payload = {
+                bu: userData.orgId,
+                dropdownType: "PreBook_Lost_Com_Sub_Reas",
+                parentId: item.id,
+              };
+              dispatch(getDropSubReasonDataApi(payload));
+            } else if (dropDownKey === "INSURENCE_ADD_ONS") {
+              let totalCost = 0;
+              let names = "";
+              let insurenceAddOns = [];
+              console.log("ADD-ON ITEM:", JSON.stringify(item));
+              if (item.length > 0) {
+                item.forEach((obj, index) => {
+                  totalCost += Number(obj.cost);
+                  names += obj.name + (index + 1 < item.length ? ", " : "");
+                  insurenceAddOns.push({
+                    insuranceAmount: obj.cost,
+                    insuranceAddonName: obj.name,
+                  });
+                });
+              }
+              setSelectedAddOnsPrice(totalCost);
+              setSelectedInsurenceAddons([...insurenceAddOns]);
+              dispatch(
+                setDropDownData({ key: dropDownKey, value: names, id: "" })
+              );
+              return;
+            }
+            dispatch(
+              setDropDownData({
+                key: dropDownKey,
+                value: item.name,
+                id: item.id,
+              })
+            );
+          }}
+        />
 
-            <DatePickerComponent
-                visible={selector.showDatepicker}
-                mode={"date"}
-                value={new Date(Date.now())}
-                minimumDate={selector.minDate}
-                maximumDate={selector.maxDate}
-                onChange={(event, selectedDate) => {
-                    console.log("date: ", selectedDate);
-                    if (Platform.OS === "android") {
-                        if (!selectedDate) {
-                            dispatch(updateSelectedDate({ key: "NONE", text: selectedDate }));
-                        } else {
-                            dispatch(updateSelectedDate({ key: "", text: selectedDate }));
-                        }
-                    } else {
-                        dispatch(updateSelectedDate({ key: "", text: selectedDate }));
-                    }
-                }}
-                onRequestClose={() => dispatch(setDatePicker())}
-            />
+        <DatePickerComponent
+          visible={selector.showDatepicker}
+          mode={"date"}
+          value={new Date(Date.now())}
+          minimumDate={selector.minDate}
+        //   minimumDate={selector.minDate}
+          maximumDate={selector.maxDate}
+          onChange={(event, selectedDate) => {
+            console.log("date: ", selectedDate);
+            if (Platform.OS === "android") {
+              if (!selectedDate) {
+                dispatch(
+                  updateSelectedDate({ key: "NONE", text: selectedDate })
+                );
+              } else {
+                dispatch(updateSelectedDate({ key: "", text: selectedDate }));
+              }
+            } else {
+              dispatch(updateSelectedDate({ key: "", text: selectedDate }));
+            }
+          }}
+          onRequestClose={() => dispatch(setDatePicker())}
+        />
 
-            <KeyboardAvoidingView
-                style={{
-                    flex: 1,
-                    flexDirection: "column",
-                    justifyContent: "center",
-                }}
-                behavior={Platform.OS == "ios" ? "padding" : "height"}
-                enabled
-                keyboardVerticalOffset={100}
-            >
-                {/* // 1. Customer Details */}
-                <ScrollView
-                    automaticallyAdjustContentInsets={true}
-                    bounces={true}
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={{ paddingVertical: 10, paddingHorizontal: 5 }}
-                    keyboardShouldPersistTaps={"handled"}
-                    style={{ flex: 1 }}
-                    ref={scrollRef}
+        <KeyboardAvoidingView
+          style={{
+            flex: 1,
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+          behavior={Platform.OS == "ios" ? "padding" : "height"}
+          enabled
+          keyboardVerticalOffset={100}
+        >
+          {/* // 1. Customer Details */}
+          <ScrollView
+            automaticallyAdjustContentInsets={true}
+            bounces={true}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{
+              paddingVertical: 10,
+              paddingHorizontal: 5,
+            }}
+            keyboardShouldPersistTaps={"handled"}
+            style={{ flex: 1 }}
+            ref={scrollRef}
+          >
+            <View style={styles.baseVw}>
+              <List.AccordionGroup
+                expandedId={openAccordian}
+                onAccordionPress={(expandedId) => updateAccordian(expandedId)}
+              >
+                {/* // 1.Customer Details */}
+                <List.Accordion
+                  id={"1"}
+                  title={"Customer Details"}
+                  titleStyle={{
+                    color: openAccordian === "1" ? Colors.BLACK : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "1" ? Colors.RED : Colors.WHITE,
+                    },
+                    styles.accordianBorder,
+                  ]}
                 >
-                    <View style={styles.baseVw}>
-                        <List.AccordionGroup
-                            expandedId={openAccordian}
-                            onAccordionPress={(expandedId) => updateAccordian(expandedId)}
-                        >
-                            {/* // 1.Customer Details */}
-                            <List.Accordion
-                                id={"1"}
-                                title={"Customer Details"}
-                                titleStyle={{
-                                    color: openAccordian === "1" ? Colors.BLACK : Colors.BLACK,
-                                    fontSize: 16,
-                                    fontWeight: "600",
-                                }}
-                                style={[
-                                    {
-                                        backgroundColor:
-                                            openAccordian === "1"
-                                                ? Colors.RED
-                                                : Colors.WHITE,
-                                    },
-                                    styles.accordianBorder,
-                                ]}
-                            >
-                                <DropDownSelectionItem
-                                    label={"Salutation*"}
-                                    value={selector.salutation}
-                                    onPress={() =>
-                                        showDropDownModelMethod("SALUTATION", "Salutation")
-                                    }
-                                />
-                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.salutation === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                                <TextinputComp
-                                    style={{ height: 65, width: "100%" }}
-                                    value={selector.first_name}
-                                    label={"First Name*"}
-                                    maxLength={50}
-                                    // editable={false}
-                                    keyboardType={"default"}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setCustomerDetails({ key: "FIRST_NAME", text: text })
-                                        )
-                                    }
-                                />
-                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.first_name === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                                <TextinputComp
-                                    style={{ height: 65, width: "100%" }}
-                                    value={selector.last_name}
-                                    label={"Last Name*"}
-                                    keyboardType={"default"}
-                                    maxLength={50}
-                                    // editable={false}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setCustomerDetails({ key: "LAST_NAME", text: text })
-                                        )
-                                    }
-                                />
-                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.last_name === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                                <TextinputComp
-                                    style={{ height: 65, width: "100%" }}
-                                    value={selector.mobile}
-                                    editable={false}
-                                    label={"Mobile Number*"}
-                                    maxLength={10}
-                                    onChangeText={(text) =>
-                                        dispatch(setCustomerDetails({ key: "MOBILE", text: text }))
-                                    }
-                                />
-                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.mobile === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                                <TextinputComp
-                                    style={{ height: 65, width: "100%" }}
-                                    value={selector.email}
-                                    label={"Email ID*"}
-                                    keyboardType={"email-address"}
-                                    onChangeText={(text) =>
-                                        dispatch(setCustomerDetails({ key: "EMAIL", text: text }))
-                                    }
-                                />
-                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.email === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                                <DropDownSelectionItem
-                                    label={"Enquiry Segment*"}
-                                    value={selector.enquiry_segment}
-                                    onPress={() =>
-                                        showDropDownModelMethod(
-                                            "ENQUIRY_SEGMENT",
-                                            "Enquiry Segment"
-                                        )
-                                    }
-                                />
-                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.enquiry_segment === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                                <DropDownSelectionItem label={"Buyer Type*"} value={selector.buyer_type} 
-                                onPress={()=> showDropDownModelMethod(
-                                    "BUYER_TYPE",
-                                    "Buyer Type"
-                                )}/>
-                                  <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.buyer_type === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                                <DropDownSelectionItem
-                                    label={"Customer Type*"}
-                                    value={selector.customer_type}
-                                    onPress={() =>
-                                        showDropDownModelMethod("CUSTOMER_TYPE", "Customer Type")
-                                    }
-                                />
-                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.customer_type === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                                {selector.enquiry_segment.toLowerCase() === "personal" ? (
-                                    <View>
-                                        <DropDownSelectionItem
-                                            label={"Gender"}
-                                            value={selector.gender}
-                                            onPress={() =>
-                                                showDropDownModelMethod("GENDER", "Gender")
-                                            }
-                                        />
-                                        <DateSelectItem
-                                            label={"Date Of Birth"}
-                                            value={selector.date_of_birth}
-                                            onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
-                                        />
-                                        <TextinputComp
-                                            style={{ height: 65, width: "100%" }}
-                                            value={selector.age}
-                                            label={"Age"}
-                                            maxLength={3}
-                                            keyboardType={"number-pad"}
-                                            onChangeText={(text) =>
-                                                dispatch(setCustomerDetails({ key: "AGE", text: text }))
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                        <DropDownSelectionItem
-                                            label={"Marital Status"}
-                                            value={selector.marital_status}
-                                            onPress={() =>
-                                                showDropDownModelMethod(
-                                                    "MARITAL_STATUS",
-                                                    "Marital Status"
-                                                )
-                                            }
-                                        />
-                                    </View>
-                                ) : null}
-                            </List.Accordion>
-                            <View style={styles.space}></View>
+                  <DropDownSelectionItem
+                    label={"Salutation*"}
+                    value={selector.salutation}
+                    onPress={() =>
+                      showDropDownModelMethod("SALUTATION", "Salutation")
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.salutation === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    value={selector.first_name}
+                    label={"First Name*"}
+                    maxLength={50}
+                    // editable={false}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCustomerDetails({ key: "FIRST_NAME", text: text })
+                      )
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.first_name === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    value={selector.last_name}
+                    label={"Last Name*"}
+                    keyboardType={"default"}
+                    maxLength={50}
+                    // editable={false}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCustomerDetails({ key: "LAST_NAME", text: text })
+                      )
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.last_name === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    value={selector.mobile}
+                    editable={false}
+                    label={"Mobile Number*"}
+                    maxLength={10}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCustomerDetails({ key: "MOBILE", text: text })
+                      )
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.mobile === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    value={selector.email}
+                    label={"Email ID*"}
+                    keyboardType={"email-address"}
+                    onChangeText={(text) =>
+                      dispatch(setCustomerDetails({ key: "EMAIL", text: text }))
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.email === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  <DropDownSelectionItem
+                    label={"Enquiry Segment*"}
+                    value={selector.enquiry_segment}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "ENQUIRY_SEGMENT",
+                        "Enquiry Segment"
+                      )
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.enquiry_segment === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  <DropDownSelectionItem
+                    label={"Buyer Type*"}
+                    value={selector.buyer_type}
+                    onPress={() =>
+                      showDropDownModelMethod("BUYER_TYPE", "Buyer Type")
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.buyer_type === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  <DropDownSelectionItem
+                    label={"Customer Type*"}
+                    value={selector.customer_type}
+                    onPress={() =>
+                      showDropDownModelMethod("CUSTOMER_TYPE", "Customer Type")
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.customer_type === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  {selector.enquiry_segment.toLowerCase() === "personal" ? (
+                    <View>
+                      <DropDownSelectionItem
+                        label={"Gender"}
+                        value={selector.gender}
+                        onPress={() =>
+                          showDropDownModelMethod("GENDER", "Gender")
+                        }
+                      />
+                      <DateSelectItem
+                        label={"Date Of Birth"}
+                        value={selector.date_of_birth}
+                        onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
+                      />
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        value={selector.age}
+                        label={"Age"}
+                        maxLength={3}
+                        keyboardType={"number-pad"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setCustomerDetails({ key: "AGE", text: text })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <DropDownSelectionItem
+                        label={"Marital Status"}
+                        value={selector.marital_status}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "MARITAL_STATUS",
+                            "Marital Status"
+                          )
+                        }
+                      />
+                    </View>
+                  ) : null}
+                </List.Accordion>
+                <View style={styles.space}></View>
 
-                            {/* // 2.Communication Address */}
-                            <List.Accordion
-                                id={"2"}
-                                title={"Communication Address"}
-                                titleStyle={{
-                                    color: openAccordian === "2" ? Colors.BLACK : Colors.BLACK,
-                                    fontSize: 16,
-                                    fontWeight: "600",
-                                }}
-                                style={[
-                                    {
-                                        backgroundColor:
-                                            openAccordian === "2"
-                                                ? Colors.RED
-                                                : Colors.WHITE,
-                                    },
-                                    styles.accordianBorder,
-                                ]}
-                            >
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    value={selector.pincode}
-                                    label={"Pincode*"}
-                                    maxLength={6}
-                                    keyboardType={"number-pad"}
-                                    onChangeText={(text) => {
-                                        // get addreess by pincode
-                                        if (text.length === 6) {
-                                            updateAddressDetails(text);
-                                        }
-                                        dispatch(
-                                            setCommunicationAddress({ key: "PINCODE", text: text })
-                                        );
-                                        setDefaultAddress(null)
-                                    }}
-                                />
-                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.pincode === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                                {addressData.length > 0 &&
-                                    <>
-                                        <Text style={GlobalStyle.underline}></Text>
-                                        <Dropdown
-                                            style={[styles.dropdownContainer,]}
-                                            placeholderStyle={styles.placeholderStyle}
-                                            selectedTextStyle={styles.selectedTextStyle}
-                                            inputSearchStyle={styles.inputSearchStyle}
-                                            iconStyle={styles.iconStyle}
-                                            data={addressData}
-                                            search
-                                            maxHeight={300}
-                                            labelField="label"
-                                            valueField="value"
-                                            placeholder={'Select address'}
-                                            searchPlaceholder="Search..."
-                                            value={defaultAddress}
-                                            // onFocus={() => setIsFocus(true)}
-                                            // onBlur={() => setIsFocus(false)}
-                                            onChange={val => {
-                                                console.log("ADDR: ", val);
-                                                dispatch(updateAddressByPincode(val.value));
-                                            }}
-                                        />
-                                    </>
-                                }
-                                <Text style={GlobalStyle.underline}></Text>
-                                <View style={styles.radioGroupBcVw}>
-                                    <RadioTextItem
-                                        label={"Urban"}
-                                        value={"urban"}
-                                        status={selector.urban_or_rural === 1 ? true : false}
-                                        onPress={() =>
-                                            dispatch(
-                                                setCommunicationAddress({
-                                                    key: "RURAL_URBAN",
-                                                    text: "1",
-                                                })
-                                            )
-                                        }
-                                    />
-                                    <RadioTextItem
-                                        label={"Rural"}
-                                        value={"rural"}
-                                        status={selector.urban_or_rural === 2 ? true : false}
-                                        onPress={() =>
-                                            dispatch(
-                                                setCommunicationAddress({
-                                                    key: "RURAL_URBAN",
-                                                    text: "2",
-                                                })
-                                            )
-                                        }
-                                    />
-                                </View>
-                                <Text style={GlobalStyle.underline}></Text>
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    value={selector.house_number}
-                                    keyboardType={"number-pad"}
-                                    label={"H.No*"}
-                                    maxLength={120}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setCommunicationAddress({ key: "HOUSE_NO", text: text })
-                                        )
-                                    }
-                                />
-                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.house_number === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    value={selector.street_name}
-                                    label={"Street Name*"}
-                                    maxLength={120}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setCommunicationAddress({
-                                                key: "STREET_NAME",
-                                                text: text,
-                                            })
-                                        )
-                                    }
-                                />
-                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.street_name === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    value={selector.village}
-                                    label={"Village*"}
-                                    maxLength={40}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setCommunicationAddress({ key: "VILLAGE", text: text })
-                                        )
-                                    }
-                                />
-                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.village === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    value={selector.mandal}
-                                    label={"Mandal*"}
-                                    maxLength={40}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setCommunicationAddress({ key: "MANDAL", text: text })
-                                        )
-                                    }
-                                />
-                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.mandal === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    value={selector.city}
-                                    label={"City*"}
-                                    maxLength={40}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setCommunicationAddress({ key: "CITY", text: text })
-                                        )
-                                    }
-                                />
-                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.city === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    value={selector.district}
-                                    label={"District*"}
-                                    maxLength={40}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setCommunicationAddress({ key: "DISTRICT", text: text })
-                                        )
-                                    }
-                                />
-                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.district === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    value={selector.state}
-                                    label={"State*"}
-                                    maxLength={40}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setCommunicationAddress({ key: "STATE", text: text })
-                                        )
-                                    }
-                                />
-                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.state === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                                <View
-                                    style={{ height: 20, backgroundColor: Colors.WHITE }}
-                                ></View>
+                {/* // 2.Communication Address */}
+                <List.Accordion
+                  id={"2"}
+                  title={"Communication Address"}
+                  titleStyle={{
+                    color: openAccordian === "2" ? Colors.BLACK : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "2" ? Colors.RED : Colors.WHITE,
+                    },
+                    styles.accordianBorder,
+                  ]}
+                >
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.pincode}
+                    label={"Pincode*"}
+                    maxLength={6}
+                    keyboardType={"number-pad"}
+                    onChangeText={(text) => {
+                      // get addreess by pincode
+                      if (text.length === 6) {
+                        updateAddressDetails(text);
+                      }
+                      dispatch(
+                        setCommunicationAddress({ key: "PINCODE", text: text })
+                      );
+                      setDefaultAddress(null);
+                    }}
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.pincode === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  {addressData.length > 0 && (
+                    <>
+                      <Text style={GlobalStyle.underline}></Text>
+                      <Dropdown
+                        style={[styles.dropdownContainer]}
+                        placeholderStyle={styles.placeholderStyle}
+                        selectedTextStyle={styles.selectedTextStyle}
+                        inputSearchStyle={styles.inputSearchStyle}
+                        iconStyle={styles.iconStyle}
+                        data={addressData}
+                        search
+                        maxHeight={300}
+                        labelField="label"
+                        valueField="value"
+                        placeholder={"Select address"}
+                        searchPlaceholder="Search..."
+                        value={defaultAddress}
+                        // onFocus={() => setIsFocus(true)}
+                        // onBlur={() => setIsFocus(false)}
+                        onChange={(val) => {
+                          console.log("ADDR: ", val);
+                          dispatch(updateAddressByPincode(val.value));
+                        }}
+                      />
+                    </>
+                  )}
+                  <Text style={GlobalStyle.underline}></Text>
+                  <View style={styles.radioGroupBcVw}>
+                    <RadioTextItem
+                      label={"Urban"}
+                      value={"urban"}
+                      status={selector.urban_or_rural === 1 ? true : false}
+                      onPress={() =>
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "RURAL_URBAN",
+                            text: "1",
+                          })
+                        )
+                      }
+                    />
+                    <RadioTextItem
+                      label={"Rural"}
+                      value={"rural"}
+                      status={selector.urban_or_rural === 2 ? true : false}
+                      onPress={() =>
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "RURAL_URBAN",
+                            text: "2",
+                          })
+                        )
+                      }
+                    />
+                  </View>
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.house_number}
+                    keyboardType={"number-pad"}
+                    label={"H.No*"}
+                    maxLength={120}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({ key: "HOUSE_NO", text: text })
+                      )
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.house_number === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.street_name}
+                    label={"Street Name*"}
+                    maxLength={120}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "STREET_NAME",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.street_name === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.village}
+                    label={"Village*"}
+                    maxLength={40}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({ key: "VILLAGE", text: text })
+                      )
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.village === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.mandal}
+                    label={"Mandal*"}
+                    maxLength={40}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({ key: "MANDAL", text: text })
+                      )
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.mandal === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.city}
+                    label={"City*"}
+                    maxLength={40}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({ key: "CITY", text: text })
+                      )
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.city === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.district}
+                    label={"District*"}
+                    maxLength={40}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({ key: "DISTRICT", text: text })
+                      )
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.district === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.state}
+                    label={"State*"}
+                    maxLength={40}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({ key: "STATE", text: text })
+                      )
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.state === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  <View
+                    style={{ height: 20, backgroundColor: Colors.WHITE }}
+                  ></View>
 
-                                {/* // Permanent Addresss */}
-                                <View
-                                    style={{ backgroundColor: Colors.WHITE, paddingLeft: 12 }}
-                                >
-                                    <Text style={styles.permanentAddText}>
-                                        {"Permanent Address Same as Communication Address"}
-                                    </Text>
-                                </View>
-                                <View style={styles.radioGroupBcVw}>
-                                    <RadioTextItem
-                                        label={"Yes"}
-                                        value={"yes"}
-                                        status={
-                                            selector.is_permanent_address_same === "YES"
-                                                ? true
-                                                : false
-                                        }
-                                        onPress={() =>
-                                            dispatch(
-                                                setCommunicationAddress({
-                                                    key: "PERMANENT_ADDRESS",
-                                                    text: "true",
-                                                })
-                                            )
-                                        }
-                                    />
-                                    <RadioTextItem
-                                        label={"No"}
-                                        value={"no"}
-                                        status={
-                                            selector.is_permanent_address_same === "NO" ? true : false
-                                        }
-                                        onPress={() => {
-                                            dispatch(
-                                                setCommunicationAddress({
-                                                    key: "PERMANENT_ADDRESS",
-                                                    text: "false",
-                                                })
-                                            )
-                                            dispatch(clearPermanentAddr())
-                                        }}
-                                    />
-                                </View>
-                                <Text style={GlobalStyle.underline}></Text>
+                  {/* // Permanent Addresss */}
+                  <View
+                    style={{ backgroundColor: Colors.WHITE, paddingLeft: 12 }}
+                  >
+                    <Text style={styles.permanentAddText}>
+                      {"Permanent Address Same as Communication Address"}
+                    </Text>
+                  </View>
+                  <View style={styles.radioGroupBcVw}>
+                    <RadioTextItem
+                      label={"Yes"}
+                      value={"yes"}
+                      status={
+                        selector.is_permanent_address_same === "YES"
+                          ? true
+                          : false
+                      }
+                      onPress={() =>
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "PERMANENT_ADDRESS",
+                            text: "true",
+                          })
+                        )
+                      }
+                    />
+                    <RadioTextItem
+                      label={"No"}
+                      value={"no"}
+                      status={
+                        selector.is_permanent_address_same === "NO"
+                          ? true
+                          : false
+                      }
+                      onPress={() => {
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "PERMANENT_ADDRESS",
+                            text: "false",
+                          })
+                        );
+                        dispatch(clearPermanentAddr());
+                      }}
+                    />
+                  </View>
+                  <Text style={GlobalStyle.underline}></Text>
 
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    value={selector.p_pincode}
-                                    label={"Pincode*"}
-                                    maxLength={6}
-                                    keyboardType={"number-pad"}
-                                    onChangeText={(text) => {
-                                        // get addreess by pincode
-                                        if (text.length === 6) {
-                                            updateAddressDetails2(text);
-                                        }
-                                        dispatch(
-                                            setCommunicationAddress({ key: "P_PINCODE", text: text })
-                                        );
-                                    }}
-                                />
-                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_pincode === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.p_pincode}
+                    label={"Pincode*"}
+                    maxLength={6}
+                    keyboardType={"number-pad"}
+                    onChangeText={(text) => {
+                      // get addreess by pincode
+                      if (text.length === 6) {
+                        updateAddressDetails2(text);
+                      }
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "P_PINCODE",
+                          text: text,
+                        })
+                      );
+                    }}
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.p_pincode === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
 
-                                {addressData2.length > 0 &&
-                                    <>
-                                        <Text style={GlobalStyle.underline}></Text>
-                                        <Dropdown
-                                            style={[styles.dropdownContainer,]}
-                                            placeholderStyle={styles.placeholderStyle}
-                                            selectedTextStyle={styles.selectedTextStyle}
-                                            inputSearchStyle={styles.inputSearchStyle}
-                                            iconStyle={styles.iconStyle}
-                                            data={addressData2}
-                                            search
-                                            maxHeight={300}
-                                            labelField="label"
-                                            valueField="value"
-                                            placeholder={'Select address'}
-                                            searchPlaceholder="Search..."
-                                            // value={defaultAddress}
-                                            // onFocus={() => setIsFocus(true)}
-                                            // onBlur={() => setIsFocus(false)}
-                                            onChange={val => {
-                                                console.log("ADDR: ", val);
-                                                dispatch(updateAddressByPincode2(val.value));
-                                            }}
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                    </>
-                                }
+                  {addressData2.length > 0 && (
+                    <>
+                      <Text style={GlobalStyle.underline}></Text>
+                      <Dropdown
+                        style={[styles.dropdownContainer]}
+                        placeholderStyle={styles.placeholderStyle}
+                        selectedTextStyle={styles.selectedTextStyle}
+                        inputSearchStyle={styles.inputSearchStyle}
+                        iconStyle={styles.iconStyle}
+                        data={addressData2}
+                        search
+                        maxHeight={300}
+                        labelField="label"
+                        valueField="value"
+                        placeholder={"Select address"}
+                        searchPlaceholder="Search..."
+                        // value={defaultAddress}
+                        // onFocus={() => setIsFocus(true)}
+                        // onBlur={() => setIsFocus(false)}
+                        onChange={(val) => {
+                          console.log("ADDR: ", val);
+                          dispatch(updateAddressByPincode2(val.value));
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </>
+                  )}
 
-                                <View style={styles.radioGroupBcVw}>
-                                    <RadioTextItem
-                                        label={"Urban"}
-                                        value={"urban"}
-                                        status={selector.p_urban_or_rural === 1 ? true : false}
-                                        onPress={() =>
-                                            dispatch(
-                                                setCommunicationAddress({
-                                                    key: "P_RURAL_URBAN",
-                                                    text: "1",
-                                                })
-                                            )
-                                        }
-                                    />
-                                    <RadioTextItem
-                                        label={"Rural"}
-                                        value={"rural"}
-                                        status={selector.p_urban_or_rural === 2 ? true : false}
-                                        onPress={() =>
-                                            dispatch(
-                                                setCommunicationAddress({
-                                                    key: "P_RURAL_URBAN",
-                                                    text: "2",
-                                                })
-                                            )
-                                        }
-                                    />
-                                </View>
-                                <Text style={GlobalStyle.underline}></Text>
+                  <View style={styles.radioGroupBcVw}>
+                    <RadioTextItem
+                      label={"Urban"}
+                      value={"urban"}
+                      status={selector.p_urban_or_rural === 1 ? true : false}
+                      onPress={() =>
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "P_RURAL_URBAN",
+                            text: "1",
+                          })
+                        )
+                      }
+                    />
+                    <RadioTextItem
+                      label={"Rural"}
+                      value={"rural"}
+                      status={selector.p_urban_or_rural === 2 ? true : false}
+                      onPress={() =>
+                        dispatch(
+                          setCommunicationAddress({
+                            key: "P_RURAL_URBAN",
+                            text: "2",
+                          })
+                        )
+                      }
+                    />
+                  </View>
+                  <Text style={GlobalStyle.underline}></Text>
 
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    label={"H.No*"}
-                                    keyboardType={"number-pad"}
-                                    maxLength={120}
-                                    value={selector.p_houseNum}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setCommunicationAddress({
-                                                key: "P_HOUSE_NO",
-                                                text: text,
-                                            })
-                                        )
-                                    }
-                                />
-                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_houseNum === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    label={"Street Name*"}
-                                    maxLength={120}
-                                    value={selector.p_streetName}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setCommunicationAddress({
-                                                key: "P_STREET_NAME",
-                                                text: text,
-                                            })
-                                        )
-                                    }
-                                />
-                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_streetName === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    value={selector.p_village}
-                                    maxLength={50}
-                                    label={"Village*"}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setCommunicationAddress({
-                                                key: "P_VILLAGE",
-                                                text: text,
-                                            })
-                                        )
-                                    }
-                                />
-                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_village === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    value={selector.p_mandal}
-                                    maxLength={50}
-                                    label={"Mandal*"}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setCommunicationAddress({
-                                                key: "P_MANDAL",
-                                                text: text,
-                                            })
-                                        )
-                                    }
-                                />
-                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_mandal === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    value={selector.p_city}
-                                    maxLength={50}
-                                    label={"City*"}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setCommunicationAddress({ key: "P_CITY", text: text })
-                                        )
-                                    }
-                                />
-                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_city === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    value={selector.p_district}
-                                    label={"District*"}
-                                    maxLength={50}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setCommunicationAddress({
-                                                key: "P_DISTRICT",
-                                                text: text,
-                                            })
-                                        )
-                                    }
-                                />
-                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_district === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                                <TextinputComp
-                                    style={styles.textInputStyle}
-                                    value={selector.p_state}
-                                    label={"State*"}
-                                    maxLength={50}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setCommunicationAddress({
-                                                key: "P_STATE",
-                                                text: text,
-                                            })
-                                        )
-                                    }
-                                />
-                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.p_state === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                            </List.Accordion>
-                            <View style={styles.space}></View>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    label={"H.No*"}
+                    keyboardType={"number-pad"}
+                    maxLength={120}
+                    value={selector.p_houseNum}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "P_HOUSE_NO",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.p_houseNum === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    label={"Street Name*"}
+                    maxLength={120}
+                    value={selector.p_streetName}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "P_STREET_NAME",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.p_streetName === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.p_village}
+                    maxLength={50}
+                    label={"Village*"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "P_VILLAGE",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.p_village === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.p_mandal}
+                    maxLength={50}
+                    label={"Mandal*"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "P_MANDAL",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.p_mandal === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.p_city}
+                    maxLength={50}
+                    label={"City*"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({ key: "P_CITY", text: text })
+                      )
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.p_city === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.p_district}
+                    label={"District*"}
+                    maxLength={50}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "P_DISTRICT",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.p_district === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  <TextinputComp
+                    style={styles.textInputStyle}
+                    value={selector.p_state}
+                    label={"State*"}
+                    maxLength={50}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommunicationAddress({
+                          key: "P_STATE",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.p_state === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                </List.Accordion>
+                <View style={styles.space}></View>
 
-                            {/* // 3.Modal Selction */}
-                            <List.Accordion
-                                id={"3"}
-                                title={"Model Selection"}
-                                titleStyle={{
-                                    color: openAccordian === "3" ? Colors.BLACK : Colors.BLACK,
-                                    fontSize: 16,
-                                    fontWeight: "600",
-                                }}
-                                style={[
-                                    {
-                                        backgroundColor:
-                                            openAccordian === "3"
-                                                ? Colors.RED
-                                                : Colors.WHITE,
-                                    },
-                                    styles.accordianBorder,
-                                ]}
-                            >
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        const carmodeldata = {
-                                            "color": '',
-                                            "fuel": '',
-                                            "id": 0,
-                                            "model": "",
-                                            "transimmisionType": '',
-                                            "variant": '',
-                                            "isPrimary": "N"
-                                        }
-                                        let arr = [...carModelsList]
-                                        arr.push(carmodeldata)
-                                        setCarModelsList(arr)
-                                        // selector.dmsLeadProducts = [...selector.dmsLeadProducts, carmodeldata]
-                                    }}
-                                    style={{ width: '40%', margin: 5, borderRadius: 5, backgroundColor: Colors.PINK, height: 40, alignSelf: 'flex-end', alignContent: 'flex-end', alignItems: 'center', justifyContent: 'center' }}>
-                                    <Text style={{ fontSize: 16, textAlign: 'center', textAlignVertical: 'center', color: Colors.WHITE, width: '100%', }}>Add Model</Text>
-                                </TouchableOpacity>
-                                <FlatList
-                                    data={carModelsList}
-                                    extraData={carModelsList}
-                                    keyExtractor={(item, index) => index.toString()}
-                                    renderItem={({ item, index }) => {
-                                        return (
-                                            // <Pressable onPress={() => selectedItem(item, index)}>
-                                            < View >
+                {/* // 3.Modal Selction */}
+                <List.Accordion
+                  id={"3"}
+                  title={"Model Selection"}
+                  titleStyle={{
+                    color: openAccordian === "3" ? Colors.BLACK : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "3" ? Colors.RED : Colors.WHITE,
+                    },
+                    styles.accordianBorder,
+                  ]}
+                >
+                  <TouchableOpacity
+                    onPress={() => {
+                      const carmodeldata = {
+                        color: "",
+                        fuel: "",
+                        id: 0,
+                        model: "",
+                        transimmisionType: "",
+                        variant: "",
+                        isPrimary: "N",
+                      };
+                      let arr = [...carModelsList];
+                      arr.push(carmodeldata);
+                      setCarModelsList(arr);
+                      // selector.dmsLeadProducts = [...selector.dmsLeadProducts, carmodeldata]
+                    }}
+                    style={{
+                      width: "40%",
+                      margin: 5,
+                      borderRadius: 5,
+                      backgroundColor: Colors.PINK,
+                      height: 40,
+                      alignSelf: "flex-end",
+                      alignContent: "flex-end",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        textAlign: "center",
+                        textAlignVertical: "center",
+                        color: Colors.WHITE,
+                        width: "100%",
+                      }}
+                    >
+                      Add Model
+                    </Text>
+                  </TouchableOpacity>
+                  <FlatList
+                    data={carModelsList}
+                    extraData={carModelsList}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({ item, index }) => {
+                      return (
+                        // <Pressable onPress={() => selectedItem(item, index)}>
+                        <View>
+                          <PreBookingModelListitemCom
+                            modelOnclick={modelOnclick}
+                            isPrimaryOnclick={isPrimaryOnclick}
+                            index={index}
+                            item={item}
+                            leadStage={leadStage}
+                          />
 
-                                                <PreBookingModelListitemCom
-                                                    modelOnclick={modelOnclick}
-                                                    isPrimaryOnclick={isPrimaryOnclick}
-                                                    index={index}
-                                                    item={item}
-                                                    leadStage={leadStage} />
-
-                                                {/* <Divider /> */}
-                                            </View>
-                                            // </Pressable>
-                                        )
-                                    }}
-                                />
-                                {/* <DropDownSelectionItem
+                          {/* <Divider /> */}
+                        </View>
+                        // </Pressable>
+                      );
+                    }}
+                  />
+                  {/* <DropDownSelectionItem
                                     label={"Model"}
                                     value={selector.model}
                                     onPress={() => showDropDownModelMethod("MODEL", "Model")}
@@ -3512,419 +3794,680 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     editable={false}
                                 />
                                 <Text style={GlobalStyle.underline}></Text> */}
-                            </List.Accordion>
-                            <View style={styles.space}></View>
+                </List.Accordion>
+                <View style={styles.space}></View>
 
-                            {/* // 4.Document Upload */}
-                            <List.Accordion
-                                id={"4"}
-                                title={"Document Upload"}
-                                titleStyle={{
-                                    color: openAccordian === "4" ? Colors.BLACK : Colors.BLACK,
-                                    fontSize: 16,
-                                    fontWeight: "600",
-                                }}
-                                style={[
-                                    {
-                                        backgroundColor:
-                                            openAccordian === "4"
-                                                ? Colors.RED
-                                                : Colors.WHITE,
-                                    },
-                                    styles.accordianBorder,
-                                ]}
+                {/* // 4.Document Upload */}
+                <List.Accordion
+                  id={"4"}
+                  title={"Document Upload"}
+                  titleStyle={{
+                    color: openAccordian === "4" ? Colors.BLACK : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "4" ? Colors.RED : Colors.WHITE,
+                    },
+                    styles.accordianBorder,
+                  ]}
+                >
+                  {/* {isDataLoaded && */}
+                  <DropDownSelectionItem
+                    label={"Form60/PAN"}
+                    value={selector.form_or_pan}
+                    onPress={() =>
+                      showDropDownModelMethod("FORM_60_PAN", "Retail Finance")
+                    }
+                  />
+                  {/* } */}
+
+                  {selector.form_or_pan === "PAN" && (
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.pan_number}
+                        label={"PAN Number"}
+                        maxLength={10}
+                        autoCapitalize={"characters"}
+                        onChangeText={(text) => {
+                          dispatch(
+                            setDocumentUploadDetails({
+                              key: "PAN_NUMBER",
+                              text: text.replace(/[^a-zA-Z0-9]/g, ""),
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <View style={styles.select_image_bck_vw}>
+                        <ImageSelectItem
+                          name={"PAN"}
+                          onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
+                        />
+                      </View>
+                      {uploadedImagesDataObj.pan?.fileName ? (
+                        <View style={{ flexDirection: "row" }}>
+                          <TouchableOpacity
+                            style={{
+                              width: "20%",
+                              height: 30,
+                              backgroundColor: Colors.SKY_BLUE,
+                              borderRadius: 4,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                            onPress={() => {
+                              if (uploadedImagesDataObj.pan?.documentPath) {
+                                setImagePath(
+                                  uploadedImagesDataObj.pan?.documentPath
+                                );
+                              }
+                            }}
+                          >
+                            <Text
+                              style={{
+                                color: Colors.WHITE,
+                                fontSize: 14,
+                                fontWeight: "600",
+                              }}
                             >
-                                {/* {isDataLoaded && */}
-                                <DropDownSelectionItem
-                                    label={"Form60/PAN"}
-                                    value={selector.form_or_pan}
-                                    onPress={() =>
-                                        showDropDownModelMethod("FORM_60_PAN", "Retail Finance")
-                                    }
-                                />
-                                {/* } */}
+                              Preview
+                            </Text>
+                          </TouchableOpacity>
+                          <View style={{ width: "80%" }}>
+                            <DisplaySelectedImage
+                              fileName={uploadedImagesDataObj.pan.fileName}
+                              from={"PAN"}
+                            />
+                          </View>
+                        </View>
+                      ) : null}
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
 
-                                {selector.form_or_pan === "PAN" && (
-                                    <View>
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.pan_number}
-                                            label={"PAN Number"}
-                                            maxLength={10}
-                                            autoCapitalize={"characters"}
-                                            onChangeText={(text) => {
-                                                dispatch(
-                                                    setDocumentUploadDetails({
-                                                        key: "PAN_NUMBER",
-                                                        text: text.replace(/[^a-zA-Z0-9]/g, ""),
-                                                    })
-                                                );
-                                            }}
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                        <View style={styles.select_image_bck_vw}>
-                                            <ImageSelectItem
-                                                name={"PAN"}
-                                                onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
-                                            />
-                                        </View>
-                                        {uploadedImagesDataObj.pan?.fileName ? (
-                                            <View style={{ flexDirection: 'row' }}>
-                                                <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                                                    if (uploadedImagesDataObj.pan?.documentPath) {
-                                                        setImagePath(uploadedImagesDataObj.pan?.documentPath)
-                                                    }
-                                                }}>
-                                                    <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
-                                                </TouchableOpacity>
-                                                <View style={{ width: '80%' }}>
-                                                    <DisplaySelectedImage
-                                                        fileName={uploadedImagesDataObj.pan.fileName}
-                                                        from={"PAN"}
-                                                    />
-                                                </View>
-                                            </View>
-                                        ) : null}
-                                        <Text style={GlobalStyle.underline}></Text>
-                                    </View>
-                                )}
+                  {selector.form_or_pan === "Form60" && (
+                    <View>
+                      <View style={styles.select_image_bck_vw}>
+                        <ImageSelectItem
+                          name={"Form60"}
+                          onPress={() =>
+                            dispatch(setImagePicker("UPLOAD_FORM60"))
+                          }
+                        />
+                      </View>
+                      {uploadedImagesDataObj.form60?.fileName ? (
+                        <View style={{ flexDirection: "row" }}>
+                          <TouchableOpacity
+                            style={{
+                              width: "20%",
+                              height: 30,
+                              backgroundColor: Colors.SKY_BLUE,
+                              borderRadius: 4,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                            onPress={() => {
+                              if (uploadedImagesDataObj.form60?.documentPath) {
+                                setImagePath(
+                                  uploadedImagesDataObj.form60?.documentPath
+                                );
+                              }
+                            }}
+                          >
+                            <Text
+                              style={{
+                                color: Colors.WHITE,
+                                fontSize: 14,
+                                fontWeight: "600",
+                              }}
+                            >
+                              Preview
+                            </Text>
+                          </TouchableOpacity>
+                          <View style={{ width: "80%" }}>
+                            <DisplaySelectedImage
+                              fileName={uploadedImagesDataObj.form60.fileName}
+                              from={"FORM60"}
+                            />
+                          </View>
+                        </View>
+                      ) : null}
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
 
-                                {selector.form_or_pan === "Form60" && (
-                                    <View>
-                                        <View style={styles.select_image_bck_vw}>
-                                            <ImageSelectItem
-                                                name={"Form60"}
-                                                onPress={() =>
-                                                    dispatch(setImagePicker("UPLOAD_FORM60"))
-                                                }
-                                            />
-                                        </View>
-                                        {uploadedImagesDataObj.form60?.fileName ? (
-                                            <View style={{ flexDirection: 'row' }}>
-                                                <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                                                    if (uploadedImagesDataObj.form60?.documentPath) {
-                                                        setImagePath(uploadedImagesDataObj.form60?.documentPath)
-                                                    }
-                                                }}>
-                                                    <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
-                                                </TouchableOpacity>
-                                                <View style={{ width: '80%' }}>
-                                                    <DisplaySelectedImage
-                                                        fileName={uploadedImagesDataObj.form60.fileName}
-                                                        from={"FORM60"}
-                                                    />
-                                                </View>
-                                            </View>
-                                        ) : null}
-                                        <Text style={GlobalStyle.underline}></Text>
-                                    </View>
-                                )}
+                  {/* // Aadhar Number */}
+                  {selector.enquiry_segment.toLowerCase() === "personal" ? (
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.adhaar_number}
+                        label={"Aadhaar Number*"}
+                        keyboardType={"phone-pad"}
+                        maxLength={12}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setDocumentUploadDetails({
+                              key: "ADHAR",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text
+                        style={[
+                          GlobalStyle.underline,
+                          {
+                            backgroundColor:
+                              isSubmitPress && selector.adhaar_number === ""
+                                ? "red"
+                                : "rgba(208, 212, 214, 0.7)",
+                          },
+                        ]}
+                      ></Text>
+                      <View style={styles.select_image_bck_vw}>
+                        <ImageSelectItem
+                          name={"Upload Adhar"}
+                          onPress={() =>
+                            dispatch(setImagePicker("UPLOAD_ADHAR"))
+                          }
+                        />
+                        {uploadedImagesDataObj.aadhar?.fileName ? (
+                          <View style={{ flexDirection: "row" }}>
+                            <TouchableOpacity
+                              style={{
+                                width: "20%",
+                                height: 30,
+                                backgroundColor: Colors.SKY_BLUE,
+                                borderRadius: 4,
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                              onPress={() => {
+                                if (
+                                  uploadedImagesDataObj.aadhar?.documentPath
+                                ) {
+                                  setImagePath(
+                                    uploadedImagesDataObj.aadhar?.documentPath
+                                  );
+                                }
+                              }}
+                            >
+                              <Text
+                                style={{
+                                  color: Colors.WHITE,
+                                  fontSize: 14,
+                                  fontWeight: "600",
+                                }}
+                              >
+                                Preview
+                              </Text>
+                            </TouchableOpacity>
+                            <View style={{ width: "80%" }}>
+                              <DisplaySelectedImage
+                                fileName={uploadedImagesDataObj.aadhar.fileName}
+                                from={"AADHAR"}
+                              />
+                            </View>
+                          </View>
+                        ) : null}
+                      </View>
+                    </View>
+                  ) : null}
 
-                                {/* // Aadhar Number */}
-                                {(selector.enquiry_segment.toLowerCase() === "personal") ? (
-                                    <View>
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.adhaar_number}
-                                            label={"Aadhaar Number*"}
-                                            keyboardType={"phone-pad"}
-                                            maxLength={12}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setDocumentUploadDetails({ key: "ADHAR", text: text })
-                                                )
-                                            }
-                                        />
-                                        <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.adhaar_number === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                                        <View style={styles.select_image_bck_vw}>
-                                            <ImageSelectItem
-                                                name={"Upload Adhar"}
-                                                onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
-                                            />
-                                            {uploadedImagesDataObj.aadhar?.fileName ? (
+                  {/* // Employeed ID */}
+                  {selector.enquiry_segment.toLowerCase() === "personal" &&
+                  (selector.customer_type.toLowerCase() === "corporate" ||
+                    selector.customer_type.toLowerCase() === "government" ||
+                    selector.customer_type.toLowerCase() === "retired") ? (
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.employee_id}
+                        label={"Employee ID"}
+                        maxLength={15}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setDocumentUploadDetails({
+                              key: "EMPLOYEE_ID",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <View style={styles.select_image_bck_vw}>
+                        <ImageSelectItem
+                          name={"Employee ID"}
+                          onPress={() =>
+                            dispatch(setImagePicker("UPLOAD_EMPLOYEE_ID"))
+                          }
+                        />
+                      </View>
+                      {uploadedImagesDataObj.employeeId?.fileName ? (
+                        <View style={{ flexDirection: "row" }}>
+                          <TouchableOpacity
+                            style={{
+                              width: "20%",
+                              height: 30,
+                              backgroundColor: Colors.SKY_BLUE,
+                              borderRadius: 4,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                            onPress={() => {
+                              if (
+                                uploadedImagesDataObj.employeeId?.documentPath
+                              ) {
+                                setImagePath(
+                                  uploadedImagesDataObj.employeeId?.documentPath
+                                );
+                              }
+                            }}
+                          >
+                            <Text
+                              style={{
+                                color: Colors.WHITE,
+                                fontSize: 14,
+                                fontWeight: "600",
+                              }}
+                            >
+                              Preview
+                            </Text>
+                          </TouchableOpacity>
+                          <View style={{ width: "80%" }}>
+                            <DisplaySelectedImage
+                              fileName={
+                                uploadedImagesDataObj.employeeId.fileName
+                              }
+                              from={"EMPLOYEE_ID"}
+                            />
+                          </View>
+                        </View>
+                      ) : null}
+                    </View>
+                  ) : null}
 
-                                                <View style={{ flexDirection: 'row' }}>
-                                                    <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                                                        if (uploadedImagesDataObj.aadhar?.documentPath) {
-                                                            setImagePath(uploadedImagesDataObj.aadhar?.documentPath)
-                                                        }
-                                                    }}>
-                                                        <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
-                                                    </TouchableOpacity>
-                                                    <View style={{ width: '80%' }}>
-                                                        <DisplaySelectedImage
-                                                            fileName={uploadedImagesDataObj.aadhar.fileName}
-                                                            from={"AADHAR"}
-                                                        />
-                                                    </View>
-                                                </View>
-                                            ) : null}
-                                        </View>
-                                    </View>
-                                ) : null}
+                  {/* Last 3 month payslip */}
+                  {selector.enquiry_segment.toLowerCase() === "personal" &&
+                  (selector.customer_type.toLowerCase() === "corporate" ||
+                    selector.customer_type.toLowerCase() === "government") ? (
+                    <View>
+                      <View style={styles.select_image_bck_vw}>
+                        <ImageSelectItem
+                          name={"Last 3 months payslip"}
+                          onPress={() =>
+                            dispatch(setImagePicker("UPLOAD_3_MONTHS_PAYSLIP"))
+                          }
+                        />
+                      </View>
+                      {uploadedImagesDataObj.payslips?.fileName ? (
+                        <View style={{ flexDirection: "row" }}>
+                          <TouchableOpacity
+                            style={{
+                              width: "20%",
+                              height: 30,
+                              backgroundColor: Colors.SKY_BLUE,
+                              borderRadius: 4,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                            onPress={() => {
+                              if (
+                                uploadedImagesDataObj.payslips?.documentPath
+                              ) {
+                                setImagePath(
+                                  uploadedImagesDataObj.payslips?.documentPath
+                                );
+                              }
+                            }}
+                          >
+                            <Text
+                              style={{
+                                color: Colors.WHITE,
+                                fontSize: 14,
+                                fontWeight: "600",
+                              }}
+                            >
+                              Preview
+                            </Text>
+                          </TouchableOpacity>
+                          <View style={{ width: "80%" }}>
+                            <DisplaySelectedImage
+                              fileName={uploadedImagesDataObj.payslips.fileName}
+                              from={"3_MONTHS_PAYSLIP"}
+                            />
+                          </View>
+                        </View>
+                      ) : null}
+                    </View>
+                  ) : null}
 
-                                {/* // Employeed ID */}
-                                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "corporate" || selector.customer_type.toLowerCase() === "government" || selector.customer_type.toLowerCase() === "retired")) ? (
-                                    <View >
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.employee_id}
-                                            label={"Employee ID"}
-                                            maxLength={15}
-                                            onChangeText={(text) =>
-                                                dispatch(setDocumentUploadDetails({ key: "EMPLOYEE_ID", text: text }))
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                        <View style={styles.select_image_bck_vw}>
-                                            <ImageSelectItem
-                                                name={"Employee ID"}
-                                                onPress={() => dispatch(setImagePicker("UPLOAD_EMPLOYEE_ID"))}
-                                            />
-                                        </View>
-                                        {uploadedImagesDataObj.employeeId?.fileName ? (
+                  {/* Patta Pass book */}
+                  {selector.enquiry_segment.toLowerCase() === "personal" &&
+                  selector.customer_type.toLowerCase() === "farmer" ? (
+                    <View>
+                      <View style={styles.select_image_bck_vw}>
+                        <ImageSelectItem
+                          name={"Patta Pass Book"}
+                          onPress={() =>
+                            dispatch(setImagePicker("UPLOAD_PATTA_PASS_BOOK"))
+                          }
+                        />
+                      </View>
+                      {uploadedImagesDataObj.passbook?.fileName ? (
+                        <View style={{ flexDirection: "row" }}>
+                          <TouchableOpacity
+                            style={{
+                              width: "20%",
+                              height: 30,
+                              backgroundColor: Colors.SKY_BLUE,
+                              borderRadius: 4,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                            onPress={() => {
+                              if (
+                                uploadedImagesDataObj.passbook?.documentPath
+                              ) {
+                                setImagePath(
+                                  uploadedImagesDataObj.passbook?.documentPath
+                                );
+                              }
+                            }}
+                          >
+                            <Text
+                              style={{
+                                color: Colors.WHITE,
+                                fontSize: 14,
+                                fontWeight: "600",
+                              }}
+                            >
+                              Preview
+                            </Text>
+                          </TouchableOpacity>
+                          <View style={{ width: "80%" }}>
+                            <DisplaySelectedImage
+                              fileName={uploadedImagesDataObj.passbook.fileName}
+                              from={"PATTA_PASS_BOOK"}
+                            />
+                          </View>
+                        </View>
+                      ) : null}
+                    </View>
+                  ) : null}
 
-                                            <View style={{ flexDirection: 'row' }}>
-                                                <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                                                    if (uploadedImagesDataObj.employeeId?.documentPath) {
-                                                        setImagePath(uploadedImagesDataObj.employeeId?.documentPath)
-                                                    }
-                                                }}>
-                                                    <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
-                                                </TouchableOpacity>
-                                                <View style={{ width: '80%' }}>
-                                                    <DisplaySelectedImage
-                                                        fileName={uploadedImagesDataObj.employeeId.fileName}
-                                                        from={"EMPLOYEE_ID"}
-                                                    />
-                                                </View>
-                                            </View>
-                                        ) : null}
-                                    </View>
-                                ) : null}
+                  {/* Pension Letter */}
+                  {selector.enquiry_segment.toLowerCase() === "personal" &&
+                  selector.customer_type.toLowerCase() === "retired" ? (
+                    <View>
+                      <View style={styles.select_image_bck_vw}>
+                        <ImageSelectItem
+                          name={"Pension Letter"}
+                          onPress={() =>
+                            dispatch(setImagePicker("UPLOAD_PENSION_LETTER"))
+                          }
+                        />
+                      </View>
+                      {uploadedImagesDataObj.pension?.fileName ? (
+                        <View style={{ flexDirection: "row" }}>
+                          <TouchableOpacity
+                            style={{
+                              width: "20%",
+                              height: 30,
+                              backgroundColor: Colors.SKY_BLUE,
+                              borderRadius: 4,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                            onPress={() => {
+                              if (uploadedImagesDataObj.pension?.documentPath) {
+                                setImagePath(
+                                  uploadedImagesDataObj.pension?.documentPath
+                                );
+                              }
+                            }}
+                          >
+                            <Text
+                              style={{
+                                color: Colors.WHITE,
+                                fontSize: 14,
+                                fontWeight: "600",
+                              }}
+                            >
+                              Preview
+                            </Text>
+                          </TouchableOpacity>
+                          <View style={{ width: "80%" }}>
+                            <DisplaySelectedImage
+                              fileName={uploadedImagesDataObj.pension.fileName}
+                              from={"PENSION_LETTER"}
+                            />
+                          </View>
+                        </View>
+                      ) : null}
+                    </View>
+                  ) : null}
 
-                                {/* Last 3 month payslip */}
-                                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "corporate" || selector.customer_type.toLowerCase() === "government")) ? (
-                                    <View >
-                                        <View style={styles.select_image_bck_vw}>
-                                            <ImageSelectItem
-                                                name={"Last 3 months payslip"}
-                                                onPress={() => dispatch(setImagePicker("UPLOAD_3_MONTHS_PAYSLIP"))}
-                                            />
-                                        </View>
-                                        {uploadedImagesDataObj.payslips?.fileName ? (
+                  {/* IMA Certificate */}
+                  {selector.enquiry_segment.toLowerCase() === "personal" &&
+                  selector.customer_type.toLowerCase() === "doctor" ? (
+                    <View>
+                      <View style={styles.select_image_bck_vw}>
+                        <ImageSelectItem
+                          name={"IMA Certificate"}
+                          onPress={() =>
+                            dispatch(setImagePicker("UPLOAD_IMA_CERTIFICATE"))
+                          }
+                        />
+                      </View>
+                      {uploadedImagesDataObj.imaCertificate?.fileName ? (
+                        <View style={{ flexDirection: "row" }}>
+                          <TouchableOpacity
+                            style={{
+                              width: "20%",
+                              height: 30,
+                              backgroundColor: Colors.SKY_BLUE,
+                              borderRadius: 4,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                            onPress={() => {
+                              if (
+                                uploadedImagesDataObj.imaCertificate
+                                  ?.documentPath
+                              ) {
+                                setImagePath(
+                                  uploadedImagesDataObj.imaCertificate
+                                    ?.documentPath
+                                );
+                              }
+                            }}
+                          >
+                            <Text
+                              style={{
+                                color: Colors.WHITE,
+                                fontSize: 14,
+                                fontWeight: "600",
+                              }}
+                            >
+                              Preview
+                            </Text>
+                          </TouchableOpacity>
+                          <View style={{ width: "80%" }}>
+                            <DisplaySelectedImage
+                              fileName={
+                                uploadedImagesDataObj.imaCertificate.fileName
+                              }
+                              from={"IMA_CERTIFICATE"}
+                            />
+                          </View>
+                        </View>
+                      ) : null}
+                    </View>
+                  ) : null}
 
-                                            <View style={{ flexDirection: 'row' }}>
-                                                <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                                                    if (uploadedImagesDataObj.payslips?.documentPath) {
-                                                        setImagePath(uploadedImagesDataObj.payslips?.documentPath)
-                                                    }
-                                                }}>
-                                                    <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
-                                                </TouchableOpacity>
-                                                <View style={{ width: '80%' }}>
-                                                    <DisplaySelectedImage
-                                                        fileName={uploadedImagesDataObj.payslips.fileName}
-                                                        from={"3_MONTHS_PAYSLIP"}
-                                                    />
-                                                </View>
-                                            </View>
-                                        ) : null}
-                                    </View>
-                                ) : null}
+                  {/* Leasing Confirmation */}
+                  {selector.enquiry_segment.toLowerCase() === "commercial" &&
+                  selector.customer_type.toLowerCase() === "fleet" ? (
+                    <View>
+                      <View style={styles.select_image_bck_vw}>
+                        <ImageSelectItem
+                          name={"Leasing Confirmation"}
+                          onPress={() =>
+                            dispatch(
+                              setImagePicker("UPLOAD_LEASING_CONFIRMATION")
+                            )
+                          }
+                        />
+                      </View>
+                      {uploadedImagesDataObj.leasingConfirm?.fileName ? (
+                        <View style={{ flexDirection: "row" }}>
+                          <TouchableOpacity
+                            style={{
+                              width: "20%",
+                              height: 30,
+                              backgroundColor: Colors.SKY_BLUE,
+                              borderRadius: 4,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                            onPress={() => {
+                              if (
+                                uploadedImagesDataObj.leasingConfirm
+                                  ?.documentPath
+                              ) {
+                                setImagePath(
+                                  uploadedImagesDataObj.leasingConfirm
+                                    ?.documentPath
+                                );
+                              }
+                            }}
+                          >
+                            <Text
+                              style={{
+                                color: Colors.WHITE,
+                                fontSize: 14,
+                                fontWeight: "600",
+                              }}
+                            >
+                              Preview
+                            </Text>
+                          </TouchableOpacity>
+                          <View style={{ width: "80%" }}>
+                            <DisplaySelectedImage
+                              fileName={
+                                uploadedImagesDataObj.leasingConfirm.fileName
+                              }
+                              from={"LEASING_CONFIRMATION"}
+                            />
+                          </View>
+                        </View>
+                      ) : null}
+                    </View>
+                  ) : null}
 
-                                {/* Patta Pass book */}
-                                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "farmer")) ? (
-                                    <View >
-                                        <View style={styles.select_image_bck_vw}>
-                                            <ImageSelectItem
-                                                name={"Patta Pass Book"}
-                                                onPress={() => dispatch(setImagePicker("UPLOAD_PATTA_PASS_BOOK"))}
-                                            />
-                                        </View>
-                                        {uploadedImagesDataObj.passbook?.fileName ? (
+                  {/* Address Proof */}
+                  {selector.enquiry_segment.toLowerCase() === "company" &&
+                  selector.customer_type.toLowerCase() === "institution" ? (
+                    <View>
+                      <View style={styles.select_image_bck_vw}>
+                        <ImageSelectItem
+                          name={"Address Proof"}
+                          onPress={() =>
+                            dispatch(setImagePicker("UPLOAD_ADDRESS_PROOF"))
+                          }
+                        />
+                      </View>
+                      {uploadedImagesDataObj.address?.fileName ? (
+                        <View style={{ flexDirection: "row" }}>
+                          <TouchableOpacity
+                            style={{
+                              width: "20%",
+                              height: 30,
+                              backgroundColor: Colors.SKY_BLUE,
+                              borderRadius: 4,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                            onPress={() => {
+                              if (uploadedImagesDataObj.address?.documentPath) {
+                                setImagePath(
+                                  uploadedImagesDataObj.address?.documentPath
+                                );
+                              }
+                            }}
+                          >
+                            <Text
+                              style={{
+                                color: Colors.WHITE,
+                                fontSize: 14,
+                                fontWeight: "600",
+                              }}
+                            >
+                              Preview
+                            </Text>
+                          </TouchableOpacity>
+                          <View style={{ width: "80%" }}>
+                            <DisplaySelectedImage
+                              fileName={uploadedImagesDataObj.address.fileName}
+                              from={"ADDRESS_PROOF"}
+                            />
+                          </View>
+                        </View>
+                      ) : null}
+                    </View>
+                  ) : null}
 
-                                            <View style={{ flexDirection: 'row' }}>
-                                                <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                                                    if (uploadedImagesDataObj.passbook?.documentPath) {
-                                                        setImagePath(uploadedImagesDataObj.passbook?.documentPath)
-                                                    }
-                                                }}>
-                                                    <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
-                                                </TouchableOpacity>
-                                                <View style={{ width: '80%' }}>
-                                                    <DisplaySelectedImage
-                                                        fileName={uploadedImagesDataObj.passbook.fileName}
-                                                        from={"PATTA_PASS_BOOK"}
-                                                    />
-                                                </View>
-                                            </View>
-                                        ) : null}
-                                    </View>
-                                ) : null}
+                  {/* // Customer Type Category */}
+                  {selector.customer_type === "Individual" && (
+                    <View>
+                      <DropDownSelectionItem
+                        label={"Customer Type Category"}
+                        value={selector.customer_type_category}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "CUSTOMER_TYPE_CATEGORY",
+                            "Customer Type Category"
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
 
-                                {/* Pension Letter */}
-                                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "retired")) ? (
-                                    <View >
-                                        <View style={styles.select_image_bck_vw}>
-                                            <ImageSelectItem
-                                                name={"Pension Letter"}
-                                                onPress={() => dispatch(setImagePicker("UPLOAD_PENSION_LETTER"))}
-                                            />
-                                        </View>
-                                        {uploadedImagesDataObj.pension?.fileName ? (
+                  {/* GSTIN Number */}
+                  {(selector.enquiry_segment.toLowerCase() === "company" &&
+                    selector.customer_type.toLowerCase() === "institution") ||
+                  selector.customer_type_category == "B2B" ||
+                  selector.customer_type_category == "B2C" ? (
+                    <View>
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.gstin_number}
+                        maxLength={15}
+                        label={"GSTIN Number"}
+                        autoCapitalize={"characters"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setDocumentUploadDetails({
+                              key: "GSTIN_NUMBER",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  ) : null}
 
-                                            <View style={{ flexDirection: 'row' }}>
-                                                <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                                                    if (uploadedImagesDataObj.pension?.documentPath) {
-                                                        setImagePath(uploadedImagesDataObj.pension?.documentPath)
-                                                    }
-                                                }}>
-                                                    <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
-                                                </TouchableOpacity>
-                                                <View style={{ width: '80%' }}>
-                                                    <DisplaySelectedImage
-                                                        fileName={uploadedImagesDataObj.pension.fileName}
-                                                        from={"PENSION_LETTER"}
-                                                    />
-                                                </View>
-                                            </View>
-                                        ) : null}
-                                    </View>
-                                ) : null}
-
-                                {/* IMA Certificate */}
-                                {(selector.enquiry_segment.toLowerCase() === "personal" && (selector.customer_type.toLowerCase() === "doctor")) ? (
-                                    <View >
-                                        <View style={styles.select_image_bck_vw}>
-                                            <ImageSelectItem
-                                                name={"IMA Certificate"}
-                                                onPress={() => dispatch(setImagePicker("UPLOAD_IMA_CERTIFICATE"))}
-                                            />
-                                        </View>
-                                        {uploadedImagesDataObj.imaCertificate?.fileName ? (
-
-                                            <View style={{ flexDirection: 'row' }}>
-                                                <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                                                    if (uploadedImagesDataObj.imaCertificate?.documentPath) {
-                                                        setImagePath(uploadedImagesDataObj.imaCertificate?.documentPath)
-                                                    }
-                                                }}>
-                                                    <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
-                                                </TouchableOpacity>
-                                                <View style={{ width: '80%' }}>
-                                                    <DisplaySelectedImage
-                                                        fileName={uploadedImagesDataObj.imaCertificate.fileName}
-                                                        from={"IMA_CERTIFICATE"}
-                                                    />
-                                                </View>
-                                            </View>
-                                        ) : null}
-                                    </View>
-                                ) : null}
-
-                                {/* Leasing Confirmation */}
-                                {(selector.enquiry_segment.toLowerCase() === "commercial" && (selector.customer_type.toLowerCase() === "fleet")) ? (
-                                    <View >
-                                        <View style={styles.select_image_bck_vw}>
-                                            <ImageSelectItem
-                                                name={"Leasing Confirmation"}
-                                                onPress={() => dispatch(setImagePicker("UPLOAD_LEASING_CONFIRMATION"))}
-                                            />
-                                        </View>
-                                        {uploadedImagesDataObj.leasingConfirm?.fileName ? (
-
-                                            <View style={{ flexDirection: 'row' }}>
-                                                <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                                                    if (uploadedImagesDataObj.leasingConfirm?.documentPath) {
-                                                        setImagePath(uploadedImagesDataObj.leasingConfirm?.documentPath)
-                                                    }
-                                                }}>
-                                                    <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
-                                                </TouchableOpacity>
-                                                <View style={{ width: '80%' }}>
-                                                    <DisplaySelectedImage
-                                                        fileName={uploadedImagesDataObj.leasingConfirm.fileName}
-                                                        from={"LEASING_CONFIRMATION"}
-                                                    />
-                                                </View>
-                                            </View>
-                                        ) : null}
-                                    </View>
-                                ) : null}
-
-                                {/* Address Proof */}
-                                {(selector.enquiry_segment.toLowerCase() === "company" && (selector.customer_type.toLowerCase() === "institution")) ? (
-                                    <View >
-                                        <View style={styles.select_image_bck_vw}>
-                                            <ImageSelectItem
-                                                name={"Address Proof"}
-                                                onPress={() => dispatch(setImagePicker("UPLOAD_ADDRESS_PROOF"))}
-                                            />
-                                        </View>
-                                        {uploadedImagesDataObj.address?.fileName ? (
-
-                                            <View style={{ flexDirection: 'row' }}>
-                                                <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                                                    if (uploadedImagesDataObj.address?.documentPath) {
-                                                        setImagePath(uploadedImagesDataObj.address?.documentPath)
-                                                    }
-                                                }}>
-                                                    <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
-                                                </TouchableOpacity>
-                                                <View style={{ width: '80%' }}>
-                                                    <DisplaySelectedImage
-                                                        fileName={uploadedImagesDataObj.address.fileName}
-                                                        from={"ADDRESS_PROOF"}
-                                                    />
-                                                </View>
-                                            </View>
-                                        ) : null}
-                                    </View>
-                                ) : null}
-
-                                {/* // Customer Type Category */}
-                                {selector.customer_type === "Individual" && (
-                                    <View>
-                                        <DropDownSelectionItem
-                                            label={"Customer Type Category"}
-                                            value={selector.customer_type_category}
-                                            onPress={() =>
-                                                showDropDownModelMethod(
-                                                    "CUSTOMER_TYPE_CATEGORY",
-                                                    "Customer Type Category"
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                    </View>
-                                )}
-
-                                {/* GSTIN Number */}
-                                {(selector.enquiry_segment.toLowerCase() === "company" && selector.customer_type.toLowerCase() === "institution") || (selector.customer_type_category == "B2B" ||
-                                    selector.customer_type_category == "B2C") ? (
-                                    <View>
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.gstin_number}
-                                            label={"GSTIN Number"}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setDocumentUploadDetails({
-                                                        key: "GSTIN_NUMBER",
-                                                        text: text,
-                                                    })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                    </View>
-                                ) : null}
-
-
-                                {/* // Relationship Number */}
-                                <View>
-                                    {/* <TextinputComp
+                  {/* // Relationship Number */}
+                  <View>
+                    {/* <TextinputComp
                                         style={styles.textInputStyle}
                                         value={selector.relationship_proof}
                                         label={"Relationship Number*"}
@@ -3940,69 +4483,91 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         }
                                     />
                                     <Text style={GlobalStyle.underline}></Text> */}
-                                    <View style={styles.select_image_bck_vw}>
-                                        <ImageSelectItem
-                                            name={"Others"}
-                                            onPress={() =>
-                                                dispatch(setImagePicker("UPLOAD_RELATION_PROOF"))
-                                            }
-                                        />
-                                    </View>
-                                    {uploadedImagesDataObj.relationshipProof?.fileName ? (
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Others"}
+                        onPress={() =>
+                          dispatch(setImagePicker("UPLOAD_RELATION_PROOF"))
+                        }
+                      />
+                    </View>
+                    {uploadedImagesDataObj.relationshipProof?.fileName ? (
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          style={{
+                            width: "20%",
+                            height: 30,
+                            backgroundColor: Colors.SKY_BLUE,
+                            borderRadius: 4,
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                          onPress={() => {
+                            if (
+                              uploadedImagesDataObj.relationshipProof
+                                ?.documentPath
+                            ) {
+                              setImagePath(
+                                uploadedImagesDataObj.relationshipProof
+                                  ?.documentPath
+                              );
+                            }
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: Colors.WHITE,
+                              fontSize: 14,
+                              fontWeight: "600",
+                            }}
+                          >
+                            Preview
+                          </Text>
+                        </TouchableOpacity>
+                        <View style={{ width: "80%" }}>
+                          <DisplaySelectedImage
+                            fileName={
+                              uploadedImagesDataObj.relationshipProof.fileName
+                            }
+                            from={"RELATION_PROOF"}
+                          />
+                        </View>
+                      </View>
+                    ) : null}
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                </List.Accordion>
+                <View style={styles.space}></View>
 
-                                        <View style={{ flexDirection: 'row' }}>
-                                            <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                                                if (uploadedImagesDataObj.relationshipProof?.documentPath) {
-                                                    setImagePath(uploadedImagesDataObj.relationshipProof?.documentPath)
-                                                }
-                                            }}>
-                                                <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
-                                            </TouchableOpacity>
-                                            <View style={{ width: '80%' }}>
-                                                <DisplaySelectedImage
-                                                    fileName={uploadedImagesDataObj.relationshipProof.fileName}
-                                                    from={"RELATION_PROOF"}
-                                                />
-                                            </View>
-                                        </View>
-                                    ) : null}
-                                    <Text style={GlobalStyle.underline}></Text>
-                                </View>
-
-                            </List.Accordion>
-                            <View style={styles.space}></View>
-
-                            {/* // 5.Price Confirmation */}
-                            <List.Accordion
-                                id={"5"}
-                                title={"Price Confirmation"}
-                                description={rupeeSymbol + " " + totalOnRoadPrice.toFixed(2)}
-                                titleStyle={{
-                                    color: openAccordian === "5" ? Colors.BLACK : Colors.BLACK,
-                                    fontSize: 16,
-                                    fontWeight: "600",
-                                }}
-                                descriptionStyle={{
-                                    color: openAccordian === "5" ? Colors.BLACK : Colors.BLACK,
-                                    paddingTop: 5,
-                                    fontSize: 16,
-                                    fontWeight: "600",
-                                }}
-                                style={[
-                                    {
-                                        backgroundColor:
-                                            openAccordian === "5"
-                                                ? Colors.RED
-                                                : Colors.WHITE,
-                                    },
-                                    styles.accordianBorder,
-                                ]}
-                            >
-                                <TextAndAmountComp
-                                    title={"Ex-Showroom Price:"}
-                                    amount={priceInfomationData.ex_showroom_price.toFixed(2)}
-                                />
-                                {/* <View style={styles.radioGroupBcVw}>
+                {/* // 5.Price Confirmation */}
+                <List.Accordion
+                  id={"5"}
+                  title={"Price Confirmation"}
+                  description={rupeeSymbol + " " + totalOnRoadPrice.toFixed(2)}
+                  titleStyle={{
+                    color: openAccordian === "5" ? Colors.BLACK : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  descriptionStyle={{
+                    color: openAccordian === "5" ? Colors.BLACK : Colors.BLACK,
+                    paddingTop: 5,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "5" ? Colors.RED : Colors.WHITE,
+                    },
+                    styles.accordianBorder,
+                  ]}
+                >
+                  <TextAndAmountComp
+                    title={"Ex-Showroom Price:"}
+                    amount={priceInfomationData.ex_showroom_price.toFixed(2)}
+                  />
+                  {/* <View style={styles.radioGroupBcVw}>
                                     <Checkbox.Android
                                         style={{ margin: 0, padding: 0 }}
                                         uncheckedColor={Colors.GRAY}
@@ -4024,403 +4589,433 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     </Text>
                                 </View> */}
 
-                                {selector.vechicle_registration ? (
-                                    <View>
-                                        <DropDownSelectionItem
-                                            label={"Vehicle Type"}
-                                            value={selector.vehicle_type}
-                                            onPress={() =>
-                                                showDropDownModelMethod("VEHICLE_TYPE", "Vehicle Type")
-                                            }
-                                        />
-                                        <TextinputComp
-                                            style={styles.textInputStyle}
-                                            value={selector.registration_number}
-                                            label={"Reg. No"}
-                                            maxLength={15}
-                                            autoCapitalize={"characters"}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setPriceConformationDetails({
-                                                        key: "REGISTRATION_NUMBER",
-                                                        text: text,
-                                                    })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                    </View>
-                                ) : null}
+                  {selector.vechicle_registration ? (
+                    <View>
+                      <DropDownSelectionItem
+                        label={"Vehicle Type"}
+                        value={selector.vehicle_type}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "VEHICLE_TYPE",
+                            "Vehicle Type"
+                          )
+                        }
+                      />
+                      <TextinputComp
+                        style={styles.textInputStyle}
+                        value={selector.registration_number}
+                        label={"Reg. No"}
+                        maxLength={15}
+                        autoCapitalize={"characters"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setPriceConformationDetails({
+                              key: "REGISTRATION_NUMBER",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  ) : null}
 
-                                {/* <TextAndAmountComp
+                  {/* <TextAndAmountComp
                                     title={"Life Tax:"}
                                     amount={lifeTaxAmount.toFixed(2)}
                                 /> */}
-                                <View style={styles.textAndAmountView}>
-                                    {/* <View style={{width: '60%', flexDirection: 'row'}}> */}
-                                    <Text style={[styles.leftLabel]}>{"Life Tax:"}</Text>
-                                    {/* </View> */}
-                                    <View style={{
-                                        width: 100,
-                                        // height: 30,
-                                        // justifyContent: 'center',
-                                        paddingHorizontal: 10,
-                                        borderBottomWidth: 1, borderBottomColor: '#d1d1d1'
-                                    }}>
-                                        <TextInput
-                                            value={taxPercent}
-                                            style={[{ fontSize: 14, fontWeight: "400", }]}
-                                            keyboardType={"number-pad"}
-                                            onChangeText={(text) => {
-                                                setTaxPercent(text);
-                                                if (text !== '') {
-                                                    setLifeTaxAmount(getLifeTaxNew(Number(text)))
-                                                }
-                                                else {
-                                                    setLifeTaxAmount(0)
-                                                }
-                                            }}
-                                        />
+                  <View style={styles.textAndAmountView}>
+                    {/* <View style={{width: '60%', flexDirection: 'row'}}> */}
+                    <Text style={[styles.leftLabel]}>{"Life Tax:"}</Text>
+                    {/* </View> */}
+                    <View
+                      style={{
+                        width: 100,
+                        // height: 30,
+                        // justifyContent: 'center',
+                        paddingHorizontal: 10,
+                        borderBottomWidth: 1,
+                        borderBottomColor: "#d1d1d1",
+                      }}
+                    >
+                      <TextInput
+                        value={taxPercent}
+                        style={[{ fontSize: 14, fontWeight: "400" }]}
+                        keyboardType={"number-pad"}
+                        onChangeText={(text) => {
+                          setTaxPercent(text);
+                          if (text !== "") {
+                            setLifeTaxAmount(getLifeTaxNew(Number(text)));
+                          } else {
+                            setLifeTaxAmount(0);
+                          }
+                        }}
+                      />
+                    </View>
+                    <Text style={{ fontSize: 14, fontWeight: "400" }}>
+                      {rupeeSymbol + " " + lifeTaxAmount.toFixed(2)}
+                    </Text>
+                  </View>
 
-                                    </View>
-                                    <Text style={{ fontSize: 14, fontWeight: "400", }}>{rupeeSymbol + " " + lifeTaxAmount.toFixed(2)}</Text>
-                                </View>
+                  <Text style={GlobalStyle.underline}></Text>
 
-                                <Text style={GlobalStyle.underline}></Text>
+                  <TextAndAmountComp
+                    title={"Registration Charges:"}
+                    amount={priceInfomationData.registration_charges.toFixed(2)}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
 
-                                <TextAndAmountComp
-                                    title={"Registration Charges:"}
-                                    amount={priceInfomationData.registration_charges.toFixed(2)}
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
+                  <View style={styles.symbolview}>
+                    <View style={{ width: "70%" }}>
+                      <DropDownSelectionItem
+                        label={"Insurance Type"}
+                        value={selector.insurance_type}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "INSURANCE_TYPE",
+                            "Insurance Type"
+                          )
+                        }
+                      />
+                    </View>
+                    <Text style={styles.shadowText}>
+                      {rupeeSymbol + " " + selectedInsurencePrice.toFixed(2)}
+                    </Text>
+                  </View>
+                  <View style={styles.symbolview}>
+                    <View style={{ width: "70%" }}>
+                      <DropDownSelectionItem
+                        label={"Add-on Insurance"}
+                        value={
+                          selector.insurance_type !== ""
+                            ? selector.add_on_insurance
+                            : ""
+                        }
+                        disabled={!selector.insurance_type}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "INSURENCE_ADD_ONS",
+                            "Add-on Insurance"
+                          )
+                        }
+                      />
+                    </View>
+                    {selector.insurance_type !== "" ? (
+                      <Text style={styles.shadowText}>
+                        {rupeeSymbol + " " + selectedAddOnsPrice.toFixed(2)}
+                      </Text>
+                    ) : (
+                      <Text style={styles.shadowText}>
+                        {rupeeSymbol + " 0.00"}
+                      </Text>
+                    )}
+                  </View>
 
-                                <View style={styles.symbolview}>
-                                    <View style={{ width: "70%" }}>
-                                        <DropDownSelectionItem
-                                            label={"Insurance Type"}
-                                            value={selector.insurance_type}
-                                            onPress={() =>
-                                                showDropDownModelMethod(
-                                                    "INSURANCE_TYPE",
-                                                    "Insurance Type"
-                                                )
-                                            }
-                                        />
-                                    </View>
-                                    <Text style={styles.shadowText}>
-                                        {rupeeSymbol + " " + selectedInsurencePrice.toFixed(2)}
-                                    </Text>
-                                </View>
-                                <View style={styles.symbolview}>
-                                    <View style={{ width: "70%" }}>
-                                        <DropDownSelectionItem
-                                            label={"Add-on Insurance"}
-                                            value={selector.insurance_type !== '' ? selector.add_on_insurance : ''}
-                                            disabled={!selector.insurance_type}
-                                            onPress={() =>
-                                                showDropDownModelMethod(
-                                                    "INSURENCE_ADD_ONS",
-                                                    "Add-on Insurance"
-                                                )
-                                            }
-                                        />
-                                    </View>
-                                    {selector.insurance_type !== '' ?
-                                        <Text style={styles.shadowText}>
-                                            {rupeeSymbol + " " + selectedAddOnsPrice.toFixed(2)}
-                                        </Text>
-                                        :
-                                        <Text style={styles.shadowText}>
-                                            {rupeeSymbol + " 0.00"}
-                                        </Text>
-                                    }
-                                </View>
+                  <View style={styles.symbolview}>
+                    <View style={{ width: "70%" }}>
+                      <DropDownSelectionItem
+                        label={"Warranty"}
+                        value={selector.warranty}
+                        onPress={() =>
+                          showDropDownModelMethod("WARRANTY", "Warranty")
+                        }
+                      />
+                    </View>
+                    <Text style={styles.shadowText}>
+                      {rupeeSymbol + " " + selectedWarrentyPrice.toFixed(2)}
+                    </Text>
+                  </View>
+                  <Text style={GlobalStyle.underline}></Text>
 
-                                <View style={styles.symbolview}>
-                                    <View style={{ width: "70%" }}>
-                                        <DropDownSelectionItem
-                                            label={"Warranty"}
-                                            value={selector.warranty}
-                                            onPress={() =>
-                                                showDropDownModelMethod("WARRANTY", "Warranty")
-                                            }
-                                        />
-                                    </View>
-                                    <Text style={styles.shadowText}>
-                                        {rupeeSymbol + " " + selectedWarrentyPrice.toFixed(2)}
-                                    </Text>
-                                </View>
-                                <Text style={GlobalStyle.underline}></Text>
+                  <CheckboxTextAndAmountComp
+                    title={"Handling Charges:"}
+                    amount={
+                      handlingChargSlctd
+                        ? priceInfomationData.handling_charges.toFixed(2)
+                        : 0
+                    }
+                    // amount={handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : "0.00"}
+                    isChecked={handlingChargSlctd}
+                    onPress={() => {
+                      setHandlingChargSlctd(!handlingChargSlctd);
+                      calculateOnRoadPrice(
+                        !handlingChargSlctd,
+                        essentialKitSlctd,
+                        fastTagSlctd
+                      );
+                    }}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
 
-                                <CheckboxTextAndAmountComp
-                                    title={"Handling Charges:"}
-                                    amount={handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : 0}
-                                    // amount={handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : "0.00"}
-                                    isChecked={handlingChargSlctd}
-                                    onPress={() => {
-                                        setHandlingChargSlctd(!handlingChargSlctd);
-                                        calculateOnRoadPrice(
-                                            !handlingChargSlctd,
-                                            essentialKitSlctd,
-                                            fastTagSlctd
-                                        );
-                                    }}
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
+                  <CheckboxTextAndAmountComp
+                    title={"Essential Kit:"}
+                    amount={
+                      essentialKitSlctd
+                        ? priceInfomationData.essential_kit.toFixed(2)
+                        : 0
+                    }
+                    // amount={essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : "0.00"}
+                    isChecked={essentialKitSlctd}
+                    onPress={() => {
+                      setEssentialKitSlctd(!essentialKitSlctd);
+                      calculateOnRoadPrice(
+                        handlingChargSlctd,
+                        !essentialKitSlctd,
+                        fastTagSlctd
+                      );
+                    }}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
 
-                                <CheckboxTextAndAmountComp
-                                    title={"Essential Kit:"}
-                                    amount={essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : 0}
-                                    // amount={essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : "0.00"}
-                                    isChecked={essentialKitSlctd}
-                                    onPress={() => {
-                                        setEssentialKitSlctd(!essentialKitSlctd);
-                                        calculateOnRoadPrice(
-                                            handlingChargSlctd,
-                                            !essentialKitSlctd,
-                                            fastTagSlctd
-                                        );
-                                    }}
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
+                  <TextAndAmountComp
+                    title={"TCS(>=10Lakhs -> 1%):"}
+                    amount={tcsAmount.toFixed(2)}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
 
-                                <TextAndAmountComp
-                                    title={"TCS(>=10Lakhs -> 1%):"}
-                                    amount={tcsAmount.toFixed(2)}
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
+                  <Pressable
+                    onPress={() =>
+                      navigation.navigate(
+                        AppNavigator.EmsStackIdentifiers.paidAccessories,
+                        {
+                          accessorylist: paidAccessoriesList,
+                          selectedAccessoryList: selectedPaidAccessoriesList,
+                          selectedFOCAccessoryList: selectedFOCAccessoriesList,
+                        }
+                      )
+                    }
+                  >
+                    <PaidAccessoriesTextAndAmountComp
+                      title={"Paid Accessories:"}
+                      amount={selectedPaidAccessoriesPrice.toFixed(2)}
+                    />
+                  </Pressable>
+                  <Text style={GlobalStyle.underline}></Text>
+                  {paidAccessoriesListNew.length > 0 ? (
+                    <View
+                      style={{
+                        backgroundColor: Colors.WHITE,
+                        paddingLeft: 12,
+                        paddingTop: 5,
+                      }}
+                    >
+                      {paidAccessoriesListNew.map((item, index) => {
+                        return (
+                          <Text
+                            style={styles.accessoriText}
+                            key={"ACC" + index}
+                          >
+                            {item.accessoriesName + " - " + item.amount}
+                          </Text>
+                        );
+                      })}
+                      <Text
+                        style={[GlobalStyle.underline, { marginTop: 5 }]}
+                      ></Text>
+                    </View>
+                  ) : null}
 
-                                <Pressable
-                                    onPress={() =>
-                                        navigation.navigate(
-                                            AppNavigator.EmsStackIdentifiers.paidAccessories,
-                                            {
-                                                accessorylist: paidAccessoriesList,
-                                                selectedAccessoryList: selectedPaidAccessoriesList,
-                                                selectedFOCAccessoryList: selectedFOCAccessoriesList,
-                                            }
-                                        )
-                                    }
-                                >
-                                    <PaidAccessoriesTextAndAmountComp
-                                        title={"Paid Accessories:"}
-                                        amount={selectedPaidAccessoriesPrice.toFixed(2)}
-                                    />
-                                </Pressable>
-                                <Text style={GlobalStyle.underline}></Text>
-                                {paidAccessoriesListNew.length > 0 ? (
-                                    <View
-                                        style={{
-                                            backgroundColor: Colors.WHITE,
-                                            paddingLeft: 12,
-                                            paddingTop: 5,
-                                        }}
-                                    >
-                                        {paidAccessoriesListNew.map((item, index) => {
-                                            return (
-                                                <Text style={styles.accessoriText} key={"ACC" + index}>
-                                                    {item.accessoriesName + " - " + item.amount}
-                                                </Text>
-                                            );
-                                        })}
-                                        <Text
-                                            style={[GlobalStyle.underline, { marginTop: 5 }]}
-                                        ></Text>
-                                    </View>
-                                ) : null}
-
-                                <CheckboxTextAndAmountComp
-                                    title={"Fast Tag:"}
-                                    amount={fastTagSlctd? priceInfomationData.fast_tag === null? 0:priceInfomationData.fast_tag.toFixed(2) :0 }
-                                    //amount={fastTagSlctd ? priceInfomationData.fast_tag.toFixed(2) : 0}
-                                    // \\\\amount={fastTagSlctd ? priceInfomationData.fast_tag.toFixed(2) : "0.00"}
-                                    isChecked={fastTagSlctd}
-                                    onPress={() => {
-                                        setFastTagSlctd(!fastTagSlctd);
-                                        calculateOnRoadPrice(
-                                            handlingChargSlctd,
-                                            essentialKitSlctd,
-                                            !fastTagSlctd
-                                        );
-                                    }}
-                                />
-                                {/* <TextAndAmountComp
+                  <CheckboxTextAndAmountComp
+                    title={"Fast Tag:"}
+                    amount={
+                      fastTagSlctd
+                        ? priceInfomationData.fast_tag === null
+                          ? 0
+                          : priceInfomationData.fast_tag.toFixed(2)
+                        : 0
+                    }
+                    //amount={fastTagSlctd ? priceInfomationData.fast_tag.toFixed(2) : 0}
+                    // \\\\amount={fastTagSlctd ? priceInfomationData.fast_tag.toFixed(2) : "0.00"}
+                    isChecked={fastTagSlctd}
+                    onPress={() => {
+                      setFastTagSlctd(!fastTagSlctd);
+                      calculateOnRoadPrice(
+                        handlingChargSlctd,
+                        essentialKitSlctd,
+                        !fastTagSlctd
+                      );
+                    }}
+                  />
+                  {/* <TextAndAmountComp
                   title={"Fast Tag:"}
                   amount={priceInfomationData.fast_tag.toFixed(2)}
                 /> */}
-                                <Text style={GlobalStyle.underline}></Text>
+                  <Text style={GlobalStyle.underline}></Text>
 
-                                <TextAndAmountComp
-                                    title={"On Road Price:"}
-                                    amount={totalOnRoadPrice.toFixed(2)}
-                                    titleStyle={{ fontSize: 18, fontWeight: "800" }}
-                                    amoutStyle={{ fontSize: 18, fontWeight: "800" }}
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
-                            </List.Accordion>
-                            <View style={styles.space}></View>
+                  <TextAndAmountComp
+                    title={"On Road Price:"}
+                    amount={totalOnRoadPrice.toFixed(2)}
+                    titleStyle={{ fontSize: 18, fontWeight: "800" }}
+                    amoutStyle={{ fontSize: 18, fontWeight: "800" }}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                </List.Accordion>
+                <View style={styles.space}></View>
 
-                            {/* // 6.Offer Price */}
-                            <List.Accordion
-                                id={"6"}
-                                title={"Offer Price"}
-                                description={
-                                    rupeeSymbol + " " + totalOnRoadPriceAfterDiscount.toFixed(2)
-                                }
-                                titleStyle={{
-                                    color: openAccordian === "6" ? Colors.BLACK : Colors.BLACK,
-                                    fontSize: 16,
-                                    fontWeight: "600",
-                                }}
-                                descriptionStyle={{
-                                    color: openAccordian === "6" ? Colors.BLACK : Colors.BLACK,
-                                    paddingTop: 5,
-                                    fontSize: 16,
-                                    fontWeight: "600",
-                                }}
-                                style={[
-                                    {
-                                        backgroundColor:
-                                            openAccordian === "6"
-                                                ? Colors.RED
-                                                : Colors.WHITE,
-                                    },
-                                    styles.accordianBorder,
-                                ]}
-                            >
-                                <TextinputComp
-                                    style={styles.offerPriceTextInput}
-                                    label={"Consumer Offer:"}
-                                    value={selector.consumer_offer}
-                                    showLeftAffixText={true}
-                                    leftAffixText={rupeeSymbol}
-                                    keyboardType="number-pad"
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setOfferPriceDetails({
-                                                key: "CONSUMER_OFFER",
-                                                text: text,
-                                            })
-                                        )
-                                    }
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
-                                <TextinputComp
-                                    style={styles.offerPriceTextInput}
-                                    label={"Exchange Offer:"}
-                                    value={selector.exchange_offer}
-                                    showLeftAffixText={true}
-                                    keyboardType="number-pad"
-                                    leftAffixText={rupeeSymbol}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setOfferPriceDetails({
-                                                key: "EXCHANGE_OFFER",
-                                                text: text,
-                                            })
-                                        )
-                                    }
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
-                                <TextinputComp
-                                    style={styles.offerPriceTextInput}
-                                    label={"Corporate Offer:"}
-                                    value={selector.corporate_offer}
-                                    showLeftAffixText={true}
-                                    leftAffixText={rupeeSymbol}
-                                    keyboardType="number-pad"
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setOfferPriceDetails({
-                                                key: "CORPORATE_OFFER",
-                                                text: text,
-                                            })
-                                        )
-                                    }
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
-                                <TextinputComp
-                                    style={styles.offerPriceTextInput}
-                                    label={"Promotional Offer:"}
-                                    value={selector.promotional_offer}
-                                    showLeftAffixText={true}
-                                    keyboardType="number-pad"
-                                    leftAffixText={rupeeSymbol}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setOfferPriceDetails({
-                                                key: "PROMOTIONAL_OFFER",
-                                                text: text,
-                                            })
-                                        )
-                                    }
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
-                                <TextinputComp
-                                    style={styles.offerPriceTextInput}
-                                    label={"Cash Discount:"}
-                                    value={selector.cash_discount}
-                                    showLeftAffixText={true}
-                                    keyboardType="number-pad"
-                                    leftAffixText={rupeeSymbol}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setOfferPriceDetails({
-                                                key: "CASH_DISCOUNT",
-                                                text: text,
-                                            })
-                                        )
-                                    }
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
-                                <TextinputComp
-                                    style={styles.offerPriceTextInput}
-                                    label={"Foc Accessories:"}
-                                    value={selector.for_accessories}
-                                    showLeftAffixText={true}
-                                    keyboardType="number-pad"
-                                    leftAffixText={rupeeSymbol}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setOfferPriceDetails({
-                                                key: "FOR_ACCESSORIES",
-                                                text: text,
-                                            })
-                                        )
-                                    }
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
-                                <TextinputComp
-                                    style={styles.offerPriceTextInput}
-                                    label={"Insurance Discount:"}
-                                    value={selector.insurance_discount}
-                                    showLeftAffixText={true}
-                                    keyboardType="number-pad"
-                                    leftAffixText={rupeeSymbol}
-                                    onChangeText={(text) => dispatch(
-                                        setOfferPriceDetails({
-                                            key: "INSURANCE_DISCOUNT",
-                                            text: text,
-                                        })
-                                    )} />
-                                <Text style={GlobalStyle.underline}></Text>
-                                <TextinputComp
-                                    style={styles.offerPriceTextInput}
-                                    label={"Accessories Discount:"}
-                                    value={selector.accessories_discount}
-                                    showLeftAffixText={true}
-                                    keyboardType="number-pad"
-                                    leftAffixText={rupeeSymbol}
-                                    onChangeText={(text) => dispatch(
-                                        setOfferPriceDetails({
-                                            key: "ACCESSORIES_DISCOUNT",
-                                            text: text,
-                                        })
-                                    )}
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
+                {/* // 6.Offer Price */}
+                <List.Accordion
+                  id={"6"}
+                  title={"Offer Price"}
+                  description={
+                    rupeeSymbol + " " + totalOnRoadPriceAfterDiscount.toFixed(2)
+                  }
+                  titleStyle={{
+                    color: openAccordian === "6" ? Colors.BLACK : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  descriptionStyle={{
+                    color: openAccordian === "6" ? Colors.BLACK : Colors.BLACK,
+                    paddingTop: 5,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "6" ? Colors.RED : Colors.WHITE,
+                    },
+                    styles.accordianBorder,
+                  ]}
+                >
+                  <TextinputComp
+                    style={styles.offerPriceTextInput}
+                    label={"Consumer Offer:"}
+                    value={selector.consumer_offer}
+                    showLeftAffixText={true}
+                    leftAffixText={rupeeSymbol}
+                    keyboardType="number-pad"
+                    onChangeText={(text) =>
+                      dispatch(
+                        setOfferPriceDetails({
+                          key: "CONSUMER_OFFER",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.offerPriceTextInput}
+                    label={"Exchange Offer:"}
+                    value={selector.exchange_offer}
+                    showLeftAffixText={true}
+                    keyboardType="number-pad"
+                    leftAffixText={rupeeSymbol}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setOfferPriceDetails({
+                          key: "EXCHANGE_OFFER",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.offerPriceTextInput}
+                    label={"Corporate Offer:"}
+                    value={selector.corporate_offer}
+                    showLeftAffixText={true}
+                    leftAffixText={rupeeSymbol}
+                    keyboardType="number-pad"
+                    onChangeText={(text) =>
+                      dispatch(
+                        setOfferPriceDetails({
+                          key: "CORPORATE_OFFER",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.offerPriceTextInput}
+                    label={"Promotional Offer:"}
+                    value={selector.promotional_offer}
+                    showLeftAffixText={true}
+                    keyboardType="number-pad"
+                    leftAffixText={rupeeSymbol}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setOfferPriceDetails({
+                          key: "PROMOTIONAL_OFFER",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.offerPriceTextInput}
+                    label={"Cash Discount:"}
+                    value={selector.cash_discount}
+                    showLeftAffixText={true}
+                    keyboardType="number-pad"
+                    leftAffixText={rupeeSymbol}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setOfferPriceDetails({
+                          key: "CASH_DISCOUNT",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.offerPriceTextInput}
+                    label={"Foc Accessories:"}
+                    value={selector.for_accessories}
+                    showLeftAffixText={true}
+                    keyboardType="number-pad"
+                    leftAffixText={rupeeSymbol}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setOfferPriceDetails({
+                          key: "FOR_ACCESSORIES",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.offerPriceTextInput}
+                    label={"Insurance Discount:"}
+                    value={selector.insurance_discount}
+                    showLeftAffixText={true}
+                    keyboardType="number-pad"
+                    leftAffixText={rupeeSymbol}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setOfferPriceDetails({
+                          key: "INSURANCE_DISCOUNT",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.offerPriceTextInput}
+                    label={"Accessories Discount:"}
+                    value={selector.accessories_discount}
+                    showLeftAffixText={true}
+                    keyboardType="number-pad"
+                    leftAffixText={rupeeSymbol}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setOfferPriceDetails({
+                          key: "ACCESSORIES_DISCOUNT",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
 
-                                {/* <View style={styles.textAndAmountView}>
+                  {/* <View style={styles.textAndAmountView}>
                                     <Text style={{ fontSize: 16, fontWeight: '400', color: Colors.GRAY }}>{"Insurance Discount:"}</Text>
                                     <View style={{ width: 80, height: 30, justifyContent: 'center', paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#d1d1d1' }}>
                                         <TextInput
@@ -4433,7 +5028,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         />
                                     </View>
                                 </View> */}
-                                {/* <View style={styles.textAndAmountView}>
+                  {/* <View style={styles.textAndAmountView}>
                                     <Text style={{ fontSize: 16, fontWeight: '400', color: Colors.GRAY }}>{"Accessories Discount:"}</Text>
                                     <View style={{ width: 80, height: 30, justifyContent: 'center', paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: '#d1d1d1' }}>
                                         <TextInput
@@ -4446,841 +5041,954 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                         />
                                     </View>
                                 </View> */}
-                                <TextinputComp
-                                    style={styles.offerPriceTextInput}
-                                    label={"Additional Offer 1:"}
-                                    value={selector.additional_offer_1}
-                                    showLeftAffixText={true}
-                                    keyboardType="number-pad"
-                                    leftAffixText={rupeeSymbol}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setOfferPriceDetails({
-                                                key: "ADDITIONAL_OFFER_1",
-                                                text: text,
-                                            })
-                                        )
-                                    }
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
-                                <TextinputComp
-                                    style={styles.offerPriceTextInput}
-                                    label={"Additional Offer 2:"}
-                                    value={selector.additional_offer_2}
-                                    showLeftAffixText={true}
-                                    keyboardType="number-pad"
-                                    leftAffixText={rupeeSymbol}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setOfferPriceDetails({
-                                                key: "ADDITIONAL_OFFER_2",
-                                                text: text,
-                                            })
-                                        )
-                                    }
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.offerPriceTextInput}
+                    label={"Additional Offer 1:"}
+                    value={selector.additional_offer_1}
+                    showLeftAffixText={true}
+                    keyboardType="number-pad"
+                    leftAffixText={rupeeSymbol}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setOfferPriceDetails({
+                          key: "ADDITIONAL_OFFER_1",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <TextinputComp
+                    style={styles.offerPriceTextInput}
+                    label={"Additional Offer 2:"}
+                    value={selector.additional_offer_2}
+                    showLeftAffixText={true}
+                    keyboardType="number-pad"
+                    leftAffixText={rupeeSymbol}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setOfferPriceDetails({
+                          key: "ADDITIONAL_OFFER_2",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
 
-                                <TextAndAmountComp
-                                    title={"On Road Price After Discount:"}
-                                    amount={totalOnRoadPriceAfterDiscount.toFixed(2)}
-                                    titleStyle={{ fontSize: 18, fontWeight: "800" }}
-                                    amoutStyle={{ fontSize: 18, fontWeight: "800" }}
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
-                            </List.Accordion>
-                            <View style={styles.space}></View>
+                  <TextAndAmountComp
+                    title={"On Road Price After Discount:"}
+                    amount={totalOnRoadPriceAfterDiscount.toFixed(2)}
+                    titleStyle={{ fontSize: 18, fontWeight: "800" }}
+                    amoutStyle={{ fontSize: 18, fontWeight: "800" }}
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                </List.Accordion>
+                <View style={styles.space}></View>
 
-                            {/* // 7.Finance Details */}
-                            <List.Accordion
-                                id={"7"}
-                                title={"Finance Details"}
-                                titleStyle={{
-                                    color: openAccordian === "7" ? Colors.BLACK : Colors.BLACK,
-                                    fontSize: 16,
-                                    fontWeight: "600",
-                                }}
-                                style={[
-                                    {
-                                        backgroundColor:
-                                            openAccordian === "7"
-                                                ? Colors.RED
-                                                : Colors.WHITE,
-                                    },
-                                    styles.accordianBorder,
-                                ]}
-                            >
-                                <DropDownSelectionItem
-                                    label={"Retail Finance"}
-                                    value={selector.retail_finance}
-                                    onPress={() =>
-                                        showDropDownModelMethod("RETAIL_FINANCE", "Retail Finance")
-                                    }
-                                />
+                {/* // 7.Finance Details */}
+                <List.Accordion
+                  id={"7"}
+                  title={"Finance Details"}
+                  titleStyle={{
+                    color: openAccordian === "7" ? Colors.BLACK : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "7" ? Colors.RED : Colors.WHITE,
+                    },
+                    styles.accordianBorder,
+                  ]}
+                >
+                  <DropDownSelectionItem
+                    label={"Retail Finance"}
+                    value={selector.retail_finance}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "RETAIL_FINANCE",
+                        "Retail Finance"
+                      )
+                    }
+                  />
 
-                                {selector.retail_finance === "Out House" ? (
-                                    <View>
-                                        <TextinputComp
-                                            style={{ height: 65, width: "100%" }}
-                                            label={"Bank/Finance Name"}
-                                            value={selector.bank_or_finance_name}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setFinancialDetails({
-                                                        key: "BANK_R_FINANCE_NAME",
-                                                        text: text,
-                                                    })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
+                  {selector.retail_finance === "Out House" ? (
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Bank/Finance Name"}
+                        value={selector.bank_or_finance_name}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setFinancialDetails({
+                              key: "BANK_R_FINANCE_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
 
-                                        <TextinputComp
-                                            style={{ height: 65, width: "100%" }}
-                                            label={"Location"}
-                                            value={selector.location}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setFinancialDetails({ key: "LOCATION", text: text })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                    </View>
-                                ) : null}
-
-                                {selector.retail_finance === "Leasing" && (
-                                    <View>
-                                        <TextinputComp
-                                            style={{ height: 65, width: "100%" }}
-                                            label={"Leasing Name"}
-                                            maxLength={50}
-                                            value={selector.leashing_name}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setFinancialDetails({
-                                                        key: "LEASHING_NAME",
-                                                        text: text,
-                                                    })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                    </View>
-                                )}
-
-                                {selector.retail_finance === "In House" && (
-                                    <DropDownSelectionItem
-                                        label={"Finance Category"}
-                                        value={selector.finance_category}
-                                        onPress={() =>
-                                            showDropDownModelMethod(
-                                                "FINANCE_CATEGORY",
-                                                "Finance Category"
-                                            )
-                                        }
-                                    />
-                                )}
-
-                                {selector.retail_finance === "In House" && (
-                                    <View>
-                                        <TextinputComp
-                                            style={{ height: 65, width: "100%" }}
-                                            label={"Down Payment"}
-                                            value={selector.down_payment}
-                                            keyboardType={"number-pad"}
-                                            onChangeText={(text) => {
-                                                if (text.length > 0) {
-                                                    const downPayment = Number(text);
-                                                    const loanAmount = (
-                                                        totalOnRoadPrice - downPayment
-                                                    ).toFixed(0);
-                                                    dispatch(
-                                                        setFinancialDetails({
-                                                            key: "LOAN_AMOUNT",
-                                                            text: `${loanAmount}`,
-                                                        })
-                                                    );
-                                                } else {
-                                                    dispatch(
-                                                        setFinancialDetails({
-                                                            key: "LOAN_AMOUNT",
-                                                            text: "0",
-                                                        })
-                                                    );
-                                                }
-                                                dispatch(
-                                                    setFinancialDetails({
-                                                        key: "DOWN_PAYMENT",
-                                                        text: text,
-                                                    })
-                                                );
-                                            }}
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-                                    </View>
-                                )}
-
-                                {(selector.retail_finance === "In House" ||
-                                    selector.retail_finance === "Out House") && (
-                                        <View>
-                                            <TextinputComp
-                                                style={{ height: 65, width: "100%" }}
-                                                label={"Loan Amount"}
-                                                keyboardType={"number-pad"}
-                                                value={selector.loan_amount}
-                                                onChangeText={(text) => {
-                                                    // Calculate EMI
-                                                    emiCal(
-                                                        text,
-                                                        selector.loan_of_tenure,
-                                                        selector.rate_of_interest
-                                                    );
-                                                    dispatch(
-                                                        setFinancialDetails({
-                                                            key: "LOAN_AMOUNT",
-                                                            text: text,
-                                                        })
-                                                    );
-                                                }}
-                                            />
-                                            <Text style={GlobalStyle.underline}></Text>
-                                            <TextinputComp
-                                                style={{ height: 65, width: "100%" }}
-                                                label={"Rate of Interest"}
-                                                keyboardType={"number-pad"}
-                                                value={selector.rate_of_interest}
-                                                onChangeText={(text) => {
-                                                    // Calculate EMI
-                                                    emiCal(
-                                                        selector.loan_amount,
-                                                        selector.loan_of_tenure,
-                                                        text
-                                                    );
-                                                    dispatch(
-                                                        setFinancialDetails({
-                                                            key: "RATE_OF_INTEREST",
-                                                            text: text,
-                                                        })
-                                                    );
-                                                }}
-                                            />
-                                            <Text style={GlobalStyle.underline}></Text>
-                                        </View>
-                                    )}
-
-                                {selector.retail_finance === "In House" && (
-                                    <View>
-                                        <DropDownSelectionItem
-                                            label={"Bank/Financer"}
-                                            value={selector.bank_or_finance}
-                                            onPress={() =>
-                                                showDropDownModelMethod("BANK_FINANCE", "Bank/Financer")
-                                            }
-                                        />
-
-                                        <TextinputComp
-                                            style={{ height: 65, width: "100%" }}
-                                            label={"Loan of Tenure(Months)"}
-                                            value={selector.loan_of_tenure}
-                                            keyboardType={"number-pad"}
-                                            onChangeText={(text) => {
-                                                // Calculate EMI
-                                                emiCal(
-                                                    selector.loan_amount,
-                                                    text,
-                                                    selector.rate_of_interest
-                                                );
-                                                dispatch(
-                                                    setFinancialDetails({
-                                                        key: "LOAN_OF_TENURE",
-                                                        text: text,
-                                                    })
-                                                );
-                                            }}
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-
-                                        <TextinputComp
-                                            style={{ height: 65, width: "100%" }}
-                                            label={"EMI"}
-                                            value={selector.emi}
-                                            keyboardType={"number-pad"}
-                                            onChangeText={(text) =>
-                                                dispatch(
-                                                    setFinancialDetails({ key: "EMI", text: text })
-                                                )
-                                            }
-                                        />
-                                        <Text style={GlobalStyle.underline}></Text>
-
-                                        <DropDownSelectionItem
-                                            label={"Approx Annual Income"}
-                                            value={selector.approx_annual_income}
-                                            onPress={() =>
-                                                showDropDownModelMethod(
-                                                    "APPROX_ANNUAL_INCOME",
-                                                    "Approx Annual Income"
-                                                )
-                                            }
-                                        />
-                                    </View>
-                                )}
-                            </List.Accordion>
-                            <View style={styles.space}></View>
-
-                            {/* // 8.Booking Payment Mode */}
-                            <List.Accordion
-                                id={"8"}
-                                title={"Booking Payment Mode"}
-                                titleStyle={{
-                                    color: openAccordian === "8" ? Colors.BLACK : Colors.BLACK,
-                                    fontSize: 16,
-                                    fontWeight: "600",
-                                }}
-                                style={[
-                                    {
-                                        backgroundColor:
-                                            openAccordian === "8"
-                                                ? Colors.RED
-                                                : Colors.WHITE,
-                                    },
-                                    styles.accordianBorder,
-                                ]}
-                            >
-                                <TextinputComp
-                                    style={{ height: 65, width: "100%" }}
-                                    value={selector.booking_amount}
-                                    label={"Booking Amount*"}
-                                    keyboardType={"number-pad"}
-                                    maxLength={9}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setBookingPaymentDetails({
-                                                key: "BOOKING_AMOUNT",
-                                                text: text,
-                                            })
-                                        )
-                                    }
-                                />
-                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.booking_amount === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-
-                                <DropDownSelectionItem
-                                    label={"Payment At*"}
-                                    value={selector.payment_at}
-                                    onPress={() =>
-                                        showDropDownModelMethod("PAYMENT_AT", "Payment At")
-                                    }
-                                />
-                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.payment_at === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                                <DropDownSelectionItem
-                                    label={"Booking Payment Mode*"}
-                                    value={selector.booking_payment_mode}
-                                    onPress={() =>
-                                        showDropDownModelMethod(
-                                            "BOOKING_PAYMENT_MODE",
-                                            "Booking Payment Mode"
-                                        )
-                                    }
-                                />
-                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.booking_payment_mode === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                            </List.Accordion>
-                            <View style={styles.space}></View>
-
-                            {/* // 9.DOD Confirmation */}
-                            <List.Accordion
-                                id={"9"}
-                                title={"DOD Confirmation"}
-                                titleStyle={{
-                                    color: openAccordian === "9" ? Colors.BLACK : Colors.BLACK,
-                                    fontSize: 16,
-                                    fontWeight: "600",
-                                }}
-                                style={[
-                                    {
-                                        backgroundColor:
-                                            openAccordian === "9"
-                                                ? Colors.RED
-                                                : Colors.WHITE,
-                                    },
-                                    styles.accordianBorder,
-                                ]}
-                            >
-                                <DateSelectItem
-                                    label={"Customer Preferred Date*"}
-                                    value={selector.customer_preferred_date}
-                                    onPress={() =>
-                                        dispatch(setDatePicker("CUSTOMER_PREFERRED_DATE"))
-                                    }
-                                />
-                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.customer_preferred_date === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                                <TextinputComp
-                                    style={{ height: 65, width: "100%" }}
-                                    label={"Occasion"}
-                                    value={selector.occasion}
-                                    maxLength={50}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setCommitmentDetails({ key: "OCCASION", text: text })
-                                        )
-                                    }
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
-                                <DateSelectItem
-                                    label={"Tentative Delivery Date*"}
-                                    value={selector.tentative_delivery_date}
-                                    onPress={() =>
-                                        dispatch(setDatePicker("TENTATIVE_DELIVERY_DATE"))
-                                    }
-                                />
-                                <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.tentative_delivery_date === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                                <TextinputComp
-                                    style={{ height: 65, width: "100%" }}
-                                    label={"Delivery Location"}
-                                    maxLength={50}
-                                    value={selector.delivery_location}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setCommitmentDetails({
-                                                key: "DELIVERY_LOCATON",
-                                                text: text,
-                                            })
-                                        )
-                                    }
-                                />
-                                <Text style={GlobalStyle.underline}></Text>
-                            </List.Accordion>
-                            <View style={styles.space}></View>
-                            {/* // 10.Drop */}
-                            {isRejectSelected ? <View style={styles.space}></View> : null}
-                            {isRejectSelected && (
-                                <List.Accordion
-                                    id={"11"}
-                                    title={"Manager Reject Remarks"}
-                                    titleStyle={{
-                                        color: openAccordian === "11" ? Colors.BLACK : Colors.BLACK,
-                                        fontSize: 16,
-                                        fontWeight: "600",
-                                    }}
-                                    style={[
-                                        {
-                                            backgroundColor:
-                                                openAccordian === "11"
-                                                    ? Colors.RED
-                                                    : Colors.WHITE,
-                                        },
-                                        styles.accordianBorder,
-                                    ]}
-                                >
-                                    <TextinputComp
-                                        style={styles.textInputStyle}
-                                        value={selector.reject_remarks}
-                                        label={"Remarks"}
-                                        onChangeText={(text) =>
-                                            dispatch(
-                                                setBookingDropDetails({
-                                                    key: "REJECT_REMARKS",
-                                                    text: text,
-                                                })
-                                            )
-                                        }
-                                    />
-                                    <Text style={GlobalStyle.underline}></Text>
-                                </List.Accordion>
-                            )}
-                            {/* // 12.Payment Details */}
-
-                            {showPrebookingPaymentSection ? (
-                                <View style={styles.space}></View>
-                            ) : null}
-                            {showPrebookingPaymentSection ? (
-                                <List.Accordion
-                                    id={"12"}
-                                    title={"PreBooking Payment Details"}
-                                    titleStyle={{
-                                        color: openAccordian === "12" ? Colors.BLACK : Colors.BLACK,
-                                        fontSize: 16,
-                                        fontWeight: "600",
-                                    }}
-                                    style={[
-                                        {
-                                            backgroundColor:
-                                                openAccordian === "12" ? Colors.RED : Colors.WHITE,
-                                        },
-                                        styles.accordianBorder,
-                                    ]}
-                                >
-                                    <View>
-                                        <View style={styles.select_image_bck_vw}>
-                                            <ImageSelectItem
-                                                name={"Receipt Doc"}
-                                                onPress={() => dispatch(setImagePicker("RECEIPT_DOC"))}
-                                            />
-                                        </View>
-                                        {uploadedImagesDataObj.receipt?.fileName ? (
-
-                                            <View style={{ flexDirection: 'row' }}>
-                                                <TouchableOpacity style={{ width: '20%', height: 30, backgroundColor: Colors.SKY_BLUE, borderRadius: 4, justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                                                    if (uploadedImagesDataObj.receipt?.documentPath) {
-                                                        setImagePath(uploadedImagesDataObj.receipt?.documentPath)
-                                                    }
-                                                }}>
-                                                    <Text style={{ color: Colors.WHITE, fontSize: 14, fontWeight: '600' }}>Preview</Text>
-                                                </TouchableOpacity>
-                                                <View style={{ width: '80%' }}>
-                                                    <DisplaySelectedImage
-                                                        fileName={uploadedImagesDataObj.receipt.fileName}
-                                                        from={"RECEIPT"}
-                                                    />
-                                                </View>
-                                            </View>
-                                        ) : null}
-                                        <Text style={GlobalStyle.underline}></Text>
-                                    </View>
-                                    {selector.booking_payment_mode === "UPI" && (
-                                        <View>
-                                            <TextinputComp
-                                                style={styles.textInputStyle}
-                                                value={selector.type_of_upi}
-                                                label={"Type of UPI"}
-                                                onChangeText={(text) =>
-                                                    dispatch(
-                                                        setPreBookingPaymentDetials({
-                                                            key: "TYPE_OF_UPI",
-                                                            text: text,
-                                                        })
-                                                    )
-                                                }
-                                            />
-                                            <Text style={GlobalStyle.underline}></Text>
-                                            <TextinputComp
-                                                style={styles.textInputStyle}
-                                                value={selector.transfer_from_mobile}
-                                                label={"Transfer From Mobile"}
-                                                keyboardType={"number-pad"}
-                                                maxLength={10}
-                                                onChangeText={(text) =>
-                                                    dispatch(
-                                                        setPreBookingPaymentDetials({
-                                                            key: "TRANSFER_FROM_MOBILE",
-                                                            text: text,
-                                                        })
-                                                    )
-                                                }
-                                            />
-                                            <Text style={GlobalStyle.underline}></Text>
-                                            <TextinputComp
-                                                style={styles.textInputStyle}
-                                                value={selector.transfer_to_mobile}
-                                                label={"Transfer To Mobile"}
-                                                keyboardType={"number-pad"}
-                                                maxLength={10}
-                                                onChangeText={(text) =>
-                                                    dispatch(
-                                                        setPreBookingPaymentDetials({
-                                                            key: "TRANSFER_TO_MOBILE",
-                                                            text: text,
-                                                        })
-                                                    )
-                                                }
-                                            />
-                                            <Text style={GlobalStyle.underline}></Text>
-                                        </View>
-                                    )}
-
-                                    {(selector.booking_payment_mode === "InternetBanking" ||
-                                        selector.booking_payment_mode === "Internet Banking") && (
-                                            <View>
-                                                <TextinputComp
-                                                    style={styles.textInputStyle}
-                                                    value={selector.utr_no}
-                                                    label={"UTR No"}
-                                                    onChangeText={(text) =>
-                                                        dispatch(
-                                                            setPreBookingPaymentDetials({
-                                                                key: "UTR_NO",
-                                                                text: text,
-                                                            })
-                                                        )
-                                                    }
-                                                />
-                                                <Text style={GlobalStyle.underline}></Text>
-                                                <DateSelectItem
-                                                    label={"Transaction Date"}
-                                                    value={selector.transaction_date}
-                                                    onPress={() =>
-                                                        dispatch(setDatePicker("TRANSACTION_DATE"))
-                                                    }
-                                                />
-                                                <TextinputComp
-                                                    style={styles.textInputStyle}
-                                                    value={selector.comapany_bank_name}
-                                                    label={"Company Bank Name"}
-                                                    onChangeText={(text) =>
-                                                        dispatch(
-                                                            setPreBookingPaymentDetials({
-                                                                key: "COMPANY_BANK_NAME",
-                                                                text: text,
-                                                            })
-                                                        )
-                                                    }
-                                                />
-                                                <Text style={GlobalStyle.underline}></Text>
-                                            </View>
-                                        )}
-
-                                    {selector.booking_payment_mode === "Cheque" && (
-                                        <View>
-                                            <TextinputComp
-                                                style={styles.textInputStyle}
-                                                value={selector.cheque_number}
-                                                label={"Cheque Number"}
-                                                keyboardType={"number-pad"}
-                                                maxLength={9}
-                                                onChangeText={(text) =>
-                                                    dispatch(
-                                                        setPreBookingPaymentDetials({
-                                                            key: "CHEQUE_NUMBER",
-                                                            text: text,
-                                                        })
-                                                    )
-                                                }
-                                            />
-                                            <Text style={GlobalStyle.underline}></Text>
-                                            <DateSelectItem
-                                                label={"Cheque Date"}
-                                                value={selector.cheque_date}
-                                                onPress={() => dispatch(setDatePicker("CHEQUE_DATE"))}
-                                            />
-                                        </View>
-                                    )}
-
-                                    {selector.booking_payment_mode === "DD" && (
-                                        <View>
-                                            <TextinputComp
-                                                style={styles.textInputStyle}
-                                                value={selector.dd_number}
-                                                label={"DD Number"}
-                                                onChangeText={(text) =>
-                                                    dispatch(
-                                                        setPreBookingPaymentDetials({
-                                                            key: "DD_NUMBER",
-                                                            text: text,
-                                                        })
-                                                    )
-                                                }
-                                            />
-                                            <Text style={GlobalStyle.underline}></Text>
-                                            <DateSelectItem
-                                                label={"DD Date"}
-                                                value={selector.dd_date}
-                                                onPress={() => dispatch(setDatePicker("DD_DATE"))}
-                                            />
-                                        </View>
-                                    )}
-                                </List.Accordion>
-                            ) : null}
-
-                            {isDropSelected ? <View style={styles.space}></View> : null}
-                            {isDropSelected ? (
-                                <List.Accordion
-                                    id={"10"}
-                                    title={"Pre Booking Lost Section"}
-                                    titleStyle={{
-                                        color: openAccordian === "10" ? Colors.BLACK : Colors.BLACK,
-                                        fontSize: 16,
-                                        fontWeight: "600",
-                                    }}
-                                    style={[
-                                        {
-                                            backgroundColor:
-                                                openAccordian === "10" ? Colors.RED : Colors.WHITE,
-                                        },
-                                        styles.accordianBorder,
-                                    ]}
-                                >
-
-                                    <DropComponent
-                                        from="PRE_BOOKING"
-                                        data={dropData}
-                                        reason={dropReason}
-                                        setReason={(text => setDropReason(text))}
-                                        subReason={dropSubReason}
-                                        setSubReason={(text => setDropSubReason(text))}
-                                        brandName={dropBrandName}
-                                        setBrandName={text => setDropBrandName(text)}
-                                        dealerName={dropDealerName}
-                                        setDealerName={text => setDropDealerName(text)}
-                                        location={dropLocation}
-                                        setLocation={text => setDropLocation(text)}
-                                        model={dropModel}
-                                        setModel={text => setDropModel(text)}
-                                        priceDiff={dropPriceDifference}
-                                        setPriceDiff={text => setDropPriceDifference(text)}
-                                        remarks={dropRemarks}
-                                        setRemarks={(text) => setDropRemarks(text)}
-                                    />
-                                </List.Accordion>
-                            ) : null}
-                            {/* // 11.Reject */}
-
-                        </List.AccordionGroup>
-
-                        {!isDropSelected && showSubmitDropBtn && !userData.isManager && !userData.isPreBookingApprover && selector.booking_amount !== '' && (
-                            <View style={styles.actionBtnView}>
-                                <Button
-                                    mode="contained"
-                                    style={{ width: 120 }}
-                                    color={Colors.BLACK}
-                                    // disabled={selector.isLoading}
-                                    labelStyle={{ textTransform: "none" }}
-                                    onPress={() => setIsDropSelected(true)}
-                                >Cancel</Button>
-                                <Button
-                                    mode="contained"
-                                    color={Colors.RED}
-                                    disabled={selector.isLoading}
-                                    labelStyle={{ textTransform: "none" }}
-                                    onPress={submitClicked}
-                                >SUBMIT</Button>
-                            </View>
-                        )}
-
-                        {showApproveRejectBtn &&
-                            userData.isPreBookingApprover &&
-                            !isDropSelected && (
-                                <View style={styles.actionBtnView}>
-                                    <Button
-                                        mode="contained"
-                                        style={{ width: 120 }}
-                                        color={Colors.GREEN}
-                                        // disabled={selector.isLoading}
-                                        labelStyle={{ textTransform: "none" }}
-                                        onPress={() => approveOrRejectMethod("APPROVE")}
-                                    >
-                                        Approve
-                  </Button>
-                                    <Button
-                                        mode="contained"
-                                        color={Colors.RED}
-                                        // disabled={selector.isLoading}
-                                        labelStyle={{ textTransform: "none" }}
-                                        onPress={() =>
-                                            isRejectSelected
-                                                ? approveOrRejectMethod("REJECT")
-                                                : setIsRejectSelected(true)
-                                        }
-                                    >
-                                        {isRejectSelected ? "Send" : "Reject"}
-                                    </Button>
-                                </View>
-                            )}
-
-                        {showPrebookingPaymentSection &&
-                            !userData.isManager &&
-                            !isDropSelected && (
-                                <>
-                                    {isEdit ?
-                                        <View style={styles.actionBtnView}>
-                                            <Button
-                                                mode="contained"
-                                                style={{ width: 120 }}
-                                                color={Colors.BLACK}
-                                                // disabled={selector.isLoading}
-                                                labelStyle={{ textTransform: "none" }}
-                                                onPress={() => setIsDropSelected(true)}
-                                            >Cancel</Button>
-                                            <Button
-                                                mode="contained"
-                                                color={Colors.RED}
-                                                 disabled={selector.isLoading}
-                                                labelStyle={{ textTransform: "none" }}
-                                                onPress={submitClicked}
-                                            >SUBMIT</Button>
-                                        </View> :
-                                        <View style={styles.actionBtnView}>
-                                            <Button
-                                                mode="contained"
-                                                color={Colors.RED}
-                                                disabled={selector.isLoading}
-                                                labelStyle={{ textTransform: "none" }}
-                                                onPress={() => setIsEdit(true)}
-                                            >EDIT</Button>
-                                        </View>
-                                    }
-                                {!isEdit && uploadedImagesDataObj.receipt?.fileName &&
-                                    <View style={styles.actionBtnView}>
-                                        <Button
-                                            mode="contained"
-                                            style={{ width: 120 }}
-                                            color={Colors.BLACK}
-                                            // disabled={selector.isLoading}
-                                            labelStyle={{ textTransform: "none" }}
-                                            onPress={() => setIsDropSelected(true)}
-                                        >
-                                            Drop
-                  </Button>
-                                        <Button
-                                            mode="contained"
-                                            color={Colors.RED}
-                                            // disabled={
-                                            //     uploadedImagesDataObj.receipt
-                                            //         ? selector.isLoading == true
-                                            //             ? true
-                                            //             : false
-                                            //         : true
-                                            // }
-                                            labelStyle={{ textTransform: "none" }}
-                                            onPress={proceedToBookingClicked}
-                                        >
-                                            Proceed To Booking
-                  </Button>
-                                    </View>
-                                    }
-                                </>
-                            )}
-
-                        {isDropSelected && (
-                            <View style={styles.prebookingBtnView}>
-                                <Button
-                                    mode="contained"
-                                    color={Colors.RED}
-                                    // disabled={selector.isLoading}
-                                    labelStyle={{ textTransform: "none" }}
-                                    onPress={proceedToCancelPreBooking}
-                                >
-                                    Proceed To Cancellation
-                                </Button>
-                            </View>
-                        )}
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Location"}
+                        value={selector.location}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setFinancialDetails({ key: "LOCATION", text: text })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
                     </View>
-                </ScrollView>
-            </KeyboardAvoidingView>
+                  ) : null}
 
-            <Modal
-                animationType="fade"
-                visible={imagePath !== ''}
-                onRequestClose={() => { setImagePath('') }}
-                transparent={true}>
-                <View style={{
-                    flex: 1,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    backgroundColor: 'rgba(0,0,0,0.7)',
-                }}>
-                    <View style={{ width: '90%' }}>
-                        <Image style={{ width: '100%', height: 400, borderRadius: 4 }} resizeMode="contain" source={{ uri: imagePath }} />
+                  {selector.retail_finance === "Leasing" && (
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Leasing Name"}
+                        maxLength={50}
+                        value={selector.leashing_name}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setFinancialDetails({
+                              key: "LEASHING_NAME",
+                              text: text,
+                            })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
                     </View>
-                    <TouchableOpacity style={{ width: 100, height: 40, justifyContent: 'center', alignItems: 'center', position: 'absolute', left: '37%', bottom: '15%', borderRadius: 5, backgroundColor: Colors.RED }} onPress={() => setImagePath('')}>
-                        <Text style={{ fontSize: 14, fontWeight: '600', color: Colors.WHITE }}>Close</Text>
-                    </TouchableOpacity>
+                  )}
+
+                  {selector.retail_finance === "In House" && (
+                    <DropDownSelectionItem
+                      label={"Finance Category"}
+                      value={selector.finance_category}
+                      onPress={() =>
+                        showDropDownModelMethod(
+                          "FINANCE_CATEGORY",
+                          "Finance Category"
+                        )
+                      }
+                    />
+                  )}
+
+                  {selector.retail_finance === "In House" && (
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Down Payment"}
+                        value={selector.down_payment}
+                        keyboardType={"number-pad"}
+                        onChangeText={(text) => {
+                          if (text.length > 0) {
+                            const downPayment = Number(text);
+                            const loanAmount = (
+                              totalOnRoadPrice - downPayment
+                            ).toFixed(0);
+                            dispatch(
+                              setFinancialDetails({
+                                key: "LOAN_AMOUNT",
+                                text: `${loanAmount}`,
+                              })
+                            );
+                          } else {
+                            dispatch(
+                              setFinancialDetails({
+                                key: "LOAN_AMOUNT",
+                                text: "0",
+                              })
+                            );
+                          }
+                          dispatch(
+                            setFinancialDetails({
+                              key: "DOWN_PAYMENT",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
+
+                  {(selector.retail_finance === "In House" ||
+                    selector.retail_finance === "Out House") && (
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Loan Amount"}
+                        keyboardType={"number-pad"}
+                        value={selector.loan_amount}
+                        onChangeText={(text) => {
+                          // Calculate EMI
+                          emiCal(
+                            text,
+                            selector.loan_of_tenure,
+                            selector.rate_of_interest
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "LOAN_AMOUNT",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Rate of Interest"}
+                        keyboardType={"number-pad"}
+                        value={selector.rate_of_interest}
+                        onChangeText={(text) => {
+                          // Calculate EMI
+                          emiCal(
+                            selector.loan_amount,
+                            selector.loan_of_tenure,
+                            text
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "RATE_OF_INTEREST",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
+
+                  {selector.retail_finance === "In House" && (
+                    <View>
+                      <DropDownSelectionItem
+                        label={"Bank/Financer"}
+                        value={selector.bank_or_finance}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "BANK_FINANCE",
+                            "Bank/Financer"
+                          )
+                        }
+                      />
+
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Loan of Tenure(Months)"}
+                        value={selector.loan_of_tenure}
+                        keyboardType={"number-pad"}
+                        onChangeText={(text) => {
+                          // Calculate EMI
+                          emiCal(
+                            selector.loan_amount,
+                            text,
+                            selector.rate_of_interest
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "LOAN_OF_TENURE",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"EMI"}
+                        value={selector.emi}
+                        keyboardType={"number-pad"}
+                        onChangeText={(text) =>
+                          dispatch(
+                            setFinancialDetails({ key: "EMI", text: text })
+                          )
+                        }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+
+                      <DropDownSelectionItem
+                        label={"Approx Annual Income"}
+                        value={selector.approx_annual_income}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "APPROX_ANNUAL_INCOME",
+                            "Approx Annual Income"
+                          )
+                        }
+                      />
+                    </View>
+                  )}
+                </List.Accordion>
+                <View style={styles.space}></View>
+
+                {/* // 8.Booking Payment Mode */}
+                <List.Accordion
+                  id={"8"}
+                  title={"Booking Payment Mode"}
+                  titleStyle={{
+                    color: openAccordian === "8" ? Colors.BLACK : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "8" ? Colors.RED : Colors.WHITE,
+                    },
+                    styles.accordianBorder,
+                  ]}
+                >
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    value={selector.booking_amount}
+                    label={"Booking Amount*"}
+                    keyboardType={"number-pad"}
+                    maxLength={9}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setBookingPaymentDetails({
+                          key: "BOOKING_AMOUNT",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.booking_amount === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+
+                  <DropDownSelectionItem
+                    label={"Payment At*"}
+                    value={selector.payment_at}
+                    onPress={() =>
+                      showDropDownModelMethod("PAYMENT_AT", "Payment At")
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.payment_at === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  <DropDownSelectionItem
+                    label={"Booking Payment Mode*"}
+                    value={selector.booking_payment_mode}
+                    onPress={() =>
+                      showDropDownModelMethod(
+                        "BOOKING_PAYMENT_MODE",
+                        "Booking Payment Mode"
+                      )
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.booking_payment_mode === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                </List.Accordion>
+                <View style={styles.space}></View>
+
+                {/* // 9.DOD Confirmation */}
+                <List.Accordion
+                  id={"9"}
+                  title={"DOD Confirmation"}
+                  titleStyle={{
+                    color: openAccordian === "9" ? Colors.BLACK : Colors.BLACK,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                  style={[
+                    {
+                      backgroundColor:
+                        openAccordian === "9" ? Colors.RED : Colors.WHITE,
+                    },
+                    styles.accordianBorder,
+                  ]}
+                >
+                  <DateSelectItem
+                    label={"Customer Preferred Date*"}
+                    value={selector.customer_preferred_date}
+                    onPress={() =>
+                      dispatch(setDatePicker("CUSTOMER_PREFERRED_DATE"))
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress &&
+                          selector.customer_preferred_date === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    label={"Occasion"}
+                    value={selector.occasion}
+                    maxLength={50}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommitmentDetails({ key: "OCCASION", text: text })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                  <DateSelectItem
+                    label={"Tentative Delivery Date*"}
+                    value={selector.tentative_delivery_date}
+                    onPress={() =>
+                      dispatch(setDatePicker("TENTATIVE_DELIVERY_DATE"))
+                    }
+                  />
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress &&
+                          selector.tentative_delivery_date === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                  <TextinputComp
+                    style={{ height: 65, width: "100%" }}
+                    label={"Delivery Location"}
+                    maxLength={50}
+                    value={selector.delivery_location}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setCommitmentDetails({
+                          key: "DELIVERY_LOCATON",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={GlobalStyle.underline}></Text>
+                </List.Accordion>
+                <View style={styles.space}></View>
+                {/* // 10.Drop */}
+                {isRejectSelected ? <View style={styles.space}></View> : null}
+                {isRejectSelected && (
+                  <List.Accordion
+                    id={"11"}
+                    title={"Manager Reject Remarks"}
+                    titleStyle={{
+                      color:
+                        openAccordian === "11" ? Colors.BLACK : Colors.BLACK,
+                      fontSize: 16,
+                      fontWeight: "600",
+                    }}
+                    style={[
+                      {
+                        backgroundColor:
+                          openAccordian === "11" ? Colors.RED : Colors.WHITE,
+                      },
+                      styles.accordianBorder,
+                    ]}
+                  >
+                    <TextinputComp
+                      style={styles.textInputStyle}
+                      value={selector.reject_remarks}
+                      label={"Remarks"}
+                      onChangeText={(text) =>
+                        dispatch(
+                          setBookingDropDetails({
+                            key: "REJECT_REMARKS",
+                            text: text,
+                          })
+                        )
+                      }
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </List.Accordion>
+                )}
+                {/* // 12.Payment Details */}
+
+                {showPrebookingPaymentSection ? (
+                  <View style={styles.space}></View>
+                ) : null}
+                {showPrebookingPaymentSection ? (
+                  <List.Accordion
+                    id={"12"}
+                    title={"PreBooking Payment Details"}
+                    titleStyle={{
+                      color:
+                        openAccordian === "12" ? Colors.BLACK : Colors.BLACK,
+                      fontSize: 16,
+                      fontWeight: "600",
+                    }}
+                    style={[
+                      {
+                        backgroundColor:
+                          openAccordian === "12" ? Colors.RED : Colors.WHITE,
+                      },
+                      styles.accordianBorder,
+                    ]}
+                  >
+                    <View>
+                      <View style={styles.select_image_bck_vw}>
+                        <ImageSelectItem
+                          name={"Receipt Doc"}
+                          onPress={() =>
+                            dispatch(setImagePicker("RECEIPT_DOC"))
+                          }
+                        />
+                      </View>
+                      {uploadedImagesDataObj.receipt?.fileName ? (
+                        <View style={{ flexDirection: "row" }}>
+                          <TouchableOpacity
+                            style={{
+                              width: "20%",
+                              height: 30,
+                              backgroundColor: Colors.SKY_BLUE,
+                              borderRadius: 4,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                            onPress={() => {
+                              if (uploadedImagesDataObj.receipt?.documentPath) {
+                                setImagePath(
+                                  uploadedImagesDataObj.receipt?.documentPath
+                                );
+                              }
+                            }}
+                          >
+                            <Text
+                              style={{
+                                color: Colors.WHITE,
+                                fontSize: 14,
+                                fontWeight: "600",
+                              }}
+                            >
+                              Preview
+                            </Text>
+                          </TouchableOpacity>
+                          <View style={{ width: "80%" }}>
+                            <DisplaySelectedImage
+                              fileName={uploadedImagesDataObj.receipt.fileName}
+                              from={"RECEIPT"}
+                            />
+                          </View>
+                        </View>
+                      ) : null}
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                    {selector.booking_payment_mode === "UPI" && (
+                      <View>
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.type_of_upi}
+                          label={"Type of UPI"}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setPreBookingPaymentDetials({
+                                key: "TYPE_OF_UPI",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.transfer_from_mobile}
+                          label={"Transfer From Mobile"}
+                          keyboardType={"number-pad"}
+                          maxLength={10}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setPreBookingPaymentDetials({
+                                key: "TRANSFER_FROM_MOBILE",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.transfer_to_mobile}
+                          label={"Transfer To Mobile"}
+                          keyboardType={"number-pad"}
+                          maxLength={10}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setPreBookingPaymentDetials({
+                                key: "TRANSFER_TO_MOBILE",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
+                    )}
+
+                    {(selector.booking_payment_mode === "InternetBanking" ||
+                      selector.booking_payment_mode === "Internet Banking") && (
+                      <View>
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.utr_no}
+                          label={"UTR No"}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setPreBookingPaymentDetials({
+                                key: "UTR_NO",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                        <DateSelectItem
+                          label={"Transaction Date"}
+                          value={selector.transaction_date}
+                          onPress={() =>
+                            dispatch(setDatePicker("TRANSACTION_DATE"))
+                          }
+                        />
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.comapany_bank_name}
+                          label={"Company Bank Name"}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setPreBookingPaymentDetials({
+                                key: "COMPANY_BANK_NAME",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                      </View>
+                    )}
+
+                    {selector.booking_payment_mode === "Cheque" && (
+                      <View>
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.cheque_number}
+                          label={"Cheque Number"}
+                          keyboardType={"number-pad"}
+                          maxLength={9}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setPreBookingPaymentDetials({
+                                key: "CHEQUE_NUMBER",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                        <DateSelectItem
+                          label={"Cheque Date"}
+                          value={selector.cheque_date}
+                          onPress={() => dispatch(setDatePicker("CHEQUE_DATE"))}
+                        />
+                      </View>
+                    )}
+
+                    {selector.booking_payment_mode === "DD" && (
+                      <View>
+                        <TextinputComp
+                          style={styles.textInputStyle}
+                          value={selector.dd_number}
+                          label={"DD Number"}
+                          onChangeText={(text) =>
+                            dispatch(
+                              setPreBookingPaymentDetials({
+                                key: "DD_NUMBER",
+                                text: text,
+                              })
+                            )
+                          }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                        <DateSelectItem
+                          label={"DD Date"}
+                          value={selector.dd_date}
+                          onPress={() => dispatch(setDatePicker("DD_DATE"))}
+                        />
+                      </View>
+                    )}
+                  </List.Accordion>
+                ) : null}
+
+                {isDropSelected ? <View style={styles.space}></View> : null}
+                {isDropSelected ? (
+                  <List.Accordion
+                    id={"10"}
+                    title={"Pre Booking Lost Section"}
+                    titleStyle={{
+                      color:
+                        openAccordian === "10" ? Colors.BLACK : Colors.BLACK,
+                      fontSize: 16,
+                      fontWeight: "600",
+                    }}
+                    style={[
+                      {
+                        backgroundColor:
+                          openAccordian === "10" ? Colors.RED : Colors.WHITE,
+                      },
+                      styles.accordianBorder,
+                    ]}
+                  >
+                    <DropComponent
+                      from="PRE_BOOKING"
+                      data={dropData}
+                      reason={dropReason}
+                      setReason={(text) => setDropReason(text)}
+                      subReason={dropSubReason}
+                      setSubReason={(text) => setDropSubReason(text)}
+                      brandName={dropBrandName}
+                      setBrandName={(text) => setDropBrandName(text)}
+                      dealerName={dropDealerName}
+                      setDealerName={(text) => setDropDealerName(text)}
+                      location={dropLocation}
+                      setLocation={(text) => setDropLocation(text)}
+                      model={dropModel}
+                      setModel={(text) => setDropModel(text)}
+                      priceDiff={dropPriceDifference}
+                      setPriceDiff={(text) => setDropPriceDifference(text)}
+                      remarks={dropRemarks}
+                      setRemarks={(text) => setDropRemarks(text)}
+                    />
+                  </List.Accordion>
+                ) : null}
+                {/* // 11.Reject */}
+              </List.AccordionGroup>
+
+              {!isDropSelected &&
+                showSubmitDropBtn &&
+                !userData.isManager &&
+                !userData.isPreBookingApprover &&
+                selector.booking_amount !== "" && (
+                  <View style={styles.actionBtnView}>
+                    <Button
+                      mode="contained"
+                      style={{ width: 120 }}
+                      color={Colors.BLACK}
+                      // disabled={selector.isLoading}
+                      labelStyle={{ textTransform: "none" }}
+                      onPress={() => setIsDropSelected(true)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      mode="contained"
+                      color={Colors.RED}
+                      disabled={selector.isLoading}
+                      labelStyle={{ textTransform: "none" }}
+                      onPress={submitClicked}
+                    >
+                      SUBMIT
+                    </Button>
+                  </View>
+                )}
+
+              {showApproveRejectBtn &&
+                userData.isPreBookingApprover &&
+                !isDropSelected && (
+                  <View style={styles.actionBtnView}>
+                    <Button
+                      mode="contained"
+                      style={{ width: 120 }}
+                      color={Colors.GREEN}
+                      // disabled={selector.isLoading}
+                      labelStyle={{ textTransform: "none" }}
+                      onPress={() => approveOrRejectMethod("APPROVE")}
+                    >
+                      Approve
+                    </Button>
+                    <Button
+                      mode="contained"
+                      color={Colors.RED}
+                      // disabled={selector.isLoading}
+                      labelStyle={{ textTransform: "none" }}
+                      onPress={() =>
+                        isRejectSelected
+                          ? approveOrRejectMethod("REJECT")
+                          : setIsRejectSelected(true)
+                      }
+                    >
+                      {isRejectSelected ? "Send" : "Reject"}
+                    </Button>
+                  </View>
+                )}
+
+              {showPrebookingPaymentSection &&
+                !userData.isManager &&
+                !isDropSelected && (
+                  <>
+                    {isEdit ? (
+                      <View style={styles.actionBtnView}>
+                        <Button
+                          mode="contained"
+                          style={{ width: 120 }}
+                          color={Colors.BLACK}
+                          // disabled={selector.isLoading}
+                          labelStyle={{ textTransform: "none" }}
+                          onPress={() => setIsDropSelected(true)}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          mode="contained"
+                          color={Colors.RED}
+                          disabled={selector.isLoading}
+                          labelStyle={{ textTransform: "none" }}
+                          onPress={submitClicked}
+                        >
+                          SUBMIT
+                        </Button>
+                      </View>
+                    ) : (
+                      <View style={styles.actionBtnView}>
+                        <Button
+                          mode="contained"
+                          color={Colors.RED}
+                          //disabled={selector.isLoading}
+                          labelStyle={{ textTransform: "none" }}
+                          onPress={() => setIsEdit(true)}
+                        >
+                          EDIT
+                        </Button>
+                      </View>
+                    )}
+                    {!isEdit && uploadedImagesDataObj.receipt?.fileName && (
+                      <View style={styles.actionBtnView}>
+                        <Button
+                          mode="contained"
+                          style={{ width: 120 }}
+                          color={Colors.BLACK}
+                          // disabled={selector.isLoading}
+                          labelStyle={{ textTransform: "none" }}
+                          onPress={() => setIsDropSelected(true)}
+                        >
+                          Drop
+                        </Button>
+                        <Button
+                          mode="contained"
+                          color={Colors.RED}
+                          // disabled={
+                          //     uploadedImagesDataObj.receipt
+                          //         ? selector.isLoading == true
+                          //             ? true
+                          //             : false
+                          //         : true
+                          // }
+                          labelStyle={{ textTransform: "none" }}
+                          onPress={proceedToBookingClicked}
+                        >
+                          Proceed To Booking
+                        </Button>
+                      </View>
+                    )}
+                  </>
+                )}
+
+              {isDropSelected && (
+                <View style={styles.prebookingBtnView}>
+                  <Button
+                    mode="contained"
+                    color={Colors.RED}
+                    // disabled={selector.isLoading}
+                    labelStyle={{ textTransform: "none" }}
+                    onPress={proceedToCancelPreBooking}
+                  >
+                    Proceed To Cancellation
+                  </Button>
                 </View>
-            </Modal>
-            {/* {selector.isLoading ? <LoaderComponent
+              )}
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+
+        <Modal
+          animationType="fade"
+          visible={imagePath !== ""}
+          onRequestClose={() => {
+            setImagePath("");
+          }}
+          transparent={true}
+        >
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "rgba(0,0,0,0.7)",
+            }}
+          >
+            <View style={{ width: "90%" }}>
+              <Image
+                style={{ width: "100%", height: 400, borderRadius: 4 }}
+                resizeMode="contain"
+                source={{ uri: imagePath }}
+              />
+            </View>
+            <TouchableOpacity
+              style={{
+                width: 100,
+                height: 40,
+                justifyContent: "center",
+                alignItems: "center",
+                position: "absolute",
+                left: "37%",
+                bottom: "15%",
+                borderRadius: 5,
+                backgroundColor: Colors.RED,
+              }}
+              onPress={() => setImagePath("")}
+            >
+              <Text
+                style={{ fontSize: 14, fontWeight: "600", color: Colors.WHITE }}
+              >
+                Close
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+        {/* {selector.isLoading ? <LoaderComponent
                 visible={true}
                 onRequestClose={() => { }}
             /> :null } */}
-        </SafeAreaView>
+      </SafeAreaView>
     );
 };
 

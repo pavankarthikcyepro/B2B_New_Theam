@@ -10,16 +10,17 @@ import { showToast } from "../../../utils/toast";
 import * as AsyncStore from "../../../asyncStore";
 
 const mytasksIdentifires = {
-    testdrive: "TEST_DRIVE",
-    testdriveapproval: "TEST_DRIVE_APPROVAL",
-    proceedtobooking: "PROCEED_TO_BOOKING",
-    proceedtoprebooking: "PROCEED_TO_PRE_BOOKING",
-    prebookingfollowup: "PRE_BOOKING_FOLLOW_UP",
-    homevisit: "HOME_VISIT",
-    enquiryfollowup: "ENQUIRY_FOLLOW_UP",
-    preenquiryfollowup: "PRE_ENQUIRY_FOLLOW_UP",
-    createenquiry: "CREATE_ENQUIRY"
-}
+  testdrive: "TEST_DRIVE",
+  testdriveapproval: "TEST_DRIVE_APPROVAL",
+  proceedtobooking: "PROCEED_TO_BOOKING",
+  proceedtoprebooking: "PROCEED_TO_PRE_BOOKING",
+  prebookingfollowup: "PRE_BOOKING_FOLLOW_UP",
+  homevisit: "HOME_VISIT",
+  enquiryfollowup: "ENQUIRY_FOLLOW_UP",
+  preenquiryfollowup: "PRE_ENQUIRY_FOLLOW_UP",
+  createenquiry: "CREATE_ENQUIRY",
+  bookingfollowupdse: "BOOKING_FOLLOW_UP",
+};
 
 const TaskThreeSixtyScreen = ({ route, navigation }) => {
 
@@ -106,7 +107,9 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
         }
 
         const trimName = taskName.toLowerCase().trim();
-        const finalTaskName = trimName.replace(/ /g, "");
+        console.log({trimName})
+        const finalTaskName1 = trimName.replace(/ /g, "");
+      const finalTaskName = finalTaskName1.replace(/-/g, "");
         let navigationId = ""
         let taskNameNew = ''
         console.log("FINAL TASK NAME: ", finalTaskName);
@@ -143,6 +146,10 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                 navigationId = AppNavigator.EmsStackIdentifiers.enquiryFollowUp;
                 taskNameNew = 'Pre Enquiry Followup'
                 break;
+                case "bookingfollowupdse":
+                    navigationId = AppNavigator.EmsStackIdentifiers.bookingFollowUp;
+                    taskNameNew = "Booking Followup"
+                    break;
             case "prebookingfollowup":
                 navigationId = AppNavigator.EmsStackIdentifiers.enquiryFollowUp;
                 taskNameNew = 'Prebooking Followup'
