@@ -65,6 +65,8 @@ export const postUserData = createAsyncThunk(
     const response = await client.post(URL.LOGIN(), inputData);
     const json = await response.json();
     if (!response.ok) {
+      console.log('json::::',json);
+      
       return rejectWithValue(json);
     }
     return json;
