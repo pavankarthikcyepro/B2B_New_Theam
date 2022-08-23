@@ -5,7 +5,7 @@ import {
   Relation_Data_Obj,
   Gender_Data_Obj,
 } from "../jsonData/enquiryFormScreenJsonData";
-import { convertTimeStampToDateString } from "../utils/helperFunctions";
+import { convertDateStringToMillisecondsUsingMoment, convertTimeStampToDateString } from "../utils/helperFunctions";
 import moment from "moment";
 import { showToastRedAlert, showToast } from "../utils/toast";
 
@@ -924,7 +924,8 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.r_registration_validity_date = selectedDate;
           break;
         case "R_INSURENCE_POLICIY_EXPIRY_DATE":
-          state.r_insurence_expiry_date = selectedDate;
+          state.r_insurence_expiry_date = convertDateStringToMillisecondsUsingMoment(text).toString();
+          // state.r_insurence_expiry_date = selectedDate;
           break;
         case "R_INSURENCE_FROM_DATE":
           state.r_insurence_from_date = selectedDate;
