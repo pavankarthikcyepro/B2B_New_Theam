@@ -5720,10 +5720,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         value={moment(
                           new Date(Number(selector.r_insurence_expiry_date))
                         ).format("DD/MM/YYYY")}
-                        // value={convertTimeStampToDateString(
-                        //   selector.r_insurence_expiry_date,
-                        //   "DD/MM/YYYY"
-                        // )}
                         onPress={() =>
                           dispatch(
                             setDatePicker("R_INSURENCE_POLICIY_EXPIRY_DATE")
