@@ -76,15 +76,15 @@ const ShowRoomMenu = [
     "Sign Out"
 ];
 const MDMenu = [
-    "Home",
-    "Settings",
-    "Digital Payment",
-    "Target Planning",
-    "Helpdesk",
-    "Task Management",
-    "Task Transfer",
-    "Drop Analysis",
-    "Sign Out"
+  "Home",
+  "Settings",
+  "Digital Payment",
+  "Target Planning",
+  "Helpdesk",
+  "Task Management",
+  "Task Transfer",
+  "Drop Analysis",
+  "Sign Out"
 ];
 
 const SideMenuScreen = ({ navigation }) => {
@@ -203,7 +203,7 @@ const SideMenuScreen = ({ navigation }) => {
         switch (item.screen) {
             case 99:
                 // navigation.navigate(AppNavigator.DrawerStackIdentifiers.home);
-                navigation.navigate(AppNavigator.DrawerStackIdentifiers.home);
+                navigation.navigate(MDMenu[0]);
                 break;
             case 100:
                 navigation.navigate(
