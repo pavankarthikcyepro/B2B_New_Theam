@@ -75,7 +75,8 @@ import {
   updateEnquiryDetailsApiAutoSave,
   clearPermanentAddr,
   updateAddressByPincode2,
-  autoSaveEnquiryDetailsApi
+  autoSaveEnquiryDetailsApi,
+  updatedmsLeadProduct
 } from "../../../redux/enquiryFormReducer";
 
 import {
@@ -1452,7 +1453,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dmsLeadDto.firstName = selector.firstName;
       dmsLeadDto.lastName = selector.lastName;
       dmsLeadDto.phone = selector.mobile;
-      dmsLeadDto.dmsLeadProducts = carModelsList
+      dmsLeadDto.dmsLeadProducts = carModelsList;
+
+      let primaryModel = carModelsList.filter((item) => item.isPrimary === "Y");
+      dmsLeadDto.model = primaryModel[0].model;
 
       // await alert(JSON.stringify(dmsLeadDto.dmsLeadProducts))
 
@@ -1958,10 +1962,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         arr[isPrimaryCureentIndex] = cardata;
         arr[index] = selecteditem
         console.log("SET FOUR", arr);
+        dispatch(updatedmsLeadProduct([...arr]));
         await setCarModelsList([...arr])
         await setIsPrimaryCurrentIndex(index)
-
-
 
       }
     } catch (error) {
