@@ -52,7 +52,7 @@ export const getPrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/
 })
 
 export const updatePrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/updatePrebookingDetailsApi", async (payload, { rejectWithValue }) => {
-
+console.log({payload})
   const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
   try {
     const json = await response.json();
@@ -666,6 +666,13 @@ const prebookingFormSlice = createSlice({
           break;
         case "RETAIL_FINANCE":
           state.retail_finance = value;
+          if (state.retail_finance == "Out House"){
+            state.rate_of_interest =""
+          }else
+          {
+              state.rate_of_interest = value
+          }
+            //console.log("RETAIL", state.retail_finance);
           break;
         case "FINANCE_CATEGORY":
           state.finance_category = value;
@@ -707,6 +714,7 @@ const prebookingFormSlice = createSlice({
       state.showImagePicker = !state.showImagePicker;
     },
     setDatePicker: (state, action) => {
+      console.log("ACTIONDATE===>",state)
       switch (action.payload) {
         case "DATE_OF_BIRTH":
           state.minDate = null;
@@ -731,6 +739,7 @@ const prebookingFormSlice = createSlice({
     updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
       const selectedDate = convertTimeStampToDateString(text, "DD/MM/YYYY");
+      console.log("REDUXDATESELECT------>>>",selectedDate)
       switch (state.datePickerKeyId) {
         case "DATE_OF_BIRTH":
           state.date_of_birth = selectedDate;
@@ -743,11 +752,14 @@ const prebookingFormSlice = createSlice({
           break;
         case "CUSTOMER_PREFERRED_DATE":
           state.customer_preferred_date = selectedDate;
+          console.log("selector===-=-==-=>", state.customer_preferred_date);
           break;
         case "TENTATIVE_DELIVERY_DATE":
           state.tentative_delivery_date = selectedDate;
+         
           break;
         case "TRANSACTION_DATE":
+
           state.transaction_date = selectedDate;
           break;
         case "CHEQUE_DATE":
@@ -1095,7 +1107,9 @@ const prebookingFormSlice = createSlice({
       // Commitment
       state.occasion = dmsLeadDto.occasion ? dmsLeadDto.occasion : "";
       const customerPreferredDate = dmsLeadDto.commitmentDeliveryPreferredDate ? dmsLeadDto.commitmentDeliveryPreferredDate : "";
+     
       state.customer_preferred_date = convertTimeStampToDateString(customerPreferredDate, "DD/MM/YYYY");
+       console.log("Select---------->>>>>>>>", customerPreferredDate);
       const tentativeDeliveryDate = dmsLeadDto.commitmentDeliveryTentativeDate ? dmsLeadDto.commitmentDeliveryTentativeDate : ""
       state.tentative_delivery_date = convertTimeStampToDateString(tentativeDeliveryDate, "DD/MM/YYYY");
 
