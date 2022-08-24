@@ -36,6 +36,7 @@ import {
 import {RenderGrandTotal} from "./components/RenderGrandTotal";
 import {RenderEmployeeTotal} from "./components/RenderEmployeeTotal";
 import {RenderEmployeeParameters} from "./components/RenderEmployeeParameters";
+import {RenderSelfInsights} from "./components/RenderSelfInsights";
 
 
 //const paramtersTitlesData = ["Parameter", "E", "TD", "HV", "VC", "B", "Ex", "R", "F", "I", "Ex-W", "Acc.", "Ev"]
@@ -417,9 +418,6 @@ const targetData = [
     color: '#ec3466'
   }
 ]
-const color = [
-  '#9f31bf', '#00b1ff', '#fb03b9', '#ffa239', '#d12a78', '#0800ff', '#1f93ab', '#ec3466'
-]
 
 const TargetScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
@@ -568,9 +566,13 @@ const TargetScreen = ({ route, navigation }) => {
     const currentDate = moment().format(dateFormat)
     const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
     setDateDiff((new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) / (1000 * 60 * 60 * 24));
-    if (selector.self_target_parameters_data.length > 0) {
+
+    const isInsights = selector.isTeamPresent && !selector.isDSE;
+    const isSelf = selector.isDSE;
+    const dashboardSelfParamsData = isSelf ? selector.self_target_parameters_data : selector.insights_target_parameters_data;
+    if (dashboardSelfParamsData.length > 0) {
       let tempRetail = [];
-      tempRetail = selector.self_target_parameters_data.filter((item) => {
+      tempRetail = dashboardSelfParamsData.filter((item) => {
         return item.paramName.toLowerCase() === 'invoice'
       })
       if (tempRetail.length > 0) {
@@ -578,7 +580,7 @@ const TargetScreen = ({ route, navigation }) => {
       }
 
       let tempBooking = [];
-      tempBooking = selector.self_target_parameters_data.filter((item) => {
+      tempBooking = dashboardSelfParamsData.filter((item) => {
         return item.paramName.toLowerCase() === 'booking'
       })
       console.log("%%%TEMP BOOK", tempBooking);
@@ -587,7 +589,7 @@ const TargetScreen = ({ route, navigation }) => {
       }
 
       let tempEnq = [];
-      tempEnq = selector.self_target_parameters_data.filter((item) => {
+      tempEnq = dashboardSelfParamsData.filter((item) => {
         return item.paramName.toLowerCase() === 'enquiry'
       })
       if (tempEnq.length > 0) {
@@ -595,7 +597,7 @@ const TargetScreen = ({ route, navigation }) => {
       }
 
       let tempVisit = [];
-      tempVisit = selector.self_target_parameters_data.filter((item) => {
+      tempVisit = dashboardSelfParamsData.filter((item) => {
         return item.paramName.toLowerCase() === 'home visit'
       })
       if (tempVisit.length > 0) {
@@ -603,7 +605,7 @@ const TargetScreen = ({ route, navigation }) => {
       }
 
       let tempTD = [];
-      tempTD = selector.self_target_parameters_data.filter((item) => {
+      tempTD = dashboardSelfParamsData.filter((item) => {
         return item.paramName.toLowerCase() === 'test drive'
       })
       if (tempTD.length > 0) {
@@ -621,13 +623,14 @@ const TargetScreen = ({ route, navigation }) => {
 
     return unsubscribe;
 
-  }, [selector.self_target_parameters_data]) //selector.self_target_parameters_data]
+  }, [selector.self_target_parameters_data, selector.insights_target_parameters_data]) //selector.self_target_parameters_data]
 
   useEffect(async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
+      console.log('HUmbley::: ', selector.login_employee_details.hasOwnProperty('roles'));
       const jsonObj = JSON.parse(employeeData);
-      if (selector.login_employee_details?.roles.length > 0) {
+      if (selector.login_employee_details.hasOwnProperty('roles') && selector.login_employee_details.roles.length > 0) {
         let rolesArr = [];
         rolesArr = selector.login_employee_details?.roles.filter((item) => {
           return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL" || item === "General Manager" || item === "branch manager" || item === "Testdrive_Manager"
@@ -978,7 +981,7 @@ const TargetScreen = ({ route, navigation }) => {
               {/* Employee params section */}
               {allParameters.length > 0 && allParameters.map((item, index) => {
                 return (
-                  <View>
+                  <View key={`${item.empId} ${index}`}>
                     <View style={{ flexDirection: 'row' }}>
                       <View style={{ width: '8%', minHeight: 40, justifyContent: 'center', alignItems: 'center', flexDirection: 'column', }}>
                         {/*// left side name section */}
@@ -1192,8 +1195,8 @@ const TargetScreen = ({ route, navigation }) => {
                                                           localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements = tempRawData;
                                                         }
                                                       }
-                                                      setIsLevel2Available(true);
                                                     }
+                                                    setIsLevel2Available(tempRawData.length > 0);
                                                     setAllParameters([...localData])
                                                   })
 
@@ -1269,8 +1272,8 @@ const TargetScreen = ({ route, navigation }) => {
                                                                       localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements = tempRawData;
                                                                     }
                                                                   }
-                                                                  setIsLevel3Available(true);
                                                                 }
+                                                                setIsLevel3Available(tempRawData.length > 0);
                                                                 setAllParameters([...localData])
                                                               })
                                                             }
@@ -1339,8 +1342,8 @@ const TargetScreen = ({ route, navigation }) => {
                                                                                   localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements = tempRawData;
                                                                                 }
                                                                               }
-                                                                              setIsLevel4Available(true);
                                                                             }
+                                                                            setIsLevel4Available(tempRawData.length > 0);
                                                                             setAllParameters([...localData])
                                                                           })
                                                                         }
@@ -1409,8 +1412,8 @@ const TargetScreen = ({ route, navigation }) => {
                                                                                               localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].employeeTargetAchievements = tempRawData;
                                                                                             }
                                                                                           }
-                                                                                          setIsLevel5Available(true);
                                                                                         }
+                                                                                        setIsLevel5Available(tempRawData.length > 0);
                                                                                         setAllParameters([...localData])
                                                                                       })
                                                                                     }
@@ -1665,188 +1668,9 @@ const TargetScreen = ({ route, navigation }) => {
                 <Text style={{ fontSize: 14, fontWeight: "600" }}>AR/Day</Text>
               </View>
             </View>
-            {selector.self_target_parameters_data.map((item, index) => {
-              return (
-                <View
-                  style={{ flexDirection: "row", marginLeft: 8 }}
-                  key={index}
-                >
-                  <View
-                    style={{
-                      width: "10%",
-                      justifyContent: "center",
-                      marginTop: 5,
-                    }}
-                  >
-                    <Text>{item.paramShortName}</Text>
-                  </View>
-                  <View
-                    style={{
-                      width: "10%",
-                      marginTop: 10,
-                      position: "relative",
-                      backgroundColor: color[index % color.length],
-                      height: 20,
-                      justifyContent: "center",
-                      alignItems: "center",
-                      borderTopLeftRadius: 3,
-                      borderBottomLeftRadius: 3,
-                    }}
-                  >
-                    <Text style={{ color: "#fff" }}>{item.achievment}</Text>
-                  </View>
-                  <View
-                    style={{
-                      width: "25%",
-                      marginTop: 10,
-                      position: "relative",
-                    }}
-                  >
-                    <ProgressBar
-                      progress={
-                        item.achivementPerc.includes("%")
-                          ? parseInt(
-                            item.achivementPerc.substring(
-                              0,
-                              item.achivementPerc.indexOf("%")
-                            )
-                          ) === 0
-                            ? 0
-                            : parseInt(
-                              item.achivementPerc.substring(
-                                0,
-                                item.achivementPerc.indexOf("%")
-                              )
-                            ) / 100
-                          : parseFloat(item.achivementPerc) / 100
-                      }
-                      color={color[index % color.length]}
-                      style={{
-                        height: 20,
-                        borderTopRightRadius: 3,
-                        borderBottomRightRadius: 3,
-                        backgroundColor: "#eeeeee",
-                      }}
-                    />
-                    {/* <View style={{ position: 'absolute', top: 1, left: 2 }}>
-                                            <Text style={{ color: Colors.WHITE }}>{item.achievment}</Text>
-                                        </View> */}
-                    <View style={{ position: "absolute", top: 1, right: 5 }}>
-                      <Text
-                        style={{
-                          color:
-                            parseInt(
-                              item.achivementPerc.substring(
-                                0,
-                                item.achivementPerc.indexOf("%")
-                              )
-                            ) >= 90
-                              ? Colors.WHITE
-                              : Colors.BLACK,
-                        }}
-                      >
-                        {item.target}
-                      </Text>
-                    </View>
-                  </View>
-                  <View
-                    style={{
-                      width: "10%",
-                      justifyContent: "center",
-                      flexDirection: "row",
-                      height: 25,
-                      marginTop: 8,
-                      alignItems: "center",
-                      marginLeft: 8,
-                    }}
-                  >
-                    <IconButton
-                      icon={
-                        parseInt(
-                          item.achivementPerc.substring(
-                            0,
-                            item.achivementPerc.indexOf("%")
-                          )
-                        ) > 40
-                          ? "menu-up"
-                          : "menu-down"
-                      }
-                      color={
-                        parseInt(
-                          item.achivementPerc.substring(
-                            0,
-                            item.achivementPerc.indexOf("%")
-                          )
-                        ) > 40
-                          ? Colors.DARK_GREEN
-                          : Colors.RED
-                      }
-                      // icon={"menu-up"}
-                      // color={Colors.DARK_GREEN}
-                      size={30}
-                    />
-                    <View
-                      style={{
-                        justifyContent: "center",
-                        flexDirection: "row",
-                        height: 25,
-                        marginTop: 0,
-                        alignItems: "center",
-                        marginLeft: -20,
-                      }}
-                    >
-                      <Text>{item.achivementPerc}</Text>
-                    </View>
-                  </View>
-                  <View
-                    style={{
-                      width: "35%",
-                      justifyContent: "center",
-                      flexDirection: "row",
-                      height: 25,
-                      alignItems: "center",
-                      marginTop: 8,
-                      marginLeft: 20,
-                    }}
-                  >
-                    <View
-                      style={{
-                        maxWidth: item.target && item.target.length >= 6 ? 70 : 45,
-                        minWidth: 45,
-                        height: 25,
-                        borderColor: color[index % color.length],
-                        borderWidth: 1,
-                        borderRadius: 8,
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Text style={{padding: 2}}>
-                        {Number(item.achievment) > Number(item.target) ? 0 : item.shortfall}
-                      </Text>
-                    </View>
-                    <View
-                      style={{
-                        maxWidth: item.target && item.target.length >= 6 ? 70 : 45,
-                        minWidth: 45,
-                        height: 25,
-                        borderColor: color[index % color.length],
-                        borderWidth: 1,
-                        borderRadius: 8,
-                        justifyContent: "center",
-                        alignItems: "center",
-                        marginLeft: item.target.length >= 6 ? 5 : 20
-                      }}
-                    >
-                      <Text style={{padding: 2}}>
-                        {parseInt(item.achievment) > parseInt(item.target) ? 0 : (dateDiff > 0 && parseInt(item.shortfall) !== 0
-                          ? Math.abs(Math.round(parseInt(item.shortfall) / dateDiff)) : 0)}
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-              );
-            })}
+            <>
+              <RenderSelfInsights data={selector.isDSE ? selector.self_target_parameters_data : selector.insights_target_parameters_data} />
+            </>
             <View
               style={{ width: "100%", flexDirection: "row", marginTop: 20 }}
             >
@@ -1854,7 +1678,7 @@ const TargetScreen = ({ route, navigation }) => {
                 <View style={styles.statWrap}>
                   <Text
                     style={{
-                      marginRight: "60%",
+                      marginRight: "55%",
                       marginLeft: 10,
                       fontSize: 16,
                       fontWeight: "600",
@@ -1875,6 +1699,7 @@ const TargetScreen = ({ route, navigation }) => {
                             ? "#14ce40"
                             : "#ff0000",
                         fontSize: 12,
+
                       }}
                     >
                       {parseInt(bookingData?.achievment) === 0 ||
@@ -1902,7 +1727,7 @@ const TargetScreen = ({ route, navigation }) => {
                 <View style={styles.statWrap}>
                   <Text
                     style={{
-                      marginRight: "60%",
+                      marginRight: "55%",
                       marginLeft: 10,
                       fontSize: 16,
                       fontWeight: "600",
@@ -1940,7 +1765,7 @@ const TargetScreen = ({ route, navigation }) => {
                 <View style={styles.statWrap}>
                   <Text
                     style={{
-                      marginRight: "60%",
+                      marginRight: "55%",
                       marginLeft: 10,
                       fontSize: 16,
                       fontWeight: "600",
@@ -1984,8 +1809,6 @@ const TargetScreen = ({ route, navigation }) => {
                   )}
                 </View>
               </View>
-
-              {/* <View style={{ height: 5 }}></View> */}
 
               <View style={{ width: "45%" }}>
                 <View style={styles.statWrap}>

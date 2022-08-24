@@ -35,7 +35,7 @@ import {
     updateIsDSE,
     updateTargetData,
     getNewTargetParametersAllData,
-    getTotalTargetParametersData
+    getTotalTargetParametersData, getTargetParametersEmpDataInsights
 } from '../../../redux/homeReducer';
 import { getCallRecordingCredentials } from '../../../redux/callRecordingReducer'
 import {
@@ -59,30 +59,6 @@ import RNFetchBlob from 'rn-fetch-blob'
 import empData from '../../../get_target_params_for_emp.json'
 import allData from '../../../get_target_params_for_all_emps.json'
 import targetData from '../../../get_target_params.json'
-
-const screenWidth = Dimensions.get("window").width;
-const itemWidth = (screenWidth - 30) / 2;
-
-const widthForBoxItem = (screenWidth - 30) / 3;
-
-const BoxComp = ({ width, name, value, iconName, bgColor }) => {
-    return (
-        <View style={{ width: width, padding: 2 }}>
-            <View style={[styles.boxView, { backgroundColor: bgColor }]}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <IconButton icon={iconName} size={12} color={Colors.WHITE} style={{ margin: 0, padding: 0 }} />
-                    <Text style={{ fontSize: 12, fontWeight: "600", color: Colors.WHITE }}>{value}</Text>
-                </View>
-                <Text style={{ fontSize: 12, fontWeight: "600", color: Colors.WHITE }}>{name}</Text>
-            </View>
-        </View>
-    )
-}
-
-const titleNames = ["Live Bookings", "Complaints", "Deliveries", "Loss In Revenue", "Pending Tasks"];
-const iconNames = ["shopping", "account-supervisor", "currency-usd", "cart", "currency-usd"];
-const colorNames = ["#85b1f4", "#f1ab48", "#79e069", "#e36e7a", "#5acce8"]
-
 
 const HomeScreen = ({ route, navigation }) => {
     const selector = useSelector((state) => state.homeReducer);
@@ -108,67 +84,13 @@ const HomeScreen = ({ route, navigation }) => {
     const [loading, setLoading] = useState(false);
 
     useLayoutEffect(() => {
-
-        // if (route.params?.branchName) {
-        //   navigation.setOptions({
-        //     headerRight: () => (
-        //       <TouchableOpacity onPress={moveToSelectBranch}>
-        //         <View style={{ paddingLeft: 5, paddingRight: 2, paddingVertical: 2, borderColor: Colors.WHITE, borderWidth: 1, borderRadius: 4, flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
-        //           <Text style={{ fontSize: 10, fontWeight: "600", color: Colors.WHITE, width: 65 }} numberOfLines={1} >{route.params?.branchName || ""}</Text>
-        //           <IconButton
-        //             icon="menu-down"
-        //             style={{ padding: 0, margin: 0 }}
-        //             color={Colors.WHITE}
-        //             size={15}
-        //           />
-        //         </View>
-        //       </TouchableOpacity>
-        //     ),
-        //   });
-        // }
-        // setInterval(() => {
-        //     console.log("CALLED INTERVAL");
-        //     getHomeData()
-        // }, 10000);
         navigation.addListener('focus', () => {
-            setTargetData()
+            setTargetData().then(r => console.log(r));
         })
 
     }, [navigation]);
 
-    // useEffect(async() => {
-    //     let abc = AsyncStore.getData("TARGET_EMP");
-    //     console.log("STORE=====>", JSON.parse(abc));
-    // }, [])
-
-    
-
     const setTargetData = async () => {
-        // let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        // if (employeeData) {
-        //     const jsonObj = JSON.parse(employeeData);
-        //     if (await AsyncStore.getData('TARGET_EMP_ID') && Number(jsonObj.empId) === Number(await AsyncStore.getData('TARGET_EMP_ID'))){
-        //         console.log("INSIDE IF", await AsyncStore.getData('TARGET_EMP_ID'), jsonObj.empId);
-        //         let obj = {
-        //             empData: JSON.parse(await AsyncStore.getData('TARGET_EMP')),
-        //             allEmpData: JSON.parse(await AsyncStore.getData('TARGET_EMP_ALL')),
-        //             allTargetData: JSON.parse(await AsyncStore.getData('TARGET_ALL')),
-        //             targetData: JSON.parse(await AsyncStore.getData('TARGET_DATA')),
-        //         }
-        //         dispatch(updateTargetData(obj))
-        //     }
-        //     else{
-        //         AsyncStore.storeData('TARGET_EMP_ID', jsonObj.empId.toString())
-        //         let obj = {
-        //             empData: empData,
-        //             allEmpData: allData.employeeTargetAchievements,
-        //             allTargetData: allData.overallTargetAchivements,
-        //             targetData: targetData,
-        //         }
-        //         dispatch(updateTargetData(obj))
-        //     }
-        // }
-
         console.log("TTTTT CALLED: ", await AsyncStore.getData('TARGET_EMP'));
         let obj = {
             empData: await AsyncStore.getData('TARGET_EMP') ? JSON.parse(await AsyncStore.getData('TARGET_EMP')) : empData,
@@ -188,11 +110,27 @@ const HomeScreen = ({ route, navigation }) => {
             })
             if (tempRetail.length > 0) {
                 setRetailData(tempRetail[0])
-                console.log("tempRetail[0]>>>>>>>>>>>>>>>>>>>>>>", tempRetail[0]);
             }
         } else {
         }
     }, [selector.self_target_parameters_data]) //selector.self_target_parameters_data
+    // self data END
+
+    // insights data
+    useEffect(() => {
+        if (selector.insights_target_parameters_data.length > 0) {
+            console.log("@@@@@@@@@@@@@@@@@@selector.insights_target_parameters_data.length$$$$$$", selector.insights_target_parameters_data);
+            let tempRetail = [];
+            tempRetail = selector.insights_target_parameters_data.filter((item) => {
+                return item.paramName.toLowerCase() === 'invoice'
+            })
+            if (tempRetail.length > 0) {
+                setRetailData(tempRetail[0])
+                console.log("tempRetail[0]>>>>>>>>>>>>>>>>>>>>>> insights", tempRetail);
+            }
+        } else {
+        }
+    }, [selector.insights_target_parameters_data]) //selector.self_target_parameters_data
 
     useEffect(async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -217,53 +155,6 @@ const HomeScreen = ({ route, navigation }) => {
     }, [selector.allDealerData])
 
     useEffect(async () => {
-        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-     
-        if (employeeData) {
-            const jsonObj = JSON.parse(employeeData);
-
-            // const dateFormat = "YYYY-MM-DD";
-            // const currentDate = moment().format(dateFormat)
-            // const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-            // const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-            // const payload = {
-            //     "endDate": monthLastDate,
-            //     "loggedInEmpId": jsonObj.empId,
-            //     "startDate": monthFirstDate,
-            //     "levelSelected": null,
-            //     "pageNo": 0,
-            //     "size": 5
-            // }
-            // console.log("jsonObj: ", jsonObj);
-            // if (selector.login_employee_details?.roles.length > 0) {
-            //     let rolesArr = [];
-            //     rolesArr = selector.login_employee_details?.roles.filter((item) => {
-            //         return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL" || item === "General Manager" || item === "branch manager" || item === "Testdrive_Manager"
-            //     })
-            //     if (rolesArr.length > 0) {
-            //         console.log("%%%%% TEAM:", rolesArr);
-            //         setIsTeamPresent(true)
-            //         // Promise.all([
-            //         //     dispatch(getTargetParametersAllData(payload))
-            //         // ]).then(() => {
-            //         //     console.log('I did everything!');
-            //         // });
-            //     }
-            // }
-        }
-
-    }, [selector.login_employee_details])
-
-    useEffect(async () => {
-        // if (selector.groupDealerRank > 0) {
-        //     console.log("DDDDDDD", selector.groupDealerRank);
-        //     setGroupDealerRank(selector.groupDealerRank)
-        //     setGroupDealerCount(selector.groupDealerCount)
-        // }
-        // if (selector.dealerRank > 0) {
-        //     setDealerRank(selector.dealerRank)
-        //     setDealerCount(selector.dealerCount)
-        // }
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
@@ -413,16 +304,12 @@ const HomeScreen = ({ route, navigation }) => {
                 dispatch(updateIsTeamPresent(true))
                 setIsTeamPresent(true)
                 if (jsonObj?.hrmsRole === 'MD' || jsonObj?.hrmsRole === "App Admin" ) {
-                    // dispatch(updateData(sidemenuSelector.managerData))
-                    // dispatch(updateIsTeam(true))
-                    // dispatch(acctionCreator.updateIsTeam(true))
                     dispatch(updateIsMD(true))
                     if (jsonObj?.hrmsRole === 'MD') {
                         setIsButtonPresent(true)
                     }
                 }
                 else {
-                    // dispatch(updateData(sidemenuSelector.normalData))
                     dispatch(updateIsMD(false))
                 }
                 // console.log("%%%%% TEAM:", rolesArr);
@@ -436,94 +323,35 @@ const HomeScreen = ({ route, navigation }) => {
                     "startDate": monthFirstDate,
                     "levelSelected": null,
                     "empId": jsonObj.empId,
-                    isTeamPresent: true,
                 }
                 getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
+                    .then(x => console.log(`getAllTargetParametersDataFromServer:: success: ${x}`))
+                    .catch(y => console.log(`getAllTargetParametersDataFromServer:: error: ${y}`));
             }
             if (jsonObj?.hrmsRole.toLowerCase().includes('manager')) {
-                // dispatch(updateData(sidemenuSelector.managerData))
                 dispatch(updateIsManager(true))
             }
             else {
-                // dispatch(updateData(sidemenuSelector.normalData))
                 dispatch(updateIsManager(false))
             }
 
             if (jsonObj?.hrmsRole.toLowerCase().includes('dse')) {
-                // dispatch(updateData(sidemenuSelector.managerData))
                 dispatch(updateIsDSE(true))
             }
             else {
-                // dispatch(updateData(sidemenuSelector.normalData))
                 dispatch(updateIsDSE(false))
             }
-
-
 
             if (jsonObj?.roles.length > 0) {
                 let rolesArr = [], mdArr = [], dseArr = [];
                 console.log("ROLLS:", jsonObj.roles);
                 rolesArr = jsonObj.roles.filter((item) => {
-                    return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL" || item === "General Manager" || item === "branch manager" || item === "Testdrive_Manager"
+                    return item === "Admin Prod" || item === "App Admin" || item === "Manager"
+                        || item === "TL" || item === "General Manager" || item === "branch manager"
+                        || item === "Testdrive_Manager"
                 })
-                // rolesArr2 = jsonObj.roles.filter((item) => {
-                //     return item.toLowerCase().includes('manager')
-                // })
-
-                // mdArr = jsonObj.roles.filter((item) => {
-                //     return item.toLowerCase().includes('md')
-                // })
-
-                // dseArr = jsonObj.roles.filter((item) => {
-                //     return item.toLowerCase().includes('dse')
-                // })
-
-                // if (item.toLowerCase().includes('manager')) {
-                //     // dispatch(updateData(sidemenuSelector.managerData))
-                //     dispatch(updateIsManager(true))
-                // }
-                // else {
-                //     // dispatch(updateData(sidemenuSelector.normalData))
-                //     dispatch(updateIsManager(false))
-                // }
-
-                // if (dseArr.length > 0) {
-                //     // dispatch(updateData(sidemenuSelector.managerData))
-                //     dispatch(updateIsDSE(true))
-                // }
-                // else {
-                //     // dispatch(updateData(sidemenuSelector.normalData))
-                //     dispatch(updateIsDSE(false))
-                // }
-
-                // if (mdArr.length > 0) {
-                //     // dispatch(updateData(sidemenuSelector.managerData))
-                //     dispatch(updateIsTeam(true))
-                //     dispatch(acctionCreator.updateIsTeam(true))
-                //     dispatch(updateIsMD(true))
-                // }
-                // else {
-                //     // dispatch(updateData(sidemenuSelector.normalData))
-                //     dispatch(updateIsMD(false))
-                // }
                 if (rolesArr.length > 0) {
                     setRoles(rolesArr)
-                    // dispatch(updateIsTeamPresent(true))
-                    // setIsTeamPresent(true)
-                    // // console.log("%%%%% TEAM:", rolesArr);
-                    // const dateFormat = "YYYY-MM-DD";
-                    // const currentDate = moment().format(dateFormat)
-                    // const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-                    // const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-                    // const payload = {
-                    //     "endDate": monthLastDate,
-                    //     "loggedInEmpId": jsonObj.empId,
-                    //     "startDate": monthFirstDate,
-                    //     "levelSelected": null,
-                    //     "empId": jsonObj.empId
-                    // }
-                    // // console.log("PAYLOAD:", payload);
-                    // getAllTargetParametersDataFromServer(payload)
                 }
             }
             getDashboadTableDataFromServer(jsonObj.empId);
@@ -551,12 +379,13 @@ const HomeScreen = ({ route, navigation }) => {
                         ...payload,
                         "pageNo": 0,
                         "size": 5,
-                        isTeamPresent: true
                     })),
-                        getAllTargetParametersDataFromServer(payload, jsonObj.orgId);
+                        getAllTargetParametersDataFromServer(payload, jsonObj.orgId)
+                            .then(x => console.log(`getAllTargetParametersDataFromServer:: success: ${x}`))
+                            .catch(y => console.log(`getAllTargetParametersDataFromServer:: error: ${y}`));
                 }
                 else{
-                    getTargetParametersDataFromServer(payload);
+                    getTargetParametersDataFromServer(payload).catch(y=> console.log('getTargetParametersDataFromServer:: home/index.js: ', y));
                 }
         }
     }
@@ -584,7 +413,7 @@ const HomeScreen = ({ route, navigation }) => {
         });
 
         getTaskTableDataFromServer(empId, payload);
-        getTargetParametersDataFromServer(payload);
+        getTargetParametersDataFromServer(payload).catch(y=> console.log('587 home/index.js: ', y));
     }
 
     const getTaskTableDataFromServer = (empId, oldPayload) => {
@@ -608,20 +437,10 @@ const HomeScreen = ({ route, navigation }) => {
         let isTeamPresentLocal = false;
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
-            console.log("EMP========>", jsonObj)
-            if (
-              jsonObj?.hrmsRole === "Admin" ||
-              jsonObj?.hrmsRole === "Admin Prod" ||
-              jsonObj?.hrmsRole === "App Admin" ||
-              jsonObj?.hrmsRole === "Manager" ||
-              jsonObj?.hrmsRole === "TL" ||
-              jsonObj?.hrmsRole === "General Manager" ||
-              jsonObj?.hrmsRole === "branch manager" ||
-              jsonObj?.hrmsRole === "Testdrive_Manager" ||
-              jsonObj?.hrmsRole === "MD" ||
-              jsonObj?.hrmsRole === "Business Head" ||
-              jsonObj?.hrmsRole === "Sales Manager"
-            ) {
+            console.log("EMP========>", jsonObj);
+            const allRoles = ["Admin", "Admin Prod", "App Admin", "Manager", "TL", "General Manager",
+                "branch manager", "Testdrive_Manager", "MD", "Business Head","Sales Manager"]
+            if (allRoles.includes(jsonObj?.hrmsRole)) {
               isTeamPresentLocal = true;
             }
         }
@@ -630,13 +449,14 @@ const HomeScreen = ({ route, navigation }) => {
             ...payload,
             "pageNo": 0,
             "size": 5,
-            isTeamPresent: isTeamPresentLocal
         }
         Promise.allSettled([
             dispatch(getTargetParametersData(payload1)),
-            dispatch(getTargetParametersEmpData(payload1))
+            dispatch(!isTeamPresentLocal ? getTargetParametersEmpData(payload1) : getTargetParametersEmpDataInsights(payload1))
         ]).then(() => {
             console.log("getTargetParametersDataFromServer");
+        }).catch(y => {
+            console.log("getTargetParametersDataFromServer err: ", y);
         });
     }
 
@@ -645,7 +465,9 @@ const HomeScreen = ({ route, navigation }) => {
         let isTeamPresentLocal = false;
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
-            if (jsonObj?.hrmsRole === "Admin" || jsonObj?.hrmsRole === "Admin Prod" || jsonObj?.hrmsRole === "App Admin" || jsonObj?.hrmsRole === "Manager" || jsonObj?.hrmsRole === "TL" || jsonObj?.hrmsRole === "General Manager" || jsonObj?.hrmsRole === "branch manager" || jsonObj?.hrmsRole === "Testdrive_Manager" || jsonObj?.hrmsRole === "MD" || jsonObj?.hrmsRole === "Business Head" || jsonObj?.hrmsRole === "Sales Manager") {
+            const allRoles = ["Admin", "Admin Prod", "App Admin", "Manager", "TL", "General Manager",
+                "branch manager", "Testdrive_Manager", "MD", "Business Head","Sales Manager"]
+            if (allRoles.includes(jsonObj?.hrmsRole)) {
                 isTeamPresentLocal = true;
             }
         }
@@ -665,16 +487,16 @@ const HomeScreen = ({ route, navigation }) => {
             "levelSelected": null,
             "pageNo": 0,
             "size": 100,
-            isTeamPresent: isTeamPresentLocal
         }
         Promise.allSettled([
            //dispatch(getTargetParametersAllData(payload1)),
           dispatch(getTotalTargetParametersData(payload2)),
           dispatch(getNewTargetParametersAllData(payload2)),
-         
-          dispatch(getTargetParametersEmpData(payload1)),
+          dispatch(isTeamPresentLocal ? getTargetParametersEmpDataInsights(payload1) : getTargetParametersEmpData(payload1))
         ]).then(() => {
           console.log("I did everything!");
+        }).catch(y => {
+            console.log("I did everything!!!: ", y);
         });
     }
 
@@ -758,14 +580,6 @@ const HomeScreen = ({ route, navigation }) => {
                             }).catch(() => {
                                 setLoading(false)
                             })
-
-                            // try {
-                            //     const response = await client.post(URL.DOWNLOAD_FILE(), payload)
-                            //     const json = await response.json()
-                            //     console.log("DOWNLOAD: ", json);
-                            // } catch (error) {
-                            //     setLoading(false)
-                            // }
                         }
                     }
                 }
@@ -787,11 +601,6 @@ const HomeScreen = ({ route, navigation }) => {
             let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
             if (employeeData) {
                 const jsonObj = JSON.parse(employeeData);
-                //  if (res[0]?.payload.length > 0) {
-                //     let braches = res[0]?.payload;
-                //    for (let i = 0; i < braches.length; i++) {
-                //       branchIds.push(braches[i].id);
-                //   if (i == braches.length - 1) {
                 const dateFormat = "YYYY-MM-DD";
                 const currentDate = moment().format(dateFormat)
                 const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
@@ -816,17 +625,6 @@ const HomeScreen = ({ route, navigation }) => {
                 }).catch(() => {
                     setLoading(false)
                 })
-
-                // try {
-                //     const response = await client.post(URL.DOWNLOAD_FILE(), payload)
-                //     const json = await response.json()
-                //     console.log("DOWNLOAD: ", json);
-                // } catch (error) {
-                //     setLoading(false)
-                // }
-                //  }
-                //   }
-                //    }
             }
 
         }).catch(() => {
@@ -912,8 +710,6 @@ const HomeScreen = ({ route, navigation }) => {
                 }}
             />
             <HeaderComp
-                // title={"Dashboard"}
-                // title={roles.length > 0 ? roles[0] : ''}
                 title={headerText}
                 branchName={selectedBranchName}
               menuClicked={() => navigation.openDrawer()}
@@ -942,7 +738,6 @@ const HomeScreen = ({ route, navigation }) => {
                                         <>
                                         <View style={styles.rankView}>
                                             <View style={styles.rankBox}>
-                                                {/* <Text style={styles.rankHeadingText}>Group Dealer Ranking</Text> */}
                                                 <Text style={styles.rankHeadingText}>Dealer Ranking</Text>
                                                 <View style={{
                                                     flexDirection: 'row'
@@ -950,12 +745,6 @@ const HomeScreen = ({ route, navigation }) => {
                                                     <TouchableOpacity style={styles.rankIconBox} onPress={() => {
                                                         navigation.navigate(AppNavigator.HomeStackIdentifiers.leaderboard)
                                                      }}>
-                                                        {/* <VectorImage
-                                                    width={25}
-                                                    height={16}
-                                                    source={SPEED}
-                                                // style={{ tintColor: Colors.DARK_GRAY }}
-                                                /> */}
                                                         <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
                                                     </TouchableOpacity>
                                                     <View style={{
@@ -965,17 +754,11 @@ const HomeScreen = ({ route, navigation }) => {
                                                         {groupDealerRank !== null &&
                                                             <Text style={styles.rankText}>{groupDealerRank}/{groupDealerCount}</Text>
                                                         }
-                                                        {/* <View style={{
-                                                    marginTop: 5
-                                                }}>
-                                                    <Text style={styles.baseText}>Based on city</Text>
-                                                </View> */}
                                                     </View>
                                                 </View>
                                             </View>
 
                                             <View style={styles.rankBox}>
-                                                {/* <Text style={styles.rankHeadingText}>Dealer Ranking</Text> */}
                                                 <Text style={styles.rankHeadingText}>Branch Ranking</Text>
                                                 <View style={{
                                                     flexDirection: 'row'
@@ -983,65 +766,27 @@ const HomeScreen = ({ route, navigation }) => {
                                                     <TouchableOpacity style={styles.rankIconBox} onPress={() => {
                                                         navigation.navigate(AppNavigator.HomeStackIdentifiers.branchRanking)
                                                     }}>
-                                                    {/* <VectorImage
-                                                    width={25}
-                                                    height={16}
-                                                    source={SPEED}
-                                                // style={{ tintColor: Colors.DARK_GRAY }}
-                                                /> */}
                                                         <Image style={styles.rankIcon} source={require("../../../assets/images/perform_rank.png")} />
                                                     </TouchableOpacity>
                                                     <View style={{
                                                         marginTop: 5,
                                                         marginLeft: 3,
-                                                        // justifyContent: 'center'
                                                     }}>
-                                                        {/* <Text style={styles.rankText}>14/50</Text> */}
                                                         {dealerRank !== null &&
                                                             <View style={{ flexDirection: 'row' }}>
                                                                 <Text style={[styles.rankText]}>{dealerRank}</Text>
                                                                 <Text style={[styles.rankText]}>/{dealerCount}</Text>
                                                             </View>
                                                         }
-                                                        {/* <View style={{
-                                                    marginTop: 5
-                                                }}>
-                                                    <Text style={styles.baseText}>Based on city</Text>
-                                                </View> */}
                                                     </View>
                                                 </View>
                                             </View>
-
-                                            {/* <View style={styles.retailBox}>
-                                        <View style={{
-                                            flexDirection: 'row',
-                                            marginBottom: 5
-                                        }}>
-                                            {retailData !== null &&
-                                                <>
-                                                    <Text style={{ color: 'red' }}>{retailData?.achievment}/ </Text>
-                                                    <Text>{retailData?.target}</Text>
-                                                </>
-                                            }
-                                        </View>
-                                        <Text style={{ color: 'red', fontSize: 14 }}>Retails</Text>
-                                        <View style={{ marginTop: 5 }}>
-                                            <Text style={{ fontSize: 12, color: '#aaa3a3' }}>Ach v/s Tar</Text>
-                                        </View>
-                                    </View> */}
-
                                             <View style={styles.rankBox}>
                                                 <Text style={styles.rankHeadingText}>Retails</Text>
                                                 <View style={{
                                                     flexDirection: 'row'
                                                 }}>
                                                     <View style={styles.rankIconBox}>
-                                                        {/* <VectorImage
-                                                    width={25}
-                                                    height={16}
-                                                    source={SPEED}
-                                                // style={{ tintColor: Colors.DARK_GRAY }}
-                                                /> */}
                                                         <Image style={styles.rankIcon} source={require("../../../assets/images/retail.png")} />
                                                     </View>
                                                     <View style={{
@@ -1049,16 +794,10 @@ const HomeScreen = ({ route, navigation }) => {
                                                         marginLeft: 5,
                                                     }}>
 
-                                                    {/*    {retailData !== null && */}
                                                             <View style={{ flexDirection: 'row' }}>
                                                                 <Text style={[styles.rankText, { color: 'red' }]}>{retailData?.achievment}</Text>
                                                                 <Text style={[styles.rankText]}>/{retailData?.target}</Text>
                                                             </View>
-                                                     {/*   } */}
-                                                     {/*   <View style={{ flexDirection: 'row' }}>
-                                                            <Text style={[styles.rankText, { color: 'red' }]}>{retailData?.achievment} </Text>
-                                                            <Text style={styles.rankText}>/{retailData?.target}</Text>
-                                                    </View> */}
                                                         <View style={{
                                                             marginTop: 5
                                                         }}>
@@ -1067,14 +806,6 @@ const HomeScreen = ({ route, navigation }) => {
                                                     </View>
                                                 </View>
                                             </View>
-
-                                            {/* <TouchableOpacity style={{ position: 'absolute', top: -10, right: -10 }}
-                                            onPress={() => navigation.navigate(HomeStackIdentifiers.filter)}>
-                                            <View style={{ flexDirection: 'row', alignItems: 'center' }}> */}
-                                            {/* <Text style={[styles.text1, { color: Colors.RED }]}>{'Filters'}</Text> */}
-                                            {/* <IconButton icon={'filter-outline'} size={25} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
-                                            </View>
-                                        </TouchableOpacity> */}
                                         </View>
                                         </>
                                     }
@@ -1084,30 +815,6 @@ const HomeScreen = ({ route, navigation }) => {
                         else if (index === 1) {
                             return (
                                 <>
-                                    {/* <View style={{ marginBottom: 5, justifyContent: 'center', alignItems: 'center', marginBottom: 10 }}>
-
-                                        <View style={styles.performView}>
-                                            <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                                                <View style={{ marginBottom: 5 }}>
-                                                    <Text style={styles.text3}>{"My Performance"}</Text>
-                                                </View>
-                                                <Text style={{ fontSize: 12, color: '#aaa3a3' }}>Last updated March 29 2020 11:40 am</Text>
-                                            </View>
-
-                                        </View>
-                                        {!isTeamPresent &&
-                                            <View >
-                                                <TargetDropdown
-                                                    label={"Select Target"}
-                                                    value={dropDownData ? dropDownData.value : ''}
-                                                    onPress={() =>
-                                                        showDropDownModelMethod("TARGET_MODEL", "Select Target")
-                                                    }
-                                                />
-                                            </View>
-                                        }
-                                    </View> */}
-
                                     {isTeamPresent && !selector.isDSE &&
                                         <View style={{ flexDirection: 'row', marginBottom: 20, justifyContent: 'center', alignItems: 'center' }}>
                                             <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, marginTop: 10, justifyContent: 'center', width: '80%' }}>
@@ -1140,33 +847,15 @@ const HomeScreen = ({ route, navigation }) => {
                                             </View>
                                         </View>
                                     }
-                                    {/* {selector.isMD &&
-                                        <View style={{ flexDirection: 'row', marginBottom: 20, justifyContent: 'center', alignItems: 'center' }}>
-                                            <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, marginTop: 10, justifyContent: 'center', width: '80%' }}>
-                                                <TouchableOpacity onPress={() => {
-                                                    // setIsTeam(false)
-                                                    dispatch(updateIsTeam(true))
-                                                }} style={{ width: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.RED, borderTopRightRadius: 5, borderBottomRightRadius: 5 }}>
-                                                    <Text style={{ fontSize: 16, color: Colors.WHITE, fontWeight: '600' }}>Teams</Text>
-                                                </TouchableOpacity>
-                                            </View>
-                                        </View>
-                                    } */}
                                 </>
                             )
                         }
                         else if (index === 2) {
                             return (
-                                // <View style={[]}>
-                                //   <View style={[GlobalStyle.shadow, { padding: 10, backgroundColor: Colors.WHITE, borderRadius: 8 }]}>
-                                //     <TargetAchivementComp />
-                                //   </View>
-                                // </View>
                                 <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                                     <View style={{
                                         width: '95%',
                                         minHeight: 400,
-                                        // borderWidth: 1,
                                         shadowColor: Colors.DARK_GRAY,
                                         shadowOffset: {
                                             width: 0,
@@ -1174,7 +863,6 @@ const HomeScreen = ({ route, navigation }) => {
                                         },
                                         shadowRadius: 4,
                                         shadowOpacity: 0.5,
-                                        // elevation: 3,
                                         marginHorizontal: 20
                                     }}>
                                         {(selector.target_parameters_data.length > 0 || (isTeamPresent && selector.all_target_parameters_data.length > 0)) &&
@@ -1187,26 +875,6 @@ const HomeScreen = ({ route, navigation }) => {
                     }}
                 />
             </View>
-            {/* <ScrollView style={{}}>
-        <View style={{ flex: 1, paddingVertical: 10, paddingHorizontal: 15, }}>
-          <View style={{ flexDirection: 'row', height: 60, alignItems: 'center', justifyContent: 'space-between' }}>
-
-          <Searchbar
-            style={{ width: "90%" }}
-            placeholder="Search"
-            onChangeText={(text) => { }}
-            value={selector.serchtext}
-          />
-          <VectorImage
-            width={25}
-            height={25}
-            source={FILTER}
-            style={{ tintColor: Colors.DARK_GRAY }}
-          />
-        </View>
-
-        </View>
-      </ScrollView> */}
             <LoaderComponent visible={loading} />
         </SafeAreaView>
     );
@@ -1280,22 +948,14 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "flex-start",
-        // borderWidth: 1,
-        // borderColor: Colors.BORDER_COLOR,
         backgroundColor: Colors.WHITE,
         marginBottom: 5,
-        // paddingLeft: 5,
-        // height: 100,
-        // backgroundColor: 'red'
     },
 
     rankView: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        // borderWidth: 1,
-        // borderColor: Colors.BORDER_COLOR,
-        // backgroundColor: Colors.WHITE,
         marginBottom: 5,
         paddingLeft: 3,
         height: 80,
@@ -1311,7 +971,6 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.3,
         shadowRadius: 1,
-        // elevation: 0.4,
         borderStyle: "solid",
         borderWidth: 1,
         borderColor: "#d2d2d2",
@@ -1340,14 +999,12 @@ const styles = StyleSheet.create({
         paddingTop: 5,
         height: 80,
         width: '32%',
-        // backgroundColor: 'red',
         marginRight: 10
     },
     rankBox2: {
         paddingTop: 5,
         height: 80,
         width: '30%',
-        // backgroundColor: 'red',
         marginRight: 10
     },
 
@@ -1355,104 +1012,9 @@ const styles = StyleSheet.create({
         paddingTop: 5,
         height: 80,
         width: '20%',
-        // backgroundColor: 'red',
         marginRight: 10,
         alignItems: 'flex-end'
     },
     rankIcon: { width: 25, height: 25 }
 });
 
-
-// const cardClicked = (index) => {
-
-//   if (index === 0) {
-//     navigation.navigate(AppNavigator.TabStackIdentifiers.ems);
-//   } else if (index === 1) {
-//     navigation.navigate(AppNavigator.TabStackIdentifiers.myTask);
-//   }
-// };
-
-{/* <FlatList
-          data={selector.tableData}
-          numColumns={2}
-          horizontal={false}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item, index }) => {
-            return (
-              <Pressable onPress={() => cardClicked(index)}>
-                <View style={{ flex: 1, width: itemWidth, padding: 5 }}>
-                  <View
-                    style={[
-                      styles.shadow,
-                      {
-                        backgroundColor:
-                          index == 0 ? Colors.YELLOW : Colors.GREEN,
-                      },
-                    ]}
-                  >
-                    <View style={{ overflow: "hidden" }}>
-                      <Image
-                        style={{
-                          width: "100%",
-                          height: 150,
-                          overflow: "hidden",
-                        }}
-                        resizeMode={"cover"}
-                        source={require("../../../assets/images/bently.png")}
-                      />
-
-                      <View
-                        style={{
-                          width: "100%",
-                          height: 100,
-                          flexDirection: "row",
-                          justifyContent: "space-around",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Text style={styles.text1}>{item.title}</Text>
-                        <View
-                          style={{
-                            height: 100,
-                            width: 50,
-                            alignItems: "center",
-                          }}
-                        >
-                          <View style={styles.barVw}>
-                            <Text style={styles.text2}>{item.count}</Text>
-                          </View>
-                        </View>
-                      </View>
-                    </View>
-                  </View>
-                </View>
-              </Pressable>
-            );
-          }}
-        /> */}
-
-{/* <View style={{ maxHeight: 100, marginBottom: 15 }}>
-          <FlatList
-            data={selector.datesData}
-            style={{}}
-            keyExtractor={(item, index) => index.toString()}
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            renderItem={({ item, index }) => {
-              return (
-                <Pressable onPress={() => dispatch(dateSelected(index))}>
-                  <View style={{ paddingRight: 10 }}>
-                    <DateItem
-                      month={item.month}
-                      date={item.date}
-                      day={item.day}
-                      selected={
-                        selector.dateSelectedIndex === index ? true : false
-                      }
-                    />
-                  </View>
-                </Pressable>
-              );
-            }}
-          />
-        </View> */}

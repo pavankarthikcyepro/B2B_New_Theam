@@ -220,17 +220,23 @@ export const getUserWiseTargetParameters = createAsyncThunk("HOME/getUserWiseTar
     return json;
 })
 
-export const getTargetParametersEmpData = createAsyncThunk("HOME/getTargetParametersEmpData", async (payload: any, { rejectWithValue }) => {
-    const url = `${payload.isTeamPresent ? URL.GET_TOTAL_TARGET_PARAMS() : URL.GET_TARGET_PARAMS_EMP()}`;
-    console.log("ADMIN=======>", payload)
-    const response = await client.post(url, payload);
+export const getTargetParametersEmpDataInsights = createAsyncThunk("HOME/getTargetParametersEmpDataInsights", async (payload: any, { rejectWithValue }) => {
+    console.log("ADMIN=======> insights: ", payload)
+    const response = await client.post(URL.GET_TOTAL_TARGET_PARAMS(), payload);
     const json = await response.json();
-      if (payload.isTeamPresent) {
-        delete payload.isTeamPresent;
-      }
- if (!response.ok) {
-   return rejectWithValue(json);
- }
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const getTargetParametersEmpData = createAsyncThunk("HOME/getTargetParametersEmpData", async (payload: any, { rejectWithValue }) => {
+    console.log("ADMIN=======> self: ", payload)
+    const response = await client.post(URL.GET_TARGET_PARAMS_EMP(), payload);
+    const json = await response.json();
+    if (!response.ok) {
+    return rejectWithValue(json);
+    }
  return json;
 
 
@@ -238,9 +244,9 @@ export const getTargetParametersEmpData = createAsyncThunk("HOME/getTargetParame
 //   const url1 = URL.GET_TOTAL_TARGET_PARAMS();
 //   const response = await client.post(url1, payload);
 //   const json = await response.json();
- 
+
 //       delete payload.isTeamPresent;
-  
+
 //   if (!response.ok) {
 //     return rejectWithValue(json);
 //   }
@@ -492,6 +498,7 @@ export const homeSlice = createSlice({
         isMD: false,
         isDSE: false,
         self_target_parameters_data: empData,
+        insights_target_parameters_data: empData,
         totalParameters: [],
         employee_list: [],
         reporting_manager_list: [],
@@ -523,7 +530,11 @@ export const homeSlice = createSlice({
             state.target_parameters_data = action.payload.targetData;
             state.all_target_parameters_data = action.payload.allTargetData;
             // state.all_emp_parameters_data = action.payload.allEmpData;
-            state.self_target_parameters_data = action.payload.empData;
+            if (state.isDSE) {
+                state.self_target_parameters_data = action.payload.empData;
+            } else {
+                state.insights_target_parameters_data = action.payload.empData;
+            }
         },
         clearState: (state, action) => {
             state.serchtext = ""
@@ -564,6 +575,7 @@ export const homeSlice = createSlice({
             state.leaderboard_list = []
             state.branchrank_list = []
             state.self_target_parameters_data =empData
+            state.insights_target_parameters_data =empData
         },
     },
     extraReducers: (builder) => {
@@ -840,12 +852,24 @@ export const homeSlice = createSlice({
                     state.self_target_parameters_data = action.payload;
                     AsyncStore.storeData('TARGET_EMP', JSON.stringify(action.payload))
                 }
-                
+
                 // else{
                 //     state.self_target_parameters_data = empData
                 // }
             })
             .addCase(getTargetParametersEmpData.rejected, (state, action) => {
+                //state.self_target_parameters_data = [];
+            })
+            .addCase(getTargetParametersEmpDataInsights.pending, (state, action) => {
+                //state.self_target_parameters_data = [];
+            })
+            .addCase(getTargetParametersEmpDataInsights.fulfilled, (state, action) => {
+                if (action.payload) {
+                    state.insights_target_parameters_data = action.payload;
+                    AsyncStore.storeData('TARGET_EMP', JSON.stringify(action.payload))
+                }
+            })
+            .addCase(getTargetParametersEmpDataInsights.rejected, (state, action) => {
                 //state.self_target_parameters_data = [];
             })
 
@@ -1000,41 +1024,3 @@ export const homeSlice = createSlice({
 export const { dateSelected, updateFilterDropDownData, updateIsTeamPresent, updateIsMD, updateIsDSE, clearState, updateTargetData } = homeSlice.actions;
 export default homeSlice.reducer;
 
-
-// const sampleData = [
-//   {
-//     "menuId": 81,
-//     "description": "EMS",
-//     "displayName": "EMS",
-//   },
-//   {
-//     "menuId": 100,
-//     "description": "Event Management",
-//     "displayName": "Event Management",
-//   },
-//   {
-//     "menuId": 115,
-//     "description": "Test Drive",
-//     "displayName": "Test Drive",
-//   },
-//   {
-//     "menuId": 117,
-//     "description": "Evaluator",
-//     "displayName": "Evaluator",
-//   },
-//   {
-//     "menuId": 119,
-//     "description": "My Tasks",
-//     "displayName": "My Tasks",
-//   },
-//   {
-//     "menuId": 123,
-//     "description": "Pre Booking",
-//     "displayName": "Pre Booking",
-//   },
-//   {
-//     "menuId": 125,
-//     "description": "Pre Delivery",
-//     "displayName": "Pre Delivery",
-//   }
-// ]

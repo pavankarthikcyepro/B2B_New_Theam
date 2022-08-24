@@ -58,11 +58,11 @@ export const RenderEmployeeTotal = (userData) => {
                 </View>
             }
             <View style={[{width: '96%', minHeight: 40, flexDirection: 'column', paddingHorizontal: 0}]}>
-                <View style={{width: '100%', minHeight: 40, flexDirection: 'row', backgroundColor: level === 0 ? '#ECF0F1' : Colors.LIGHT_GRAY}}>
+                <View style={{width: '100%', minHeight: 40, flexDirection: 'row', borderBottomStartRadius: level > 0 ? 10 : 0 , backgroundColor: level === 0 ? '#ECF0F1' : Colors.LIGHT_GRAY}}>
                     {paramsData.map((param) => {
                         const selectedParameter = (empParams && empParams.length) && empParams.filter((item) => item.paramName === param)[0];
                         return (
-                            <TotalView item={selectedParameter} parameterType={param}/>
+                            <TotalView key={param} item={selectedParameter} parameterType={param}/>
                         )
                     })}
                 </View>
