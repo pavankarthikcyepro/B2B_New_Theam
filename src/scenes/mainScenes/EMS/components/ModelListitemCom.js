@@ -369,7 +369,8 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
                            "id": item.id,
                            "model": carModel,
                            "transimmisionType": carModelObj.transmission_type,
-                           "variant": selectedVarientName
+                           "variant": selectedVarientName,
+                           "isPrimary": item.isPrimary
                        }
                    }
 
