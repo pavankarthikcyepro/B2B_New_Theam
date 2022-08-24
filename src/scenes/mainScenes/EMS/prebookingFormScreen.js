@@ -1319,7 +1319,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const submitClicked = () => {
         Keyboard.dismiss();
         setIsSubmitPress(true)
-        // console.log("ATTCH", JSON.stringify(uploadedImagesDataObj));
+        console.log("ATTCH", JSON.stringify(uploadedImagesDataObj));
         // console.log("FOUND: ", uploadedImagesDataObj.hasOwnProperty('receipt'));
         if (selector.first_name.length === 0) {
             scrollToPos(0)
@@ -1687,6 +1687,57 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         tinNumber: "",
                     });
                 }
+
+                if (selector.adhaar_number || dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "Form60";
+                }))
+                {
+                    tempAttachments.push({
+                        branchId: jsonObj.branchs[0]?.branchId,
+                        contentSize: 0,
+                        createdBy: new Date().getSeconds(),
+                        description: "",
+                        documentNumber: selector.pan_number,
+                        documentPath:
+                            dmsLeadDto.dmsAttachments.length > 0
+                                ? (dmsLeadDto.dmsAttachments.filter((item) => {
+                                    return item.documentType === "Form60";
+                                })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
+                                    return item.documentType === "Form60";
+                                })[0]?.documentPath : '')
+                                : "",
+                        documentType: "pan",
+                        documentVersion: 0,
+                        fileName:
+                            dmsLeadDto.dmsAttachments.length > 0
+                                ? (dmsLeadDto.dmsAttachments.filter((item) => {
+                                    return item.documentType === "Form60";
+                                })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
+                                    return item.documentType === "Form60";
+                                })[0]?.fileName : '')
+                                : "",
+                        gstNumber: "",
+                        id: 0,
+                        isActive: 0,
+                        isPrivate: 0,
+                        keyName:
+                            dmsLeadDto.dmsAttachments.length > 0
+                                ? (dmsLeadDto.dmsAttachments.filter((item) => {
+                                    return item.documentType === "Form60";
+                                })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
+                                    return item.documentType === "Form60";
+                                })[0]?.keyName : '')
+                                : "",
+                        modifiedBy: jsonObj.empName,
+                        orgId: jsonObj.orgId,
+                        ownerId: "",
+                        ownerName: jsonObj.empName,
+                        parentId: "",
+                        tinNumber: "",
+                    });
+                }
+
+
                 if (selector.adhaar_number || dmsLeadDto.dmsAttachments.filter((item) => {
                     return item.documentType === "aadhar";
                 })) {
@@ -2126,10 +2177,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     const mapDmsAttachments = (prevDmsAttachments) => {
         let dmsAttachments = [...prevDmsAttachments];
+        console.log("DMS-==-===->",dmsAttachments)
         if (dmsAttachments.length > 0) {
             dmsAttachments.forEach((obj, index) => {
                 const item = uploadedImagesDataObj[obj.documentType];
-                // console.log("uploadedImagesDataObj2: ", uploadedImagesDataObj);
+                 console.log("uploadedImagesDataObj2: ", uploadedImagesDataObj);
                 const object = formatAttachment(
                     { ...obj },
                     item,
@@ -2139,7 +2191,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 dmsAttachments[index] = object;
             });
         } else {
-            // console.log("uploadedImagesDataObj1: ", uploadedImagesDataObj);
+             console.log("uploadedImagesDataObj1: ", uploadedImagesDataObj);
             Object.keys(uploadedImagesDataObj).forEach((key, index) => {
                 const item = uploadedImagesDataObj[key];
                 const object = formatAttachment({}, item, index, item.documentType);
@@ -2151,6 +2203,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     const formatAttachment = (data, photoObj, index, typeOfDocument) => {
         let object = { ...data };
+        console.log("DATATATATT=======>", data)
+        console.log({typeOfDocument})
         object.branchId = selectedBranchId;
         object.ownerName = userData.employeeName;
         object.orgId = userData.orgId;
@@ -2163,15 +2217,20 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         object.modifiedBy = userData.employeeName;
         object.ownerId = userData.employeeId;
         switch (typeOfDocument) {
-            case "pan":
-                object.documentNumber = selector.pan_number;
-                break;
-            case "aadhar":
-                object.documentNumber = selector.adhaar_number;
-                break;
-            case "REGDOC":
-                object.documentNumber = selector.r_reg_no;
-                break;
+          case "pan":
+            object.documentNumber = selector.pan_number;
+            break;
+          case "aadhar":
+            object.documentNumber = selector.adhaar_number;
+            break;
+
+          case "form60":
+            object.documentNumber = selector.pan_number;
+            break;
+
+          case "REGDOC":
+            object.documentNumber = selector.r_reg_no;
+            break;
         }
         return object;
     };
@@ -2548,6 +2607,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     };
 
     const uploadSelectedImage = async (selectedPhoto, keyId) => {
+      console.log("KEY=--==-=>",keyId)
         const photoUri = selectedPhoto.uri;
         if (!photoUri) {
             return;
@@ -2618,7 +2678,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         })
             .then((response) => response.json())
             .then((response) => {
-                //console.log('response', response);
+                console.log('response', response);
                 if (response) {
                     const dataObj = { ...uploadedImagesDataObj };
                     dataObj[response.documentType] = response;
@@ -2636,6 +2696,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     const deteleButtonPressed = (from) => {
         const imagesDataObj = { ...uploadedImagesDataObj };
+        console.log("delelelete====>", imagesDataObj);
         switch (from) {
             case "PAN":
                 delete imagesDataObj.pan;
@@ -4733,14 +4794,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   </View>
                   <View style={styles.symbolview}>
                     <View style={{ width: "70%" }}>
-                      <DropDownSelectionItem  disabled={userData.isManager? true:false}
+                      <DropDownSelectionItem  
+                      disabled={userData.isManager || !selector.insurance_type?  true:false}
                         label={"Add-on Insurance"}
                         value={
                           selector.insurance_type !== ""
                             ? selector.add_on_insurance
                             : ""
                         }
-                        disabled={!selector.insurance_type}
+                        //disabled={!selector.insurance_type}
                         onPress={() =>
                           showDropDownModelMethod(
                             "INSURENCE_ADD_ONS",
