@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import {
-  SafeAreaView, FlatList,
+  SafeAreaView,
+  FlatList,
   StyleSheet,
   View,
   Text,
@@ -15,14 +16,15 @@ import {
   BackHandler,
   Image,
   TouchableOpacity,
-  Modal
+  Modal,
 } from "react-native";
 import {
   DefaultTheme,
   Checkbox,
   IconButton,
   List,
-  Button, Divider
+  Button,
+  Divider,
 } from "react-native-paper";
 import { Colors, GlobalStyle } from "../../../styles";
 import VectorImage from "react-native-vector-image";
@@ -76,7 +78,7 @@ import {
   clearPermanentAddr,
   updateAddressByPincode2,
   autoSaveEnquiryDetailsApi,
-  updatedmsLeadProduct
+  updatedmsLeadProduct,
 } from "../../../redux/enquiryFormReducer";
 
 import {
@@ -87,7 +89,7 @@ import {
 } from "../../../pureComponents";
 import { ImagePickerComponent } from "../../../components";
 // import { Dropdown } from "sharingan-rn-modal-dropdown";
-import { Dropdown } from 'react-native-element-dropdown';
+import { Dropdown } from "react-native-element-dropdown";
 import {
   Salutation_Types,
   Enquiry_Segment_Data,
@@ -124,7 +126,7 @@ import {
   GetDropList,
   GetFinanceBanksList,
   PincodeDetails,
-  PincodeDetailsNew
+  PincodeDetailsNew,
 } from "../../../utils/helperFunctions";
 
 import CREATE_NEW from "../../../assets/images/create_new.svg";
@@ -139,9 +141,8 @@ import {
 } from "../../../utils/helperFunctions";
 import uuid from "react-native-uuid";
 import { DropComponent } from "./components/dropComp";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
-
 
 const theme = {
   ...DefaultTheme,
@@ -157,9 +158,11 @@ const theme = {
 const DetailsOverviewScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const headNavigation = useNavigation();
-  let scrollRef = useRef(null)
+  let scrollRef = useRef(null);
   const selector = useSelector((state) => state.enquiryFormReducer);
-  const proceedToPreSelector = useSelector(state => state.proceedToPreBookingReducer);
+  const proceedToPreSelector = useSelector(
+    (state) => state.proceedToPreBookingReducer
+  );
   const [openAccordian, setOpenAccordian] = useState("0");
   const [componentAppear, setComponentAppear] = useState(false);
   const { universalId, enqDetails, leadStatus, leadStage } = route.params;
@@ -207,7 +210,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [dropModel, setDropModel] = useState("");
   const [dropPriceDifference, setDropPriceDifference] = useState("");
   const [dropRemarks, setDropRemarks] = useState("");
-  const [imagePath, setImagePath] = useState('');
+  const [imagePath, setImagePath] = useState("");
   const [addressData, setAddressData] = useState([]);
   const [addressData2, setAddressData2] = useState([]);
   const [defaultAddress, setDefaultAddress] = useState(null);
@@ -227,6 +230,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       ),
     });
   }, [navigation]);
+
+  useEffect(() => {
+    console.log("=============================");
+    console.log("expected_delivery_date ===> ", selector.expected_delivery_date);
+    console.log("=============================");
+  }, [selector.expected_delivery_date]);
+  
 
   // useEffect(() => {
 
@@ -254,12 +264,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   useEffect(() => {
     const interval = setInterval(() => {
       // if (enqDetails?.leadStage === "ENQUIRY" && enqDetails?.leadStatus === null) {
-      updateEnquiry()
+      updateEnquiry();
       // }
     }, 10000);
     return () => {
-      clearInterval(interval)
-    }
+      clearInterval(interval);
+    };
     // let interval;
     // interval = setInterval(() => {
     //   updateEnquiry()
@@ -279,8 +289,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   //     clearInterval(interval)
   //   }
   // }, [selector])
-
-
 
   // useEffect(() => {
   //   let autoSaveInterval;
@@ -335,11 +343,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     setDropModel("");
     setDropPriceDifference("");
     setDropRemarks("");
-    setImagePath('');
+    setImagePath("");
     setAddressData([]);
     setAddressData2([]);
     setDefaultAddress(null);
-  }
+  };
 
   const goParentScreen = () => {
     clearLocalData();
@@ -352,10 +360,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     getBranchId();
     setComponentAppear(true);
     getCustomerType();
-   
+
     //  const dms = [{ "color": "Outback Bronze", "fuel": "Petrol", "id": 2704, "model": "Kwid",
     //           "transimmisionType": "Manual", "variant": "KWID RXT 1.0L EASY- R BS6 ORVM MY22" },
-    //            { "color": "Caspian Blue", "fuel": "Petrol", "id": 1833, "model": "Kiger", "transimmisionType": "Automatic", 
+    //            { "color": "Caspian Blue", "fuel": "Petrol", "id": 1833, "model": "Kiger", "transimmisionType": "Automatic",
     //           "variant": "Rxt 1.0L Ece Easy-R Ece My22" }]
     //           setModelsList(dms)
     BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
@@ -368,7 +376,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   }, []);
 
   useEffect(() => {
-    navigation.addListener('blur', () => {
+    navigation.addListener("blur", () => {
       BackHandler.removeEventListener(
         "hardwareBackPress",
         handleBackButtonClick
@@ -387,19 +395,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       const jsonObj = JSON.parse(employeeData);
       dispatch(getCustomerTypesApi(jsonObj.orgId));
     }
-  }
+  };
 
   const getBranchId = () => {
-
     AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then((branchId) => {
-      console.log("branch id:", branchId)
+      console.log("branch id:", branchId);
       setSelectedBranchId(branchId);
     });
-  }
+  };
 
   const scrollToPos = (itemIndex) => {
-    scrollRef.current.scrollTo({ y: itemIndex * 70 })
-  }
+    scrollRef.current.scrollTo({ y: itemIndex * 70 });
+  };
 
   const handleBackButtonClick = () => {
     goParentScreen();
@@ -431,13 +438,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   const GetEnquiryDropReasons = (orgId, token) => {
-
-    GetDropList(orgId, token, "Enquiry").then(resolve => {
-      setDropData(resolve);
-    }, reject => {
-      console.error("Getting drop list faild")
-    })
-  }
+    GetDropList(orgId, token, "Enquiry").then(
+      (resolve) => {
+        setDropData(resolve);
+      },
+      (reject) => {
+        console.error("Getting drop list faild");
+      }
+    );
+  };
 
   const getCarModelListFromServer = (orgId) => {
     // Call Api
@@ -459,20 +468,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           //  alert("entry---------",JSON.stringify(selector.dmsLeadProducts))
           if (selector.dmsLeadProducts.length > 0) {
             console.log("SET ONE", selector.dmsLeadProducts);
-            setCarModelsList(selector.dmsLeadProducts)
-          }
-          else {
+            setCarModelsList(selector.dmsLeadProducts);
+          } else {
             let tempModelObj = {
-              "color": '',
-              "fuel": '',
-              "id": 0,
-              "model": selector.enquiry_details_response?.dmsLeadDto?.model,
-              "transimmisionType": '',
-              "variant": '',
-              "isPrimary": "N"
-            }
+              color: "",
+              fuel: "",
+              id: 0,
+              model: selector.enquiry_details_response?.dmsLeadDto?.model,
+              transimmisionType: "",
+              variant: "",
+              isPrimary: "N",
+            };
             console.log("TEMP MODEL:", tempModelObj);
-            setCarModelsList([tempModelObj])
+            setCarModelsList([tempModelObj]);
           }
         },
         (rejected) => {
@@ -509,7 +517,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       });
   };
 
-  const deleteModalFromServer = async ({token, value}) => {
+  const deleteModalFromServer = async ({ token, value }) => {
     //alert(value.id)
     await fetch(URL.DELETE_MODEL_CARD(value.id), {
       method: "DELETE",
@@ -521,10 +529,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     })
       .then((json) => {
         //console.log('JSON----------->',json)
-        json.json()})
+        json.json();
+      })
       .then((res) => {
         //alert("delete : ", res.status);
-       //alert(res)
+        //alert(res)
       })
       .catch((error) => {
         showToastRedAlert(error.message);
@@ -570,12 +579,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   }, [selector.dmsLeadProducts, selector.enquiry_details_response]); //selector.dmsLeadProducts, selector.enquiry_details_response
 
   useEffect(() => {
-    console.log("PROCEED TTTT:", proceedToPreSelector.update_enquiry_details_response_status);
-    if (proceedToPreSelector.update_enquiry_details_response_status === "success") {
+    console.log(
+      "PROCEED TTTT:",
+      proceedToPreSelector.update_enquiry_details_response_status
+    );
+    if (
+      proceedToPreSelector.update_enquiry_details_response_status === "success"
+    ) {
       clearState();
       clearLocalData();
     }
-  }, [proceedToPreSelector.update_enquiry_details_response_status])
+  }, [proceedToPreSelector.update_enquiry_details_response_status]);
 
   useEffect(() => {
     console.log("$%$%^^^%&^&*^&&&*&", selector.pincode);
@@ -587,15 +601,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         (res) => {
           // dispatch an action to update address
           console.log("PINCODE DETAILS 2", selector.village);
-          let tempAddr = []
+          let tempAddr = [];
           if (res.length > 0) {
             for (let i = 0; i < res.length; i++) {
               if (res[i].Block === selector.village) {
-                setDefaultAddress(res[i])
+                setDefaultAddress(res[i]);
               }
-              tempAddr.push({ label: res[i].Name, value: res[i] })
+              tempAddr.push({ label: res[i].Name, value: res[i] });
               if (i === res.length - 1) {
-                setAddressData([...tempAddr])
+                setAddressData([...tempAddr]);
               }
             }
           }
@@ -690,17 +704,22 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (universalId) {
       // if (selector.isOpened) {
       // dispatch(getAutoSaveEnquiryDetailsApi(universalId));
-      if (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY') {
+      if (leadStatus === "ENQUIRYCOMPLETED" && leadStage === "ENQUIRY") {
         dispatch(getEnquiryDetailsApi({ universalId, leadStage, leadStatus }));
-      }
-      else {
+      } else {
         Promise.all([
-          dispatch(getEnquiryDetailsApiAuto({ universalId, leadStage, leadStatus }))
-        ]).then(() => {
-          dispatch(getEnquiryDetailsApi({ universalId, leadStage, leadStatus }))
-        }).catch(() => {
-          console.log("INSIDE CATCH");
-        })
+          dispatch(
+            getEnquiryDetailsApiAuto({ universalId, leadStage, leadStatus })
+          ),
+        ])
+          .then(() => {
+            dispatch(
+              getEnquiryDetailsApi({ universalId, leadStage, leadStatus })
+            );
+          })
+          .catch(() => {
+            console.log("INSIDE CATCH");
+          });
       }
       // dispatch(getEnquiryDetailsApi({universalId, leadStage, leadStatus}));
       // } else {
@@ -722,51 +741,52 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const addingIsPrimary = async () => {
     try {
-      let array = await [...selector.dmsLeadProducts]
+      let array = await [...selector.dmsLeadProducts];
       for (let i = 0; i < selector.dmsLeadProducts.length; i++) {
-        var item = await array[i]
+        var item = await array[i];
         if (i == 0) {
-          var isPrimary = "Y"
+          var isPrimary = "Y";
           if (item.isPrimary && item.isPrimary != null)
-            isPrimary = item.isPrimary
+            isPrimary = item.isPrimary;
           item = await {
-            "color": item.color,
-            "fuel": item.fuel,
-            "id": item.id,
-            "model": item.model,
-            "transimmisionType": item.transimmisionType,
-            "variant": item.variant,
-            "isPrimary": isPrimary
-          }
-          if (item.isPrimary && item.isPrimary != null && item.isPrimary === 'Y')
-            setIsPrimaryCurrentIndex(i)
+            color: item.color,
+            fuel: item.fuel,
+            id: item.id,
+            model: item.model,
+            transimmisionType: item.transimmisionType,
+            variant: item.variant,
+            isPrimary: isPrimary,
+          };
+          if (
+            item.isPrimary &&
+            item.isPrimary != null &&
+            item.isPrimary === "Y"
+          )
+            setIsPrimaryCurrentIndex(i);
           updateVariantModelsData(item.model, true, item.variant);
-        }
-        else {
-          var isPrimary = "N"
+        } else {
+          var isPrimary = "N";
           if (item.isPrimary && item.isPrimary != null)
-            isPrimary = item.isPrimary
+            isPrimary = item.isPrimary;
           item = await {
-            "color": item.color,
-            "fuel": item.fuel,
-            "id": item.id,
-            "model": item.model,
-            "transimmisionType": item.transimmisionType,
-            "variant": item.variant,
-            "isPrimary": isPrimary
-          }
+            color: item.color,
+            fuel: item.fuel,
+            id: item.id,
+            model: item.model,
+            transimmisionType: item.transimmisionType,
+            variant: item.variant,
+            isPrimary: isPrimary,
+          };
         }
-        array[i] = await item
-        if (item.isPrimary && item.isPrimary != null && item.isPrimary === 'Y')
-          setIsPrimaryCurrentIndex(i)
+        array[i] = await item;
+        if (item.isPrimary && item.isPrimary != null && item.isPrimary === "Y")
+          setIsPrimaryCurrentIndex(i);
         // console.log(userObject.username);
       }
       console.log("SET THREE", array);
-      await setCarModelsList(array)
-    } catch (error) {
-    }
-
-  }
+      await setCarModelsList(array);
+    } catch (error) {}
+  };
 
   const updateEnquiry = async () => {
     console.log("CALLED AUTO UPDATE");
@@ -786,7 +806,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dmsLeadDto.firstName = selector.firstName;
       dmsLeadDto.lastName = selector.lastName;
       dmsLeadDto.phone = selector.mobile;
-      if (enqDetails.leadStage === 'ENQUIRY' && enqDetails.leadStatus === null) {
+      if (
+        enqDetails.leadStage === "ENQUIRY" &&
+        enqDetails.leadStatus === null
+      ) {
         dmsLeadDto.leadStage = "ENQUIRY";
         dmsLeadDto.leadStatus = null;
       }
@@ -797,9 +820,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         const jsonObj = JSON.parse(employeeData);
         let tempAttachments = [];
         // console.log("GDGHDGDGDGDGD", JSON.stringify(dmsLeadDto.dmsAttachments));
-        if (selector.pan_number || dmsLeadDto.dmsAttachments.filter((item) => {
-          return item.documentType === "pan";
-        })) {
+        if (
+          selector.pan_number ||
+          dmsLeadDto.dmsAttachments.filter((item) => {
+            return item.documentType === "pan";
+          })
+        ) {
           tempAttachments.push({
             branchId: jsonObj.branchs[0]?.branchId,
             contentSize: 0,
@@ -808,21 +834,25 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             documentNumber: selector.pan_number,
             documentPath:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0]?.documentPath : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "pan";
+                  })[0]?.documentPath
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "pan";
+                    })[0]?.documentPath
+                  : ""
                 : "",
             documentType: "pan",
             documentVersion: 0,
             fileName:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0]?.fileName : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "pan";
+                  })[0]?.fileName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "pan";
+                    })[0]?.fileName
+                  : ""
                 : "",
             gstNumber: "",
             id: 0,
@@ -830,11 +860,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             isPrivate: 0,
             keyName:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0]?.keyName : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "pan";
+                  })[0]?.keyName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "pan";
+                    })[0]?.keyName
+                  : ""
                 : "",
             modifiedBy: jsonObj.empName,
             orgId: jsonObj.orgId,
@@ -844,9 +876,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             tinNumber: "",
           });
         }
-        if (selector.adhaar_number || dmsLeadDto.dmsAttachments.filter((item) => {
-          return item.documentType === "aadhar";
-        })) {
+        if (
+          selector.adhaar_number ||
+          dmsLeadDto.dmsAttachments.filter((item) => {
+            return item.documentType === "aadhar";
+          })
+        ) {
           tempAttachments.push({
             branchId: jsonObj.branchs[0]?.branchId,
             contentSize: 0,
@@ -855,21 +890,25 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             documentNumber: selector.adhaar_number,
             documentPath:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0]?.documentPath : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "aadhar";
+                  })[0]?.documentPath
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "aadhar";
+                    })[0]?.documentPath
+                  : ""
                 : "",
             documentType: "aadhar",
             documentVersion: 0,
             fileName:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0]?.fileName : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "aadhar";
+                  })[0]?.fileName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "aadhar";
+                    })[0]?.fileName
+                  : ""
                 : "",
             gstNumber: "",
             id: 0,
@@ -877,11 +916,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             isPrivate: 0,
             keyName:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0]?.keyName : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "aadhar";
+                  })[0]?.keyName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "aadhar";
+                    })[0]?.keyName
+                  : ""
                 : "",
             modifiedBy: jsonObj.empName,
             orgId: jsonObj.orgId,
@@ -891,9 +932,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             tinNumber: "",
           });
         }
-        if (selector.employee_id || dmsLeadDto.dmsAttachments.filter((item) => {
-          return item.documentType === "employeeId";
-        })) {
+        if (
+          selector.employee_id ||
+          dmsLeadDto.dmsAttachments.filter((item) => {
+            return item.documentType === "employeeId";
+          })
+        ) {
           tempAttachments.push({
             branchId: jsonObj.branchs[0]?.branchId,
             contentSize: 0,
@@ -902,21 +946,25 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             documentNumber: selector.employee_id,
             documentPath:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "employeeId";
-                })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "employeeId";
-                })[0]?.documentPath : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "employeeId";
+                  })[0]?.documentPath
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "employeeId";
+                    })[0]?.documentPath
+                  : ""
                 : "",
             documentType: "employeeId",
             documentVersion: 0,
             fileName:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "employeeId";
-                })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "employeeId";
-                })[0]?.fileName : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "employeeId";
+                  })[0]?.fileName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "employeeId";
+                    })[0]?.fileName
+                  : ""
                 : "",
             gstNumber: "",
             id: 0,
@@ -924,11 +972,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             isPrivate: 0,
             keyName:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "employeeId";
-                })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "employeeId";
-                })[0]?.keyName : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "employeeId";
+                  })[0]?.keyName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "employeeId";
+                    })[0]?.keyName
+                  : ""
                 : "",
             modifiedBy: jsonObj.empName,
             orgId: jsonObj.orgId,
@@ -939,14 +989,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           });
         }
         if (Object.keys(uploadedImagesDataObj).length > 0) {
-          let tempImages = Object.entries(uploadedImagesDataObj).map((e) => ({ name: e[0], value: e[1] }));
+          let tempImages = Object.entries(uploadedImagesDataObj).map((e) => ({
+            name: e[0],
+            value: e[1],
+          }));
           for (let i = 0; i < tempImages.length; i++) {
             tempAttachments.push({
               branchId: jsonObj.branchs[0]?.branchId,
               contentSize: 0,
               createdBy: new Date().getSeconds(),
               description: "",
-              documentNumber: '',
+              documentNumber: "",
               documentPath: tempImages[i].value.documentPath,
               documentType: tempImages[i].name,
               documentVersion: 0,
@@ -968,12 +1021,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               dmsLeadDto.dmsAttachments = tempAttachments;
             }
           }
-        }
-        else {
+        } else {
           dmsLeadDto.dmsAttachments = tempAttachments;
         }
         console.log("TEMP ATT:", JSON.stringify(tempAttachments));
-
       }
     }
 
@@ -988,17 +1039,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         dmsLeadDto: dmsLeadDto,
       };
     }
+
     console.log("PPPP", JSON.stringify(formData));
     // setTypeOfActionDispatched("UPDATE_ENQUIRY");
     // dispatch(autoSaveEnquiryDetailsApi(formData))
     let payload = {
       data: formData,
       status: "Active",
-      universalId: universalId
-    }
+      universalId: universalId,
+    };
     AsyncStore.storeJsonData(AsyncStore.Keys.ENQ_PAYLOAD, payload);
-    dispatch(updateEnquiryDetailsApiAutoSave(payload))
-  }
+    dispatch(updateEnquiryDetailsApiAutoSave(payload));
+  };
 
   const checkModelSelection = () => {
     let error = false;
@@ -1022,14 +1074,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return true;
     }
     return false;
-  }
+  };
 
   const submitClicked = async () => {
     //Personal Intro
-    setIsSubmitPress(true)
+    setIsSubmitPress(true);
     if (selector.salutation.length == 0) {
-      scrollToPos(0)
-      setOpenAccordian('2')
+      scrollToPos(0);
+      setOpenAccordian("2");
       showToast("Please fill required salutation field in Personal Intro");
       return;
     }
@@ -1046,14 +1098,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     // }
 
     if (!isValidate(selector.firstName)) {
-      scrollToPos(0)
-      setOpenAccordian('2')
+      scrollToPos(0);
+      setOpenAccordian("2");
       showToast("please enter alphabetics only in firstname");
       return;
     }
     if (!isValidate(selector.lastName)) {
-      scrollToPos(0)
-      setOpenAccordian('2')
+      scrollToPos(0);
+      setOpenAccordian("2");
       showToast("please enter alphabetics only in lastname");
       return;
     }
@@ -1064,16 +1116,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   return;
     // }
     if (!isValidateAlphabetics(selector.streetName)) {
-      scrollToPos(3)
-      setOpenAccordian('3')
+      scrollToPos(3);
+      setOpenAccordian("3");
       showToast("Please enter alphabetics only in street name");
       return;
     }
     //Customer Profile
 
     if (selector.designation.length == 0) {
-      scrollToPos(2)
-      setOpenAccordian('1')
+      scrollToPos(2);
+      setOpenAccordian("1");
       showToast("Please fill designation");
       return;
     }
@@ -1082,20 +1134,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   return;
     // }
     if (selector.enquiry_segment.length == 0) {
-      scrollToPos(2)
-      setOpenAccordian('1')
+      scrollToPos(2);
+      setOpenAccordian("1");
       showToast("Please select enquery segment");
       return;
     }
     if (selector.customer_type.length == 0) {
-      scrollToPos(2)
-      setOpenAccordian('1')
+      scrollToPos(2);
+      setOpenAccordian("1");
       showToast("Please select customer type");
       return;
     }
     if (selector.buyer_type.length == 0) {
-      scrollToPos(2)
-      setOpenAccordian('1')
+      scrollToPos(2);
+      setOpenAccordian("1");
       showToast("Please fill  Buyer type");
       return;
     }
@@ -1105,52 +1157,51 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     // }
 
     if (!isValidateAlphabetics(selector.designation)) {
-      scrollToPos(2)
-      setOpenAccordian('1')
+      scrollToPos(2);
+      setOpenAccordian("1");
       showToast("Please enter alphabetics only in designation");
       return;
     }
     //communication Address
     if (selector.houseNum.length == 0) {
-      scrollToPos(3)
-      setOpenAccordian('3')
+      scrollToPos(3);
+      setOpenAccordian("3");
       showToast("Please fill H.No ");
       return;
     }
     if (selector.streetName.length == 0) {
-      scrollToPos(3)
-      setOpenAccordian('3')
+      scrollToPos(3);
+      setOpenAccordian("3");
       showToast("Please fill Street Name ");
       return;
     }
     if (selector.village.length == 0) {
-      scrollToPos(3)
-      setOpenAccordian('3')
+      scrollToPos(3);
+      setOpenAccordian("3");
       showToast("Please fill village ");
       return;
     }
     if (selector.mandal.length == 0) {
-      scrollToPos(3)
-      setOpenAccordian('3')
+      scrollToPos(3);
+      setOpenAccordian("3");
       showToast("Please fill mandal");
       return;
     }
     if (selector.city.length == 0) {
-      scrollToPos(3)
-      setOpenAccordian('3')
+      scrollToPos(3);
+      setOpenAccordian("3");
       showToast("Please fill city ");
       return;
     }
     if (selector.state.length == 0) {
-      scrollToPos(3)
-      setOpenAccordian('3')
+      scrollToPos(3);
+      setOpenAccordian("3");
       showToast("Please fill state ");
       return;
     }
-    if (
-      selector.district.length == 0) {
-      scrollToPos(3)
-      setOpenAccordian('3')
+    if (selector.district.length == 0) {
+      scrollToPos(3);
+      setOpenAccordian("3");
       showToast("Please fill district ");
       return;
     }
@@ -1170,61 +1221,61 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   showToast("Please fill permanent address ");
     //   return;
     // }
-     if (selector.p_pincode.length == 0) {
-       scrollToPos(14);
-       setOpenAccordian("3");
-       showToast("Please fill Permanent pincode");
-       return;
-     }
-      if (selector.p_urban_or_rural.length == 0) {
-        scrollToPos(14);
-        setOpenAccordian("3");
-        showToast("Please fill Permanent Urban or Rural");
-        return;
-      }
-      if (selector.p_houseNum.length == 0) {
-        scrollToPos(14);
-        setOpenAccordian("3");
-        showToast("Please fill Permanent house number");
-        return;
-      }
+    if (selector.p_pincode.length == 0) {
+      scrollToPos(14);
+      setOpenAccordian("3");
+      showToast("Please fill Permanent pincode");
+      return;
+    }
+    if (selector.p_urban_or_rural.length == 0) {
+      scrollToPos(14);
+      setOpenAccordian("3");
+      showToast("Please fill Permanent Urban or Rural");
+      return;
+    }
+    if (selector.p_houseNum.length == 0) {
+      scrollToPos(14);
+      setOpenAccordian("3");
+      showToast("Please fill Permanent house number");
+      return;
+    }
     if (selector.p_streetName.length == 0) {
       scrollToPos(14);
       setOpenAccordian("3");
       showToast("Please fill Permanent street");
       return;
     }
-     if (selector.p_village.length == 0) {
-       scrollToPos(14);
-       setOpenAccordian("3");
-       showToast("Please fill Permanent village");
-       return;
-     }
-      if (selector.p_mandal.length == 0) {
-        scrollToPos(14);
-        setOpenAccordian("3");
-        showToast("Please fill Permanent mandal");
-        return;
-      }
-      if (selector.p_city.length == 0) {
-        scrollToPos(14);
-        setOpenAccordian("3");
-        showToast("Please fill Permanent City");
-        return;
-      }
-      if (selector.p_district.length == 0) {
-        scrollToPos(14);
-        setOpenAccordian("3");
-        showToast("Please fill Permanent District");
-        return;
-      }
-      if (selector.p_state.length == 0) {
-        scrollToPos(14);
-        setOpenAccordian("3");
-        showToast("Please fill Permanent state");
-        return;
-      }
-    
+    if (selector.p_village.length == 0) {
+      scrollToPos(14);
+      setOpenAccordian("3");
+      showToast("Please fill Permanent village");
+      return;
+    }
+    if (selector.p_mandal.length == 0) {
+      scrollToPos(14);
+      setOpenAccordian("3");
+      showToast("Please fill Permanent mandal");
+      return;
+    }
+    if (selector.p_city.length == 0) {
+      scrollToPos(14);
+      setOpenAccordian("3");
+      showToast("Please fill Permanent City");
+      return;
+    }
+    if (selector.p_district.length == 0) {
+      scrollToPos(14);
+      setOpenAccordian("3");
+      showToast("Please fill Permanent District");
+      return;
+    }
+    if (selector.p_state.length == 0) {
+      scrollToPos(14);
+      setOpenAccordian("3");
+      showToast("Please fill Permanent state");
+      return;
+    }
+
     // Model Selection
     // if (carModelsList.length == 0) {
     //   scrollToPos(4)
@@ -1233,20 +1284,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   return;
     // }
 
-    if(checkModelSelection()){
+    if (checkModelSelection()) {
       scrollToPos(4);
       setOpenAccordian("4");
       return;
     }
 
-    let primaryTempCars = []
+    let primaryTempCars = [];
     primaryTempCars = carModelsList.filter((item) => {
-      return item.isPrimary === 'Y' })
-
+      return item.isPrimary === "Y";
+    });
 
     if (!primaryTempCars.length > 0) {
-      scrollToPos(4)
-      setOpenAccordian('4')
+      scrollToPos(4);
+      setOpenAccordian("4");
       showToast("Select is Primary for atleast one vehicle");
       return;
     }
@@ -1269,11 +1320,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   showToast("Please fill color");
     //   return;
     // }
-    
+
     //Finance Details
     if (selector.retail_finance.length == 0) {
-      scrollToPos(5)
-      setOpenAccordian('5')
+      scrollToPos(5);
+      setOpenAccordian("5");
       showToast("Please fill required fields in Finance Details");
       return;
     }
@@ -1337,32 +1388,34 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       //   return;
       // }
       if (!isValidateAlphabetics(selector.a_color)) {
-        scrollToPos(8)
-        setOpenAccordian('8')
+        scrollToPos(8);
+        setOpenAccordian("8");
         showToast("Please enter alphabetics only in color ");
         return;
       }
-
     }
 
-    if (selector.buyer_type === "Replacement Buyer" || selector.buyer_type === "Exchange Buyer") {
+    if (
+      selector.buyer_type === "Replacement Buyer" ||
+      selector.buyer_type === "Exchange Buyer"
+    ) {
       if (selector.r_color.length > 0) {
         if (!isValidateAlphabetics(selector.r_color)) {
-          scrollToPos(9)
-          setOpenAccordian('9')
+          scrollToPos(9);
+          setOpenAccordian("9");
           showToast("Please enter alphabetics only in color ");
           return;
         }
       }
       if (selector.r_reg_no.length == 0) {
-        scrollToPos(9)
-        setOpenAccordian('9')
+        scrollToPos(9);
+        setOpenAccordian("9");
         showToast("Please fill reg no is mandatory");
         return;
       }
       if (!isValidateAlphabetics(selector.r_model_other_name)) {
-        scrollToPos(9)
-        setOpenAccordian('9')
+        scrollToPos(9);
+        setOpenAccordian("9");
         showToast("Please enter proper model other name");
         return;
       }
@@ -1375,16 +1428,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       if (selector.r_hypothication_checked === true) {
         if (selector.r_hypothication_name.length > 0) {
           if (!isValidateAlphabetics(selector.r_hypothication_name)) {
-            scrollToPos(9)
-            setOpenAccordian('9')
+            scrollToPos(9);
+            setOpenAccordian("9");
             showToast("Please enter the proper Hypothication name");
             return;
           }
         }
         if (selector.r_hypothication_branch.length > 0) {
           if (!isValidateAlphabetics(selector.r_hypothication_branch)) {
-            scrollToPos(9)
-            setOpenAccordian('9')
+            scrollToPos(9);
+            setOpenAccordian("9");
             showToast("Please enter the proper Hypothication branch");
             return;
           }
@@ -1395,8 +1448,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (selector.c_looking_for_any_other_brand_checked === true) {
       if (selector.c_dealership_name.length > 0) {
         if (!isValidateAlphabetics(selector.c_dealership_name)) {
-          scrollToPos(7)
-          setOpenAccordian('7')
+          scrollToPos(7);
+          setOpenAccordian("7");
           showToast("please enter the validate Dealership name");
           return;
         }
@@ -1415,8 +1468,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       selector.pan_number.length > 0 &&
       !isValidateAplhaNumeric(selector.pan_number)
     ) {
-      scrollToPos(6)
-      setOpenAccordian('6')
+      scrollToPos(6);
+      setOpenAccordian("6");
       showToast("Please enter proper PAN number");
       return;
     }
@@ -1424,8 +1477,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       selector.gstin_number.length > 0 &&
       !isValidateAplhaNumeric(selector.gstin_number)
     ) {
-      scrollToPos(6)
-      setOpenAccordian('6')
+      scrollToPos(6);
+      setOpenAccordian("6");
       showToast("Please enter proper gstin number");
       return;
     }
@@ -1447,9 +1500,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (dmsEntity.hasOwnProperty("dmsLeadDto")) {
       try {
         dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
-
-      } catch (error) {
-      }
+      } catch (error) {}
       dmsLeadDto.firstName = selector.firstName;
       dmsLeadDto.lastName = selector.lastName;
       dmsLeadDto.phone = selector.mobile;
@@ -1467,9 +1518,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         const jsonObj = JSON.parse(employeeData);
         let tempAttachments = [];
         // console.log("GDGHDGDGDGDGD", JSON.stringify(dmsLeadDto.dmsAttachments));
-        if (selector.pan_number || dmsLeadDto.dmsAttachments.filter((item) => {
-          return item.documentType === "pan";
-        })) {
+        if (
+          selector.pan_number ||
+          dmsLeadDto.dmsAttachments.filter((item) => {
+            return item.documentType === "pan";
+          })
+        ) {
           tempAttachments.push({
             branchId: jsonObj.branchs[0]?.branchId,
             contentSize: 0,
@@ -1478,21 +1532,25 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             documentNumber: selector.pan_number,
             documentPath:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0]?.documentPath : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "pan";
+                  })[0]?.documentPath
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "pan";
+                    })[0]?.documentPath
+                  : ""
                 : "",
             documentType: "pan",
             documentVersion: 0,
             fileName:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0]?.fileName : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "pan";
+                  })[0]?.fileName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "pan";
+                    })[0]?.fileName
+                  : ""
                 : "",
             gstNumber: "",
             id: 0,
@@ -1500,11 +1558,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             isPrivate: 0,
             keyName:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0]?.keyName : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "pan";
+                  })[0]?.keyName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "pan";
+                    })[0]?.keyName
+                  : ""
                 : "",
             modifiedBy: jsonObj.empName,
             orgId: jsonObj.orgId,
@@ -1514,9 +1574,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             tinNumber: "",
           });
         }
-        if (selector.adhaar_number || dmsLeadDto.dmsAttachments.filter((item) => {
-          return item.documentType === "aadhar";
-        })) {
+        if (
+          selector.adhaar_number ||
+          dmsLeadDto.dmsAttachments.filter((item) => {
+            return item.documentType === "aadhar";
+          })
+        ) {
           tempAttachments.push({
             branchId: jsonObj.branchs[0]?.branchId,
             contentSize: 0,
@@ -1525,21 +1588,25 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             documentNumber: selector.adhaar_number,
             documentPath:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0]?.documentPath : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "aadhar";
+                  })[0]?.documentPath
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "aadhar";
+                    })[0]?.documentPath
+                  : ""
                 : "",
             documentType: "aadhar",
             documentVersion: 0,
             fileName:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0]?.fileName : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "aadhar";
+                  })[0]?.fileName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "aadhar";
+                    })[0]?.fileName
+                  : ""
                 : "",
             gstNumber: "",
             id: 0,
@@ -1547,11 +1614,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             isPrivate: 0,
             keyName:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0]?.keyName : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "aadhar";
+                  })[0]?.keyName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "aadhar";
+                    })[0]?.keyName
+                  : ""
                 : "",
             modifiedBy: jsonObj.empName,
             orgId: jsonObj.orgId,
@@ -1561,9 +1630,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             tinNumber: "",
           });
         }
-        if (selector.employee_id || dmsLeadDto.dmsAttachments.filter((item) => {
-          return item.documentType === "employeeId";
-        })) {
+        if (
+          selector.employee_id ||
+          dmsLeadDto.dmsAttachments.filter((item) => {
+            return item.documentType === "employeeId";
+          })
+        ) {
           tempAttachments.push({
             branchId: jsonObj.branchs[0]?.branchId,
             contentSize: 0,
@@ -1572,21 +1644,25 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             documentNumber: selector.employee_id,
             documentPath:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "employeeId";
-                })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "employeeId";
-                })[0]?.documentPath : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "employeeId";
+                  })[0]?.documentPath
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "employeeId";
+                    })[0]?.documentPath
+                  : ""
                 : "",
             documentType: "employeeId",
             documentVersion: 0,
             fileName:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "employeeId";
-                })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "employeeId";
-                })[0]?.fileName : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "employeeId";
+                  })[0]?.fileName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "employeeId";
+                    })[0]?.fileName
+                  : ""
                 : "",
             gstNumber: "",
             id: 0,
@@ -1594,11 +1670,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             isPrivate: 0,
             keyName:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "employeeId";
-                })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "employeeId";
-                })[0]?.keyName : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "employeeId";
+                  })[0]?.keyName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "employeeId";
+                    })[0]?.keyName
+                  : ""
                 : "",
             modifiedBy: jsonObj.empName,
             orgId: jsonObj.orgId,
@@ -1609,14 +1687,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           });
         }
         if (Object.keys(uploadedImagesDataObj).length > 0) {
-          let tempImages = Object.entries(uploadedImagesDataObj).map((e) => ({ name: e[0], value: e[1] }));
+          let tempImages = Object.entries(uploadedImagesDataObj).map((e) => ({
+            name: e[0],
+            value: e[1],
+          }));
           for (let i = 0; i < tempImages.length; i++) {
             tempAttachments.push({
               branchId: jsonObj.branchs[0]?.branchId,
               contentSize: 0,
               createdBy: new Date().getSeconds(),
               description: "",
-              documentNumber: '',
+              documentNumber: "",
               documentPath: tempImages[i].value.documentPath,
               documentType: tempImages[i].name,
               documentVersion: 0,
@@ -1638,12 +1719,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               dmsLeadDto.dmsAttachments = tempAttachments;
             }
           }
-        }
-        else {
+        } else {
           dmsLeadDto.dmsAttachments = tempAttachments;
         }
         console.log("TEMP ATT:", JSON.stringify(tempAttachments));
-
       }
     }
 
@@ -1658,6 +1737,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         dmsLeadDto: dmsLeadDto,
       };
     }
+
     console.log("PPPP", JSON.stringify(formData));
     setTypeOfActionDispatched("UPDATE_ENQUIRY");
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -1686,15 +1766,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   const mapContactOrAccountDto = (prevData) => {
-    console.log("first", selector.salutation)
+    console.log("first", selector.salutation);
     let dataObj = { ...prevData };
     if (selector.dateOfBirth) {
       dataObj.dateOfBirth = convertDateStringToMillisecondsUsingMoment(
         selector.dateOfBirth
       );
-    }
-    else {
-      dataObj.dateOfBirth = ''
+    } else {
+      dataObj.dateOfBirth = "";
     }
     dataObj.email = selector.email;
     dataObj.firstName = selector.firstName;
@@ -1738,10 +1817,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.eventCode = selector.event_code;
     dataObj.subSource = selector.sub_source_of_enquiry;
     dataObj.gstNumber = selector.gstin_number;
-    dataObj.dmsExpectedDeliveryDate =
-      convertDateStringToMillisecondsUsingMoment(
-        selector.expected_delivery_date
-      );
+    dataObj.dmsExpectedDeliveryDate = selector.expected_delivery_date
+      ? Number(selector.expected_delivery_date)
+      : "";
     dataObj.leadStatus = "ENQUIRYCOMPLETED";
     dataObj.dmsAddresses = mapDMSAddress(dataObj.dmsAddresses);
     dataObj.dmsLeadProducts = mapLeadProducts(dataObj.dmsLeadProducts);
@@ -1873,27 +1951,33 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
   const modelOnclick = async (index, value, type) => {
     try {
-    
       if (type == "update") {
-        let arr = [...carModelsList]
-        arr[index] = value
+        let arr = [...carModelsList];
+        arr[index] = value;
         // arr.splice(carModelsList, index, value);
         //console.log("MODELS IF: ", arr);
         let primaryModel = [];
         primaryModel = arr.filter((item) => item.isPrimary === "Y");
         if (primaryModel.length > 0) {
-          if (primaryModel[0].variant !== '' && primaryModel[0].model !== '' && primaryModel[0].color!=='') {
-            updateVariantModelsData(primaryModel[0].model, true, primaryModel[0].variant, primaryModel[0].color);
+          if (
+            primaryModel[0].variant !== "" &&
+            primaryModel[0].model !== "" &&
+            primaryModel[0].color !== ""
+          ) {
+            updateVariantModelsData(
+              primaryModel[0].model,
+              true,
+              primaryModel[0].variant,
+              primaryModel[0].color
+            );
           }
         }
-        await setCarModelsList([...arr])
-      }
-      else {
-
+        await setCarModelsList([...arr]);
+      } else {
         if (type == "delete") {
           let arr = await [...carModelsList];
           arr.splice(index, 1);
-         deleteModalFromServer({value})
+          deleteModalFromServer({ value });
 
           console.log("MODELS ELSE: ", arr);
           let item = {
@@ -1916,64 +2000,57 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           await setCarModelsList([...arr]);
           // carModelsList.splice(0, 1)
         }
-              }
+      }
 
       // console.log("onValueChangeonValueChange@@@@ ", value)
     } catch (error) {
       // alert(error)
     }
-
-  }
+  };
 
   const isPrimaryOnclick = async (isPrimaryEnabled, index, item) => {
-
     try {
       if (isPrimaryEnabled === "Y") {
-        console.log('YES=========>>>>>')
+        console.log("YES=========>>>>>");
         await setIsPrimaryCurrentIndex(index);
         await setCarModelsList([]);
         updateVariantModelsData(item.model, true, item.variant, item.color); //item.variant, item.color
       }
       if (carModelsList && carModelsList.length > 0) {
-        console.log('NO===============>')
-        let arr = await [...carModelsList]
-        var data = arr[isPrimaryCureentIndex]
-        console.log('DATAS================>>>', data)
+        console.log("NO===============>");
+        let arr = await [...carModelsList];
+        var data = arr[isPrimaryCureentIndex];
+        console.log("DATAS================>>>", data);
         const cardata = await {
-          "color": data.color,
-          "fuel": data.fuel,
-          "id": data.id,
-          "model": data.model,
-          "transimmisionType": data.transimmisionType,
-          "variant": data.variant,
-          "isPrimary": "N"
-        }
+          color: data.color,
+          fuel: data.fuel,
+          id: data.id,
+          model: data.model,
+          transimmisionType: data.transimmisionType,
+          variant: data.variant,
+          isPrimary: "N",
+        };
         const selecteditem = await {
-          "color": item.color,
-          "fuel": item.fuel,
-          "id": item.id,
-          "model": item.model,
-          "transimmisionType": item.transimmisionType,
-          "variant": item.variant,
-          "isPrimary": "Y"
-
-        }
+          color: item.color,
+          fuel: item.fuel,
+          id: item.id,
+          model: item.model,
+          transimmisionType: item.transimmisionType,
+          variant: item.variant,
+          isPrimary: "Y",
+        };
         //await setCarModelsList([])
         arr[isPrimaryCureentIndex] = cardata;
-        arr[index] = selecteditem
+        arr[index] = selecteditem;
         console.log("SET FOUR", arr);
         dispatch(updatedmsLeadProduct([...arr]));
-        await setCarModelsList([...arr])
-        await setIsPrimaryCurrentIndex(index)
-
+        await setCarModelsList([...arr]);
+        await setIsPrimaryCurrentIndex(index);
       }
     } catch (error) {
       // alert(error)
     }
-
-
-
-  }
+  };
 
   const formatExchangeDetails = (prevData) => {
     let dataObj = { ...prevData };
@@ -1984,7 +2061,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dataObj.varient = selector.a_varient;
       dataObj.color = selector.a_color;
       dataObj.regNo = selector.a_reg_no;
-    } else if (selector.buyer_type === "Replacement Buyer" || selector.buyer_type === "Exchange Buyer") {
+    } else if (
+      selector.buyer_type === "Replacement Buyer" ||
+      selector.buyer_type === "Exchange Buyer"
+    ) {
       dataObj.buyerType = selector.buyer_type;
       dataObj.regNo = selector.r_reg_no;
       dataObj.brand = selector.r_make;
@@ -1997,7 +2077,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       // dataObj.yearofManufacture = convertDateStringToMillisecondsUsingMoment(
       //   selector.r_mfg_year
       // );
-      dataObj.yearofManufacture = selector.r_mfg_year
+      dataObj.yearofManufacture = selector.r_mfg_year;
       dataObj.kiloMeters = selector.r_kms_driven_or_odometer_reading;
       dataObj.expectedPrice = selector.r_expected_price
         ? Number(selector.r_expected_price)
@@ -2018,7 +2098,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         selector.r_insurence_document_checked;
       dataObj.insuranceCompanyName = selector.r_insurence_company_name;
       // Pending
-      dataObj.insuranceExpiryDate = Number(selector.r_insurence_expiry_date);
+      dataObj.insuranceExpiryDate = selector.r_insurence_expiry_date
+        ? Number(selector.r_insurence_expiry_date)
+        : "";
       dataObj.insuranceType = selector.r_insurence_type;
       // Pending
       dataObj.insuranceFromDate = convertDateStringToMillisecondsUsingMoment(
@@ -2101,7 +2183,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         const universalId = dataObj.universalId;
         const taskStatus = dataObj.taskStatus;
 
-        if (taskNames === '') {
+        if (taskNames === "") {
           navigation.navigate(
             AppNavigator.EmsStackIdentifiers.proceedToPreBooking,
             {
@@ -2111,8 +2193,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               taskStatus,
             }
           );
-        }
-        else {
+        } else {
           Alert.alert(
             "Below tasks are pending, do you want to continue to proceed pre-booking",
             taskNames,
@@ -2169,8 +2250,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           element.taskName === "Evaluation" &&
           (element.taskStatus === "" || element.taskStatus === "ASSIGNED") &&
           (selector.enquiry_details_response.dmsLeadDto.buyerType ===
-            "Replacement Buyer" || selector.enquiry_details_response.dmsLeadDto.buyerType ===
-            "Exchange Buyer")
+            "Replacement Buyer" ||
+            selector.enquiry_details_response.dmsLeadDto.buyerType ===
+              "Exchange Buyer")
         ) {
           pendingTaskNames.push("Evaluation : Pending \n");
         }
@@ -2196,14 +2278,23 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     );
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
-      console.log("%%%%%", jsonObj, JSON.stringify(selector.enquiry_details_response.dmsLeadDto));
-      if (selector.enquiry_details_response.dmsLeadDto.salesConsultant == jsonObj.empName || selector.enquiry_details_response.dmsLeadDto.createdBy == jsonObj.empName) {
+      console.log(
+        "%%%%%",
+        jsonObj,
+        JSON.stringify(selector.enquiry_details_response.dmsLeadDto)
+      );
+      if (
+        selector.enquiry_details_response.dmsLeadDto.salesConsultant ==
+          jsonObj.empName ||
+        selector.enquiry_details_response.dmsLeadDto.createdBy ==
+          jsonObj.empName
+      ) {
         if (universalId) {
           const endUrl = universalId + "?" + "stage=Enquiry";
           dispatch(getPendingTasksApi(endUrl));
         }
       } else {
-        alert('Permission Denied')
+        alert("Permission Denied");
         // Alert.alert(
         //   'Permission Denied',
         //   [
@@ -2252,10 +2343,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   const proceedToCancelEnquiry = () => {
-    if (
-      dropRemarks.length === 0 ||
-      dropReason.length === 0
-    ) {
+    if (dropRemarks.length === 0 || dropReason.length === 0) {
       showToastRedAlert("Please enter details for drop");
       return;
     }
@@ -2301,21 +2389,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-    if (selector.enquiry_drop_response_status === "success" && selector.refNo !== '') {
-      Alert.alert(
-        "Sent For Approval",
-        `Enquery Number: ${selector.refNo}`,
-        [
-          {
-            text: "OK",
-            onPress: () => {
-              goParentScreen()
-            },
+    if (
+      selector.enquiry_drop_response_status === "success" &&
+      selector.refNo !== ""
+    ) {
+      Alert.alert("Sent For Approval", `Enquery Number: ${selector.refNo}`, [
+        {
+          text: "OK",
+          onPress: () => {
+            goParentScreen();
           },
-        ]
-      );
+        },
+      ]);
     }
-  }, [selector.enquiry_drop_response_status, selector.refNo])
+  }, [selector.enquiry_drop_response_status, selector.refNo]);
 
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
@@ -2578,7 +2665,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     })
       .then((response) => response.json())
       .then((response) => {
-        console.log('response', response);
+        console.log("response", response);
         if (response) {
           const dataObj = { ...uploadedImagesDataObj };
           console.log("UPLOADED IMAGES: ", JSON.stringify(dataObj));
@@ -2656,9 +2743,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     navigation.navigate(AppNavigator.EmsStackIdentifiers.ProformaScreen, {
       modelDetails: selector.dmsLeadProducts[0],
       branchId: selectedBranchId,
-      universalId: universalId
-    })
-  }
+      universalId: universalId,
+    });
+  };
   const updateAddressDetails = (pincode) => {
     if (pincode.length != 6) {
       return;
@@ -2668,13 +2755,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       (res) => {
         // dispatch an action to update address
         console.log("PINCODE DETAILS 1", JSON.stringify(res));
-        let tempAddr = []
+        let tempAddr = [];
         if (res) {
           if (res.length > 0) {
             for (let i = 0; i < res.length; i++) {
-              tempAddr.push({ label: res[i].Name, value: res[i] })
+              tempAddr.push({ label: res[i].Name, value: res[i] });
               if (i === res.length - 1) {
-                setAddressData([...tempAddr])
+                setAddressData([...tempAddr]);
               }
             }
           }
@@ -2696,13 +2783,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       (res) => {
         // dispatch an action to update address
         console.log("PINCODE DETAILS 1", JSON.stringify(res));
-        let tempAddr = []
+        let tempAddr = [];
         if (res) {
           if (res.length > 0) {
             for (let i = 0; i < res.length; i++) {
-              tempAddr.push({ label: res[i].Name, value: res[i] })
+              tempAddr.push({ label: res[i].Name, value: res[i] });
               if (i === res.length - 1) {
-                setAddressData2([...tempAddr])
+                setAddressData2([...tempAddr]);
               }
             }
           }
@@ -3307,9 +3394,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <DateSelectItem
                   label={"Expected Delivery Date*"}
                   value={
-                    selector.expected_delivery_date.length == 0
-                      ? moment().format("DD/MM/YYYY")
-                      : selector.expected_delivery_date
+                    selector.expected_delivery_date
+                      ? moment(
+                          new Date(Number(selector.expected_delivery_date))
+                        ).format("DD/MM/YYYY")
+                      : ""
                   }
                   onPress={() =>
                     dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
@@ -5717,9 +5806,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <View>
                       <DateSelectItem
                         label={"Insurance Policy Expiry Date"}
-                        value={moment(
-                          new Date(Number(selector.r_insurence_expiry_date))
-                        ).format("DD/MM/YYYY")}
+                        value={
+                          selector.r_insurence_expiry_date
+                            ? moment(
+                                new Date(
+                                  Number(selector.r_insurence_expiry_date)
+                                )
+                              ).format("DD/MM/YYYY")
+                            : selector.r_insurence_expiry_date
+                        }
                         onPress={() =>
                           dispatch(
                             setDatePicker("R_INSURENCE_POLICIY_EXPIRY_DATE")
@@ -6054,16 +6149,16 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   dropdownContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 16,
     // borderWidth: 1,
-    width: '100%',
+    width: "100%",
     height: 50,
-    borderRadius: 5
+    borderRadius: 5,
   },
   dropdown: {
     height: 50,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderWidth: 0.5,
     borderRadius: 8,
     paddingHorizontal: 8,
@@ -6072,8 +6167,8 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   label: {
-    position: 'absolute',
-    backgroundColor: 'white',
+    position: "absolute",
+    backgroundColor: "white",
     left: 22,
     top: 8,
     zIndex: 999,
@@ -6085,8 +6180,8 @@ const styles = StyleSheet.create({
   },
   selectedTextStyle: {
     fontSize: 16,
-    color: '#000',
-    fontWeight: '400'
+    color: "#000",
+    fontWeight: "400",
   },
   iconStyle: {
     width: 20,
