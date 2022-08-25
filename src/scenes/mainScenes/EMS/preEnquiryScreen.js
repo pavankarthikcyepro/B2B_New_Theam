@@ -109,6 +109,7 @@ const PreEnquiryScreen = ({ navigation }) => {
     }
 
     useEffect(() => {
+        console.log('selector.pre_enquiry_list----->',selector.pre_enquiry_list);
         if (selector.pre_enquiry_list.length > 0){
             setSearchedData(selector.pre_enquiry_list)
             // console.log("PreEnquiryAfterScreen:", selector.pre_enquiry_list[0])
@@ -141,7 +142,16 @@ const PreEnquiryScreen = ({ navigation }) => {
             if (appSelector.searchKey !== ''){
                 let tempData = []
                 tempData = selector.pre_enquiry_list.filter((item) => {
-                    return item.firstName.toLowerCase().includes(appSelector.searchKey.toLowerCase()) || item.lastName.toLowerCase().includes(appSelector.searchKey.toLowerCase())
+                    console.log('itemitemitemitem----->', item);
+                    return (
+                        item.firstName
+                            .toLowerCase()
+                            .includes(appSelector.searchKey.toLowerCase()) ||
+                        item.lastName
+                            .toLowerCase()
+                            .includes(appSelector.searchKey.toLowerCase()) ||
+                        item.phone.includes(appSelector.searchKey)
+                    );
                 })
                 setSearchedData([]);
                 setSearchedData(tempData);
