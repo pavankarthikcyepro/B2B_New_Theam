@@ -13,7 +13,7 @@ import { Colors, GlobalStyle } from "../../../styles";
 import { TextinputComp } from "../../../components";
 import { Button } from "react-native-paper";
 import { useSelector, useDispatch } from "react-redux";
-import { DropDownSelectionItem } from "../../../pureComponents/dropDownSelectionItem";
+import { DropDownSelectionItem } from "../../../pureComponents";
 import { DropDownComponant, DatePickerComponent, LoaderComponent } from "../../../components";
 import Geolocation from '@react-native-community/geolocation';
 import {
@@ -142,6 +142,19 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     }
   }, [selector.isReasonUpdate, reasonList]);
 
+  useEffect(() => {
+    const enquiryResponse = selector.enquiry_details_response;
+    if (enquiryResponse && identifier === 'ENQUIRY_FOLLOW_UP') {
+      const dmsLeadDto = enquiryResponse.dmsLeadDto;
+      const dmsLeadProducts = dmsLeadDto.dmsLeadProducts;
+      if (dmsLeadProducts && dmsLeadProducts.length) {
+        const selectedModelData = dmsLeadProducts[0];
+        const {model, variant} = selectedModelData;
+        updateModelVarientsData(model, false);
+      }
+    }
+  }, [selector.enquiry_details_response]);
+
   const getReasonListData = async (taskName) => {
     setLoading(true)
     const employeeData = await AsyncStorage.getData(AsyncStorage.Keys.LOGIN_EMPLOYEE);
@@ -162,7 +175,9 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
             allReasons[i].label = allReasons[i].reason;
             allReasons[i].value = allReasons[i].reason;
             if (i === allReasons.length - 1) {
-              setReasonList([...allReasons, ...reasonList])
+              setTimeout(() => {
+                setReasonList([...allReasons, ...reasonList])
+              }, 100);
               setLoading(false)
             }
           }
@@ -300,7 +315,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       showToast("Please Enter Other Reason");
       return;
     }
-    if (selector.customer_remarks == 0) {
+    if (selector.customer_remarks === 0) {
       showToast("Please enter customer remarks");
       return;
     }
@@ -401,7 +416,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS == "ios" ? "padding" : "height"}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         enabled
         keyboardVerticalOffset={100}
       >
@@ -425,13 +440,14 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
                     }
                   />
 
-                  <DropDownSelectionItem
-                    label={"Varient"}
-                    value={selector.varient}
-                    onPress={() =>
-                      setDropDownDataForModel("VARIENT", "Select Varient")
-                    }
-                  />
+                  {(identifier === "ENQUIRY_FOLLOW_UP" &&
+                      <DropDownSelectionItem
+                      label={"Varient"}
+                      value={selector.varient}
+                      onPress={() =>
+                          setDropDownDataForModel("VARIENT", "Select Varient")
+                      }
+                  />)}
                 </View>
               )}
 
