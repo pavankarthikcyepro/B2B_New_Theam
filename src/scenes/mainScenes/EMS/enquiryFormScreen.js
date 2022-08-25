@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import {
-  SafeAreaView, FlatList,
+  SafeAreaView,
+  FlatList,
   StyleSheet,
   View,
   Text,
@@ -15,14 +16,15 @@ import {
   BackHandler,
   Image,
   TouchableOpacity,
-  Modal
+  Modal,
 } from "react-native";
 import {
   DefaultTheme,
   Checkbox,
   IconButton,
   List,
-  Button, Divider
+  Button,
+  Divider,
 } from "react-native-paper";
 import { Colors, GlobalStyle } from "../../../styles";
 import VectorImage from "react-native-vector-image";
@@ -76,7 +78,8 @@ import {
   clearPermanentAddr,
   updateAddressByPincode2,
   autoSaveEnquiryDetailsApi,
-  updatedmsLeadProduct
+  updatedmsLeadProduct,
+  clearState2,
 } from "../../../redux/enquiryFormReducer";
 
 import {
@@ -87,7 +90,7 @@ import {
 } from "../../../pureComponents";
 import { ImagePickerComponent } from "../../../components";
 // import { Dropdown } from "sharingan-rn-modal-dropdown";
-import { Dropdown } from 'react-native-element-dropdown';
+import { Dropdown } from "react-native-element-dropdown";
 import {
   Salutation_Types,
   Enquiry_Segment_Data,
@@ -124,7 +127,7 @@ import {
   GetDropList,
   GetFinanceBanksList,
   PincodeDetails,
-  PincodeDetailsNew
+  PincodeDetailsNew,
 } from "../../../utils/helperFunctions";
 
 import CREATE_NEW from "../../../assets/images/create_new.svg";
@@ -139,9 +142,18 @@ import {
 } from "../../../utils/helperFunctions";
 import uuid from "react-native-uuid";
 import { DropComponent } from "./components/dropComp";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
-
+import Geolocation from "@react-native-community/geolocation";
+import {
+  changeEnquiryStatusApi,
+  getTaskDetailsApi,
+  updateTaskApi,
+  getEnquiryDetailsApi as proceedGetEnquiryDetailsApi,
+  updateEnquiryDetailsApi as proceedUpdateEnquiryDetailsApi,
+} from "../../../redux/proceedToPreBookingReducer";
+import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
+import { getCurrentTasksListApi, getPendingTasksListApi } from "../../../redux/mytaskReducer";
 
 const theme = {
   ...DefaultTheme,
@@ -157,9 +169,11 @@ const theme = {
 const DetailsOverviewScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const headNavigation = useNavigation();
-  let scrollRef = useRef(null)
+  let scrollRef = useRef(null);
   const selector = useSelector((state) => state.enquiryFormReducer);
-  const proceedToPreSelector = useSelector(state => state.proceedToPreBookingReducer);
+  const proceedToPreSelector = useSelector(
+    (state) => state.proceedToPreBookingReducer
+  );
   const [openAccordian, setOpenAccordian] = useState("0");
   const [componentAppear, setComponentAppear] = useState(false);
   const { universalId, enqDetails, leadStatus, leadStage } = route.params;
@@ -181,6 +195,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [showPreBookingBtn, setShowPreBookingBtn] = useState(false);
   const [isDropSelected, setIsDropSelected] = useState(false);
   const [userData, setUserData] = useState({
+    branchId: "",
     orgId: "",
     employeeId: "",
     employeeName: "",
@@ -207,13 +222,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [dropModel, setDropModel] = useState("");
   const [dropPriceDifference, setDropPriceDifference] = useState("");
   const [dropRemarks, setDropRemarks] = useState("");
-  const [imagePath, setImagePath] = useState('');
+  const [imagePath, setImagePath] = useState("");
   const [addressData, setAddressData] = useState([]);
   const [addressData2, setAddressData2] = useState([]);
   const [defaultAddress, setDefaultAddress] = useState(null);
   const [isSubmitPress, setIsSubmitPress] = useState(false);
   const [isPrimaryCureentIndex, setIsPrimaryCurrentIndex] = useState(0);
-  // console.log("gender", selector.enquiry_details_response)
+
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const [authToken, setAuthToken] = useState("");
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -245,27 +262,24 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   //   });
   //   navigation.addListener('blur', () => {
 
-  //     console.log("CLEAR");
   //     clearInterval(interval)
   //   }
   // }, [autoSave, selector]);
 
-
   useEffect(() => {
     const interval = setInterval(() => {
       // if (enqDetails?.leadStage === "ENQUIRY" && enqDetails?.leadStatus === null) {
-      updateEnquiry()
+      updateEnquiry();
       // }
     }, 10000);
     return () => {
-      clearInterval(interval)
-    }
+      clearInterval(interval);
+    };
     // let interval;
     // interval = setInterval(() => {
     //   updateEnquiry()
     // }, 60000);
     // navigation.addListener('blur', () => {
-    //   console.log("CLEAR");
     //   clearInterval(interval)
     // })
   }, [updateEnquiry, selector, uploadedImagesDataObj]);
@@ -275,12 +289,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   //     autoSave()
   //   }, 10000);
   //   return () => {
-  //     console.log("CLEAR");
   //     clearInterval(interval)
   //   }
   // }, [selector])
-
-
 
   // useEffect(() => {
   //   let autoSaveInterval;
@@ -291,7 +302,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   // }, [])
 
   const clearLocalData = () => {
-    console.log("CALLED CLEAR DATA");
     setOpenAccordian("0");
     setComponentAppear(false);
     setShowDropDownModel(false);
@@ -311,6 +321,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     setShowPreBookingBtn(false);
     setIsDropSelected(false);
     setUserData({
+      branchId: "",
       orgId: "",
       employeeId: "",
       employeeName: "",
@@ -335,11 +346,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     setDropModel("");
     setDropPriceDifference("");
     setDropRemarks("");
-    setImagePath('');
+    setImagePath("");
     setAddressData([]);
     setAddressData2([]);
     setDefaultAddress(null);
-  }
+  };
 
   const goParentScreen = () => {
     clearLocalData();
@@ -348,14 +359,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   useEffect(() => {
+    getAuthToken();
     getAsyncstoreData();
     getBranchId();
     setComponentAppear(true);
     getCustomerType();
-   
+
     //  const dms = [{ "color": "Outback Bronze", "fuel": "Petrol", "id": 2704, "model": "Kwid",
     //           "transimmisionType": "Manual", "variant": "KWID RXT 1.0L EASY- R BS6 ORVM MY22" },
-    //            { "color": "Caspian Blue", "fuel": "Petrol", "id": 1833, "model": "Kiger", "transimmisionType": "Automatic", 
+    //            { "color": "Caspian Blue", "fuel": "Petrol", "id": 1833, "model": "Kiger", "transimmisionType": "Automatic",
     //           "variant": "Rxt 1.0L Ece Easy-R Ece My22" }]
     //           setModelsList(dms)
     BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
@@ -367,8 +379,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     // };
   }, []);
 
+  const getAuthToken = async () => {
+    const token = await AsyncStore.getData(AsyncStore.Keys.USER_TOKEN);
+    if (token) {
+      setAuthToken(token);
+    }
+  };
+
   useEffect(() => {
-    navigation.addListener('blur', () => {
+    navigation.addListener("blur", () => {
       BackHandler.removeEventListener(
         "hardwareBackPress",
         handleBackButtonClick
@@ -382,24 +401,21 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const getCustomerType = async () => {
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-    // console.log("$$$$$ LOGIN EMP:", employeeData);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       dispatch(getCustomerTypesApi(jsonObj.orgId));
     }
-  }
+  };
 
   const getBranchId = () => {
-
     AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then((branchId) => {
-      console.log("branch id:", branchId)
       setSelectedBranchId(branchId);
     });
-  }
+  };
 
   const scrollToPos = (itemIndex) => {
-    scrollRef.current.scrollTo({ y: itemIndex * 70 })
-  }
+    scrollRef.current.scrollTo({ y: itemIndex * 70 });
+  };
 
   const handleBackButtonClick = () => {
     goParentScreen();
@@ -413,6 +429,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       setUserData({
+        branchId: jsonObj.branchId,
         orgId: jsonObj.orgId,
         employeeId: jsonObj.empId,
         employeeName: jsonObj.empName,
@@ -431,13 +448,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   const GetEnquiryDropReasons = (orgId, token) => {
-
-    GetDropList(orgId, token, "Enquiry").then(resolve => {
-      setDropData(resolve);
-    }, reject => {
-      console.error("Getting drop list faild")
-    })
-  }
+    GetDropList(orgId, token, "Enquiry").then(
+      (resolve) => {
+        setDropData(resolve);
+      },
+      (reject) => {
+        console.error("Getting drop list faild");
+      }
+    );
+  };
 
   const getCarModelListFromServer = (orgId) => {
     // Call Api
@@ -458,21 +477,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           setCarModelsData([...modalList]);
           //  alert("entry---------",JSON.stringify(selector.dmsLeadProducts))
           if (selector.dmsLeadProducts.length > 0) {
-            console.log("SET ONE", selector.dmsLeadProducts);
-            setCarModelsList(selector.dmsLeadProducts)
-          }
-          else {
+            setCarModelsList(selector.dmsLeadProducts);
+          } else {
             let tempModelObj = {
-              "color": '',
-              "fuel": '',
-              "id": 0,
-              "model": selector.enquiry_details_response?.dmsLeadDto?.model,
-              "transimmisionType": '',
-              "variant": '',
-              "isPrimary": "N"
-            }
-            console.log("TEMP MODEL:", tempModelObj);
-            setCarModelsList([tempModelObj])
+              color: "",
+              fuel: "",
+              id: 0,
+              model: selector.enquiry_details_response?.dmsLeadDto?.model,
+              transimmisionType: "",
+              variant: "",
+              isPrimary: "N",
+            };
+            setCarModelsList([tempModelObj]);
           }
         },
         (rejected) => {
@@ -496,7 +512,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     })
       .then((json) => json.json())
       .then((res) => {
-        // console.log("insurance : ", res);
         if (res != null && res.length > 0) {
           const companyList = res.map((item, index) => {
             return { ...item, name: item.company_name };
@@ -509,7 +524,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       });
   };
 
-  const deleteModalFromServer = async ({token, value}) => {
+  const deleteModalFromServer = async ({ token, value }) => {
     //alert(value.id)
     await fetch(URL.DELETE_MODEL_CARD(value.id), {
       method: "DELETE",
@@ -520,11 +535,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       },
     })
       .then((json) => {
-        //console.log('JSON----------->',json)
-        json.json()})
+        json.json();
+      })
       .then((res) => {
         //alert("delete : ", res.status);
-       //alert(res)
+        //alert(res)
       })
       .catch((error) => {
         showToastRedAlert(error.message);
@@ -547,7 +562,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     try {
-      console.log("$$$$$$$$$ DMS LEAD PROD: ", selector.dmsLeadProducts);
       if (selector.dmsLeadProducts && selector.dmsLeadProducts.length > 0) {
         // setCarModelsList(selector.dmsLeadProducts)
         addingIsPrimary();
@@ -561,7 +575,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           variant: "",
           isPrimary: "N",
         };
-        console.log("SET TWO:", tempModelObj);
         setCarModelsList([tempModelObj]);
       }
     } catch (error) {
@@ -570,15 +583,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   }, [selector.dmsLeadProducts, selector.enquiry_details_response]); //selector.dmsLeadProducts, selector.enquiry_details_response
 
   useEffect(() => {
-    console.log("PROCEED TTTT:", proceedToPreSelector.update_enquiry_details_response_status);
-    if (proceedToPreSelector.update_enquiry_details_response_status === "success") {
-      clearState();
-      clearLocalData();
-    }
-  }, [proceedToPreSelector.update_enquiry_details_response_status])
-
-  useEffect(() => {
-    console.log("$%$%^^^%&^&*^&&&*&", selector.pincode);
     if (selector.pincode) {
       if (selector.pincode.length != 6) {
         return;
@@ -586,16 +590,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       PincodeDetailsNew(selector.pincode).then(
         (res) => {
           // dispatch an action to update address
-          console.log("PINCODE DETAILS 2", selector.village);
-          let tempAddr = []
+          let tempAddr = [];
           if (res.length > 0) {
             for (let i = 0; i < res.length; i++) {
               if (res[i].Block === selector.village) {
-                setDefaultAddress(res[i])
+                setDefaultAddress(res[i]);
               }
-              tempAddr.push({ label: res[i].Name, value: res[i] })
+              tempAddr.push({ label: res[i].Name, value: res[i] });
               if (i === res.length - 1) {
-                setAddressData([...tempAddr])
+                setAddressData([...tempAddr]);
               }
             }
           }
@@ -626,10 +629,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         setShowPreBookingBtn(true);
       }
 
-      // console.log("dmsLeadDto.leadStage", dmsLeadDto.leadStage);
-      // console.log("dmsLeadDto.leadStatus", dmsLeadDto.leadStatus);
       // if (dmsLeadDto.leadStage == "ENQUIRY" && dmsLeadDto.leadStatus == null) {
-      //   console.log("called here in enquiryFormScreen for autoSave call lineNo: 492")
       //   dispatch(getAutoSaveEnquiryDetailsApi(universalId));
       // }
 
@@ -644,11 +644,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dispatch(updateDmsAddressData(dmsLeadDto.dmsAddresses));
       // Updaet Model Selection
       dispatch(updateModelSelectionData(dmsLeadDto.dmsLeadProducts));
-      // console.log('DMS----------->>>>',dmsLeadDto.dmsLeadProducts[0]?.id)
       //   alert("reponse---------", JSON.stringify(dmsLeadDto.dmsLeadProducts))
       //  setCarModelsList(selector.dmsLeadProducts)
       // Update Finance Details
-      console.log("DMSPRODUCTS============>", selector.dmsLeadProducts);
       dispatch(updateFinancialData(dmsLeadDto.dmsfinancedetails));
       // Update Customer Need Analysys
       dispatch(updateCustomerNeedAnalysisData(dmsLeadDto.dmsLeadScoreCards));
@@ -664,7 +662,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   }, [selector.enquiry_details_response]); //selector.enquiry_details_response
 
   const saveAttachmentDetailsInLocalObject = (dmsAttachments) => {
-    console.log("ATTACHMENTS:", JSON.stringify(dmsAttachments));
     if (dmsAttachments.length > 0) {
       const dataObj = {};
       dmsAttachments.forEach((item, index) => {
@@ -690,17 +687,22 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (universalId) {
       // if (selector.isOpened) {
       // dispatch(getAutoSaveEnquiryDetailsApi(universalId));
-      if (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY') {
+      if (leadStatus === "ENQUIRYCOMPLETED" && leadStage === "ENQUIRY") {
         dispatch(getEnquiryDetailsApi({ universalId, leadStage, leadStatus }));
-      }
-      else {
+      } else {
         Promise.all([
-          dispatch(getEnquiryDetailsApiAuto({ universalId, leadStage, leadStatus }))
-        ]).then(() => {
-          dispatch(getEnquiryDetailsApi({ universalId, leadStage, leadStatus }))
-        }).catch(() => {
-          console.log("INSIDE CATCH");
-        })
+          dispatch(
+            getEnquiryDetailsApiAuto({ universalId, leadStage, leadStatus })
+          ),
+        ])
+          .then(() => {
+            dispatch(
+              getEnquiryDetailsApi({ universalId, leadStage, leadStatus })
+            );
+          })
+          .catch(() => {
+            console.log("INSIDE CATCH");
+          });
       }
       // dispatch(getEnquiryDetailsApi({universalId, leadStage, leadStatus}));
       // } else {
@@ -716,66 +718,63 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
   };
 
-  // console.log(selector, "Redux Data")
   // let dmsEntity = selector.enquiry_details_response;
-  // console.log({ dmsEntity })
 
   const addingIsPrimary = async () => {
     try {
-      let array = await [...selector.dmsLeadProducts]
+      let array = await [...selector.dmsLeadProducts];
       for (let i = 0; i < selector.dmsLeadProducts.length; i++) {
-        var item = await array[i]
+        var item = await array[i];
         if (i == 0) {
-          var isPrimary = "Y"
+          var isPrimary = "Y";
           if (item.isPrimary && item.isPrimary != null)
-            isPrimary = item.isPrimary
+            isPrimary = item.isPrimary;
           item = await {
-            "color": item.color,
-            "fuel": item.fuel,
-            "id": item.id,
-            "model": item.model,
-            "transimmisionType": item.transimmisionType,
-            "variant": item.variant,
-            "isPrimary": isPrimary
-          }
-          if (item.isPrimary && item.isPrimary != null && item.isPrimary === 'Y')
-            setIsPrimaryCurrentIndex(i)
+            color: item.color,
+            fuel: item.fuel,
+            id: item.id,
+            model: item.model,
+            transimmisionType: item.transimmisionType,
+            variant: item.variant,
+            isPrimary: isPrimary,
+          };
+          if (
+            item.isPrimary &&
+            item.isPrimary != null &&
+            item.isPrimary === "Y"
+          )
+            setIsPrimaryCurrentIndex(i);
           updateVariantModelsData(item.model, true, item.variant);
-        }
-        else {
-          var isPrimary = "N"
+        } else {
+          var isPrimary = "N";
           if (item.isPrimary && item.isPrimary != null)
-            isPrimary = item.isPrimary
+            isPrimary = item.isPrimary;
           item = await {
-            "color": item.color,
-            "fuel": item.fuel,
-            "id": item.id,
-            "model": item.model,
-            "transimmisionType": item.transimmisionType,
-            "variant": item.variant,
-            "isPrimary": isPrimary
-          }
+            color: item.color,
+            fuel: item.fuel,
+            id: item.id,
+            model: item.model,
+            transimmisionType: item.transimmisionType,
+            variant: item.variant,
+            isPrimary: isPrimary,
+          };
         }
-        array[i] = await item
-        if (item.isPrimary && item.isPrimary != null && item.isPrimary === 'Y')
-          setIsPrimaryCurrentIndex(i)
-        // console.log(userObject.username);
+        array[i] = await item;
+        if (item.isPrimary && item.isPrimary != null && item.isPrimary === "Y")
+          setIsPrimaryCurrentIndex(i);
       }
-      console.log("SET THREE", array);
-      await setCarModelsList(array)
-    } catch (error) {
-    }
 
-  }
+      await setCarModelsList(array);
+    } catch (error) {}
+  };
 
   const updateEnquiry = async () => {
-    console.log("CALLED AUTO UPDATE");
     let dmsContactOrAccountDto = {};
     let dmsLeadDto = {};
     let formData;
 
     const dmsEntity = selector.enquiry_details_response;
-    console.log("DMS ENTITY: ", dmsEntity);
+
     if (dmsEntity.hasOwnProperty("dmsContactDto"))
       dmsContactOrAccountDto = mapContactOrAccountDto(dmsEntity.dmsContactDto);
     else if (dmsEntity.hasOwnProperty("dmsAccountDto"))
@@ -786,7 +785,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dmsLeadDto.firstName = selector.firstName;
       dmsLeadDto.lastName = selector.lastName;
       dmsLeadDto.phone = selector.mobile;
-      if (enqDetails.leadStage === 'ENQUIRY' && enqDetails.leadStatus === null) {
+      if (
+        enqDetails.leadStage === "ENQUIRY" &&
+        enqDetails.leadStatus === null
+      ) {
         dmsLeadDto.leadStage = "ENQUIRY";
         dmsLeadDto.leadStatus = null;
       }
@@ -796,10 +798,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         let tempAttachments = [];
-        // console.log("GDGHDGDGDGDGD", JSON.stringify(dmsLeadDto.dmsAttachments));
-        if (selector.pan_number || dmsLeadDto.dmsAttachments.filter((item) => {
-          return item.documentType === "pan";
-        })) {
+        if (
+          selector.pan_number ||
+          dmsLeadDto.dmsAttachments.filter((item) => {
+            return item.documentType === "pan";
+          })
+        ) {
           tempAttachments.push({
             branchId: jsonObj.branchs[0]?.branchId,
             contentSize: 0,
@@ -808,21 +812,25 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             documentNumber: selector.pan_number,
             documentPath:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0]?.documentPath : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "pan";
+                  })[0]?.documentPath
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "pan";
+                    })[0]?.documentPath
+                  : ""
                 : "",
             documentType: "pan",
             documentVersion: 0,
             fileName:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0]?.fileName : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "pan";
+                  })[0]?.fileName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "pan";
+                    })[0]?.fileName
+                  : ""
                 : "",
             gstNumber: "",
             id: 0,
@@ -830,11 +838,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             isPrivate: 0,
             keyName:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0]?.keyName : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "pan";
+                  })[0]?.keyName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "pan";
+                    })[0]?.keyName
+                  : ""
                 : "",
             modifiedBy: jsonObj.empName,
             orgId: jsonObj.orgId,
@@ -844,9 +854,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             tinNumber: "",
           });
         }
-        if (selector.adhaar_number || dmsLeadDto.dmsAttachments.filter((item) => {
-          return item.documentType === "aadhar";
-        })) {
+        if (
+          selector.adhaar_number ||
+          dmsLeadDto.dmsAttachments.filter((item) => {
+            return item.documentType === "aadhar";
+          })
+        ) {
           tempAttachments.push({
             branchId: jsonObj.branchs[0]?.branchId,
             contentSize: 0,
@@ -855,21 +868,25 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             documentNumber: selector.adhaar_number,
             documentPath:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0]?.documentPath : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "aadhar";
+                  })[0]?.documentPath
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "aadhar";
+                    })[0]?.documentPath
+                  : ""
                 : "",
             documentType: "aadhar",
             documentVersion: 0,
             fileName:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0]?.fileName : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "aadhar";
+                  })[0]?.fileName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "aadhar";
+                    })[0]?.fileName
+                  : ""
                 : "",
             gstNumber: "",
             id: 0,
@@ -877,11 +894,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             isPrivate: 0,
             keyName:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0]?.keyName : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "aadhar";
+                  })[0]?.keyName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "aadhar";
+                    })[0]?.keyName
+                  : ""
                 : "",
             modifiedBy: jsonObj.empName,
             orgId: jsonObj.orgId,
@@ -891,9 +910,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             tinNumber: "",
           });
         }
-        if (selector.employee_id || dmsLeadDto.dmsAttachments.filter((item) => {
-          return item.documentType === "employeeId";
-        })) {
+        if (
+          selector.employee_id ||
+          dmsLeadDto.dmsAttachments.filter((item) => {
+            return item.documentType === "employeeId";
+          })
+        ) {
           tempAttachments.push({
             branchId: jsonObj.branchs[0]?.branchId,
             contentSize: 0,
@@ -902,21 +924,25 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             documentNumber: selector.employee_id,
             documentPath:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "employeeId";
-                })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "employeeId";
-                })[0]?.documentPath : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "employeeId";
+                  })[0]?.documentPath
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "employeeId";
+                    })[0]?.documentPath
+                  : ""
                 : "",
             documentType: "employeeId",
             documentVersion: 0,
             fileName:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "employeeId";
-                })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "employeeId";
-                })[0]?.fileName : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "employeeId";
+                  })[0]?.fileName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "employeeId";
+                    })[0]?.fileName
+                  : ""
                 : "",
             gstNumber: "",
             id: 0,
@@ -924,11 +950,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             isPrivate: 0,
             keyName:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "employeeId";
-                })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "employeeId";
-                })[0]?.keyName : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "employeeId";
+                  })[0]?.keyName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "employeeId";
+                    })[0]?.keyName
+                  : ""
                 : "",
             modifiedBy: jsonObj.empName,
             orgId: jsonObj.orgId,
@@ -939,14 +967,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           });
         }
         if (Object.keys(uploadedImagesDataObj).length > 0) {
-          let tempImages = Object.entries(uploadedImagesDataObj).map((e) => ({ name: e[0], value: e[1] }));
+          let tempImages = Object.entries(uploadedImagesDataObj).map((e) => ({
+            name: e[0],
+            value: e[1],
+          }));
           for (let i = 0; i < tempImages.length; i++) {
             tempAttachments.push({
               branchId: jsonObj.branchs[0]?.branchId,
               contentSize: 0,
               createdBy: new Date().getSeconds(),
               description: "",
-              documentNumber: '',
+              documentNumber: "",
               documentPath: tempImages[i].value.documentPath,
               documentType: tempImages[i].name,
               documentVersion: 0,
@@ -968,12 +999,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               dmsLeadDto.dmsAttachments = tempAttachments;
             }
           }
-        }
-        else {
+        } else {
           dmsLeadDto.dmsAttachments = tempAttachments;
         }
-        console.log("TEMP ATT:", JSON.stringify(tempAttachments));
-
       }
     }
 
@@ -988,17 +1016,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         dmsLeadDto: dmsLeadDto,
       };
     }
-    console.log("PPPP", JSON.stringify(formData));
+
     // setTypeOfActionDispatched("UPDATE_ENQUIRY");
     // dispatch(autoSaveEnquiryDetailsApi(formData))
     let payload = {
       data: formData,
       status: "Active",
-      universalId: universalId
-    }
+      universalId: universalId,
+    };
     AsyncStore.storeJsonData(AsyncStore.Keys.ENQ_PAYLOAD, payload);
-    dispatch(updateEnquiryDetailsApiAutoSave(payload))
-  }
+    dispatch(updateEnquiryDetailsApiAutoSave(payload));
+  };
 
   const checkModelSelection = () => {
     let error = false;
@@ -1022,14 +1050,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return true;
     }
     return false;
-  }
+  };
 
   const submitClicked = async () => {
     //Personal Intro
-    setIsSubmitPress(true)
+    setIsSubmitPress(true);
     if (selector.salutation.length == 0) {
-      scrollToPos(0)
-      setOpenAccordian('2')
+      scrollToPos(0);
+      setOpenAccordian("2");
       showToast("Please fill required salutation field in Personal Intro");
       return;
     }
@@ -1046,14 +1074,14 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     // }
 
     if (!isValidate(selector.firstName)) {
-      scrollToPos(0)
-      setOpenAccordian('2')
+      scrollToPos(0);
+      setOpenAccordian("2");
       showToast("please enter alphabetics only in firstname");
       return;
     }
     if (!isValidate(selector.lastName)) {
-      scrollToPos(0)
-      setOpenAccordian('2')
+      scrollToPos(0);
+      setOpenAccordian("2");
       showToast("please enter alphabetics only in lastname");
       return;
     }
@@ -1064,16 +1092,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   return;
     // }
     if (!isValidateAlphabetics(selector.streetName)) {
-      scrollToPos(3)
-      setOpenAccordian('3')
+      scrollToPos(3);
+      setOpenAccordian("3");
       showToast("Please enter alphabetics only in street name");
       return;
     }
     //Customer Profile
 
     if (selector.designation.length == 0) {
-      scrollToPos(2)
-      setOpenAccordian('1')
+      scrollToPos(2);
+      setOpenAccordian("1");
       showToast("Please fill designation");
       return;
     }
@@ -1082,20 +1110,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   return;
     // }
     if (selector.enquiry_segment.length == 0) {
-      scrollToPos(2)
-      setOpenAccordian('1')
+      scrollToPos(2);
+      setOpenAccordian("1");
       showToast("Please select enquery segment");
       return;
     }
     if (selector.customer_type.length == 0) {
-      scrollToPos(2)
-      setOpenAccordian('1')
+      scrollToPos(2);
+      setOpenAccordian("1");
       showToast("Please select customer type");
       return;
     }
     if (selector.buyer_type.length == 0) {
-      scrollToPos(2)
-      setOpenAccordian('1')
+      scrollToPos(2);
+      setOpenAccordian("1");
       showToast("Please fill  Buyer type");
       return;
     }
@@ -1105,52 +1133,51 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     // }
 
     if (!isValidateAlphabetics(selector.designation)) {
-      scrollToPos(2)
-      setOpenAccordian('1')
+      scrollToPos(2);
+      setOpenAccordian("1");
       showToast("Please enter alphabetics only in designation");
       return;
     }
     //communication Address
     if (selector.houseNum.length == 0) {
-      scrollToPos(3)
-      setOpenAccordian('3')
+      scrollToPos(3);
+      setOpenAccordian("3");
       showToast("Please fill H.No ");
       return;
     }
     if (selector.streetName.length == 0) {
-      scrollToPos(3)
-      setOpenAccordian('3')
+      scrollToPos(3);
+      setOpenAccordian("3");
       showToast("Please fill Street Name ");
       return;
     }
     if (selector.village.length == 0) {
-      scrollToPos(3)
-      setOpenAccordian('3')
+      scrollToPos(3);
+      setOpenAccordian("3");
       showToast("Please fill village ");
       return;
     }
     if (selector.mandal.length == 0) {
-      scrollToPos(3)
-      setOpenAccordian('3')
+      scrollToPos(3);
+      setOpenAccordian("3");
       showToast("Please fill mandal");
       return;
     }
     if (selector.city.length == 0) {
-      scrollToPos(3)
-      setOpenAccordian('3')
+      scrollToPos(3);
+      setOpenAccordian("3");
       showToast("Please fill city ");
       return;
     }
     if (selector.state.length == 0) {
-      scrollToPos(3)
-      setOpenAccordian('3')
+      scrollToPos(3);
+      setOpenAccordian("3");
       showToast("Please fill state ");
       return;
     }
-    if (
-      selector.district.length == 0) {
-      scrollToPos(3)
-      setOpenAccordian('3')
+    if (selector.district.length == 0) {
+      scrollToPos(3);
+      setOpenAccordian("3");
       showToast("Please fill district ");
       return;
     }
@@ -1170,61 +1197,61 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   showToast("Please fill permanent address ");
     //   return;
     // }
-     if (selector.p_pincode.length == 0) {
-       scrollToPos(14);
-       setOpenAccordian("3");
-       showToast("Please fill Permanent pincode");
-       return;
-     }
-      if (selector.p_urban_or_rural.length == 0) {
-        scrollToPos(14);
-        setOpenAccordian("3");
-        showToast("Please fill Permanent Urban or Rural");
-        return;
-      }
-      if (selector.p_houseNum.length == 0) {
-        scrollToPos(14);
-        setOpenAccordian("3");
-        showToast("Please fill Permanent house number");
-        return;
-      }
+    if (selector.p_pincode.length == 0) {
+      scrollToPos(14);
+      setOpenAccordian("3");
+      showToast("Please fill Permanent pincode");
+      return;
+    }
+    if (selector.p_urban_or_rural.length == 0) {
+      scrollToPos(14);
+      setOpenAccordian("3");
+      showToast("Please fill Permanent Urban or Rural");
+      return;
+    }
+    if (selector.p_houseNum.length == 0) {
+      scrollToPos(14);
+      setOpenAccordian("3");
+      showToast("Please fill Permanent house number");
+      return;
+    }
     if (selector.p_streetName.length == 0) {
       scrollToPos(14);
       setOpenAccordian("3");
       showToast("Please fill Permanent street");
       return;
     }
-     if (selector.p_village.length == 0) {
-       scrollToPos(14);
-       setOpenAccordian("3");
-       showToast("Please fill Permanent village");
-       return;
-     }
-      if (selector.p_mandal.length == 0) {
-        scrollToPos(14);
-        setOpenAccordian("3");
-        showToast("Please fill Permanent mandal");
-        return;
-      }
-      if (selector.p_city.length == 0) {
-        scrollToPos(14);
-        setOpenAccordian("3");
-        showToast("Please fill Permanent City");
-        return;
-      }
-      if (selector.p_district.length == 0) {
-        scrollToPos(14);
-        setOpenAccordian("3");
-        showToast("Please fill Permanent District");
-        return;
-      }
-      if (selector.p_state.length == 0) {
-        scrollToPos(14);
-        setOpenAccordian("3");
-        showToast("Please fill Permanent state");
-        return;
-      }
-    
+    if (selector.p_village.length == 0) {
+      scrollToPos(14);
+      setOpenAccordian("3");
+      showToast("Please fill Permanent village");
+      return;
+    }
+    if (selector.p_mandal.length == 0) {
+      scrollToPos(14);
+      setOpenAccordian("3");
+      showToast("Please fill Permanent mandal");
+      return;
+    }
+    if (selector.p_city.length == 0) {
+      scrollToPos(14);
+      setOpenAccordian("3");
+      showToast("Please fill Permanent City");
+      return;
+    }
+    if (selector.p_district.length == 0) {
+      scrollToPos(14);
+      setOpenAccordian("3");
+      showToast("Please fill Permanent District");
+      return;
+    }
+    if (selector.p_state.length == 0) {
+      scrollToPos(14);
+      setOpenAccordian("3");
+      showToast("Please fill Permanent state");
+      return;
+    }
+
     // Model Selection
     // if (carModelsList.length == 0) {
     //   scrollToPos(4)
@@ -1233,20 +1260,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   return;
     // }
 
-    if(checkModelSelection()){
+    if (checkModelSelection()) {
       scrollToPos(4);
       setOpenAccordian("4");
       return;
     }
 
-    let primaryTempCars = []
+    let primaryTempCars = [];
     primaryTempCars = carModelsList.filter((item) => {
-      return item.isPrimary === 'Y' })
-
+      return item.isPrimary === "Y";
+    });
 
     if (!primaryTempCars.length > 0) {
-      scrollToPos(4)
-      setOpenAccordian('4')
+      scrollToPos(4);
+      setOpenAccordian("4");
       showToast("Select is Primary for atleast one vehicle");
       return;
     }
@@ -1269,11 +1296,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   showToast("Please fill color");
     //   return;
     // }
-    
+
     //Finance Details
     if (selector.retail_finance.length == 0) {
-      scrollToPos(5)
-      setOpenAccordian('5')
+      scrollToPos(5);
+      setOpenAccordian("5");
       showToast("Please fill required fields in Finance Details");
       return;
     }
@@ -1337,32 +1364,34 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       //   return;
       // }
       if (!isValidateAlphabetics(selector.a_color)) {
-        scrollToPos(8)
-        setOpenAccordian('8')
+        scrollToPos(8);
+        setOpenAccordian("8");
         showToast("Please enter alphabetics only in color ");
         return;
       }
-
     }
 
-    if (selector.buyer_type === "Replacement Buyer" || selector.buyer_type === "Exchange Buyer") {
+    if (
+      selector.buyer_type === "Replacement Buyer" ||
+      selector.buyer_type === "Exchange Buyer"
+    ) {
       if (selector.r_color.length > 0) {
         if (!isValidateAlphabetics(selector.r_color)) {
-          scrollToPos(9)
-          setOpenAccordian('9')
+          scrollToPos(9);
+          setOpenAccordian("9");
           showToast("Please enter alphabetics only in color ");
           return;
         }
       }
       if (selector.r_reg_no.length == 0) {
-        scrollToPos(9)
-        setOpenAccordian('9')
+        scrollToPos(9);
+        setOpenAccordian("9");
         showToast("Please fill reg no is mandatory");
         return;
       }
       if (!isValidateAlphabetics(selector.r_model_other_name)) {
-        scrollToPos(9)
-        setOpenAccordian('9')
+        scrollToPos(9);
+        setOpenAccordian("9");
         showToast("Please enter proper model other name");
         return;
       }
@@ -1375,16 +1404,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       if (selector.r_hypothication_checked === true) {
         if (selector.r_hypothication_name.length > 0) {
           if (!isValidateAlphabetics(selector.r_hypothication_name)) {
-            scrollToPos(9)
-            setOpenAccordian('9')
+            scrollToPos(9);
+            setOpenAccordian("9");
             showToast("Please enter the proper Hypothication name");
             return;
           }
         }
         if (selector.r_hypothication_branch.length > 0) {
           if (!isValidateAlphabetics(selector.r_hypothication_branch)) {
-            scrollToPos(9)
-            setOpenAccordian('9')
+            scrollToPos(9);
+            setOpenAccordian("9");
             showToast("Please enter the proper Hypothication branch");
             return;
           }
@@ -1395,8 +1424,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (selector.c_looking_for_any_other_brand_checked === true) {
       if (selector.c_dealership_name.length > 0) {
         if (!isValidateAlphabetics(selector.c_dealership_name)) {
-          scrollToPos(7)
-          setOpenAccordian('7')
+          scrollToPos(7);
+          setOpenAccordian("7");
           showToast("please enter the validate Dealership name");
           return;
         }
@@ -1415,8 +1444,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       selector.pan_number.length > 0 &&
       !isValidateAplhaNumeric(selector.pan_number)
     ) {
-      scrollToPos(6)
-      setOpenAccordian('6')
+      scrollToPos(6);
+      setOpenAccordian("6");
       showToast("Please enter proper PAN number");
       return;
     }
@@ -1424,8 +1453,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       selector.gstin_number.length > 0 &&
       !isValidateAplhaNumeric(selector.gstin_number)
     ) {
-      scrollToPos(6)
-      setOpenAccordian('6')
+      scrollToPos(6);
+      setOpenAccordian("6");
       showToast("Please enter proper gstin number");
       return;
     }
@@ -1447,9 +1476,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (dmsEntity.hasOwnProperty("dmsLeadDto")) {
       try {
         dmsLeadDto = mapLeadDto(dmsEntity.dmsLeadDto);
-
-      } catch (error) {
-      }
+      } catch (error) {}
       dmsLeadDto.firstName = selector.firstName;
       dmsLeadDto.lastName = selector.lastName;
       dmsLeadDto.phone = selector.mobile;
@@ -1466,10 +1493,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       if (employeeData) {
         const jsonObj = JSON.parse(employeeData);
         let tempAttachments = [];
-        // console.log("GDGHDGDGDGDGD", JSON.stringify(dmsLeadDto.dmsAttachments));
-        if (selector.pan_number || dmsLeadDto.dmsAttachments.filter((item) => {
-          return item.documentType === "pan";
-        })) {
+        if (
+          selector.pan_number ||
+          dmsLeadDto.dmsAttachments.filter((item) => {
+            return item.documentType === "pan";
+          })
+        ) {
           tempAttachments.push({
             branchId: jsonObj.branchs[0]?.branchId,
             contentSize: 0,
@@ -1478,21 +1507,25 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             documentNumber: selector.pan_number,
             documentPath:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0]?.documentPath : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "pan";
+                  })[0]?.documentPath
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "pan";
+                    })[0]?.documentPath
+                  : ""
                 : "",
             documentType: "pan",
             documentVersion: 0,
             fileName:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0]?.fileName : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "pan";
+                  })[0]?.fileName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "pan";
+                    })[0]?.fileName
+                  : ""
                 : "",
             gstNumber: "",
             id: 0,
@@ -1500,11 +1533,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             isPrivate: 0,
             keyName:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "pan";
-                })[0]?.keyName : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "pan";
+                  })[0]?.keyName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "pan";
+                    })[0]?.keyName
+                  : ""
                 : "",
             modifiedBy: jsonObj.empName,
             orgId: jsonObj.orgId,
@@ -1514,9 +1549,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             tinNumber: "",
           });
         }
-        if (selector.adhaar_number || dmsLeadDto.dmsAttachments.filter((item) => {
-          return item.documentType === "aadhar";
-        })) {
+        if (
+          selector.adhaar_number ||
+          dmsLeadDto.dmsAttachments.filter((item) => {
+            return item.documentType === "aadhar";
+          })
+        ) {
           tempAttachments.push({
             branchId: jsonObj.branchs[0]?.branchId,
             contentSize: 0,
@@ -1525,21 +1563,25 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             documentNumber: selector.adhaar_number,
             documentPath:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0]?.documentPath : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "aadhar";
+                  })[0]?.documentPath
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "aadhar";
+                    })[0]?.documentPath
+                  : ""
                 : "",
             documentType: "aadhar",
             documentVersion: 0,
             fileName:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0]?.fileName : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "aadhar";
+                  })[0]?.fileName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "aadhar";
+                    })[0]?.fileName
+                  : ""
                 : "",
             gstNumber: "",
             id: 0,
@@ -1547,11 +1589,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             isPrivate: 0,
             keyName:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "aadhar";
-                })[0]?.keyName : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "aadhar";
+                  })[0]?.keyName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "aadhar";
+                    })[0]?.keyName
+                  : ""
                 : "",
             modifiedBy: jsonObj.empName,
             orgId: jsonObj.orgId,
@@ -1561,9 +1605,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             tinNumber: "",
           });
         }
-        if (selector.employee_id || dmsLeadDto.dmsAttachments.filter((item) => {
-          return item.documentType === "employeeId";
-        })) {
+        if (
+          selector.employee_id ||
+          dmsLeadDto.dmsAttachments.filter((item) => {
+            return item.documentType === "employeeId";
+          })
+        ) {
           tempAttachments.push({
             branchId: jsonObj.branchs[0]?.branchId,
             contentSize: 0,
@@ -1572,21 +1619,25 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             documentNumber: selector.employee_id,
             documentPath:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "employeeId";
-                })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "employeeId";
-                })[0]?.documentPath : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "employeeId";
+                  })[0]?.documentPath
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "employeeId";
+                    })[0]?.documentPath
+                  : ""
                 : "",
             documentType: "employeeId",
             documentVersion: 0,
             fileName:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "employeeId";
-                })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "employeeId";
-                })[0]?.fileName : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "employeeId";
+                  })[0]?.fileName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "employeeId";
+                    })[0]?.fileName
+                  : ""
                 : "",
             gstNumber: "",
             id: 0,
@@ -1594,11 +1645,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             isPrivate: 0,
             keyName:
               dmsLeadDto.dmsAttachments.length > 0
-                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "employeeId";
-                })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                  return item.documentType === "employeeId";
-                })[0]?.keyName : '')
+                ? dmsLeadDto.dmsAttachments.filter((item) => {
+                    return item.documentType === "employeeId";
+                  })[0]?.keyName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
+                      return item.documentType === "employeeId";
+                    })[0]?.keyName
+                  : ""
                 : "",
             modifiedBy: jsonObj.empName,
             orgId: jsonObj.orgId,
@@ -1609,14 +1662,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           });
         }
         if (Object.keys(uploadedImagesDataObj).length > 0) {
-          let tempImages = Object.entries(uploadedImagesDataObj).map((e) => ({ name: e[0], value: e[1] }));
+          let tempImages = Object.entries(uploadedImagesDataObj).map((e) => ({
+            name: e[0],
+            value: e[1],
+          }));
           for (let i = 0; i < tempImages.length; i++) {
             tempAttachments.push({
               branchId: jsonObj.branchs[0]?.branchId,
               contentSize: 0,
               createdBy: new Date().getSeconds(),
               description: "",
-              documentNumber: '',
+              documentNumber: "",
               documentPath: tempImages[i].value.documentPath,
               documentType: tempImages[i].name,
               documentVersion: 0,
@@ -1638,12 +1694,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               dmsLeadDto.dmsAttachments = tempAttachments;
             }
           }
-        }
-        else {
+        } else {
           dmsLeadDto.dmsAttachments = tempAttachments;
         }
-        console.log("TEMP ATT:", JSON.stringify(tempAttachments));
-
       }
     }
 
@@ -1658,7 +1711,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         dmsLeadDto: dmsLeadDto,
       };
     }
-    console.log("PPPP", JSON.stringify(formData));
+
     setTypeOfActionDispatched("UPDATE_ENQUIRY");
     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
@@ -1673,28 +1726,24 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         dispatch(updateEnquiryDetailsApi(formData)),
         dispatch(customerLeadRef(refPayload)),
       ]).then(async (res) => {
-        // console.log("REF NO:", JSON.stringify(res));
         const payload = {
           refNo: res[1].payload.dmsEntity.leadCustomerReference.referencenumber,
           orgId: jsonObj.orgId,
           stageCompleted: "ENQUIRY",
         };
-        console.log("PAYLOAD TTT:", payload);
         dispatch(updateRef(payload));
       });
     }
   };
 
   const mapContactOrAccountDto = (prevData) => {
-    console.log("first", selector.salutation)
     let dataObj = { ...prevData };
     if (selector.dateOfBirth) {
       dataObj.dateOfBirth = convertDateStringToMillisecondsUsingMoment(
         selector.dateOfBirth
       );
-    }
-    else {
-      dataObj.dateOfBirth = ''
+    } else {
+      dataObj.dateOfBirth = "";
     }
     dataObj.email = selector.email;
     dataObj.firstName = selector.firstName;
@@ -1738,10 +1787,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.eventCode = selector.event_code;
     dataObj.subSource = selector.sub_source_of_enquiry;
     dataObj.gstNumber = selector.gstin_number;
-    dataObj.dmsExpectedDeliveryDate =
-      convertDateStringToMillisecondsUsingMoment(
-        selector.expected_delivery_date
-      );
+    dataObj.dmsExpectedDeliveryDate = selector.expected_delivery_date
+      ? Number(selector.expected_delivery_date)
+      : "";
     dataObj.leadStatus = "ENQUIRYCOMPLETED";
     dataObj.dmsAddresses = mapDMSAddress(dataObj.dmsAddresses);
     dataObj.dmsLeadProducts = mapLeadProducts(dataObj.dmsLeadProducts);
@@ -1750,7 +1798,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.dmsLeadScoreCards = mapDmsLeadScoreCards(dataObj.dmsLeadScoreCards);
     dataObj.dmsExchagedetails = mapExchangeDetails(dataObj.dmsExchagedetails);
     dataObj.dmsAttachments = mapDmsAttachments(dataObj.dmsAttachments);
-    console.log("MAPLEAD: ", JSON.stringify(dataObj));
     return dataObj;
   };
 
@@ -1808,7 +1855,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const mapDmsFinanceDetails = (prevDmsFinancedetails) => {
     let dmsfinancedetails = [...prevDmsFinancedetails];
     let dataObj = {};
-    console.log("RETAL FIN: ", selector.retail_finance, selector.leashing_name);
     if (dmsfinancedetails.length > 0) {
       dataObj = { ...dmsfinancedetails[0] };
     }
@@ -1873,29 +1919,33 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
   const modelOnclick = async (index, value, type) => {
     try {
-    
       if (type == "update") {
-        let arr = [...carModelsList]
-        arr[index] = value
+        let arr = [...carModelsList];
+        arr[index] = value;
         // arr.splice(carModelsList, index, value);
-        //console.log("MODELS IF: ", arr);
         let primaryModel = [];
         primaryModel = arr.filter((item) => item.isPrimary === "Y");
         if (primaryModel.length > 0) {
-          if (primaryModel[0].variant !== '' && primaryModel[0].model !== '' && primaryModel[0].color!=='') {
-            updateVariantModelsData(primaryModel[0].model, true, primaryModel[0].variant, primaryModel[0].color);
+          if (
+            primaryModel[0].variant !== "" &&
+            primaryModel[0].model !== "" &&
+            primaryModel[0].color !== ""
+          ) {
+            updateVariantModelsData(
+              primaryModel[0].model,
+              true,
+              primaryModel[0].variant,
+              primaryModel[0].color
+            );
           }
         }
-        await setCarModelsList([...arr])
-      }
-      else {
-
+        await setCarModelsList([...arr]);
+      } else {
         if (type == "delete") {
           let arr = await [...carModelsList];
           arr.splice(index, 1);
-         deleteModalFromServer({value})
+          deleteModalFromServer({ value });
 
-          console.log("MODELS ELSE: ", arr);
           let item = {
             color: arr[0].color,
             fuel: arr[0].fuel,
@@ -1916,64 +1966,51 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           await setCarModelsList([...arr]);
           // carModelsList.splice(0, 1)
         }
-              }
-
-      // console.log("onValueChangeonValueChange@@@@ ", value)
+      }
     } catch (error) {
       // alert(error)
     }
-
-  }
+  };
 
   const isPrimaryOnclick = async (isPrimaryEnabled, index, item) => {
-
     try {
       if (isPrimaryEnabled === "Y") {
-        console.log('YES=========>>>>>')
         await setIsPrimaryCurrentIndex(index);
         await setCarModelsList([]);
         updateVariantModelsData(item.model, true, item.variant, item.color); //item.variant, item.color
       }
       if (carModelsList && carModelsList.length > 0) {
-        console.log('NO===============>')
-        let arr = await [...carModelsList]
-        var data = arr[isPrimaryCureentIndex]
-        console.log('DATAS================>>>', data)
+        let arr = await [...carModelsList];
+        var data = arr[isPrimaryCureentIndex];
         const cardata = await {
-          "color": data.color,
-          "fuel": data.fuel,
-          "id": data.id,
-          "model": data.model,
-          "transimmisionType": data.transimmisionType,
-          "variant": data.variant,
-          "isPrimary": "N"
-        }
+          color: data.color,
+          fuel: data.fuel,
+          id: data.id,
+          model: data.model,
+          transimmisionType: data.transimmisionType,
+          variant: data.variant,
+          isPrimary: "N",
+        };
         const selecteditem = await {
-          "color": item.color,
-          "fuel": item.fuel,
-          "id": item.id,
-          "model": item.model,
-          "transimmisionType": item.transimmisionType,
-          "variant": item.variant,
-          "isPrimary": "Y"
-
-        }
+          color: item.color,
+          fuel: item.fuel,
+          id: item.id,
+          model: item.model,
+          transimmisionType: item.transimmisionType,
+          variant: item.variant,
+          isPrimary: "Y",
+        };
         //await setCarModelsList([])
         arr[isPrimaryCureentIndex] = cardata;
-        arr[index] = selecteditem
-        console.log("SET FOUR", arr);
+        arr[index] = selecteditem;
         dispatch(updatedmsLeadProduct([...arr]));
-        await setCarModelsList([...arr])
-        await setIsPrimaryCurrentIndex(index)
-
+        await setCarModelsList([...arr]);
+        await setIsPrimaryCurrentIndex(index);
       }
     } catch (error) {
       // alert(error)
     }
-
-
-
-  }
+  };
 
   const formatExchangeDetails = (prevData) => {
     let dataObj = { ...prevData };
@@ -1984,7 +2021,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       dataObj.varient = selector.a_varient;
       dataObj.color = selector.a_color;
       dataObj.regNo = selector.a_reg_no;
-    } else if (selector.buyer_type === "Replacement Buyer" || selector.buyer_type === "Exchange Buyer") {
+    } else if (
+      selector.buyer_type === "Replacement Buyer" ||
+      selector.buyer_type === "Exchange Buyer"
+    ) {
       dataObj.buyerType = selector.buyer_type;
       dataObj.regNo = selector.r_reg_no;
       dataObj.brand = selector.r_make;
@@ -1997,7 +2037,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       // dataObj.yearofManufacture = convertDateStringToMillisecondsUsingMoment(
       //   selector.r_mfg_year
       // );
-      dataObj.yearofManufacture = selector.r_mfg_year
+      dataObj.yearofManufacture = selector.r_mfg_year;
       dataObj.kiloMeters = selector.r_kms_driven_or_odometer_reading;
       dataObj.expectedPrice = selector.r_expected_price
         ? Number(selector.r_expected_price)
@@ -2018,7 +2058,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         selector.r_insurence_document_checked;
       dataObj.insuranceCompanyName = selector.r_insurence_company_name;
       // Pending
-      dataObj.insuranceExpiryDate = Number(selector.r_insurence_expiry_date);
+      dataObj.insuranceExpiryDate = selector.r_insurence_expiry_date
+        ? Number(selector.r_insurence_expiry_date)
+        : "";
       dataObj.insuranceType = selector.r_insurence_type;
       // Pending
       dataObj.insuranceFromDate = convertDateStringToMillisecondsUsingMoment(
@@ -2033,7 +2075,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const mapDmsAttachments = (prevDmsAttachments) => {
     let dmsAttachments = [...prevDmsAttachments];
-    // console.log("TRTRTRTRTR:", JSON.stringify(dmsAttachments));
     if (dmsAttachments.length > 0) {
       dmsAttachments.forEach((obj, index) => {
         const item = uploadedImagesDataObj[obj.documentType];
@@ -2087,7 +2128,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       let taskNames = "";
       let enableProceedToPrebooking = false;
       data.forEach((item) => {
-        console.log("$$$$$$$$$", item);
         if (item === "Proceed to Pre Booking") {
           enableProceedToPrebooking = true;
         } else {
@@ -2101,7 +2141,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         const universalId = dataObj.universalId;
         const taskStatus = dataObj.taskStatus;
 
-        if (taskNames === '') {
+        if (taskNames === "") {
           navigation.navigate(
             AppNavigator.EmsStackIdentifiers.proceedToPreBooking,
             {
@@ -2111,8 +2151,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               taskStatus,
             }
           );
-        }
-        else {
+        } else {
           Alert.alert(
             "Below tasks are pending, do you want to continue to proceed pre-booking",
             taskNames,
@@ -2125,15 +2164,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               {
                 text: "Proceed",
                 onPress: () => {
-                  navigation.navigate(
-                    AppNavigator.EmsStackIdentifiers.proceedToPreBooking,
-                    {
-                      identifier: "PROCEED_TO_PRE_BOOKING",
-                      taskId,
-                      universalId,
-                      taskStatus,
-                    }
-                  );
+                  proceedToFinalPreBookingClicked(taskId);
+                  // navigation.navigate(
+                  //   AppNavigator.EmsStackIdentifiers.proceedToPreBooking,
+                  //   {
+                  //     identifier: "PROCEED_TO_PRE_BOOKING",
+                  //     taskId,
+                  //     universalId,
+                  //     taskStatus,
+                  //   }
+                  // );
                 },
               },
             ]
@@ -2142,6 +2182,176 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       } else {
         showAlertMessage("Below tasks are pending...", taskNames);
       }
+    }
+  };
+
+  useEffect(() => {
+    navigation.addListener("blur", () => {
+      getCurrentLocation();
+    });
+  }, [navigation]);
+
+  const getCurrentLocation = () => {
+    Geolocation.getCurrentPosition((info) => {
+      setCurrentLocation({
+        lat: info.coords.latitude,
+        long: info.coords.longitude,
+      });
+    });
+  };
+
+  const proceedToFinalPreBookingClicked = async (taskId) => {
+    setTypeOfActionDispatched("PROCEED_TO_PREBOOKING");
+
+    let response = await dispatch(getTaskDetailsApi(taskId));
+
+    if (response?.payload?.dmsEntity?.task?.taskId) {
+      const newTaskObj = { ...response.payload.dmsEntity.task };
+      newTaskObj.taskStatus = "CLOSED";
+      newTaskObj.lat = currentLocation ? currentLocation.lat.toString() : null;
+      newTaskObj.lon = currentLocation ? currentLocation.long.toString() : null;
+      dispatch(updateTaskApi(newTaskObj));
+    }
+  };
+
+  // Handle Update Current Task Response
+  useEffect(() => {
+    if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING") {
+      if (proceedToPreSelector.update_task_response_status === "success") {
+        const endUrl = `${universalId}` + "?" + "stage=PREBOOKING";
+        dispatch(changeEnquiryStatusApi(endUrl));
+      } else if (
+        proceedToPreSelector.update_task_response_status === "failed"
+      ) {
+        showToastRedAlert("something went wrong");
+      }
+    }
+  }, [proceedToPreSelector.update_task_response_status]);
+
+  // Handle Change Enquiry Status response
+  useEffect(() => {
+    if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING") {
+      if (proceedToPreSelector.change_enquiry_status === "success") {
+        callCustomerLeadReferenceApi();
+      } else if (proceedToPreSelector.change_enquiry_status === "failed") {
+        showToastRedAlert("something went wrong");
+      }
+    }
+  }, [proceedToPreSelector.change_enquiry_status]);
+
+  const callCustomerLeadReferenceApi = async () => {
+    const payload = {
+      branchid: userData.branchId,
+      leadstage: "PREBOOKING",
+      orgid: userData.orgId,
+      universalId: universalId,
+    };
+    const url = URL.CUSTOMER_LEAD_REFERENCE();
+    await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        "auth-token": authToken,
+      },
+      method: "POST",
+      body: JSON.stringify(payload),
+    })
+      .then((res) => res.json())
+      .then((jsonRes) => {
+        if (jsonRes.success === true) {
+          if (jsonRes.dmsEntity?.leadCustomerReference) {
+            const refNumber =
+              jsonRes.dmsEntity?.leadCustomerReference.referencenumber;
+            updateEnuiquiryDetails(refNumber);
+          }
+        }
+      })
+      .catch((err) => console.error(err));
+  };
+
+  const updateEnuiquiryDetails = async (refNumber) => {
+    let response = await dispatch(proceedGetEnquiryDetailsApi(universalId));
+
+    if (response?.payload?.dmsEntity) {
+      let enquiryDetailsObj = { ...response.payload.dmsEntity };
+      let dmsLeadDto = { ...enquiryDetailsObj.dmsLeadDto };
+      if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING") {
+        dmsLeadDto.leadStatus = "ENQUIRYCOMPLETED";
+        dmsLeadDto.leadStage = "PREBOOKING";
+        dmsLeadDto.referencenumber = refNumber;
+      }
+
+      enquiryDetailsObj.dmsLeadDto = dmsLeadDto;
+      dispatch(proceedUpdateEnquiryDetailsApi(enquiryDetailsObj));
+    }
+  };
+
+  // Handle Enquiry Update response
+  useEffect(() => {
+    if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING") {
+
+      if (
+        proceedToPreSelector.update_enquiry_details_response_status ===
+          "success" &&
+        proceedToPreSelector.update_enquiry_details_response
+      ) {
+        if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING") {
+          displayCreateEnquiryAlert();
+        }
+      } else if (
+        proceedToPreSelector.update_enquiry_details_response_status === "failed"
+      ) {
+        showToastRedAlert("something went wrong");
+      }
+    } else {
+      if (
+        proceedToPreSelector.update_enquiry_details_response_status ===
+        "success"
+      ) {
+        clearState();
+        clearLocalData();
+      }
+    }
+  }, [
+    proceedToPreSelector.update_enquiry_details_response_status,
+    proceedToPreSelector.update_enquiry_details_response,
+  ]);
+
+  const displayCreateEnquiryAlert = () => {
+   
+    let refNumber = "";
+    if (proceedToPreSelector.update_enquiry_details_response) {
+      refNumber =
+        proceedToPreSelector.update_enquiry_details_response.dmsLeadDto
+          .referencenumber;
+    }
+
+    Alert.alert(
+      "Pre Booking Created Successfully",
+      refNumber,
+      [
+        {
+          text: "OK",
+          onPress: () => goToParentScreen(),
+        },
+      ],
+      {
+        cancelable: false,
+      }
+    );
+  };
+
+  const goToParentScreen = () => {
+    getMyTasksListFromServer();
+    navigation.navigate(EmsTopTabNavigatorIdentifiers.preBooking);
+    dispatch(clearState());
+    dispatch(clearState2());
+  };
+
+  const getMyTasksListFromServer = () => {
+    if (userData.employeeId) {
+      const endUrl = `empid=${userData.employeeId}&limit=10&offset=${0}`;
+      dispatch(getCurrentTasksListApi(endUrl));
+      dispatch(getPendingTasksListApi(endUrl));
     }
   };
 
@@ -2169,8 +2379,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           element.taskName === "Evaluation" &&
           (element.taskStatus === "" || element.taskStatus === "ASSIGNED") &&
           (selector.enquiry_details_response.dmsLeadDto.buyerType ===
-            "Replacement Buyer" || selector.enquiry_details_response.dmsLeadDto.buyerType ===
-            "Exchange Buyer")
+            "Replacement Buyer" ||
+            selector.enquiry_details_response.dmsLeadDto.buyerType ===
+              "Exchange Buyer")
         ) {
           pendingTaskNames.push("Evaluation : Pending \n");
         }
@@ -2196,14 +2407,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     );
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
-      console.log("%%%%%", jsonObj, JSON.stringify(selector.enquiry_details_response.dmsLeadDto));
-      if (selector.enquiry_details_response.dmsLeadDto.salesConsultant == jsonObj.empName || selector.enquiry_details_response.dmsLeadDto.createdBy == jsonObj.empName) {
+      if (
+        selector.enquiry_details_response.dmsLeadDto.salesConsultant ==
+          jsonObj.empName ||
+        selector.enquiry_details_response.dmsLeadDto.createdBy ==
+          jsonObj.empName
+      ) {
         if (universalId) {
           const endUrl = universalId + "?" + "stage=Enquiry";
           dispatch(getPendingTasksApi(endUrl));
         }
       } else {
-        alert('Permission Denied')
+        alert("Permission Denied");
         // Alert.alert(
         //   'Permission Denied',
         //   [
@@ -2215,8 +2430,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         // );
       }
     }
-
-    // console.log(selector.enquiry_details_response.dmsLeadDto, "Proceed to prebooking")
   };
 
   // useEffect(() => {
@@ -2252,10 +2465,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   const proceedToCancelEnquiry = () => {
-    if (
-      dropRemarks.length === 0 ||
-      dropReason.length === 0
-    ) {
+    if (dropRemarks.length === 0 || dropReason.length === 0) {
       showToastRedAlert("Please enter details for drop");
       return;
     }
@@ -2301,21 +2511,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-    if (selector.enquiry_drop_response_status === "success" && selector.refNo !== '') {
-      Alert.alert(
-        "Sent For Approval",
-        `Enquery Number: ${selector.refNo}`,
-        [
-          {
-            text: "OK",
-            onPress: () => {
-              goParentScreen()
-            },
+    if (
+      selector.enquiry_drop_response_status === "success" &&
+      selector.refNo !== ""
+    ) {
+      Alert.alert("Sent For Approval", `Enquery Number: ${selector.refNo}`, [
+        {
+          text: "OK",
+          onPress: () => {
+            goParentScreen();
           },
-        ]
-      );
+        },
+      ]);
     }
-  }, [selector.enquiry_drop_response_status, selector.refNo])
+  }, [selector.enquiry_drop_response_status, selector.refNo]);
 
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
@@ -2498,7 +2707,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       }
     });
     // alert("color")
-    // console.log("modelsData: ", modelsData);
     switch (dropDownKey) {
       case "C_MAKE":
         return set_c_model_types([...modelsData]);
@@ -2522,7 +2730,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       .split(".");
     // const fileName = fileNameArry.length > 0 ? fileNameArry[0] : "None";
     const fileName = uuid.v4();
-    // console.log("uuid: ", fileName);
     formData.append("file", {
       name: `${fileName}-.${fileType}`,
       type: `image/${fileType}`,
@@ -2578,10 +2785,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     })
       .then((response) => response.json())
       .then((response) => {
-        console.log('response', response);
         if (response) {
           const dataObj = { ...uploadedImagesDataObj };
-          console.log("UPLOADED IMAGES: ", JSON.stringify(dataObj));
           dataObj[response.documentType] = response;
           setUploadedImagesDataObj({ ...dataObj });
         }
@@ -2656,9 +2861,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     navigation.navigate(AppNavigator.EmsStackIdentifiers.ProformaScreen, {
       modelDetails: selector.dmsLeadProducts[0],
       branchId: selectedBranchId,
-      universalId: universalId
-    })
-  }
+      universalId: universalId,
+    });
+  };
   const updateAddressDetails = (pincode) => {
     if (pincode.length != 6) {
       return;
@@ -2667,14 +2872,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     PincodeDetailsNew(pincode).then(
       (res) => {
         // dispatch an action to update address
-        console.log("PINCODE DETAILS 1", JSON.stringify(res));
-        let tempAddr = []
+        let tempAddr = [];
         if (res) {
           if (res.length > 0) {
             for (let i = 0; i < res.length; i++) {
-              tempAddr.push({ label: res[i].Name, value: res[i] })
+              tempAddr.push({ label: res[i].Name, value: res[i] });
               if (i === res.length - 1) {
-                setAddressData([...tempAddr])
+                setAddressData([...tempAddr]);
               }
             }
           }
@@ -2695,14 +2899,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     PincodeDetailsNew(pincode).then(
       (res) => {
         // dispatch an action to update address
-        console.log("PINCODE DETAILS 1", JSON.stringify(res));
-        let tempAddr = []
+        let tempAddr = [];
         if (res) {
           if (res.length > 0) {
             for (let i = 0; i < res.length; i++) {
-              tempAddr.push({ label: res[i].Name, value: res[i] })
+              tempAddr.push({ label: res[i].Name, value: res[i] });
               if (i === res.length - 1) {
-                setAddressData2([...tempAddr])
+                setAddressData2([...tempAddr]);
               }
             }
           }
@@ -2734,7 +2937,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         visible={selector.showImagePicker}
         keyId={selector.imagePickerKeyId}
         selectedImage={(data, keyId) => {
-          // console.log("imageObj: ", data, keyId);
           uploadSelectedImage(data, keyId);
         }}
         onDismiss={() => dispatch(setImagePicker(""))}
@@ -2746,7 +2948,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         data={dataForDropDown}
         onRequestClose={() => setShowDropDownModel(false)}
         selectedItems={(item) => {
-          console.log("ITEM:", JSON.stringify(item));
           if (dropDownKey === "MODEL") {
             updateVariantModelsData(item.name, false);
           } else if (dropDownKey === "VARIENT") {
@@ -2776,7 +2977,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           minimumDate={selector.minDate}
           maximumDate={selector.maxDate}
           onChange={(event, selectedDate) => {
-            console.log("date: ", selectedDate);
             if (Platform.OS === "android") {
               if (!selectedDate) {
                 dispatch(
@@ -2801,7 +3001,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         minimumDate={selector.minDate}
         maximumDate={selector.maxDate}
         onChange={(event, selectedDate) => {
-          console.log("date: ", selectedDate);
           if (Platform.OS === "android") {
             if (!selectedDate) {
               dispatch(updateSelectedDate({ key: "NONE", text: selectedDate }));
@@ -3307,9 +3506,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <DateSelectItem
                   label={"Expected Delivery Date*"}
                   value={
-                    selector.expected_delivery_date.length == 0
-                      ? moment().format("DD/MM/YYYY")
-                      : selector.expected_delivery_date
+                    selector.expected_delivery_date
+                      ? moment(
+                          new Date(Number(selector.expected_delivery_date))
+                        ).format("DD/MM/YYYY")
+                      : ""
                   }
                   onPress={() =>
                     dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
@@ -3455,7 +3656,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       // onFocus={() => setIsFocus(true)}
                       // onBlur={() => setIsFocus(false)}
                       onChange={(val) => {
-                        console.log("ADDR: ", val);
                         dispatch(updateAddressByPincode(val.value));
                       }}
                     />
@@ -3782,7 +3982,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         // onFocus={() => setIsFocus(true)}
                         // onBlur={() => setIsFocus(false)}
                         onChange={(val) => {
-                          console.log("ADDR: ", val);
                           dispatch(updateAddressByPincode2(val.value));
                         }}
                       />
@@ -4061,7 +4260,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   //extraData={carModelsList}
                   keyExtractor={(item, index) => index.toString()}
                   renderItem={({ item, index }) => {
-                    //console.log("HERE IS LIST----->",carModelsList)
                     return (
                       // <Pressable onPress={() => selectedItem(item, index)}>
                       <View>
@@ -5499,7 +5697,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     // maxLength={7}
                     onChangeText={(text) => {
                       let regex = /[\d]{2} \/ [\d]{4}/;
-                      console.log("TTT:", regex.test(text));
                       dispatch(updateSelectedDate({ key: "R_MFG_YEAR", text: text }))
                     }}
                   /> */}
@@ -5717,9 +5914,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <View>
                       <DateSelectItem
                         label={"Insurance Policy Expiry Date"}
-                        value={moment(
-                          new Date(Number(selector.r_insurence_expiry_date))
-                        ).format("DD/MM/YYYY")}
+                        value={
+                          selector.r_insurence_expiry_date
+                            ? moment(
+                                new Date(
+                                  Number(selector.r_insurence_expiry_date)
+                                )
+                              ).format("DD/MM/YYYY")
+                            : selector.r_insurence_expiry_date
+                        }
                         onPress={() =>
                           dispatch(
                             setDatePicker("R_INSURENCE_POLICIY_EXPIRY_DATE")
@@ -6054,16 +6257,16 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   dropdownContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 16,
     // borderWidth: 1,
-    width: '100%',
+    width: "100%",
     height: 50,
-    borderRadius: 5
+    borderRadius: 5,
   },
   dropdown: {
     height: 50,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderWidth: 0.5,
     borderRadius: 8,
     paddingHorizontal: 8,
@@ -6072,8 +6275,8 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   label: {
-    position: 'absolute',
-    backgroundColor: 'white',
+    position: "absolute",
+    backgroundColor: "white",
     left: 22,
     top: 8,
     zIndex: 999,
@@ -6085,8 +6288,8 @@ const styles = StyleSheet.create({
   },
   selectedTextStyle: {
     fontSize: 16,
-    color: '#000',
-    fontWeight: '400'
+    color: "#000",
+    fontWeight: "400",
   },
   iconStyle: {
     width: 20,

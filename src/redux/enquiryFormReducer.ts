@@ -912,7 +912,8 @@ const enquiryDetailsOverViewSlice = createSlice({
           }
 
           state.enquiry_category = categoryType;
-          state.expected_delivery_date = selectedDate;
+          state.expected_delivery_date = convertDateStringToMillisecondsUsingMoment(text).toString();
+          // state.expected_delivery_date = selectedDate;
           break;
         case "R_MFG_YEAR":
           state.r_mfg_year = convertTimeStampToDateString(text, "MM-YYYY");
@@ -1388,10 +1389,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       const deliveryDate = dmsLeadDto.dmsExpectedDeliveryDate
         ? dmsLeadDto.dmsExpectedDeliveryDate
         : "";
-      state.expected_delivery_date = convertTimeStampToDateString(
-        deliveryDate,
-        "DD/MM/YYYY"
-      );
+      state.expected_delivery_date = deliveryDate;
       state.model = dmsLeadDto.model ? dmsLeadDto.model : "";
       if (dmsLeadDto.dmsLeadProducts && dmsLeadDto.dmsLeadProducts.length != 0)
       state.dmsLeadProducts = dmsLeadDto.dmsLeadProducts ;
