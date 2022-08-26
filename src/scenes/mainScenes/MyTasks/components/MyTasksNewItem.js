@@ -97,35 +97,74 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, na
 
     return (
         <TouchableOpacity onPress={onItemPress} style={styles.section}>
-            <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center", position: 'relative'}}>
-                
-                <View style={{ width: "70%" }}>
-                    <View style={{flexDirection: 'row'}}>
-                        <View style={{maxWidth: '73%',}}>
+            <View
+                style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    position: 'relative',
+                }}
+            >
+                <View style={{ width: '70%' }}>
+                    <View style={{ flexDirection: 'row' }}>
+                        <View style={{ maxWidth: '73%' }}>
                             <Text style={styles.text1}>{name}</Text>
                         </View>
                         <Text style={styles.catText}>{enqCat}</Text>
                     </View>
-                    <Text style={styles.text2}>{source + " - " + dmsLead}</Text>
+                    <Text style={styles.text2}>{source + ' - ' + dmsLead}</Text>
+                    <Text style={styles.text2}>{phone}</Text>
+
                     <Text style={styles.text3}>{date}</Text>
-                    {needStatus === "YES" &&
-                        <View style={{ height: 15, width: 15, borderRadius: 10, backgroundColor: leadStatus === 'PREENQUIRYCOMPLETED' || (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY') || (leadStatus === 'PREBOOKINGCOMPLETED' && leadStage === 'PREBOOKING') || leadStatus === 'BOOKINGCOMPLETED' ? '#18a835' : '#f29a22', position: 'absolute', top: 0, right: 0 }}></View>
-                    }
+                    {needStatus === 'YES' && (
+                        <View
+                            style={{
+                                height: 15,
+                                width: 15,
+                                borderRadius: 10,
+                                backgroundColor:
+                                    leadStatus === 'PREENQUIRYCOMPLETED' ||
+                                    (leadStatus === 'ENQUIRYCOMPLETED' &&
+                                        leadStage === 'ENQUIRY') ||
+                                    (leadStatus === 'PREBOOKINGCOMPLETED' &&
+                                        leadStage === 'PREBOOKING') ||
+                                    leadStatus === 'BOOKINGCOMPLETED'
+                                        ? '#18a835'
+                                        : '#f29a22',
+                                position: 'absolute',
+                                top: 0,
+                                right: 0,
+                            }}
+                        ></View>
+                    )}
                 </View>
-                <View style={{ width: "30%", alignItems: "center" }}>
+                <View style={{ width: '30%', alignItems: 'center' }}>
                     <View style={styles.modal}>
                         <Text style={styles.text4}>{model}</Text>
                         {/* <Text style={styles.text4}>{"Jeep Compact SUV"}</Text> */}
                     </View>
                     {/* <View style={{ height: 8 }}></View> */}
-                    <View style={{ flexDirection: "row", width: "100%", justifyContent: "space-evenly" }}>
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            width: '100%',
+                            justifyContent: 'space-evenly',
+                        }}
+                    >
                         <IconComp
                             iconName={'format-list-bulleted-square'}
                             onPress={onDocPress}
                         />
                         <IconComp
                             iconName={'phone-outline'}
-                            onPress={() => callWebViewRecord({ navigator, phone, uniqueId,type})}
+                            onPress={() =>
+                                callWebViewRecord({
+                                    navigator,
+                                    phone,
+                                    uniqueId,
+                                    type,
+                                })
+                            }
                         />
 
                         <IconComp
@@ -136,7 +175,7 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, na
                 </View>
             </View>
         </TouchableOpacity>
-    )
+    );
 }
 
 const styles = StyleSheet.create({

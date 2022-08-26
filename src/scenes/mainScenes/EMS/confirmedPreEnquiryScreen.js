@@ -38,6 +38,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     const [isDropSelected, setIsDropSelected] = useState(false);
     const [openAccordian, setOpenAccordian] = useState(0);
     const [userToken, setUserToken] = useState("");
+    const [disabled, setDisabled] = useState(false);
     const [userData, setUserData] = useState({
         orgId: "",
         employeeId: "",
@@ -124,6 +125,8 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         };
         DropPreEnquiryLead(payload, enquiryDetailsObj)
     };
+
+    
 
     const DropPreEnquiryLead = async (payload, enquiryDetailsObj) => {
         console.log("DROP PAY: ", URL.DROP_ENQUIRY(), payload);
@@ -229,7 +232,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     const getBranchId = () => {
 
         AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then((branchId) => {
-            console.log("branch id:", branchId)
+            // console.log("branch id:", branchId)
             setBranchId(branchId);
         });
     }
@@ -480,7 +483,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     }
 
     const createEnquiryClicked = () => {
-
+        setDisabled(true)
         if (selector.pre_enquiry_details) {
             if (!selector.pre_enquiry_details.dmsLeadDto) {
                 showToastRedAlert("something went wrong")
@@ -496,7 +499,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
             Promise.all([
                 dispatch(getEmployeesListApi(data))
             ]).then(async (res) => {
-
+                
                 //  let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
                 // if (employeeData) {
                 //     const jsonObj = JSON.parse(employeeData);
@@ -562,15 +565,16 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
             <SelectEmployeeComponant
                 visible={showEmployeeSelectModel}
-                headerTitle={"Select Employee"}
+                headerTitle={'Select Employee'}
                 data={employeesData}
                 selectedEmployee={(employee) => updateEmployee(employee)}
-                onRequestClose={() => setEmployeeSelectModel(false)}
+                onRequestClose={() => {setDisabled(false)
+                    setEmployeeSelectModel(false);}}
             />
 
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
-                behavior={Platform.OS == "ios" ? "padding" : "height"}
+                behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
                 enabled
                 keyboardVerticalOffset={100}
             >
@@ -581,10 +585,10 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                     style={{ flex: 1 }}
                 >
                     <View style={styles.view1}>
-                        <Text style={styles.text1}>{"Pre-Enquiry"}</Text>
+                        <Text style={styles.text1}>{'Pre-Enquiry'}</Text>
 
                         <IconButton
-                            icon="square-edit-outline"
+                            icon='square-edit-outline'
                             color={Colors.DARK_GRAY}
                             size={25}
                             onPress={editButton}
@@ -594,23 +598,25 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                     <View style={[{ borderRadius: 6 }]}>
                         <TextinputComp
                             style={{ height: 70 }}
-                            value={itemData.firstName + " " + itemData.lastName}
-                            label={"Customer Name"}
+                            value={itemData.firstName + ' ' + itemData.lastName}
+                            label={'Customer Name'}
                             editable={false}
                         />
                         <Text style={styles.devider}></Text>
                         <TextinputComp
                             style={{ height: 70 }}
                             value={itemData.phone}
-                            label={"Mobile Number"}
+                            label={'Mobile Number'}
                             editable={false}
                         />
                         <Text style={styles.devider}></Text>
 
                         <TextinputComp
                             style={{ height: 70 }}
-                            value={convertTimeStampToDateString(itemData.createdDate)}
-                            label={"Date Created"}
+                            value={convertTimeStampToDateString(
+                                itemData.createdDate
+                            )}
+                            label={'Date Created'}
                             editable={false}
                         />
                         <Text style={styles.devider}></Text>
@@ -618,7 +624,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                         <TextinputComp
                             style={{ height: 70 }}
                             value={itemData.enquirySource}
-                            label={"Source of Pre-Enquiry"}
+                            label={'Source of Pre-Enquiry'}
                             editable={false}
                         />
                         <Text style={styles.devider}></Text>
@@ -626,7 +632,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                         <TextinputComp
                             style={{ height: 70 }}
                             value={itemData.model}
-                            label={"Model"}
+                            label={'Model'}
                             editable={false}
                         />
                         <Text style={styles.devider}></Text>
@@ -634,14 +640,14 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                         <TextinputComp
                             style={{ height: 70 }}
                             value={itemData.leadStage}
-                            label={"Status"}
+                            label={'Status'}
                             editable={false}
                         />
                         <Text style={styles.devider}></Text>
 
                         {isDropSelected && (
                             <DropComponent
-                                from="PRE_ENQUIRY"
+                                from='PRE_ENQUIRY'
                                 data={dropData}
                                 reason={dropReason}
                                 setReason={(text) => setDropReason(text)}
@@ -650,13 +656,17 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                                 brandName={dropBrandName}
                                 setBrandName={(text) => setDropBrandName(text)}
                                 dealerName={dropDealerName}
-                                setDealerName={(text) => setDropDealerName(text)}
+                                setDealerName={(text) =>
+                                    setDropDealerName(text)
+                                }
                                 location={dropLocation}
                                 setLocation={(text) => setDropLocation(text)}
                                 model={dropModel}
                                 setModel={(text) => setDropModel(text)}
                                 priceDiff={dropPriceDifference}
-                                setPriceDiff={(text) => setDropPriceDifference(text)}
+                                setPriceDiff={(text) =>
+                                    setDropPriceDifference(text)
+                                }
                                 remarks={dropRemarks}
                                 setRemarks={(text) => setDropRemarks(text)}
                             />
@@ -664,16 +674,22 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
                         {!isDropSelected && (
                             <View style={styles.view2}>
-                                <Text style={[styles.text2, { color: Colors.GRAY }]}>
-                                    {"Allocated DSE"}
+                                <Text
+                                    style={[
+                                        styles.text2,
+                                        { color: Colors.GRAY },
+                                    ]}
+                                >
+                                    {'Allocated DSE'}
                                 </Text>
 
                                 <View style={styles.view3}>
                                     <Button
-                                        mode="contained"
+                                        disabled={disabled}
+                                        mode='contained'
                                         color={Colors.RED}
                                         labelStyle={{
-                                            textTransform: "none",
+                                            textTransform: 'none',
                                             color: Colors.WHITE,
                                         }}
                                         onPress={createEnquiryClicked}
@@ -682,12 +698,12 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                                     </Button>
 
                                     <Button
-                                        mode="contained"
+                                        mode='contained'
                                         style={{ width: 120 }}
                                         color={Colors.GRAY}
                                         //   disabled={selector.isLoading}
                                         labelStyle={{
-                                            textTransform: "none",
+                                            textTransform: 'none',
                                             color: Colors.WHITE,
                                         }}
                                         onPress={() => setIsDropSelected(true)}
@@ -701,19 +717,24 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                         {isDropSelected && (
                             <View style={styles.view4}>
                                 <Button
-                                    mode="contained"
+                                    mode='contained'
                                     color={Colors.BLACK}
-                                    labelStyle={{ textTransform: "none", color: Colors.WHITE }}
-                                    onPress={() => setIsDropSelected(false)}
+                                    labelStyle={{
+                                        textTransform: 'none',
+                                        color: Colors.WHITE,
+                                    }}
+                                    onPress={() => 
+                                        setIsDropSelected(false)
+                                    }
                                 >
                                     Cancel
                                 </Button>
 
                                 <Button
-                                    mode="contained"
+                                    mode='contained'
                                     color={Colors.RED}
                                     disabled={isLoading}
-                                    labelStyle={{ textTransform: "none" }}
+                                    labelStyle={{ textTransform: 'none' }}
                                     onPress={proceedToCancelPreEnquiry}
                                 >
                                     Proceed To Cancellation
@@ -723,10 +744,12 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>
-            {!selector.isLoading ? null : <LoaderComponent
-                visible={selector.isLoading}
-                onRequestClose={() => { }}
-            />}
+            {!selector.isLoading ? null : (
+                <LoaderComponent
+                    visible={selector.isLoading}
+                    onRequestClose={() => {}}
+                />
+            )}
         </SafeAreaView>
     );
 }
