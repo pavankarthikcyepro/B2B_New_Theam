@@ -140,11 +140,11 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                 break;
             case "enquiryfollowup":
                 navigationId = AppNavigator.EmsStackIdentifiers.enquiryFollowUp;
-                taskNameNew = 'Enquiry Followup'
+                taskNameNew = 'Enquiry follow-up'
                 break;
             case "preenquiryfollowup":
                 navigationId = AppNavigator.EmsStackIdentifiers.enquiryFollowUp;
-                taskNameNew = 'Pre Enquiry Followup'
+                taskNameNew = 'Contacts follow-up'
                 break;
                 case "bookingfollowupdse":
                     navigationId = AppNavigator.EmsStackIdentifiers.bookingFollowUp;
@@ -152,7 +152,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                     break;
             case "prebookingfollowup":
                 navigationId = AppNavigator.EmsStackIdentifiers.enquiryFollowUp;
-                taskNameNew = 'Prebooking Followup'
+                taskNameNew = 'Booking approval task'
                 break;
             case "createenquiry":
                 navigationId = AppNavigator.EmsStackIdentifiers.confirmedPreEnq;
@@ -232,7 +232,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                         return (
                             <>
                                 {item.taskName === 'Test Drive Approval' ?
-                                    (isApprovar ? 
+                                    (isApprovar ?
                                         <View style={{ width: "100%", flexDirection: "row" }}>
                                             <View style={{ width: "25%", justifyContent: "center" }}>
                                                 <View style={{ marginLeft: 8, flex: 1, width: 2, backgroundColor: topBcgColor }}></View>
@@ -265,7 +265,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                                 </View>
                                             </View>
                                         </View>
-                                        : 
+                                        :
                                         null)
                                     :
                                     <View style={{ width: "100%", flexDirection: "row" }}>

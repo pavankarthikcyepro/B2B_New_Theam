@@ -2153,7 +2153,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           );
         } else {
           Alert.alert(
-            "Below tasks are pending, do you want to continue to proceed pre-booking",
+            "Below tasks are pending, do you want to continue to proceed to Booking Approval",
             taskNames,
             [
               {
@@ -2317,7 +2317,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   ]);
 
   const displayCreateEnquiryAlert = () => {
-   
+
     let refNumber = "";
     if (proceedToPreSelector.update_enquiry_details_response) {
       refNumber =
@@ -3054,7 +3054,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               onPress={() => navigateToProforma()}>Proforma Invoice</Button> : null}
 
 
-           {(leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY' && carModelsList && carModelsList.length > 0) ? 
+           {(leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY' && carModelsList && carModelsList.length > 0) ?
             <Button style={{height:40, width:200,marginBottom:15, alignSelf:'flex-end', alignContent:'center', backgroundColor:Colors.PINK, color: Colors.WHITE}}
               labelStyle={{ textTransform: "none",fontSize:16, color: Colors.WHITE }}
         onPress={()=> navigateToProforma()}>Proforma Invoice</Button> : null}
@@ -4284,9 +4284,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     }
                   />
                   <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.model === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                
+
                 </View>
-               
+
                 <DropDownSelectionItem
                   label={"Variant*"}
                   value={selector.varient}
@@ -6069,7 +6069,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 labelStyle={{ textTransform: "none" }}
                 onPress={proceedToPreBookingClicked}
               >
-                Proceed To PreBooking
+                Proceed to Booking approval
               </Button>
             </View>
           )}

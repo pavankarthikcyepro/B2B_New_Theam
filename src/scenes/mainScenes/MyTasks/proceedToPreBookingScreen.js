@@ -200,7 +200,7 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
                 "stage": "PREBOOKING",
                 "status": "PREBOOKING",
             }
-        } 
+        }
 
         dispatch(dropEnquiryApi(payload));
     }
@@ -351,7 +351,7 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
             console.log("INSIDE ", identifier);
             getMyTasksListFromServer();
             navigation.navigate(EmsTopTabNavigatorIdentifiers.preBooking)
-        } 
+        }
         else if (identifier === "PROCEED_TO_BOOKING") {
             console.log("INSIDE ", identifier);
             navigation.navigate(EmsTopTabNavigatorIdentifiers.booking)
@@ -514,7 +514,7 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
                             // disabled={selector.isLoading}
                             onPress={proceedToPreBookingClicked}
                         >
-                            {identifier === "PROCEED_TO_BOOKING" ? "Proceed To Booking" : "Proceed To PreBooking"}
+                            {identifier === "PROCEED_TO_BOOKING" ? "Proceed To Booking View" : "Proceed to Booking approval"}
                         </Button>
                     </View>
                 )}

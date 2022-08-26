@@ -26,7 +26,7 @@ const tabBarOptions = {
     backgroundColor: Colors.RED,
   },
   labelStyle: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "600",
   },
 }
@@ -47,7 +47,7 @@ const EMSTopTabNavigatorOne = () => {
   );
 };
 
-const EMSTopTabNavigatorTwo = () => { 
+const EMSTopTabNavigatorTwo = () => {
 
   return (
     <EMSTopTab.Navigator
@@ -57,7 +57,8 @@ const EMSTopTabNavigatorTwo = () => {
       <EMSTopTab.Screen
         name={EmsTopTabNavigatorIdentifiers.preEnquiry}
         component={PreEnquiryScreen}
-        options={{ title: "Pre- Enquiry" }}
+        options={{ title: "Contacts",  }}
+
       />
       <EMSTopTab.Screen
         name={EmsTopTabNavigatorIdentifiers.enquiry}
@@ -67,12 +68,12 @@ const EMSTopTabNavigatorTwo = () => {
       <EMSTopTab.Screen
         name={EmsTopTabNavigatorIdentifiers.preBooking}
         component={PreBookingScreen}
-        options={{ title: "Pre- Booking" }}
+        options={{ title: "Booking Approval" }}
       />
       <EMSTopTab.Screen
         name={EmsTopTabNavigatorIdentifiers.booking}
         component={BookingScreen}
-        options={{ title: "Booking" }}
+        options={{ title: "Booking View" }}
       />
       {/* <EMSTopTab.Screen
         name={EmsTopTabNavigatorIdentifiers.proceedToBooking}

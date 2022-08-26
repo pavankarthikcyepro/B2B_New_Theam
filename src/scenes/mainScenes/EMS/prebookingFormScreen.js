@@ -352,7 +352,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         getAsyncstoreData();
         getBranchId();
         getCustomerType();
-        
+
 
         BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
         // return () => {
@@ -1085,7 +1085,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           case "CUSTOMER_TYPE":
             setDataForDropDown([...selector.customer_types_data]);
             break;
-          
+
 
           case "GENDER":
             setDataForDropDown([...selector.gender_types_data]);
@@ -1520,7 +1520,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             return;
         }
 
-        
+
 
         let postOnRoadPriceTable = {};
         postOnRoadPriceTable.additionalOffer1 = selector.additional_offer_1;
@@ -1593,7 +1593,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             removeExistingKeysFromAsync(route?.params?.lists.names);
         }
 //         if(selector.loading){
-                    
+
 // setIsSubmitPress(false)
 //         }
     };
@@ -1939,12 +1939,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 clearLocalData();
                 navigation.goBack();
             } else if (typeOfActionDispatched === "APPROVE") {
-                showToastSucess("Pre-Booking Approved");
+                showToastSucess("Booking Approval Approved");
                 dispatch(clearState());
                 clearLocalData();
                 navigation.goBack();
             } else if (typeOfActionDispatched === "REJECT") {
-                showToastSucess("Pre-Booking Rejected");
+                showToastSucess("Booking Approval Rejected");
                 dispatch(clearState());
                 clearLocalData();
                 navigation.goBack();
@@ -2961,7 +2961,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 <List.Accordion
                   id={"1"}
                   title={"Customer Details"}
-                  
+
                   titleStyle={{
                     color: openAccordian === "1" ? Colors.BLACK : Colors.BLACK,
                     fontSize: 16,
@@ -3165,7 +3165,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         value={selector.date_of_birth}
                         onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
                       />
-                      <TextinputComp 
+                      <TextinputComp
                        disabled={userData.isManager? true:false}
                         style={{ height: 65, width: "100%" }}
                         value={selector.age}
@@ -3179,7 +3179,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         }
                       />
                       <Text style={GlobalStyle.underline}></Text>
-                      <DropDownSelectionItem 
+                      <DropDownSelectionItem
                        disabled={userData.isManager? true:false}
                         label={"Marital Status"}
                         value={selector.marital_status}
@@ -3851,7 +3851,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       Add Model
                     </Text>
                   </TouchableOpacity>
-                  <FlatList 
+                  <FlatList
                     data={carModelsList}
                     extraData={carModelsList}
                     keyExtractor={(item, index) => index.toString()}
@@ -3859,7 +3859,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       return (
                         // <Pressable onPress={() => selectedItem(item, index)}>
                         <View>
-                          <PreBookingModelListitemCom 
+                          <PreBookingModelListitemCom
                             modelOnclick={modelOnclick}
                             isPrimaryOnclick={isPrimaryOnclick}
                             index={index}
@@ -4794,7 +4794,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   </View>
                   <View style={styles.symbolview}>
                     <View style={{ width: "70%" }}>
-                      <DropDownSelectionItem  
+                      <DropDownSelectionItem
                       disabled={userData.isManager || !selector.insurance_type?  true:false}
                         label={"Add-on Insurance"}
                         value={
@@ -6026,7 +6026,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           labelStyle={{ textTransform: "none" }}
                           onPress={proceedToBookingClicked}
                         >
-                          Proceed To Booking
+                          Proceed To Booking View
                         </Button>
                       </View>
                     )}

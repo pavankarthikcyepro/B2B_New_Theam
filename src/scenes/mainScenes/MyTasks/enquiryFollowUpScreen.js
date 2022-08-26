@@ -86,13 +86,13 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     let title = "Enquiry Follow Up";
     switch (identifier) {
       case "PRE_ENQUIRY_FOLLOW_UP":
-        title = "Pre Enquiry Follow Up";
+        title = "Contacts follow-up";
         break;
       case "PRE_BOOKING_FOLLOW_UP":
-        title = "Pre Booking Follow Up";
+        title = "Booking approval task";
         break;
         case "BOOKING_FOLLOW_UP":
-          title ="Booking follow up";
+          title ="Booking view follow up";
           break;
     }
 
