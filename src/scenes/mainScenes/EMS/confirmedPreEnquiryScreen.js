@@ -126,6 +126,8 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         DropPreEnquiryLead(payload, enquiryDetailsObj)
     };
 
+    
+
     const DropPreEnquiryLead = async (payload, enquiryDetailsObj) => {
         console.log("DROP PAY: ", URL.DROP_ENQUIRY(), payload);
         setIsLoading(true);
@@ -230,7 +232,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     const getBranchId = () => {
 
         AsyncStore.getData(AsyncStore.Keys.SELECTED_BRANCH_ID).then((branchId) => {
-            console.log("branch id:", branchId)
+            // console.log("branch id:", branchId)
             setBranchId(branchId);
         });
     }
