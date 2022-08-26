@@ -71,10 +71,10 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
             const data = [];
             if (selector.wrokflow_response.length > 0) {
                 selector.wrokflow_response.forEach(element => {
-                    if ((element.taskStatus != 'CLOSED' && selector.enquiry_leadDto_response.leadStage === element.taskCategory.taskCategory) || (element.taskCategory.taskCategory === 'APPROVAL' && element.taskStatus === 'ASSIGNED')) {
+                    if ((element.taskStatus !== 'CLOSED' && selector.enquiry_leadDto_response.leadStage === element.taskCategory.taskCategory) || (element.taskCategory.taskCategory === 'APPROVAL' && element.taskStatus === 'ASSIGNED')) {
                         plannedData.push(element);
                     }
-                    else if (element.taskStatus == 'CLOSED') {
+                    else if (element.taskStatus === 'CLOSED') {
                         closedData.push(element);
                     }
                 });
@@ -100,7 +100,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
         const taskStatus = item.taskStatus;
         const mobileNumber = item.assignee?.mobile ? item.assignee?.mobile : "";
 
-        if (item.taskStatus == 'CLOSED') {
+        if (item.taskStatus === 'CLOSED') {
             showToast(item.taskName + " task has closed");
             return;
         }
@@ -214,11 +214,11 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
 
                         let topBcgColor = Colors.LIGHT_GRAY;
                         let bottomBcgColor = Colors.LIGHT_GRAY;
-                        if (section.data[index - 1] != undefined) {
+                        if (section.data[index - 1] !== undefined) {
                             topBcgColor = Colors.GRAY;
                         }
 
-                        if (section.data[index + 1] != undefined) {
+                        if (section.data[index + 1] !== undefined) {
                             bottomBcgColor = Colors.GRAY;
                         }
 
