@@ -14,21 +14,27 @@ const WelcomeScreen = ({ navigation }) => {
     }
 
     return (
-        <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container}>
+        <Image
+          style={{ width: "100%", height: 300, resizeMode: "contain" }}
+          source={require("../../assets/images/logo.png")}
+        />
+        <ButtonComp
+          title={"LOG IN"}
+          width={ScreenWidth - 40}
+          onPress={loginButtonClicked}
+        />
 
-            <Image
-                style={{ width: '100%', height: 300 }}
-                resizeMode={'center'}
-                source={require('../../assets/images/logo.png')}
-            />
-            <ButtonComp title={'LOG IN'} width={ScreenWidth - 40} onPress={loginButtonClicked} />
-
-            <View style={styles.bottomViewStyle}>
-                <Text style={styles.textOneStyle}>{'Important Notice'}</Text>
-                <Text style={styles.textTwoStyle}>{'By using this app, you agree to the use of cookies and data processing technologies by us.'}</Text>
-            </View>
-        </SafeAreaView>
-    )
+        <View style={styles.bottomViewStyle}>
+          <Text style={styles.textOneStyle}>{"Important Notice"}</Text>
+          <Text style={styles.textTwoStyle}>
+            {
+              "By using this app, you agree to the use of cookies and data processing technologies by us."
+            }
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
 }
 
 export default WelcomeScreen;

@@ -290,7 +290,8 @@ const enquiryDetailsOverViewSlice = createSlice({
           if (state.salutation !== value) {
 
             const genderData = Gender_Data_Obj[value.toLowerCase()];
-            state.gender = genderData.length > 0 ? genderData[0].name : "";
+            
+            state.gender = genderData?.length > 0 ? genderData[0].name : "";
             state.relation = "";
             state.gender_types_data = genderData;
             state.relation_types_data = Relation_Data_Obj[value.toLowerCase()];
@@ -926,8 +927,11 @@ const enquiryDetailsOverViewSlice = createSlice({
         ? dmsLeadDto.enquirySegment
         : "";
       if (state.customer_types_response && state.enquiry_segment) {
+
+        console.log('customer_types_data',state.customer_types_data);
+        
         state.customer_types_data =
-          state.customer_types_response[state.enquiry_segment.toLowerCase()];
+          state?.customer_types_response[state.enquiry_segment.toLowerCase()];
       }
       state.source_of_enquiry = dmsLeadDto.enquirySource
         ? dmsLeadDto.enquirySource

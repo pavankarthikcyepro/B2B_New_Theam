@@ -344,7 +344,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
   }
 
   const getDropDownApi = () => {
-    return fetch('http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails?organizationId=1&stageName=Pre%20Enquiry')
+    return fetch('http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8091/Lost_SubLost_AllDetails?organizationId=1&stageName=Pre%20Enquiry')
       .then((response) => response.json())
       .then((json) => {
         return json.Drop;

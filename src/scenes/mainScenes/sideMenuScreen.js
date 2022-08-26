@@ -97,7 +97,7 @@ const SideMenuScreen = ({ navigation }) => {
 
     const getProfilePic = () => {
         fetch(
-            "http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/146/1/242"
+            "http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/146/1/242"
         )
             .then((response) => response.json())
             .then((json) => setDataList(json))
@@ -121,6 +121,8 @@ const SideMenuScreen = ({ navigation }) => {
             newFilterData = selector.tableData;
         }
         setNewTableData([...newFilterData])
+
+        console.log('newdataaaaa', newTableData);
     }
 
     const itemSelected = (item) => {
@@ -276,6 +278,8 @@ const SideMenuScreen = ({ navigation }) => {
                 renderItem={({ item, index }) => {
                     return (
                         <Pressable onPress={() => itemSelected(item)}>
+                         {item.title !== "Task Management" && 
+
                             <View
                                 style={{
                                     paddingLeft: 10,
@@ -300,6 +304,7 @@ const SideMenuScreen = ({ navigation }) => {
                                 </View>
                                 {/* <Divider /> */}
                             </View>
+                }
                         </Pressable>
                     );
                 }}

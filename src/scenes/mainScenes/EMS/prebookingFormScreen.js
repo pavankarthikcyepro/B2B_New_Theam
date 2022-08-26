@@ -674,7 +674,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setDataForDropDown([...Enquiry_Segment_Data]);
         break;
       case "CUSTOMER_TYPE":
-        setDataForDropDown([...selector.customer_types_data]);
+        setDataForDropDown([...selector?.customer_types_data ? selector?.customer_types_data : []]);
         break;
       case "GENDER":
         setDataForDropDown([...selector.gender_types_data]);

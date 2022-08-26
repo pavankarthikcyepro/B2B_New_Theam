@@ -182,8 +182,7 @@ const LoginScreen = ({ navigation }) => {
 
           <View style={{ width: "100%", height: ScreenHeight * 0.23, alignItems: "center", justifyContent: 'center', }}>
             <Image
-              style={{ width: 200, height: ScreenHeight * 0.4 }}
-              resizeMode={"center"}
+              style={{ width: 200, height: ScreenHeight * 0.4, resizeMode:'contain' }}              
               source={require("../../assets/images/logo.png")}
             />
           </View>
