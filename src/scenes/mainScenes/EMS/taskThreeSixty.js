@@ -92,6 +92,17 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
         }
     }, [selector.wrokflow_response_status, selector.wrokflow_response])
 
+    function checkForTaskNames(taskName) {
+        if (taskName.includes('Pre Enquiry')) {
+            taskName = taskName.replace('Pre Enquiry', 'Contacts');
+        } else if (taskName.includes('Pre Booking')) {
+            taskName = taskName.replace('Pre Booking', 'Booking Approval');
+        } else if (taskName.includes('Booking')) {
+            taskName = taskName.replace('Booking', 'Booking View');
+        }
+        return taskName
+    }
+
     const itemClicked = (item) => {
         console.log("ITEM: ", JSON.stringify(item));
         const taskName = item.taskName;
@@ -101,7 +112,8 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
         const mobileNumber = item.assignee?.mobile ? item.assignee?.mobile : "";
 
         if (item.taskStatus === 'CLOSED') {
-            showToast(item.taskName + " task has closed");
+            const name =  checkForTaskNames(taskName)
+            showToast(name + " task has been closed");
             return;
         }
 
@@ -128,7 +140,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
             case "proceedtobooking":
                 if (leadStatus === 'PREBOOKINGCOMPLETED')
                 navigationId = AppNavigator.EmsStackIdentifiers.proceedToPreBooking;
-                else showToast('Please complete the prebooking process')
+                else showToast('Please complete the booking approval process')
                 taskNameNew = ''
                 break;
             case "homevisit":
@@ -222,6 +234,13 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                             bottomBcgColor = Colors.GRAY;
                         }
 
+                        function TaskNameView(taskName) {
+                            const name = checkForTaskNames(taskName)
+                            return (
+                                <Text style={{ fontSize: 16, fontWeight: "700", marginBottom: 5 }}>{name}</Text>
+                            )
+                        }
+
                         return (
                             <>
                                 {item.taskName === 'Test Drive Approval' ?
@@ -278,7 +297,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                             <View style={[{ backgroundColor: Colors.WHITE }, GlobalStyle.shadow]}>
                                                 <TouchableOpacity onPress={() => itemClicked(item)}>
                                                     <View style={[{ paddingVertical: 5, paddingLeft: 10, backgroundColor: Colors.WHITE },]}>
-                                                        <Text style={{ fontSize: 16, fontWeight: "700", marginBottom: 5 }}>{item.taskName}</Text>
+                                                        {TaskNameView(item.taskName)}
                                                         <Text style={{ fontSize: 14, fontWeight: "400" }}>{"Assignee: " + item.assignee?.empName}</Text>
                                                         <Text style={{ fontSize: 14, fontWeight: "400", color: Colors.GRAY }}>{"Remarks: " + (item.employeeRemarks ? item.employeeRemarks : "")}</Text>
                                                     </View>
