@@ -79,15 +79,15 @@ const TaskListScreen = ({ route, navigation }) => {
                 break;
             case "enquiryfollowup":
                 navigationId = AppNavigator.MyTasksStackIdentifiers.enquiryFollowUp;
-                taskNameNew = 'Enquiry Followup'
+                taskNameNew = 'Enquiry Follow-up'
                 break;
             case "preenquiryfollowup":
                 navigationId = AppNavigator.MyTasksStackIdentifiers.enquiryFollowUp;
-                taskNameNew = 'Pre Enquiry Followup'
+                taskNameNew = 'Contacts follow-up'
                 break;
             case "prebookingfollowup":
                 navigationId = AppNavigator.MyTasksStackIdentifiers.enquiryFollowUp;
-                taskNameNew = 'Prebooking Followup'
+                taskNameNew = 'Booking approval task'
                 break;
             case "createenquiry":
                 navigationId = AppNavigator.MyTasksStackIdentifiers.createEnquiry;
@@ -149,7 +149,7 @@ const TaskListScreen = ({ route, navigation }) => {
                                         dmsLead={item.salesExecutive}
                                         phone={item.phoneNo}
                                         source={item.sourceType}
-                                        model={item.model}                                        
+                                        model={item.model}
                                         onDocPress={() =>{
                                              itemClicked(item)}}
                                 />

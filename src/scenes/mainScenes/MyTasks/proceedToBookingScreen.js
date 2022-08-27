@@ -118,7 +118,7 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
       dispatch(getTaskDetailsApi(taskId));
       getAuthToken();
       getAsyncstoreData();
-      
+
       getPreBookingDetailsFromServer();
     })
     navigation.addListener('blur', () => {
@@ -591,8 +591,8 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
               onPress={proceedToPreBookingClicked}
             >
               {identifier === "PROCEED_TO_BOOKING"
-                ? "Proceed To Booking"
-                : "Proceed To PreBooking"}
+                ? "Proceed To Booking View"
+                : "Proceed to Booking approval"}
             </Button>
           </View>
         )}

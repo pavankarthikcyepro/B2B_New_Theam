@@ -37,7 +37,7 @@ const SelectEmployeeComponant = ({ visible = false, headerTitle = "Select Data",
 
         let newTableData = [];
         tabledata.forEach((item, index) => {
-            item.selected = index === selectedIndex ? true : false;
+            item.selected = index === selectedIndex;
             newTableData.push(item);
         })
         setTabledata([...newTableData]);
@@ -106,7 +106,7 @@ const SelectEmployeeComponant = ({ visible = false, headerTitle = "Select Data",
                                     labelStyle={{ textTransform: 'none', color: Colors.WHITE }}
                                     onPress={saveClicked}
                                 >
-                                    SAVE
+                                    Allocate
                                 </Button>
                             </View>
                         </View>

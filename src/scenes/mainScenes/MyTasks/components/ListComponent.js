@@ -46,12 +46,12 @@ const ListComponent = ({ route, navigation }) => {
     const defaultData = [
         {
             taskCnt: 0,
-            taskName: "Booking Follow Up",
+            taskName: "Booking View Follow Up",
             myTaskList: []
         },
         {
             taskCnt: 0,
-            taskName: "Pre Booking Follow Up",
+            taskName: "Booking approval task",
             myTaskList: []
         },
         {
@@ -76,7 +76,7 @@ const ListComponent = ({ route, navigation }) => {
         },
         {
             taskCnt: 0,
-            taskName: "Pre Enquiry Follow Up",
+            taskName: "Contacts Followup",
             myTaskList: []
         }
     ]

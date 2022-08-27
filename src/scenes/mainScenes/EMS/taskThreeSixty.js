@@ -109,7 +109,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
         const taskStatus = item.taskStatus;
         const mobileNumber = item.assignee?.mobile ? item.assignee?.mobile : "";
 
-        if (item.taskStatus == 'CLOSED') {
+        if (item.taskStatus === 'CLOSED') {
             showToast(item.taskName + " task has closed");
             return;
         }
@@ -148,11 +148,11 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                 break;
             case "enquiryfollowup":
                 navigationId = AppNavigator.EmsStackIdentifiers.enquiryFollowUp;
-                taskNameNew = 'Enquiry Followup'
+                taskNameNew = 'Enquiry follow-up'
                 break;
             case "preenquiryfollowup":
                 navigationId = AppNavigator.EmsStackIdentifiers.enquiryFollowUp;
-                taskNameNew = 'Pre Enquiry Followup'
+                taskNameNew = 'Contacts follow-up'
                 break;
                 case "bookingfollowupdse":
                     navigationId = AppNavigator.EmsStackIdentifiers.bookingFollowUp;
@@ -160,7 +160,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                     break;
             case "prebookingfollowup":
                 navigationId = AppNavigator.EmsStackIdentifiers.enquiryFollowUp;
-                taskNameNew = 'Prebooking Followup'
+                taskNameNew = 'Booking approval task'
                 break;
             case "createenquiry":
                 navigationId = AppNavigator.EmsStackIdentifiers.confirmedPreEnq;
@@ -229,18 +229,18 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
 
                         let topBcgColor = Colors.LIGHT_GRAY;
                         let bottomBcgColor = Colors.LIGHT_GRAY;
-                        if (section.data[index - 1] != undefined) {
+                        if (section.data[index - 1] !== undefined) {
                             topBcgColor = Colors.GRAY;
                         }
 
-                        if (section.data[index + 1] != undefined) {
+                        if (section.data[index + 1] !== undefined) {
                             bottomBcgColor = Colors.GRAY;
                         }
 
                         return (
                             <>
                                 {item.taskName === 'Test Drive Approval' ?
-                                    (isApprovar ? 
+                                    (isApprovar ?
                                         <View style={{ width: "100%", flexDirection: "row" }}>
                                             <View style={{ width: "25%", justifyContent: "center" }}>
                                                 <View style={{ marginLeft: 8, flex: 1, width: 2, backgroundColor: topBcgColor }}></View>
@@ -273,7 +273,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                                 </View>
                                             </View>
                                         </View>
-                                        : 
+                                        :
                                         null)
                                     :
                                     <View style={{ width: "100%", flexDirection: "row" }}>

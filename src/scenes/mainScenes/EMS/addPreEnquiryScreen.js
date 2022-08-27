@@ -97,7 +97,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     });
     const [subSourceData, setSubSourceData] = useState([]);
     const [address, setAddress] = useState(
-        { 
+        {
             "Name": "",
             "Description": "",
             "BranchType": "",
@@ -551,7 +551,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         GetPincodeDetails(selector.pincode).then((data) => {
             // Genereate new ref number
             getReferenceNumber(data);
-        })       
+        })
     };
 
     const GetPincodeDetails = (pincode) => {
@@ -751,7 +751,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             url = url + "/account?allocateDse=" + selector.create_enquiry_checked;
             dmsAccountOrContactDto = { ...existingPreEnquiryDetails.dmsAccountDto };
         }
-        
+
         dmsAccountOrContactDto.firstName = selector.firstName;
         dmsAccountOrContactDto.lastName = selector.lastName;
         dmsAccountOrContactDto.email = selector.email;
@@ -822,18 +822,18 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                 }
                  if (organizationId == 21){
                      setDataForDropDown([...selector.enquiry_type_list21]);
-                     
+
                      //console.log("SELECTOR====>", selector.customer_type_list);
              }
              else if(organizationId ==22){
                     setDataForDropDown([...selector.enquiry_type_list22]);
              }
             //  else if(organizationId ==22){
-            //        
+            //
             //  }
                 else{
                         setDataForDropDown([...selector.enquiry_type_list]);
-               }  
+               }
                 break;
 
             case "CUSTOMER_TYPE":
@@ -844,8 +844,8 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                 }
 
                 setDataForDropDown([...selector.customer_type_list]);
-            
-                
+
+
                 break;
             case "SOURCE_OF_ENQUIRY":
                 if (homeSelector.source_of_enquiry_list.length === 0) {
@@ -981,7 +981,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                     contentContainerStyle={{ padding: 10 }}
                     style={{ flex: 1 }}
                 >
-                    <Text style={styles.text1}>{"Create New Pre-Enquiry"}</Text>
+                    <Text style={styles.text1}>{"Create New Contact"}</Text>
                     <View style={styles.view1}>
                         {/* <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Checkbox.Android
@@ -1184,7 +1184,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                             onPress={() =>
                                 showDropDownModelMethod(
                                     "SOURCE_OF_ENQUIRY",
-                                    "Select Source of Pre-Enquiry"
+                                    "Select Source of Contact"
                                 )
                             }
                         />
@@ -1197,7 +1197,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                                 onPress={() =>
                                     showDropDownModelMethod(
                                         "SUB_SOURCE_OF_ENQUIRY",
-                                        "Select Sub Source of Pre-Enquiry"
+                                        "Select Sub Source of Contact"
                                     )
                                 }
                             />

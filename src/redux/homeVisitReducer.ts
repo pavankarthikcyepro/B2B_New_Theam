@@ -39,7 +39,7 @@ export const updateTaskApi = createAsyncThunk("HOME_VISIT_SLICE/updateTaskApi", 
 export const generateOtpApi = createAsyncThunk("HOME_VISIT_SLICE/generateOtpApi", async (payload, { rejectWithValue }) => {
 
     console.log("OTP PAYLOAD: ", URL.GENERATE_OTP(), payload);
-    
+
     const response = await client.post(URL.GENERATE_OTP(), payload);
     const json = await response.json()
     if (!response.ok) {
@@ -102,14 +102,16 @@ const slice = createSlice({
             }
         },
         setDatePicker: (state, action) => {
+            let date = new Date();
+            date.setDate(date.getDate() + 9);
             switch (action.payload) {
                 case "ACTUAL_START_TIME":
                     state.minDate = new Date();
-                    state.maxDate = null;
+                    state.maxDate = date;
                     break;
                 case "ACTUAL_END_TIME":
                     state.minDate = new Date();
-                    state.maxDate = null;
+                    state.maxDate = date;
                     break;
             }
             state.datePickerKeyId = action.payload;
