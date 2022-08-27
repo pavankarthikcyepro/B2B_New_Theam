@@ -1316,6 +1316,29 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         setTotalOnRoadPriceAfterDiscount(totalPrice);
     };
 
+    const checkModelSelection = () => {
+      let error = false;
+      for (let i = 0; i < carModelsList.length; i++) {
+        if (carModelsList[i].model.length == 0) {
+          error = true;
+          showToast("Please fill model");
+          break;
+        } else if (carModelsList[i].variant.length == 0) {
+          error = true;
+          showToast("Please fill model variant");
+          break;
+        } else if (carModelsList[i].color.length == 0) {
+          error = true;
+          showToast("Please fill model Color");
+          break;
+        }
+      }
+      if (error) {
+        return true;
+      }
+      return false;
+    };
+
     const submitClicked = () => {
         Keyboard.dismiss();
         setIsSubmitPress(true)
@@ -1381,6 +1404,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             showToast("Please select customer type");
             return;
         }
+        if (checkModelSelection()) {
+          scrollToPos(3);
+          setOpenAccordian("3");
+          return;
+        }
+
         let primaryTempCars = []
         primaryTempCars = carModelsList.filter((item) => {
             return item.isPrimary === 'Y'
@@ -3304,7 +3333,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                    disabled={userData.isManager? true:false}
                     style={styles.textInputStyle}
                     value={selector.house_number}
-                    keyboardType={"number-pad"}
+                    // keyboardType={"number-pad"}
                     label={"H.No*"}
                     maxLength={120}
                     onChangeText={(text) =>
@@ -3615,7 +3644,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                    disabled={userData.isManager? true:false}
                     style={styles.textInputStyle}
                     label={"H.No*"}
-                    keyboardType={"number-pad"}
+                    // keyboardType={"number-pad"}
                     maxLength={120}
                     value={selector.p_houseNum}
                     onChangeText={(text) =>
@@ -3813,6 +3842,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 >
                   <TouchableOpacity  disabled={userData.isManager? true:false}
                     onPress={() => {
+                       if (checkModelSelection()) {
+                         scrollToPos(3);
+                         setOpenAccordian("3");
+                         return;
+                       }
                       const carmodeldata = {
                         color: "",
                         fuel: "",
