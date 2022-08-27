@@ -81,7 +81,6 @@ import {
   updatedmsLeadProduct,
   clearState2,
 } from "../../../redux/enquiryFormReducer";
-
 import {
   RadioTextItem,
   DropDownSelectionItem,
@@ -151,6 +150,7 @@ import {
   updateTaskApi,
   getEnquiryDetailsApi as proceedGetEnquiryDetailsApi,
   updateEnquiryDetailsApi as proceedUpdateEnquiryDetailsApi,
+  clearState as preClearState,
 } from "../../../redux/proceedToPreBookingReducer";
 import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
 import { getCurrentTasksListApi, getPendingTasksListApi } from "../../../redux/mytaskReducer";
@@ -1789,7 +1789,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.gstNumber = selector.gstin_number;
     dataObj.dmsExpectedDeliveryDate = selector.expected_delivery_date
       ? Number(selector.expected_delivery_date)
-      : "";
+      : convertDateStringToMillisecondsUsingMoment(new Date());
     dataObj.leadStatus = "ENQUIRYCOMPLETED";
     dataObj.dmsAddresses = mapDMSAddress(dataObj.dmsAddresses);
     dataObj.dmsLeadProducts = mapLeadProducts(dataObj.dmsLeadProducts);
@@ -2343,8 +2343,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const goToParentScreen = () => {
     getMyTasksListFromServer();
     navigation.navigate(EmsTopTabNavigatorIdentifiers.preBooking);
-    dispatch(clearState());
+    dispatch(preClearState());
     dispatch(clearState2());
+    clearState();
+    clearLocalData();
   };
 
   const getMyTasksListFromServer = () => {
@@ -3510,7 +3512,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       ? moment(
                           new Date(Number(selector.expected_delivery_date))
                         ).format("DD/MM/YYYY")
-                      : ""
+                      : moment().format("DD/MM/YYYY")
                   }
                   onPress={() =>
                     dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
