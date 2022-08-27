@@ -102,7 +102,7 @@ export const ModelListitemCom = ({ from, modelOnclick,isPrimaryOnclick ,item, in
 
     const showDropDownModelMethod = (key, headerText) => {
         Keyboard.dismiss();
-
+        setIsSubmitPress(true);
         switch (key) {
             case "MODEL":
                console.log("onpreseed", carModelsData)

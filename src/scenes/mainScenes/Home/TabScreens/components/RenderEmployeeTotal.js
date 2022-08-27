@@ -45,36 +45,82 @@ export const RenderEmployeeTotal = (userData) => {
         setEmpParams(json);
     }, [empId]);
     return (
-        <View style={{flexDirection: 'row'}}>
-            { level === 0 &&
-                <View style={{width: '8%', minHeight: 40, justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
-                    {
-                        <View style={{marginTop: 7, marginBottom: 7, alignItems: 'center'}}>
-                            <Text style={{fontSize: 14, color: '#000', fontWeight: '600'}}>Total</Text>
-                            <Text style={{ fontSize: 8, color: '#000', textAlign: 'center'}} numberOfLines={2}>
-                                {branches.length > 0 && (branches.find(x => +x.branchId === +branchId).branchName.split(' - ')[0])}</Text>
-                        </View>
-                    }
-                </View>
+      <View style={{ flexDirection: "row" }}>
+        {level === 0 && (
+          <View
+            style={{
+              width: "8%",
+              minHeight: 40,
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "column",
+              marginRight: 2,
+            }}
+          >
+            {
+              <View
+                style={{ marginTop: 7, marginBottom: 7, alignItems: "center" }}
+              >
+                <Text
+                  style={{ fontSize: 14, color: "#000", fontWeight: "600" }}
+                >
+                  Total
+                </Text>
+                <Text
+                  style={{ fontSize: 8, color: "#000", textAlign: "center" }}
+                  numberOfLines={2}
+                >
+                  {branches.length > 0 &&
+                    branches
+                      .find((x) => +x.branchId === +branchId)
+                      .branchName.split(" - ")[0]}
+                </Text>
+              </View>
             }
-            <View style={[{width: '96%', minHeight: 40, flexDirection: 'column', paddingHorizontal: 0}]}>
-                <View style={{width: '100%', minHeight: 40, flexDirection: 'row', borderBottomStartRadius: level > 0 ? 10 : 0 , backgroundColor: level === 0 ? '#ECF0F1' : Colors.LIGHT_GRAY}}>
-                    {paramsData.map((param) => {
-                        const selectedParameter = (empParams && empParams.length) && empParams.filter((item) => item.paramName === param)[0];
-                        return (
-                            <TotalView key={param} item={selectedParameter} parameterType={param}/>
-                        )
-                    })}
-                </View>
-            </View>
+          </View>
+        )}
+        <View
+          style={[
+            {
+              width: "96%",
+              minHeight: 40,
+              flexDirection: "column",
+              paddingHorizontal: 0,
+            },
+          ]}
+        >
+          <View
+            style={{
+              width: "100%",
+              minHeight: 40,
+              flexDirection: "row",
+              borderBottomStartRadius: level > 0 ? 10 : 0,
+              backgroundColor: level === 0 ? "#ECF0F1" : Colors.LIGHT_GRAY,
+            }}
+          >
+            {paramsData.map((param) => {
+              const selectedParameter =
+                empParams &&
+                empParams.length &&
+                empParams.filter((item) => item.paramName === param)[0];
+              return (
+                <TotalView
+                  key={param}
+                  item={selectedParameter}
+                  parameterType={param}
+                />
+              );
+            })}
+          </View>
         </View>
-    )
+      </View>
+    );
 }
 
 export const TotalView = (parameter) => {
     const {item, parameterType} = parameter;
     return (
-        <View style={[styles.itemBox, {width: parameterType === 'Accessories' ? 65 : 50}]}>
+        <View style={[styles.itemBox, {width: parameterType === 'Accessories' ? 60 : 50}]}>
             <Text
                 style={[styles.totalText1]}>{item ? Number(item.achievment) : 0}</Text>
             <View style={{height: 1, backgroundColor: Colors.BLACK, 
@@ -88,7 +134,7 @@ export const TotalView = (parameter) => {
 
 const styles = StyleSheet.create({
   itemBox: {
-    width: 50,
+    width: 60,
     height: 40,
     justifyContent: "center",
     alignItems: "center",
@@ -96,9 +142,15 @@ const styles = StyleSheet.create({
   },
   totalText1: {
     color: "black",
-    fontSize: 12,
+    fontSize: 14,
+    //  marginRight: -5,
     textAlign: "center",
     textDecorationLine: "underline",
   },
-  totalText: { color: "#FA03B9", fontSize: 12, textAlign: "center" },
+  totalText: {
+    color: "#FA03B9",
+    fontSize: 14,
+    //   marginRight: -5,
+    textAlign: "center",
+  },
 });
