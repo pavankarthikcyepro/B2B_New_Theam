@@ -31,14 +31,14 @@ export const RenderEmployeeParameters = (parameter) => {
           { width: parameterType === "Accessories" ? 60 : 50 },
         ]}
       >
-        <Text style={{ color: "black", textDecorationLine: "underline" }}>
+        <Text style={styles.totalText1}>
           {Number(selectedParameter.achievment)}
         </Text>
         <View
           style={{
             height: 1,
             backgroundColor: elementColor,
-            // alignSelf: 'stretch'
+            //  alignSelf: 'stretch'
           }}
         />
         <Text
@@ -58,6 +58,18 @@ export const RenderEmployeeParameters = (parameter) => {
 
 
 const styles = StyleSheet.create({
-    itemBox: {width: 60, height: 40, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 2},
-    totalText: { textAlign: 'center', fontSize: 12},
-})
+  itemBox: {
+    width: 60,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 2,
+  },
+  totalText: { textAlign: "center", fontSize: 14 },
+  totalText1: {
+    color: "black",
+    fontSize: 14,
+    textAlign: "center",
+    textDecorationLine: "underline",
+  },
+});

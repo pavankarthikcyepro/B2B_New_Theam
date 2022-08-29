@@ -37,10 +37,9 @@ export const updateTaskApi = createAsyncThunk("HOME_VISIT_SLICE/updateTaskApi", 
 })
 
 export const generateOtpApi = createAsyncThunk("HOME_VISIT_SLICE/generateOtpApi", async (payload, { rejectWithValue }) => {
-
-    console.log("OTP PAYLOAD: ", URL.GENERATE_OTP(), payload);
-
-    const response = await client.post(URL.GENERATE_OTP(), payload);
+    const url = `${URL.GENERATE_OTP()}?type=HOME VISIT`;
+    console.log("OTP PAYLOAD url: ", url, payload);
+    const response = await client.post(url, payload);
     const json = await response.json()
     if (!response.ok) {
         return rejectWithValue(json);
