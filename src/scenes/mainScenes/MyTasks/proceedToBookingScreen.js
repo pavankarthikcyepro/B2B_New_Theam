@@ -278,13 +278,17 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
   };
 
   useEffect(async() => {
-      await proceedToPreBookingClicked();
-      
-      await navigation.popToTop();
-      await navigation.navigate('EMS_TAB');
-      await navigation.navigate(EmsTopTabNavigatorIdentifiers.booking);
-      dispatch(clearState());
+      await proceedBooking();
   }, []);
+
+  const proceedBooking = async () =>{
+    await proceedToPreBookingClicked();
+
+    await navigation.popToTop();
+    await navigation.navigate('EMS_TAB');
+    await navigation.navigate(EmsTopTabNavigatorIdentifiers.booking);
+    dispatch(clearState());
+  }
 
   // Handle Update Current Task Response
   useEffect(() => {
