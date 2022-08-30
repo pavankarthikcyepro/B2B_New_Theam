@@ -71,10 +71,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
   const [modelVarientsData, setModelVarientsData] = useState([]);
   const [actionType, setActionType] = useState("");
   const [empId, setEmpId] = useState("");
-  const [reasonList, setReasonList] = useState([{
-    label: 'Other',
-    value: 'Other'
-  }]);
+  const [reasonList, setReasonList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [defaultReasonIndex, setDefaultReasonIndex] = useState(null);
   const [currentLocation, setCurrentLocation] = useState(null);
@@ -125,7 +122,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     });
   }
   useEffect(() => {
-    if(selector.isReasonUpdate && reasonList.length > 0){
+    if(selector.isReasonUpdate && reasonList.length > 0){  
       let reason = selector.reason;
       let findIndex = reasonList.findIndex((item) => {
         return item.value === selector.reason
@@ -134,10 +131,10 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       if(findIndex !== -1){
         setDefaultReasonIndex(reasonList[findIndex].value)
       }
-      else {
-        dispatch(setEnquiryFollowUpDetails({ key: "REASON", text: 'Other' }));
-        setDefaultReasonIndex('Other')
-        setOtherReason(reason)
+      else if (reason) {
+        dispatch(setEnquiryFollowUpDetails({ key: "REASON", text: "Other" }));
+        setDefaultReasonIndex("Other");
+        setOtherReason(reason);
       }
     }
   }, [selector.isReasonUpdate, reasonList]);
@@ -176,7 +173,10 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
             allReasons[i].value = allReasons[i].reason;
             if (i === allReasons.length - 1) {
               setTimeout(() => {
-                setReasonList([...allReasons, ...reasonList])
+                setReasonList([
+                  ...allReasons,
+                  { label: "Other", value: "Other" },
+                ]);
               }, 100);
               setLoading(false)
             }
