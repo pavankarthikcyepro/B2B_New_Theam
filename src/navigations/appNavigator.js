@@ -375,7 +375,7 @@ const EmsStackNavigator = ({ navigation }) => {
             headerRight: () => {
               return (
                 <View style={{ flexDirection: "row" }}>
-                  <SearchIcon />
+                  {/*<SearchIcon />*/}
                   {/* <RefreshIcon /> */}
                   {/* <MapIcon /> */}
                   <NotficationIcon
