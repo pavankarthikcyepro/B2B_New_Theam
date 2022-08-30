@@ -76,7 +76,15 @@ const PreBookingScreen = ({ navigation }) => {
             if (appSelector.searchKey !== '') {
                 let tempData = []
                 tempData = selector.pre_booking_list.filter((item) => {
-                    return item.firstName.toLowerCase().includes(appSelector.searchKey.toLowerCase()) || item.lastName.toLowerCase().includes(appSelector.searchKey.toLowerCase())
+                    return (
+                        item.firstName
+                            .toLowerCase()
+                            .includes(appSelector.searchKey.toLowerCase()) ||
+                        item.lastName
+                            .toLowerCase()
+                            .includes(appSelector.searchKey.toLowerCase()) ||
+                        item.phone.includes(appSelector.searchKey)
+                    );
                 })
                 setSearchedData([]);
                 setSearchedData(tempData);
