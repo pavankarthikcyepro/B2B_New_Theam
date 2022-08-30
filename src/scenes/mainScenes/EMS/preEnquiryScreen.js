@@ -3,7 +3,7 @@ import { SafeAreaView, StyleSheet, View, Text, FlatList, Pressable, Alert, Activ
 import { PreEnquiryItem, PageControlItem, EmptyListView } from '../../../pureComponents';
 import { Colors, GlobalStyle } from '../../../styles';
 import { useSelector, useDispatch } from 'react-redux';
-import { IconButton } from 'react-native-paper';
+import {IconButton, Searchbar} from 'react-native-paper';
 import VectorImage from 'react-native-vector-image';
 // import { CREATE_NEW } from '../../../assets/svg';
 import CREATE_NEW from '../../../assets/images/create_new.svg';
@@ -43,6 +43,7 @@ const PreEnquiryScreen = ({ navigation }) => {
     const [selectedToDate, setSelectedToDate] = useState("");
     const [sortAndFilterVisible, setSortAndFilterVisible] = useState(false);
     const [searchedData, setSearchedData] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
 
     const orgIdStateRef = React.useRef(orgId);
     const empIdStateRef = React.useRef(employeeId);
@@ -69,7 +70,6 @@ const PreEnquiryScreen = ({ navigation }) => {
 
 
     useEffect(async() => {
-
         // Get Data From Server
         let isMounted = true;
         setFromDateState(lastMonthFirstDate);
@@ -109,6 +109,8 @@ const PreEnquiryScreen = ({ navigation }) => {
     }
 
     useEffect(() => {
+        setSearchQuery('');
+        console.log('selector.pre_enquiry_list----->',selector.pre_enquiry_list);
         if (selector.pre_enquiry_list.length > 0){
             setSearchedData(selector.pre_enquiry_list)
             // console.log("PreEnquiryAfterScreen:", selector.pre_enquiry_list[0])
@@ -141,7 +143,12 @@ const PreEnquiryScreen = ({ navigation }) => {
             if (appSelector.searchKey !== ''){
                 let tempData = []
                 tempData = selector.pre_enquiry_list.filter((item) => {
-                    return item.firstName.toLowerCase().includes(appSelector.searchKey.toLowerCase()) || item.lastName.toLowerCase().includes(appSelector.searchKey.toLowerCase())
+                    return (
+                        `${item.firstName} ${item.lastName}`
+                            .toLowerCase()
+                            .includes(appSelector.searchKey.toLowerCase()) ||
+                        item.phone.includes(appSelector.searchKey)
+                    );
                 })
                 setSearchedData([]);
                 setSearchedData(tempData);
@@ -226,7 +233,7 @@ const PreEnquiryScreen = ({ navigation }) => {
         const sourceData = payload.source;
         const categoryData = payload.category;
 
-        
+
 
         const categoryFilters = [];
         const modelFilters = [];
@@ -261,11 +268,11 @@ const PreEnquiryScreen = ({ navigation }) => {
         setCategoryList([...categoryFilters])
         setVehicleModelList([...modelData]);
         setSourceList([...sourceData]);
-        
+
 
         // Make Server call
         const payload2 = getPayloadData(employeeId, selectedFromDate, selectedToDate, 0, modelFilters, categoryFilters, sourceFilters)
-        
+
         dispatch(getPreEnquiryData(payload2));
     }
 
@@ -284,6 +291,12 @@ const PreEnquiryScreen = ({ navigation }) => {
     const getFirstLetterUpperCase = (string) => {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
+
+    const onChangeSearch = query => {
+        setSearchQuery(query);
+        dispatch(updateSearchKey(query));
+        dispatch(updateIsSearch(true));
+    };
 
     return (
         <SafeAreaView style={styles.conatiner}>
@@ -345,6 +358,15 @@ const PreEnquiryScreen = ({ navigation }) => {
                     </Pressable>
                 </View>
                 {/* // filter */}
+                {/*Search View*/}
+                <View>
+                    <Searchbar
+                        placeholder="Search"
+                        onChangeText={onChangeSearch}
+                        value={searchQuery}
+                        style={styles.searchBar}
+                    />
+                </View>
 
                 {searchedData.length === 0 ? <EmptyListView title={'No Data Found'} isLoading={selector.isLoading} /> :
                     <View style={[ { backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 }]}>
@@ -381,8 +403,8 @@ const PreEnquiryScreen = ({ navigation }) => {
                                                 from='PRE_ENQUIRY'
                                                 name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
                                                 navigator={navigation}
-                                                uniqueId={item.leadId}  
-                                                type='PreEnq'                     
+                                                uniqueId={item.leadId}
+                                                type='PreEnq'
                                                  status={""}
                                                 created={item.createdDate}
                                                 dmsLead={item.createdBy}
@@ -462,4 +484,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginBottom: 5
     },
+    searchBar:{height: 40}
+
 })

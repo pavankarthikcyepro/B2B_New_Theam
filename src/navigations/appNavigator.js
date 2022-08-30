@@ -258,7 +258,7 @@ export const EmsStackIdentifiers = {
     preBookingFollowUp: "PREBOOKING_FOLLOWUP_1",
     testDrive: "TEST_DRIVE_1",
     enquiryFollowUp: "ENQUIRY_FOLLOW_UP_1",
-    proceedToPreBooking: "PROCEED_TO_PRE_BOOKING_1",
+    proceedToPreBooking1: "PROCEED_TO_PRE_BOOKING_1",
     proceedToBooking: "PROCEED_TO_BOOKING_1",
     createEnquiry: "CREATE_ENQUIRY_1",
     bookingForm: "BOOKING_FORM",
@@ -361,31 +361,31 @@ const EmsStack = createStackNavigator();
 
 const EmsStackNavigator = ({ navigation }) => {
     return (
-        <EmsStack.Navigator
-            initialRouteName={"EMS"}
-            screenOptions={screeOptionStyle}
-        >
-            <EmsStack.Screen
-                name="EMS"
-                component={EMSScreen}
-                options={{
-                    title: "EMS",
-                    headerLeft: () => <MenuIcon navigation={navigation} />,
-                    headerRight: () => {
-                        return (
-                            <View style={{ flexDirection: "row" }}>
-                                <SearchIcon />
-                                {/* <RefreshIcon /> */}
-                                {/* <MapIcon /> */}
-                                <NotficationIcon
-                                    navigation={navigation}
-                                    identifier={"NOTIF_2"}
-                                />
-                            </View>
-                        );
-                    },
-                }}
-            />
+      <EmsStack.Navigator
+        initialRouteName={"EMS"}
+        screenOptions={screeOptionStyle}
+      >
+        <EmsStack.Screen
+          name="EMS"
+          component={EMSScreen}
+          options={{
+            title: "EMS",
+            headerLeft: () => <MenuIcon navigation={navigation} />,
+            headerRight: () => {
+              return (
+                <View style={{ flexDirection: "row" }}>
+                  {/*<SearchIcon />*/}
+                  {/* <RefreshIcon /> */}
+                  {/* <MapIcon /> */}
+                  <NotficationIcon
+                    navigation={navigation}
+                    identifier={"NOTIF_2"}
+                  />
+                </View>
+              );
+            },
+          }}
+        />
 
             <EmsStack.Screen
                 name={"NOTIF_2"}
@@ -832,7 +832,7 @@ const DropAnalysisStackNavigator = ({ navigation }) => {
                                 <SearchIcon />
                                 {/* <RefreshIcon /> */}
                                 {/* <MapIcon /> */}
-                               
+
                             </View>
                         );
                     },
