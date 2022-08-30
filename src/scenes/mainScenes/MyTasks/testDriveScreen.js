@@ -325,7 +325,7 @@ const TestDriveScreen = ({ route, navigation }) => {
         if (selector.task_details_response) {
             getTestDriveAppointmentDetailsFromServer();
         }
-    }, [selector.task_details_response])
+    }, [selector.task_details_response, taskStatusAndName])
 
     const getTestDriveAppointmentDetailsFromServer = async () => {
         if (selector.task_details_response.entityModuleId) {
@@ -388,8 +388,8 @@ const TestDriveScreen = ({ route, navigation }) => {
             }
 
             setSelectedDseDetails({
-                name: selector.task_details_response.assignee.empName,
-                id: selector.task_details_response.assignee.empId,
+                name: selector.task_details_response.assignee?.empName,
+                id: selector.task_details_response.assignee?.empId,
             });
             setIsRecordEditable(false);
             updateTaskDetails(selector.task_details_response);
@@ -789,49 +789,46 @@ const TestDriveScreen = ({ route, navigation }) => {
         }
     }, [selector.book_test_drive_appointment_response]);
 
+    const autoApproveTestDrive = () => {
+        submitClicked("APPROVED", "Test Drive Approval");
+    }
     // Handle Update Test Drive Task response
     useEffect(() => {
         console.log('repsonse: ', selector.test_drive_update_task_response, ', task status: ', taskStatusAndName)
         if (selector.test_drive_update_task_response === "success" && taskStatusAndName.status === 'SENT_FOR_APPROVAL') {
-            showAlertMsg(true);
+            autoApproveTestDrive();
+                // showAlertMsg(true);
         } else if (selector.test_drive_update_task_response === "success" && taskStatusAndName.status === 'CANCELLED') {
             showCancelAlertMsg();
+        } else if (selector.test_drive_update_task_response === "success" && taskStatusAndName.status === 'APPROVED') {
+                setTimeout(() => {
+                    dispatch(getTaskDetailsApi(taskId))
+                }, 1000);
+                // displayStatusSuccessMessage();
         } else if (selector.test_drive_update_task_response === "failed") {
             showAlertMsg(false);
         }  else if (selector.test_drive_update_task_response === "success" &&
-            (taskStatusAndName.name==='Test Drive Approval' || taskStatusAndName.status === 'RESCHEDULED' || taskStatusAndName.status === 'CLOSED')) {
-            Alert.alert(
-                    selector.test_drive_update_task_response,
-                    taskStatusAndName.status,
-                    [
-                        {
-                            text: "OK",
-                            onPress: () => {
-                                dispatch(clearState());
-                                navigation.goBack();
-                            },
-                        },
-                    ],
-                    { cancelable: false }
-                );
+            (taskStatusAndName.status === 'RESCHEDULED' || taskStatusAndName.status === 'CLOSED')) {
+            displayStatusSuccessMessage();
         }
-        // else if (selector.test_drive_update_task_response !== null) {
-        //     Alert.alert(
-        //         "",
-        //         selector.test_drive_update_task_response,
-        //         [
-        //             {
-        //                 text: "OK",
-        //                 onPress: () => {
-        //                     dispatch(clearState());
-        //                     navigation.goBack();
-        //                 },
-        //             },
-        //         ],
-        //         { cancelable: false }
-        //     );
-        // }
-    }, [selector.test_drive_update_task_response]);
+    }, [selector.test_drive_update_task_response, taskStatusAndName]);
+
+    const displayStatusSuccessMessage = () => {
+        Alert.alert(
+            selector.test_drive_update_task_response,
+            taskStatusAndName.status,
+            [
+                {
+                    text: "OK",
+                    onPress: () => {
+                        dispatch(clearState());
+                        navigation.goBack();
+                    },
+                },
+            ],
+            { cancelable: false }
+        );
+    }
 
     const showAlertMsg = (isSucess) => {
         let message = isSucess
