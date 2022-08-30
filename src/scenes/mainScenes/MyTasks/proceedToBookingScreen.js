@@ -59,6 +59,7 @@ const SecondDependencyArray = [
 const ProceedToBookingScreen = ({ route, navigation }) => {
   const { taskId, identifier, universalId, taskStatus } = route.params;
   const selector = useSelector((state) => state.proceedToBookingReducer);
+  console.log('selector-===--=---', selector);
   const dispatch = useDispatch();
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [dataForDropDown, setDataForDropDown] = useState([]);
@@ -261,7 +262,7 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
     }
   }, [selector.enquiry_drop_response_status]);
 
-  const proceedToPreBookingClicked = () => {
+  const proceedToPreBookingClicked = async() => {
     setTypeOfActionDispatched("PROCEED_TO_PREBOOKING");
     console.log("DTLS:", selector.task_details_response?.taskId, taskId);
     if (selector.task_details_response?.taskId !== taskId) {
@@ -273,7 +274,17 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
     newTaskObj.lat = currentLocation ? currentLocation.lat.toString() : null;
     newTaskObj.lon = currentLocation ? currentLocation.long.toString() : null;
     dispatch(updateTaskApi(newTaskObj));
+    
   };
+
+  useEffect(async() => {
+      await proceedToPreBookingClicked();
+      
+      await navigation.popToTop();
+      await navigation.navigate('EMS_TAB');
+      await navigation.navigate(EmsTopTabNavigatorIdentifiers.booking);
+      dispatch(clearState());
+  }, []);
 
   // Handle Update Current Task Response
   useEffect(() => {
