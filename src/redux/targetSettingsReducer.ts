@@ -30,7 +30,7 @@ export const getEmployeesRolls = createAsyncThunk("TARGET_SETTINGS/getEmployeesR
 export const addTargetMapping = createAsyncThunk("TARGET_SETTINGS/addTargetMapping", async (payload: any, { rejectWithValue }) => {
     console.log("PAYLOAD:", URL.ADD_TARGET_MAPPING(), JSON.stringify(payload))
     const response = await client.post(URL.ADD_TARGET_MAPPING(), payload)
-    
+
     const json = await response.json()
     console.log("$$$$%%%$$ ADD:", JSON.stringify(json));
     if (json?.message) {
@@ -69,8 +69,6 @@ export const getEmployeesDropDownData = createAsyncThunk("TARGET_SETTINGS/getEmp
 })
 
 export const getAllTargetMapping = createAsyncThunk("TARGET_SETTINGS/getAllTargetMapping", async (payload: any, { rejectWithValue }) => {
-    console.log("PAYLOAD TARGET:", URL.GET_ALL_TARGET_MAPPING(), JSON.stringify(payload));
-    
     const response = await client.post(URL.GET_ALL_TARGET_MAPPING(), payload)
     const json = await response.json()
     console.log("$$$$$$$$$ TARGET:", JSON.stringify(json));
@@ -84,7 +82,34 @@ export const getSpecialDropValue = createAsyncThunk("TARGET_SETTINGS/getSpecialD
 
     const response = await client.post(URL.GET_SPECIAL_DROP_VALUE(), payload)
     const json = await response.json()
-    
+
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const saveSelfTargetParams = createAsyncThunk("TARGET_SETTINGS/saveSelfTargetParams", async (payload: any, { rejectWithValue }) => {
+    console.log('$$$$%%%$$ EDIT save params: payload:: ', payload)
+    const response = await client.post(URL.UPDATE_SELF_TARGET_PARAMS(), payload)
+    const json = await response.json()
+    console.log("$$$$%%%$$ EDIT save params:", JSON.stringify(json));
+    if (json?.message){
+        showToast(json.message)
+    }
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+export const saveTeamTargetParams = createAsyncThunk("TARGET_SETTINGS/saveTeamTargetParams", async (payload: any, { rejectWithValue }) => {
+    console.log('$$$$%%%$$ EDIT save TEAM params: payload:: ', payload)
+    const response = await client.post(URL.UPDATE_TEAM_TARGET_PARAMS(), payload)
+    const json = await response.json()
+    console.log("$$$$%%%$$ EDIT save TEAM params:", JSON.stringify(json));
+    if (json?.message){
+        showToast(json.message)
+    }
     if (!response.ok) {
         return rejectWithValue(json);
     }
@@ -168,7 +193,8 @@ export const targetSettingsSlice = createSlice({
         targetType: 'MONTHLY',
         isDataLoaded: false,
         specialOcation: [],
-        selectedSpecial: null
+        selectedSpecial: null,
+        team_target_data_saved: false
     },
     reducers: {
         updateStartDate: (state, action) => {
@@ -233,7 +259,7 @@ export const targetSettingsSlice = createSlice({
             .addCase(getAllTargetMapping.fulfilled, (state, action) => {
                 state.isLoading = false;
 
-                // console.log('menu_list: ', JSON.stringify(action.payload));
+                console.log('menu_list: ', JSON.stringify(action.payload));
                 state.targetMapping = []
                 state.targetMapping = action.payload.data ? action.payload.data : [];
                 state.isDataLoaded = true
@@ -247,7 +273,7 @@ export const targetSettingsSlice = createSlice({
             .addCase(addTargetMapping.pending, (state, action) => {
                 state.isLoading = true;
 
-                
+
             })
             .addCase(addTargetMapping.fulfilled, (state, action) => {
                 state.isLoading = false;
@@ -321,6 +347,27 @@ export const targetSettingsSlice = createSlice({
                 state.isLoading = false;
 
                 // state.employees_drop_down_data = {};
+            })
+            .addCase(saveSelfTargetParams.pending, (state, action) => {
+                state.isLoading = true;
+            })
+            .addCase(saveSelfTargetParams.fulfilled, (state, action) => {
+                state.isLoading = false;
+            })
+            .addCase(saveSelfTargetParams.rejected, (state, action) => {
+                state.isLoading = false;
+            })
+            .addCase(saveTeamTargetParams.pending, (state, action) => {
+                state.isLoading = true;
+                state.team_target_data_saved = false;
+            })
+            .addCase(saveTeamTargetParams.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.team_target_data_saved = true;
+            })
+            .addCase(saveTeamTargetParams.rejected, (state, action) => {
+                state.isLoading = false;
+                state.team_target_data_saved = false;
             })
     }
 });
