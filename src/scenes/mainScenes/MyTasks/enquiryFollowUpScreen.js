@@ -60,8 +60,10 @@ const LocalButtonComp = ({ title, onPress, disabled }) => {
 };
 
 const EnquiryFollowUpScreen = ({ route, navigation }) => {
+  console.log('route-----', route?.params?.model);
   const { taskId, identifier, universalId, reasonTaskName } = route.params;
   const selector = useSelector((state) => state.enquiryFollowUpReducer);
+  
   const dispatch = useDispatch();
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [dropDownTitle, setDropDownTitle] = useState("");
@@ -149,8 +151,14 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
         const {model, variant} = selectedModelData;
         updateModelVarientsData(model, false);
       }
+      
     }
   }, [selector.enquiry_details_response]);
+
+  console.log(
+      'selector.enquiry_detail---',
+      selector.enquiry_details_response?.dmsLeadDto?.model
+  );
 
   const getReasonListData = async (taskName) => {
     setLoading(true)
@@ -382,77 +390,90 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
   };
 
   return (
-    <SafeAreaView style={[styles.container]}>
-      <DropDownComponant
-        visible={showDropDownModel}
-        headerTitle={dropDownTitle}
-        data={dataForDropDown}
-        onRequestClose={() => setShowDropDownModel(false)}
-        selectedItems={(item) => {
-          if (dropDownKey === "MODEL") {
-            updateModelVarientsData(item.name, false);
-          }
-          dispatch(
-            setEnquiryFollowUpDetails({ key: dropDownKey, text: item.name })
-          );
-          setShowDropDownModel(false);
-        }}
-      />
+      <SafeAreaView style={[styles.container]}>
+          <DropDownComponant
+              visible={showDropDownModel}
+              headerTitle={dropDownTitle}
+              data={dataForDropDown}
+              onRequestClose={() => setShowDropDownModel(false)}
+              selectedItems={(item) => {
+                  if (dropDownKey === 'MODEL') {
+                      updateModelVarientsData(item.name, false);
+                  }
+                  dispatch(
+                      setEnquiryFollowUpDetails({
+                          key: dropDownKey,
+                          text: item.name,
+                      })
+                  );
+                  setShowDropDownModel(false);
+              }}
+          />
 
-      <DatePickerComponent
-        visible={selector.showDatepicker}
-        mode={"date"}
-        minimumDate={selector.minDate}
-        maximumDate={selector.maxDate}
-        value={new Date(Date.now())}
-        onChange={(event, selectedDate) => {
-          console.log("date: ", selectedDate);
-          if (Platform.OS === "android") {
-            //setDatePickerVisible(false);
-          }
-          dispatch(updateSelectedDate({ key: "", text: selectedDate }));
-        }}
-        onRequestClose={() => dispatch(setDatePicker())}
-      />
+          <DatePickerComponent
+              visible={selector.showDatepicker}
+              mode={'date'}
+              minimumDate={selector.minDate}
+              maximumDate={selector.maxDate}
+              value={new Date(Date.now())}
+              onChange={(event, selectedDate) => {
+                  console.log('date: ', selectedDate);
+                  if (Platform.OS === 'android') {
+                      //setDatePickerVisible(false);
+                  }
+                  dispatch(updateSelectedDate({ key: '', text: selectedDate }));
+              }}
+              onRequestClose={() => dispatch(setDatePicker())}
+          />
 
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        enabled
-        keyboardVerticalOffset={100}
-      >
-        <ScrollView
-          automaticallyAdjustContentInsets={true}
-          bounces={true}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ padding: 15 }}
-          keyboardShouldPersistTaps={"handled"}
-          style={{ flex: 1 }}
-        >
-          <View style={[GlobalStyle.shadow]}>
-            {(identifier === "ENQUIRY_FOLLOW_UP" ||
-              identifier === "PRE_ENQUIRY_FOLLOW_UP") && (
-                <View>
-                  <DropDownSelectionItem
-                    label={"Model"}
-                    value={selector.model}
-                    onPress={() =>
-                      setDropDownDataForModel("MODEL", "Select Model")
-                    }
-                  />
+          <KeyboardAvoidingView
+              style={{ flex: 1 }}
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              enabled
+              keyboardVerticalOffset={100}
+          >
+              <ScrollView
+                  automaticallyAdjustContentInsets={true}
+                  bounces={true}
+                  showsVerticalScrollIndicator={false}
+                  contentContainerStyle={{ padding: 15 }}
+                  keyboardShouldPersistTaps={'handled'}
+                  style={{ flex: 1 }}
+              >
+                  <View style={[GlobalStyle.shadow]}>
+                      {(identifier === 'ENQUIRY_FOLLOW_UP' ||
+                          identifier === 'PRE_ENQUIRY_FOLLOW_UP') && (
+                          <View>
+                              <DropDownSelectionItem
+                                  label={'Model'}
+                                  value={
+                                      selector.enquiry_details_response
+                                          ?.dmsLeadDto?.model
+                                  }
+                                  // onPress={() =>
+                                  //     setDropDownDataForModel(
+                                  //         'MODEL',
+                                  //         'Select Model'
+                                  //     )
+                                  // }
+                              />
 
-                  {(identifier === "ENQUIRY_FOLLOW_UP" &&
-                      <DropDownSelectionItem
-                      label={"Varient"}
-                      value={selector.varient}
-                      onPress={() =>
-                          setDropDownDataForModel("VARIENT", "Select Varient")
-                      }
-                  />)}
-                </View>
-              )}
+                              {identifier === 'ENQUIRY_FOLLOW_UP' && (
+                                  <DropDownSelectionItem
+                                      label={'Varient'}
+                                      value={selector.varient}
+                                      onPress={() =>
+                                          setDropDownDataForModel(
+                                              'VARIENT',
+                                              'Select Varient'
+                                          )
+                                      }
+                                  />
+                              )}
+                          </View>
+                      )}
 
-            {/* <TextinputComp
+                      {/* <TextinputComp
               style={styles.textInputStyle}
               label={"Reason*"}
               value={selector.reason}
@@ -464,138 +485,206 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
                 );
               }}
             /> */}
-            <View style={{position: 'relative'}}>
-              {selector.reason !== '' &&
-                <View style={{ position: 'absolute', top: 0, left: 10, zIndex: 99 }}>
-                  <Text style={{ fontSize: 13, color: Colors.GRAY }}>Reason*</Text>
-                </View>
-              }
-              <Dropdown
-                style={[styles.dropdownContainer,]}
-                placeholderStyle={styles.placeholderStyle}
-                selectedTextStyle={styles.selectedTextStyle}
-                inputSearchStyle={styles.inputSearchStyle}
-                iconStyle={styles.iconStyle}
-                data={reasonList}
-                search
-                maxHeight={300}
-                labelField="label"
-                valueField="value"
-                placeholder={"Reason*"}
-                searchPlaceholder="Search..."
-                value={defaultReasonIndex}
-                // onFocus={() => setIsFocus(true)}
-                // onBlur={() => setIsFocus(false)}
-                onChange={val => {
-                  console.log("£££", val);
-                  dispatch(setEnquiryFollowUpDetails({ key: "REASON", text: val.value }));
-                }}
-              />
-              <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.reason === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-            </View>
-            {selector.reason === 'Other' &&
-              <TextinputComp
-                style={styles.textInputStyle}
-                label={"Other reason"}
-              autoCapitalize="sentences"
-                value={otherReason}
-                maxLength={50}
-                onChangeText={(text) => {
-                  setOtherReason(text)
-                }}
-              />
-            }
-            <Text style={GlobalStyle.underline}></Text>
+                      <View style={{ position: 'relative' }}>
+                          {selector.reason !== '' && (
+                              <View
+                                  style={{
+                                      position: 'absolute',
+                                      top: 0,
+                                      left: 10,
+                                      zIndex: 99,
+                                  }}
+                              >
+                                  <Text
+                                      style={{
+                                          fontSize: 13,
+                                          color: Colors.GRAY,
+                                      }}
+                                  >
+                                      Reason*
+                                  </Text>
+                              </View>
+                          )}
+                          <Dropdown
+                              style={[styles.dropdownContainer]}
+                              placeholderStyle={styles.placeholderStyle}
+                              selectedTextStyle={styles.selectedTextStyle}
+                              inputSearchStyle={styles.inputSearchStyle}
+                              iconStyle={styles.iconStyle}
+                              data={reasonList}
+                              search
+                              maxHeight={300}
+                              labelField='label'
+                              valueField='value'
+                              placeholder={'Reason*'}
+                              searchPlaceholder='Search...'
+                              value={defaultReasonIndex}
+                              // onFocus={() => setIsFocus(true)}
+                              // onBlur={() => setIsFocus(false)}
+                              onChange={(val) => {
+                                  console.log('£££', val);
+                                  dispatch(
+                                      setEnquiryFollowUpDetails({
+                                          key: 'REASON',
+                                          text: val.value,
+                                      })
+                                  );
+                              }}
+                          />
+                          <Text
+                              style={[
+                                  GlobalStyle.underline,
+                                  {
+                                      backgroundColor:
+                                          isSubmitPress &&
+                                          selector.reason === ''
+                                              ? 'red'
+                                              : 'rgba(208, 212, 214, 0.7)',
+                                  },
+                              ]}
+                          ></Text>
+                      </View>
+                      {selector.reason === 'Other' && (
+                          <TextinputComp
+                              style={styles.textInputStyle}
+                              label={'Other reason'}
+                              autoCapitalize='sentences'
+                              value={otherReason}
+                              maxLength={50}
+                              onChangeText={(text) => {
+                                  setOtherReason(text);
+                              }}
+                          />
+                      )}
+                      <Text style={GlobalStyle.underline}></Text>
 
-            <TextinputComp
-              style={styles.textInputStyle}
-              label={"Customer Remarks*"}
-              maxLength={50}
-              value={selector.customer_remarks}
-              autoCapitalize={"words"}
-              onChangeText={(text) =>
-                dispatch(
-                  setEnquiryFollowUpDetails({
-                    key: "CUSTOMER_REMARKS",
-                    text: text,
-                  })
-                )
-              }
-            />
-            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.customer_remarks === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+                      <TextinputComp
+                          style={styles.textInputStyle}
+                          label={'Customer Remarks*'}
+                          maxLength={50}
+                          value={selector.customer_remarks}
+                          autoCapitalize={'words'}
+                          onChangeText={(text) =>
+                              dispatch(
+                                  setEnquiryFollowUpDetails({
+                                      key: 'CUSTOMER_REMARKS',
+                                      text: text,
+                                  })
+                              )
+                          }
+                      />
+                      <Text
+                          style={[
+                              GlobalStyle.underline,
+                              {
+                                  backgroundColor:
+                                      isSubmitPress &&
+                                      selector.customer_remarks === ''
+                                          ? 'red'
+                                          : 'rgba(208, 212, 214, 0.7)',
+                              },
+                          ]}
+                      ></Text>
 
-            <TextinputComp
-              style={styles.textInputStyle}
-              label={"Employee Remarks*"}
-              value={selector.employee_remarks}
-              maxLength={50}
-              autoCapitalize={"words"}
-              onChangeText={(text) =>
-                dispatch(
-                  setEnquiryFollowUpDetails({
-                    key: "EMPLOYEE_REMARKS",
-                    text: text,
-                  })
-                )
-              }
-            />
-            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.employee_remarks === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-            <DateSelectItem
-              label={"Actual Start Date"}
-              value={selector.actual_start_time}
-              onPress={() => dispatch(setDatePicker("ACTUAL_START_TIME"))}
-            //  value={selector.expected_delivery_date}
-            // onPress={() =>
-            // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
-            />
-            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && (selector.actual_start_time === '' || isDateError) ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-            <DateSelectItem
-              label={"Actual End Date"}
-              value={selector.actual_end_time}
-              onPress={() => dispatch(setDatePicker("ACTUAL_END_TIME"))}
-            />
-            <Text style={GlobalStyle.underline}></Text>
-          </View>
+                      <TextinputComp
+                          style={styles.textInputStyle}
+                          label={'Employee Remarks*'}
+                          value={selector.employee_remarks}
+                          maxLength={50}
+                          autoCapitalize={'words'}
+                          onChangeText={(text) =>
+                              dispatch(
+                                  setEnquiryFollowUpDetails({
+                                      key: 'EMPLOYEE_REMARKS',
+                                      text: text,
+                                  })
+                              )
+                          }
+                      />
+                      <Text
+                          style={[
+                              GlobalStyle.underline,
+                              {
+                                  backgroundColor:
+                                      isSubmitPress &&
+                                      selector.employee_remarks === ''
+                                          ? 'red'
+                                          : 'rgba(208, 212, 214, 0.7)',
+                              },
+                          ]}
+                      ></Text>
+                      <DateSelectItem
+                          label={'Actual Start Date'}
+                          value={selector.actual_start_time}
+                          onPress={() =>
+                              dispatch(setDatePicker('ACTUAL_START_TIME'))
+                          }
+                          //  value={selector.expected_delivery_date}
+                          // onPress={() =>
+                          // dispatch(setDatePicker("EXPECTED_DELIVERY_DATE"))
+                      />
+                      <Text
+                          style={[
+                              GlobalStyle.underline,
+                              {
+                                  backgroundColor:
+                                      isSubmitPress &&
+                                      (selector.actual_start_time === '' ||
+                                          isDateError)
+                                          ? 'red'
+                                          : 'rgba(208, 212, 214, 0.7)',
+                              },
+                          ]}
+                      ></Text>
+                      <DateSelectItem
+                          label={'Actual End Date'}
+                          value={selector.actual_end_time}
+                          onPress={() =>
+                              dispatch(setDatePicker('ACTUAL_END_TIME'))
+                          }
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                  </View>
 
-          {selector.task_status !== "CANCELLED" ? (
-            <View>
-              <View style={styles.view1}>
-                <LocalButtonComp
-                  title={"Update"}
-                  onPress={updateTask}
-                  disabled={selector.is_loading_for_task_update}
-                />
-                <LocalButtonComp
-                  title={"Close"}
-                  onPress={closeTask}
-                  disabled={selector.is_loading_for_task_update}
-                />
-              </View>
+                  {selector.task_status !== 'CANCELLED' ? (
+                      <View>
+                          <View style={styles.view1}>
+                              <LocalButtonComp
+                                  title={'Update'}
+                                  onPress={updateTask}
+                                  disabled={selector.is_loading_for_task_update}
+                              />
+                              <LocalButtonComp
+                                  title={'Close'}
+                                  onPress={closeTask}
+                                  disabled={selector.is_loading_for_task_update}
+                              />
+                          </View>
 
-              <View style={styles.view1}>
-                <LocalButtonComp
-                  title={"Cancel"}
-                  onPress={cancelTask}
-                  disabled={selector.is_loading_for_task_update}
-                />
-                <LocalButtonComp
-                  title={"Reschedule"}
-                  onPress={rescheduleTask}
-                  disabled={selector.is_loading_for_task_update}
-                />
-              </View>
-            </View>
-          ) : (
-            <View style={styles.cancelledVw}>
-              <Text style={styles.cancelledText}>
-                {"This task has been cancelled"}
-              </Text>
-            </View>
-          )}
-        </ScrollView>
-      </KeyboardAvoidingView>
-      <LoaderComponent visible={loading} />
-    </SafeAreaView>
+                          <View style={styles.view1}>
+                              <LocalButtonComp
+                                  title={'Cancel'}
+                                  onPress={cancelTask}
+                                  disabled={selector.is_loading_for_task_update}
+                              />
+                              <LocalButtonComp
+                                  title={'Reschedule'}
+                                  onPress={rescheduleTask}
+                                  disabled={selector.is_loading_for_task_update}
+                              />
+                          </View>
+                      </View>
+                  ) : (
+                      <View style={styles.cancelledVw}>
+                          <Text style={styles.cancelledText}>
+                              {'This task has been cancelled'}
+                          </Text>
+                      </View>
+                  )}
+              </ScrollView>
+          </KeyboardAvoidingView>
+          <LoaderComponent visible={loading} />
+      </SafeAreaView>
   );
 };
 
