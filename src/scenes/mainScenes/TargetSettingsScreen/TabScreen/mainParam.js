@@ -953,7 +953,7 @@ const MainParamScreen = ({ route, navigation }) => {
 
                     <View style={styles.textBoxWrap}>
                         <TouchableOpacity style={styles.textBox} onPress={() => {
-                            setSelectedUser(loggedInEmpDetails)
+                            setSelectedUser({...loggedInEmpDetails})
                             // if (isNoTargetAvailable) {
                             //     setAddOrEdit('A')
                             // }
@@ -1089,7 +1089,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                     else {
                                         setAddOrEdit('A')
                                     }
-                                    setSelectedUser(loggedInEmpDetails)
+                                    setSelectedUser({...loggedInEmpDetails});
                                     (ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate) ? setRetail(ownData.retailTarget.toString()) : setRetail('')
 
                                     setOpenRetail(true)
