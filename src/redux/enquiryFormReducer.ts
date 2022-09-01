@@ -936,7 +936,7 @@ const enquiryDetailsOverViewSlice = createSlice({
           console.log("NONE");
           break;
       }
-      state.showDatepicker = !state.showDatepicker;
+      // state.showDatepicker = !state.showDatepicker;
     },
     setPersonalIntro: (state, action: PayloadAction<PersonalIntroModel>) => {
       const { key, text } = action.payload;

@@ -1643,7 +1643,8 @@ const TargetScreen = ({ route, navigation }) => {
                   </View>
                   <View
                     style={{
-                      width: "10%",
+                      // width: "10%",
+                      minWidth:"10%",
                       marginTop: 10,
                       position: "relative",
                       backgroundColor: color[index % color.length],

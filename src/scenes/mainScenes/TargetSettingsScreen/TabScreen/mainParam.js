@@ -369,7 +369,9 @@ const MainParamScreen = ({ route, navigation }) => {
         }
         else {
             console.log("CALLED ADD");
-            setOpenRetail(false)
+            setTimeout(() => {
+                setOpenRetail(false);
+            }, 1000);
             let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
             if (employeeData) {
                 const jsonObj = JSON.parse(employeeData);

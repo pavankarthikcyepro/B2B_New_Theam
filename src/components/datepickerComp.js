@@ -15,17 +15,18 @@ const DatePickerComponent = ({ visible = false, onRequestClose, value, mode = "d
         }
 
         return (
-            <DateTimePicker
-                testID="dateTimePicker"
-                value={value}
-                mode={mode}
-                is24Hour={true}
-                display="default"
-                onChange={onChange}
-                maximumDate={maximumDate}
-                minimumDate={minimumDate}
-            />
-        )
+          <DateTimePicker
+            testID="dateTimePicker"
+            value={value}
+            mode={mode}
+            is24Hour={true}
+            // display="default"
+            display="spinner"
+            onChange={onChange}
+            maximumDate={maximumDate}
+            minimumDate={minimumDate}
+          />
+        );
     }
     else if (Platform.OS === 'ios') {
         return (
@@ -58,7 +59,7 @@ const DatePickerComponent = ({ visible = false, onRequestClose, value, mode = "d
                             value={value}
                             mode={mode}
                             is24Hour={true}
-                            display="default"
+                            display="spinner"
                             onChange={onChange}
                             style={styles.datePicker}
                             maximumDate={maximumDate}
