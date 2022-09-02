@@ -58,13 +58,13 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
 
     useLayoutEffect(() => {
 
-        let title = "Pre Booking Task"
+        let title = "Booking Approval Task"
         switch (identifier) {
             case "PROCEED_TO_PRE_BOOKING":
-                title = "Pre Booking Task";
+                title = "Booking Approval Task";
                 break;
             case "PROCEED_TO_BOOKING":
-                title = "Booking Task";
+                title = "Booking View Task";
                 break;
         }
 

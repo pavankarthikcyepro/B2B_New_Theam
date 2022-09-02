@@ -72,19 +72,19 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
             const data = [];
             if (selector.wrokflow_response.length > 0) {
                 selector.wrokflow_response.forEach(element => {
-                    if (
-                      (element.taskStatus != "CLOSED" &&
+                    if (element.taskStatus === "CLOSED") {
+                        closedData.push(element);
+                    } else if (
+                      (element.taskStatus !== "CLOSED" &&
                         selector.enquiry_leadDto_response.leadStage ===
                           element.taskCategory.taskCategory) ||
                       (element.taskCategory.taskCategory === "APPROVAL" &&
                         element.taskStatus === "ASSIGNED") ||
-                      (element.taskStatus != "APPROVAL" &&
-                        (element.taskName == "Home Visit" ||
-                          element.taskName == "Test Drive"))
+                      ((element.taskStatus && element.taskStatus !== "APPROVAL") &&
+                        (element.taskName === "Home Visit" ||
+                          element.taskName === "Test Drive"))
                     ) {
                       plannedData.push(element);
-                    } else if (element.taskStatus == "CLOSED") {
-                      closedData.push(element);
                     }
                 });
             }
