@@ -715,6 +715,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         const employeeData = await AsyncStore.getData(
             AsyncStore.Keys.LOGIN_EMPLOYEE
         );
+        console.log('employeeData-----', employeeData);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             let isManager = false,
@@ -723,7 +724,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             if (
                 jsonObj.hrmsRole === "MD" ||
                 jsonObj.hrmsRole === "General Manager" ||
-                jsonObj.hrmsRole === "Manager"
+                jsonObj.hrmsRole === "Manager" ||
+                jsonObj.hrmsRole === "Sales Manager"
             ) {
                 isManager = true;
             }

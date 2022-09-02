@@ -88,7 +88,10 @@ const EnquiryScreen = ({ navigation }) => {
                 let tempData = []
                 tempData = selector.enquiry_list.filter((item) => {
                     return (
-                        `${item.firstName} ${item.lastName}`
+                        item.firstName
+                            .toLowerCase()
+                            .includes(appSelector.searchKey.toLowerCase()) ||
+                        item.lastName
                             .toLowerCase()
                             .includes(appSelector.searchKey.toLowerCase()) ||
                         item.phone.includes(appSelector.searchKey)
