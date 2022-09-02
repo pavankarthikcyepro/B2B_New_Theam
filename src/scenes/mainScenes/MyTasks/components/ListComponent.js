@@ -46,12 +46,12 @@ const ListComponent = ({ route, navigation }) => {
     const defaultData = [
         {
             taskCnt: 0,
-            taskName: "Booking View Follow Up",
+            taskName: "Proceed to Booking",
             myTaskList: []
         },
         {
             taskCnt: 0,
-            taskName: "Booking approval task",
+            taskName: "Pre Booking Follow Up",
             myTaskList: []
         },
         {
@@ -76,7 +76,7 @@ const ListComponent = ({ route, navigation }) => {
         },
         {
             taskCnt: 0,
-            taskName: "Contacts Followup",
+            taskName: "Pre Enquiry Follow Up",
             myTaskList: []
         }
     ]
@@ -851,6 +851,17 @@ const ListComponent = ({ route, navigation }) => {
         }
     }
 
+    const checkForTaskNames = (taskName) => {
+        if (taskName.includes('Pre Enquiry')) {
+            taskName = taskName.replace('Pre Enquiry', 'Contacts');
+        } else if (taskName.includes('Pre Booking')) {
+            taskName = taskName.replace('Pre Booking', 'Booking Approval');
+        } else if (taskName.includes('Booking')) {
+            taskName = taskName.replace('Booking', 'Booking View');
+        }
+        return taskName
+    }
+
     return (
 
         <View style={{ flex: 1, backgroundColor: Colors.LIGHT_GRAY, padding: 5, }}>
@@ -997,7 +1008,7 @@ const ListComponent = ({ route, navigation }) => {
                                         </View>
                                         <View style={{ width: "100%", justifyContent: "center", alignItems: "center" }}>
                                             <View style={{ width: "75%", backgroundColor: Colors.DARK_GRAY, height: 2, marginBottom: 13 }}></View>
-                                            <Text style={{ fontSize: 12, fontWeight: "700", textAlign: "center" }} numberOfLines={2}>{item.taskName}</Text>
+                                            <Text style={{ fontSize: 12, fontWeight: "700", textAlign: "center" }} numberOfLines={2}>{checkForTaskNames(item.taskName)}</Text>
                                         </View>
                                     </View>
                                 </TouchableOpacity>
@@ -1038,7 +1049,7 @@ const ListComponent = ({ route, navigation }) => {
                                         </View>
                                         <View style={{ width: "100%", justifyContent: "center", alignItems: "center" }}>
                                             <View style={{ width: "75%", backgroundColor: Colors.DARK_GRAY, height: 2, marginBottom: 13 }}></View>
-                                            <Text style={{ fontSize: 12, fontWeight: "700", textAlign: "center" }} numberOfLines={2}>{item.taskName}</Text>
+                                            <Text style={{ fontSize: 12, fontWeight: "700", textAlign: "center" }} numberOfLines={2}>{checkForTaskNames(item.taskName)}</Text>
                                         </View>
                                     </View>
                                 </TouchableOpacity>

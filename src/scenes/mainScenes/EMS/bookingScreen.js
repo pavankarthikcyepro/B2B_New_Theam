@@ -9,7 +9,7 @@ import {
     ActivityIndicator,
     Pressable,
 } from "react-native";
-import { IconButton } from "react-native-paper";
+import {IconButton, Searchbar} from "react-native-paper";
 import { PreEnquiryItem, EmptyListView } from "../../../pureComponents";
 import {
     DateRangeComp,
@@ -59,6 +59,7 @@ const BookingScreen = ({ navigation }) => {
     const [sortAndFilterVisible, setSortAndFilterVisible] = useState(false);
     const [searchedData, setSearchedData] = useState([]);
     const [orgId, setOrgId] = useState("");
+    const [searchQuery, setSearchQuery] = useState('');
 
     const orgIdStateRef = React.useRef(orgId);
     const empIdStateRef = React.useRef(employeeId);
@@ -84,6 +85,7 @@ const BookingScreen = ({ navigation }) => {
 
 
     useEffect(() => {
+        setSearchQuery('');
         if (selector.pre_booking_list.length > 0) {
             setSearchedData(selector.pre_booking_list)
         }
@@ -120,7 +122,6 @@ const BookingScreen = ({ navigation }) => {
     }, [appSelector.isSearch])
 
     useEffect(async () => {
-
         // Get Data From Server
         // let isMounted = true;
         setFromDateState(lastMonthFirstDate);
@@ -315,6 +316,11 @@ const BookingScreen = ({ navigation }) => {
         );
     };
 
+    const onChangeSearch = query => {
+        setSearchQuery(query);
+        dispatch(updateSearchKey(query));
+        dispatch(updateIsSearch(true));
+    };
     return (
         <SafeAreaView style={styles.container}>
             <DatePickerComponent
@@ -371,7 +377,14 @@ const BookingScreen = ({ navigation }) => {
                     </View>
                 </Pressable>
             </View>
-
+            <View>
+                <Searchbar
+                    placeholder="Search"
+                    onChangeText={onChangeSearch}
+                    value={searchQuery}
+                    style={styles.searchBar}
+                />
+            </View>
             {searchedData.length === 0 ? (
                 <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} />
             ) : (
@@ -501,4 +514,5 @@ const styles = StyleSheet.create({
         textAlign: "center",
         marginBottom: 5,
     },
+    searchBar:{height: 40}
 });

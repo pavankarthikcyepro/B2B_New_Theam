@@ -8,7 +8,7 @@ import {
 import { showToast } from "../utils/toast";
 import URL from "../networking/endpoints";
 import { convertToDate } from "../utils/helperFunctions";
-import moment from "moment";
+import * as moment from "moment";
 
 interface TextModel {
     key: string;
