@@ -197,7 +197,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     };
 
     const showSucessAlert = (itemData) => {
-        const title = `Pre-Enquiry Successfully Created \n Ref Num: ${itemData.referencenumber}`;
+        const title = `Contact Successfully Created \n Ref Num: ${itemData.referencenumber}`;
 
         Alert.alert(
             title,
@@ -722,7 +722,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     useEffect(() => {
         if (selector.updateEnquiryStatus === "success") {
             dispatch(updateEnqStatus(''))
-            showToastSucess("Pre-enquiry successfully updated");
+            showToastSucess("Contact successfully updated");
             navigation.popToTop();
         } else if (selector.updateEnquiryStatus === "failed") {
             if (

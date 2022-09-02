@@ -2153,7 +2153,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           );
         } else {
           Alert.alert(
-            "Below tasks are pending, do you want to continue to proceed to Booking Approval",
+            "Below tasks are pending, do you want to continue to proceed",
             taskNames,
             [
               {
@@ -2326,7 +2326,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
 
     Alert.alert(
-      "Pre Booking Created Successfully",
+      "Booking Approval Successfully Created",
       refNumber,
       [
         {
