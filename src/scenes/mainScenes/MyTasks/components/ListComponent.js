@@ -859,6 +859,9 @@ const ListComponent = ({ route, navigation }) => {
         } else if (taskName.includes('Booking')) {
             taskName = taskName.replace('Booking', 'Booking View');
         }
+        if (taskName.toLowerCase() === 'proceed to booking view') {
+            taskName = 'Booking Followup'
+        }
         return taskName
     }
 

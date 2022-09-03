@@ -413,8 +413,8 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
     }
     let title =
       identifier === "PROCEED_TO_BOOKING"
-        ? "Booking Created Successfully"
-        : "Pre Booking Created Successfully";
+        ? "Booking Successfully Created"
+        : "Booking Approval Successfully Created";
 
     Alert.alert(
       title,

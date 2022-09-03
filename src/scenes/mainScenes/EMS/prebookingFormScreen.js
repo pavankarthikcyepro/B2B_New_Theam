@@ -5689,7 +5689,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 {showPrebookingPaymentSection && !userData.isManager  ? (
                   <List.Accordion
                     id={"12"}
-                    title={"PreBooking Payment Details"}
+                    title={"Booking Payment Details"}
                     titleStyle={{
                       color:
                         openAccordian === "12" ? Colors.BLACK : Colors.BLACK,
@@ -5900,7 +5900,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 {isDropSelected ? (
                   <List.Accordion
                     id={"10"}
-                    title={"Pre Booking Lost Section"}
+                    title={"Booking Approval Lost Section"}
                     titleStyle={{
                       color:
                         openAccordian === "10" ? Colors.BLACK : Colors.BLACK,
