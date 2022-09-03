@@ -274,6 +274,7 @@ const MainParamScreen = ({ route, navigation }) => {
                 clearOwnData();
             }
         }
+        setTeamEmployeeTargetParams();
 
     }, [selector.selectedMonth])
 
@@ -389,7 +390,7 @@ const MainParamScreen = ({ route, navigation }) => {
                     "retailTarget": retail,
                     "startDate": selector.startDate,
                     // "teamLeadId": otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead').length > 0 ? otherDropDownSelectedValue.filter((item) => item.key === 'Team Lead')[0].value.value : '',
-                    "targetType": selector.targetType,
+                    "targetType": 'MONTHLY',
                     // "targetName": selector.targetType === 'MONTHLY' ? selector.selectedMonth.value : selector.selectedSpecial.keyId
                     "targetName": targetName !== '' ? targetName : "DEFAULT"
                 }
@@ -463,11 +464,19 @@ const MainParamScreen = ({ route, navigation }) => {
         teamMembers.forEach(x => {
             const internalTargets = [];
             const empData = data.filter(y => y.empId === x);
+            const user = selector.targetMapping.find(y => y.employeeId === x);
+            const branchInfo = {};
+            if (user) {
+                const {branch, department, designation} = user;
+                branchInfo.branch = branch;
+                branchInfo.department = department;
+                branchInfo.designation = designation;
+            }
             empData.forEach(e => {
                 const obj = {unit: e.type === 'accessories' ? 'number' : 'percentage', target: e.target, parameter: e.type};
                 internalTargets.push(obj);
             });
-            const obj = {employeeId: +x, targets: internalTargets};
+            const obj = {employeeId: x, ...branchInfo, targets: internalTargets};
             targets.push(obj);
         });
         return targets;
@@ -520,18 +529,31 @@ const MainParamScreen = ({ route, navigation }) => {
                 orgId: `${orgId}`,
                 employeeId: `${empId}`,
                 targets: formTeamParamsTargetPayloadData(),
-                branch: `${branchId}`,
-                department: `${ownData.department}`,
-                designation: `${ownData.designation}`,
+
                 start_date: selector.startDate,
                 end_date: selector.endDate
             }
             Promise.all([
                 dispatch(saveTeamTargetParams(payload))
             ]).then((x) => {
-                console.log('daata: ', x)
+                console.log('daata---: ', selector.targetMapping)
+                if (Array.isArray(x) && x[0].payload.message.toLowerCase() === 'not updated') {
+                    const payload2 = {
+                        "empId": loggedInEmpDetails.empId,
+                        "pageNo": 1,
+                        "size": 500,
+                        "targetType": selector.targetType
+                    }
+                    Promise.all([
+                        dispatch(getAllTargetMapping(payload2))
+                    ]).then((x) => {
+                        console.log('daata: ', x)
+                    }).catch((y) => {
+                        console.log('daata: errr', y)
+                    })
+                }
             }).catch((y) => {
-                console.log('daata: errr', y)
+                console.log('daata---: errr', y)
             })
         }
     }
@@ -547,6 +569,7 @@ const MainParamScreen = ({ route, navigation }) => {
         let param;
         if (curIndex !== -1) {
             const curParam = updateTeamsParamsData[curIndex];
+            console.log('123````: ', curParam, item.employeeId)
             param = curParam.target;
         }
         return (
@@ -565,65 +588,65 @@ const MainParamScreen = ({ route, navigation }) => {
         <>
             <View>
                 {!editParameters &&
-                <View>
-                    <Pressable style={[styles.editParamsButton, {borderColor: Colors.RED}]} onPress={() => {
-                        setEditParameters(true);
-                    }}>
-                        <View style={styles.editParamsBtnView}>
-                            <IconButton icon="pencil" size={16} color={Colors.RED}/>
-                            <Text>Edit Parameters</Text>
-                        </View>
-                    </Pressable>
-                </View>
+                    <View>
+                        <Pressable style={[styles.editParamsButton, {borderColor: Colors.RED}]} onPress={() => {
+                            setEditParameters(true);
+                        }}>
+                            <View style={styles.editParamsBtnView}>
+                                <IconButton icon="pencil" size={16} color={Colors.RED}/>
+                                <Text>Edit Parameters</Text>
+                            </View>
+                        </Pressable>
+                    </View>
                 }
                 {editParameters &&
-                <View style={{display: 'flex', flexDirection: 'row', alignSelf: 'flex-end'}}>
-                    <Pressable style={[styles.editParamsButton, {borderColor: 'green'}]} onPress={() => {
-                        if ((homeSelector.isTeamPresent && selector.isTeam)) {
-                            saveTeamData();
-                        } else {
-                            saveSelfData();
-                        }
-                    }}>
-                        <View style={styles.editParamsBtnView}>
-                            <IconButton icon="content-save" size={16} color={'green'} />
-                            <Text>Save</Text>
-                        </View>
-                    </Pressable>
-                    <Pressable style={[styles.editParamsButton, {borderColor: 'red'}]} onPress={() => {
-                        setEditParameters(false);
-                        if (homeSelector.isTeamPresent) {
-                            if (selector.isTeam) {
-                                // const data = [...masterTeamsParamsData];
-                                // setMasterTeamsParamsData(data);
-                                const payload2 = {
-                                    "empId": loggedInEmpDetails.empId,
-                                    "pageNo": 1,
-                                    "size": 500,
-                                    "targetType": selector.targetType
+                    <View style={{display: 'flex', flexDirection: 'row', alignSelf: 'flex-end'}}>
+                        <Pressable style={[styles.editParamsButton, {borderColor: 'green'}]} onPress={() => {
+                            if ((homeSelector.isTeamPresent && selector.isTeam)) {
+                                saveTeamData();
+                            } else {
+                                saveSelfData();
+                            }
+                        }}>
+                            <View style={styles.editParamsBtnView}>
+                                <IconButton icon="content-save" size={16} color={'green'} />
+                                <Text>Save</Text>
+                            </View>
+                        </Pressable>
+                        <Pressable style={[styles.editParamsButton, {borderColor: 'red'}]} onPress={() => {
+                            setEditParameters(false);
+                            if (homeSelector.isTeamPresent) {
+                                if (selector.isTeam) {
+                                    // const data = [...masterTeamsParamsData];
+                                    // setMasterTeamsParamsData(data);
+                                    const payload2 = {
+                                        "empId": loggedInEmpDetails.empId,
+                                        "pageNo": 1,
+                                        "size": 500,
+                                        "targetType": selector.targetType
+                                    }
+                                    Promise.all([
+                                        dispatch(getAllTargetMapping(payload2))
+                                    ]).then((x) => {
+                                        console.log('daata: ', x)
+                                    }).catch((y) => {
+                                        console.log('daata: errr', y)
+                                    })
+                                } else {
+                                    const data = {...masterSelfParameters};
+                                    setUpdatedSelfParameters(data);
                                 }
-                                Promise.all([
-                                    dispatch(getAllTargetMapping(payload2))
-                                ]).then((x) => {
-                                    console.log('daata: ', x)
-                                }).catch((y) => {
-                                    console.log('daata: errr', y)
-                                })
                             } else {
                                 const data = {...masterSelfParameters};
                                 setUpdatedSelfParameters(data);
                             }
-                        } else {
-                            const data = {...masterSelfParameters};
-                            setUpdatedSelfParameters(data);
-                        }
-                    }}>
-                        <View style={styles.editParamsBtnView}>
-                            <IconButton icon="cancel" size={16} color={'red'} style={{padding: 0}}/>
-                            <Text>Cancel</Text>
-                        </View>
-                    </Pressable>
-                </View>
+                        }}>
+                            <View style={styles.editParamsBtnView}>
+                                <IconButton icon="cancel" size={16} color={'red'} style={{padding: 0}}/>
+                                <Text>Cancel</Text>
+                            </View>
+                        </Pressable>
+                    </View>
                 }
             </View>
             {/*Teams Data Section*/}
@@ -667,7 +690,7 @@ const MainParamScreen = ({ route, navigation }) => {
                         </View>
                     </View>
                     <ScrollView style={{ width: '100%' }} contentContainerStyle={{ flexDirection: 'column' }} showsVerticalScrollIndicator={false}
-                        showsHorizontalScrollIndicator={false} horizontal={true}>
+                                showsHorizontalScrollIndicator={false} horizontal={true}>
                         <View style={styles.nameWrap}>
                             <View style={styles.nameBox} >
                                 <Text style={styles.text}>Team Total</Text>
@@ -944,7 +967,7 @@ const MainParamScreen = ({ route, navigation }) => {
                     </View>
                 </View>
                 <ScrollView style={{ width: '100%' }} contentContainerStyle={{ flexDirection: 'column' }} showsVerticalScrollIndicator={false}
-                    showsHorizontalScrollIndicator={false} horizontal={true}>
+                            showsHorizontalScrollIndicator={false} horizontal={true}>
                     <View style={styles.nameWrap}>
                         <View style={styles.nameBox}>
                             <Text style={styles.text}>Total</Text>
@@ -1063,7 +1086,7 @@ const MainParamScreen = ({ route, navigation }) => {
                     </View>
                     {/*Right Side View*/}
                     <ScrollView style={{ width: '100%' }} contentContainerStyle={{ flexDirection: 'column' }} showsVerticalScrollIndicator={false}
-                        showsHorizontalScrollIndicator={false} horizontal={true}>
+                                showsHorizontalScrollIndicator={false} horizontal={true}>
                         <View style={styles.nameWrap}>
                             <View style={styles.nameBox}>
                                 <Text style={styles.text}>Total</Text>
@@ -1354,3 +1377,4 @@ const styles = StyleSheet.create({
     editParamsButton: {borderStyle: 'solid', borderWidth: 1, paddingEnd: 4, margin: 4, alignSelf: 'flex-end' },
     editParamsBtnView: {display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}
 });
+
