@@ -1421,7 +1421,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             setOpenAccordian('4')
             showToast("Select is Primary for atleast one vehicle");
             return;
-        }
+        }  
         if (selector.pincode.length === 0 ||
             selector.house_number.length === 0 ||
             selector.street_name.length === 0 ||
@@ -3901,6 +3901,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             index={index}
                             item={item}
                             leadStage={leadStage}
+                            isSubmitPress={isSubmitPress}
+                            onChangeSubmit={() => setIsSubmitPress(false)}
                           />
 
                           {/* <Divider /> */}

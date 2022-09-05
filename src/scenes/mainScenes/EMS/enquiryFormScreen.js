@@ -4270,6 +4270,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           isPrimaryOnclick={isPrimaryOnclick}
                           index={index}
                           item={item}
+                          isSubmitPress={isSubmitPress}
+                          onChangeSubmit={() => setIsSubmitPress(false)}
                         />
 
                         {/* <Divider /> */}
