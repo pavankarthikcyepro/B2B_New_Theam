@@ -691,17 +691,7 @@ export const PreBookingModelListitemCom = ({
           editable={false}
           value={carFuelType}
         />
-        <Text
-          style={[
-            GlobalStyle.underline,
-            {
-              backgroundColor:
-                isSubmitPress && selector.fuel_type === ""
-                  ? "red"
-                  : "rgba(208, 212, 214, 0.7)",
-            },
-          ]}
-        ></Text>
+        <Text style={GlobalStyle.underline} />
 
         <TextinputComp
           style={{ height: 65, width: "100%" }}
@@ -709,17 +699,7 @@ export const PreBookingModelListitemCom = ({
           editable={false}
           value={carTransmissionType}
         />
-        <Text
-          style={[
-            GlobalStyle.underline,
-            {
-              backgroundColor:
-                isSubmitPress && selector.transmission_type === ""
-                  ? "red"
-                  : "rgba(208, 212, 214, 0.7)",
-            },
-          ]}
-        ></Text>
+        <Text style={GlobalStyle.underline} />
       </View>
       {/* <View style={styles.space}></View> */}
       <Modal
