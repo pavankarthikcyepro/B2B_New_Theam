@@ -80,7 +80,7 @@ const ListComponent = ({ route, navigation }) => {
             myTaskList: []
         }
     ]
-
+    
     useEffect(() => {
         navigation.addListener('focus', () => {
             console.log("CALLED %%%");
@@ -979,7 +979,7 @@ const ListComponent = ({ route, navigation }) => {
 } */}
             {(index === 0 && myTasksData.length > 0) && (
                 <FlatList
-                    data={myTasksData}
+                    data={myTasksData.filter((value => homeSelector.isTeamPresent && value.taskName === "Test Drive Approval" ? false : true ))}
                     extraData={myTasksData}
                     style={{ flex: 1 }}
                     numColumns={3}
