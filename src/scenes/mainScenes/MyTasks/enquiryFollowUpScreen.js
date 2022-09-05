@@ -63,7 +63,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
   console.log('route-----', route?.params?.model);
   const { taskId, identifier, universalId, reasonTaskName } = route.params;
   const selector = useSelector((state) => state.enquiryFollowUpReducer);
-  
+
   const dispatch = useDispatch();
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [dropDownTitle, setDropDownTitle] = useState("");
@@ -85,13 +85,13 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     let title = "Enquiry Follow Up";
     switch (identifier) {
       case "PRE_ENQUIRY_FOLLOW_UP":
-        title = "Contacts follow-up";
+        title = "Contacts followup";
         break;
       case "PRE_BOOKING_FOLLOW_UP":
         title = "Booking approval task";
         break;
         case "BOOKING_FOLLOW_UP":
-          title ="Booking view follow up";
+          title ="Booking follow up";
           break;
     }
 
@@ -110,7 +110,11 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     navigation.addListener('focus', () => {
       console.log("TYPE:", reasonTaskName);
       getCurrentLocation()
-      getReasonListData(reasonTaskName)
+      let taskName = reasonTaskName;
+      if (taskName ==='Contacts followup') { // this change is to send the previously used taskName value to the service call.
+        taskName = 'Pre Enquiry Followup'
+      }
+      getReasonListData(taskName)
     })
   }, [navigation]);
 
@@ -124,7 +128,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     });
   }
   useEffect(() => {
-    if(selector.isReasonUpdate && reasonList.length > 0){  
+    if(selector.isReasonUpdate && reasonList.length > 0){
       let reason = selector.reason;
       let findIndex = reasonList.findIndex((item) => {
         return item.value === selector.reason
@@ -151,7 +155,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
         const {model, variant} = selectedModelData;
         updateModelVarientsData(model, false);
       }
-      
+
     }
   }, [selector.enquiry_details_response]);
 
@@ -169,6 +173,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
         orgId: jsonObj.orgId,
         taskName: taskName
       }
+      console.log('123421: ', payload)
       Promise.all([
         dispatch(getReasonList(payload))
       ]).then((res) => {
