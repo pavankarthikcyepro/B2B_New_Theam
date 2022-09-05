@@ -4,7 +4,6 @@ import {
   convertToTime,
 } from "../utils/helperFunctions";
 import URL from "../networking/endpoints";
-import moment from "moment";
 import { client } from "../networking/client";
 
 interface EnquiryFollowUpTextModel {
@@ -125,14 +124,16 @@ const slice = createSlice({
       }
     },
     setDatePicker: (state, action) => {
+      let date = new Date();
+      date.setDate(date.getDate() + 9);
       switch (action.payload) {
         case "ACTUAL_START_TIME":
           state.minDate = new Date();
-          state.maxDate = null;
+          state.maxDate = date;
           break;
         case "ACTUAL_END_TIME":
           state.minDate = new Date();
-          state.maxDate = null;
+          state.maxDate = date;
           break;
       }
       state.datePickerKeyId = action.payload;

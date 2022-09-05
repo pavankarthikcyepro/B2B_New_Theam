@@ -86,10 +86,13 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     let title = "Enquiry Follow Up";
     switch (identifier) {
       case "PRE_ENQUIRY_FOLLOW_UP":
-        title = "Pre Enquiry Follow Up";
+        title = "Contacts Followup";
         break;
       case "PRE_BOOKING_FOLLOW_UP":
-        title = "Pre Booking Follow Up";
+        title = "Booking approval task";
+        break;
+      case "BOOKING_FOLLOW_UP":
+        title ="Booking follow up";
         break;
     }
 
@@ -108,6 +111,10 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     navigation.addListener('focus', () => {
       console.log("TYPE:", reasonTaskName);
       getCurrentLocation()
+      let taskName = reasonTaskName;
+      if (taskName ==='Contacts followup') { // this change is to send the previously used taskName value to the service call.
+        taskName = 'Pre Enquiry Followup'
+      }
       getReasonListData(reasonTaskName)
     })
   }, [navigation]);
@@ -400,6 +407,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
         visible={selector.showDatepicker}
         mode={"date"}
         minimumDate={selector.minDate}
+        maximumDate={selector.maxDate}
         value={new Date(Date.now())}
         onChange={(event, selectedDate) => {
           console.log("date: ", selectedDate);

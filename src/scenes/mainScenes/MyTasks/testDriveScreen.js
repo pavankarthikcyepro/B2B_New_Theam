@@ -147,6 +147,8 @@ const TestDriveScreen = ({ route, navigation }) => {
         setValue: setOtpValue,
     });
     const [isSubmitPress, setIsSubmitPress] = useState(false);
+    let date = new Date();
+    date.setDate(date.getDate() + 9);
 
     useEffect(() => {
         //updateBasicDetails(taskData);
@@ -323,7 +325,7 @@ const TestDriveScreen = ({ route, navigation }) => {
         if (selector.task_details_response) {
             getTestDriveAppointmentDetailsFromServer();
         }
-    }, [selector.task_details_response])
+    }, [selector.task_details_response, taskStatusAndName])
 
     const getTestDriveAppointmentDetailsFromServer = async () => {
         if (selector.task_details_response.entityModuleId) {
@@ -386,8 +388,8 @@ const TestDriveScreen = ({ route, navigation }) => {
             }
 
             setSelectedDseDetails({
-                name: selector.task_details_response.assignee.empName,
-                id: selector.task_details_response.assignee.empId,
+                name: selector.task_details_response.assignee?.empName,
+                id: selector.task_details_response.assignee?.empId,
             });
             setIsRecordEditable(false);
             updateTaskDetails(selector.task_details_response);
@@ -507,21 +509,21 @@ const TestDriveScreen = ({ route, navigation }) => {
 
         switch (key) {
             case "MODEL":
-                if (selector.test_drive_vehicle_list_for_drop_down.length == 0) {
+                if (selector.test_drive_vehicle_list_for_drop_down.length === 0) {
                     showToast("No Vehicles Found");
                     return;
                 }
                 setDataForDropDown([...selector.test_drive_vehicle_list_for_drop_down]);
                 break;
             case "VARIENT":
-                if (varientListForDropDown.length == 0) {
+                if (varientListForDropDown.length === 0) {
                     showToast("No Varients Found");
                     return;
                 }
                 setDataForDropDown([...varientListForDropDown]);
                 break;
             case "LIST_OF_DRIVERS":
-                if (selector.drivers_list.length == 0) {
+                if (selector.drivers_list.length === 0) {
                     showToast("No Driver List Found");
                     return;
                 }
@@ -572,10 +574,7 @@ const TestDriveScreen = ({ route, navigation }) => {
             return;
         }
 
-        if (
-            selectedVehicleDetails.vehicleId == 0 ||
-            selectedVehicleDetails.varientId == 0
-        ) {
+        if (selectedVehicleDetails.vehicleId === 0 || selectedVehicleDetails.varientId === 0) {
             showToast("Please select model & varient");
             return;
         }
@@ -585,7 +584,7 @@ const TestDriveScreen = ({ route, navigation }) => {
         // }
 
         if (selector.customer_preferred_date.length === 0) {
-            showToast("Please select customer preffered date");
+            showToast("Please select customer preferred date");
             return;
         }
 
@@ -608,11 +607,8 @@ const TestDriveScreen = ({ route, navigation }) => {
             return;
         }
 
-        if (
-            selectedVehicleDetails.vehicleId == 0 ||
-            selectedVehicleDetails.varientId == 0
-        ) {
-            showToast("Please select model & varient");
+        if (selectedVehicleDetails.vehicleId === 0 || selectedVehicleDetails.varientId === 0) {
+            showToast("Please select model & variant");
             return;
         }
 
@@ -669,7 +665,7 @@ const TestDriveScreen = ({ route, navigation }) => {
         let appointmentObj = {
             address: customerAddress,
             branchId: selectedBranchId,
-            customerHaveingDl: customerHavingDrivingLicense === 1 ? true : false,
+            customerHaveingDl: customerHavingDrivingLicense === 1,
             customerId: universalId,
             dseId: selectedDseDetails.id,
             location: location,
@@ -735,10 +731,7 @@ const TestDriveScreen = ({ route, navigation }) => {
             return;
         }
 
-        if (
-            selectedVehicleDetails.vehicleId == 0 ||
-            selectedVehicleDetails.varientId == 0
-        ) {
+        if (selectedVehicleDetails.vehicleId === 0 || selectedVehicleDetails.varientId === 0) {
             showToast("Please select model & varient");
             return;
         }
@@ -796,49 +789,46 @@ const TestDriveScreen = ({ route, navigation }) => {
         }
     }, [selector.book_test_drive_appointment_response]);
 
+    const autoApproveTestDrive = () => {
+        submitClicked("APPROVED", "Test Drive Approval");
+    }
     // Handle Update Test Drive Task response
     useEffect(() => {
         console.log('repsonse: ', selector.test_drive_update_task_response, ', task status: ', taskStatusAndName)
         if (selector.test_drive_update_task_response === "success" && taskStatusAndName.status === 'SENT_FOR_APPROVAL') {
-            showAlertMsg(true);
+            autoApproveTestDrive();
+            // showAlertMsg(true);
         } else if (selector.test_drive_update_task_response === "success" && taskStatusAndName.status === 'CANCELLED') {
             showCancelAlertMsg();
+        } else if (selector.test_drive_update_task_response === "success" && taskStatusAndName.status === 'APPROVED') {
+            setTimeout(() => {
+                dispatch(getTaskDetailsApi(taskId))
+            }, 1000);
+            // displayStatusSuccessMessage();
         } else if (selector.test_drive_update_task_response === "failed") {
             showAlertMsg(false);
         }  else if (selector.test_drive_update_task_response === "success" &&
-            (taskStatusAndName.name==='Test Drive Approval' || taskStatusAndName.status === 'RESCHEDULED' || taskStatusAndName.status === 'CLOSED')) {
-            Alert.alert(
-                    selector.test_drive_update_task_response,
-                    taskStatusAndName.status,
-                    [
-                        {
-                            text: "OK",
-                            onPress: () => {
-                                dispatch(clearState());
-                                navigation.goBack();
-                            },
-                        },
-                    ],
-                    { cancelable: false }
-                );
+            (taskStatusAndName.status === 'RESCHEDULED' || taskStatusAndName.status === 'CLOSED')) {
+            displayStatusSuccessMessage();
         }
-        // else if (selector.test_drive_update_task_response !== null) {
-        //     Alert.alert(
-        //         "",
-        //         selector.test_drive_update_task_response,
-        //         [
-        //             {
-        //                 text: "OK",
-        //                 onPress: () => {
-        //                     dispatch(clearState());
-        //                     navigation.goBack();
-        //                 },
-        //             },
-        //         ],
-        //         { cancelable: false }
-        //     );
-        // }
-    }, [selector.test_drive_update_task_response]);
+    }, [selector.test_drive_update_task_response, taskStatusAndName]);
+
+    const displayStatusSuccessMessage = () => {
+        Alert.alert(
+            selector.test_drive_update_task_response,
+            taskStatusAndName.status,
+            [
+                {
+                    text: "OK",
+                    onPress: () => {
+                        dispatch(clearState());
+                        navigation.goBack();
+                    },
+                },
+            ],
+            { cancelable: false }
+        );
+    }
 
     const showAlertMsg = (isSucess) => {
         let message = isSucess
@@ -1030,6 +1020,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 visible={showDatePickerModel}
                 mode={datePickerMode}
                 minimumDate={new Date(Date.now())}
+                maximumDate={date}
                 value={new Date(Date.now())}
                 onChange={(event, selectedDate) => {
                     console.log("date: ", selectedDate);
@@ -1066,7 +1057,7 @@ const TestDriveScreen = ({ route, navigation }) => {
 
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
-                behavior={Platform.OS == "ios" ? "padding" : "height"}
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
                 enabled
                 keyboardVerticalOffset={100}
             >
@@ -1160,13 +1151,13 @@ const TestDriveScreen = ({ route, navigation }) => {
                                 <RadioTextItem
                                     label={"Showroom address"}
                                     value={"Showroom address"}
-                                    status={addressType === 1 ? true : false}
+                                    status={addressType === 1}
                                     onPress={() => setAddressType(1)}
                                 />
                                 <RadioTextItem
                                     label={"Customer address"}
                                     value={"Customer address"}
-                                    status={addressType === 2 ? true : false}
+                                    status={addressType === 2}
                                     onPress={() => setAddressType(2)}
                                 />
                             </View>

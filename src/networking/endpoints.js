@@ -393,6 +393,12 @@ const URL = {
   TRANSFER_TASK: (fromUserId, toUserId) => {
       return sales_url + `/task-delegation/process/selected?emplIdFrom=${fromUserId}&emplIdTo=${toUserId}`;
   },
+  UPDATE_SELF_TARGET_PARAMS: () => {
+    return `${salesGap}/target-update1`;
+  },
+  UPDATE_TEAM_TARGET_PARAMS: () => {
+    return `${salesGap}/target-update`;
+  }
 }
 
 // bankFinancier, incuranceCompany, enqueryCategory, deliveryCheckList, sublostReason

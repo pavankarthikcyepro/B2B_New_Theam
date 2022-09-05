@@ -46,7 +46,7 @@ const ListComponent = ({ route, navigation }) => {
     const defaultData = [
         {
             taskCnt: 0,
-            taskName: "Booking Follow Up",
+            taskName: "Proceed to Booking",
             myTaskList: []
         },
         {
@@ -850,7 +850,19 @@ const ListComponent = ({ route, navigation }) => {
             showToast("No tasks available")
         }
     }
-
+    const checkForTaskNames = (taskName) => {
+        if (taskName.includes('Pre Enquiry')) {
+            taskName = taskName.replace('Pre Enquiry', 'Contacts');
+        } else if (taskName.includes('Pre Booking')) {
+            taskName = taskName.replace('Pre Booking', 'Booking Approval');
+        } else if (taskName.includes('Booking')) {
+            taskName = taskName.replace('Booking', 'Booking View');
+        }
+        if (taskName.toLowerCase() === 'proceed to booking view') {
+            taskName = 'Booking Followup'
+        }
+        return taskName
+    }
     return (
 
         <View style={{ flex: 1, backgroundColor: Colors.LIGHT_GRAY, padding: 5, }}>
@@ -997,7 +1009,7 @@ const ListComponent = ({ route, navigation }) => {
                                         </View>
                                         <View style={{ width: "100%", justifyContent: "center", alignItems: "center" }}>
                                             <View style={{ width: "75%", backgroundColor: Colors.DARK_GRAY, height: 2, marginBottom: 13 }}></View>
-                                            <Text style={{ fontSize: 12, fontWeight: "700", textAlign: "center" }} numberOfLines={2}>{item.taskName}</Text>
+                                            <Text style={{ fontSize: 12, fontWeight: "700", textAlign: "center" }} numberOfLines={3}>{checkForTaskNames(item.taskName)}</Text>
                                         </View>
                                     </View>
                                 </TouchableOpacity>
@@ -1038,7 +1050,7 @@ const ListComponent = ({ route, navigation }) => {
                                         </View>
                                         <View style={{ width: "100%", justifyContent: "center", alignItems: "center" }}>
                                             <View style={{ width: "75%", backgroundColor: Colors.DARK_GRAY, height: 2, marginBottom: 13 }}></View>
-                                            <Text style={{ fontSize: 12, fontWeight: "700", textAlign: "center" }} numberOfLines={2}>{item.taskName}</Text>
+                                            <Text style={{ fontSize: 12, fontWeight: "700", textAlign: "center" }} numberOfLines={2}>{checkForTaskNames(item.taskName)}</Text>
                                         </View>
                                     </View>
                                 </TouchableOpacity>
