@@ -106,9 +106,10 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
             taskName = taskName.replace('Pre Enquiry', 'Contacts');
         } else if (taskName.includes('Pre Booking')) {
             taskName = taskName.replace('Pre Booking', 'Booking Approval');
-        } else if (taskName.includes('Booking')) {
-            taskName = taskName.replace('Booking', 'Booking View');
         }
+        // else if (taskName.includes('Booking')) {
+        //     taskName = taskName.replace('Booking', 'Booking View');
+        // }
         return taskName
     }
 
@@ -160,15 +161,15 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                 break;
             case "enquiryfollowup":
                 navigationId = AppNavigator.EmsStackIdentifiers.enquiryFollowUp;
-                taskNameNew = 'Enquiry follow-up'
+                taskNameNew = 'Enquiry followup'
                 break;
             case "preenquiryfollowup":
                 navigationId = AppNavigator.EmsStackIdentifiers.enquiryFollowUp;
-                taskNameNew = 'Contacts follow-up'
+                taskNameNew = 'Contacts followup'
                 break;
                 case "bookingfollowupdse":
                     navigationId = AppNavigator.EmsStackIdentifiers.bookingFollowUp;
-                    taskNameNew = "Booking Followup"
+                    taskNameNew = "Booking Followup -DSE"
                     break;
             case "prebookingfollowup":
                 navigationId = AppNavigator.EmsStackIdentifiers.enquiryFollowUp;

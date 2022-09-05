@@ -327,12 +327,12 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
         }
     }, [selector.update_enquiry_details_response_status, selector.update_enquiry_details_response]);
 
-    displayCreateEnquiryAlert = () => {
+    const displayCreateEnquiryAlert = () => {
         let refNumber = "";
-        if (selector.update_enquiry_details_response && identifier != "PROCEED_TO_BOOKING") {
+        if (selector.update_enquiry_details_response && identifier !== "PROCEED_TO_BOOKING") {
             refNumber = selector.update_enquiry_details_response.dmsLeadDto.referencenumber;
         }
-        let title = identifier === "PROCEED_TO_BOOKING" ? 'Booking Created Successfully' : 'Pre Booking Created Successfully';
+        let title = identifier === "PROCEED_TO_BOOKING" ? 'Booking Created Successfully' : 'Booking Approval Created Successfully';
 
         Alert.alert(title, refNumber,
             [

@@ -859,6 +859,9 @@ const ListComponent = ({ route, navigation }) => {
         } else if (taskName.includes('Booking')) {
             taskName = taskName.replace('Booking', 'Booking View');
         }
+        if (taskName.toLowerCase() === 'proceed to booking view') {
+            taskName = 'Booking Followup'
+        }
         return taskName
     }
 
@@ -1008,7 +1011,7 @@ const ListComponent = ({ route, navigation }) => {
                                         </View>
                                         <View style={{ width: "100%", justifyContent: "center", alignItems: "center" }}>
                                             <View style={{ width: "75%", backgroundColor: Colors.DARK_GRAY, height: 2, marginBottom: 13 }}></View>
-                                            <Text style={{ fontSize: 12, fontWeight: "700", textAlign: "center" }} numberOfLines={2}>{checkForTaskNames(item.taskName)}</Text>
+                                            <Text style={{ fontSize: 12, fontWeight: "700", textAlign: "center" }} numberOfLines={3}>{checkForTaskNames(item.taskName)}</Text>
                                         </View>
                                     </View>
                                 </TouchableOpacity>
