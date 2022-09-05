@@ -59,6 +59,8 @@ const BookingScreen = ({ navigation }) => {
     const [sortAndFilterVisible, setSortAndFilterVisible] = useState(false);
     const [searchedData, setSearchedData] = useState([]);
     const [orgId, setOrgId] = useState("");
+    const [fromDate, setFromDate] = useState(new Date(Date.now()));
+    const [toDate, setToDate] = useState(new Date(Date.now()));
 
     const orgIdStateRef = React.useRef(orgId);
     const empIdStateRef = React.useRef(employeeId);
@@ -225,20 +227,27 @@ const BookingScreen = ({ navigation }) => {
         dispatch(getPreBookingData(payload));
     }
 
-    const updateSelectedDate = (date, key) => {
-        const formatDate = moment(date).format(dateFormat);
-        switch (key) {
-            case "FROM_DATE":
-                setFromDateState(formatDate);
-                getPreBookingListFromServer(employeeId, formatDate, selectedToDate);
-                break;
-            case "TO_DATE":
-                setToDateState(formatDate);
-                getPreBookingListFromServer(employeeId, selectedFromDate, formatDate);
-                break;
-        }
+    const handleModal = () => {
+      setShowDatePicker(false);
+      getPreBookingListFromServer(employeeId, selectedFromDate, selectedToDate);
     };
-
+    const onChange = (event, selectedDate) => {
+      const formatDate = moment(selectedDate).format(dateFormat);
+      switch (datePickerId) {
+        case "FROM_DATE":
+          if (selectedDate) {
+            setFromDateState(formatDate);
+            setFromDate(selectedDate);
+          }
+          break;
+        case "TO_DATE":
+          if (selectedDate) {
+            setToDateState(formatDate);
+            setToDate(selectedDate);
+          }
+          break;
+      }
+    };
     const applySelectedFilters = (payload) => {
         const modelData = payload.model;
         const sourceData = payload.source;
@@ -308,144 +317,145 @@ const BookingScreen = ({ navigation }) => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <DatePickerComponent
-                visible={showDatePicker}
-                mode={"date"}
-                value={new Date(Date.now())}
-                onChange={(event, selectedDate) => {
-                    console.log("date: ", selectedDate);
-                    setShowDatePicker(false);
-                    if (Platform.OS === "android") {
-                        if (selectedDate) {
-                            updateSelectedDate(selectedDate, datePickerId);
-                        }
-                    } else {
-                        updateSelectedDate(selectedDate, datePickerId);
-                    }
-                }}
-                onRequestClose={() => setShowDatePicker(false)}
-            />
+      <SafeAreaView style={styles.container}>
 
-            <SortAndFilterComp
-                visible={sortAndFilterVisible}
-                categoryList={categoryList}
-                modelList={vehicleModelList}
-                sourceList={sourceList}
-                submitCallback={(payload) => {
-                    // console.log("payload: ", payload);
-                    applySelectedFilters(payload);
-                    setSortAndFilterVisible(false);
-                }}
-                onRequestClose={() => {
-                    setSortAndFilterVisible(false);
-                }}
-            />
+        <DatePickerComponent
+          visible={showDatePicker}
+          mode={"date"}
+          value={datePickerId === "FROM_DATE" ? fromDate : toDate}
+          onChange={onChange}
+          onRequestClose={handleModal}
+        />
 
-            <View style={styles.view1}>
-                <View style={{ width: "80%" }}>
-                    <DateRangeComp
-                        fromDate={selectedFromDate}
-                        toDate={selectedToDate}
-                        fromDateClicked={() => showDatePickerMethod("FROM_DATE")}
-                        toDateClicked={() => showDatePickerMethod("TO_DATE")}
-                    />
-                </View>
-                <Pressable onPress={() => setSortAndFilterVisible(true)}>
-                    <View style={{ flexDirection: "row", alignItems: "center" }}>
-                        <Text style={styles.text1}>{"Filter"}</Text>
-                        <IconButton
-                            icon={"filter-outline"}
-                            size={20}
-                            color={Colors.RED}
-                            style={{ margin: 0, padding: 0 }}
-                        />
-                    </View>
-                </Pressable>
+        <SortAndFilterComp
+          visible={sortAndFilterVisible}
+          categoryList={categoryList}
+          modelList={vehicleModelList}
+          sourceList={sourceList}
+          submitCallback={(payload) => {
+            // console.log("payload: ", payload);
+            applySelectedFilters(payload);
+            setSortAndFilterVisible(false);
+          }}
+          onRequestClose={() => {
+            setSortAndFilterVisible(false);
+          }}
+        />
+
+        <View style={styles.view1}>
+          <View style={{ width: "80%" }}>
+            <DateRangeComp
+              fromDate={selectedFromDate}
+              toDate={selectedToDate}
+              fromDateClicked={() => showDatePickerMethod("FROM_DATE")}
+              toDateClicked={() => showDatePickerMethod("TO_DATE")}
+            />
+          </View>
+          <Pressable onPress={() => setSortAndFilterVisible(true)}>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Text style={styles.text1}>{"Filter"}</Text>
+              <IconButton
+                icon={"filter-outline"}
+                size={20}
+                color={Colors.RED}
+                style={{ margin: 0, padding: 0 }}
+              />
             </View>
+          </Pressable>
+        </View>
 
-            {searchedData.length === 0 ? (
-                <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} />
-            ) : (
-                <View
-                    style={[
-                        { backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 },
-                    ]}
-                >
-                    <FlatList
-                        data={searchedData}
-                        extraData={searchedData}
-                        keyExtractor={(item, index) => index.toString()}
-                        refreshControl={
-                            <RefreshControl
-                                refreshing={selector.isLoading}
-                                onRefresh={() =>
-                                    getPreBookingListFromServer(
-                                        employeeId,
-                                        selectedFromDate,
-                                        selectedToDate
-                                    )
-                                }
-                                progressViewOffset={200}
-                            />
+        {searchedData.length === 0 ? (
+          <EmptyListView
+            title={"No Data Found"}
+            isLoading={selector.isLoading}
+          />
+        ) : (
+          <View
+            style={[
+              { backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 },
+            ]}
+          >
+            <FlatList
+              data={searchedData}
+              extraData={searchedData}
+              keyExtractor={(item, index) => index.toString()}
+              refreshControl={
+                <RefreshControl
+                  refreshing={selector.isLoading}
+                  onRefresh={() =>
+                    getPreBookingListFromServer(
+                      employeeId,
+                      selectedFromDate,
+                      selectedToDate
+                    )
+                  }
+                  progressViewOffset={200}
+                />
+              }
+              showsVerticalScrollIndicator={false}
+              onEndReachedThreshold={0}
+              // onEndReached={() => {
+              //     if (appSelector.searchKey === '') {
+              //         getMorePreBookingListFromServer()
+              //     }
+              // }}
+              ListFooterComponent={renderFooter}
+              renderItem={({ item, index }) => {
+                let color = Colors.WHITE;
+                if (index % 2 != 0) {
+                  color = Colors.LIGHT_GRAY;
+                }
+
+                return (
+                  <>
+                    <View>
+                      <MyTaskNewItem
+                        from="BOOKING"
+                        name={
+                          getFirstLetterUpperCase(item.firstName) +
+                          " " +
+                          getFirstLetterUpperCase(item.lastName)
                         }
-                        showsVerticalScrollIndicator={false}
-                        onEndReachedThreshold={0}
-                        // onEndReached={() => {
-                        //     if (appSelector.searchKey === '') {
-                        //         getMorePreBookingListFromServer()
-                        //     }
-                        // }}
-                        ListFooterComponent={renderFooter}
-                        renderItem={({ item, index }) => {
-                            let color = Colors.WHITE;
-                            if (index % 2 != 0) {
-                                color = Colors.LIGHT_GRAY;
+                        navigator={navigation}
+                        uniqueId={item.leadId}
+                        type="Book"
+                        status={""}
+                        created={item.modifiedDate}
+                        dmsLead={item.createdBy}
+                        phone={item.phone}
+                        source={item.enquirySource}
+                        model={item.model}
+                        leadStatus={item.leadStatus}
+                        enqCat={item.enquiryCategory}
+                        onItemPress={() =>
+                          navigation.navigate(
+                            AppNavigator.EmsStackIdentifiers.task360,
+                            {
+                              universalId: item.universalId,
+                              mobileNo: item.phone,
                             }
-
-                            return (
-                                <>
-                                    <View>
-                                        <MyTaskNewItem
-                                            from="BOOKING"
-                                            name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
-                                            navigator={navigation}
-                                            uniqueId={item.leadId} 
-                                            type='Book'
-                                            status={""}
-                                            created={item.modifiedDate}
-                                            dmsLead={item.createdBy}
-                                            phone={item.phone}
-                                            source={item.enquirySource}
-                                            model={item.model}
-                                            leadStatus={item.leadStatus}
-                                            enqCat={item.enquiryCategory}
-                                            onItemPress={() =>
-                                                navigation.navigate(
-                                                    AppNavigator.EmsStackIdentifiers.task360,
-                                                    { universalId: item.universalId, mobileNo: item.phone }
-                                                )
-                                            }
-                                            onDocPress={() => {
-                                                console.log("BK DTLS:", item);
-                                                navigation.navigate(
-                                                    AppNavigator.EmsStackIdentifiers.bookingForm,
-                                                    { universalId: item.universalId }
-                                                )
-                                                // navigation.navigate(
-                                                //     AppNavigator.EmsStackIdentifiers.bookingForm                                            
-                                                // )
-                                                // alert(AppNavigator.EmsStackIdentifiers.bookingForm)
-                                            }}
-                                        />
-                                    </View>
-                                </>
-                            );
+                          )
+                        }
+                        onDocPress={() => {
+                          console.log("BK DTLS:", item);
+                          navigation.navigate(
+                            AppNavigator.EmsStackIdentifiers.bookingForm,
+                            { universalId: item.universalId }
+                          );
+                          // navigation.navigate(
+                          //     AppNavigator.EmsStackIdentifiers.bookingForm
+                          // )
+                          // alert(AppNavigator.EmsStackIdentifiers.bookingForm)
                         }}
-                    />
-                </View>
-            )}
-        </SafeAreaView>
+                      />
+                    </View>
+                  </>
+                );
+              }}
+            />
+          </View>
+        )}
+      </SafeAreaView>
     );
 };
 

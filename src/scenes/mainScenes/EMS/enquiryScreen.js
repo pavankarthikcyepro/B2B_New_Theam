@@ -36,11 +36,15 @@ const EnquiryScreen = ({ navigation }) => {
     const [sortAndFilterVisible, setSortAndFilterVisible] = useState(false);
     const [searchedData, setSearchedData] = useState([]);
     const [orgId, setOrgId] = useState("");
-
+    const [fromDate, setFromDate] = useState(new Date(Date.now()));
+    const [toDate, setToDate] = useState(new Date(Date.now()));
+    
     const orgIdStateRef = React.useRef(orgId);
     const empIdStateRef = React.useRef(employeeId);
     const fromDateRef = React.useRef(selectedFromDate);
     const toDateRef = React.useRef(selectedToDate);
+
+  
 
     const setMyState = data => {
         empIdStateRef.current = data.empId;
@@ -185,21 +189,27 @@ const EnquiryScreen = ({ navigation }) => {
         setDatePickerId(key);
     }
 
-    const updateSelectedDate = (date, key) => {
-
-        const formatDate = moment(date).format(dateFormat);
-        switch (key) {
-            case "FROM_DATE":
-                setFromDateState(formatDate);
-                getEnquiryListFromServer(employeeId, formatDate, selectedToDate);
-                break;
-            case "TO_DATE":
-                setToDateState(formatDate);
-                getEnquiryListFromServer(employeeId, selectedFromDate, formatDate);
-                break;
-        }
-    }
-
+    const handleModal = () => {
+      setShowDatePicker(false);
+      getEnquiryListFromServer(employeeId, selectedFromDate, selectedToDate);
+    };
+    const onChange = (event, selectedDate) => {
+      const formatDate = moment(selectedDate).format(dateFormat);
+      switch (datePickerId) {
+        case "FROM_DATE":
+          if (selectedDate) {
+            setFromDateState(formatDate);
+            setFromDate(selectedDate);
+          }
+          break;
+        case "TO_DATE":
+          if (selectedDate) {
+            setToDateState(formatDate);
+            setToDate(selectedDate);
+          }
+          break;
+      }
+    };
     const applySelectedFilters = (payload) => {
 
         const modelData = payload.model;
@@ -260,118 +270,148 @@ const EnquiryScreen = ({ navigation }) => {
     }
 
     return (
-        <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container}>
+        <DatePickerComponent
+          visible={showDatePicker}
+          mode={"date"}
+          value={datePickerId === "FROM_DATE" ? fromDate : toDate}
+          onChange={onChange}
+          onRequestClose={handleModal}
+        />
 
-            <DatePickerComponent
-                visible={showDatePicker}
-                mode={"date"}
-                value={new Date(Date.now())}
-                onChange={(event, selectedDate) => {
-                    console.log("date: ", selectedDate);
-                    setShowDatePicker(false)
-                    if (Platform.OS === "android") {
-                        if (selectedDate) {
-                            updateSelectedDate(selectedDate, datePickerId);
-                        }
-                    } else {
-                        updateSelectedDate(selectedDate, datePickerId);
-                    }
-                }}
-                onRequestClose={() => setShowDatePicker(false)}
+        <SortAndFilterComp
+          visible={sortAndFilterVisible}
+          categoryList={categoryList}
+          modelList={vehicleModelList}
+          sourceList={sourceList}
+          submitCallback={(payload) => {
+            // console.log("payload: ", payload);
+            applySelectedFilters(payload);
+            setSortAndFilterVisible(false);
+          }}
+          onRequestClose={() => {
+            setSortAndFilterVisible(false);
+          }}
+        />
+
+        <View style={styles.view1}>
+          <View style={{ width: "80%" }}>
+            <DateRangeComp
+              fromDate={selectedFromDate}
+              toDate={selectedToDate}
+              fromDateClicked={() => showDatePickerMethod("FROM_DATE")}
+              toDateClicked={() => showDatePickerMethod("TO_DATE")}
             />
-
-            <SortAndFilterComp
-                visible={sortAndFilterVisible}
-                categoryList={categoryList}
-                modelList={vehicleModelList}
-                sourceList={sourceList}
-                submitCallback={(payload) => {
-                    // console.log("payload: ", payload);
-                    applySelectedFilters(payload);
-                    setSortAndFilterVisible(false);
-                }}
-                onRequestClose={() => {
-                    setSortAndFilterVisible(false);
-                }}
-            />
-
-            <View style={styles.view1}>
-                <View style={{ width: "80%" }}>
-                    <DateRangeComp
-                        fromDate={selectedFromDate}
-                        toDate={selectedToDate}
-                        fromDateClicked={() => showDatePickerMethod("FROM_DATE")}
-                        toDateClicked={() => showDatePickerMethod("TO_DATE")}
-                    />
-                </View>
-                <Pressable onPress={() => setSortAndFilterVisible(true)}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Text style={styles.text1}>{'Filter'}</Text>
-                        <IconButton icon={'filter-outline'} size={20} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
-                    </View>
-                </Pressable>
+          </View>
+          <Pressable onPress={() => setSortAndFilterVisible(true)}>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Text style={styles.text1}>{"Filter"}</Text>
+              <IconButton
+                icon={"filter-outline"}
+                size={20}
+                color={Colors.RED}
+                style={{ margin: 0, padding: 0 }}
+              />
             </View>
+          </Pressable>
+        </View>
 
-            {searchedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
-                <View style={[{ backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 }]}>
-                    <FlatList
-                        data={searchedData}
-                        extraData={searchedData}
-                        keyExtractor={(item, index) => index.toString()}
-                        refreshControl={(
-                            <RefreshControl
-                                refreshing={selector.isLoading}
-                                onRefresh={() => getEnquiryListFromServer(employeeId, selectedFromDate, selectedToDate)}
-                                progressViewOffset={200}
-                            />
-                        )}
-                        showsVerticalScrollIndicator={false}
-                        onEndReachedThreshold={0}
-                        // onEndReached={() => {
-                        //     if (appSelector.searchKey === '') {
-                        //         getMoreEnquiryListFromServer()
-                        //     }
-                        // }}
-                        ListFooterComponent={renderFooter}
-                        renderItem={({ item, index }) => {
+        {searchedData.length === 0 ? (
+          <EmptyListView
+            title={"No Data Found"}
+            isLoading={selector.isLoading}
+          />
+        ) : (
+          <View
+            style={[
+              { backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 },
+            ]}
+          >
+            <FlatList
+              data={searchedData}
+              extraData={searchedData}
+              keyExtractor={(item, index) => index.toString()}
+              refreshControl={
+                <RefreshControl
+                  refreshing={selector.isLoading}
+                  onRefresh={() =>
+                    getEnquiryListFromServer(
+                      employeeId,
+                      selectedFromDate,
+                      selectedToDate
+                    )
+                  }
+                  progressViewOffset={200}
+                />
+              }
+              showsVerticalScrollIndicator={false}
+              onEndReachedThreshold={0}
+              // onEndReached={() => {
+              //     if (appSelector.searchKey === '') {
+              //         getMoreEnquiryListFromServer()
+              //     }
+              // }}
+              ListFooterComponent={renderFooter}
+              renderItem={({ item, index }) => {
+                let color = Colors.WHITE;
+                if (index % 2 != 0) {
+                  color = Colors.LIGHT_GRAY;
+                }
 
-                            let color = Colors.WHITE;
-                            if (index % 2 != 0) {
-                                color = Colors.LIGHT_GRAY;
+                return (
+                  <>
+                    <View>
+                      <MyTaskNewItem
+                        from="PRE_ENQUIRY"
+                        name={
+                          getFirstLetterUpperCase(item.firstName) +
+                          " " +
+                          getFirstLetterUpperCase(item.lastName)
+                        }
+                        navigator={navigation}
+                        uniqueId={item.leadId}
+                        type="Enq"
+                        status={""}
+                        created={item.modifiedDate}
+                        dmsLead={item.createdBy}
+                        phone={item.phone}
+                        source={item.enquirySource}
+                        model={item.model}
+                        leadStatus={item.leadStatus}
+                        leadStage={item.leadStage}
+                        needStatus={"YES"}
+                        enqCat={item.enquiryCategory}
+                        onItemPress={() => {
+                          console.log("ENQ: ", JSON.stringify(item));
+                          navigation.navigate(
+                            AppNavigator.EmsStackIdentifiers.task360,
+                            {
+                              universalId: item.universalId,
+                              mobileNo: item.phone,
+                              leadStatus: item.leadStatus,
                             }
-
-                            return (
-                                <>
-                                    <View>
-                                        <MyTaskNewItem
-                                            from='PRE_ENQUIRY'
-                                            name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
-                                            navigator={navigation} 
-                                            uniqueId={item.leadId} 
-                                            type='Enq'
-                                            status={""}
-                                            created={item.modifiedDate}
-                                            dmsLead={item.createdBy}
-                                            phone={item.phone} 
-                                            source={item.enquirySource}
-                                            model={item.model}
-                                            leadStatus={item.leadStatus}
-                                            leadStage={item.leadStage}
-                                            needStatus={"YES"}
-                                            enqCat={item.enquiryCategory}
-                                            onItemPress={() => {
-                                                console.log("ENQ: ", JSON.stringify(item));
-                                                navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId, mobileNo: item.phone, leadStatus: item.leadStatus })
-                                            }}
-                                            onDocPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.detailsOverview, { universalId: item.universalId, enqDetails: item, leadStatus: item.leadStatus, leadStage: item.leadStage })}
-                                        />
-                                    </View>
-                                </>
-                            );
+                          );
                         }}
-                    />
-                </View>}
-        </SafeAreaView>
+                        onDocPress={() =>
+                          navigation.navigate(
+                            AppNavigator.EmsStackIdentifiers.detailsOverview,
+                            {
+                              universalId: item.universalId,
+                              enqDetails: item,
+                              leadStatus: item.leadStatus,
+                              leadStage: item.leadStage,
+                            }
+                          )
+                        }
+                      />
+                    </View>
+                  </>
+                );
+              }}
+            />
+          </View>
+        )}
+      </SafeAreaView>
     );
 };
 

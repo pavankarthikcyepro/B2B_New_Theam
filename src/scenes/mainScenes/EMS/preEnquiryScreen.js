@@ -43,12 +43,13 @@ const PreEnquiryScreen = ({ navigation }) => {
     const [selectedToDate, setSelectedToDate] = useState("");
     const [sortAndFilterVisible, setSortAndFilterVisible] = useState(false);
     const [searchedData, setSearchedData] = useState([]);
+    const [fromDate, setFromDate] = useState(new Date(Date.now()));
+    const [toDate, setToDate] = useState(new Date(Date.now()));
 
     const orgIdStateRef = React.useRef(orgId);
     const empIdStateRef = React.useRef(employeeId);
     const fromDateRef = React.useRef(selectedFromDate);
     const toDateRef = React.useRef(selectedToDate);
-
 
     const setMyState = data => {
         empIdStateRef.current = data.empId;
@@ -207,20 +208,6 @@ const PreEnquiryScreen = ({ navigation }) => {
         setDatePickerId(key);
     }
 
-    const updateSelectedDate = (date, key) => {
-        const formatDate = moment(date).format(dateFormat);
-        switch (key) {
-            case "FROM_DATE":
-                setFromDateState(formatDate);
-                getPreEnquiryListFromServer(employeeId, formatDate, selectedToDate);
-                break;
-            case "TO_DATE":
-                setToDateState(formatDate);
-                getPreEnquiryListFromServer(employeeId, selectedFromDate, formatDate);
-                break;
-        }
-    }
-
     const applySelectedFilters = (payload) => {
         const modelData = payload.model;
         const sourceData = payload.source;
@@ -285,10 +272,43 @@ const PreEnquiryScreen = ({ navigation }) => {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
-    return (
-        <SafeAreaView style={styles.conatiner}>
+     const handleModal = () => {
+       setShowDatePicker(false);
+       getPreEnquiryListFromServer(
+         employeeId,
+         selectedFromDate,
+         selectedToDate
+       );
+     };
+     const onChange = (event, selectedDate) => {
+       const formatDate = moment(selectedDate).format(dateFormat);
+       switch (datePickerId) {
+         case "FROM_DATE":
+           if (selectedDate) {
+             setFromDateState(formatDate);
+             setFromDate(selectedDate);
+           }
+           break;
+         case "TO_DATE":
+           if (selectedDate) {
+             setToDateState(formatDate);
+             setToDate(selectedDate);
+           }
+           break;
+       }
+     };
 
-            <DatePickerComponent
+    return (
+      <SafeAreaView style={styles.conatiner}>
+        <DatePickerComponent
+          visible={showDatePicker}
+          mode={"date"}
+          value={datePickerId === "FROM_DATE" ? fromDate : toDate}
+          onChange={onChange}
+          onRequestClose={handleModal}
+        />
+        {/* <DatePickerComponent
+            
                 visible={showDatePicker}
                 mode={"date"}
                 value={new Date(Date.now())}
@@ -304,124 +324,179 @@ const PreEnquiryScreen = ({ navigation }) => {
                     }
                 }}
                 onRequestClose={() => setShowDatePicker(false)}
-            />
+            /> */}
 
-            {/* <CallUserComponent
+        {/* <CallUserComponent
                 visible={selector.modelVisible}
                 onRequestClose={() => dispatch(callPressed())}
             /> */}
 
-            <SortAndFilterComp
-                visible={sortAndFilterVisible}
-                // categoryList={categoryList}
-                modelList={vehicleModelList}
-                sourceList={sourceList}
-                submitCallback={(payload) => {
-                    // console.log("payload: ", payload);
-                    applySelectedFilters(payload);
-                    setSortAndFilterVisible(false);
-                }}
-                onRequestClose={() => {
-                    setSortAndFilterVisible(false);
-                }}
-            />
+        <SortAndFilterComp
+          visible={sortAndFilterVisible}
+          // categoryList={categoryList}
+          modelList={vehicleModelList}
+          sourceList={sourceList}
+          submitCallback={(payload) => {
+            // console.log("payload: ", payload);
+            applySelectedFilters(payload);
+            setSortAndFilterVisible(false);
+          }}
+          onRequestClose={() => {
+            setSortAndFilterVisible(false);
+          }}
+        />
 
-            <View style={{ flex: 1, paddingHorizontal: 10, paddingTop: 5 }}>
-
-                <View style={styles.view1}>
-                    <View style={{ width: "80%" }}>
-                        <DateRangeComp
-                            fromDate={selectedFromDate}
-                            toDate={selectedToDate}
-                            fromDateClicked={() => showDatePickerMethod("FROM_DATE")}
-                            toDateClicked={() => showDatePickerMethod("TO_DATE")}
-                        />
-                    </View>
-                    <Pressable onPress={() => setSortAndFilterVisible(true)}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Text style={styles.text1}>{'Filter'}</Text>
-                            <IconButton icon={'filter-outline'} size={20} color={Colors.RED} style={{ margin: 0, padding: 0 }} />
-                        </View>
-                    </Pressable>
-                </View>
-                {/* // filter */}
-
-                {searchedData.length === 0 ? <EmptyListView title={'No Data Found'} isLoading={selector.isLoading} /> :
-                    <View style={[ { backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 }]}>
-                        <FlatList
-                            data={searchedData}
-                            extraData={searchedData}
-                            keyExtractor={(item, index) => index.toString()}
-                            refreshControl={(
-                                <RefreshControl
-                                    refreshing={selector.isLoading}
-                                    onRefresh={() => getPreEnquiryListFromServer(employeeId, selectedFromDate, selectedToDate)}
-                                    progressViewOffset={200}
-                                />
-                            )}
-                            showsVerticalScrollIndicator={false}
-                            onEndReachedThreshold={0}
-                            // onEndReached={() => {
-                            //     if (appSelector.searchKey === ''){
-                            //         getMorePreEnquiryListFromServer()
-                            //     }
-                            // }}
-                            ListFooterComponent={renderFooter}
-                            renderItem={({ item, index }) => {
-
-                                let color = Colors.WHITE;
-                                if (index % 2 != 0) {
-                                    color = Colors.LIGHT_GRAY;
-                                }
-
-                                return (
-                                    <>
-                                        <View>
-                                            <MyTaskNewItem
-                                                from='PRE_ENQUIRY'
-                                                name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
-                                                navigator={navigation}
-                                                uniqueId={item.leadId}  
-                                                type='PreEnq'                     
-                                                 status={""}
-                                                created={item.createdDate}
-                                                dmsLead={item.createdBy}
-                                                phone={item.phone}
-                                                source={item.enquirySource}
-                                                model={item.model}
-                                                leadStatus={item.leadStatus}
-                                                needStatus={"YES"}
-                                                onItemPress={() => {
-                                                    console.log("ENQ: ", JSON.stringify(item));
-                                                    navigation.navigate(AppNavigator.EmsStackIdentifiers.task360, { universalId: item.universalId, itemData: item })
-                                                }}
-                                                onDocPress={() => {
-                                                    console.log("ITEM:", JSON.stringify(item));
-                                                    navigation.navigate(AppNavigator.EmsStackIdentifiers.confirmedPreEnq, { itemData: item, fromCreatePreEnquiry: false })
-                                                }}
-                                            />
-                                        </View>
-                                    </>
-                                )
-                            }}
-                        />
-                    </View>
-                    }
-
-                <View style={[styles.addView, GlobalStyle.shadow, {justifyContent: 'center', alignItems: 'center'}]}>
-                    <View style={{width: 60, height: 60, borderRadius: 30, backgroundColor: '#FFFFFF'}}>
-                        <Pressable onPress={() => navigation.navigate(AppNavigator.EmsStackIdentifiers.addPreEnq, { fromEdit: false })}>
-                            {/* <View style={[GlobalStyle.shadow, { height: 60, width: 60, borderRadius: 30, shadowRadius: 5 }]}> */}
-                            {/* <VectorImage source={CREATE_NEW} width={60} height={60} color={"rgba(76,24,197,0.8)"} /> */}
-                            <CREATE_NEW width={60} height={60} fill={"rgba(255,21,107,6)"} />
-                            {/* </View> */}
-                        </Pressable>
-                    </View>
-                </View>
-
+        <View style={{ flex: 1, paddingHorizontal: 10, paddingTop: 5 }}>
+          <View style={styles.view1}>
+            <View style={{ width: "80%" }}>
+              <DateRangeComp
+                fromDate={selectedFromDate}
+                toDate={selectedToDate}
+                fromDateClicked={() => showDatePickerMethod("FROM_DATE")}
+                toDateClicked={() => showDatePickerMethod("TO_DATE")}
+              />
             </View>
-        </SafeAreaView >
-    )
+            <Pressable onPress={() => setSortAndFilterVisible(true)}>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text style={styles.text1}>{"Filter"}</Text>
+                <IconButton
+                  icon={"filter-outline"}
+                  size={20}
+                  color={Colors.RED}
+                  style={{ margin: 0, padding: 0 }}
+                />
+              </View>
+            </Pressable>
+          </View>
+          {/* // filter */}
+
+          {searchedData.length === 0 ? (
+            <EmptyListView
+              title={"No Data Found"}
+              isLoading={selector.isLoading}
+            />
+          ) : (
+            <View
+              style={[
+                {
+                  backgroundColor: Colors.LIGHT_GRAY,
+                  flex: 1,
+                  marginBottom: 10,
+                },
+              ]}
+            >
+              <FlatList
+                data={searchedData}
+                extraData={searchedData}
+                keyExtractor={(item, index) => index.toString()}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={selector.isLoading}
+                    onRefresh={() =>
+                      getPreEnquiryListFromServer(
+                        employeeId,
+                        selectedFromDate,
+                        selectedToDate
+                      )
+                    }
+                    progressViewOffset={200}
+                  />
+                }
+                showsVerticalScrollIndicator={false}
+                onEndReachedThreshold={0}
+                // onEndReached={() => {
+                //     if (appSelector.searchKey === ''){
+                //         getMorePreEnquiryListFromServer()
+                //     }
+                // }}
+                ListFooterComponent={renderFooter}
+                renderItem={({ item, index }) => {
+                  let color = Colors.WHITE;
+                  if (index % 2 != 0) {
+                    color = Colors.LIGHT_GRAY;
+                  }
+
+                  return (
+                    <>
+                      <View>
+                        <MyTaskNewItem
+                          from="PRE_ENQUIRY"
+                          name={
+                            getFirstLetterUpperCase(item.firstName) +
+                            " " +
+                            getFirstLetterUpperCase(item.lastName)
+                          }
+                          navigator={navigation}
+                          uniqueId={item.leadId}
+                          type="PreEnq"
+                          status={""}
+                          created={item.createdDate}
+                          dmsLead={item.createdBy}
+                          phone={item.phone}
+                          source={item.enquirySource}
+                          model={item.model}
+                          leadStatus={item.leadStatus}
+                          needStatus={"YES"}
+                          onItemPress={() => {
+                            console.log("ENQ: ", JSON.stringify(item));
+                            navigation.navigate(
+                              AppNavigator.EmsStackIdentifiers.task360,
+                              { universalId: item.universalId, itemData: item }
+                            );
+                          }}
+                          onDocPress={() => {
+                            console.log("ITEM:", JSON.stringify(item));
+                            navigation.navigate(
+                              AppNavigator.EmsStackIdentifiers.confirmedPreEnq,
+                              { itemData: item, fromCreatePreEnquiry: false }
+                            );
+                          }}
+                        />
+                      </View>
+                    </>
+                  );
+                }}
+              />
+            </View>
+          )}
+
+          <View
+            style={[
+              styles.addView,
+              GlobalStyle.shadow,
+              { justifyContent: "center", alignItems: "center" },
+            ]}
+          >
+            <View
+              style={{
+                width: 60,
+                height: 60,
+                borderRadius: 30,
+                backgroundColor: "#FFFFFF",
+              }}
+            >
+              <Pressable
+                onPress={() =>
+                  navigation.navigate(
+                    AppNavigator.EmsStackIdentifiers.addPreEnq,
+                    { fromEdit: false }
+                  )
+                }
+              >
+                {/* <View style={[GlobalStyle.shadow, { height: 60, width: 60, borderRadius: 30, shadowRadius: 5 }]}> */}
+                {/* <VectorImage source={CREATE_NEW} width={60} height={60} color={"rgba(76,24,197,0.8)"} /> */}
+                <CREATE_NEW
+                  width={60}
+                  height={60}
+                  fill={"rgba(255,21,107,6)"}
+                />
+                {/* </View> */}
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </SafeAreaView>
+    );
 }
 
 export default PreEnquiryScreen;
