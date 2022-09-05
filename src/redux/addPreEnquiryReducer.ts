@@ -325,7 +325,6 @@ state.customerType = "";
     },
     setExistingDetails: (state, action) => {
       const preEnquiryDetails = action.payload.dmsLeadDto;
-      console.log("REDUENQ------>>", preEnquiryDetails);
       let dmsAccountOrContactObj = {};
       if (action.payload.dmsAccountDto) {
         dmsAccountOrContactObj = action.payload.dmsAccountDto;
@@ -338,7 +337,6 @@ state.customerType = "";
       state.mobile = preEnquiryDetails.phone;
       state.alterMobile = dmsAccountOrContactObj["secondaryPhone"] || "";
       state.email = preEnquiryDetails.email;
-      console.log("PINCODE:", JSON.stringify(preEnquiryDetails));
 
       state.pincode =
         action.payload.dmsAddressList.length > 0
@@ -348,10 +346,10 @@ state.customerType = "";
       state.enquiryType = preEnquiryDetails.enquirySegment;
       state.customer_type_list =
         CustomerTypesObj[preEnquiryDetails.enquirySegment.toLowerCase()];
-      state.customer_type_list =
-        CustomerTypesObj21[preEnquiryDetails.enquirySegment.toLowerCase()];
-      state.customer_type_list =
-        CustomerTypesObj22[preEnquiryDetails.enquirySegment.toLowerCase()];
+      // state.customer_type_list =
+      //   CustomerTypesObj21[preEnquiryDetails.enquirySegment.toLowerCase()];
+      // state.customer_type_list =
+      //   CustomerTypesObj22[preEnquiryDetails.enquirySegment.toLowerCase()];
 
       state.enquiry_type_list = EnquiryTypes;
       state.enquiry_type_list21 = EnquiryTypes21;
