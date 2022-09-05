@@ -346,12 +346,12 @@ state.customerType = "";
           : "";
       state.carModel = preEnquiryDetails.model;
       state.enquiryType = preEnquiryDetails.enquirySegment;
-      state.customer_type_list =
-        CustomerTypesObj[preEnquiryDetails.enquirySegment.toLowerCase()];
-      state.customer_type_list =
-        CustomerTypesObj21[preEnquiryDetails.enquirySegment.toLowerCase()];
-      state.customer_type_list =
-        CustomerTypesObj22[preEnquiryDetails.enquirySegment.toLowerCase()];
+
+      const customerType = CustomerTypesObj[preEnquiryDetails.enquirySegment.toLowerCase()];
+      const customerType21 = CustomerTypesObj21[preEnquiryDetails.enquirySegment.toLowerCase()]
+      const customerType22 = CustomerTypesObj22[preEnquiryDetails.enquirySegment.toLowerCase()];
+
+      state.customer_type_list =  customerType ? customerType : (customerType21 ? customerType21 : customerType22) 
 
       state.enquiry_type_list = EnquiryTypes;
       state.enquiry_type_list21 = EnquiryTypes21;
@@ -363,6 +363,7 @@ state.customerType = "";
       state.subSourceOfEnquiryId = preEnquiryDetails.subSourceOfEnquiry;
       state.companyName = dmsAccountOrContactObj["company"] || "";
       state.other = "";
+      console.log('state.customer_type_list',state.customer_type_list)
     },
   },
   extraReducers: (builder) => {

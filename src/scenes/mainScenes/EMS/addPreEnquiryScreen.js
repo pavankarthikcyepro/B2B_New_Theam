@@ -127,7 +127,14 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                 dispatch(clearState());
             }
         });
-
+        //    dispatch(
+        //      setDropDownData({
+        //        key: dropDownKey,
+        //        value: selector?.enquiryType[0].name,
+        //        id: item.id,
+        //        orgId: item.orgId,
+        //      })
+        //    );
         return UnSubscribe;
     }, []);
 
@@ -625,7 +632,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             status: "PREENQUIRY",
             pincode: selector.pincode,
         };
-
+        console.log("hehheehheehhehehehe==>", selector);
         const dmsLeadDtoObj = {
             branchId: Number(branchId),
             createdBy: employeeName,
@@ -807,7 +814,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         };
         dispatch(updatePreEnquiry(dataObj));
     };
-
+    {console.log("ddddddd===>", selector);}
     const showDropDownModelMethod = (key, headerText, oid) => {
         Keyboard.dismiss();
 //console.log({oid})
@@ -838,9 +845,12 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
 
             case "CUSTOMER_TYPE":
                 console.log("CUSTOMER_TYPE", selector.customer_type_list);
-                if (selector.customer_type_list.length === 0) {
-                    showToast("No Customer Types found");
-                    return;
+                if (
+                  selector?.customer_type_list?.length === 0 ||
+                  selector?.customer_type_list === undefined
+                ) {
+                  showToast("No Customer Types found");
+                  return;
                 }
 
                 setDataForDropDown([...selector.customer_type_list]);
@@ -923,67 +933,73 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            {/* // select modal */}
-            <DropDownComponant
-                visible={showDropDownModel}
-                headerTitle={dropDownTitle}
-                data={dataForDropDown}
-                onRequestClose={() => setShowDropDownModel(false)}
-                selectedItems={(item) => {
-                    console.log("selected: ", item);
+      <SafeAreaView style={styles.container}>
+        {/* // select modal */}
+        {console.log("dataForDropDown", dataForDropDown)}
+        <DropDownComponant
+          visible={showDropDownModel}
+          headerTitle={dropDownTitle}
+          data={dataForDropDown}
+          onRequestClose={() => setShowDropDownModel(false)}
+          selectedItems={(item) => {
+            console.log("selected: ", item);
 
-                    if (dropDownKey === "SOURCE_OF_ENQUIRY") {
-                        if (item.name === "Event") {
-                            getEventListFromServer();
-                        }
-                        updateSubSourceData(item);
-                    }
-                    setShowDropDownModel(false);
-                    dispatch(
-                        setDropDownData({ key: dropDownKey, value: item.name, id: item.id ,orgId:item.orgId })
-                    );
-                }}
-            />
+            if (dropDownKey === "SOURCE_OF_ENQUIRY") {
+              if (item.name === "Event") {
+                getEventListFromServer();
+              }
+              updateSubSourceData(item);
+            }
+            setShowDropDownModel(false);
+            dispatch(
+              setDropDownData({
+                key: dropDownKey,
+                value: item.name,
+                id: item.id,
+                orgId: item.orgId,
+              })
+            );
+          }}
+        />
 
-            <DatePickerComponent
-                visible={showDatePicker}
-                mode={"date"}
-                value={new Date(Date.now())}
-                onChange={(event, selectedDate) => {
-                    console.log("date: ", selectedDate);
-                    if (Platform.OS === "android") {
-                        if (selectedDate) {
-                            dispatch(
-                                updateSelectedDate({ key: datePickerId, text: selectedDate })
-                            );
-                        }
-                    } else {
-                        dispatch(
-                            updateSelectedDate({ key: datePickerId, text: selectedDate })
-                        );
-                    }
-                    setShowDatePicker(false);
-                }}
-                onRequestClose={() => setShowDatePicker(false)}
-            />
+        <DatePickerComponent
+          visible={showDatePicker}
+          mode={"date"}
+          value={new Date(Date.now())}
+          onChange={(event, selectedDate) => {
+            console.log("date: ", selectedDate);
+            if (Platform.OS === "android") {
+              if (selectedDate) {
+                dispatch(
+                  updateSelectedDate({ key: datePickerId, text: selectedDate })
+                );
+              }
+            } else {
+              dispatch(
+                updateSelectedDate({ key: datePickerId, text: selectedDate })
+              );
+            }
+            setShowDatePicker(false);
+          }}
+          onRequestClose={() => setShowDatePicker(false)}
+        />
 
-            <KeyboardAvoidingView
-                style={{ flex: 1 }}
-                behavior={Platform.OS == "ios" ? "padding" : "height"}
-                enabled
-                keyboardVerticalOffset={100}
-            >
-                <ScrollView
-                    automaticallyAdjustContentInsets={true}
-                    bounces={true}
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={{ padding: 10 }}
-                    style={{ flex: 1 }}
-                >
-                    <Text style={styles.text1}>{"Create New Pre-Enquiry"}</Text>
-                    <View style={styles.view1}>
-                        {/* <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS == "ios" ? "padding" : "height"}
+          enabled
+          keyboardVerticalOffset={100}
+        >
+          <ScrollView
+            automaticallyAdjustContentInsets={true}
+            bounces={true}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ padding: 10 }}
+            style={{ flex: 1 }}
+          >
+            <Text style={styles.text1}>{"Create New Pre-Enquiry"}</Text>
+            <View style={styles.view1}>
+              {/* <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Checkbox.Android
                 status={
                   selector.create_enquiry_checked ? "checked" : "unchecked"
@@ -994,238 +1010,316 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
               />
               <Text style={styles.text2}>{"Create enquiry"}</Text>
             </View> */}
-                        <Button
-                            labelStyle={{
-                                fontSize: 12,
-                                fontWeight: "400",
-                                color: Colors.BLUE,
-                                textTransform: "none",
-                            }}
-                            onPress={() => dispatch(clearState())}
-                        >
-                            Reset
-            </Button>
-                    </View>
+              <Button
+                labelStyle={{
+                  fontSize: 12,
+                  fontWeight: "400",
+                  color: Colors.BLUE,
+                  textTransform: "none",
+                }}
+                onPress={() => dispatch(clearState())}
+              >
+                Reset
+              </Button>
+            </View>
 
-                    <View style={[{ borderRadius: 6, backgroundColor: Colors.WHITE }]}>
-                        <DropDownSelectionItem
-                            label={"Enquiry Segment*"}
-                            value={selector.enquiryType}
-                            onPress={() =>
-                                showDropDownModelMethod(
-                                    "ENQUIRY_SEGMENT",
-                                    "Select Enquiry Segment",
-                                    organizationId
-                                )
-                            }
-                        />
-                        <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.enquiryType === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                        <DropDownSelectionItem
-                            label={"Customer Type*"}
-                            value={selector.customerType}
-                            onPress={() =>
-                                showDropDownModelMethod("CUSTOMER_TYPE", "Select Customer Type")
-                            }
-                        />
-                        <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.customerType === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                        <TextinputComp
-                            style={styles.textInputComp}
-                            value={selector.firstName}
-                            autoCapitalize="words"
-                            label={"First Name*"}
-                            editable={
-                                selector.enquiryType.length > 0 &&
-                                    selector.customerType.length > 0
-                                    ? true
-                                    : false
-                            }
-                            maxLength={30}
-                            disabled={
-                                selector.enquiryType.length > 0 &&
-                                    selector.customerType.length > 0
-                                    ? false
-                                    : true
-                            }
-                            keyboardType={"default"}
-                            error={firstNameErrorHandler.showError}
-                            errorMsg={firstNameErrorHandler.msg}
-                            onChangeText={(text) => {
-                                if (firstNameErrorHandler.showError) {
-                                    setFirstNameErrorHandler({ showError: false, msg: "" });
-                                }
-                                dispatch(
-                                    setPreEnquiryDetails({ key: "FIRST_NAME", text: text })
-                                );
-                            }}
-                        />
-                        <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.firstName === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+            <View style={[{ borderRadius: 6, backgroundColor: Colors.WHITE }]}>
+              <DropDownSelectionItem
+                label={"Enquiry Segment*"}
+                value={selector.enquiryType}
+                onPress={() =>
+                  showDropDownModelMethod(
+                    "ENQUIRY_SEGMENT",
+                    "Select Enquiry Segment",
+                    organizationId
+                  )
+                }
+              />
+              <Text
+                style={[
+                  GlobalStyle.underline,
+                  {
+                    backgroundColor:
+                      isSubmitPress && selector.enquiryType === ""
+                        ? "red"
+                        : "rgba(208, 212, 214, 0.7)",
+                  },
+                ]}
+              ></Text>
+              <DropDownSelectionItem
+                label={"Customer Type*"}
+                value={selector.customerType}
+                onPress={() =>
+                  showDropDownModelMethod(
+                    "CUSTOMER_TYPE",
+                    "Select Customer Type"
+                  )
+                }
+              />
+              <Text
+                style={[
+                  GlobalStyle.underline,
+                  {
+                    backgroundColor:
+                      isSubmitPress && selector.customerType === ""
+                        ? "red"
+                        : "rgba(208, 212, 214, 0.7)",
+                  },
+                ]}
+              ></Text>
+              <TextinputComp
+                style={styles.textInputComp}
+                value={selector.firstName}
+                autoCapitalize="words"
+                label={"First Name*"}
+                editable={
+                  selector.enquiryType.length > 0 &&
+                  selector.customerType.length > 0
+                    ? true
+                    : false
+                }
+                maxLength={30}
+                disabled={
+                  selector.enquiryType.length > 0 &&
+                  selector.customerType.length > 0
+                    ? false
+                    : true
+                }
+                keyboardType={"default"}
+                error={firstNameErrorHandler.showError}
+                errorMsg={firstNameErrorHandler.msg}
+                onChangeText={(text) => {
+                  if (firstNameErrorHandler.showError) {
+                    setFirstNameErrorHandler({ showError: false, msg: "" });
+                  }
+                  dispatch(
+                    setPreEnquiryDetails({ key: "FIRST_NAME", text: text })
+                  );
+                }}
+              />
+              <Text
+                style={[
+                  GlobalStyle.underline,
+                  {
+                    backgroundColor:
+                      isSubmitPress && selector.firstName === ""
+                        ? "red"
+                        : "rgba(208, 212, 214, 0.7)",
+                  },
+                ]}
+              ></Text>
 
-                        <TextinputComp
-                            style={styles.textInputComp}
-                            value={selector.lastName}
-                            autoCapitalize="words"
-                            label={"Last Name*"}
-                            editable={
-                                selector.enquiryType.length > 0 &&
-                                    selector.customerType.length > 0
-                                    ? true
-                                    : false
-                            }
-                            maxLength={30}
-                            disabled={
-                                selector.enquiryType.length > 0 &&
-                                    selector.customerType.length > 0
-                                    ? false
-                                    : true
-                            }
-                            keyboardType={"default"}
-                            error={lastNameErrorHandler.showError}
-                            errorMsg={lastNameErrorHandler.msg}
-                            onChangeText={(text) => {
-                                if (lastNameErrorHandler.showError) {
-                                    setFirstNameErrorHandler({ showError: false, msg: "" });
-                                }
-                                dispatch(
-                                    setPreEnquiryDetails({ key: "LAST_NAME", text: text })
-                                );
-                            }}
-                        />
-                        <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.lastName === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+              <TextinputComp
+                style={styles.textInputComp}
+                value={selector.lastName}
+                autoCapitalize="words"
+                label={"Last Name*"}
+                editable={
+                  selector.enquiryType.length > 0 &&
+                  selector.customerType.length > 0
+                    ? true
+                    : false
+                }
+                maxLength={30}
+                disabled={
+                  selector.enquiryType.length > 0 &&
+                  selector.customerType.length > 0
+                    ? false
+                    : true
+                }
+                keyboardType={"default"}
+                error={lastNameErrorHandler.showError}
+                errorMsg={lastNameErrorHandler.msg}
+                onChangeText={(text) => {
+                  if (lastNameErrorHandler.showError) {
+                    setFirstNameErrorHandler({ showError: false, msg: "" });
+                  }
+                  dispatch(
+                    setPreEnquiryDetails({ key: "LAST_NAME", text: text })
+                  );
+                }}
+              />
+              <Text
+                style={[
+                  GlobalStyle.underline,
+                  {
+                    backgroundColor:
+                      isSubmitPress && selector.lastName === ""
+                        ? "red"
+                        : "rgba(208, 212, 214, 0.7)",
+                  },
+                ]}
+              ></Text>
 
-                        <TextinputComp
-                            style={styles.textInputComp}
-                            value={selector.mobile}
-                            label={"Mobile Number*"}
-                            keyboardType={"phone-pad"}
-                            maxLength={10}
-                            onChangeText={(text) => {
-                                dispatch(setPreEnquiryDetails({ key: "MOBILE", text: text }));
-                            }}
-                        />
-                        <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.mobile === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+              <TextinputComp
+                style={styles.textInputComp}
+                value={selector.mobile}
+                label={"Mobile Number*"}
+                keyboardType={"phone-pad"}
+                maxLength={10}
+                onChangeText={(text) => {
+                  dispatch(setPreEnquiryDetails({ key: "MOBILE", text: text }));
+                }}
+              />
+              <Text
+                style={[
+                  GlobalStyle.underline,
+                  {
+                    backgroundColor:
+                      isSubmitPress && selector.mobile === ""
+                        ? "red"
+                        : "rgba(208, 212, 214, 0.7)",
+                  },
+                ]}
+              ></Text>
 
-                        <TextinputComp
-                            style={styles.textInputComp}
-                            value={selector.alterMobile}
-                            label={"Alternate Mobile Number"}
-                            keyboardType={"phone-pad"}
-                            maxLength={10}
-                            onChangeText={(text) =>
-                                dispatch(
-                                    setPreEnquiryDetails({ key: "ALTER_MOBILE", text: text })
-                                )
-                            }
-                        />
-                        <Text style={styles.devider}></Text>
+              <TextinputComp
+                style={styles.textInputComp}
+                value={selector.alterMobile}
+                label={"Alternate Mobile Number"}
+                keyboardType={"phone-pad"}
+                maxLength={10}
+                onChangeText={(text) =>
+                  dispatch(
+                    setPreEnquiryDetails({ key: "ALTER_MOBILE", text: text })
+                  )
+                }
+              />
+              <Text style={styles.devider}></Text>
 
-                        <TextinputComp
-                            style={styles.textInputComp}
-                            value={selector.email}
-                            label={"Email-Id"}
-                            maxLength={40}
-                            keyboardType={"email-address"}
-                            onChangeText={(text) =>
-                                dispatch(setPreEnquiryDetails({ key: "EMAIL", text: text }))
-                            }
-                        />
-                        <Text style={styles.devider}></Text>
+              <TextinputComp
+                style={styles.textInputComp}
+                value={selector.email}
+                label={"Email-Id"}
+                maxLength={40}
+                keyboardType={"email-address"}
+                onChangeText={(text) =>
+                  dispatch(setPreEnquiryDetails({ key: "EMAIL", text: text }))
+                }
+              />
+              <Text style={styles.devider}></Text>
 
-                        <DropDownSelectionItem
-                            label={"Model*"}
-                            value={selector.carModel}
-                            onPress={() =>
-                                showDropDownModelMethod("CAR_MODEL", "Select Model")
-                            }
-                        />
-                        <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.carModel === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                        {selector.customerType === "Corporate" ||
-                            selector.customerType === "Government" ||
-                            selector.customerType === "Retired" ||
-                            selector.customerType === "Fleet" ||
-                            selector.customerType === "Institution" ? (
-                            <View>
-                                <TextinputComp
-                                    style={styles.textInputComp}
-                                    value={selector.companyName}
-                                    autoCapitalize="words"
-                                    label={"Company Name"}
-                                    maxLength={50}
-                                    keyboardType={"default"}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setPreEnquiryDetails({ key: "COMPANY_NAME", text: text })
-                                        )
-                                    }
-                                />
-                                <Text style={styles.devider}></Text>
-                            </View>
-                        ) : null}
+              <DropDownSelectionItem
+                label={"Model*"}
+                value={selector.carModel}
+                onPress={() =>
+                  showDropDownModelMethod("CAR_MODEL", "Select Model")
+                }
+              />
+              <Text
+                style={[
+                  GlobalStyle.underline,
+                  {
+                    backgroundColor:
+                      isSubmitPress && selector.carModel === ""
+                        ? "red"
+                        : "rgba(208, 212, 214, 0.7)",
+                  },
+                ]}
+              ></Text>
+              {selector.customerType === "Corporate" ||
+              selector.customerType === "Government" ||
+              selector.customerType === "Retired" ||
+              selector.customerType === "Fleet" ||
+              selector.customerType === "Institution" ? (
+                <View>
+                  <TextinputComp
+                    style={styles.textInputComp}
+                    value={selector.companyName}
+                    autoCapitalize="words"
+                    label={"Company Name"}
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setPreEnquiryDetails({
+                          key: "COMPANY_NAME",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={styles.devider}></Text>
+                </View>
+              ) : null}
 
-                        {selector.customerType === "Other" ? (
-                            <View>
-                                <TextinputComp
-                                    style={styles.textInputComp}
-                                    value={selector.other}
-                                    label={"Other"}
-                                    maxLength={50}
-                                    keyboardType={"default"}
-                                    onChangeText={(text) =>
-                                        dispatch(setPreEnquiryDetails({ key: "OTHER", text: text }))
-                                    }
-                                />
-                                <Text style={styles.devider}></Text>
-                            </View>
-                        ) : null}
+              {selector.customerType === "Other" ? (
+                <View>
+                  <TextinputComp
+                    style={styles.textInputComp}
+                    value={selector.other}
+                    label={"Other"}
+                    maxLength={50}
+                    keyboardType={"default"}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setPreEnquiryDetails({ key: "OTHER", text: text })
+                      )
+                    }
+                  />
+                  <Text style={styles.devider}></Text>
+                </View>
+              ) : null}
 
-                        <DropDownSelectionItem
-                            label={"Source of Lead*"}
-                            value={selector.sourceOfEnquiry}
-                            disabled={fromEdit}
-                            onPress={() =>
-                                showDropDownModelMethod(
-                                    "SOURCE_OF_ENQUIRY",
-                                    "Select Source of Pre-Enquiry"
-                                )
-                            }
-                        />
-                        <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.sourceOfEnquiry === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                        {subSourceData.length > 0 && (
-                            <DropDownSelectionItem
-                                label={"Sub Source of Lead"}
-                                value={selector.subSourceOfEnquiry}
-                                disabled={fromEdit}
-                                onPress={() =>
-                                    showDropDownModelMethod(
-                                        "SUB_SOURCE_OF_ENQUIRY",
-                                        "Select Sub Source of Pre-Enquiry"
-                                    )
-                                }
-                            />
-                        )}
-                        <Text style={[GlobalStyle.underline]}></Text>
-                        {/* <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.subSourceOfEnquiry === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text> */}
-                        {selector.sourceOfEnquiry === "Other" ? (
-                            <View>
-                                <TextinputComp
-                                    style={styles.textInputComp}
-                                    value={selector.other_company_name}
-                                    label={"Other"}
-                                    keyboardType={"default"}
-                                    maxLength={50}
-                                    onChangeText={(text) =>
-                                        dispatch(
-                                            setPreEnquiryDetails({
-                                                key: "OTHER_COMPANY_NAME",
-                                                text: text,
-                                            })
-                                        )
-                                    }
-                                />
-                                <Text style={styles.devider}></Text>
-                            </View>
-                        ) : null}
+              <DropDownSelectionItem
+                label={"Source of Lead*"}
+                value={selector.sourceOfEnquiry}
+                disabled={fromEdit}
+                onPress={() =>
+                  showDropDownModelMethod(
+                    "SOURCE_OF_ENQUIRY",
+                    "Select Source of Pre-Enquiry"
+                  )
+                }
+              />
+              <Text
+                style={[
+                  GlobalStyle.underline,
+                  {
+                    backgroundColor:
+                      isSubmitPress && selector.sourceOfEnquiry === ""
+                        ? "red"
+                        : "rgba(208, 212, 214, 0.7)",
+                  },
+                ]}
+              ></Text>
+              {subSourceData.length > 0 && (
+                <DropDownSelectionItem
+                  label={"Sub Source of Lead"}
+                  value={selector.subSourceOfEnquiry}
+                  disabled={fromEdit}
+                  onPress={() =>
+                    showDropDownModelMethod(
+                      "SUB_SOURCE_OF_ENQUIRY",
+                      "Select Sub Source of Pre-Enquiry"
+                    )
+                  }
+                />
+              )}
+              <Text style={[GlobalStyle.underline]}></Text>
+              {/* <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.subSourceOfEnquiry === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text> */}
+              {selector.sourceOfEnquiry === "Other" ? (
+                <View>
+                  <TextinputComp
+                    style={styles.textInputComp}
+                    value={selector.other_company_name}
+                    label={"Other"}
+                    keyboardType={"default"}
+                    maxLength={50}
+                    onChangeText={(text) =>
+                      dispatch(
+                        setPreEnquiryDetails({
+                          key: "OTHER_COMPANY_NAME",
+                          text: text,
+                        })
+                      )
+                    }
+                  />
+                  <Text style={styles.devider}></Text>
+                </View>
+              ) : null}
 
-                        {/* {selector.sourceOfEnquiry === "Event" ? (
+              {/* {selector.sourceOfEnquiry === "Event" ? (
                             <View>
                                 <DateSelectItem
                                     label={"Event Start Date"}
@@ -1255,32 +1349,42 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                             </View>
                         ) : null} */}
 
-                        {/* {!fromEdit && ( */}
-                        <TextinputComp
-                            style={styles.textInputComp}
-                            value={selector.pincode}
-                            label={"Pincode*"}
-                            keyboardType={"number-pad"}
-                            maxLength={6}
-                            onChangeText={(text) =>
-                                dispatch(setPreEnquiryDetails({ key: "PINCODE", text: text }))
-                            }
-                        />
-                        {/* )} */}
-                        <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.pincode === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                    </View>
+              {/* {!fromEdit && ( */}
+              <TextinputComp
+                style={styles.textInputComp}
+                value={selector.pincode}
+                label={"Pincode*"}
+                keyboardType={"number-pad"}
+                maxLength={6}
+                onChangeText={(text) =>
+                  dispatch(setPreEnquiryDetails({ key: "PINCODE", text: text }))
+                }
+              />
+              {/* )} */}
+              <Text
+                style={[
+                  GlobalStyle.underline,
+                  {
+                    backgroundColor:
+                      isSubmitPress && selector.pincode === ""
+                        ? "red"
+                        : "rgba(208, 212, 214, 0.7)",
+                  },
+                ]}
+              ></Text>
+            </View>
 
-                    <View style={styles.view2}>
-                        <ButtonComp
-                            // disabled={selector.isLoading}
-                            title={fromEdit ? "UPDATE" : "SUBMIT"}
-                            width={screenWidth - 40}
-                            onPress={submitClicked}
-                        />
-                    </View>
-                </ScrollView>
-            </KeyboardAvoidingView>
-        </SafeAreaView>
+            <View style={styles.view2}>
+              <ButtonComp
+                // disabled={selector.isLoading}
+                title={fromEdit ? "UPDATE" : "SUBMIT"}
+                width={screenWidth - 40}
+                onPress={submitClicked}
+              />
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     );
 };
 
