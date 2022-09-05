@@ -126,7 +126,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         DropPreEnquiryLead(payload, enquiryDetailsObj)
     };
 
-    
+
 
     const DropPreEnquiryLead = async (payload, enquiryDetailsObj) => {
         console.log("DROP PAY: ", URL.DROP_ENQUIRY(), payload);
@@ -499,7 +499,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
             Promise.all([
                 dispatch(getEmployeesListApi(data))
             ]).then(async (res) => {
-                
+
                 //  let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
                 // if (employeeData) {
                 //     const jsonObj = JSON.parse(employeeData);
@@ -554,6 +554,14 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         dmsLeadDto.salesConsultant = employeeObj.name;
         dispatch(updateEmployeeApi(dmsLeadDto));
         setEmployeeSelectModel(false);
+    }
+
+    function checkForLeadStage() {
+        let name = itemData.leadStage;
+        if (name === 'PREENQUIRY') {
+            name = 'Contacts';
+        }
+        return name;
     }
 
     return (
@@ -638,7 +646,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
                         <TextinputComp
                             style={{ height: 70 }}
-                            value={itemData.leadStage}
+                            value={checkForLeadStage()}
                             label={'Status'}
                             editable={false}
                         />
@@ -722,7 +730,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                                         textTransform: 'none',
                                         color: Colors.WHITE,
                                     }}
-                                    onPress={() => 
+                                    onPress={() =>
                                         setIsDropSelected(false)
                                     }
                                 >
