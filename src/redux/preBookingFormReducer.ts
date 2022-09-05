@@ -711,22 +711,29 @@ const prebookingFormSlice = createSlice({
         case "DATE_OF_BIRTH":
           state.minDate = null;
           state.maxDate = new Date();
+          state.showDatepicker = true;
           break;
         case "CUSTOMER_PREFERRED_DATE":
           state.minDate = new Date();
           state.maxDate = null;
+          state.showDatepicker = true;
           break;
         case "TENTATIVE_DELIVERY_DATE":
           state.minDate = new Date();
           state.maxDate = null;
+          state.showDatepicker = true;
+          break;
+        case "CLOSE":
+          state.showDatepicker = false;
           break;
         default:
           state.minDate = null;
           state.maxDate = null;
           break;
+           
       }
       state.datePickerKeyId = action.payload;
-      state.showDatepicker = !state.showDatepicker;
+      
     },
     updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
@@ -760,7 +767,7 @@ const prebookingFormSlice = createSlice({
           console.log("NONE");
           break;
       }
-      state.showDatepicker = !state.showDatepicker;
+      // state.showDatepicker = !state.showDatepicker;
     },
     setCustomerDetails: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
