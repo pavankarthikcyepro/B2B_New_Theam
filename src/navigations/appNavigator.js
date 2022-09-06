@@ -417,7 +417,7 @@ const EmsStackNavigator = ({ navigation }) => {
                 name={EmsStackIdentifiers.bookingForm}
                 component={BookingFormScreen}
                 initialParams={{ accessoriesList: [] }}
-                options={{ title: "Booking View Form" }}
+                options={{ title: "Booking Form" }}
             />
 
             <EmsStack.Screen
