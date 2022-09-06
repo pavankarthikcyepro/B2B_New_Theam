@@ -6043,7 +6043,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <View style={styles.actionBtnView}>
                         <Button
                           mode="contained"
-                          style={{ width: 120 }}
+                          // style={{ width: 120 }}
                           color={Colors.BLACK}
                           // disabled={selector.isLoading}
                           labelStyle={{ textTransform: "none" }}
