@@ -326,6 +326,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const [isReciptDocUpload, setIsReciptDocUpload] = useState(false);
     const [isSubmitPress, setIsSubmitPress] = useState(false);
 
+    console.log('uploadedImagesDataObj->', uploadedImagesDataObj);
     useLayoutEffect(() => {
         navigation.setOptions({
             headerLeft: () => (
@@ -1601,9 +1602,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         console.log("PAYLOAD:===---=-=-=->>>>>", JSON.stringify(postOnRoadPriceTable));
         if(isEdit)
         {
+          alert("if-------");
             postOnRoadPriceTable.id = selector.on_road_price_dto_list_response[0].id
             dispatch(sendEditedOnRoadPriceDetails(postOnRoadPriceTable))
-        } else   dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable))
+        } else   {
+          alert('else-------');
+          dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable))
+        }
         // Promise.all([
         //     dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable))
         // ]).then(async (res) => {
@@ -2224,6 +2229,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         } else {
              console.log("uploadedImagesDataObj1: ", uploadedImagesDataObj);
             Object.keys(uploadedImagesDataObj).forEach((key, index) => {
+              
                 const item = uploadedImagesDataObj[key];
                 const object = formatAttachment({}, item, index, item.documentType);
                 dmsAttachments.push(object);
@@ -2234,12 +2240,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     const formatAttachment = (data, photoObj, index, typeOfDocument) => {
         let object = { ...data };
-        console.log("DATATATATT=======>", data)
+        console.log('DATATATATT=======>', photoObj);
         console.log({typeOfDocument})
         object.branchId = selectedBranchId;
         object.ownerName = userData.employeeName;
         object.orgId = userData.orgId;
-        object.documentType = photoObj.documentType;
+        object.documentType = photoObj.documentType; 
         object.documentPath = photoObj.documentPath;
         object.keyName = photoObj.keyName;
         object.fileName = photoObj.fileName;
@@ -2657,8 +2663,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             uri: Platform.OS === "ios" ? photoUri.replace("file://", "") : photoUri,
         });
         formData.append("universalId", universalId);
-
+        
         switch (keyId) {
+          
             case "UPLOAD_PAN":
                 formData.append("documentType", "pan");
                 break;
@@ -5578,9 +5585,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     styles.accordianBorder,
                   ]}
                 >
+                  {console.log("selector.customer_preferred_date---",selector.customer_preferred_date)}
                   <DateSelectItem disabled={userData.isManager? true:false}
                     label={"Customer Preferred Date*"}
-                    value={selector.customer_preferred_date}
+                    value={moment(selector.customer_preferred_date).format('DD/MM/YYYY')}
                     onPress={() =>
                       dispatch(setDatePicker("CUSTOMER_PREFERRED_DATE"))
                     }
@@ -5943,7 +5951,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               {!isDropSelected &&
                 showSubmitDropBtn &&
                 !userData.isManager &&
-                !userData.isPreBookingApprover &&
+                !userData.isPreBookingApprover && !isRejectSelected &&
                 selector.booking_amount !== "" && (
                   <View style={styles.actionBtnView}>
                     <Button
@@ -5997,12 +6005,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     </Button>
                   </View>
                 )}
-
-              {showPrebookingPaymentSection &&
+              
+              {
+              //showPrebookingPaymentSection &&
                 !userData.isManager &&
-                !isDropSelected && (
+                !isDropSelected && isRejectSelected && (
                   <>
-                    {isEdit ? (
+                    { isEdit ? (
                       <View style={styles.actionBtnView}>
                         <Button
                           mode="contained"
@@ -6024,7 +6033,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           SUBMIT
                         </Button>
                       </View>
-                    ) : (
+                    )  : isRejectSelected == true ? (
                       <View style={styles.actionBtnView}>
                         <Button
                           mode="contained"
@@ -6036,8 +6045,28 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           EDIT
                         </Button>
                       </View>
-                    )}
-                    {!isEdit && uploadedImagesDataObj.receipt?.fileName && (
+                    ) : 'abcd'
+                    // : (
+                    //   <View style={styles.actionBtnView}>
+                    //     <Button
+                    //       mode="contained"
+                    //       color={Colors.RED}
+                    //       //disabled={selector.isLoading}
+                    //       labelStyle={{ textTransform: "none" }}
+                    //       onPress={() => setIsEdit(true)}
+                    //     >
+                    //       EDIT
+                    //     </Button>
+                    //   </View>
+                    // )
+                    }
+                    
+                    
+                  </>
+                )}
+
+
+                {!isEdit && uploadedImagesDataObj.receipt?.fileName && (
                       <View style={styles.actionBtnView}>
                         <Button
                           mode="contained"
@@ -6066,8 +6095,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         </Button>
                       </View>
                     )}
-                  </>
-                )}
+
 
               {isDropSelected && (
                 <View style={styles.prebookingBtnView}>
