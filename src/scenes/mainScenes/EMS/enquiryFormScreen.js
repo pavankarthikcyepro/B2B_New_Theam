@@ -3095,7 +3095,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               {/* 1. Personal Intro */}
               <List.Accordion
                 id={"2"}
-                title="Personal Intro"
+                title="Personal Info"
                 titleStyle={{
                   color: openAccordian === "2" ? Colors.BLACK : Colors.BLACK,
                   fontSize: 16,

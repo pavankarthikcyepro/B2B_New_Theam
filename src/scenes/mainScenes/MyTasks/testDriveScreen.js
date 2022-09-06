@@ -260,7 +260,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                     const leadDtoObj = resp.dmsEntity?.dmsLeadDto;
                     setName(leadDtoObj.firstName + " " + leadDtoObj.lastName);
                     setEmail(leadDtoObj.email || "");
-                    setMobileNumber(mobile);
+                    setMobileNumber(mobile || leadDtoObj.phone);
                     // setSelectedDseDetails({
                     //   name: taskData.assignee.empName,
                     //   id: taskData.assignee.empId,
@@ -564,6 +564,10 @@ const TestDriveScreen = ({ route, navigation }) => {
         //     return;
         // }
         setIsSubmitPress(true)
+        if (!mobileNumber || mobileNumber.length === 0) {
+            showToast("Please enter mobile number");
+            return;
+        }
         if (selectedVehicleDetails.model.length === 0) {
             showToast("Please select model");
             return;
@@ -1108,7 +1112,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                                 disabled={false}
                                 onChangeText={(text) => setMobileNumber(text)}
                             />
-                            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && mobileNumber === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
+                            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && !mobileNumber ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
 
                             <DropDownSelectionItem
                                 label={"Model*"}
