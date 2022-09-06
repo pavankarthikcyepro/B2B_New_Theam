@@ -101,7 +101,7 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
           icon="arrow-left"
           color={Colors.WHITE}
           size={30}
-          onPress={goParentScreen}
+          onPress={() => goParentScreen()}
         />
       ),
     });
@@ -278,7 +278,7 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
   };
 
   useEffect(async() => {
-      await proceedBooking();
+      // await proceedBooking();
   }, []);
 
   const proceedBooking = async () =>{
@@ -603,7 +603,7 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
               color={Colors.RED}
               labelStyle={{ textTransform: "none" }}
               // disabled={selector.isLoading}
-              onPress={proceedToPreBookingClicked}
+              onPress={() => proceedToPreBookingClicked()}
             >
               {identifier === "PROCEED_TO_BOOKING"
                 ? "Proceed To Booking View"
@@ -618,7 +618,7 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
               color={Colors.RED}
               labelStyle={{ textTransform: "none" }}
               // disabled={selector.isLoading}
-              onPress={proceedToCancellation}
+              onPress={() => proceedToCancellation()}
             >
               Proceed To Cancellation
             </Button>
