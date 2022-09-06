@@ -43,12 +43,12 @@ const data = [
   //   screen: 103,
   //   pngIcon: require('../assets/images/Event_Management-01.png')
   // },
-  // {
-  //   title: "Task Transfer",
-  //   icon: TRANSFER_STR,
-  //   screen: 109,
-  //   pngIcon: require('../assets/images/Task_Trasnfer-01.png')
-  // },
+  {
+    title: "Task Transfer",
+    icon: TRANSFER_STR,
+    screen: 109,
+    pngIcon: require('../assets/images/Task_Trasnfer-01.png')
+  },
   // {
   //   title: "Team Shuffle",
   //   icon: GROUP_STR,
@@ -125,11 +125,11 @@ const dataForManager = [
   //   icon: EVENT_MANAGEMENT_STR,
   //   screen: 103,
   // },
-  // {
-  //   title: "Task Transfer",
-  //   icon: CUSTOMER_RELATIONSHIP_STR,
-  //   screen: 109,
-  // },
+  {
+    title: "Task Transfer",
+    icon: CUSTOMER_RELATIONSHIP_STR,
+    screen: 109,
+  },
   // {
   //   title: "Team Shuffle",
   //   icon: CUSTOMER_RELATIONSHIP_STR,
