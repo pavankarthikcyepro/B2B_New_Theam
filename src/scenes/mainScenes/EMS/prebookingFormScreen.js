@@ -1118,6 +1118,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 setDataForDropDown([...Payment_At_Types]);
                 break;
             case "BOOKING_PAYMENT_MODE":
+                console.log('dataaaaa<><><><><', dataForDropDown);
                 setDataForDropDown([...Booking_Payment_Types]);
                 break;
             case "INSURANCE_TYPE":
@@ -5049,6 +5050,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                                 }
                                             />
                                             <Text style={GlobalStyle.underline}></Text>
+                                            {console.log('selector.cheque_date111', selector)}
                                             <DateSelectItem
                                                 label={"Cheque Date"}
                                                 value={selector.cheque_date}
@@ -5073,6 +5075,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                                 }
                                             />
                                             <Text style={GlobalStyle.underline}></Text>
+                                            {console.log('selector.dd_date<><>', selector.dd_date)}
                                             <DateSelectItem
                                                 label={"DD Date"}
                                                 value={selector.dd_date}

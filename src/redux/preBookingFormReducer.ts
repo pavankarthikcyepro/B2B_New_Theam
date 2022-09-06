@@ -247,6 +247,7 @@ export const getPaymentDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/get
   const response = await client.get(URL.GET_PRE_BOOKING_PAYMENT_DETAILS(leadId));
   try {
     const json = await response.json();
+    console.log('getPaymentDetailsApi<><><<><', json)
     if (response.status != 200) {
       return rejectWithValue(json);
     }
@@ -707,6 +708,8 @@ const prebookingFormSlice = createSlice({
       state.showImagePicker = !state.showImagePicker;
     },
     setDatePicker: (state, action) => {
+      const selectedDate = convertTimeStampToDateString(new Date(), "DD/MM/YYYY");
+
       switch (action.payload) {
         case "DATE_OF_BIRTH":
           state.minDate = null;
@@ -721,6 +724,18 @@ const prebookingFormSlice = createSlice({
         case "TENTATIVE_DELIVERY_DATE":
           state.minDate = new Date();
           state.maxDate = null;
+          state.showDatepicker = true;
+          break;
+        case "DD_DATE":
+          state.dd_date = selectedDate;
+          state.showDatepicker = true;
+          break;
+        case "TRANSACTION_DATE":
+          state.transaction_date = selectedDate;
+          state.showDatepicker = true;
+          break;
+        case "CHEQUE_DATE":
+          state.cheque_date = selectedDate;
           state.showDatepicker = true;
           break;
         case "CLOSE":
@@ -756,15 +771,21 @@ const prebookingFormSlice = createSlice({
           break;
         case "TRANSACTION_DATE":
           state.transaction_date = selectedDate;
+          state.showDatepicker = true;
           break;
         case "CHEQUE_DATE":
           state.cheque_date = selectedDate;
+          state.showDatepicker = true;
           break;
         case "DD_DATE":
           state.dd_date = selectedDate;
+          state.showDatepicker = true;
           break;
         case "NONE":
           console.log("NONE");
+          break;
+        case "CLOSE":
+          state.showDatepicker = false;
           break;
       }
       // state.showDatepicker = !state.showDatepicker;

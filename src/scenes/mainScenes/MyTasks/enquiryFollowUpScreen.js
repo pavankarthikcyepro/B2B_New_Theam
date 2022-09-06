@@ -81,6 +81,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
   const [otherReason, setOtherReason] = useState('');
   const [isSubmitPress, setIsSubmitPress] = useState(false);
   const [isDateError, setIsDateError] = useState(false);
+  const [date, setDate] = useState(new Date(Date.now()));
 
   useLayoutEffect(() => {
     let title = "Enquiry Follow Up";
@@ -363,6 +364,21 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
     setDropDownKey(key);
   };
 
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate;
+    setDate(currentDate);
+
+    if (Platform.OS === "android") {
+      if (!currentDate) {
+        dispatch(updateSelectedDate({ key: "NONE", text: currentDate }));
+      } else {
+        dispatch(updateSelectedDate({ key: "", text: currentDate }));
+      }
+    } else {
+      dispatch(updateSelectedDate({ key: "", text: currentDate }));
+    }
+  };
+
   return (
     <SafeAreaView style={[styles.container]}>
       <DropDownComponant
@@ -385,15 +401,9 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
         visible={selector.showDatepicker}
         mode={"date"}
         minimumDate={selector.minDate}
-        value={new Date(Date.now())}
-        onChange={(event, selectedDate) => {
-          console.log("date: ", selectedDate);
-          if (Platform.OS === "android") {
-            //setDatePickerVisible(false);
-          }
-          dispatch(updateSelectedDate({ key: "", text: selectedDate }));
-        }}
-        onRequestClose={() => dispatch(setDatePicker())}
+        value={date}
+        onChange={onChange}
+        onRequestClose={() => dispatch(setDatePicker('CLOSE'))}
       />
 
       <KeyboardAvoidingView

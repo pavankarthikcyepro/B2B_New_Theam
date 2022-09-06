@@ -129,14 +129,18 @@ const slice = createSlice({
         case "ACTUAL_START_TIME":
           state.minDate = new Date();
           state.maxDate = null;
+          state.showDatepicker = true;
           break;
         case "ACTUAL_END_TIME":
           state.minDate = new Date();
           state.maxDate = null;
+          state.showDatepicker = true;
+          break;
+        case "CLOSE":
+          state.showDatepicker = false;
           break;
       }
-      state.datePickerKeyId = action.payload;
-      state.showDatepicker = !state.showDatepicker;
+      state.datePickerKeyId = action.payload;     
     },
     updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
@@ -151,7 +155,6 @@ const slice = createSlice({
           state.actual_end_time = selectedDate;
           break;
       }
-      state.showDatepicker = !state.showDatepicker;
     },
   },
   extraReducers: (builder) => {
