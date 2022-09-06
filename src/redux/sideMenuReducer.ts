@@ -5,31 +5,31 @@ export const HOME_LINE_STR = "HOME_LINE";
 export const BOOKING_TRACKER_STR = "BOOKING_TRACKER";
 export const DOCUMENT_WALLET_STR = "DOCUMENT_WALLET";
 export const CUSTOMER_RELATIONSHIP_STR = "CUSTOMER_RELATIONSHIP";
-export const DROP_ANALYSIS = 'DROP_ANALYSIS';
+export const DROP_ANALYSIS = "DROP_ANALYSIS";
 export const EVENT_MANAGEMENT_STR = "EVENT_MANAGEMENT";
-export const DIGITAL_PAYMENT_STR = "DIGITAL_PAYMENT"
-export const QR_CODE_STR = "QR_CODE"
-export const GROUP_STR = "GROUP"
-export const TRANSFER_STR = "TRANSFER"
+export const DIGITAL_PAYMENT_STR = "DIGITAL_PAYMENT";
+export const QR_CODE_STR = "QR_CODE";
+export const GROUP_STR = "GROUP";
+export const TRANSFER_STR = "TRANSFER";
 
 const data = [
   {
     title: "Home",
     icon: BOOKING_TRACKER_STR,
     screen: 99,
-    pngIcon: require('../assets/images/Home-01.png')
+    pngIcon: require("../assets/images/Home-01.png"),
   },
   {
     title: "Target Planning",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 106,
-    pngIcon: require('../assets/images/Target_Planning-01.png')
+    pngIcon: require("../assets/images/Target_Planning-01.png"),
   },
   {
     title: "Task Management",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 108,
-    pngIcon: require('../assets/images/Task_Management-01.png')
+    pngIcon: require("../assets/images/Task_Management-01.png"),
   },
   // {
   //   title: "Upcoming Deliveries",
@@ -59,7 +59,7 @@ const data = [
     title: "Digital Payment",
     icon: BOOKING_TRACKER_STR,
     screen: 105,
-    pngIcon: require('../assets/images/Digital_Payment-01.png')
+    pngIcon: require("../assets/images/Digital_Payment-01.png"),
   },
   // {
   //   title: "Complaints",
@@ -70,13 +70,13 @@ const data = [
     title: "Helpdesk",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 107,
-    pngIcon: require('../assets/images/Help_Desk-01.png')
+    pngIcon: require("../assets/images/Help_Desk-01.png"),
   },
   {
     title: "Settings",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 102,
-    pngIcon: require('../assets/images/Settings-01.png')
+    pngIcon: require("../assets/images/Settings-01.png"),
   },
   // {
   //   title: "ETVBRL Report",
@@ -84,18 +84,17 @@ const data = [
   //   screen: 111,
   //   pngIcon: require('../assets/images/Reports-01.png')
   // },
-  // {
-  //   title: "Drop Analysis",
-  //   icon: DROP_ANALYSIS,
-  //   screen: 113,
-  //   pngIcon: require('../assets/images/Settings-01.png')
-
-  // },
+  {
+    title: "Drop Analysis",
+    icon: DROP_ANALYSIS,
+    screen: 113,
+    pngIcon: require("../assets/images/Settings-01.png"),
+  },
   {
     title: "Sign Out",
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 112,
-    pngIcon: require('../assets/images/Signout-01.png')
+    pngIcon: require("../assets/images/Signout-01.png"),
   },
 ];
 
@@ -155,15 +154,12 @@ const dataForManager = [
     icon: CUSTOMER_RELATIONSHIP_STR,
     screen: 102,
   },
-  // {
-  //   title: "Drop Analysis",
-  //   icon: DROP_ANALYSIS,
-  //   screen: 113,
-  // },
-{title: "Sign Out",
-  icon: CUSTOMER_RELATIONSHIP_STR,
-  screen: 112
-}
+  {
+    title: "Drop Analysis",
+    icon: DROP_ANALYSIS,
+    screen: 113,
+  },
+  { title: "Sign Out", icon: CUSTOMER_RELATIONSHIP_STR, screen: 112 },
 ];
 
 // {
@@ -178,7 +174,7 @@ export const sideMenuSlice = createSlice({
     tableData: data,
     managerData: dataForManager,
     normalData: data,
-    isManager: false
+    isManager: false,
   },
   reducers: {
     updateData: (state, action) => {
