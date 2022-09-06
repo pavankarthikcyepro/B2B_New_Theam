@@ -71,11 +71,19 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
             const data = [];
             if (selector.wrokflow_response.length > 0) {
                 selector.wrokflow_response.forEach(element => {
-                    if ((element.taskStatus != 'CLOSED' && selector.enquiry_leadDto_response.leadStage === element.taskCategory.taskCategory) || (element.taskCategory.taskCategory === 'APPROVAL' && element.taskStatus === 'ASSIGNED')) {
-                        plannedData.push(element);
-                    }
-                    else if (element.taskStatus == 'CLOSED') {
+                    if (element.taskStatus === "CLOSED") {
                         closedData.push(element);
+                    } else if (
+                        (element.taskStatus !== "CLOSED" &&
+                            selector.enquiry_leadDto_response.leadStage ===
+                            element.taskCategory.taskCategory) ||
+                        (element.taskCategory.taskCategory === "APPROVAL" &&
+                            element.taskStatus === "ASSIGNED") ||
+                        ((element.taskStatus && element.taskStatus !== "APPROVAL") &&
+                            (element.taskName === "Home Visit" ||
+                                element.taskName === "Test Drive"))
+                    ) {
+                        plannedData.push(element);
                     }
                 });
             }
@@ -92,6 +100,18 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
         }
     }, [selector.wrokflow_response_status, selector.wrokflow_response])
 
+    function checkForTaskNames(taskName) {
+        if (taskName.includes('Pre Enquiry')) {
+            taskName = taskName.replace('Pre Enquiry', 'Contacts');
+        } else if (taskName.includes('Pre Booking')) {
+            taskName = taskName.replace('Pre Booking', 'Booking Approval');
+        }
+        // else if (taskName.includes('Booking')) {
+        //     taskName = taskName.replace('Booking', 'Booking View');
+        // }
+        return taskName
+    }
+
     const itemClicked = (item) => {
         console.log("ITEM: ", JSON.stringify(item));
         const taskName = item.taskName;
@@ -100,8 +120,9 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
         const taskStatus = item.taskStatus;
         const mobileNumber = item.assignee?.mobile ? item.assignee?.mobile : "";
 
-        if (item.taskStatus == 'CLOSED') {
-            showToast(item.taskName + " task has closed");
+        if (item.taskStatus === 'CLOSED') {
+            const name =  checkForTaskNames(taskName)
+            showToast(name + " task has been closed");
             return;
         }
 
@@ -128,7 +149,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
             case "proceedtobooking":
                 if (leadStatus === 'PREBOOKINGCOMPLETED')
                 navigationId = AppNavigator.EmsStackIdentifiers.proceedToPreBooking;
-                else showToast('Please complete the prebooking process')
+                else showToast('Please complete the booking approval process')
                 taskNameNew = ''
                 break;
             case "homevisit":
@@ -141,11 +162,16 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                 break;
             case "preenquiryfollowup":
                 navigationId = AppNavigator.EmsStackIdentifiers.enquiryFollowUp;
-                taskNameNew = 'Pre Enquiry Followup'
+                taskNameNew = 'Contacts Followup'
+                break;
+            case "bookingfollowupdse":
+                navigationId = AppNavigator.EmsStackIdentifiers.bookingFollowUp;
+                taskNameNew = "Booking Followup"
+                taskNameNew = "Booking Followup -DSE"
                 break;
             case "prebookingfollowup":
                 navigationId = AppNavigator.EmsStackIdentifiers.enquiryFollowUp;
-                taskNameNew = 'Prebooking Followup'
+                taskNameNew = 'Booking approval task'
                 break;
             case "createenquiry":
                 navigationId = AppNavigator.EmsStackIdentifiers.confirmedPreEnq;
@@ -214,18 +240,25 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
 
                         let topBcgColor = Colors.LIGHT_GRAY;
                         let bottomBcgColor = Colors.LIGHT_GRAY;
-                        if (section.data[index - 1] != undefined) {
+                        if (section.data[index - 1] !== undefined) {
                             topBcgColor = Colors.GRAY;
                         }
 
-                        if (section.data[index + 1] != undefined) {
+                        if (section.data[index + 1] !== undefined) {
                             bottomBcgColor = Colors.GRAY;
+                        }
+
+                        function TaskNameView(taskName) {
+                            const name = checkForTaskNames(taskName)
+                            return (
+                                <Text style={{ fontSize: 16, fontWeight: "700", marginBottom: 5 }}>{name}</Text>
+                            )
                         }
 
                         return (
                             <>
                                 {item.taskName === 'Test Drive Approval' ?
-                                    (isApprovar ? 
+                                    (isApprovar ?
                                         <View style={{ width: "100%", flexDirection: "row" }}>
                                             <View style={{ width: "25%", justifyContent: "center" }}>
                                                 <View style={{ marginLeft: 8, flex: 1, width: 2, backgroundColor: topBcgColor }}></View>
@@ -258,7 +291,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                                 </View>
                                             </View>
                                         </View>
-                                        : 
+                                        :
                                         null)
                                     :
                                     <View style={{ width: "100%", flexDirection: "row" }}>
@@ -278,7 +311,7 @@ const TaskThreeSixtyScreen = ({ route, navigation }) => {
                                             <View style={[{ backgroundColor: Colors.WHITE }, GlobalStyle.shadow]}>
                                                 <TouchableOpacity onPress={() => itemClicked(item)}>
                                                     <View style={[{ paddingVertical: 5, paddingLeft: 10, backgroundColor: Colors.WHITE },]}>
-                                                        <Text style={{ fontSize: 16, fontWeight: "700", marginBottom: 5 }}>{item.taskName}</Text>
+                                                        {TaskNameView(item.taskName)}
                                                         <Text style={{ fontSize: 14, fontWeight: "400" }}>{"Assignee: " + item.assignee?.empName}</Text>
                                                         <Text style={{ fontSize: 14, fontWeight: "400", color: Colors.GRAY }}>{"Remarks: " + (item.employeeRemarks ? item.employeeRemarks : "")}</Text>
                                                     </View>

@@ -83,13 +83,13 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
   const [currentLocation, setCurrentLocation] = useState(null);
 
   useLayoutEffect(() => {
-    let title = "Pre Booking Task";
+    let title = "Booking Approval Task";
     switch (identifier) {
       case "PROCEED_TO_PRE_BOOKING":
-        title = "Pre Booking Task";
+        title = "Booking Approval Task";
         break;
       case "PROCEED_TO_BOOKING":
-        title = "Booking Task";
+        title = "Booking View Task";
         break;
     }
 
@@ -118,7 +118,7 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
       dispatch(getTaskDetailsApi(taskId));
       getAuthToken();
       getAsyncstoreData();
-      
+
       getPreBookingDetailsFromServer();
     })
     navigation.addListener('blur', () => {
@@ -398,8 +398,8 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
     }
     let title =
       identifier === "PROCEED_TO_BOOKING"
-        ? "Booking Created Successfully"
-        : "Pre Booking Created Successfully";
+        ? "Booking Successfully Created"
+        : "Booking Approval Successfully Created";
 
     Alert.alert(
       title,
@@ -591,8 +591,8 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
               onPress={proceedToPreBookingClicked}
             >
               {identifier === "PROCEED_TO_BOOKING"
-                ? "Proceed To Booking"
-                : "Proceed To PreBooking"}
+                ? "Proceed To Booking View"
+                : "Proceed To Booking Approval"}
             </Button>
           </View>
         )}

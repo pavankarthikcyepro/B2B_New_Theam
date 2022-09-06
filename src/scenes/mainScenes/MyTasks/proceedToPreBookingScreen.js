@@ -58,13 +58,13 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
 
     useLayoutEffect(() => {
 
-        let title = "Pre Booking Task"
+        let title = "Booking Approval Task"
         switch (identifier) {
             case "PROCEED_TO_PRE_BOOKING":
-                title = "Pre Booking Task";
+                title = "Booking Approval Task";
                 break;
             case "PROCEED_TO_BOOKING":
-                title = "Booking Task";
+                title = "Booking View Task";
                 break;
         }
 
@@ -200,7 +200,7 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
                 "stage": "PREBOOKING",
                 "status": "PREBOOKING",
             }
-        } 
+        }
 
         dispatch(dropEnquiryApi(payload));
     }
@@ -327,12 +327,12 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
         }
     }, [selector.update_enquiry_details_response_status, selector.update_enquiry_details_response]);
 
-    displayCreateEnquiryAlert = () => {
+    const displayCreateEnquiryAlert = () => {
         let refNumber = "";
-        if (selector.update_enquiry_details_response && identifier != "PROCEED_TO_BOOKING") {
+        if (selector.update_enquiry_details_response && identifier !== "PROCEED_TO_BOOKING") {
             refNumber = selector.update_enquiry_details_response.dmsLeadDto.referencenumber;
         }
-        let title = identifier === "PROCEED_TO_BOOKING" ? 'Booking Created Successfully' : 'Pre Booking Created Successfully';
+        let title = identifier === "PROCEED_TO_BOOKING" ? 'Booking Created Successfully' : 'Booking Approval Created Successfully';
 
         Alert.alert(title, refNumber,
             [
@@ -351,7 +351,7 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
             console.log("INSIDE ", identifier);
             getMyTasksListFromServer();
             navigation.navigate(EmsTopTabNavigatorIdentifiers.preBooking)
-        } 
+        }
         else if (identifier === "PROCEED_TO_BOOKING") {
             console.log("INSIDE ", identifier);
             navigation.navigate(EmsTopTabNavigatorIdentifiers.booking)
@@ -514,7 +514,7 @@ const ProceedToPreBookingScreen = ({ route, navigation }) => {
                             // disabled={selector.isLoading}
                             onPress={proceedToPreBookingClicked}
                         >
-                            {identifier === "PROCEED_TO_BOOKING" ? "Proceed To Booking" : "Proceed To PreBooking"}
+                            {identifier === "PROCEED_TO_BOOKING" ? "Proceed To Booking View" : "Proceed To Booking Approval"}
                         </Button>
                     </View>
                 )}

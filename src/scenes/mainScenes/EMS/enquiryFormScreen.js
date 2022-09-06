@@ -351,10 +351,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     getBranchId();
     setComponentAppear(true);
     getCustomerType();
-   
+
     //  const dms = [{ "color": "Outback Bronze", "fuel": "Petrol", "id": 2704, "model": "Kwid",
     //           "transimmisionType": "Manual", "variant": "KWID RXT 1.0L EASY- R BS6 ORVM MY22" },
-    //            { "color": "Caspian Blue", "fuel": "Petrol", "id": 1833, "model": "Kiger", "transimmisionType": "Automatic", 
+    //            { "color": "Caspian Blue", "fuel": "Petrol", "id": 1833, "model": "Kiger", "transimmisionType": "Automatic",
     //           "variant": "Rxt 1.0L Ece Easy-R Ece My22" }]
     //           setModelsList(dms)
     BackHandler.addEventListener("hardwareBackPress", handleBackButtonClick);
@@ -1005,7 +1005,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (selector.salutation.length == 0) {
       scrollToPos(0)
       setOpenAccordian('2')
-      showToast("Please fill required salutation field in Personal Intro");
+      showToast("Please fill required salutation field in Personal Info");
       return;
     }
 
@@ -1015,7 +1015,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //     // ||
     //     // selector.anniversaryDate.length == 0
     //   ) {
-    //     showToast("Please fill required fields in Personal Intro");
+    //     showToast("Please fill required fields in Personal Info");
     //     return;
     //   }
     // }
@@ -1199,7 +1199,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         showToast("Please fill Permanent state");
         return;
       }
-    
+
     // Model Selection
     // if (carModelsList.length == 0) {
     //   scrollToPos(4)
@@ -1236,9 +1236,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         item.variant !== ''
     })
 
-    
 
-    
+
+
 
     let primaryTempCars = []
     primaryTempCars = carModelsList.filter((item) => {
@@ -1251,7 +1251,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("Please fill model details");
       return;
     }
-    
+
 
     if (!primaryTempCars.length > 0) {
       scrollToPos(4)
@@ -1278,7 +1278,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   showToast("Please fill color");
     //   return;
     // }
-    
+
     //Finance Details
     if (selector.retail_finance.length == 0) {
       scrollToPos(5)
@@ -1879,7 +1879,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   };
   const modelOnclick = async (index, value, type) => {
     try {
-    
+
       if (type == "update") {
         let arr = [...carModelsList]
         arr[index] = value
@@ -2123,7 +2123,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         }
         else {
           Alert.alert(
-            "Below tasks are pending, do you want to continue to proceed pre-booking",
+            "Below tasks are pending, do you want to continue to proceed",
             taskNames,
             [
               {
@@ -2313,7 +2313,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (selector.enquiry_drop_response_status === "success" && selector.refNo !== '') {
       Alert.alert(
         "Sent For Approval",
-        `Enquery Number: ${selector.refNo}`,
+        `Enquiry Number: ${selector.refNo}`,
         [
           {
             text: "OK",
@@ -2866,11 +2866,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               onPress={() => navigateToProforma()}>Proforma Invoice</Button> : null}
 
 
-           {(leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY' && carModelsList && carModelsList.length > 0) ? 
+           {(leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY' && carModelsList && carModelsList.length > 0) ?
             <Button style={{height:40, width:200,marginBottom:15, alignSelf:'flex-end', alignContent:'center', backgroundColor:Colors.PINK, color: Colors.WHITE}}
               labelStyle={{ textTransform: "none",fontSize:16, color: Colors.WHITE }}
         onPress={()=> navigateToProforma()}>Proforma Invoice</Button> : null}
-        */}   
+        */}
 
             <List.AccordionGroup
               expandedId={openAccordian}
@@ -2905,7 +2905,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               {/* 1. Personal Intro */}
               <List.Accordion
                 id={"2"}
-                title="Personal Intro"
+                title="Personal Info"
                 titleStyle={{
                   color: openAccordian === "2" ? Colors.BLACK : Colors.BLACK,
                   fontSize: 16,
@@ -3836,7 +3836,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       "variant": '',
                       "isPrimary": 'N'
                     }
-                    
+
                     let arr = [...carModelsList]
                     arr.push(carmodeldata)
                     setCarModelsList(arr)
@@ -3876,9 +3876,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     }
                   />
                   <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.model === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                
+
                 </View>
-               
+
                 <DropDownSelectionItem
                   label={"Variant*"}
                   value={selector.varient}
@@ -5383,7 +5383,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             </List.AccordionGroup>
           </View>
 
-         
+
           {!isDropSelected && (
             <View style={styles.actionBtnView}>
               <Button

@@ -358,6 +358,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
           visible={selector.showDatepicker}
           mode={"date"}
           minimumDate={selector.minDate}
+          maximumDate={selector.maxDate}
           value={new Date(Date.now())}
           onChange={(event, selectedDate) => {
             console.log("date: ", selectedDate);

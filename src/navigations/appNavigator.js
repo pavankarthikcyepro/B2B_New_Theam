@@ -252,7 +252,7 @@ export const EmsStackIdentifiers = {
     preBookingForm: "PRE_BOOKING_FORM",
 
     paidAccessories: "PAID_ACCESSORIES",
-    proceedToPreBooking: "PROCEED_TO_PRE_BOOKING",
+    // proceedToPreBooking: "PROCEED_TO_PRE_BOOKING",
     task360: "TASK_360",
     homeVisit: "HOME_VISIT_1",
     preBookingFollowUp: "PREBOOKING_FOLLOWUP_1",
@@ -374,7 +374,7 @@ const EmsStackNavigator = ({ navigation }) => {
                     headerRight: () => {
                         return (
                             <View style={{ flexDirection: "row" }}>
-                                <SearchIcon />
+                                {/*<SearchIcon />*/}
                                 {/* <RefreshIcon /> */}
                                 {/* <MapIcon /> */}
                                 <NotficationIcon
@@ -395,12 +395,12 @@ const EmsStackNavigator = ({ navigation }) => {
             <EmsStack.Screen
                 name={EmsStackIdentifiers.addPreEnq}
                 component={AddPreEnquiryScreen}
-                options={{ title: "Pre-Enquiry" }}
+                options={{ title: "Contacts" }}
             />
             <EmsStack.Screen
                 name={EmsStackIdentifiers.confirmedPreEnq}
                 component={ConfirmedPreEnquiryScreen}
-                options={{ title: "Pre-Enquiry" }}
+                options={{ title: "Contacts" }}
             />
             <EmsStack.Screen
                 name={EmsStackIdentifiers.detailsOverview}
@@ -411,7 +411,7 @@ const EmsStackNavigator = ({ navigation }) => {
                 name={EmsStackIdentifiers.preBookingForm}
                 component={PreBookingFormScreen}
                 initialParams={{ accessoriesList: [] }}
-                options={{ title: "Pre-Booking Form" }}
+                options={{ title: "Booking Approval Form" }}
             />
             <EmsStack.Screen
                 name={EmsStackIdentifiers.bookingForm}
@@ -438,13 +438,13 @@ const EmsStackNavigator = ({ navigation }) => {
             <EmsStack.Screen
                 name={EmsStackIdentifiers.proceedToPreBooking}
                 component={ProceedToPreBookingScreen}
-                options={{ title: "Proceed To PreBooking" }}
+                options={{ title: "Proceed To Booking Approval" }}
             />
             <EmsStack.Screen
                 name={EmsStackIdentifiers.proceedToBooking}
                 component={ProceedToBookingScreen}
                 initialParams={{ accessoriesList: [] }}
-                options={{ title: "Proceed To Booking" }}
+                options={{ title: "Proceed To Booking View" }}
             />
             <EmsStack.Screen
                 name={EmsStackIdentifiers.task360}
@@ -561,12 +561,12 @@ const MyTaskStackNavigator = ({ navigation }) => {
             <MyTaskStack.Screen
                 name={MyTasksStackIdentifiers.proceedToPreBooking}
                 component={ProceedToPreBookingScreen}
-                options={{ title: "Proceed To PreBooking" }}
+                options={{ title: "Proceed To Booking Approval" }}
             />
             <MyTaskStack.Screen
                 name={MyTasksStackIdentifiers.proceedToBooking}
                 component={ProceedToBookingScreen}
-                options={{ title: "Proceed To Booking" }}
+                options={{ title: "Proceed To Booking View" }}
             />
         </MyTaskStack.Navigator>
     );
@@ -832,7 +832,7 @@ const DropAnalysisStackNavigator = ({ navigation }) => {
                                 <SearchIcon />
                                 {/* <RefreshIcon /> */}
                                 {/* <MapIcon /> */}
-                               
+
                             </View>
                         );
                     },
@@ -937,7 +937,7 @@ const PreBookingStackNavigator = ({ navigation }) => {
                 name={PreBookingStackIdentifiers.preBookingForm}
                 component={PreBookingFormScreen}
                 options={{
-                    title: "Pre Booking Form",
+                    title: "Booking Approval Form",
                 }}
             />
         </PreBookingStack.Navigator>

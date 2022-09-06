@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { SafeAreaView, StyleSheet, View, FlatList, ActivityIndicator, Text, RefreshControl, Pressable } from "react-native";
 import { PageControlItem } from "../../../pureComponents/pageControlItem";
-import { IconButton } from "react-native-paper";
+import { IconButton, Searchbar } from "react-native-paper";
 import { PreEnquiryItem, EmptyListView } from "../../../pureComponents";
 import { DateRangeComp, DatePickerComponent, SortAndFilterComp } from "../../../components";
 import { useDispatch, useSelector } from "react-redux";
@@ -36,6 +36,7 @@ const EnquiryScreen = ({ navigation }) => {
     const [sortAndFilterVisible, setSortAndFilterVisible] = useState(false);
     const [searchedData, setSearchedData] = useState([]);
     const [orgId, setOrgId] = useState("");
+    const [searchQuery, setSearchQuery] = useState('');
 
     const orgIdStateRef = React.useRef(orgId);
     const empIdStateRef = React.useRef(employeeId);
@@ -48,7 +49,7 @@ const EnquiryScreen = ({ navigation }) => {
         setEmployeeId(data.empId);
         setOrgId(data.orgId);
     };
- 
+
     const setFromDateState = date => {
         fromDateRef.current = date;
         setSelectedFromDate(date);
@@ -60,6 +61,7 @@ const EnquiryScreen = ({ navigation }) => {
     }
 
     useEffect(() => {
+        setSearchQuery('');
         if (selector.enquiry_list.length > 0) {
             console.log("ENQ LENGTH: ", selector.enquiry_list.length);
             setSearchedData(selector.enquiry_list)
@@ -75,7 +77,12 @@ const EnquiryScreen = ({ navigation }) => {
             if (appSelector.searchKey !== '') {
                 let tempData = []
                 tempData = selector.enquiry_list.filter((item) => {
-                    return item.firstName.toLowerCase().includes(appSelector.searchKey.toLowerCase()) || item.lastName.toLowerCase().includes(appSelector.searchKey.toLowerCase())
+                    return (
+                        `${item.firstName} ${item.lastName}`
+                            .toLowerCase()
+                            .includes(appSelector.searchKey.toLowerCase()) ||
+                        item.phone.includes(appSelector.searchKey)
+                    );
                 })
                 setSearchedData([]);
                 setSearchedData(tempData);
@@ -89,7 +96,6 @@ const EnquiryScreen = ({ navigation }) => {
     }, [appSelector.isSearch])
 
     useEffect(async () => {
-
         // Get Data From Server
         let isMounted = true;
         setFromDateState(lastMonthFirstDate);
@@ -259,6 +265,12 @@ const EnquiryScreen = ({ navigation }) => {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
+    const onChangeSearch = query => {
+        setSearchQuery(query);
+        dispatch(updateSearchKey(query));
+        dispatch(updateIsSearch(true));
+    };
+
     return (
         <SafeAreaView style={styles.container}>
 
@@ -311,7 +323,14 @@ const EnquiryScreen = ({ navigation }) => {
                     </View>
                 </Pressable>
             </View>
-
+            <View>
+                <Searchbar
+                    placeholder="Search"
+                    onChangeText={onChangeSearch}
+                    value={searchQuery}
+                    style={styles.searchBar}
+                />
+            </View>
             {searchedData.length === 0 ? <EmptyListView title={"No Data Found"} isLoading={selector.isLoading} /> :
                 <View style={[{ backgroundColor: Colors.LIGHT_GRAY, flex: 1, marginBottom: 10 }]}>
                     <FlatList
@@ -336,7 +355,7 @@ const EnquiryScreen = ({ navigation }) => {
                         renderItem={({ item, index }) => {
 
                             let color = Colors.WHITE;
-                            if (index % 2 != 0) {
+                            if (index % 2 !== 0) {
                                 color = Colors.LIGHT_GRAY;
                             }
 
@@ -346,13 +365,13 @@ const EnquiryScreen = ({ navigation }) => {
                                         <MyTaskNewItem
                                             from='PRE_ENQUIRY'
                                             name={getFirstLetterUpperCase(item.firstName) + " " + getFirstLetterUpperCase(item.lastName)}
-                                            navigator={navigation} 
-                                            uniqueId={item.leadId} 
+                                            navigator={navigation}
+                                            uniqueId={item.leadId}
                                             type='Enq'
                                             status={""}
                                             created={item.modifiedDate}
                                             dmsLead={item.createdBy}
-                                            phone={item.phone} 
+                                            phone={item.phone}
                                             source={item.enquirySource}
                                             model={item.model}
                                             leadStatus={item.leadStatus}
@@ -412,4 +431,5 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginBottom: 5
     },
+    searchBar:{height: 40}
 });

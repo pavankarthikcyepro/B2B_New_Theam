@@ -38,7 +38,7 @@ interface Item {
 
 export const getPreEnquiryDetails = createAsyncThunk("ADD_PRE_ENQUIRY_SLICE/getPreEnquiryDetails", async (universalId, { rejectWithValue }) => {
   console.log("PAYLOAD EDIT ENQ: ", URL.CONTACT_DETAILS(universalId));
-  
+
   const response = await client.get(URL.CONTACT_DETAILS(universalId))
   const json = await response.json()
   if (!response.ok) {
@@ -51,7 +51,7 @@ export const createPreEnquiry = createAsyncThunk("ADD_PRE_ENQUIRY_SLICE/createPr
   console.log("first:", data)
   const response = await client.post(data["url"], data["body"]);
   console.log("PAYLOAD PRE ENQ:", data["url"], JSON.stringify(data["body"]));
-  
+
   // console.log("resp pre enq: ", JSON.stringify(response));
   try {
     const json = await response.json();
@@ -88,7 +88,7 @@ export const updatePreEnquiry = createAsyncThunk(
   "ADD_PRE_ENQUIRY_SLICE/updatePreEnquiry",
   async (data, { rejectWithValue }) => {
     console.log("PAY URL:", data["url"], JSON.stringify(data["body"]));
-    
+
     const response = await client.put(data["url"], data["body"]);
     try {
       const json = await response.json();
@@ -114,7 +114,7 @@ export const getEventListApi = createAsyncThunk(
       URL.GET_EVENT_LIST(payload.startDate, payload.endDate, payload.empId),
       customConfig
     );
-     
+
     try {
       const json = await response.json();
       if (response.status != 200) {
@@ -216,11 +216,11 @@ export const addPreEnquirySlice = createSlice({
     },
     setDropDownData: (state, action: PayloadAction<DropDownModel>) => {
       const { key, value, id, orgId } = action.payload;
-     
+
       switch (key) {
         case "ENQUIRY_SEGMENT":
           state.enquiryType = value;
-         
+
           console.log("VLUEEEEE2=====>", CustomerTypesObj[value.toLowerCase()]);
 
           state.customer_type_list = CustomerTypesObj21[value.toLowerCase()]
@@ -236,11 +236,11 @@ else{
 state.customer_type_list = CustomerTypesObj[value.toLowerCase()];
 state.customerType = "";
 }
-      
 
-          
-        
-          
+
+
+
+
           //state.customer_type_list = CustomerTypesObj22[value.toLowerCase()];
 
           //state.customerType = "";
@@ -348,10 +348,10 @@ state.customerType = "";
       state.enquiryType = preEnquiryDetails.enquirySegment;
       state.customer_type_list =
         CustomerTypesObj[preEnquiryDetails.enquirySegment.toLowerCase()];
-      state.customer_type_list =
-        CustomerTypesObj21[preEnquiryDetails.enquirySegment.toLowerCase()];
-      state.customer_type_list =
-        CustomerTypesObj22[preEnquiryDetails.enquirySegment.toLowerCase()];
+      // state.customer_type_list =
+      //   CustomerTypesObj21[preEnquiryDetails.enquirySegment.toLowerCase()];
+      // state.customer_type_list =
+      //   CustomerTypesObj22[preEnquiryDetails.enquirySegment.toLowerCase()];
 
       state.enquiry_type_list = EnquiryTypes;
       state.enquiry_type_list21 = EnquiryTypes21;

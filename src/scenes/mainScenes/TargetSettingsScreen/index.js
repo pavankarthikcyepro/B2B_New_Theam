@@ -146,7 +146,7 @@ const TargetSettingsScreen = ({ route, navigation }) => {
                 "empId": jsonObj.empId,
                 "pageNo": 1,
                 "size": 500,
-                "targetType": selector.targetType
+                // "targetType": selector.targetType
             }
             const dateFormat = "YYYY-MM-DD";
             const currentDate = moment().format(dateFormat)

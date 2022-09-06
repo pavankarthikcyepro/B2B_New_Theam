@@ -1508,7 +1508,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             return;
         }
 
-        
+
 
         let postOnRoadPriceTable = {};
         postOnRoadPriceTable.additionalOffer1 = selector.additional_offer_1;
@@ -1581,7 +1581,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             removeExistingKeysFromAsync(route?.params?.lists.names);
         }
 //         if(selector.loading){
-                    
+
 // setIsSubmitPress(false)
 //         }
     };
@@ -1876,12 +1876,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 clearLocalData();
                 navigation.goBack();
             } else if (typeOfActionDispatched === "APPROVE") {
-                showToastSucess("Pre-Booking Approved");
+                showToastSucess("Booking Approval Approved");
                 dispatch(clearState());
                 clearLocalData();
                 navigation.goBack();
             } else if (typeOfActionDispatched === "REJECT") {
-                showToastSucess("Pre-Booking Rejected");
+                showToastSucess("Booking Approval Rejected");
                 dispatch(clearState());
                 clearLocalData();
                 navigation.goBack();
@@ -2957,7 +2957,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                     }
                                 />
                                 <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.enquiry_segment === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                                <DropDownSelectionItem label={"Buyer Type*"} value={selector.buyer_type} 
+                                <DropDownSelectionItem label={"Buyer Type*"} value={selector.buyer_type}
                                 onPress={()=> showDropDownModelMethod(
                                     "BUYER_TYPE",
                                     "Buyer Type"
@@ -4896,7 +4896,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             {showPrebookingPaymentSection ? (
                                 <List.Accordion
                                     id={"12"}
-                                    title={"PreBooking Payment Details"}
+                                    title={"Booking Payment Details"}
                                     titleStyle={{
                                         color: openAccordian === "12" ? Colors.BLACK : Colors.BLACK,
                                         fontSize: 16,
@@ -5085,7 +5085,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             {isDropSelected ? (
                                 <List.Accordion
                                     id={"10"}
-                                    title={"Pre Booking Lost Section"}
+                                    title={"Booking Approval Lost Section"}
                                     titleStyle={{
                                         color: openAccordian === "10" ? Colors.BLACK : Colors.BLACK,
                                         fontSize: 16,
@@ -5233,7 +5233,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                             labelStyle={{ textTransform: "none" }}
                                             onPress={proceedToBookingClicked}
                                         >
-                                            Proceed To Booking
+                                            Proceed To Booking View
                   </Button>
                                     </View>
                                     }

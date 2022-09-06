@@ -508,7 +508,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                 //     }
                 //     console.log("PAYLOAD LEAD REF:", payload);
                 //     customerLeadReference(payload)
-                //    // dispatch(customerLeadRef(payload))              
+                //    // dispatch(customerLeadRef(payload))
 
                 // }
             });
@@ -553,6 +553,14 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         setEmployeeSelectModel(false);
     }
 
+    function checkForLeadStage() {
+        let name = itemData.leadStage;
+        if (name === 'PREENQUIRY') {
+            name = 'Contacts';
+        }
+        return name;
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             {/* <LoaderComponent
@@ -570,7 +578,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
-                behavior={Platform.OS == "ios" ? "padding" : "height"}
+                behavior={Platform.OS === "ios" ? "padding" : "height"}
                 enabled
                 keyboardVerticalOffset={100}
             >
@@ -581,7 +589,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                     style={{ flex: 1 }}
                 >
                     <View style={styles.view1}>
-                        <Text style={styles.text1}>{"Pre-Enquiry"}</Text>
+                        <Text style={styles.text1}>{"Contact"}</Text>
 
                         <IconButton
                             icon="square-edit-outline"
@@ -618,7 +626,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                         <TextinputComp
                             style={{ height: 70 }}
                             value={itemData.enquirySource}
-                            label={"Source of Pre-Enquiry"}
+                            label={"Source of Contact"}
                             editable={false}
                         />
                         <Text style={styles.devider}></Text>
@@ -633,7 +641,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
                         <TextinputComp
                             style={{ height: 70 }}
-                            value={itemData.leadStage}
+                            value={checkForLeadStage()}
                             label={"Status"}
                             editable={false}
                         />
