@@ -123,6 +123,7 @@ const slice = createSlice({
           break;
       }
     },
+  
     setDatePicker: (state, action) => {
       let date = new Date();
       date.setDate(date.getDate() + 9);
