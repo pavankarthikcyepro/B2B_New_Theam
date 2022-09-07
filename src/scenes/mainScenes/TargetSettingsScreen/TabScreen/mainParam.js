@@ -329,7 +329,9 @@ const MainParamScreen = ({ route, navigation }) => {
         }
         else {
             console.log("CALLED ADD");
-            setOpenRetail(false)
+            setTimeout(() => {
+                setOpenRetail(false);
+            }, 1000);
             let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
             if (employeeData) {
                 const jsonObj = JSON.parse(employeeData);
@@ -377,7 +379,10 @@ const MainParamScreen = ({ route, navigation }) => {
         }
         else {
             console.log("CALLED EDIT");
-            setOpenRetail(false)
+            setTimeout(() => {
+            setOpenRetail(false);    
+            }, 1000);
+            
             let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
             if (employeeData) {
                 const jsonObj = JSON.parse(employeeData);
@@ -1172,7 +1177,7 @@ const MainParamScreen = ({ route, navigation }) => {
             <Modal
                 animationType="fade"
                 visible={openRetail}
-                onRequestClose={() => { setOpenRetail(false) }}
+                // onRequestClose={() => { setOpenRetail(false) }}
                 transparent={true}>
                 <View style={{
                     flex: 1,

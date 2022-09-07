@@ -131,11 +131,15 @@ const slice = createSlice({
         case "ACTUAL_START_TIME":
           state.minDate = new Date();
           state.maxDate = date;
+          state.showDatepicker = true;
           break;
         case "ACTUAL_END_TIME":
           state.minDate = new Date();
           state.maxDate = date;
+          state.showDatepicker = true;
           break;
+        case "CLOSE":
+          state.showDatepicker = false;
       }
       state.datePickerKeyId = action.payload;
       state.showDatepicker = !state.showDatepicker;

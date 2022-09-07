@@ -232,6 +232,29 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [authToken, setAuthToken] = useState("");
 
+  const [selectedDates, setSelectedDates] = useState(new Date(Date.now()));
+
+
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate;
+    console.log("date: ", selectedDate);
+    
+    if (Platform.OS === "android") {
+      if (!currentDate) {
+        dispatch(updateSelectedDate({ key: "NONE", text: currentDate }));
+        setSelectedDates(currentDate);
+        // setDatePicker();
+      } else {
+        dispatch(updateSelectedDate({ key: "", text: currentDate }));
+        setSelectedDates(currentDate);
+      }
+    } else {
+      dispatch(updateSelectedDate({ key: "", text: currentDate }));
+      setSelectedDates(currentDate);
+    }
+    
+  };
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
@@ -2994,25 +3017,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           onRequestClose={() => dispatch(setDatePicker())}
         />
       )} */}
-
       {/* {selector.showDatepicker && ( */}
       <DatePickerComponent
         visible={selector.showDatepicker}
         mode={"date"}
-        value={new Date(Date.now())}
+        value={selectedDates}
         minimumDate={selector.minDate}
         maximumDate={selector.maxDate}
-        onChange={(event, selectedDate) => {
-          if (Platform.OS === "android") {
-            if (!selectedDate) {
-              dispatch(updateSelectedDate({ key: "NONE", text: selectedDate }));
-            } else {
-              dispatch(updateSelectedDate({ key: "", text: selectedDate }));
-            }
-          } else {
-            dispatch(updateSelectedDate({ key: "", text: selectedDate }));
-          }
-        }}
+        onChange={onChange}
+
         onRequestClose={() => dispatch(setDatePicker())}
       />
       {/* )} */}

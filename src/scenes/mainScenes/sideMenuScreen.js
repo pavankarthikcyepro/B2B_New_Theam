@@ -154,9 +154,9 @@ const SideMenuScreen = ({ navigation }) => {
 
 
     const getProfilePic = (userData) => {
-        // console.log(`http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`);
+        // console.log(`http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`);
         fetch(
-            `http://automatestaging-724985329.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
+            `http://liveautomate-345116193.ap-south-1.elb.amazonaws.com:8081/sales/employeeprofilepic/get/${userData.empId}/${userData.orgId}/${userData.branchId}`
         )
             .then((response) => response.json())
             .then((json) => {

@@ -903,6 +903,7 @@ const ListComponent = ({ route, navigation }) => {
                         </View>
                     )
                 } */}
+                {console.log('homeSelector::::::',JSON.stringify(homeSelector))}
                 {homeSelector.isTeamPresent && !homeSelector.isDSE &&
                     (route.params.from !== "TODAY" ?
                         <View style={{ flexDirection: 'row' }}>

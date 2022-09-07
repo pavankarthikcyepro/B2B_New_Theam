@@ -37,6 +37,8 @@ const PreBookingScreen = ({ navigation }) => {
     const [sortAndFilterVisible, setSortAndFilterVisible] = useState(false);
     const [searchedData, setSearchedData] = useState([]);
     const [orgId, setOrgId] = useState("");
+    const [fromDate, setFromDate] = useState(new Date(Date.now()));
+    const [toDate, setToDate] = useState(new Date(Date.now()));
     const [searchQuery, setSearchQuery] = useState('');
 
     const orgIdStateRef = React.useRef(orgId);
@@ -193,20 +195,40 @@ const PreBookingScreen = ({ navigation }) => {
     }
 
     const updateSelectedDate = (date, key) => {
-
-        const formatDate = moment(date).format(dateFormat);
         switch (key) {
             case "FROM_DATE":
-                setFromDateState(formatDate);
-                getPreBookingListFromServer(employeeId, formatDate, selectedToDate);
+                getPreBookingListFromServer(employeeId, selectedFromDate, selectedToDate);
                 break;
             case "TO_DATE":
-                setToDateState(formatDate);
-                getPreBookingListFromServer(employeeId, selectedFromDate, formatDate);
+                getPreBookingListFromServer(employeeId, selectedFromDate, selectedToDate);
                 break;
         }
     }
-
+    const handleModal = () => {
+        setShowDatePicker(false)
+        getPreBookingListFromServer(
+          employeeId,
+          selectedFromDate,
+          selectedToDate
+        );
+    }
+    const onChange = (event, selectedDate) => {
+        const formatDate = moment(selectedDate).format(dateFormat);
+        switch (datePickerId) {
+          case "FROM_DATE":
+            if (selectedDate) {
+              setFromDateState(formatDate);
+              setFromDate(selectedDate);
+            }
+            break;
+          case "TO_DATE":
+            if (selectedDate) {
+              setToDateState(formatDate);
+              setToDate(selectedDate);
+            }
+            break;
+        }
+    }
     const applySelectedFilters = (payload) => {
 
         const modelData = payload.model;
@@ -273,25 +295,14 @@ const PreBookingScreen = ({ navigation }) => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-
-            <DatePickerComponent
-                visible={showDatePicker}
-                mode={"date"}
-                value={new Date(Date.now())}
-                onChange={(event, selectedDate) => {
-                    console.log("date: ", selectedDate);
-                    setShowDatePicker(false)
-                    if (Platform.OS === "android") {
-                        if (selectedDate) {
-                            updateSelectedDate(selectedDate, datePickerId);
-                        }
-                    } else {
-                        updateSelectedDate(selectedDate, datePickerId);
-                    }
-                }}
-                onRequestClose={() => setShowDatePicker(false)}
-            />
+      <SafeAreaView style={styles.container}>
+        <DatePickerComponent
+          visible={showDatePicker}
+          mode={"date"}
+          value={datePickerId === "FROM_DATE" ? fromDate : toDate}
+          onChange={onChange}
+          onRequestClose={handleModal}
+        />
 
             <SortAndFilterComp
                 visible={sortAndFilterVisible}

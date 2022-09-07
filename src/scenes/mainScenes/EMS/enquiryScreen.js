@@ -46,12 +46,16 @@ const EnquiryScreen = ({ navigation }) => {
     const [sortAndFilterVisible, setSortAndFilterVisible] = useState(false);
     const [searchedData, setSearchedData] = useState([]);
     const [orgId, setOrgId] = useState("");
-    const [searchQuery, setSearchQuery] = useState('');
+    const [fromDate, setFromDate] = useState(new Date(Date.now()));
+    const [toDate, setToDate] = useState(new Date(Date.now()));
+        const [searchQuery, setSearchQuery] = useState('');
 
     const orgIdStateRef = React.useRef(orgId);
     const empIdStateRef = React.useRef(employeeId);
     const fromDateRef = React.useRef(selectedFromDate);
     const toDateRef = React.useRef(selectedToDate);
+
+  
 
     const setMyState = data => {
         empIdStateRef.current = data.empId;
@@ -204,21 +208,27 @@ const EnquiryScreen = ({ navigation }) => {
         setDatePickerId(key);
     }
 
-    const updateSelectedDate = (date, key) => {
-
-        const formatDate = moment(date).format(dateFormat);
-        switch (key) {
-            case "FROM_DATE":
-                setFromDateState(formatDate);
-                getEnquiryListFromServer(employeeId, formatDate, selectedToDate);
-                break;
-            case "TO_DATE":
-                setToDateState(formatDate);
-                getEnquiryListFromServer(employeeId, selectedFromDate, formatDate);
-                break;
-        }
-    }
-
+    const handleModal = () => {
+      setShowDatePicker(false);
+      getEnquiryListFromServer(employeeId, selectedFromDate, selectedToDate);
+    };
+    const onChange = (event, selectedDate) => {
+      const formatDate = moment(selectedDate).format(dateFormat);
+      switch (datePickerId) {
+        case "FROM_DATE":
+          if (selectedDate) {
+            setFromDateState(formatDate);
+            setFromDate(selectedDate);
+          }
+          break;
+        case "TO_DATE":
+          if (selectedDate) {
+            setToDateState(formatDate);
+            setToDate(selectedDate);
+          }
+          break;
+      }
+    };
     const applySelectedFilters = (payload) => {
 
         const modelData = payload.model;
@@ -285,40 +295,29 @@ const EnquiryScreen = ({ navigation }) => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+      <SafeAreaView style={styles.container}>
+        <DatePickerComponent
+          visible={showDatePicker}
+          mode={"date"}
+          value={datePickerId === "FROM_DATE" ? fromDate : toDate}
+          onChange={onChange}
+          onRequestClose={handleModal}
+        />
 
-            <DatePickerComponent
-                visible={showDatePicker}
-                mode={"date"}
-                value={new Date(Date.now())}
-                onChange={(event, selectedDate) => {
-                    console.log("date: ", selectedDate);
-                    setShowDatePicker(false)
-                    if (Platform.OS === "android") {
-                        if (selectedDate) {
-                            updateSelectedDate(selectedDate, datePickerId);
-                        }
-                    } else {
-                        updateSelectedDate(selectedDate, datePickerId);
-                    }
-                }}
-                onRequestClose={() => setShowDatePicker(false)}
-            />
-
-            <SortAndFilterComp
-                visible={sortAndFilterVisible}
-                categoryList={categoryList}
-                modelList={vehicleModelList}
-                sourceList={sourceList}
-                submitCallback={(payload) => {
-                    // console.log("payload: ", payload);
-                    applySelectedFilters(payload);
-                    setSortAndFilterVisible(false);
-                }}
-                onRequestClose={() => {
-                    setSortAndFilterVisible(false);
-                }}
-            />
+        <SortAndFilterComp
+          visible={sortAndFilterVisible}
+          categoryList={categoryList}
+          modelList={vehicleModelList}
+          sourceList={sourceList}
+          submitCallback={(payload) => {
+            // console.log("payload: ", payload);
+            applySelectedFilters(payload);
+            setSortAndFilterVisible(false);
+          }}
+          onRequestClose={() => {
+            setSortAndFilterVisible(false);
+          }}
+        />
 
             <View style={styles.view1}>
                 <View style={{ width: "80%" }}>

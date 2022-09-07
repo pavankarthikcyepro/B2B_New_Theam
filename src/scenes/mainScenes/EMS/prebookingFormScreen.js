@@ -325,7 +325,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     const [isEdit, setIsEdit] = useState(false);
     const [isReciptDocUpload, setIsReciptDocUpload] = useState(false);
     const [isSubmitPress, setIsSubmitPress] = useState(false);
-
+    const [date, setDate] = useState(new Date(Date.now()));
     useLayoutEffect(() => {
         navigation.setOptions({
             headerLeft: () => (
@@ -820,7 +820,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             setShowSubmitDropBtn(false)
             setIsEdit(false)
             setIsReciptDocUpload(false)
-            console.log("MAXXXXX=>>>>", selector.maxDate);
             console.log("DDDDD", JSON.stringify(selector.pre_booking_details_response));
             let dmsContactOrAccountDto;
             if (
@@ -2076,7 +2075,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     const mapLeadDto = (prevData) => {
         let dataObj = { ...prevData };
-        console.log("MapLeadDTO----------->",selector.customer_preferred_date)
         dataObj.enquirySegment = selector.enquiry_segment;
         dataObj.buyerType = selector.buyer_type;
         dataObj.maritalStatus = selector.marital_status;
@@ -2234,8 +2232,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     const formatAttachment = (data, photoObj, index, typeOfDocument) => {
         let object = { ...data };
-        console.log("DATATATATT=======>", data)
-        console.log({typeOfDocument})
         object.branchId = selectedBranchId;
         object.ownerName = userData.employeeName;
         object.orgId = userData.orgId;
@@ -2709,7 +2705,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         })
             .then((response) => response.json())
             .then((response) => {
-                console.log('response', response);
+                //console.log('response', response);
                 if (response) {
                     const dataObj = { ...uploadedImagesDataObj };
                     dataObj[response.documentType] = response;
@@ -2727,7 +2723,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     const deteleButtonPressed = (from) => {
         const imagesDataObj = { ...uploadedImagesDataObj };
-        console.log("delelelete====>", imagesDataObj);
         switch (from) {
             case "PAN":
                 delete imagesDataObj.pan;
@@ -2857,6 +2852,19 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         );
     }
 
+    const onChange = (event, selectedDate) => {
+          const currentDate = selectedDate;
+          setDate(currentDate);
+          if (Platform.OS === "android") {
+            if (!currentDate) {
+              dispatch(updateSelectedDate({ key: "NONE", text: currentDate }));
+            } else {
+              dispatch(updateSelectedDate({ key: "", text: currentDate }));
+            }
+          } else {
+            dispatch(updateSelectedDate({ key: "", text: currentDate }));
+          }
+    };
     return (
       <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
         <ImagePickerComponent
@@ -2936,29 +2944,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
           }}
         />
 
-        <DatePickerComponent
-          visible={selector.showDatepicker}
-          mode={"date"}
-          value={new Date(Date.now())}
-          minimumDate={selector.minDate}
-          //   minimumDate={selector.minDate}
-          maximumDate={selector.maxDate}
-          onChange={(event, selectedDate) => {
-            console.log("date: ", selectedDate);
-            if (Platform.OS === "android") {
-              if (!selectedDate) {
-                dispatch(
-                  updateSelectedDate({ key: "NONE", text: selectedDate })
-                );
-              } else {
-                dispatch(updateSelectedDate({ key: "", text: selectedDate }));
-              }
-            } else {
-              dispatch(updateSelectedDate({ key: "", text: selectedDate }));
-            }
-          }}
-          onRequestClose={() => dispatch(setDatePicker())}
-        />
+            <DatePickerComponent
+                visible={selector.showDatepicker}
+                mode={"date"}
+                value={date}
+                minimumDate={selector.minDate}
+                maximumDate={selector.maxDate}
+                onChange={onChange}
+                onRequestClose={() => dispatch(setDatePicker("CLOSE"))}
+            />
 
         <KeyboardAvoidingView
           style={{

@@ -11,6 +11,7 @@ import {
     Alert,
     Dimensions
 } from "react-native";
+
 import { Colors, GlobalStyle } from "../../../styles";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -123,6 +124,7 @@ const TestDriveScreen = ({ route, navigation }) => {
     const [mobileNumber, setMobileNumber] = useState("");
     const [email, setEmail] = useState("");
     const [name, setName] = useState("");
+    const [selectedDate, setSelectedDate] = useState(new Date(Date.now()));
     const [selectedDseDetails, setSelectedDseDetails] = useState({
         name: "",
         id: "",
@@ -149,6 +151,42 @@ const TestDriveScreen = ({ route, navigation }) => {
     const [isSubmitPress, setIsSubmitPress] = useState(false);
     let date = new Date();
     date.setDate(date.getDate() + 9);
+
+       const onChange = (event, selectedDate) => {
+         const currentDate = selectedDate;
+          let formatDate = "";
+            if (currentDate) {
+              if (datePickerMode === "date") {
+                 formatDate = convertToDate(currentDate);
+                 validateSelectedDateForTestDrive(currentDate);
+                 setSelectedDate(currentDate);
+              } else {
+                if (Platform.OS === "ios") {
+                  formatDate = convertToTime(currentDate);
+                  setSelectedDate(currentDate);
+                } else {
+                  formatDate = convertToTime(currentDate);
+                }
+              }
+            }
+
+            if (Platform.OS === "android") {
+              if (currentDate) {
+                dispatch(
+                  updateSelectedDate({ key: datePickerKey, text: formatDate })
+                );
+              }
+            } else {
+              dispatch(
+                updateSelectedDate({ key: datePickerKey, text: formatDate })
+              );
+            }
+            // setTimeout(() => {
+            // setShowDatePickerModel(false);
+
+            // }, 1000);
+          };
+
 
     useEffect(() => {
         //updateBasicDetails(taskData);
@@ -536,7 +574,7 @@ const TestDriveScreen = ({ route, navigation }) => {
     };
 
     const showDatePickerModelMethod = (key, mode) => {
-        Keyboard.dismiss();
+        // Keyboard.dismiss();
 
         // if (selectedVehicleDetails.vehicleId == 0) {
         //     showToast("Please select model");
@@ -989,75 +1027,54 @@ const TestDriveScreen = ({ route, navigation }) => {
     }, [selector.validate_otp_response_status])
 
     return (
-        <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
-            <ImagePickerComponent
-                visible={showImagePicker}
-                keyId={imagePickerKey}
-                selectedImage={(data, keyId) => {
-                    console.log("imageObj: ", data, keyId);
-                    uploadSelectedImage(data, keyId);
-                    setShowImagePicker(false);
-                }}
-                onDismiss={() => setShowImagePicker(false)}
-            />
+      <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
+        <ImagePickerComponent
+          visible={showImagePicker}
+          keyId={imagePickerKey}
+          selectedImage={(data, keyId) => {
+            console.log("imageObj: ", data, keyId);
+            uploadSelectedImage(data, keyId);
+            setShowImagePicker(false);
+          }}
+          onDismiss={() => setShowImagePicker(false)}
+        />
 
-            <DropDownComponant
-                visible={showDropDownModel}
-                headerTitle={dropDownTitle}
-                data={dataForDropDown}
-                onRequestClose={() => setShowDropDownModel(false)}
-                selectedItems={(item) => {
-                    if (dropDownKey === "MODEL") {
-                        updateSelectedVehicleDetails(item, false);
-                    }
-                    if (dropDownKey === "VARIENT") {
-                        updateSelectedVehicleDetails(item, true);
-                    }
-                    if (dropDownKey === "LIST_OF_DRIVERS") {
-                        setSelectedDriverDetails({ name: item.name, id: item.id });
-                    }
-                    setShowDropDownModel(false);
-                }}
-            />
+        <DropDownComponant
+          visible={showDropDownModel}
+          headerTitle={dropDownTitle}
+          data={dataForDropDown}
+          onRequestClose={() => setShowDropDownModel(false)}
+          selectedItems={(item) => {
+            if (dropDownKey === "MODEL") {
+              updateSelectedVehicleDetails(item, false);
+            }
+            if (dropDownKey === "VARIENT") {
+              updateSelectedVehicleDetails(item, true);
+            }
+            if (dropDownKey === "LIST_OF_DRIVERS") {
+              setSelectedDriverDetails({ name: item.name, id: item.id });
+            }
+            setShowDropDownModel(false);
+          }}
+        />
 
-            <DatePickerComponent
-                visible={showDatePickerModel}
-                mode={datePickerMode}
-                minimumDate={new Date(Date.now())}
-                maximumDate={date}
-                value={new Date(Date.now())}
-                onChange={(event, selectedDate) => {
-                    console.log("date: ", selectedDate);
-                    setShowDatePickerModel(false);
-
-                    let formatDate = "";
-                    if (selectedDate) {
-                        if (datePickerMode === "date") {
-                            formatDate = convertToDate(selectedDate);
-                            validateSelectedDateForTestDrive(selectedDate);
-                        } else {
-                            if (Platform.OS === "ios") {
-                                formatDate = convertToTime(selectedDate);
-                            } else {
-                                formatDate = convertToTime(selectedDate);
-                            }
-                        }
-                    }
-
-                    if (Platform.OS === "android") {
-                        if (selectedDate) {
-                            dispatch(
-                                updateSelectedDate({ key: datePickerKey, text: formatDate })
-                            );
-                        }
-                    } else {
-                        dispatch(
-                            updateSelectedDate({ key: datePickerKey, text: formatDate })
-                        );
-                    }
-                }}
-                onRequestClose={() => setShowDatePickerModel(false)}
-            />
+        <DatePickerComponent
+          visible={showDatePickerModel}
+          mode={datePickerMode}
+          minimumDate={new Date(Date.now())}
+          value={selectedDate}
+          onChange={onChange}
+          onRequestClose={() => setShowDatePickerModel(false)}
+        />
+        {/* {showDatePickerModel && (
+          <DateTimePicker
+            testID="dateTimePicker"
+            value={date}
+            //   mode=""
+            is24Hour={true}
+            onChange={onChange}
+          />
+        )} */}
 
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
@@ -1139,14 +1156,14 @@ const TestDriveScreen = ({ route, navigation }) => {
                             />
                             <Text style={GlobalStyle.underline}></Text>
 
-                            <TextinputComp
-                                style={{ height: 65, width: "100%" }}
-                                label={"Transmission Type"}
-                                value={selectedVehicleDetails.transType}
-                                editable={false}
-                                disabled={true}
-                            />
-                            <Text style={GlobalStyle.underline}></Text>
+                <TextinputComp
+                  style={{ height: 65, width: "100%" }}
+                  label={"Transmission Type"}
+                  value={selectedVehicleDetails.transType}
+                  editable={false}
+                  disabled={true}
+                />
+                <Text style={GlobalStyle.underline}></Text>
 
                             <Text style={styles.chooseAddressTextStyle}>
                                 {"Choose address:"}
@@ -1167,141 +1184,184 @@ const TestDriveScreen = ({ route, navigation }) => {
                             </View>
                             <Text style={GlobalStyle.underline}></Text>
 
-                            {addressType === 2 && (
-                                <View>
-                                    <TextinputComp
-                                        style={{ height: 65, maxHeight: 100, width: "100%" }}
-                                        value={customerAddress}
-                                        label={"Customer Address"}
-                                        multiline={true}
-                                        numberOfLines={4}
-                                        onChangeText={(text) => setCustomerAddress(text)}
-                                    />
-                                    <Text style={GlobalStyle.underline}></Text>
-                                </View>
-                            )}
+                {addressType === 2 && (
+                  <View>
+                    <TextinputComp
+                      style={{ height: 65, maxHeight: 100, width: "100%" }}
+                      value={customerAddress}
+                      label={"Customer Address"}
+                      multiline={true}
+                      numberOfLines={4}
+                      onChangeText={(text) => setCustomerAddress(text)}
+                    />
+                    <Text style={GlobalStyle.underline}></Text>
+                  </View>
+                )}
 
-                            <Text style={{ padding: 10 }}>
-                                {"Do Customer have Driving License?"}
-                            </Text>
-                            <View
-                                style={{
-                                    flexDirection: "row",
-                                    paddingLeft: 12,
-                                    paddingBottom: 5,
-                                }}
-                            >
-                                <RadioTextItem
-                                    label={"Yes"}
-                                    value={"Yes"}
-                                    status={customerHavingDrivingLicense === 1}
-                                    onPress={() => setCustomerHavingDrivingLicense(1)}
-                                />
-                                <RadioTextItem
-                                    label={"No"}
-                                    value={"No"}
-                                    status={customerHavingDrivingLicense === 2}
-                                    onPress={() => setCustomerHavingDrivingLicense(2)}
-                                />
-                            </View>
-                            {customerHavingDrivingLicense === 1 && (
-                                <View>
-                                    <View style={styles.select_image_bck_vw}>
-                                        <ImageSelectItem
-                                            name={"Upload Driving License (Front)"}
-                                            onPress={() =>
-                                                showImagePickerMethod("DRIVING_LICENSE_FRONT")
-                                            }
-                                        />
-                                    </View>
-                                    {uploadedImagesDataObj.dlFrontUrl ? (
-                                        <DisplaySelectedImage
-                                            fileName={uploadedImagesDataObj.dlFrontUrl.fileName}
-                                            from={"DLFRONTURL"}
-                                        />
-                                    ) : null}
-                                    <View style={styles.select_image_bck_vw}>
-                                        <ImageSelectItem
-                                            name={"Upload Driving License (Back)"}
-                                            onPress={() =>
-                                                showImagePickerMethod("DRIVING_LICENSE_BACK")
-                                            }
-                                        />
-                                    </View>
-                                    {uploadedImagesDataObj.dlBackUrl ? (
-                                        <DisplaySelectedImage
-                                            fileName={uploadedImagesDataObj.dlBackUrl.fileName}
-                                            from={"DLBACKURL"}
-                                        />
-                                    ) : null}
-                                </View>
-                            )}
+                <Text style={{ padding: 10 }}>
+                  {"Do Customer have Driving License?"}
+                </Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    paddingLeft: 12,
+                    paddingBottom: 5,
+                  }}
+                >
+                  <RadioTextItem
+                    label={"Yes"}
+                    value={"Yes"}
+                    status={customerHavingDrivingLicense === 1}
+                    onPress={() => setCustomerHavingDrivingLicense(1)}
+                  />
+                  <RadioTextItem
+                    label={"No"}
+                    value={"No"}
+                    status={customerHavingDrivingLicense === 2}
+                    onPress={() => setCustomerHavingDrivingLicense(2)}
+                  />
+                </View>
+                {customerHavingDrivingLicense === 1 && (
+                  <View>
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Upload Driving License (Front)"}
+                        onPress={() =>
+                          showImagePickerMethod("DRIVING_LICENSE_FRONT")
+                        }
+                      />
+                    </View>
+                    {uploadedImagesDataObj.dlFrontUrl ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.dlFrontUrl.fileName}
+                        from={"DLFRONTURL"}
+                      />
+                    ) : null}
+                    <View style={styles.select_image_bck_vw}>
+                      <ImageSelectItem
+                        name={"Upload Driving License (Back)"}
+                        onPress={() =>
+                          showImagePickerMethod("DRIVING_LICENSE_BACK")
+                        }
+                      />
+                    </View>
+                    {uploadedImagesDataObj.dlBackUrl ? (
+                      <DisplaySelectedImage
+                        fileName={uploadedImagesDataObj.dlBackUrl.fileName}
+                        from={"DLBACKURL"}
+                      />
+                    ) : null}
+                  </View>
+                )}
 
-                            <Text style={GlobalStyle.underline}></Text>
+                <Text style={GlobalStyle.underline}></Text>
 
-                            <DateSelectItem
-                                label={"Customer Preffered Date"}
-                                value={selector.customer_preferred_date}
-                                // disabled={!isRecordEditable}
-                                disabled={false}
-                                onPress={() =>
-                                    showDatePickerModelMethod("PREFERRED_DATE", "date")
-                                }
-                            />
-                            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.customer_preferred_date === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                            <DropDownSelectionItem
-                                label={"List of Employees"}
-                                value={selectedDseDetails.name}
-                                disabled={true}
-                            />
-                            <DropDownSelectionItem
-                                label={"List of Drivers"}
-                                value={selectedDriverDetails.name}
-                                // disabled={!isRecordEditable}
-                                disabled={false}
-                                onPress={() =>
-                                    showDropDownModelMethod("LIST_OF_DRIVERS", "List of Drivers")
-                                }
-                            />
-                            <DateSelectItem
-                                label={"Customer Preffered Time"}
-                                value={selector.customer_preferred_time}
-                                // disabled={!isRecordEditable}
-                                disabled={false}
-                                onPress={() =>
-                                    showDatePickerModelMethod("CUSTOMER_PREFERRED_TIME", "time")
-                                }
-                            />
-                            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.customer_preferred_time === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                            {/* <View style={{ flexDirection: "row" }}>
+                <DateSelectItem
+                  label={"Customer Preffered Date"}
+                  value={selector.customer_preferred_date}
+                  // disabled={!isRecordEditable}
+                  disabled={false}
+                  onPress={() =>
+                    showDatePickerModelMethod("PREFERRED_DATE", "date")
+                  }
+                />
+                <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.customer_preferred_date === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text>
+                <DropDownSelectionItem
+                  label={"List of Employees"}
+                  value={selectedDseDetails.name}
+                  disabled={true}
+                />
+                <DropDownSelectionItem
+                  label={"List of Drivers"}
+                  value={selectedDriverDetails.name}
+                  // disabled={!isRecordEditable}
+                  disabled={false}
+                  onPress={() =>
+                    showDropDownModelMethod(
+                      "LIST_OF_DRIVERS",
+                      "List of Drivers"
+                    )
+                  }
+                />
+                <DateSelectItem
+                  label={"Customer Preffered Time"}
+                  value={selector.customer_preferred_time}
+                  // disabled={!isRecordEditable}
+                  disabled={false}
+                  onPress={() =>
+                    showDatePickerModelMethod("CUSTOMER_PREFERRED_TIME", "time")
+                  }
+                />
+                <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.customer_preferred_time === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text>
+                {/* <View style={{ flexDirection: "row" }}>
                                 <View style={{ width: "50%" }}> */}
-                            <DateSelectItem
-                                label={"Actual start Time"}
-                                value={selector.actual_start_time}
-                                // disabled={!isRecordEditable}
-                                disabled={false}
-                                onPress={() =>
-                                    showDatePickerModelMethod("ACTUAL_START_TIME", "time")
-                                }
-                            />
-                            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.actual_start_time === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                            {/* </View>
+                <DateSelectItem
+                  label={"Actual start Time"}
+                  value={selector.actual_start_time}
+                  // disabled={!isRecordEditable}
+                  disabled={false}
+                  onPress={() =>
+                    showDatePickerModelMethod("ACTUAL_START_TIME", "time")
+                  }
+                />
+                <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.actual_start_time === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text>
+                {/* </View>
                                 <View style={{ width: "50%" }}> */}
-                            <DateSelectItem
-                                label={"Actual End Time"}
-                                value={selector.actual_end_time}
-                                disabled={false}
-                                // disabled={!isRecordEditable}
-                                onPress={() =>
-                                    showDatePickerModelMethod("ACTUAL_END_TIME", "time")
-                                }
-                            />
-                            <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.actual_end_time === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
-                            {/* </View> */}
-                            {/* </View> */}
+                <DateSelectItem
+                  label={"Actual End Time"}
+                  value={selector.actual_end_time}
+                  disabled={false}
+                  // disabled={!isRecordEditable}
+                  onPress={() =>
+                    showDatePickerModelMethod("ACTUAL_END_TIME", "time")
+                  }
+                />
+                <Text
+                  style={[
+                    GlobalStyle.underline,
+                    {
+                      backgroundColor:
+                        isSubmitPress && selector.actual_end_time === ""
+                          ? "red"
+                          : "rgba(208, 212, 214, 0.7)",
+                    },
+                  ]}
+                ></Text>
+                {/* </View> */}
+                {/* </View> */}
 
-                            {/* <View style={styles.space}></View> */}
-                            {/* <Text style={{ padding: 10 }}>{"Allotment ID"}</Text>
+                {/* <View style={styles.space}></View> */}
+                {/* <Text style={{ padding: 10 }}>{"Allotment ID"}</Text>
               <Text style={GlobalStyle.underline}></Text>
               <View style={styles.space}></View>
               <Text style={{ padding: 10 }}>{"Planned Start Date Time"} </Text>
@@ -1309,124 +1369,144 @@ const TestDriveScreen = ({ route, navigation }) => {
               <View style={styles.space}></View>
               <Text style={{ padding: 10 }}>{"Planned End Date Time"}</Text>
               <Text style={GlobalStyle.underline}></Text> */}
-                        </View>
-                    </View>
+              </View>
+            </View>
 
-                    {handleActionButtons === 1 && (
-                        <View style={styles.view1}>
-                            <LocalButtonComp
-                                title={"Close"}
-                                // disabled={selector.isLoading}
-                                onPress={() => navigation.goBack()}
-                            />
-                            <LocalButtonComp
-                                title={"Submit"}
-                                // disabled={selector.isLoading}
-                                onPress={() => submitClicked("SENT_FOR_APPROVAL", "Test Drive")}
-                            />
-                        </View>
-                    )}
-                    {handleActionButtons === 2 && (
-                        <View style={styles.view1}>
-                            <LocalButtonComp
-                                title={"Cancel"}
-                                // disabled={selector.isLoading}
-                                onPress={() => submitClicked("CANCELLED", "Test Drive")}
-                            />
-                        </View>
-                    )}
-                    {handleActionButtons === 3 && (
-                        <View style={styles.view1}>
-                            <LocalButtonComp
-                                title={"Reject"}
-                                // disabled={selector.isLoading}
-                                onPress={() =>
-                                    submitClicked("CANCELLED", "Test Drive Approval")
-                                }
-                            />
-                            <LocalButtonComp
-                                title={"Approve"}
-                                // disabled={selector.isLoading}
-                                bgColor={Colors.GREEN}
-                                onPress={() => submitClicked("APPROVED", "Test Drive Approval")}
-                            />
-                        </View>
-                    )}
-                    {handleActionButtons === 4 && (
-                        <View style={styles.view1}>
-                            <LocalButtonComp
-                                title={"Close"}
-                                // disabled={selector.isLoading}
-                                onPress={() => closeTask()}
-                            />
-                            <LocalButtonComp
-                                title={"Reschedule"}
-                                // disabled={selector.isLoading}
-                                bgColor={Colors.GREEN}
-                                onPress={() => submitClicked("RESCHEDULED", "Test Drive")}
-                            />
-                        </View>
-                    )}
-                    {handleActionButtons === 5 && (
-                        <View style={styles.view1}>
-                            <Text style={styles.cancelText}>{"This task has cancelled"}</Text>
-                        </View>
-                    )}
+            {handleActionButtons === 1 && (
+              <View style={styles.view1}>
+                <LocalButtonComp
+                  title={"Close"}
+                  // disabled={selector.isLoading}
+                  onPress={() => navigation.goBack()}
+                />
+                <LocalButtonComp
+                  title={"Submit"}
+                  // disabled={selector.isLoading}
+                  onPress={() =>
+                    submitClicked("SENT_FOR_APPROVAL", "Test Drive")
+                  }
+                />
+              </View>
+            )}
+            {handleActionButtons === 2 && (
+              <View style={styles.view1}>
+                <LocalButtonComp
+                  title={"Cancel"}
+                  // disabled={selector.isLoading}
+                  onPress={() => submitClicked("CANCELLED", "Test Drive")}
+                />
+              </View>
+            )}
+            {handleActionButtons === 3 && (
+              <View style={styles.view1}>
+                <LocalButtonComp
+                  title={"Reject"}
+                  // disabled={selector.isLoading}
+                  onPress={() =>
+                    submitClicked("CANCELLED", "Test Drive Approval")
+                  }
+                />
+                <LocalButtonComp
+                  title={"Approve"}
+                  // disabled={selector.isLoading}
+                  bgColor={Colors.GREEN}
+                  onPress={() =>
+                    submitClicked("APPROVED", "Test Drive Approval")
+                  }
+                />
+              </View>
+            )}
+            {handleActionButtons === 4 && (
+              <View style={styles.view1}>
+                <LocalButtonComp
+                  title={"Close"}
+                  // disabled={selector.isLoading}
+                  onPress={() => closeTask()}
+                />
+                <LocalButtonComp
+                  title={"Reschedule"}
+                  // disabled={selector.isLoading}
+                  bgColor={Colors.GREEN}
+                  onPress={() => submitClicked("RESCHEDULED", "Test Drive")}
+                />
+              </View>
+            )}
+            {handleActionButtons === 5 && (
+              <View style={styles.view1}>
+                <Text style={styles.cancelText}>
+                  {"This task has cancelled"}
+                </Text>
+              </View>
+            )}
 
-                    {isCloseSelected ? (
-                        <View style={{ marginTop: 20, paddingHorizontal: otpViewHorizontalPadding }}>
-                            <View style={{ height: 60, justifyContent: 'center', alignItems: "center" }}>
-                                <Text style={{ textAlign: "center" }}>{"We have sent an OTP to mobile number, please verify"}</Text>
-                            </View>
-                            <CodeField
-                                ref={ref}
-                                {...props}
-                                caretHidden={false} // when users can't paste a text value, because context menu doesn't appear
-                                value={otpValue}
-                                onChangeText={setOtpValue}
-                                cellCount={CELL_COUNT}
-                                rootStyle={otpStyles.codeFieldRoot}
-                                keyboardType="number-pad"
-                                textContentType="oneTimeCode"
-                                renderCell={({ index, symbol, isFocused }) => (
-                                    <Text
-                                        key={index}
-                                        style={[otpStyles.cell, isFocused && otpStyles.focusCell]}
-                                        onLayout={getCellOnLayoutHandler(index)}>
-                                        {symbol || (isFocused ? <Cursor /> : null)}
-                                    </Text>
-                                )}
-                            />
-                        </View>
-                    ) : null}
+            {isCloseSelected ? (
+              <View
+                style={{
+                  marginTop: 20,
+                  paddingHorizontal: otpViewHorizontalPadding,
+                }}
+              >
+                <View
+                  style={{
+                    height: 60,
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text style={{ textAlign: "center" }}>
+                    {"We have sent an OTP to mobile number, please verify"}
+                  </Text>
+                </View>
+                <CodeField
+                  ref={ref}
+                  {...props}
+                  caretHidden={false} // when users can't paste a text value, because context menu doesn't appear
+                  value={otpValue}
+                  onChangeText={setOtpValue}
+                  cellCount={CELL_COUNT}
+                  rootStyle={otpStyles.codeFieldRoot}
+                  keyboardType="number-pad"
+                  textContentType="oneTimeCode"
+                  renderCell={({ index, symbol, isFocused }) => (
+                    <Text
+                      key={index}
+                      style={[otpStyles.cell, isFocused && otpStyles.focusCell]}
+                      onLayout={getCellOnLayoutHandler(index)}
+                    >
+                      {symbol || (isFocused ? <Cursor /> : null)}
+                    </Text>
+                  )}
+                />
+              </View>
+            ) : null}
 
-                    {isCloseSelected ? (
-                        <View style={[styles.view1, { marginTop: 30 }]}>
-                            <Button
-                                mode="contained"
-                                style={{ width: 120 }}
-                                color={Colors.GREEN}
-                                // disabled={selector.is_loading_for_task_update}
-                                labelStyle={{ textTransform: "none" }}
-                                onPress={verifyClicked}
-                            >
-                                Verify
-            </Button>
-                            <Button
-                                mode="contained"
-                                style={{ width: 120 }}
-                                color={Colors.RED}
-                                // disabled={selector.is_loading_for_task_update}
-                                labelStyle={{ textTransform: "none" }}
-                                onPress={resendClicked}
-                            >
-                                Resend
-            </Button>
-                        </View>
-                    ) : null}
-                </ScrollView>
-            </KeyboardAvoidingView>
-        </SafeAreaView>
+            {isCloseSelected ? (
+              <View style={[styles.view1, { marginTop: 30 }]}>
+                <Button
+                  mode="contained"
+                  style={{ width: 120 }}
+                  color={Colors.GREEN}
+                  // disabled={selector.is_loading_for_task_update}
+                  labelStyle={{ textTransform: "none" }}
+                  onPress={verifyClicked}
+                >
+                  Verify
+                </Button>
+                <Button
+                  mode="contained"
+                  style={{ width: 120 }}
+                  color={Colors.RED}
+                  // disabled={selector.is_loading_for_task_update}
+                  labelStyle={{ textTransform: "none" }}
+                  onPress={resendClicked}
+                >
+                  Resend
+                </Button>
+              </View>
+            ) : null}
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     );
 };
 
