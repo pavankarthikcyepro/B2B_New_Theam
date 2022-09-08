@@ -12,7 +12,7 @@ export const EnquiryTypes = [
     id: "3",
     name: "Company",
   },
-  
+
 ];
 
 export const EnquiryTypes21 = [
@@ -114,7 +114,7 @@ export const CustomerTypesObj21 = {
       "name": "Captive"
     }
   ],
-  "fleetowner": [
+  "fleet owner": [
     {
       "id": "1",
       "name": "Fleet"

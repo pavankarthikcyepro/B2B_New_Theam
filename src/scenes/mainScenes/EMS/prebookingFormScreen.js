@@ -127,6 +127,13 @@ import uuid from "react-native-uuid";
 import { DropComponent } from "./components/dropComp";
 import * as AsyncStorage from "../../../asyncStore";
 import moment from "moment";
+import {
+    CustomerTypesObj,
+    CustomerTypesObj21,
+    CustomerTypesObj22,
+    EnquiryTypes21,
+    EnquiryTypes22
+} from "../../../jsonData/preEnquiryScreenJsonData";
 
 const rupeeSymbol = "\u20B9";
 
@@ -1073,19 +1080,43 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     const showDropDownModelMethod = (key, headerText) => {
         Keyboard.dismiss();
+        const orgId = +userData.orgId;
 
         switch (key) {
           case "SALUTATION":
             setDataForDropDown([...Salutation_Types]);
             break;
           case "ENQUIRY_SEGMENT":
-            setDataForDropDown([...Enquiry_Segment_Data]);
+              let segments = [...Enquiry_Segment_Data];
+              if (orgId === 21) {
+                  segments = [...EnquiryTypes21];
+              } else if(orgId === 22) {
+                  segments = [...EnquiryTypes22];
+              }
+              setDataForDropDown(segments);
+            // setDataForDropDown([...Enquiry_Segment_Data]);
             break;
           case "BUYER_TYPE":
             setDataForDropDown([...Buyer_Type_Data]);
             break;
           case "CUSTOMER_TYPE":
-            setDataForDropDown([...selector.customer_types_data]);
+            // setDataForDropDown([...selector.customer_types_data]);
+
+              let customerTypes = []
+              customerTypes = CustomerTypesObj21[selector.enquiry_segment.toLowerCase()]
+              if(orgId === 21){
+                  customerTypes = CustomerTypesObj21[selector.enquiry_segment.toLowerCase()];
+                  selector.customerType = "";
+              }
+              else if( orgId === 22){
+                  customerTypes = CustomerTypesObj22[selector.enquiry_segment.toLowerCase()];
+                  selector.customerType = "";
+              }
+              else{
+                  customerTypes = CustomerTypesObj[selector.enquiry_segment.toLowerCase()];
+                  selector.customerType = "";
+              }
+              setDataForDropDown([...customerTypes]);
             break;
 
 
@@ -1421,7 +1452,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             setOpenAccordian('4')
             showToast("Select is Primary for atleast one vehicle");
             return;
-        }  
+        }
         if (selector.pincode.length === 0 ||
             selector.house_number.length === 0 ||
             selector.street_name.length === 0 ||
