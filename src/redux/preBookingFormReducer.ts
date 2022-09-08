@@ -13,7 +13,11 @@ import {
 import { convertTimeStampToDateString } from "../utils/helperFunctions";
 import { showToastRedAlert } from "../utils/toast";
 import moment from "moment";
-import { add } from "react-native-reanimated";
+import {
+  CustomerTypesObj,
+  CustomerTypesObj21,
+  CustomerTypesObj22
+} from "../jsonData/preEnquiryScreenJsonData";
 
 const dropDownData = [
   {
@@ -90,12 +94,12 @@ export const getOnRoadPriceAndInsurenceDetailsApi = createAsyncThunk("PREBOONING
 export const dropPreBooingApi = createAsyncThunk("PREBOONING_FORMS_SLICE/dropPreBooingApi", async (payload, { rejectWithValue }) => {
 
   console.log("DROP PAYLOAD: ", URL.DROP_ENQUIRY(), payload);
-  
+
   const response = await client.post(URL.DROP_ENQUIRY(), payload);
   try {
     const json = await response.json();
     console.log("DROP RES: ", JSON.stringify(json));
-    
+
     if (response.status != 200) {
       return rejectWithValue(json);
     }
@@ -209,7 +213,7 @@ export const getOnRoadPriceDtoListApi = createAsyncThunk("PREBOONING_FORMS_SLICE
 export const preBookingPaymentApi = createAsyncThunk("PREBOONING_FORMS_SLICE/preBookingPaymentApi", async (payload, { rejectWithValue }) => {
 
   console.log("URL PPP", URL.PRE_BOOKING_PAYMENT(), JSON.stringify(payload));
-  
+
   const response = await client.post(URL.PRE_BOOKING_PAYMENT(), payload);
   try {
     const json = await response.json();
@@ -614,7 +618,7 @@ const prebookingFormSlice = createSlice({
       state.dmsLeadProducts = data
     },
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
-      const { key, value, id } = action.payload;
+      const { key, value, id, orgId } = action.payload;
       switch (key) {
         case "SALUTATION":
           if (state.salutation !== value) {
@@ -626,9 +630,19 @@ const prebookingFormSlice = createSlice({
         case "ENQUIRY_SEGMENT":
           state.enquiry_segment = value;
           state.customer_type = "";
-          if (state.customer_types_response) {
-            state.customer_types_data = state.customer_types_response[value.toLowerCase()];
+          // if (state.customer_types_response) {
+          //   state.customer_types_data = state.customer_types_response[value.toLowerCase()];
+          // }
+          if(+orgId == 21){
+            state.customer_types_data = CustomerTypesObj21[value.toLowerCase()];
           }
+          else if( +orgId == 22){
+            state.customer_types_data = CustomerTypesObj22[value.toLowerCase()];
+          }
+          else{
+            state.customer_types_data = CustomerTypesObj[value.toLowerCase()];
+          }
+
           break;
           case "BUYER_TYPE":
             state.buyer_type = value;
@@ -756,7 +770,7 @@ const prebookingFormSlice = createSlice({
           break;
         case "TENTATIVE_DELIVERY_DATE":
           state.tentative_delivery_date = selectedDate;
-         
+
           break;
         case "TRANSACTION_DATE":
 
@@ -1107,7 +1121,7 @@ const prebookingFormSlice = createSlice({
       // Commitment
       state.occasion = dmsLeadDto.occasion ? dmsLeadDto.occasion : "";
       const customerPreferredDate = dmsLeadDto.commitmentDeliveryPreferredDate ? dmsLeadDto.commitmentDeliveryPreferredDate : "";
-     
+
       state.customer_preferred_date = convertTimeStampToDateString(customerPreferredDate, "DD/MM/YYYY");
        console.log("Select---------->>>>>>>>", customerPreferredDate);
       const tentativeDeliveryDate = dmsLeadDto.commitmentDeliveryTentativeDate ? dmsLeadDto.commitmentDeliveryTentativeDate : ""
@@ -1236,7 +1250,7 @@ const prebookingFormSlice = createSlice({
       state.booking_amount = dataObj.bookingAmount ? dataObj.bookingAmount.toString() : "";
       state.payment_at = dataObj.paymentAt ? dataObj.paymentAt : "";
       console.log("BOOKING MODE: ", dataObj.modeOfPayment);
-      
+
       state.booking_payment_mode = dataObj.modeOfPayment ? dataObj.modeOfPayment : "";
       state.delivery_location = dataObj.deliveryLocation ? dataObj.deliveryLocation : "";
       state.vechicle_registration = dataObj.otherVehicle ? dataObj.otherVehicle : false;
@@ -1466,7 +1480,7 @@ const prebookingFormSlice = createSlice({
       state.on_road_price_dto_list_response = [];
       state.isLoading = false;
     })
-    // Get Customer Types 
+    // Get Customer Types
     builder.addCase(getCustomerTypesApi.pending, (state, action) => {
       state.customer_types_response = [];
       state.isLoading = true;
@@ -1595,7 +1609,7 @@ const prebookingFormSlice = createSlice({
     builder.addCase(getPaymentDetailsApi.fulfilled, (state, action) => {
       if (action.payload) {
         console.log("PAYMENT DATA: ", JSON.stringify(action.payload));
-        
+
         state.existing_payment_details_response = action.payload;
         state.type_of_upi = action.payload.typeUpi ? action.payload.typeUpi : "";
         state.transfer_from_mobile = action.payload.transferFromMobile ? action.payload.transferFromMobile : "";
