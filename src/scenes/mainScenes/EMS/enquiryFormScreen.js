@@ -154,6 +154,13 @@ import {
 } from "../../../redux/proceedToPreBookingReducer";
 import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
 import { getCurrentTasksListApi, getPendingTasksListApi } from "../../../redux/mytaskReducer";
+import {
+  CustomerTypesObj,
+  CustomerTypesObj21,
+  CustomerTypesObj22,
+  EnquiryTypes21,
+  EnquiryTypes22
+} from "../../../jsonData/preEnquiryScreenJsonData";
 
 const theme = {
   ...DefaultTheme,
@@ -2530,13 +2537,39 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
-
+  Alert.alert('orgID: '+ userData.orgId);
+    const orgId = +userData.orgId;
     switch (key) {
       case "ENQUIRY_SEGMENT":
-        setDataForDropDown([...Enquiry_Segment_Data]);
+        let segments = [...Enquiry_Segment_Data];
+        if (orgId === 21) {
+          segments = [...EnquiryTypes21];
+        } else if(orgId === 22) {
+          segments = [...EnquiryTypes22];
+        }
+        setDataForDropDown(segments);
         break;
       case "CUSTOMER_TYPE":
-        setDataForDropDown([...selector.customer_types_data]);
+        // if (selector.customer_typcustomer_types_dataes_data.length === 0) {
+        //   showToast("No Customer Types found");
+        //   return;
+        // }
+
+        let customerTypes = []
+        customerTypes = CustomerTypesObj21[selector.enquiry_segment.toLowerCase()]
+        if(orgId === 21){
+          customerTypes = CustomerTypesObj21[selector.enquiry_segment.toLowerCase()];
+          selector.customerType = "";
+        }
+        else if( orgId === 22){
+          customerTypes = CustomerTypesObj22[selector.enquiry_segment.toLowerCase()];
+          selector.customerType = "";
+        }
+        else{
+          customerTypes = CustomerTypesObj[selector.enquiry_segment.toLowerCase()];
+          selector.customerType = "";
+        }
+        setDataForDropDown([...customerTypes]);
         break;
       case "SUB_SOURCE_OF_ENQUIRY":
         setDataForDropDown([...Enquiry_Sub_Source_Type_Data]);
@@ -2966,7 +2999,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           }
           setShowDropDownModel(false);
           dispatch(
-            setDropDownData({ key: dropDownKey, value: item.name, id: item.id })
+            setDropDownData({ key: dropDownKey, value: item.name, id: item.id, orgId: userData.orgId })
           );
         }}
       />

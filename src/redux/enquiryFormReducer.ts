@@ -8,6 +8,12 @@ import {
 import { convertDateStringToMillisecondsUsingMoment, convertTimeStampToDateString } from "../utils/helperFunctions";
 import moment from "moment";
 import { showToastRedAlert, showToast } from "../utils/toast";
+import {
+  CustomerTypesObj,
+  CustomerTypesObj21,
+  CustomerTypesObj22
+} from "../jsonData/preEnquiryScreenJsonData";
+import {Alert} from "react-native";
 
 export const getEnquiryDetailsApi = createAsyncThunk(
   "ENQUIRY_FORM_SLICE/getEnquiryDetailsApi",
@@ -18,19 +24,19 @@ export const getEnquiryDetailsApi = createAsyncThunk(
     //   console.log("URL$$$: ", URL.ENQUIRY_DETAILS_BY_AUTOSAVE(universalId));
     //   console.log("ENQ DETAILS: ", JSON.stringify(autoSavejson));
     // // } catch (error) {
-      
+
     // // }
-    
+
 
     const response = await client.get(URL.ENQUIRY_DETAILS(universalId));
     const json = await response.json();
-    
+
     console.log("ENQ DETAILS @@@: ", URL.ENQUIRY_DETAILS(universalId), JSON.stringify(json));
-    
+
     if (!response.ok) {
       return rejectWithValue(json);
     }
-    
+
     return json.dmsEntity
     // if (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY')
     // {
@@ -327,7 +333,7 @@ export const dropEnquiryApi = createAsyncThunk(
     const response = await client.post(URL.DROP_ENQUIRY(), payload);
     const json = await response.json();
     console.log("DROP RES: ", JSON.stringify(json));
-    
+
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -352,11 +358,11 @@ export const getPendingTasksApi = createAsyncThunk(
   async (endUrl, { rejectWithValue }) => {
     const url = URL.TASKS_PRE_ENQUIRY() + endUrl;
     console.log("$$$URL: ", url);
-    
+
     const response = await client.get(url);
     const json = await response.json();
     console.log("RES:", JSON.stringify(json));
-    
+
     if (!response.ok) {
       return rejectWithValue(json);
     }
@@ -373,6 +379,7 @@ interface DropDownModelNew {
   key: string;
   value: string;
   id?: string;
+  orgId?: string;
 }
 
 interface DropDownModel {
@@ -668,15 +675,27 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.enableEdit = !state.enableEdit;
     },
     setDropDownData: (state, action: PayloadAction<DropDownModelNew>) => {
-      const { key, value, id } = action.payload;
+      const { key, value, id, orgId } = action.payload;
+
       switch (key) {
         case "ENQUIRY_SEGMENT":
           console.log("selected: ", value);
           state.enquiry_segment = value;
           state.customer_type = "";
-          if (state.customer_types_response) {
-            state.customer_types_data =
-              state.customer_types_response[value.toLowerCase()];
+
+          // if (state.customer_types_response) {
+          //   state.customer_types_data =
+          //       state.customer_types_response[value.toLowerCase()];
+          // }
+          // state.customer_type_list = CustomerTypesObj21[value.toLowerCase()]
+          if(+orgId == 21){
+            state.customer_types_data = CustomerTypesObj21[value.toLowerCase()];
+          }
+          else if( +orgId == 22){
+            state.customer_types_data = CustomerTypesObj22[value.toLowerCase()];
+          }
+          else{
+            state.customer_types_data = CustomerTypesObj[value.toLowerCase()];
           }
           break;
         case "CUSTOMER_TYPE":
@@ -729,7 +748,7 @@ const enquiryDetailsOverViewSlice = createSlice({
         case "INSURANCE_TYPE":
           state.insurance_type = value;
           break;
-     
+
         case "INSURENCE_ADD_ONS":
           state.add_on_insurance = value;
         case "SOURCE_OF_ENQUIRY":
@@ -1081,6 +1100,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     },
     setCustomerProfile: (state, action: PayloadAction<PersonalIntroModel>) => {
       const { key, text } = action.payload;
+      console.log('arey======> key ', key, text)
       switch (key) {
         case "OCCUPATION":
           state.occupation = text;
@@ -1452,7 +1472,7 @@ const enquiryDetailsOverViewSlice = createSlice({
     updateModelSelectionData: (state , action) => {
       const dmsLeadProducts = action.payload;
       console.log("updateModelSelectionData: ", JSON.stringify(action.payload));
-      
+
       let dataObj: any = {};
       // if (dmsLeadProducts.length > 0) {
       //   dataObj = { ...dmsLeadProducts[0] };
@@ -1460,7 +1480,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       //  // dmsLeadProducts[1]= dmsLeadProducts[0]
       //   // const dms = [{ "color": "Outback Bronze", "fuel": "Petrol", "id": 2704, "model": "Kwid",
       //   //  "transimmisionType": "Manual", "variant": "KWID RXT 1.0L EASY- R BS6 ORVM MY22" },
-      //   //   { "color": "Caspian Blue", "fuel": "Petrol", "id": 1833, "model": "Kiger", "transimmisionType": "Automatic", 
+      //   //   { "color": "Caspian Blue", "fuel": "Petrol", "id": 1833, "model": "Kiger", "transimmisionType": "Automatic",
       //   //   "variant": "Rxt 1.0L Ece Easy-R Ece My22" }]
       //   alert("hiii")
       //   state.dmsLeadProducts = dmsLeadProducts
@@ -1489,7 +1509,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       }catch(error){
        // alert(error)
       }
-     
+
 
     },
     updateFinancialData: (state, action) => {
@@ -1758,7 +1778,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       // }
       state.isLoading = false;
     });
-    builder.addCase(getEnquiryDetailsApi.rejected, (state, action) => {      
+    builder.addCase(getEnquiryDetailsApi.rejected, (state, action) => {
       state.isLoading = false;
     });
     builder.addCase(getLogoNameApi.pending, (state) => {
@@ -1902,7 +1922,6 @@ const enquiryDetailsOverViewSlice = createSlice({
     });
     builder.addCase(dropEnquiryApi.fulfilled, (state, action) => {
       console.log("STATUS TT: ", action.payload.status);
-      
       if (action.payload.status === "SUCCESS") {
         state.enquiry_drop_response_status = "success";
       }
