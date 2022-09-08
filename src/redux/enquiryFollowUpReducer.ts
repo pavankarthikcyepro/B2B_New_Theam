@@ -142,7 +142,6 @@ const slice = createSlice({
           state.showDatepicker = false;
       }
       state.datePickerKeyId = action.payload;
-      state.showDatepicker = !state.showDatepicker;
     },
     updateSelectedDate: (state, action: PayloadAction<CustomerDetailModel>) => {
       const { key, text } = action.payload;
@@ -157,7 +156,6 @@ const slice = createSlice({
           state.actual_end_time = selectedDate;
           break;
       }
-      state.showDatepicker = !state.showDatepicker;
     },
   },
   extraReducers: (builder) => {
