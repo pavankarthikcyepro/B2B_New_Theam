@@ -2537,7 +2537,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
-  Alert.alert('orgID: '+ userData.orgId);
     const orgId = +userData.orgId;
     switch (key) {
       case "ENQUIRY_SEGMENT":
