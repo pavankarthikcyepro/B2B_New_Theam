@@ -593,7 +593,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                     style={{ flex: 1 }}
                 >
                     <View style={styles.view1}>
-                        <Text style={styles.text1}>{"Contact"}</Text>
+                        <Text style={styles.text1}>{"Contacts"}</Text>
                         <IconButton
                             icon='square-edit-outline'
                             color={Colors.DARK_GRAY}
