@@ -596,6 +596,7 @@ const HomeScreen = ({ route, navigation }) => {
         Promise.all([
             dispatch(getBranchIds({}))
         ]).then(async (res) => {
+            setLoading(false)
             // console.log('DATA', res[0]);
             let branchIds = []
             let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -875,7 +876,7 @@ const HomeScreen = ({ route, navigation }) => {
                     }}
                 />
             </View>
-            <LoaderComponent visible={loading} />
+            {loading  && <LoaderComponent visible={loading} />}
         </SafeAreaView>
     );
 };
