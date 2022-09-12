@@ -125,6 +125,7 @@ const slice = createSlice({
     },
   
     setDatePicker: (state, action) => {
+      const { text } = action.payload;
       let date = new Date();
       date.setDate(date.getDate() + 9);
       switch (action.payload) {
@@ -181,7 +182,7 @@ const slice = createSlice({
         );
         const endDate = taskObj.taskActualEndTime
           ? taskObj.taskActualEndTime
-          : "";
+          : new Date();
         state.actual_end_time = convertTimeStampToDateString(
           endDate,
           "DD/MM/YYYY"

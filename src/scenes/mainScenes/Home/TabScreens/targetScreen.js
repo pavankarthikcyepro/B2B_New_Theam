@@ -651,12 +651,17 @@ const TargetScreen = ({ route, navigation }) => {
   const handleModalDropdownDataForShuffle = (user) => {
     console.log("USER: ", user);
     if (delegateButtonClick) {
-      getReportingManagerListFromServer(user);
       setShowShuffleModal(true);
+      setTimeout(() => {
+        getReportingManagerListFromServer(user);
+      }, 500);      
+      
       // setReoprtingManagerDropdownList(selector.reporting_manager_list.map(({ name: label, id: value, ...rest }) => ({ value, label, ...rest })));
     } else {
-      getEmployeeListFromServer(user);
-      setShowShuffleModal(true);
+      setShowShuffleModal(true);      
+      setTimeout(() => {
+        getEmployeeListFromServer(user);  
+      }, 500);
       // setEmployeeDropdownList(selector.employee_list.map(({ name: label, id: value, ...rest }) => ({ value, label, ...rest })));
     }
   }
@@ -761,6 +766,7 @@ const TargetScreen = ({ route, navigation }) => {
 
   return (
     <>
+     
       <Modal
         visible={showShuffleModal}
         animationType={'fade'}
@@ -857,12 +863,7 @@ const TargetScreen = ({ route, navigation }) => {
                   setEmployeeListDropdownItem(item.value);
                 }
               }}
-            />
-
-            <LoaderComponent
-              visible={selector.isLoading}
-              onRequestClose={() => { }}
-            />
+            />           
 
             <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, marginBottom: 10, flexDirection: 'row', width: '95%', justifyContent: 'space-around' }}>
               {dropDownPlaceHolder === 'Employees' ?
@@ -909,7 +910,10 @@ const TargetScreen = ({ route, navigation }) => {
             </View>
           </View>
         </View>
-
+        <LoaderComponent
+          visible={selector.isLoading}
+          onRequestClose={() => { }}
+        />
       </Modal>
 
       <Modal
@@ -930,6 +934,7 @@ const TargetScreen = ({ route, navigation }) => {
           </View>
         </View>
       </Modal>
+      
       <View style={styles.container}>
         {selector.isTeam ? (
           <View >

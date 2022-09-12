@@ -430,12 +430,12 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
                   setShowDropDownModel(false);
               }}
           />
-
       <DatePickerComponent
         visible={selector.showDatepicker}
         mode={"date"}
-        minimumDate={selector.minDate}
         value={date}
+        minimumDate={selector.minDate}
+        maximumDate={selector.maxDate}
         onChange={onChange}
         onRequestClose={() => dispatch(setDatePicker('CLOSE'))}
       />

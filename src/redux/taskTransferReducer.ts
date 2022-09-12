@@ -4,10 +4,11 @@ import URL from "../networking/endpoints";
 
 
 export const getTaskList = createAsyncThunk("TASK_TRANSFER/getTaskList", async (payload, { rejectWithValue }) => {
-    console.log("TASK URL: ", URL.GET_TASK_LIST(payload));
     
     const response = await client.get(URL.GET_TASK_LIST(payload));
     const json = await response.json()
+    console.log("TASK URL: ", json);
+
     if (!response.ok) {
         return rejectWithValue(json);
     }
