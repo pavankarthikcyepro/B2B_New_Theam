@@ -611,6 +611,23 @@ const TestDriveScreen = ({ route, navigation }) => {
             showToast("Please select time");
             return;
         }
+        
+        const preferredTime = moment(selector.customer_preferred_time, "HH:mm");
+        const startTime = moment(selector.actual_start_time, "HH:mm");
+        const endTime = moment(selector.actual_end_time, "HH:mm");
+
+        let preferredTimeDiff = moment(preferredTime).diff(startTime, "m");
+        let diff = moment(endTime).diff(startTime, "m");
+
+        if (0 == preferredTimeDiff) {
+          showToast("Customer Preferred Time and Actual Start Time Should not be Equal");
+        } else if (0 > preferredTimeDiff) {
+          showToast("Customer Preferred Should not be less than Actual Start Time");
+        } else if (0 == diff) {
+          showToast("Actual Start Time and Actual End Time Should not be Equal");
+        } else if (0 > diff) {
+          showToast("Actual End Time Should not be less than Actual Start Time");
+        }
 
         if (selectedVehicleDetails.vehicleId === 0 || selectedVehicleDetails.varientId === 0) {
             showToast("Please select model & variant");
@@ -668,24 +685,24 @@ const TestDriveScreen = ({ route, navigation }) => {
         setTaskStatusAndName({ status: status, name: taskName });
 
         let appointmentObj = {
-            address: customerAddress,
-            branchId: selectedBranchId,
-            customerHaveingDl: customerHavingDrivingLicense === 1,
-            customerId: universalId,
-            dseId: selectedDseDetails.id,
-            location: location,
-            orgId: userData.orgId,
-            source: "ShowroomWalkin",
-            startTime: actualStartTime,
-            endTime: actualEndTime,
-            testDriveDatetime: prefferedTime,
-            testdriveId: 0,
-            status: status,
-            varientId: varientId,
-            vehicleId: vehicleId,
-            driverId: selectedDriverDetails.id.toString(),
-            dlBackUrl: "",
-            dlFrontUrl: "",
+          address: customerAddress,
+          branchId: selectedBranchId,
+          customerHaveingDl: customerHavingDrivingLicense === 1,
+          customerId: universalId,
+          dseId: selectedDseDetails.id,
+          location: location,
+          orgId: userData.orgId,
+          source: "ShowroomWalkin",
+          startTime: actualStartTime,
+          endTime: actualEndTime,
+          testDriveDatetime: prefferedTime,
+          testdriveId: 0,
+          status: status,
+          varientId: varientId,
+          vehicleId: vehicleId,
+          driverId: selectedDriverDetails.id.toString(),
+          dlBackUrl: "",
+          dlFrontUrl: "",
         };
 
         if (customerHavingDrivingLicense === 1) {
