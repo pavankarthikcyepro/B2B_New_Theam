@@ -621,12 +621,16 @@ const TestDriveScreen = ({ route, navigation }) => {
 
         if (0 == preferredTimeDiff) {
           showToast("Customer Preferred Time and Actual Start Time Should not be Equal");
+          return;
         } else if (0 > preferredTimeDiff) {
           showToast("Customer Preferred Should not be less than Actual Start Time");
+          return;
         } else if (0 == diff) {
           showToast("Actual Start Time and Actual End Time Should not be Equal");
+          return;
         } else if (0 > diff) {
           showToast("Actual End Time Should not be less than Actual Start Time");
+          return;
         }
 
         if (selectedVehicleDetails.vehicleId === 0 || selectedVehicleDetails.varientId === 0) {
