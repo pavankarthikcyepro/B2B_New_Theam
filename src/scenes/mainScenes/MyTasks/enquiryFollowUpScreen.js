@@ -468,12 +468,12 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
                                       selector.enquiry_details_response
                                           ?.dmsLeadDto?.model
                                   }
-                                  // onPress={() =>
-                                  //     setDropDownDataForModel(
-                                  //         'MODEL',
-                                  //         'Select Model'
-                                  //     )
-                                  // }
+                                  onPress={() =>
+                                      setDropDownDataForModel(
+                                          'MODEL',
+                                          'Select Model'
+                                      )
+                                  }
                               />
 
                               {identifier === 'ENQUIRY_FOLLOW_UP' && (
