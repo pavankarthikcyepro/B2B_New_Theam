@@ -119,7 +119,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                 droppedBy: userData.employeeId,
                 location: dropLocation,
                 model: dropModel,
-                stage: "PREENQUIRY",
+                stage: "CONTACT",
                 status: "PREENQUIRY",
             },
         };
@@ -450,8 +450,8 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
     const goToParentScreen = () => {
         getPreEnquiryListFromServer();
-        navigation.navigate(EmsTopTabNavigatorIdentifiers.enquiry);
-        // navigation.popToTop();
+        // navigation.navigate(EmsTopTabNavigatorIdentifiers.enquiry);
+     navigation.popToTop();
         dispatch(clearState());
     }
 
