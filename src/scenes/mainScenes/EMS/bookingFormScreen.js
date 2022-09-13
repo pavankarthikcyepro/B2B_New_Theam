@@ -1563,7 +1563,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                     otherReason: "",
                     droppedBy: jsonObj.empId,
                     lostSubReason: dropSubReason,
-                    stage: "PREBOOKING",
+                    stage: "BOOKINGVIEW",
                     status: "PREBOOKING",
                 },
             };
