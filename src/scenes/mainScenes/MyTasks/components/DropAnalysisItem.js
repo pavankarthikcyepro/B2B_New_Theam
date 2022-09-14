@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
     },
     text4: {
         color: Colors.WHITE,
-        fontSize: 11,
+        fontSize: 9,
         fontWeight: "bold",
         // textAlign: "center",
         // paddingHorizontal: 5
@@ -206,8 +206,8 @@ const styles = StyleSheet.create({
     modal: {
         backgroundColor: Colors.RED,
         borderRadius: 4,
-        width: "85%",
-        height: 21,
+        width: "100%",
+        height: 22,
         justifyContent: "center",
         alignItems: "center",
         marginBottom: 10

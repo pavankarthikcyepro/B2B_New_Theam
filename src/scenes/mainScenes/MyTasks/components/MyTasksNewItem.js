@@ -155,7 +155,7 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, na
                 iconName={"format-list-bulleted-square"}
                 onPress={onDocPress}
               />
-              <View style={{ padding: 5 }} />
+              <View style={{ padding: 8 }} />
               <IconComp
                 iconName={"phone-outline"}
                 onPress={() =>
@@ -167,7 +167,7 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, na
                   })
                 }
               />
-              <View style={{ padding: 5 }} />
+              <View style={{ padding: 8 }} />
               <IconComp
                 iconName={"whatsapp"}
                 onPress={() => sendWhatsApp(phone)}
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
         minHeight: 21,
         justifyContent: "center",
         alignItems: "center",
-        marginLeft:24,
+        marginLeft:26,
         marginBottom: 10
     },
     catText: {
