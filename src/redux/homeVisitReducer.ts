@@ -18,7 +18,7 @@ interface CustomerDetailModel {
 }
 
 export const getTaskDetailsApi = createAsyncThunk("HOME_VISIT_SLICE/getTaskDetailsApi", async (taskId, { rejectWithValue }) => {
-
+    
     const response = await client.get(URL.GET_TASK_DETAILS(taskId));
     const json = await response.json()
     if (!response.ok) {
@@ -146,11 +146,11 @@ const slice = createSlice({
                 state.customer_remarks = taskObj.customerRemarks ? taskObj.customerRemarks : "";
                 state.employee_remarks = taskObj.employeeRemarks ? taskObj.employeeRemarks : "";
                 state.task_details_response = taskObj;
-                const stratDate = taskObj.taskActualStartTime
+                const startDate = taskObj.taskActualStartTime
                     ? taskObj.taskActualStartTime
                     : "";
                 state.actual_start_time = convertTimeStampToDateString(
-                    stratDate,
+                    startDate,
                     "DD/MM/YYYY"
                 );
                 const endDate = taskObj.taskActualEndTime
