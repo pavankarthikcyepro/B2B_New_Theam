@@ -411,6 +411,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     };
 
     const submitClicked = async () => {
+        console.log('selector><<><><>><><><><><', selector.other);
         Keyboard.dismiss();
         setIsSubmitPress(true)
         // if (
@@ -743,7 +744,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         let url = sales_url;
         let dmsAccountOrContactDto = {};
         let dmsLeadDto = {};
-
+        console.log('selector><<><><>><><><><><', selector.other);
         if (existingPreEnquiryDetails.hasOwnProperty("dmsContactDto")) {
             url = url + "/contact?allocateDse=" + selector.create_enquiry_checked;
             dmsAccountOrContactDto = { ...existingPreEnquiryDetails.dmsContactDto };
@@ -758,7 +759,8 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         dmsAccountOrContactDto.phone = selector.mobile;
         dmsAccountOrContactDto.secondaryPhone = selector.alterMobile;
         dmsAccountOrContactDto.model = selector.carModel;
-        dmsAccountOrContactDto.company = selector.companyName,
+        dmsAccountOrContactDto.company = selector.companyName;
+        dmsAccountOrContactDto.other = selector.other;
 
         dmsAccountOrContactDto.customerType = selector.customerType;
         dmsAccountOrContactDto.enquirySource = selector.sourceOfEnquiryId;
@@ -780,6 +782,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             dmsLeadDto.enquirySource = selector.sourceOfEnquiry;
             dmsLeadDto.subSource = selector.subSourceOfEnquiry;
             dmsLeadDto.pincode = selector.pincode;
+            dmsAccountOrContactDto.other = selector.other;
         }
 
         let formData = {};
@@ -799,7 +802,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             };
         }
 
-        console.log("formData: ", formData);
+        console.log("formData:><><><><>< ", formData);
 
         let dataObj = {
             url: url,
@@ -851,6 +854,9 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                 if (homeSelector.source_of_enquiry_list.length === 0) {
                     showToast("No data found");
                     return;
+                }
+                else{
+                    console.log('source_of_enquiry_list', homeSelector.source_of_enquiry_list);
                 }
                 setDataForDropDown([...homeSelector.source_of_enquiry_list]);
                 break;
@@ -1006,7 +1012,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                             Reset
             </Button>
                     </View>
-
+                    
                     <View style={[{ borderRadius: 6, backgroundColor: Colors.WHITE }]}>
                         <DropDownSelectionItem
                             label={"Enquiry Segment*"}
@@ -1159,8 +1165,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                                 />
                                 <Text style={styles.devider}></Text>
                             </View>
-                        ) : null}
-
+                        ) : null}                        
                         {selector.customerType === "Other" ? (
                             <View>
                                 <TextinputComp

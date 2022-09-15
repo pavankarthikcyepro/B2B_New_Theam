@@ -16,11 +16,12 @@ import * as AsyncStore from "../../../../asyncStore";
 import {
     getLogoNameApi, getOnRoadPriceAndInsurenceDetailsApi, setDropDownData, postProformaInvoiceDetails
  } from "../../../../redux/enquiryFormReducer";
-import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
+import { getFocusedRouteNameFromRoute, useNavigation } from "@react-navigation/native";
 import {
     GetCarModelList,
 } from "../../../../utils/helperFunctions";
 import { PriceStackIdentifiers } from "../../../../navigations/appNavigator";
+import { AppNavigator } from "../../../../navigations";
 
 const lostToCompetitor = "Lost to Competitor".replace(/\s/g, "").toLowerCase();
 const lostToUsedCarsFromCoDelear = "Lost to Used Cars from Co-Dealer".replace(/\s/g, "").toLowerCase();
@@ -118,8 +119,9 @@ const PaidAccessoriesTextAndAmountComp = ({
         </View>
     );
 };
-export const ProformaComp = ({ branchId, modelDetails, universalId }) => {
+export const ProformaComp = ({ branchId, modelDetails, universalId,  }) => {
     const dispatch = useDispatch();
+    const navigation = useNavigation();
 
     const selector = useSelector((state) => state.enquiryFormReducer);
     const [orgId, setOrgId] = useState("");
@@ -174,6 +176,8 @@ export const ProformaComp = ({ branchId, modelDetails, universalId }) => {
     const [paidAccessoriesListNew, setPaidAccessoriesListNew] =
         useState([]);
     const [selectedFOCAccessoriesList, setSelectedFOCAccessoriesList] =
+        useState([]);
+    const [selectedPaidAccessoriesList, setSelectedPaidAccessoriesList] =
         useState([]);
     const [selectedInsurenceAddons, setSelectedInsurenceAddons] = useState([]);
     const [showApproveRejectBtn, setShowApproveRejectBtn] = useState(false);

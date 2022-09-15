@@ -1140,7 +1140,7 @@ const enquiryDetailsOverViewSlice = createSlice({
         case "EMI":
           state.emi = text;
           break;
-        case "BANK_R_FINANCE_NAME":
+        case "BANK_R_FINANCE_NAME":          
           state.bank_or_finance_name = text;
           break;
         case "LOCATION":
@@ -1530,10 +1530,10 @@ const enquiryDetailsOverViewSlice = createSlice({
         : "";
       state.bank_or_finance = dataObj.financeCompany
         ? dataObj.financeCompany
-        : "";
+        : "" ;
       state.bank_or_finance_name = dataObj.financeCompany
         ? dataObj.financeCompany
-        : "";
+        : ""
       state.rate_of_interest = dataObj.rateOfInterest
         ? dataObj.rateOfInterest
         : "";
@@ -1545,9 +1545,9 @@ const enquiryDetailsOverViewSlice = createSlice({
         ? dataObj.annualIncome
         : "";
       state.location = dataObj.location ? dataObj.location : "";
-      state.leashing_name = dataObj.financeCompany
+      state.leashing_name = dataObj.financeType === 'Leasing' ? (dataObj.financeCompany
         ? dataObj.financeCompany
-        : "";
+        : "") : '';
     },
     updateCustomerNeedAnalysisData: (state, action) => {
       const dmsLeadScoreCards = action.payload;

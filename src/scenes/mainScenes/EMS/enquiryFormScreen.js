@@ -291,6 +291,58 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     // })
   }, [updateEnquiry, selector, uploadedImagesDataObj]);
 
+
+  useEffect(() => {
+    handleRetailFinanceFields();
+    
+  }, [selector.retail_finance])
+  const handleRetailFinanceFields = () => {
+    
+    console.log('selector.retail_finance<<><><><>', selector.retail_finance);
+
+    if (selector.retail_finance === 'In House') {
+      dispatch(
+        setFinancialDetails({
+          key: "BANK_R_FINANCE_NAME",
+          text: '',
+        })
+      )
+      dispatch(
+        setFinancialDetails({
+          key: "LOAN_AMOUNT",
+          text: '',
+        })
+      );
+      dispatch(
+        setFinancialDetails({
+          key: "RATE_OF_INTEREST",
+          text: '',
+        })
+      );
+    }
+    else{
+      dispatch(
+        setFinancialDetails({
+          key: "BANK_R_FINANCE_NAME",
+          text: selector.bank_or_finance_name,
+        })
+      )
+      dispatch(
+        setFinancialDetails({
+          key: "LOAN_AMOUNT",
+          text: selector.loan_amount,
+        })
+      );
+      dispatch(
+        setFinancialDetails({
+          key: "RATE_OF_INTEREST",
+          text: selector.rate_of_interest,
+        })
+      );
+    }
+
+  }
+
   // useEffect(() => {
   //   const interval = setInterval(() => {
   //     autoSave()
@@ -3098,7 +3150,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               expandedId={openAccordian}
               onAccordionPress={(expandedId) => updateAccordian(expandedId)}
             >
-              {/* { (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY') ? <List.Accordion
+              { (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY') ? <List.Accordion
                 id={"10"}
                 title={"Proforma Invoice"}
                 titleStyle={{
@@ -3121,7 +3173,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <ProformaComp
                   modelDetails={selector.dmsLeadProducts[0]}
                   branchId={selectedBranchId} />
-              </List.Accordion> : null} */}
+              </List.Accordion> : null}
               <View style={styles.space}></View>
 
               {/* 1. Personal Intro */}

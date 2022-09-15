@@ -40,6 +40,8 @@ export const getPreEnquiryDetails = createAsyncThunk("ADD_PRE_ENQUIRY_SLICE/getP
   console.log("PAYLOAD EDIT ENQ: ", URL.CONTACT_DETAILS(universalId));
 
   const response = await client.get(URL.CONTACT_DETAILS(universalId))
+  console.log("responseresponseresponseresponse: ", response);
+
   const json = await response.json()
   if (!response.ok) {
     return rejectWithValue(json);
@@ -92,6 +94,7 @@ export const updatePreEnquiry = createAsyncThunk(
     const response = await client.put(data["url"], data["body"]);
     try {
       const json = await response.json();
+      console.log("jsonjsonjsonjsonjsonjson:", json);
       if (response.status != 200) {
         return rejectWithValue(json);
       }
@@ -304,6 +307,7 @@ state.customerType = "";
           state.companyName = text;
           break;
         case "OTHER":
+          console.log('OTHEROTHERtext', text);
           state.other = text;
           break;
         case "OTHER_COMPANY_NAME":
@@ -377,7 +381,7 @@ state.customerType = "";
       state.subSourceOfEnquiry = preEnquiryDetails.subSource;
       state.subSourceOfEnquiryId = preEnquiryDetails.subSourceOfEnquiry;
       state.companyName = dmsAccountOrContactObj["company"] || "";
-      state.other = "";
+      // state.other = "";
     },
   },
   extraReducers: (builder) => {
