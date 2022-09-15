@@ -1026,6 +1026,10 @@ const TestDriveScreen = ({ route, navigation }) => {
         }
     }, [selector.validate_otp_response_status])
 
+    const onDatePickerDone = () => {
+        onChange('', selectedDate);
+        setShowDatePickerModel(false)
+    }
     return (
       <SafeAreaView style={[styles.container, { flexDirection: "column" }]}>
         <ImagePickerComponent
@@ -1064,7 +1068,7 @@ const TestDriveScreen = ({ route, navigation }) => {
           minimumDate={new Date(Date.now())}
           value={selectedDate}
           onChange={onChange}
-          onRequestClose={() => setShowDatePickerModel(false)}
+          onRequestClose={onDatePickerDone}
         />
         {/* {showDatePickerModel && (
           <DateTimePicker

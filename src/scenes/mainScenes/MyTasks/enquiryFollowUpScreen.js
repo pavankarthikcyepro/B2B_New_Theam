@@ -396,6 +396,8 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
   };
 
   const onChange = (event, selectedDate) => {
+
+    console.log('selectedDate<<><><<>', selectedDate);
     const currentDate = selectedDate;
     setDate(currentDate);
 
@@ -409,6 +411,10 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       dispatch(updateSelectedDate({ key: "", text: currentDate }));
     }
   };
+  const onDatePickerDone = () => {
+    onChange('', date);
+    dispatch(setDatePicker('CLOSE'))
+  }
 
   return (
       <SafeAreaView style={[styles.container]}>
@@ -437,7 +443,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
         minimumDate={selector.minDate}
         maximumDate={selector.maxDate}
         onChange={onChange}
-        onRequestClose={() => dispatch(setDatePicker('CLOSE'))}
+        onRequestClose={onDatePickerDone}
       />
 
           <KeyboardAvoidingView

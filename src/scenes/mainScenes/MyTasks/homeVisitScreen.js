@@ -106,6 +106,9 @@ const HomeVisitScreen = ({ route, navigation }) => {
   const [isSubmitPress, setIsSubmitPress] = useState(false);
   const [isDateError, setIsDateError] = useState(false);
 
+  const [date, setDate] = useState(new Date(Date.now()));
+
+
   useEffect(() => {
     getAsyncStorageData();
     dispatch(getTaskDetailsApi(taskId));
@@ -346,6 +349,25 @@ const HomeVisitScreen = ({ route, navigation }) => {
     }
   }, [selector.validate_otp_response_status])
 
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate;
+    setDate(currentDate);
+
+    if (Platform.OS === "android") {
+      if (!currentDate) {
+        dispatch(updateSelectedDate({ key: "NONE", text: currentDate }));
+      } else {
+        dispatch(updateSelectedDate({ key: "", text: currentDate }));
+      }
+    } else {
+      dispatch(updateSelectedDate({ key: "", text: currentDate }));
+    }
+  };
+  const onDatePickerDone = () => {
+    onChange('', date);
+    dispatch(setDatePicker('CLOSE'))
+  }
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -358,16 +380,10 @@ const HomeVisitScreen = ({ route, navigation }) => {
           visible={selector.showDatepicker}
           mode={"date"}
           minimumDate={selector.minDate}
-          maximumDate={selector.maxDate}
-          value={new Date(Date.now())}
-          onChange={(event, selectedDate) => {
-            console.log("date: ", selectedDate);
-            if (Platform.OS === "android") {
-              //setDatePickerVisible(false);
-            }
-            dispatch(updateSelectedDate({ key: "", text: selectedDate }));
-          }}
-          onRequestClose={() => dispatch(setDatePicker())}
+          maximumDate={selector.maxDate}          
+          value={date}          
+          onChange={onChange}
+          onRequestClose={onDatePickerDone}          
         />
         <View style={{ padding: 15 }}>
           <View style={[GlobalStyle.shadow, { backgroundColor: Colors.WHITE }]}>

@@ -182,7 +182,7 @@ const slice = createSlice({
         );
         const endDate = taskObj.taskActualEndTime
           ? taskObj.taskActualEndTime
-          : new Date();
+          : "";
         state.actual_end_time = convertTimeStampToDateString(
           endDate,
           "DD/MM/YYYY"
