@@ -1706,47 +1706,53 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     return item.documentType === "pan";
                 })) {
                     tempAttachments.push({
-                        branchId: jsonObj.branchs[0]?.branchId,
-                        contentSize: 0,
-                        createdBy: new Date().getSeconds(),
-                        description: "",
-                        documentNumber: selector.pan_number,
-                        documentPath:
-                            dmsLeadDto.dmsAttachments.length > 0
-                                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "pan";
-                                })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "pan";
-                                })[0]?.documentPath : '')
-                                : "",
-                        documentType: "pan",
-                        documentVersion: 0,
-                        fileName:
-                            dmsLeadDto.dmsAttachments.length > 0
-                                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "pan";
-                                })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "pan";
-                                })[0]?.fileName : '')
-                                : "",
-                        gstNumber: "",
-                        id: 0,
-                        isActive: 0,
-                        isPrivate: 0,
-                        keyName:
-                            dmsLeadDto.dmsAttachments.length > 0
-                                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "pan";
-                                })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "pan";
-                                })[0]?.keyName : '')
-                                : "",
-                        modifiedBy: jsonObj.empName,
-                        orgId: jsonObj.orgId,
-                        ownerId: "",
-                        ownerName: jsonObj.empName,
-                        parentId: "",
-                        tinNumber: "",
+                      branchId: jsonObj.branchs[0]?.branchId,
+                      contentSize: 0,
+                      createdBy: new Date().getSeconds(),
+                      description: "",
+                      documentNumber: selector.pan_number,
+                      documentPath:
+                        dmsLeadDto.dmsAttachments.length > 0
+                          ? dmsLeadDto.dmsAttachments.filter((item) => {
+                              return item.documentType === "pan";
+                            })[0]?.documentPath
+                            ? dmsLeadDto.dmsAttachments.filter((item) => {
+                                return item.documentType === "pan";
+                              })[0]?.documentPath
+                            : ""
+                          : "",
+                      documentType: "pan",
+                      documentVersion: 0,
+                      fileName:
+                        dmsLeadDto.dmsAttachments.length > 0
+                          ? dmsLeadDto.dmsAttachments.filter((item) => {
+                              return item.documentType === "pan";
+                            })[0]?.fileName
+                            ? dmsLeadDto.dmsAttachments.filter((item) => {
+                                return item.documentType === "pan";
+                              })[0]?.fileName
+                            : ""
+                          : "",
+                      gstNumber: selector.gstin_number,
+                      id: 0,
+                      isActive: 0,
+                      isPrivate: 0,
+                      keyName:
+                        dmsLeadDto.dmsAttachments.length > 0
+                          ? dmsLeadDto.dmsAttachments.filter((item) => {
+                              return item.documentType === "pan";
+                            })[0]?.keyName
+                            ? dmsLeadDto.dmsAttachments.filter((item) => {
+                                return item.documentType === "pan";
+                              })[0]?.keyName
+                            : ""
+                          : "",
+                      modifiedBy: jsonObj.empName,
+                      orgId: jsonObj.orgId,
+                      ownerId: "",
+                      ownerName: jsonObj.empName,
+                      parentId: "",
+                      tinNumber: "",
                     });
                 }
 
@@ -1755,47 +1761,53 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 }))
                 {
                     tempAttachments.push({
-                        branchId: jsonObj.branchs[0]?.branchId,
-                        contentSize: 0,
-                        createdBy: new Date().getSeconds(),
-                        description: "",
-                        documentNumber: selector.pan_number,
-                        documentPath:
-                            dmsLeadDto.dmsAttachments.length > 0
-                                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "Form60";
-                                })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "Form60";
-                                })[0]?.documentPath : '')
-                                : "",
-                        documentType: "pan",
-                        documentVersion: 0,
-                        fileName:
-                            dmsLeadDto.dmsAttachments.length > 0
-                                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "Form60";
-                                })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "Form60";
-                                })[0]?.fileName : '')
-                                : "",
-                        gstNumber: "",
-                        id: 0,
-                        isActive: 0,
-                        isPrivate: 0,
-                        keyName:
-                            dmsLeadDto.dmsAttachments.length > 0
-                                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "Form60";
-                                })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "Form60";
-                                })[0]?.keyName : '')
-                                : "",
-                        modifiedBy: jsonObj.empName,
-                        orgId: jsonObj.orgId,
-                        ownerId: "",
-                        ownerName: jsonObj.empName,
-                        parentId: "",
-                        tinNumber: "",
+                      branchId: jsonObj.branchs[0]?.branchId,
+                      contentSize: 0,
+                      createdBy: new Date().getSeconds(),
+                      description: "",
+                      documentNumber: selector.pan_number,
+                      documentPath:
+                        dmsLeadDto.dmsAttachments.length > 0
+                          ? dmsLeadDto.dmsAttachments.filter((item) => {
+                              return item.documentType === "Form60";
+                            })[0]?.documentPath
+                            ? dmsLeadDto.dmsAttachments.filter((item) => {
+                                return item.documentType === "Form60";
+                              })[0]?.documentPath
+                            : ""
+                          : "",
+                      documentType: "pan",
+                      documentVersion: 0,
+                      fileName:
+                        dmsLeadDto.dmsAttachments.length > 0
+                          ? dmsLeadDto.dmsAttachments.filter((item) => {
+                              return item.documentType === "Form60";
+                            })[0]?.fileName
+                            ? dmsLeadDto.dmsAttachments.filter((item) => {
+                                return item.documentType === "Form60";
+                              })[0]?.fileName
+                            : ""
+                          : "",
+                      gstNumber: selector.gstin_number,
+                      id: 0,
+                      isActive: 0,
+                      isPrivate: 0,
+                      keyName:
+                        dmsLeadDto.dmsAttachments.length > 0
+                          ? dmsLeadDto.dmsAttachments.filter((item) => {
+                              return item.documentType === "Form60";
+                            })[0]?.keyName
+                            ? dmsLeadDto.dmsAttachments.filter((item) => {
+                                return item.documentType === "Form60";
+                              })[0]?.keyName
+                            : ""
+                          : "",
+                      modifiedBy: jsonObj.empName,
+                      orgId: jsonObj.orgId,
+                      ownerId: "",
+                      ownerName: jsonObj.empName,
+                      parentId: "",
+                      tinNumber: "",
                     });
                 }
 
@@ -1804,120 +1816,132 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     return item.documentType === "aadhar";
                 })) {
                     tempAttachments.push({
-                        branchId: jsonObj.branchs[0]?.branchId,
-                        contentSize: 0,
-                        createdBy: new Date().getSeconds(),
-                        description: "",
-                        documentNumber: selector.adhaar_number,
-                        documentPath:
-                            dmsLeadDto.dmsAttachments.length > 0
-                                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "aadhar";
-                                })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "aadhar";
-                                })[0]?.documentPath : '')
-                                : "",
-                        documentType: "aadhar",
-                        documentVersion: 0,
-                        fileName:
-                            dmsLeadDto.dmsAttachments.length > 0
-                                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "aadhar";
-                                })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "aadhar";
-                                })[0]?.fileName : '')
-                                : "",
-                        gstNumber: "",
-                        id: 0,
-                        isActive: 0,
-                        isPrivate: 0,
-                        keyName:
-                            dmsLeadDto.dmsAttachments.length > 0
-                                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "aadhar";
-                                })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "aadhar";
-                                })[0]?.keyName : '')
-                                : "",
-                        modifiedBy: jsonObj.empName,
-                        orgId: jsonObj.orgId,
-                        ownerId: "",
-                        ownerName: jsonObj.empName,
-                        parentId: "",
-                        tinNumber: "",
+                      branchId: jsonObj.branchs[0]?.branchId,
+                      contentSize: 0,
+                      createdBy: new Date().getSeconds(),
+                      description: "",
+                      documentNumber: selector.adhaar_number,
+                      documentPath:
+                        dmsLeadDto.dmsAttachments.length > 0
+                          ? dmsLeadDto.dmsAttachments.filter((item) => {
+                              return item.documentType === "aadhar";
+                            })[0]?.documentPath
+                            ? dmsLeadDto.dmsAttachments.filter((item) => {
+                                return item.documentType === "aadhar";
+                              })[0]?.documentPath
+                            : ""
+                          : "",
+                      documentType: "aadhar",
+                      documentVersion: 0,
+                      fileName:
+                        dmsLeadDto.dmsAttachments.length > 0
+                          ? dmsLeadDto.dmsAttachments.filter((item) => {
+                              return item.documentType === "aadhar";
+                            })[0]?.fileName
+                            ? dmsLeadDto.dmsAttachments.filter((item) => {
+                                return item.documentType === "aadhar";
+                              })[0]?.fileName
+                            : ""
+                          : "",
+                      gstNumber: selector.gstin_number,
+                      id: 0,
+                      isActive: 0,
+                      isPrivate: 0,
+                      keyName:
+                        dmsLeadDto.dmsAttachments.length > 0
+                          ? dmsLeadDto.dmsAttachments.filter((item) => {
+                              return item.documentType === "aadhar";
+                            })[0]?.keyName
+                            ? dmsLeadDto.dmsAttachments.filter((item) => {
+                                return item.documentType === "aadhar";
+                              })[0]?.keyName
+                            : ""
+                          : "",
+                      modifiedBy: jsonObj.empName,
+                      orgId: jsonObj.orgId,
+                      ownerId: "",
+                      ownerName: jsonObj.empName,
+                      parentId: "",
+                      tinNumber: "",
                     });
                 }
                 if (selector.employee_id || dmsLeadDto.dmsAttachments.filter((item) => {
                     return item.documentType === "employeeId";
                 })) {
                     tempAttachments.push({
-                        branchId: jsonObj.branchs[0]?.branchId,
-                        contentSize: 0,
-                        createdBy: new Date().getSeconds(),
-                        description: "",
-                        documentNumber: selector.employee_id,
-                        documentPath:
-                            dmsLeadDto.dmsAttachments.length > 0
-                                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "employeeId";
-                                })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "employeeId";
-                                })[0]?.documentPath : '')
-                                : "",
-                        documentType: "employeeId",
-                        documentVersion: 0,
-                        fileName:
-                            dmsLeadDto.dmsAttachments.length > 0
-                                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "employeeId";
-                                })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "employeeId";
-                                })[0]?.fileName : '')
-                                : "",
-                        gstNumber: "",
-                        id: 0,
-                        isActive: 0,
-                        isPrivate: 0,
-                        keyName:
-                            dmsLeadDto.dmsAttachments.length > 0
-                                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "employeeId";
-                                })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "employeeId";
-                                })[0]?.keyName : '')
-                                : "",
-                        modifiedBy: jsonObj.empName,
-                        orgId: jsonObj.orgId,
-                        ownerId: "",
-                        ownerName: jsonObj.empName,
-                        parentId: "",
-                        tinNumber: "",
+                      branchId: jsonObj.branchs[0]?.branchId,
+                      contentSize: 0,
+                      createdBy: new Date().getSeconds(),
+                      description: "",
+                      documentNumber: selector.employee_id,
+                      documentPath:
+                        dmsLeadDto.dmsAttachments.length > 0
+                          ? dmsLeadDto.dmsAttachments.filter((item) => {
+                              return item.documentType === "employeeId";
+                            })[0]?.documentPath
+                            ? dmsLeadDto.dmsAttachments.filter((item) => {
+                                return item.documentType === "employeeId";
+                              })[0]?.documentPath
+                            : ""
+                          : "",
+                      documentType: "employeeId",
+                      documentVersion: 0,
+                      fileName:
+                        dmsLeadDto.dmsAttachments.length > 0
+                          ? dmsLeadDto.dmsAttachments.filter((item) => {
+                              return item.documentType === "employeeId";
+                            })[0]?.fileName
+                            ? dmsLeadDto.dmsAttachments.filter((item) => {
+                                return item.documentType === "employeeId";
+                              })[0]?.fileName
+                            : ""
+                          : "",
+                      gstNumber: selector.gstin_number,
+                      id: 0,
+                      isActive: 0,
+                      isPrivate: 0,
+                      keyName:
+                        dmsLeadDto.dmsAttachments.length > 0
+                          ? dmsLeadDto.dmsAttachments.filter((item) => {
+                              return item.documentType === "employeeId";
+                            })[0]?.keyName
+                            ? dmsLeadDto.dmsAttachments.filter((item) => {
+                                return item.documentType === "employeeId";
+                              })[0]?.keyName
+                            : ""
+                          : "",
+                      modifiedBy: jsonObj.empName,
+                      orgId: jsonObj.orgId,
+                      ownerId: "",
+                      ownerName: jsonObj.empName,
+                      parentId: "",
+                      tinNumber: "",
                     });
                 }
                 if (Object.keys(uploadedImagesDataObj).length > 0) {
                     let tempImages = Object.entries(uploadedImagesDataObj).map((e) => ({ name: e[0], value: e[1] }));
                     for (let i = 0; i < tempImages.length; i++) {
                         tempAttachments.push({
-                            branchId: jsonObj.branchs[0]?.branchId,
-                            contentSize: 0,
-                            createdBy: new Date().getSeconds(),
-                            description: "",
-                            documentNumber: '',
-                            documentPath: tempImages[i].value.documentPath,
-                            documentType: tempImages[i].name,
-                            documentVersion: 0,
-                            fileName: tempImages[i].value.fileName,
-                            gstNumber: "",
-                            id: 0,
-                            isActive: 0,
-                            isPrivate: 0,
-                            keyName: tempImages[i].value.keyName,
-                            modifiedBy: jsonObj.empName,
-                            orgId: jsonObj.orgId,
-                            ownerId: "",
-                            ownerName: jsonObj.empName,
-                            parentId: "",
-                            tinNumber: "",
+                          branchId: jsonObj.branchs[0]?.branchId,
+                          contentSize: 0,
+                          createdBy: new Date().getSeconds(),
+                          description: "",
+                          documentNumber: "",
+                          documentPath: tempImages[i].value.documentPath,
+                          documentType: tempImages[i].name,
+                          documentVersion: 0,
+                          fileName: tempImages[i].value.fileName,
+                          gstNumber: selector.gstin_number,
+                          id: 0,
+                          isActive: 0,
+                          isPrivate: 0,
+                          keyName: tempImages[i].value.keyName,
+                          modifiedBy: jsonObj.empName,
+                          orgId: jsonObj.orgId,
+                          ownerId: "",
+                          ownerName: jsonObj.empName,
+                          parentId: "",
+                          tinNumber: "",
                         });
 
                         if (i === tempImages.length - 1) {
@@ -1943,7 +1967,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     dmsLeadDto: dmsLeadDto,
                 };
             }
-            console.log("PBK PAYLOAD:", JSON.stringify(formData));
             setTypeOfActionDispatched("UPDATE_PRE_BOOKING");
             // dispatch(updatePrebookingDetailsApi(formData));
             Promise.all([
@@ -2243,14 +2266,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         if (dmsAttachments.length > 0) {
             dmsAttachments.forEach((obj, index) => {
                 const item = uploadedImagesDataObj[obj.documentType];
-                 console.log("uploadedImagesDataObj2: ", uploadedImagesDataObj);
-                const object = formatAttachment(
-                    { ...obj },
-                    item,
-                    index,
-                    obj.documentType
-                );
-                dmsAttachments[index] = object;
+                if(item){
+                  const object = formatAttachment(
+                      { ...obj },
+                      item,
+                      index,
+                      obj.documentType
+                  );
+                  dmsAttachments[index] = object;
+                }
             });
         } else {
              console.log("uploadedImagesDataObj1: ", uploadedImagesDataObj);
@@ -2731,19 +2755,20 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 break;
         }
 
+        
         await fetch(URL.UPLOAD_DOCUMENT(), {
-            method: "POST",
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-            body: formData,
+          method: "POST",
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          body: formData,
         })
-            .then((response) => response.json())
-            .then((response) => {
-                console.log('response', response);
-                if (response) {
-                    const dataObj = { ...uploadedImagesDataObj };
-                    dataObj[response.documentType] = response;
+        .then((response) => response.json())
+        .then((response) => {
+          console.log('response', response);
+          if (response) {
+                  const dataObj = { ...uploadedImagesDataObj };
+                  dataObj[response.documentType] = response;
                     setUploadedImagesDataObj({ ...dataObj });
                     setIsReciptDocUpload(true)
                 }
