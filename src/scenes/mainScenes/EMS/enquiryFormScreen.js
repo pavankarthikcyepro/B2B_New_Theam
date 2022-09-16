@@ -4684,7 +4684,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <Text style={GlobalStyle.underline}></Text>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
-                        name={"Upload Adhar"}
+                        name={"Upload Aadhaar"}
                         onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
                       />
                     </View>

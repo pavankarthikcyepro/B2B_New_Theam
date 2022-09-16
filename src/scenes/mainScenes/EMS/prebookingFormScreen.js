@@ -1514,7 +1514,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
             if (selector.adhaar_number.length == 0) {
                 scrollToPos(4)
                 setOpenAccordian("4")
-                showToast("please enter aadhar number");
+                showToast("please enter aadhaar number");
                 return;
             }
         }
@@ -4175,7 +4175,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       ></Text>
                       <View style={styles.select_image_bck_vw}>
                         <ImageSelectItem  disabled={userData.isManager? true:false}
-                          name={"Upload Adhar"}
+                          name={"Upload Aadhaar"}
                           onPress={() =>
                             dispatch(setImagePicker("UPLOAD_ADHAR"))
                           }
