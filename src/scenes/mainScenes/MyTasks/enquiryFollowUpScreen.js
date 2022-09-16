@@ -351,18 +351,6 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       return;
     }
 
-    let startDate = moment(selector.actual_start_time, "DD/MM/YYYY");
-    let endDate = moment(selector.actual_end_time, "DD/MM/YYYY");
-    let diff = moment(endDate).diff(startDate, "d");
-
-    if (0 == diff) {
-      showToast("Actual Start Date and Actual End Date Should not be Equal");
-      return;
-    } else if (0 > diff) {
-      showToast("Actual End Date Should not be less than Actual Start Date");
-      return;
-    }
-
     const newTaskObj = { ...selector.task_details_response };
     newTaskObj.reason = selector.reason === 'Other' ? otherReason : selector.reason;
     newTaskObj.customerRemarks = selector.customer_remarks;
