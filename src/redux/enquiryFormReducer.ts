@@ -224,9 +224,11 @@ export const postProformaInvoiceDetails = createAsyncThunk(
     console.log("Proforma", JSON.stringify(payload))
     const response = await client.post(URL.SAVE_PROFORMA_DETAILS(), payload);
     const json = await response.json();
-    console.log("auto save details", json);
+    console.log("auto save details", response);
 
     if (!response.ok) {
+      console.log("response::::::", json);
+
       return rejectWithValue(json);
     }
     return json;

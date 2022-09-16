@@ -15,7 +15,7 @@ var RNFS = require('react-native-fs');
 import * as AsyncStore from "../../../../asyncStore";
 import {
     getLogoNameApi, getOnRoadPriceAndInsurenceDetailsApi, setDropDownData, postProformaInvoiceDetails
- } from "../../../../redux/enquiryFormReducer";
+} from "../../../../redux/enquiryFormReducer";
 import { getFocusedRouteNameFromRoute, useNavigation } from "@react-navigation/native";
 import {
     GetCarModelList,
@@ -81,8 +81,8 @@ const TextAndAmountComp = ({
     return (
         <View style={styles.textAndAmountView}>
             <Text style={[styles.leftLabel, titleStyle]}>{title}</Text>
-            
-            {text && text != '' ? <Text style={[{ fontSize: 16, fontWeight: "400", width:'50%' }, amoutStyle]}>
+
+            {text && text != '' ? <Text style={[{ fontSize: 16, fontWeight: "400", width: '50%' }, amoutStyle]}>
                 {text}
             </Text> : <Text style={[{ fontSize: 14, fontWeight: "400" }, amoutStyle]}>
                 {rupeeSymbol + " " + amount}
@@ -119,7 +119,7 @@ const PaidAccessoriesTextAndAmountComp = ({
         </View>
     );
 };
-export const ProformaComp = ({ branchId, modelDetails, universalId,  }) => {
+export const ProformaComp = ({ branchId, modelDetails, universalId, }) => {
     const dispatch = useDispatch();
     const navigation = useNavigation();
 
@@ -190,15 +190,15 @@ export const ProformaComp = ({ branchId, modelDetails, universalId,  }) => {
     const [carModelsData, setCarModelsData] = useState([]);
 
     const [userToken, setUserToken] = useState("");
-    useEffect(()=>{
-      getUserData()
-    },[])
-    const getUserData = async()=>{
-        try{
+    useEffect(() => {
+        getUserData()
+    }, [])
+    const getUserData = async () => {
+        try {
             let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
             AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
                 setUserToken(token);
-               
+
             });
             // console.log("$$$$$ LOGIN EMP:", employeeData);
             if (employeeData) {
@@ -211,13 +211,13 @@ export const ProformaComp = ({ branchId, modelDetails, universalId,  }) => {
                 dispatch(getLogoNameApi(data));
                 getCarModelListFromServer(jsonObj.orgId)
             }
-        }catch(error){
+        } catch (error) {
             alert(error)
         }
-       
+
     }
     useEffect(() => {
-        
+
         calculateOnRoadPrice(handlingChargSlctd, essentialKitSlctd, fastTagSlctd);
     }, [
         priceInfomationData,
@@ -300,132 +300,132 @@ export const ProformaComp = ({ branchId, modelDetails, universalId,  }) => {
         }
     }, [selector.vehicle_on_road_price_insurence_details_response]);
 
-    const downloadPdf = async (from)=>{
-        try{
-            let siteTypeName = await '<div >'+
-                '<div style="border: 1px solid black;color: black;font-weight: bold;" id="invoice">'+
-                    '<div class="row align-items-center">'+
+    const downloadPdf = async (from) => {
+        try {
+            let siteTypeName = await '<div >' +
+                '<div style="border: 1px solid black;color: black;font-weight: bold;" id="invoice">' +
+                '<div class="row align-items-center">' +
                 '<div class="col-md-1">' +
-                '<img style="background: #fff;width: 120px;" src='+selector.proforma_logo+'>' +
+                '<img style="background: #fff;width: 120px;" src=' + selector.proforma_logo + '>' +
                 '</div>' +
                 '<div class="col-md-8 orgname" style="font-size: 18px; font-weight: bold;  margin-left: 30px; border-left: 1px solid black;">' +
-                '<p >'+selector.proforma_orgName+'</p>' +
+                '<p >' + selector.proforma_orgName + '</p>' +
                 // '<p class="orgname-pad">(Authorised Dealer for HYUNDAI MOTOR INDIA LTD.)</p>' +
                 // '<p class="orgname-pad">GSTN: 36AAFCB6312A1ZA</p>' +
                 '</div>' +
                 '<div class="col-md-3" class="orgaddr">' +
-                '<P style="margin-top: -10px;">' + selector.proforma_branch +'</P>' +
-                '<P style="margin-top: -10px;">' + selector.proforma_city +'</P>' +
-                '<P style="margin-top: -10px;">' + selector.proforma_state +'</P>' +
-            '</div>' +
-            '</div>' +
-            '<div class="col-md-12">' +
-            '<table class="ttable">' +
-            '<colgroup>' +
-            '<col style="width:10%;">' +
-            '<col style="width:60%;">' +
-            '<col style="width:5%;">' +
-            '<col style="width:25%;">' +
-            '</colgroup>' +
+                '<P style="margin-top: -10px;">' + selector.proforma_branch + '</P>' +
+                '<P style="margin-top: -10px;">' + selector.proforma_city + '</P>' +
+                '<P style="margin-top: -10px;">' + selector.proforma_state + '</P>' +
+                '</div>' +
+                '</div>' +
+                '<div class="col-md-12">' +
+                '<table class="ttable">' +
+                '<colgroup>' +
+                '<col style="width:10%;">' +
+                '<col style="width:60%;">' +
+                '<col style="width:5%;">' +
+                '<col style="width:25%;">' +
+                '</colgroup>' +
                 '<tr>' +
                 '<td style="background-color:rgb(185, 200, 241);" colspan="4" ><strong>PROFORMA INVOICE</strong></td>' +
                 '</tr>' +
                 '<tr class="tCenter">' +
                 '<td style=" border: 1px solid black; border-collapse: collapse;" >NAME :</td>' +
-                '<td style=" border: 1px solid black; border-collapse: collapse;">'+modelDetails.model+'</td>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;">' + modelDetails.model + '</td>' +
                 '<td style=" border: 1px solid black; border-collapse: collapse;" >DATE</td>' +
-                '<td style=" border: 1px solid black; border-collapse: collapse;">' + moment().format("DD/MM/YYYY") +'</td>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;">' + moment().format("DD/MM/YYYY") + '</td>' +
                 '</tr>' +
                 '<tr class="tCenter">' +
                 '<td style=" border: 1px solid black; border-collapse: collapse;"colspan="2" rowspan="4"></td>' +
                 '<td style=" border: 1px solid black; border-collapse: collapse;">MODEL</td>' +
-                '<td style=" border: 1px solid black; border-collapse: collapse;">'+modelDetails.model+'</td>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;">' + modelDetails.model + '</td>' +
                 '</tr>' +
                 '<tr class="tCenter">' +
                 '<td style=" border: 1px solid black; border-collapse: collapse;" >VARIANT</td>' +
-                '<td style=" border: 1px solid black; border-collapse: collapse;">'+modelDetails.variant+'</td>' +
-     ' </tr > '+
-    '< tr class="tCenter" > '+
-          '<td style=" border: 1px solid black; border-collapse: collapse;">COLOUR</td>'+
-                '<td style=" border: 1px solid black; border-collapse: collapse;">' + modelDetails.color +'</td>'+
-    '</tr>'+
-        '< tr > '+
-          '<td style=" border: 1px solid black; border-collapse: collapse;"   colspan="2" class="tCenter">AMOUNT</td>'+
-      '</tr > '+
-          '< tr > '+
-         '<td style=" border: 1px solid black; border-collapse: collapse;"colspan="4" style="text-align:center"><strong> DESCRIPTION</strong></td>' +
-            '</tr>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;">' + modelDetails.variant + '</td>' +
+                ' </tr > ' +
+                '< tr class="tCenter" > ' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;">COLOUR</td>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;">' + modelDetails.color + '</td>' +
+                '</tr>' +
+                '< tr > ' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;"   colspan="2" class="tCenter">AMOUNT</td>' +
+                '</tr > ' +
+                '< tr > ' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;"colspan="4" style="text-align:center"><strong> DESCRIPTION</strong></td>' +
+                '</tr>' +
                 '<tr>' +
                 '<td style=" border: 1px solid black; border-collapse: collapse;"colspan="2">EX SHOWROOM</td>' +
-                '<td style=" border: 1px solid black; border-collapse: collapse;" colspan="2" class="talign">' + priceInfomationData.ex_showroom_price+'</td>' +
-            '</tr>' +
-            '<tr>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;" colspan="2" class="talign">' + priceInfomationData.ex_showroom_price + '</td>' +
+                '</tr>' +
+                '<tr>' +
                 '<td style=" border: 1px solid black; border-collapse: collapse;"colspan="2">LIFE TAX @ 14%</td>' +
-                '<td style=" border: 1px solid black; border-collapse: collapse;"colspan="2"class="talign">' + lifeTaxAmount +'</td>' +
-         '</tr>' +
-            '<tr>' +
-            '<td style=" border: 1px solid black; border-collapse: collapse;" colspan="2">INSURANCE</td>' +
-                ' <td style=" border: 1px solid black; border-collapse: collapse;" colspan="2"class="talign">' + selectedInsurencePrice +'</td>' +
-            '</tr>' +
-            '<tr>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;"colspan="2"class="talign">' + lifeTaxAmount + '</td>' +
+                '</tr>' +
+                '<tr>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;" colspan="2">INSURANCE</td>' +
+                ' <td style=" border: 1px solid black; border-collapse: collapse;" colspan="2"class="talign">' + selectedInsurencePrice + '</td>' +
+                '</tr>' +
+                '<tr>' +
                 '<td style=" border: 1px solid black; border-collapse: collapse;" colspan="2">ESSENTIAL KIT</td>' +
-                '<td style=" border: 1px solid black; border-collapse: collapse;" colspan="2"class="talign">' + priceInfomationData.essential_kit +'</td>' +
-      '</tr > '+
-         '<tr>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;" colspan="2"class="talign">' + priceInfomationData.essential_kit + '</td>' +
+                '</tr > ' +
+                '<tr>' +
                 '<td style=" border: 1px solid black; border-collapse: collapse;" colspan="2">WARRANTY</td>' +
-                '<td style=" border: 1px solid black; border-collapse: collapse;" colspan="2" class="talign">' + selectedWarrentyPrice +'</td>'+
-      '</tr > '+
-          '<tr>'+
-          '<td style=" border: 1px solid black; border-collapse: collapse;"colspan="2">TR CHARGES</td>'+
-                '<td style=" border: 1px solid black; border-collapse: collapse;" colspan="2"class="talign">' + tcsAmount +'</td>'+
-    '</tr>'+
-      '<tr>'+
-          '<td style=" border: 1px solid black; border-collapse: collapse;"colspan="2">FASTAG</td>'+
-                '<td style=" border: 1px solid black; border-collapse: collapse;" colspan="2"class="talign">' + priceInfomationData.fast_tag +'</td>'+
-         '</tr>' +
-         '<tr>' +
-         '<td style=" border: 1px solid black; border-collapse: collapse;" colspan="2" class="tCenter"style="background-color:rgb(228, 212, 190)"><strong>NET ON ROAD PRICE</strong> </td>' +
-                '<td style=" border: 1px solid black; border-collapse: collapse;"colspan="2"class="talign" style="background-color:rgb(228, 212, 190)"><strong>' + totalOnRoadPrice +'</strong> </td>' +
-      '</tr > '+
-          '<tr>'+
-          '<td style=" border: 1px solid black; border-collapse: collapse;"colspan="4"><p style="text-decoration:underline">TERMS AND CONDITIONS</p>'+""+'</td > '+
-      '</tr > '+
-      '</table > '+
-       
-        '<div class="row">'+
-          '<div class="col-md-10">'+
-    
-          '</div>'+
-          '<div class="col-md-2">'+
-            '<p style="float: right; margin-bottom: 50px;"><b>for BHARAT HYUNDAI</b></p><br>'+
-            '<p style="float: right;"><b>Authorised Signatory</b></p>'+
-          '</div>'+
-         '</div > '+
-     
-          '<div  style="padding-bottom: 10px; padding-left: 0px;padding-top: 10px;float: right;" data-html2canvas-ignore="true">' +
-'<ul style="list-style-type: none;display:flex">' +
-    //'<li style="margin-right:10px"> <button class="btn btn-primary" (click)="submit()">back</button></li>' +
-//'<li><button class="btn btn-primary" (click)="download()">Download</button></li>' +
-'</ul>' +
-'</div>' +
-'</div>' +
-    
-'</div>' +
-    '</div >' ;
+                '<td style=" border: 1px solid black; border-collapse: collapse;" colspan="2" class="talign">' + selectedWarrentyPrice + '</td>' +
+                '</tr > ' +
+                '<tr>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;"colspan="2">TR CHARGES</td>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;" colspan="2"class="talign">' + tcsAmount + '</td>' +
+                '</tr>' +
+                '<tr>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;"colspan="2">FASTAG</td>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;" colspan="2"class="talign">' + priceInfomationData.fast_tag + '</td>' +
+                '</tr>' +
+                '<tr>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;" colspan="2" class="tCenter"style="background-color:rgb(228, 212, 190)"><strong>NET ON ROAD PRICE</strong> </td>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;"colspan="2"class="talign" style="background-color:rgb(228, 212, 190)"><strong>' + totalOnRoadPrice + '</strong> </td>' +
+                '</tr > ' +
+                '<tr>' +
+                '<td style=" border: 1px solid black; border-collapse: collapse;"colspan="4"><p style="text-decoration:underline">TERMS AND CONDITIONS</p>' + "" + '</td > ' +
+                '</tr > ' +
+                '</table > ' +
+
+                '<div class="row">' +
+                '<div class="col-md-10">' +
+
+                '</div>' +
+                '<div class="col-md-2">' +
+                '<p style="float: right; margin-bottom: 50px;"><b>for BHARAT HYUNDAI</b></p><br>' +
+                '<p style="float: right;"><b>Authorised Signatory</b></p>' +
+                '</div>' +
+                '</div > ' +
+
+                '<div  style="padding-bottom: 10px; padding-left: 0px;padding-top: 10px;float: right;" data-html2canvas-ignore="true">' +
+                '<ul style="list-style-type: none;display:flex">' +
+                //'<li style="margin-right:10px"> <button class="btn btn-primary" (click)="submit()">back</button></li>' +
+                //'<li><button class="btn btn-primary" (click)="download()">Download</button></li>' +
+                '</ul>' +
+                '</div>' +
+                '</div>' +
+
+                '</div>' +
+                '</div >';
             let bottomPitch = await '<div style="padding-top:10px;" >' + '<p>' + 'Thank you for using our LED Savings Calculator. Energy Lighting Services is based in Nashville, Tennessee, and has been retrofitting commercial buildings all over North America with LED lighting systems since 2010. We would be honored to help you with your project needs.Please reach out to us if you have any questions.www.energylightingservices.com  855.270.3300  info@elsco.org' + '<p>' + '</div>'
-            let finalHtmlText = await siteTypeName 
+            let finalHtmlText = await siteTypeName
 
             let options = {
-                html: finalHtmlText, 
+                html: finalHtmlText,
                 fileName: 'ProformaInvoice',
                 directory: 'B2B',
             };
             let file = await RNHTMLtoPDF.convert(options)
             var PdfData = await RNFS.readFile(file.filePath, 'base64').then();
-            if (from === 'email'){
+            if (from === 'email') {
                 await Mailer.mail({
                     subject: 'Invoice',
-                  //  recipients: ['radhadevi8958@gmail.com'],
+                    //  recipients: ['radhadevi8958@gmail.com'],
                     body: '',
                     attachments: [{
                         path: file.filePath,  // The absolute path of the file from which to read data.
@@ -438,41 +438,59 @@ export const ProformaComp = ({ branchId, modelDetails, universalId,  }) => {
                     }
                 });
             }
-         
 
-                 
+
+
             alert(file.filePath);
 
-        }catch(error){
+        } catch (error) {
             alert(error)
         }
-       
+
 
     }
-    const saveProformaDetails = async(from)=>{
+    const saveProformaDetails = async (from) => {
         var proformaStatus = ''
-        if(from === 'save')
+        console.log('fromfrom', from);
+        if (from === 'save') {
+            console.log('fromfromiffff', from);
             proformaStatus = 'ENQUIRYCOMPLETED'
-        else proformaStatus = 'SENTFORAPPROVAL'
-        const data = await {
-            "crmUniversalId": universalId, 
-        "id": null, "performa_status": proformaStatus, 
-        "performa_comments": "xyz", 
-           "oth_performa_column": {
-               "ex_showroom_price": priceInfomationData.ex_showroom_price, 
-               "lifeTaxPercentage": taxPercent, "life_tax": lifeTaxAmount, "registration_charges": priceInfomationData.registration_charges,
-        "insurance_type": selector.insurance_type, "insurance_value": selectedInsurencePrice, "add_on_covers": selectedAddOnsPrice, "waranty_name": selector.waranty_name,
-         "waranty_value": selectedWarrentyPrice, "handling_charges":priceInfomationData.handling_charges, "essential_kit": priceInfomationData.essential_kit, 
-         "tcs_amount": tcsAmount, 
-         "paid_access": selectedPaidAccessoriesPrice, "fast_tag": priceInfomationData.fast_tag, "on_road_price": totalOnRoadPrice } }
-        await dispatch(postProformaInvoiceDetails(data))
         }
+        else {
+            console.log('fromfrom', from);
+            proformaStatus = 'SENTFORAPPROVAL'
+            const data = {
+                "crmUniversalId": universalId,
+                "id": null, 
+                "performa_status": proformaStatus,
+                "performa_comments": "xyz",
+                "oth_performa_column": {
+                    "ex_showroom_price": priceInfomationData.ex_showroom_price,
+                    "lifeTaxPercentage": taxPercent, 
+                    "life_tax": lifeTaxAmount, 
+                    "registration_charges": priceInfomationData.registration_charges,
+                    "insurance_type": selector.insurance_type, 
+                    "insurance_value": selectedInsurencePrice, 
+                    "add_on_covers": selectedAddOnsPrice, 
+                    "waranty_name": selector.waranty_name,
+                    "waranty_value": selectedWarrentyPrice,
+                    "handling_charges": priceInfomationData.handling_charges, 
+                    "essential_kit": priceInfomationData.essential_kit,
+                    "tcs_amount": tcsAmount,
+                    "paid_access": selectedPaidAccessoriesPrice, 
+                    "fast_tag": priceInfomationData.fast_tag, 
+                    "on_road_price": totalOnRoadPrice
+                }
+            }
+            dispatch(postProformaInvoiceDetails(data))
+        }
+    }
     const showDropDownModelMethod = (key, headerText) => {
         Keyboard.dismiss();
 
         switch (key) {
-           
-          
+
+
             case "PAYMENT_AT":
                 setDataForDropDown([...Payment_At_Types]);
                 break;
@@ -515,7 +533,7 @@ export const ProformaComp = ({ branchId, modelDetails, universalId,  }) => {
         setDropDownTitle(headerText);
         setShowDropDownModel(true);
     };
-    const getCarModelListFromServer = async(orgId) => {
+    const getCarModelListFromServer = async (orgId) => {
         // Call Api
         GetCarModelList(orgId)
             .then(
@@ -535,7 +553,7 @@ export const ProformaComp = ({ branchId, modelDetails, universalId,  }) => {
                     updateVariantModelsData(modelDetails.model, orgId, modalList)
 
                     //  alert("entry---------",JSON.stringify(selector.dmsLeadProducts))
-                  
+
                 },
                 (rejected) => {
                     console.log("getCarModelListFromServer Failed");
@@ -553,7 +571,7 @@ export const ProformaComp = ({ branchId, modelDetails, universalId,  }) => {
         if (!selectedModelName || selectedModelName.length === 0) {
             return;
         }
-      
+
         let arrTemp = modalList.filter(function (obj) {
             return obj.model === selectedModelName;
         });
@@ -570,12 +588,12 @@ export const ProformaComp = ({ branchId, modelDetails, universalId,  }) => {
                         name: item.name,
                     });
                 });
-             
 
-                    updateColorsDataForSelectedVarient(
-                        modelDetails.variant,
-                        [...mArray],orgId
-                    );
+
+                updateColorsDataForSelectedVarient(
+                    modelDetails.variant,
+                    [...mArray], orgId
+                );
             }
         }
     };
@@ -598,8 +616,8 @@ export const ProformaComp = ({ branchId, modelDetails, universalId,  }) => {
             let mArray = carModelObj.vehicleImages;
             const varientId = carModelObj.id;
             setSelectedVarientId(varientId);
-            console.log("data ", orgId , " varientId" ,varientId )
-           // alert("variant id")
+            console.log("data ", orgId, " varientId", varientId)
+            // alert("variant id")
 
             //alert("success" + orgId + " varientId" + varientId)
             dispatch(
@@ -608,7 +626,7 @@ export const ProformaComp = ({ branchId, modelDetails, universalId,  }) => {
                     varientId: varientId,
                 })
             );
-           
+
         }
     };
     const calculateOnRoadPrice = (
@@ -744,10 +762,10 @@ export const ProformaComp = ({ branchId, modelDetails, universalId,  }) => {
                     );
                 }}
             />
-            <View style={{flexDirection:'row', alignSelf:'flex-end'}}>
+            <View style={{ flexDirection: 'row', alignSelf: 'flex-end' }}>
                 <Button
                     mode="contained"
-                    style={{ width: 100, marginRight:10 }}
+                    style={{ width: 100, marginRight: 10 }}
                     color={Colors.PINK}
                     labelStyle={{ textTransform: "none" }}
                     onPress={() => downloadPdf('downlaod')}
@@ -756,7 +774,7 @@ export const ProformaComp = ({ branchId, modelDetails, universalId,  }) => {
                 </Button>
                 <Button
                     mode="contained"
-                    style={{ width: 80 , marginRight:10}}
+                    style={{ width: 80, marginRight: 10 }}
                     color={Colors.PINK}
                     labelStyle={{ textTransform: "none" }}
                     onPress={() => downloadPdf('email')}
@@ -764,282 +782,282 @@ export const ProformaComp = ({ branchId, modelDetails, universalId,  }) => {
                     Email
                 </Button>
             </View>
-           
-        <View style={{flexDirection:'row', alignItems:'center', justifyContent:'center', padding:5}}>
+
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: 5 }}>
                 <Image
                     style={styles.ImageStyleS}
                     source={{ uri: selector.proforma_logo }}
                 />
                 <Text style={{ fontSize: 18, color: Colors.PINK, textAlign: 'center', marginLeft: 10 }}>{selector.proforma_orgName}</Text>
-        </View>
-            <Text style={{ fontSize: 14, color: Colors.BLACK, textAlign: 'center', marginLeft: 10, marginBottom:10 }}>{selector.proforma_branch + ", " + selector.proforma_city + ", " + selector.proforma_state}</Text>
-            <View style={{margin:10, borderRadius:5, borderWidth:1, borderColor: Colors.BLACK, paddingBottom:10}}>
-            <Text style={{ fontSize: 18, color: Colors.PINK, textAlign: 'center', margin: 10 }}>Proforma Invoice</Text>
-            <TextAndAmountComp
-                title={"Name"}
-                text={modelDetails.model}
-            /> 
-            <TextAndAmountComp
-                title={"Date"}
+            </View>
+            <Text style={{ fontSize: 14, color: Colors.BLACK, textAlign: 'center', marginLeft: 10, marginBottom: 10 }}>{selector.proforma_branch + ", " + selector.proforma_city + ", " + selector.proforma_state}</Text>
+            <View style={{ margin: 10, borderRadius: 5, borderWidth: 1, borderColor: Colors.BLACK, paddingBottom: 10 }}>
+                <Text style={{ fontSize: 18, color: Colors.PINK, textAlign: 'center', margin: 10 }}>Proforma Invoice</Text>
+                <TextAndAmountComp
+                    title={"Name"}
+                    text={modelDetails?.model}
+                />
+                <TextAndAmountComp
+                    title={"Date"}
                     text={moment().format("DD/MM/YYYY")}
-            />   
-            <TextAndAmountComp
-                title={"Model"}
-                text={modelDetails.variant}
-            />    
-            <TextAndAmountComp
-                title={"Color"}
-                text={modelDetails.color}
-            />  
-            <TextAndAmountComp
-                title={"Amount"}
+                />
+                <TextAndAmountComp
+                    title={"Model"}
+                    text={modelDetails?.variant}
+                />
+                <TextAndAmountComp
+                    title={"Color"}
+                    text={modelDetails?.color}
+                />
+                <TextAndAmountComp
+                    title={"Amount"}
                     text={totalOnRoadPrice.toFixed(2)}
-            />  
+                />
             </View>
 
             <View style={{ margin: 10, borderRadius: 5, borderWidth: 1, borderColor: Colors.BLACK, paddingBottom: 10 }}>
 
-            <Text style={{ fontSize: 18, color: Colors.PINK, textAlign: 'center', margin: 10 }}>Description</Text>
+                <Text style={{ fontSize: 18, color: Colors.PINK, textAlign: 'center', margin: 10 }}>Description</Text>
 
-            <TextAndAmountComp
-                title={"Ex-Showroom Price:"}
-                amount={priceInfomationData.ex_showroom_price.toFixed(2)}
-            />           
+                <TextAndAmountComp
+                    title={"Ex-Showroom Price:"}
+                    amount={priceInfomationData.ex_showroom_price.toFixed(2)}
+                />
 
-            {selector.vechicle_registration ? (
-                <View>
-                    <DropDownSelectionItem
-                        label={"Vehicle Type"}
-                        value={selector.vehicle_type}
-                        onPress={() =>
-                            showDropDownModelMethod("VEHICLE_TYPE", "Vehicle Type")
-                        }
-                    />
-                    <TextinputComp
-                        style={styles.textInputStyle}
-                        value={selector.registration_number}
-                        label={"Reg. No"}
-                        maxLength={15}
-                        autoCapitalize={"characters"}
-                        onChangeText={(text) =>
-                            dispatch(
-                                setPriceConformationDetails({
-                                    key: "REGISTRATION_NUMBER",
-                                    text: text,
-                                })
-                            )
-                        }
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                </View>
-            ) : null}
+                {selector.vechicle_registration ? (
+                    <View>
+                        <DropDownSelectionItem
+                            label={"Vehicle Type"}
+                            value={selector.vehicle_type}
+                            onPress={() =>
+                                showDropDownModelMethod("VEHICLE_TYPE", "Vehicle Type")
+                            }
+                        />
+                        <TextinputComp
+                            style={styles.textInputStyle}
+                            value={selector.registration_number}
+                            label={"Reg. No"}
+                            maxLength={15}
+                            autoCapitalize={"characters"}
+                            onChangeText={(text) =>
+                                dispatch(
+                                    setPriceConformationDetails({
+                                        key: "REGISTRATION_NUMBER",
+                                        text: text,
+                                    })
+                                )
+                            }
+                        />
+                        <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                ) : null}
 
-            {/* <TextAndAmountComp
+                {/* <TextAndAmountComp
                                     title={"Life Tax:"}
                                     amount={lifeTaxAmount.toFixed(2)}
                                 /> */}
-            <View style={styles.textAndAmountView}>
-                {/* <View style={{width: '60%', flexDirection: 'row'}}> */}
-                <Text style={[styles.leftLabel]}>{"Life Tax:"}</Text>
-                {/* </View> */}
-                <View style={{
-                    width: 100,
-                    // height: 30,
-                    // justifyContent: 'center',
-                    paddingHorizontal: 10,
-                    borderBottomWidth: 1, borderBottomColor: '#d1d1d1'
-                }}>
-                    <TextInput
-                        value={taxPercent}
-                        style={[{ fontSize: 14, fontWeight: "400", }]}
-                        keyboardType={"number-pad"}
-                        onChangeText={(text) => {
-                            setTaxPercent(text);
-                            if (text !== '') {
-                                setLifeTaxAmount(getLifeTaxNew(Number(text)))
-                            }
-                            else {
-                                setLifeTaxAmount(0)
-                            }
-                        }}
-                    />
+                <View style={styles.textAndAmountView}>
+                    {/* <View style={{width: '60%', flexDirection: 'row'}}> */}
+                    <Text style={[styles.leftLabel]}>{"Life Tax:"}</Text>
+                    {/* </View> */}
+                    <View style={{
+                        width: 100,
+                        // height: 30,
+                        // justifyContent: 'center',
+                        paddingHorizontal: 10,
+                        borderBottomWidth: 1, borderBottomColor: '#d1d1d1'
+                    }}>
+                        <TextInput
+                            value={taxPercent}
+                            style={[{ fontSize: 14, fontWeight: "400", }]}
+                            keyboardType={"number-pad"}
+                            onChangeText={(text) => {
+                                setTaxPercent(text);
+                                if (text !== '') {
+                                    setLifeTaxAmount(getLifeTaxNew(Number(text)))
+                                }
+                                else {
+                                    setLifeTaxAmount(0)
+                                }
+                            }}
+                        />
 
+                    </View>
+                    <Text style={{ fontSize: 14, fontWeight: "400", }}>{rupeeSymbol + " " + lifeTaxAmount.toFixed(2)}</Text>
                 </View>
-                <Text style={{ fontSize: 14, fontWeight: "400", }}>{rupeeSymbol + " " + lifeTaxAmount.toFixed(2)}</Text>
-            </View>
 
-            <Text style={GlobalStyle.underline}></Text>
+                <Text style={GlobalStyle.underline}></Text>
 
-            <TextAndAmountComp
-                title={"Registration Charges:"}
-                amount={priceInfomationData.registration_charges.toFixed(2)}
-            />
-            <Text style={GlobalStyle.underline}></Text>
-
-            <View style={styles.symbolview}>
-                <View style={{ width: "70%" }}>
-                    <DropDownSelectionItem
-                        label={"Insurance Type"}
-                        value={selector.insurance_type}
-                        onPress={() =>
-                            showDropDownModelMethod(
-                                "INSURANCE_TYPE",
-                                "Insurance Type"
-                            )
-                        }
-                    />
-                </View>
-                <Text style={styles.shadowText}>
-                    {rupeeSymbol + " " + selectedInsurencePrice.toFixed(2)}
-                </Text>
-            </View>
-            <View style={styles.symbolview}>
-                <View style={{ width: "70%" }}>
-                    <DropDownSelectionItem
-                        label={"Add-on Insurance"}
-                        value={selector.insurance_type !== '' ? selector.add_on_insurance : ''}
-                        disabled={!selector.insurance_type}
-                        onPress={() =>
-                            showDropDownModelMethod(
-                                "INSURENCE_ADD_ONS",
-                                "Add-on Insurance"
-                            )
-                        }
-                    />
-                </View>
-                {selector.insurance_type !== '' ?
-                    <Text style={styles.shadowText}>
-                        {rupeeSymbol + " " + selectedAddOnsPrice.toFixed(2)}
-                    </Text>
-                    :
-                    <Text style={styles.shadowText}>
-                        {rupeeSymbol + " 0.00"}
-                    </Text>
-                }
-            </View>
-
-            <View style={styles.symbolview}>
-                <View style={{ width: "70%" }}>
-                    <DropDownSelectionItem
-                        label={"Warranty"}
-                        value={selector.warranty}
-                        onPress={() =>
-                            showDropDownModelMethod("WARRANTY", "Warranty")
-                        }
-                    />
-                </View>
-                <Text style={styles.shadowText}>
-                    {rupeeSymbol + " " + selectedWarrentyPrice.toFixed(2)}
-                </Text>
-            </View>
-            <Text style={GlobalStyle.underline}></Text>
-
-            <CheckboxTextAndAmountComp
-                title={"Handling Charges:"}
-                amount={handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : 0}
-                // amount={handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : "0.00"}
-                isChecked={handlingChargSlctd}
-                onPress={() => {
-                    setHandlingChargSlctd(!handlingChargSlctd);
-                    calculateOnRoadPrice(
-                        !handlingChargSlctd,
-                        essentialKitSlctd,
-                        fastTagSlctd
-                    );
-                }}
-            />
-            <Text style={GlobalStyle.underline}></Text>
-
-            <CheckboxTextAndAmountComp
-                title={"Essential Kit:"}
-                amount={essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : 0}
-                // amount={essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : "0.00"}
-                isChecked={essentialKitSlctd}
-                onPress={() => {
-                    setEssentialKitSlctd(!essentialKitSlctd);
-                    calculateOnRoadPrice(
-                        handlingChargSlctd,
-                        !essentialKitSlctd,
-                        fastTagSlctd
-                    );
-                }}
-            />
-            <Text style={GlobalStyle.underline}></Text>
-
-            <TextAndAmountComp
-                title={"TCS(>=10Lakhs -> 1%):"}
-                amount={tcsAmount.toFixed(2)}
-            />
-            <Text style={GlobalStyle.underline}></Text>
-
-            <Pressable
-                onPress={() =>
-                    navigation.navigate(
-                        AppNavigator.EmsStackIdentifiers.paidAccessories,
-                        {
-                            accessorylist: paidAccessoriesList,
-                            selectedAccessoryList: selectedPaidAccessoriesList,
-                            selectedFOCAccessoryList: selectedFOCAccessoriesList,
-                        }
-                    )
-                }
-            >
-                <PaidAccessoriesTextAndAmountComp
-                    title={"Paid Accessories:"}
-                    amount={selectedPaidAccessoriesPrice.toFixed(2)}
+                <TextAndAmountComp
+                    title={"Registration Charges:"}
+                    amount={priceInfomationData.registration_charges.toFixed(2)}
                 />
-            </Pressable>
-            <Text style={GlobalStyle.underline}></Text>
-            {paidAccessoriesListNew.length > 0 ? (
-                <View
-                    style={{
-                        backgroundColor: Colors.WHITE,
-                        paddingLeft: 12,
-                        paddingTop: 5,
-                    }}
-                >
-                    {paidAccessoriesListNew.map((item, index) => {
-                        return (
-                            <Text style={styles.accessoriText} key={"ACC" + index}>
-                                {item.accessoriesName + " - " + item.amount}
-                            </Text>
-                        );
-                    })}
-                    <Text
-                        style={[GlobalStyle.underline, { marginTop: 5 }]}
-                    ></Text>
-                </View>
-            ) : null}
+                <Text style={GlobalStyle.underline}></Text>
 
-            <CheckboxTextAndAmountComp
-                title={"Fast Tag:"}
-                amount={fastTagSlctd ? priceInfomationData.fast_tag.toFixed(2) : 0}
-                // amount={fastTagSlctd ? priceInfomationData.fast_tag.toFixed(2) : "0.00"}
-                isChecked={fastTagSlctd}
-                onPress={() => {
-                    setFastTagSlctd(!fastTagSlctd);
-                    calculateOnRoadPrice(
-                        handlingChargSlctd,
-                        essentialKitSlctd,
-                        !fastTagSlctd
-                    );
-                }}
-            />
-            {/* <TextAndAmountComp
+                <View style={styles.symbolview}>
+                    <View style={{ width: "70%" }}>
+                        <DropDownSelectionItem
+                            label={"Insurance Type"}
+                            value={selector.insurance_type}
+                            onPress={() =>
+                                showDropDownModelMethod(
+                                    "INSURANCE_TYPE",
+                                    "Insurance Type"
+                                )
+                            }
+                        />
+                    </View>
+                    <Text style={styles.shadowText}>
+                        {rupeeSymbol + " " + selectedInsurencePrice.toFixed(2)}
+                    </Text>
+                </View>
+                <View style={styles.symbolview}>
+                    <View style={{ width: "70%" }}>
+                        <DropDownSelectionItem
+                            label={"Add-on Insurance"}
+                            value={selector.insurance_type !== '' ? selector.add_on_insurance : ''}
+                            disabled={!selector.insurance_type}
+                            onPress={() =>
+                                showDropDownModelMethod(
+                                    "INSURENCE_ADD_ONS",
+                                    "Add-on Insurance"
+                                )
+                            }
+                        />
+                    </View>
+                    {selector.insurance_type !== '' ?
+                        <Text style={styles.shadowText}>
+                            {rupeeSymbol + " " + selectedAddOnsPrice.toFixed(2)}
+                        </Text>
+                        :
+                        <Text style={styles.shadowText}>
+                            {rupeeSymbol + " 0.00"}
+                        </Text>
+                    }
+                </View>
+
+                <View style={styles.symbolview}>
+                    <View style={{ width: "70%" }}>
+                        <DropDownSelectionItem
+                            label={"Warranty"}
+                            value={selector.warranty}
+                            onPress={() =>
+                                showDropDownModelMethod("WARRANTY", "Warranty")
+                            }
+                        />
+                    </View>
+                    <Text style={styles.shadowText}>
+                        {rupeeSymbol + " " + selectedWarrentyPrice.toFixed(2)}
+                    </Text>
+                </View>
+                <Text style={GlobalStyle.underline}></Text>
+
+                <CheckboxTextAndAmountComp
+                    title={"Handling Charges:"}
+                    amount={handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : 0}
+                    // amount={handlingChargSlctd ? priceInfomationData.handling_charges.toFixed(2) : "0.00"}
+                    isChecked={handlingChargSlctd}
+                    onPress={() => {
+                        setHandlingChargSlctd(!handlingChargSlctd);
+                        calculateOnRoadPrice(
+                            !handlingChargSlctd,
+                            essentialKitSlctd,
+                            fastTagSlctd
+                        );
+                    }}
+                />
+                <Text style={GlobalStyle.underline}></Text>
+
+                <CheckboxTextAndAmountComp
+                    title={"Essential Kit:"}
+                    amount={essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : 0}
+                    // amount={essentialKitSlctd ? priceInfomationData.essential_kit.toFixed(2) : "0.00"}
+                    isChecked={essentialKitSlctd}
+                    onPress={() => {
+                        setEssentialKitSlctd(!essentialKitSlctd);
+                        calculateOnRoadPrice(
+                            handlingChargSlctd,
+                            !essentialKitSlctd,
+                            fastTagSlctd
+                        );
+                    }}
+                />
+                <Text style={GlobalStyle.underline}></Text>
+
+                <TextAndAmountComp
+                    title={"TCS(>=10Lakhs -> 1%):"}
+                    amount={tcsAmount.toFixed(2)}
+                />
+                <Text style={GlobalStyle.underline}></Text>
+
+                <Pressable
+                    onPress={() =>
+                        navigation.navigate(
+                            AppNavigator.EmsStackIdentifiers.paidAccessories,
+                            {
+                                accessorylist: paidAccessoriesList,
+                                selectedAccessoryList: selectedPaidAccessoriesList,
+                                selectedFOCAccessoryList: selectedFOCAccessoriesList,
+                            }
+                        )
+                    }
+                >
+                    <PaidAccessoriesTextAndAmountComp
+                        title={"Paid Accessories:"}
+                        amount={selectedPaidAccessoriesPrice.toFixed(2)}
+                    />
+                </Pressable>
+                <Text style={GlobalStyle.underline}></Text>
+                {paidAccessoriesListNew.length > 0 ? (
+                    <View
+                        style={{
+                            backgroundColor: Colors.WHITE,
+                            paddingLeft: 12,
+                            paddingTop: 5,
+                        }}
+                    >
+                        {paidAccessoriesListNew.map((item, index) => {
+                            return (
+                                <Text style={styles.accessoriText} key={"ACC" + index}>
+                                    {item.accessoriesName + " - " + item.amount}
+                                </Text>
+                            );
+                        })}
+                        <Text
+                            style={[GlobalStyle.underline, { marginTop: 5 }]}
+                        ></Text>
+                    </View>
+                ) : null}
+
+                <CheckboxTextAndAmountComp
+                    title={"Fast Tag:"}
+                    amount={fastTagSlctd ? priceInfomationData?.fast_tag?.toFixed(2) : 0}
+                    // amount={fastTagSlctd ? priceInfomationData.fast_tag.toFixed(2) : "0.00"}
+                    isChecked={fastTagSlctd}
+                    onPress={() => {
+                        setFastTagSlctd(!fastTagSlctd);
+                        calculateOnRoadPrice(
+                            handlingChargSlctd,
+                            essentialKitSlctd,
+                            !fastTagSlctd
+                        );
+                    }}
+                />
+                {/* <TextAndAmountComp
                   title={"Fast Tag:"}
                   amount={priceInfomationData.fast_tag.toFixed(2)}
                 /> */}
-            <Text style={GlobalStyle.underline}></Text>
+                <Text style={GlobalStyle.underline}></Text>
 
-            <TextAndAmountComp
-                title={"On Road Price:"}
-                amount={totalOnRoadPrice.toFixed(2)}
-                titleStyle={{ fontSize: 18, fontWeight: "800" }}
-                amoutStyle={{ fontSize: 18, fontWeight: "800" }}
-            />
-            {/* <Text style={GlobalStyle.underline}></Text> */}
+                <TextAndAmountComp
+                    title={"On Road Price:"}
+                    amount={totalOnRoadPrice.toFixed(2)}
+                    titleStyle={{ fontSize: 18, fontWeight: "800" }}
+                    amoutStyle={{ fontSize: 18, fontWeight: "800" }}
+                />
+                {/* <Text style={GlobalStyle.underline}></Text> */}
             </View>
-            <View style={{flexDirection:'row', justifyContent:'space-between', margin:15}}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 15 }}>
                 <Button
                     mode="contained"
                     style={{ width: 120 }}
@@ -1059,7 +1077,7 @@ export const ProformaComp = ({ branchId, modelDetails, universalId,  }) => {
                     Sent For Approval
                 </Button>
             </View>
-           
+
         </View>
     )
 }

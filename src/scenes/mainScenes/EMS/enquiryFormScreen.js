@@ -297,9 +297,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     
   }, [selector.retail_finance])
   const handleRetailFinanceFields = () => {
-    
-    console.log('selector.retail_finance<<><><><>', selector.retail_finance);
-
     if (selector.retail_finance === 'In House') {
       dispatch(
         setFinancialDetails({
@@ -3172,7 +3169,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               >
                 <ProformaComp
                   modelDetails={selector.dmsLeadProducts[0]}
-                  branchId={selectedBranchId} />
+                  branchId={selectedBranchId} 
+                  universalId={route.params.universalId}
+                  />
               </List.Accordion> : null}
               <View style={styles.space}></View>
 
