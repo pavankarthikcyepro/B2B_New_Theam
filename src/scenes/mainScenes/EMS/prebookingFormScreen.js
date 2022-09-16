@@ -2360,7 +2360,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 otherReason: "",
                 droppedBy: userData.employeeId,
                 lostSubReason: dropSubReason,
-                stage: "PREBOOKING",
+                stage: "BOOKINGAPPROVAL",
                 status: "PREBOOKING",
             },
         };
