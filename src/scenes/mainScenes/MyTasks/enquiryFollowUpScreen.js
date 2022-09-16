@@ -27,7 +27,7 @@ import {
   getReasonList
 } from "../../../redux/enquiryFollowUpReducer";
 import { DateSelectItem } from "../../../pureComponents";
-import { convertDateStringToMillisecondsUsingMoment, GetCarModelList } from "../../../utils/helperFunctions";
+import { convertDateStringToMillisecondsUsingMoment, GetCarModelList, isValidateAlphaNumericSpecial } from "../../../utils/helperFunctions";
 import moment from "moment";
 import {
   showToast,
@@ -332,8 +332,10 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       showToast("Please enter customer remarks");
       return;
     }
-    if (!isValidateAlphabetics(selector.customer_remarks)) {
-      showToast("Please enter alphabetics only in customer remarks");
+    if (!isValidateAlphaNumericSpecial(selector.customer_remarks)) {
+      showToast(
+        "Please enter alphanumerical/special characters only in customer remarks"
+      );
       return;
     }
 
@@ -342,8 +344,10 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (!isValidateAlphabetics(selector.employee_remarks)) {
-      showToast("Please enter alphabetics only in employee remarks");
+    if (!isValidateAlphaNumericSpecial(selector.employee_remarks)) {
+      showToast(
+        "Please enter alphanumerical/special characters only in employee remarks"
+      );
       return;
     }
 
