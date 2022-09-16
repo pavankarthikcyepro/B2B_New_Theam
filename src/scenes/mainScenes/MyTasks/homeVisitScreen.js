@@ -226,8 +226,22 @@ const HomeVisitScreen = ({ route, navigation }) => {
       return;
     }
 
+    if (!isValidateAlphaNumericSpecial(selector.customer_remarks)) {
+      showToast(
+        "Please enter alphanumerical/special characters only in customer remarks"
+      );
+      return;
+    }
+
     if (selector.employee_remarks.length === 0) {
       showToast("Please Enter employee remarks");
+      return;
+    }
+
+    if (!isValidateAlphaNumericSpecial(selector.employee_remarks)) {
+      showToast(
+        "Please enter alphanumerical/special characters only in employee remarks"
+      );
       return;
     }
 
@@ -265,8 +279,22 @@ const HomeVisitScreen = ({ route, navigation }) => {
       return;
     }
 
+    if (!isValidateAlphaNumericSpecial(selector.customer_remarks)) {
+      showToast(
+        "Please enter alphanumerical/special characters only in customer remarks"
+      );
+      return;
+    }
+
     if (selector.employee_remarks.length === 0) {
       showToast("Please Enter employee remarks");
+      return;
+    }
+
+    if (!isValidateAlphaNumericSpecial(selector.employee_remarks)) {
+      showToast(
+        "Please enter alphanumerical/special characters only in employee remarks"
+      );
       return;
     }
 
