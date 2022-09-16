@@ -439,6 +439,7 @@ const TargetScreen = ({ route, navigation }) => {
   const [insData, setInsData] = useState(null);
   const [exwData, setExwData] = useState(null);
   const [accData, setAccData] = useState(null);
+  const [selfInsightsData, setSelfInsightsData] = useState([]);
 
   const [dateDiff, setDateDiff] = useState(null);
   const [isTeamPresent, setIsTeamPresent] = useState(false);
@@ -577,8 +578,6 @@ const TargetScreen = ({ route, navigation }) => {
     const isSelf = selector.isDSE;
     const dashboardSelfParamsData = isSelf ? selector.self_target_parameters_data : selector.insights_target_parameters_data;
 
-    console.log("dashboardSelfParamsData ->", dashboardSelfParamsData);
-
     if (dashboardSelfParamsData.length > 0) {
       let tempRetail = [];
       tempRetail = dashboardSelfParamsData.filter((item) => {
@@ -662,6 +661,8 @@ const TargetScreen = ({ route, navigation }) => {
 
         setAccData(tempAcc[0])
       }
+
+      setSelfInsightsData([tempEnq[0], tempTD[0], tempVisit[0], tempBooking[0], tempRetail[0], tempEXG[0], tempFin[0], tempIns[0], tempExw[0], tempAcc[0]])
 
     } else {
     }
@@ -1712,8 +1713,21 @@ const TargetScreen = ({ route, navigation }) => {
           <>
             <View style={{ flexDirection: "row" }}>
               <View
-                style={{ width: "65%", justifyContent: "center", height: 15 }}
-              ></View>
+                style={{ width: "12%", justifyContent: "center", height: 15 }}
+              >
+
+              </View>
+              <View
+                style={{ width: "35%", justifyContent: "space-between", height: 15, flexDirection: "row" }}
+              >
+                <Text style={{ fontSize: 14, fontWeight: "600" }}>Ach</Text>
+                <Text style={{ fontSize: 14, fontWeight: "600" }}>Tar</Text>
+              </View>
+              <View
+                style={{ width: "18%", justifyContent: "center", height: 15, alignItems:"center" }}
+              >
+                <Text style={{ fontSize: 14, fontWeight: "600" }}>Ach%</Text>
+              </View>
               <View style={{ width: "35%", flexDirection: "row" }}>
                 <Text style={{ fontSize: 14, fontWeight: "600" }}>Balance</Text>
                 <View style={{ marginRight: 10 }}></View>
@@ -1721,7 +1735,7 @@ const TargetScreen = ({ route, navigation }) => {
               </View>
             </View>
             <>
-              <RenderSelfInsights data={selector.isDSE ? selector.self_target_parameters_data : selector.insights_target_parameters_data} />
+              <RenderSelfInsights data={selfInsightsData} />
             </>
             <View
               style={{ flexDirection: "row", marginTop: 16, justifyContent: "space-between", marginHorizontal: 8 }}
@@ -1735,16 +1749,17 @@ const TargetScreen = ({ route, navigation }) => {
                       marginLeft: 10,
                       fontSize: 16,
                       fontWeight: "600",
+                      flexDirection: "row",
                     }}
                   >
-                    E2R
+                    E2B
                   </Text>
-                  {retailData !== null && enqData !== null && (
+                  {bookingData !== null && enqData !== null ? (
                     <Text
                       style={{
                         color:
                           Math.floor(
-                            (parseInt(retailData?.achievment) /
+                            (parseInt(bookingData?.achievment) /
                               parseInt(enqData?.achievment)) *
                             100
                           ) > 40
@@ -1754,15 +1769,24 @@ const TargetScreen = ({ route, navigation }) => {
                         marginRight: 4
                       }}
                     >
-                      {parseInt(retailData?.achievment) === 0 ||
+                      {parseInt(bookingData?.achievment) === 0 ||
                         parseInt(enqData?.achievment) === 0
                         ? 0
                         : Math.round(
-                          (parseInt(retailData?.achievment) /
+                          (parseInt(bookingData?.achievment) /
                             parseInt(enqData?.achievment)) *
                           100
                         )}
                       %
+                    </Text>
+                  ) : (
+                    <Text
+                      style={{
+                        color: "#ff0000",
+                        fontSize: 12,
+                      }}
+                    >
+                      0%
                     </Text>
                   )}
                 </View>
@@ -1776,14 +1800,14 @@ const TargetScreen = ({ route, navigation }) => {
                       fontWeight: "600",
                     }}
                   >
-                    E2TD
+                    E2V
                   </Text>
-                  {TDData !== null && enqData !== null && (
+                  {enqData !== null && visitData !== null ? (
                     <Text
                       style={{
                         color:
-                          Math.round(
-                            (parseInt(TDData?.achievment) /
+                          Math.floor(
+                            (parseInt(visitData?.achievment) /
                               parseInt(enqData?.achievment)) *
                             100
                           ) > 40
@@ -1793,18 +1817,28 @@ const TargetScreen = ({ route, navigation }) => {
                         marginRight: 4
                       }}
                     >
-                      {parseInt(TDData?.achievment) === 0 ||
-                        parseInt(enqData?.achievment) === 0
+                      {parseInt(enqData?.achievment) === 0 ||
+                        parseInt(visitData?.achievment) === 0
                         ? 0
-                        : Math.floor(
-                          (parseInt(TDData?.achievment) /
+                        : Math.round(
+                          (parseInt(visitData?.achievment) /
                             parseInt(enqData?.achievment)) *
                           100
                         )}
                       %
                     </Text>
+                  ) : (
+                    <Text
+                      style={{
+                        color: "#ff0000",
+                        fontSize: 12,
+                      }}
+                    >
+                      0%
+                    </Text>
                   )}
                 </View>
+
 
                 <View style={{ height: 4 }}></View>
                 <View style={styles.statWrap}>
@@ -1904,14 +1938,14 @@ const TargetScreen = ({ route, navigation }) => {
                       fontWeight: "600",
                     }}
                   >
-                    E2V
+                    E2TD
                   </Text>
-                  {enqData !== null && visitData !== null ? (
+                  {TDData !== null && enqData !== null && (
                     <Text
                       style={{
                         color:
-                          Math.floor(
-                            (parseInt(visitData?.achievment) /
+                          Math.round(
+                            (parseInt(TDData?.achievment) /
                               parseInt(enqData?.achievment)) *
                             100
                           ) > 40
@@ -1921,27 +1955,19 @@ const TargetScreen = ({ route, navigation }) => {
                         marginRight: 4
                       }}
                     >
-                      {parseInt(enqData?.achievment) === 0 ||
-                        parseInt(visitData?.achievment) === 0
+                      {parseInt(TDData?.achievment) === 0 ||
+                        parseInt(enqData?.achievment) === 0
                         ? 0
-                        : Math.round(
-                          (parseInt(visitData?.achievment) /
+                        : Math.floor(
+                          (parseInt(TDData?.achievment) /
                             parseInt(enqData?.achievment)) *
                           100
                         )}
                       %
                     </Text>
-                  ) : (
-                    <Text
-                      style={{
-                        color: "#ff0000",
-                        fontSize: 12,
-                      }}
-                    >
-                      0%
-                    </Text>
                   )}
                 </View>
+
 
                 <View style={{ height: 4 }}></View>
                 <View style={styles.statWrap}>
@@ -1986,6 +2012,7 @@ const TargetScreen = ({ route, navigation }) => {
               </View>
 
               <View style={{ flexGrow: 1 }}>
+
                 <View style={{ height: 4 }}></View>
                 <View style={styles.statWrap}>
                   <Text
@@ -1993,17 +2020,16 @@ const TargetScreen = ({ route, navigation }) => {
                       marginLeft: 10,
                       fontSize: 16,
                       fontWeight: "600",
-                      flexDirection: "row",
                     }}
                   >
-                    E2B
+                    E2R
                   </Text>
-                  {bookingData !== null && enqData !== null ? (
+                  {retailData !== null && enqData !== null && (
                     <Text
                       style={{
                         color:
                           Math.floor(
-                            (parseInt(bookingData?.achievment) /
+                            (parseInt(retailData?.achievment) /
                               parseInt(enqData?.achievment)) *
                             100
                           ) > 40
@@ -2013,27 +2039,19 @@ const TargetScreen = ({ route, navigation }) => {
                         marginRight: 4
                       }}
                     >
-                      {parseInt(bookingData?.achievment) === 0 ||
+                      {parseInt(retailData?.achievment) === 0 ||
                         parseInt(enqData?.achievment) === 0
                         ? 0
                         : Math.round(
-                          (parseInt(bookingData?.achievment) /
+                          (parseInt(retailData?.achievment) /
                             parseInt(enqData?.achievment)) *
                           100
                         )}
                       %
                     </Text>
-                  ) : (
-                    <Text
-                      style={{
-                        color: "#ff0000",
-                        fontSize: 12,
-                      }}
-                    >
-                      0%
-                    </Text>
                   )}
                 </View>
+
 
                 <View style={{ height: 4 }}></View>
                 <View style={styles.statWrap}>
@@ -2136,7 +2154,7 @@ const TargetScreen = ({ route, navigation }) => {
                     fontWeight: "600",
                   }}
                 >
-                 Accessories/Car
+                  Accessories/Car
                 </Text>
                 {accData !== null && retailData !== null && (
                   <Text

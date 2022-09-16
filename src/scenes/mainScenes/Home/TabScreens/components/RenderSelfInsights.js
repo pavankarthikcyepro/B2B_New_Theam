@@ -1,7 +1,7 @@
-import React from "react";
-import {Text, View} from "react-native";
-import {IconButton, ProgressBar} from "react-native-paper";
-import {Colors} from "../../../../../styles";
+import React, { useEffect } from "react";
+import { Text, View } from "react-native";
+import { IconButton, ProgressBar } from "react-native-paper";
+import { Colors } from "../../../../../styles";
 import moment from "moment/moment";
 
 export const RenderSelfInsights = (args) => {
@@ -13,12 +13,18 @@ export const RenderSelfInsights = (args) => {
     const currentDate = moment().format(dateFormat)
     const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
     const dateDiff = ((new Date(monthLastDate).getTime() - new Date(currentDate).getTime()) / (1000 * 60 * 60 * 24));
-    const {data} = args;
+    const { data } = args;
+
+    useEffect(() => {
+        console.log("data0894908 ->", data);
+    }, [])
+
+
     return (
         data.map((item, index) => {
             return (
-                <View style={{flexDirection: "row", marginLeft: 8}} key={index}>
-                    <View style={{width: "10%", justifyContent: "center", marginTop: 5}}>
+                <View style={{ flexDirection: "row", marginLeft: 8 }} key={index}>
+                    <View style={{ width: "10%", justifyContent: "center", marginTop: 5 }}>
                         <Text>{item.paramShortName}</Text>
                     </View>
                     <View style={{
@@ -32,7 +38,7 @@ export const RenderSelfInsights = (args) => {
                         borderTopLeftRadius: 3,
                         borderBottomLeftRadius: 3
                     }}>
-                        <Text style={{color: "#fff"}}>{item.achievment}</Text>
+                        <Text style={{ color: "#fff" }}>{item.achievment}</Text>
                     </View>
                     <View style={{
                         width: item.paramName === 'Accessories' ? '23%' : "25%",
@@ -55,7 +61,7 @@ export const RenderSelfInsights = (args) => {
                                 backgroundColor: "#eeeeee"
                             }}
                         />
-                        <View style={{position: "absolute", top: 1, right: 5}}>
+                        <View style={{ position: "absolute", top: 1, right: 5 }}>
                             <Text
                                 style={{
                                     color:
@@ -143,7 +149,7 @@ export const RenderSelfInsights = (args) => {
                                 alignItems: "center",
                             }}
                         >
-                            <Text style={{padding: 2}}>
+                            <Text style={{ padding: 2 }}>
                                 {Number(item.achievment) > Number(item.target) ? 0 : item.shortfall}
                             </Text>
                         </View>
@@ -160,7 +166,7 @@ export const RenderSelfInsights = (args) => {
                                 marginLeft: item.target.length >= 6 ? 5 : 20
                             }}
                         >
-                            <Text style={{padding: 2}}>
+                            <Text style={{ padding: 2 }}>
                                 {parseInt(item.achievment) > parseInt(item.target) ? 0 : (dateDiff > 0 && parseInt(item.shortfall) !== 0
                                     ? Math.abs(Math.round(parseInt(item.shortfall) / dateDiff)) : 0)}
                             </Text>
