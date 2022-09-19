@@ -27,7 +27,7 @@ import {
   getReasonList
 } from "../../../redux/enquiryFollowUpReducer";
 import { DateSelectItem } from "../../../pureComponents";
-import { convertDateStringToMillisecondsUsingMoment, GetCarModelList } from "../../../utils/helperFunctions";
+import { convertDateStringToMillisecondsUsingMoment, GetCarModelList, isValidateAlphaNumericSpecial } from "../../../utils/helperFunctions";
 import moment from "moment";
 import {
   showToast,
@@ -332,8 +332,10 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       showToast("Please enter customer remarks");
       return;
     }
-    if (!isValidateAlphabetics(selector.customer_remarks)) {
-      showToast("Please enter alphabetics only in customer remarks");
+    if (!isValidateAlphaNumericSpecial(selector.customer_remarks)) {
+      showToast(
+        "Please enter alphanumerical/special characters only in customer remarks"
+      );
       return;
     }
 
@@ -342,20 +344,10 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (!isValidateAlphabetics(selector.employee_remarks)) {
-      showToast("Please enter alphabetics only in employee remarks");
-      return;
-    }
-
-    let startDate = moment(selector.actual_start_time, "DD/MM/YYYY");
-    let endDate = moment(selector.actual_end_time, "DD/MM/YYYY");
-    let diff = moment(endDate).diff(startDate, "d");
-
-    if (0 == diff) {
-      showToast("Actual Start Date and Actual End Date Should not be Equal");
-      return;
-    } else if (0 > diff) {
-      showToast("Actual End Date Should not be less than Actual Start Date");
+    if (!isValidateAlphaNumericSpecial(selector.employee_remarks)) {
+      showToast(
+        "Please enter alphanumerical/special characters only in employee remarks"
+      );
       return;
     }
 

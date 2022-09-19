@@ -383,7 +383,7 @@ const EnquiryScreen = ({ navigation }) => {
                                             type='Enq'
                                             status={""}
                                             created={item.modifiedDate}
-                                            dmsLead={item.createdBy}
+                                            dmsLead={item.salesConsultant}
                                             phone={item.phone}
                                             source={item.enquirySource}
                                             model={item.model}

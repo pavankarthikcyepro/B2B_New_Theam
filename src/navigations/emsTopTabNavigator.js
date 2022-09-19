@@ -41,7 +41,7 @@ const EMSTopTabNavigatorOne = () => {
       <EMSTopTab.Screen
         name={EmsTopTabNavigatorIdentifiers.preEnquiry}
         component={PreEnquiryScreen}
-        options={{ title: "Pre-Enquiry" }}
+        options={{ title: "Contacts" }}
       />
     </EMSTopTab.Navigator>
   );

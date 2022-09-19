@@ -2769,7 +2769,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         <Text style={GlobalStyle.underline}></Text>
                                         <View style={styles.select_image_bck_vw}>
                                             <ImageSelectItem
-                                                name={"Upload Adhar"}
+                                                name={"Upload Aadhaar"}
                                                 disabled={true}
                                                 onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
                                             />

@@ -439,7 +439,7 @@ const BookingScreen = ({ navigation }) => {
                                     type="Book"
                                     status={""}
                                     created={item.modifiedDate}
-                                    dmsLead={item.createdBy}
+                                    dmsLead={item.salesConsultant}
                                     phone={item.phone}
                                     source={item.enquirySource}
                                     model={item.model}
