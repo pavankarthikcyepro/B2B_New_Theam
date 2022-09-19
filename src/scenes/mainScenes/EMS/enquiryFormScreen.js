@@ -2889,6 +2889,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           ) {
             updateModelTypesForCustomerNeedAnalysis(item.name, dropDownKey);
           }
+
+          if (dropDownKey === "RETAIL_FINANCE" && selector.retail_finance !== item.name) {
+            dispatch(setFinancialDetails({key: "BANK_R_FINANCE_NAME", text: ""}));
+            dispatch(setFinancialDetails({key: "LOAN_AMOUNT", text: ""}));
+            dispatch(setFinancialDetails({key: "RATE_OF_INTEREST",text: ""}));
+          };
+
           setShowDropDownModel(false);
           dispatch(
             setDropDownData({ key: dropDownKey, value: item.name, id: item.id, orgId: userData.orgId })
