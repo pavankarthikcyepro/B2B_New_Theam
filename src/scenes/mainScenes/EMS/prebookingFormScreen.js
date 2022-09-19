@@ -1501,22 +1501,20 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         //   return;
         // }
 
-        // if (selector.form_or_pan === "PAN") {
-        //     if (selector.pan_number.length == 0) {
-        //         scrollToPos(4)
-        //         setOpenAccordian("4")
-        //         showToast("please enter pan card number");
-        //         return;
-        //     }
-        // }
-
-        if (selector.enquiry_segment.toLowerCase() === "personal") {
-            if (selector.adhaar_number.length == 0) {
+        if (selector.form_or_pan === "PAN") {
+            if (selector.pan_number.length == 0) {
                 scrollToPos(4)
                 setOpenAccordian("4")
-                showToast("please enter aadhaar number");
+                showToast("please enter PAN Number");
                 return;
             }
+        }
+        
+        if (taxPercent === "") {
+            scrollToPos(5);
+            setOpenAccordian("5");
+            showToast("please enter Life Tax");
+            return;
         }
 
         if ((selector.enquiry_segment.toLowerCase() === "company" && selector.customer_type.toLowerCase() === "institution") && (selector.customer_type_category == "B2B" ||
@@ -1546,6 +1544,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         //     }
         // }
 
+        if (selector.selector.retail_finance.length === 0) {
+          scrollToPos(7);
+          setOpenAccordian("7");
+          showToast("Please select Retail Finance");
+          return;
+        }
+
         const bookingAmount = parseInt(selector.booking_amount);
         if (bookingAmount < 5000) {
             scrollToPos(8)
@@ -1555,26 +1560,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         }
 
         if (
-            selector.payment_at.length === 0 ||
             selector.booking_payment_mode.length === 0
         ) {
             scrollToPos(8)
             setOpenAccordian('8')
-            showToast("Please enter booking details");
-            return;
-        }
-
-        if (
-            selector.customer_preferred_date.length === 0 ||
-            selector.tentative_delivery_date.length === 0
-        ) {
-          console.log(
-            "Function Preferred-=-=>>>",
-            selector.customer_preferred_date
-          );
-            showToast("Please enter DOD details");
-            scrollToPos(9)
-            setOpenAccordian('9')
+            showToast("Please enter Booking Payment Mode");
             return;
         }
 
@@ -4033,7 +4023,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                        disabled={userData.isManager? true:false}
                         style={styles.textInputStyle}
                         value={selector.pan_number}
-                        label={"PAN Number"}
+                        label={"PAN Number*"}
                         maxLength={10}
                         autoCapitalize={"characters"}
                         onChangeText={(text) => {
@@ -4052,6 +4042,17 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
                         />
                       </View>
+                      <Text
+                        style={[
+                          GlobalStyle.underline,
+                          {
+                            backgroundColor:
+                              isSubmitPress && selector.pan_number === ""
+                                ? "red"
+                                : "rgba(208, 212, 214, 0.7)",
+                          },
+                        ]}
+                      ></Text>
                       {uploadedImagesDataObj.pan?.fileName ? (
                         <View style={{ flexDirection: "row" }}>
                           <TouchableOpacity  disabled={userData.isManager? true:false}
@@ -4150,7 +4151,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <TextinputComp  disabled={userData.isManager? true:false}
                         style={styles.textInputStyle}
                         value={selector.adhaar_number}
-                        label={"Aadhaar Number*"}
+                        label={"Aadhaar Number"}
                         keyboardType={"phone-pad"}
                         maxLength={12}
                         onChangeText={(text) =>
@@ -4163,16 +4164,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         }
                       />
                       <Text
-                        style={[
-                          GlobalStyle.underline,
-                          {
-                            backgroundColor:
-                              isSubmitPress && selector.adhaar_number === ""
-                                ? "red"
-                                : "rgba(208, 212, 214, 0.7)",
-                          },
-                        ]}
-                      ></Text>
+                        style={GlobalStyle.underline} />
                       <View style={styles.select_image_bck_vw}>
                         <ImageSelectItem  disabled={userData.isManager? true:false}
                           name={"Upload Aadhaar"}
@@ -4768,7 +4760,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ]}
                 >
                   <TextAndAmountComp
-                    title={"Ex-Showroom Price:"}
+                    title={"Ex-Showroom Price*:"}
                     amount={priceInfomationData.ex_showroom_price.toFixed(2)}
                   />
                   {/* <View style={styles.radioGroupBcVw}>
@@ -4830,7 +4822,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 /> */}
                   <View style={styles.textAndAmountView}>
                     {/* <View style={{width: '60%', flexDirection: 'row'}}> */}
-                    <Text style={[styles.leftLabel]}>{"Life Tax:"}</Text>
+                    <Text style={[styles.leftLabel]}>{"Life Tax*:"}</Text>
                     {/* </View> */}
                     <View
                       style={{
@@ -4839,7 +4831,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         // justifyContent: 'center',
                         paddingHorizontal: 10,
                         borderBottomWidth: 1,
-                        borderBottomColor: "#d1d1d1",
+                        borderBottomColor: isSubmitPress && taxPercent == "" ? "red" : "#d1d1d1",
                       }}
                     >
                       <TextInput  disabled={userData.isManager? true:false}
@@ -5309,7 +5301,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ]}
                 >
                   <DropDownSelectionItem  disabled={userData.isManager? true:false}
-                    label={"Retail Finance"}
+                    label={"Retail Finance*"}
                     value={selector.retail_finance}
                     onPress={() =>
                       showDropDownModelMethod(
@@ -5318,6 +5310,18 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       )
                     }
                   />
+
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.retail_finance === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
 
                   {selector.retail_finance === "Out House" ? (
                     <View>
@@ -5578,23 +5582,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ></Text>
 
                   <DropDownSelectionItem disabled={userData.isManager? true:false}
-                    label={"Payment At*"}
+                    label={"Payment At"}
                     value={selector.payment_at}
                     onPress={() =>
                       showDropDownModelMethod("PAYMENT_AT", "Payment At")
                     }
                   />
                   <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.payment_at === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                    style={GlobalStyle.underline} />
+                  
                   <DropDownSelectionItem disabled={userData.isManager? true:false}
                     label={"Booking Payment Mode*"}
                     value={selector.booking_payment_mode}
@@ -5637,24 +5633,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ]}
                 >
                   <DateSelectItem disabled={userData.isManager? true:false}
-                    label={"Customer Preferred Date*"}
+                    label={"Customer Preferred Date"}
                     value={selector.customer_preferred_date}
                     onPress={() =>
                       dispatch(setDatePicker("CUSTOMER_PREFERRED_DATE"))
                     }
                   />
                   <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress &&
-                          selector.customer_preferred_date === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                    style={GlobalStyle.underline} />
                   <TextinputComp disabled={userData.isManager? true:false}
                     style={{ height: 65, width: "100%" }}
                     label={"Occasion"}
@@ -5668,24 +5654,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   />
                   <Text style={GlobalStyle.underline}></Text>
                   <DateSelectItem disabled={userData.isManager? true:false}
-                    label={"Tentative Delivery Date*"}
+                    label={"Tentative Delivery Date"}
                     value={selector.tentative_delivery_date}
                     onPress={() =>
                       dispatch(setDatePicker("TENTATIVE_DELIVERY_DATE"))
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress &&
-                          selector.tentative_delivery_date === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
                   <TextinputComp disabled={userData.isManager? true:false}
                     style={{ height: 65, width: "100%" }}
                     label={"Delivery Location"}
