@@ -125,7 +125,6 @@ import {
   GetCarModelList,
   GetDropList,
   GetFinanceBanksList,
-  isValidateAlphaNumericSpecial,
   PincodeDetails,
   PincodeDetailsNew,
 } from "../../../utils/helperFunctions";
@@ -1124,14 +1123,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (
-      selector.streetName.length != 0 &&
-      !isValidateAlphaNumericSpecial(selector.streetName)
-    ) {
+    if (selector.streetName.trim().length != 0) {
       scrollToPos(3);
       setOpenAccordian("3");
       showToast(
-        "Please enter alphanumerical/special characters only in street name"
+        "Please enter street name"
       );
       return;
     }
@@ -1160,10 +1156,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (
-      selector.p_streetName.length != 0 &&
-      !isValidateAlphaNumericSpecial(selector.p_streetName)
-    ) {
+    if (selector.p_streetName.trim().length != 0) {
       scrollToPos(14);
       setOpenAccordian("3");
       showToast(

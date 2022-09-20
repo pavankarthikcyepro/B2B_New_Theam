@@ -26,7 +26,7 @@ import {
   getCurrentTasksListApi,
   getPendingTasksListApi,
 } from "../../../redux/mytaskReducer";
-import { convertDateStringToMillisecondsUsingMoment, isValidateAlphaNumericSpecial } from "../../../utils/helperFunctions";
+import { convertDateStringToMillisecondsUsingMoment } from "../../../utils/helperFunctions";
 import { DateSelectItem, RadioTextItem } from "../../../pureComponents";
 import {
   CodeField,
@@ -218,27 +218,13 @@ const HomeVisitScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (selector.customer_remarks.length === 0) {
+    if (selector.customer_remarks.trim().length === 0) {
       showToast("Please enter customer remarks");
       return;
     }
 
-    if (!isValidateAlphaNumericSpecial(selector.customer_remarks)) {
-      showToast(
-        "Please enter alphanumerical/special characters only in customer remarks"
-      );
-      return;
-    }
-
-    if (selector.employee_remarks.length === 0) {
+    if (selector.employee_remarks.trim().length === 0) {
       showToast("Please Enter employee remarks");
-      return;
-    }
-
-    if (!isValidateAlphaNumericSpecial(selector.employee_remarks)) {
-      showToast(
-        "Please enter alphanumerical/special characters only in employee remarks"
-      );
       return;
     }
 
@@ -271,27 +257,13 @@ const HomeVisitScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (selector.customer_remarks.length === 0) {
+    if (selector.customer_remarks.trim().length === 0) {
       showToast("Please enter customer remarks");
       return;
     }
 
-    if (!isValidateAlphaNumericSpecial(selector.customer_remarks)) {
-      showToast(
-        "Please enter alphanumerical/special characters only in customer remarks"
-      );
-      return;
-    }
-
-    if (selector.employee_remarks.length === 0) {
+    if (selector.employee_remarks.trim().length === 0) {
       showToast("Please Enter employee remarks");
-      return;
-    }
-
-    if (!isValidateAlphaNumericSpecial(selector.employee_remarks)) {
-      showToast(
-        "Please enter alphanumerical/special characters only in employee remarks"
-      );
       return;
     }
 

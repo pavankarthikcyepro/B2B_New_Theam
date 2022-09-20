@@ -713,6 +713,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                                     </Button>
 
                                     <Button
+                                        disabled={disabled}
                                         mode='contained'
                                         style={{ width: 120 }}
                                         color={Colors.GRAY}
