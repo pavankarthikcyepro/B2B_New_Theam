@@ -1350,6 +1350,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     };
 
     const checkModelSelection = () => {
+      console.log("carModelsList =====> ", carModelsList);
       let error = false;
       for (let i = 0; i < carModelsList.length; i++) {
         if (carModelsList[i].model.length == 0) {
@@ -1544,7 +1545,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         //     }
         // }
 
-        if (selector.selector.retail_finance.length === 0) {
+        if (selector.retail_finance.length === 0) {
           scrollToPos(7);
           setOpenAccordian("7");
           showToast("Please select Retail Finance");
