@@ -29,7 +29,7 @@ const NoDataFound = () => {
     )
 }
 
-const taskNames = ["testdrive", "testdriveapproval", "homevisit", "enquiryfollowup", "preenquiryfollowup", "prebookingfollowup", "bookingfollowup"]
+const taskNames = ["testdrive", "testdriveapproval", "homevisit", "enquiryfollowup", "preenquiryfollowup", "prebookingfollowup", "bookingfollowup-dse"]
 
 
 
@@ -46,7 +46,7 @@ const ListComponent = ({ route, navigation }) => {
     const defaultData = [
         {
             taskCnt: 0,
-            taskName: "Proceed to Booking",
+            taskName: "Booking Follow Up - DSE",
             myTaskList: []
         },
         {
@@ -859,7 +859,7 @@ const ListComponent = ({ route, navigation }) => {
         } else if (taskName.includes('Booking')) {
             taskName = taskName.replace('Booking', 'Booking View');
         }
-        if (taskName.toLowerCase() === 'proceed to booking view') {
+        if (taskName.toLowerCase() === 'booking view follow up - dse') {
             taskName = 'Booking Followup'
         }
         return taskName
