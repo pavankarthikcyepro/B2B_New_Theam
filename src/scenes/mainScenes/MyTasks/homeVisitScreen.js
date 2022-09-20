@@ -26,7 +26,7 @@ import {
   getCurrentTasksListApi,
   getPendingTasksListApi,
 } from "../../../redux/mytaskReducer";
-import { isValidateAlphabetics, convertDateStringToMillisecondsUsingMoment } from "../../../utils/helperFunctions";
+import { convertDateStringToMillisecondsUsingMoment, isValidateAlphaNumericSpecial } from "../../../utils/helperFunctions";
 import { DateSelectItem, RadioTextItem } from "../../../pureComponents";
 import {
   CodeField,
@@ -94,10 +94,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
     value: otpValue,
     setValue: setOtpValue,
   });
-  const [reasonList, setReasonList] = useState([{
-    label: 'Other',
-    value: 'Other'
-  }]);
+  const [reasonList, setReasonList] = useState([]);
   const [currentLocation, setCurrentLocation] = useState(null);
   const [otherReason, setOtherReason] = useState('');
   const [defaultReasonIndex, setDefaultReasonIndex] = useState(null);
@@ -140,8 +137,8 @@ const HomeVisitScreen = ({ route, navigation }) => {
         setDefaultReasonIndex(reasonList[findIndex].value)
       }
       else {
-        dispatch(setHomeVisitDetails({ key: "REASON", text: 'Other' }));
-        setDefaultReasonIndex('Other')
+        dispatch(setHomeVisitDetails({ key: "REASON", text: 'Others' }));
+        setDefaultReasonIndex('Others')
         setOtherReason(reason)
       }
     }
@@ -269,7 +266,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (selector.reason === 'Other' && otherReason.length === 0) {
+    if (selector.reason === 'Others' && otherReason.length === 0) {
       showToast("Please Enter Other Reason");
       return;
     }
@@ -299,7 +296,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
     }
 
     const newTaskObj = { ...selector.task_details_response };
-    newTaskObj.reason = selector.reason === 'Other' ? otherReason : selector.reason;
+    newTaskObj.reason = selector.reason === 'Others' ? otherReason : selector.reason;
     newTaskObj.customerRemarks = selector.customer_remarks;
     newTaskObj.employeeRemarks = selector.employee_remarks;
     newTaskObj.lat = currentLocation ? currentLocation.lat.toString() : null;
@@ -472,7 +469,7 @@ const HomeVisitScreen = ({ route, navigation }) => {
               />
               <Text style={[GlobalStyle.underline, { backgroundColor: isSubmitPress && selector.reason === '' ? 'red' : 'rgba(208, 212, 214, 0.7)' }]}></Text>
             </View>
-            {selector.reason === 'Other' &&
+            {selector.reason === 'Others' &&
               <TextinputComp
                 style={styles.textInputStyle}
                 label={"Other reason"}
