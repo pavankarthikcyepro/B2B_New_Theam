@@ -27,7 +27,7 @@ import {
   getReasonList
 } from "../../../redux/enquiryFollowUpReducer";
 import { DateSelectItem } from "../../../pureComponents";
-import { convertDateStringToMillisecondsUsingMoment, GetCarModelList, isValidateAlphaNumericSpecial } from "../../../utils/helperFunctions";
+import { convertDateStringToMillisecondsUsingMoment, GetCarModelList } from "../../../utils/helperFunctions";
 import moment from "moment";
 import {
   showToast,
@@ -328,26 +328,13 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       showToast("Please Enter Other Reason");
       return;
     }
-    if (selector.customer_remarks === 0) {
+    if (selector.customer_remarks.trim().length === 0) {
       showToast("Please enter customer remarks");
       return;
     }
-    if (!isValidateAlphaNumericSpecial(selector.customer_remarks)) {
-      showToast(
-        "Please enter alphanumerical/special characters only in customer remarks"
-      );
-      return;
-    }
 
-    if (selector.employee_remarks.length === 0) {
+    if (selector.employee_remarks.trim().length === 0) {
       showToast("Please enter employee remarks");
-      return;
-    }
-
-    if (!isValidateAlphaNumericSpecial(selector.employee_remarks)) {
-      showToast(
-        "Please enter alphanumerical/special characters only in employee remarks"
-      );
       return;
     }
 
