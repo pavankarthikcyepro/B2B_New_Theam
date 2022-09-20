@@ -692,7 +692,7 @@ export const ModelListitemCom = ({
         ></Text>
         <TextinputComp
           style={{ height: 65, width: "100%" }}
-          label={"Fuel Type"}
+          label={"Fuel Type*"}
           editable={false}
           value={carFuelType}
         />
@@ -700,7 +700,7 @@ export const ModelListitemCom = ({
 
         <TextinputComp
           style={{ height: 65, width: "100%" }}
-          label={"Transmission Type"}
+          label={"Transmission Type*"}
           editable={false}
           value={carTransmissionType}
         />

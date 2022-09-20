@@ -105,23 +105,23 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         }
 
         const payload = {
-            dmsLeadDropInfo: {
-                additionalRemarks: dropRemarks,
-                branchId: Number(branchId),
-                brandName: dropBrandName,
-                dealerName: dropDealerName,
-                leadId: leadId,
-                crmUniversalId: itemData.universalId,
-                lostReason: dropReason,
-                lostSubReason: dropSubReason,
-                organizationId: userData.orgId,
-                otherReason: "",
-                droppedBy: userData.employeeId,
-                location: dropLocation,
-                model: dropModel,
-                stage: "CONTACT",
-                status: "PREENQUIRY",
-            },
+          dmsLeadDropInfo: {
+            additionalRemarks: dropRemarks,
+            branchId: Number(branchId),
+            brandName: dropBrandName,
+            dealerName: dropDealerName,
+            leadId: leadId,
+            crmUniversalId: itemData.universalId,
+            lostReason: dropReason,
+            lostSubReason: dropSubReason,
+            organizationId: userData.orgId,
+            otherReason: "",
+            droppedBy: userData.employeeId,
+            location: dropLocation,
+            model: dropModel,
+            stage: "CONTACT",
+            status: "PREENQUIRY",
+          },
         };
         DropPreEnquiryLead(payload, enquiryDetailsObj)
     };
@@ -359,20 +359,22 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     }
 
     const updateRefNumber = async () => {
-        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        if (employeeData) {
-            const jsonObj = JSON.parse(employeeData);
-            const payload = {
-                "branchid": Number(branchId),
-                "leadstage": "ENQUIRY",
-                "orgid": jsonObj.orgId,
-                "universalId": itemData.universalId
-            }
-            console.log("PAYLOAD LEAD REF:", payload);
-            customerLeadReference(payload)
-        }
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        const payload = {
+          branchid: Number(branchId),
+          leadstage: "ENQUIRY",
+          orgid: jsonObj.orgId,
+          universalId: itemData.universalId,
+        };
+        console.log("PAYLOAD LEAD REF:", payload);
+        customerLeadReference(payload);
+      }
 
-        goToParentScreen();
+      goToEnquiry();
     }
     const updateEnquiryDetailsCreateEnquiry = (leadRefIdForEnq) => {
         //SarathKumarUppuluri
@@ -448,10 +450,16 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
             })
     }
 
+    const goToEnquiry = () => {
+        getPreEnquiryListFromServer();
+        navigation.navigate(EmsTopTabNavigatorIdentifiers.enquiry);
+        dispatch(clearState());
+    }
+
     const goToParentScreen = () => {
         getPreEnquiryListFromServer();
         // navigation.navigate(EmsTopTabNavigatorIdentifiers.enquiry);
-     navigation.popToTop();
+        navigation.popToTop();
         dispatch(clearState());
     }
 

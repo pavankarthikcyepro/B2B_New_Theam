@@ -2107,7 +2107,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 ]}
                             >
                                 <DropDownSelectionItem
-                                    label={"Salutation"}
+                                    label={"Salutation*"}
                                     value={selector.salutation}
                                     disabled={true}
                                     onPress={() =>
@@ -2169,7 +2169,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 />
                                 <Text style={GlobalStyle.underline}></Text>
                                 <DropDownSelectionItem
-                                    label={"Enquiry Segment"}
+                                    label={"Enquiry Segment*"}
                                     value={selector.enquiry_segment}
                                     disabled={true}
                                     onPress={() =>
@@ -2180,7 +2180,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                     }
                                 />
                                 <DropDownSelectionItem
-                                    label={"Customer Type"}
+                                    label={"Customer Type*"}
                                     value={selector.customer_type}
                                     disabled={true}
                                     onPress={() =>
@@ -2628,19 +2628,19 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 ]}
                             >
                                 <DropDownSelectionItem
-                                    label={"Model"}
+                                    label={"Model*"}
                                     value={selector.model}
                                     disabled={true}
                                     onPress={() => showDropDownModelMethod("MODEL", "Model")}
                                 />
                                 <DropDownSelectionItem
-                                    label={"Varient"}
+                                    label={"Varient*"}
                                     value={selector.varient}
                                     disabled={true}
                                     onPress={() => showDropDownModelMethod("VARIENT", "Varient")}
                                 />
                                 <DropDownSelectionItem
-                                    label={"Color"}
+                                    label={"Color*"}
                                     value={selector.color}
                                     disabled={true}
                                     onPress={() => showDropDownModelMethod("COLOR", "Color")}
@@ -2648,7 +2648,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 <TextinputComp
                                     style={{ height: 65, width: "100%" }}
                                     value={selector.fuel_type}
-                                    label={"Fuel Type"}
+                                    label={"Fuel Type*"}
                                     disabled={true}
                                     editable={false}
                                 />
@@ -2656,7 +2656,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 <TextinputComp
                                     style={{ height: 65, width: "100%" }}
                                     value={selector.transmission_type}
-                                    label={"Transmission Type"}
+                                    label={"Transmission Type*"}
                                     disabled={true}
                                     editable={false}
                                 />
@@ -2769,7 +2769,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         <Text style={GlobalStyle.underline}></Text>
                                         <View style={styles.select_image_bck_vw}>
                                             <ImageSelectItem
-                                                name={"Upload Adhar"}
+                                                name={"Upload Aadhaar"}
                                                 disabled={true}
                                                 onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
                                             />
@@ -3068,7 +3068,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 ]}
                             >
                                 <TextAndAmountComp
-                                    title={"Ex-Showroom Price:"}
+                                    title={"Ex-Showroom Price*:"}
                                     amount={priceInfomationData.ex_showroom_price.toFixed(2)}
                                 />
                                 <View style={styles.radioGroupBcVw}>
@@ -3131,7 +3131,7 @@ const BookingFormScreen = ({ route, navigation }) => {
 
                                 <View style={styles.textAndAmountView}>
                                     {/* <View style={{width: '60%', flexDirection: 'row'}}> */}
-                                    <Text style={[styles.leftLabel]}>{"Life Tax:"}</Text>
+                                    <Text style={[styles.leftLabel]}>{"Life Tax*:"}</Text>
                                     {/* </View> */}
                                     <View style={{
                                         // width: 80, height: 30,
@@ -3593,7 +3593,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 ]}
                             >
                                 <DropDownSelectionItem
-                                    label={"Retail Finance"}
+                                    label={"Retail Finance*"}
                                     disabled={true}
                                     value={selector.retail_finance}
                                     onPress={() =>
@@ -3912,7 +3912,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 />
                                 <TextinputComp
                                     style={{ height: 65, width: "100%" }}
-                                    label={"Occasion*"}
+                                    label={"Occasion"}
                                     disabled={true}
                                     value={selector.occasion}
                                     maxLength={50}
@@ -3933,7 +3933,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 />
                                 <TextinputComp
                                     style={{ height: 65, width: "100%" }}
-                                    label={"Delivery Location*"}
+                                    label={"Delivery Location"}
                                     disabled={true}
                                     maxLength={50}
                                     value={selector.delivery_location}

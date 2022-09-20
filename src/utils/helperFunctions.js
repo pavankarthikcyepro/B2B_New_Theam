@@ -49,6 +49,14 @@ export const isValidateAlphabetics = (text) => {
   return false;
 };
 
+export const isValidateAlphaNumericSpecial = (text) => {
+  const regex = /^[ a-zA-Z0-9!@#$&()`.+,/"-]*$/;
+  if (regex.test(text)) {
+    return true;
+  }
+  return false;
+};
+
 export const isValidateAplhaNumeric = (text) => {
   // const regex = /^[a-zA-Z]+$/;/^[A-Za-z0-9]+$/
   const regex = /^[A-Za-z0-9]+$/;
