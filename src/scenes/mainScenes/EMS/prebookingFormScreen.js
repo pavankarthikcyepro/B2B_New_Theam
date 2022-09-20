@@ -4036,13 +4036,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           );
                         }}
                       />
-                      <Text style={GlobalStyle.underline}></Text>
-                      <View style={styles.select_image_bck_vw}>
-                        <ImageSelectItem  disabled={userData.isManager? true:false}
-                          name={"PAN"}
-                          onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
-                        />
-                      </View>
                       <Text
                         style={[
                           GlobalStyle.underline,
@@ -4054,6 +4047,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           },
                         ]}
                       ></Text>
+                      <Text style={GlobalStyle.underline}></Text>
+                      <View style={styles.select_image_bck_vw}>
+                        <ImageSelectItem  disabled={userData.isManager? true:false}
+                          name={"PAN"}
+                          onPress={() => dispatch(setImagePicker("UPLOAD_PAN"))}
+                        />
+                      </View>
                       {uploadedImagesDataObj.pan?.fileName ? (
                         <View style={{ flexDirection: "row" }}>
                           <TouchableOpacity  disabled={userData.isManager? true:false}
