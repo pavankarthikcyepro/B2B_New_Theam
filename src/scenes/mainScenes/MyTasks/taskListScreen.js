@@ -89,6 +89,10 @@ const TaskListScreen = ({ route, navigation }) => {
                 navigationId = AppNavigator.MyTasksStackIdentifiers.enquiryFollowUp;
                 taskNameNew = 'Booking approval task'
                 break;
+            case "bookingfollowup-dse":
+                navigationId = AppNavigator.EmsStackIdentifiers.bookingFollowUp;
+                taskNameNew = "Booking Followup -DSE";
+                break;
             case "createenquiry":
                 navigationId = AppNavigator.MyTasksStackIdentifiers.createEnquiry;
                 taskNameNew = ''
