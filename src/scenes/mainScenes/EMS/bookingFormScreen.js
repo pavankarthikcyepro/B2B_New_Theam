@@ -3903,7 +3903,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 ]}
                             >
                                 <DateSelectItem
-                                    label={"Customer Preferred Date*"}
+                                    label={"Customer Preferred Date"}
                                     disabled={true}
                                     value={selector.customer_preferred_date}
                                     onPress={() =>
@@ -3924,7 +3924,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 />
                                 <Text style={GlobalStyle.underline}></Text>
                                 <DateSelectItem
-                                    label={"Tentative Delivery Date*"}
+                                    label={"Tentative Delivery Date"}
                                     disabled={true}
                                     value={selector.tentative_delivery_date}
                                     onPress={() =>

@@ -1088,13 +1088,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
     
-    if (!isValidateAlphabetics(selector.streetName)) {
-      scrollToPos(3);
-      setOpenAccordian("3");
-      showToast("Please enter alphabetics only in street name");
-      return;
-    }
-    
     if (selector.enquiry_segment.length == 0) {
       scrollToPos(2);
       setOpenAccordian("1");
@@ -1115,15 +1108,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("Please fill  Buyer type");
       return;
     }
-    
-    if (selector.designation.length != 0 && !isValidateAlphabetics(selector.designation)) {
-      scrollToPos(2);
-      setOpenAccordian("1");
-      showToast("Please enter alphabetics only in designation");
-      return;
-    }
 
-    if (selector.streetName.trim().length != 0) {
+    if (selector.streetName.trim().length == 0) {
       scrollToPos(3);
       setOpenAccordian("3");
       showToast(
@@ -3252,17 +3238,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     )
                   }
                 />
-                <Text
-                  style={[
-                    GlobalStyle.underline,
-                    {
-                      backgroundColor:
-                        isSubmitPress && selector.designation === ""
-                          ? "red"
-                          : "rgba(208, 212, 214, 0.7)",
-                    },
-                  ]}
-                ></Text>
+                <Text style={GlobalStyle.underline} />
 
                 <DropDownSelectionItem
                   label={"Enquiry Segment*"}
@@ -3318,7 +3294,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.source_of_enquiry}
-                  label={"Source Of Enquiry"}
+                  label={"Source Of Enquiry*"}
                   editable={false}
                 />
                 <Text style={GlobalStyle.underline}></Text>
