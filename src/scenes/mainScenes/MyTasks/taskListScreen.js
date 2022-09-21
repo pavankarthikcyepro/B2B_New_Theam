@@ -21,16 +21,17 @@ import * as AsyncStorage from "../../../asyncStore";
 import { EmptyListView } from "../../../pureComponents";
 
 const mytasksIdentifires = {
-    testdrive: "TEST_DRIVE",
-    testdriveapproval: "TEST_DRIVE_APPROVAL",
-    proceedtobooking: "PROCEED_TO_BOOKING",
-    proceedtoprebooking: "PROCEED_TO_PRE_BOOKING",
-    prebookingfollowup: "PRE_BOOKING_FOLLOW_UP",
-    homevisit: "HOME_VISIT",
-    enquiryfollowup: "ENQUIRY_FOLLOW_UP",
-    preenquiryfollowup: "PRE_ENQUIRY_FOLLOW_UP",
-    createenquiry: "CREATE_ENQUIRY"
-}
+  testdrive: "TEST_DRIVE",
+  testdriveapproval: "TEST_DRIVE_APPROVAL",
+  proceedtobooking: "PROCEED_TO_BOOKING",
+  proceedtoprebooking: "PROCEED_TO_PRE_BOOKING",
+  prebookingfollowup: "PRE_BOOKING_FOLLOW_UP",
+  homevisit: "HOME_VISIT",
+  enquiryfollowup: "ENQUIRY_FOLLOW_UP",
+  preenquiryfollowup: "PRE_ENQUIRY_FOLLOW_UP",
+  createenquiry: "CREATE_ENQUIRY",
+  "bookingfollowup-dse": "BOOKING_FOLLOW_UP",
+};
 
 const TaskListScreen = ({ route, navigation }) => {
     const dispatch = useDispatch();
@@ -90,7 +91,7 @@ const TaskListScreen = ({ route, navigation }) => {
                 taskNameNew = 'Booking approval task'
                 break;
             case "bookingfollowup-dse":
-                navigationId = AppNavigator.EmsStackIdentifiers.bookingFollowUp;
+                navigationId = AppNavigator.MyTasksStackIdentifiers.bookingFollowUp;
                 taskNameNew = "Booking Followup -DSE";
                 break;
             case "createenquiry":
