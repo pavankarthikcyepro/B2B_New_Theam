@@ -1142,11 +1142,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (selector.p_streetName.trim().length != 0) {
+    if (selector.p_streetName.trim().length == 0) {
       scrollToPos(14);
       setOpenAccordian("3");
       showToast(
-        "Please enter alphanumerical/special characters only in Permanent street name"
+        "Please enter Permanent street name"
       );
       return;
     }
