@@ -1142,15 +1142,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (selector.p_streetName.trim().length == 0) {
-      scrollToPos(14);
-      setOpenAccordian("3");
-      showToast(
-        "Please enter Permanent street name"
-      );
-      return;
-    }
-
     if (selector.p_urban_or_rural.length == 0) {
       scrollToPos(14);
       setOpenAccordian("3");
