@@ -1109,15 +1109,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (selector.streetName.trim().length == 0) {
-      scrollToPos(3);
-      setOpenAccordian("3");
-      showToast(
-        "Please enter street name"
-      );
-      return;
-    }
-
     // if (
     //   selector.p_pincode.length == 0 ||
     //   selector.p_urban_or_rural.length == 0 ||
@@ -3019,17 +3010,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     showDropDownModelMethod("SALUTATION", "Select Salutation")
                   }
                 />
-                <Text
-                  style={[
-                    GlobalStyle.underline,
-                    {
-                      backgroundColor:
-                        isSubmitPress && selector.salutation === ""
-                          ? "red"
-                          : "rgba(208, 212, 214, 0.7)",
-                    },
-                  ]}
-                ></Text>
+                <Text style={GlobalStyle.underline} />
                 {selector.enquiry_segment.toLowerCase() == "personal" ? (
                   <DropDownSelectionItem
                     label={"Gender"}
@@ -3597,17 +3578,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     )
                   }
                 />
-                <Text
-                  style={[
-                    GlobalStyle.underline,
-                    {
-                      backgroundColor:
-                        isSubmitPress && selector.houseNum === ""
-                          ? "red"
-                          : "rgba(208, 212, 214, 0.7)",
-                    },
-                  ]}
-                ></Text>
+                <Text style={GlobalStyle.underline} />
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.streetName}
@@ -3624,17 +3595,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     )
                   }
                 />
-                <Text
-                  style={[
-                    GlobalStyle.underline,
-                    {
-                      backgroundColor:
-                        isSubmitPress && selector.streetName === ""
-                          ? "red"
-                          : "rgba(208, 212, 214, 0.7)",
-                    },
-                  ]}
-                ></Text>
+                <Text style={GlobalStyle.underline} />
                 {/* {selector.isAddressSet && ( */}
                 <>
                   <TextinputComp
@@ -3653,17 +3614,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.village === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
 
                   <TextinputComp
                     style={styles.textInputStyle}
@@ -3681,17 +3632,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.mandal === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
 
                   <TextinputComp
                     style={styles.textInputStyle}
@@ -3706,17 +3647,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.city === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.district}
@@ -3733,17 +3664,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.district === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.state}
@@ -3760,17 +3681,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.state === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
                 </>
                 {/* )} */}
                 <View
@@ -3927,17 +3838,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.p_houseNum === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
                   <TextinputComp
                     style={styles.textInputStyle}
                     label={"Street Name"}
@@ -3971,17 +3872,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.p_village === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.p_mandal}
@@ -4015,17 +3906,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.p_city === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.p_district}
@@ -4042,17 +3923,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.p_district === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.p_state}
@@ -4069,17 +3940,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.p_state === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
                 </View>
                 {/* ) : null} */}
               </List.Accordion>

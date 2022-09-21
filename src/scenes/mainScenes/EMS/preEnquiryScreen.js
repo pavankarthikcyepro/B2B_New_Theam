@@ -143,12 +143,22 @@ const PreEnquiryScreen = ({ navigation }) => {
             if (appSelector.searchKey !== ''){
                 let tempData = []
                 tempData = selector.pre_enquiry_list.filter((item) => {
-                    console.log('itemitemitemitem----->', item);
                     return (
-                        `${item.firstName} ${item.lastName}`
-                            .toLowerCase()
-                            .includes(appSelector.searchKey.toLowerCase()) ||
-                        item.phone.includes(appSelector.searchKey)
+                      `${item.firstName} ${item.lastName}`
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.phone
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.enquirySource
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.enquiryCategory
+                        ?.toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.model
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase())
                     );
                 })
                 setSearchedData([]);
