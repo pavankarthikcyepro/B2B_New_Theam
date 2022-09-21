@@ -165,14 +165,20 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
   );
 
   const getReasonListData = async (taskName) => {
+
     setLoading(true)
     const employeeData = await AsyncStorage.getData(AsyncStorage.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       let payload = {
         orgId: jsonObj.orgId,
-        taskName: taskName
-      }
+        taskName:
+          taskName == "Booking Followup -DSE"
+            ? "Booking Followup"
+            : taskName == "Booking approval task"
+            ? "PreBooking FollowUp"
+            : taskName,
+      };
       console.log('123421: ', payload)
       Promise.all([
         dispatch(getReasonList(payload))
