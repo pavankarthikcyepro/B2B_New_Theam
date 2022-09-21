@@ -120,7 +120,23 @@ const TaskListScreen = ({ route, navigation }) => {
                                     console.log(route.params.data[0]);
                                     let tempData = [];
                                     tempData = route.params.data.filter(item => {
-                                        return item.customerName.toLowerCase().includes(text.toLowerCase()) || item.salesExecutive.toLowerCase().includes(text.toLowerCase())
+                                        return (
+                                          item.customerName
+                                            .toLowerCase()
+                                            .includes(text.toLowerCase()) ||
+                                          item.phoneNo
+                                            .toLowerCase()
+                                            .includes(text.toLowerCase()) ||
+                                          item.model
+                                            .toLowerCase()
+                                            .includes(text.toLowerCase()) ||
+                                          item.sourceType
+                                            .toLowerCase()
+                                            .includes(text.toLowerCase()) ||
+                                          item.salesExecutive
+                                            .toLowerCase()
+                                            .includes(text.toLowerCase())
+                                        );
                                     })
                                     if(tempData.length > 0){
                                         setSearchedData([...tempData])
