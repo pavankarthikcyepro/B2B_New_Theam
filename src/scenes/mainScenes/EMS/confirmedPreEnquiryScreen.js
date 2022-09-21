@@ -28,6 +28,7 @@ import Geolocation from '@react-native-community/geolocation';
 const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
     const selector = useSelector(state => state.confirmedPreEnquiryReducer);
+    const homeSelector = useSelector(state => state.homeReducer);
     const dispatch = useDispatch();
     const { itemData, fromCreatePreEnquiry } = route.params;
     const [employeeId, setEmployeeId] = useState("");
@@ -372,10 +373,19 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         };
         console.log("PAYLOAD LEAD REF:", payload);
         customerLeadReference(payload);
+
+        if (
+          jsonObj.hrmsRole === "Reception" ||
+          jsonObj.hrmsRole === "Tele Caller"
+        ) {
+            goToParentScreen();
+            return;
+        }
       }
 
       goToEnquiry();
     }
+
     const updateEnquiryDetailsCreateEnquiry = (leadRefIdForEnq) => {
         //SarathKumarUppuluri
         let enquiryDetailsObj = { ...selector.pre_enquiry_details };
