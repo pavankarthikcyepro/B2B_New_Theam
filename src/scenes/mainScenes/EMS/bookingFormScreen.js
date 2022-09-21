@@ -2756,7 +2756,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                         <TextinputComp
                                             style={styles.textInputStyle}
                                             value={selector.adhaar_number}
-                                            label={"Aadhaar Number*"}
+                                            label={"Aadhaar Number"}
                                             disabled={true}
                                             keyboardType="number-pad"
                                             maxLength={12}
@@ -3870,7 +3870,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 />
 
                                 <DropDownSelectionItem
-                                    label={"Booking Payment Mode"}
+                                    label={"Booking Payment Mode*"}
                                     value={selector.booking_payment_mode}
                                     disabled={true}
                                     onPress={() =>

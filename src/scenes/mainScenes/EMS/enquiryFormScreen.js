@@ -3010,17 +3010,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     showDropDownModelMethod("SALUTATION", "Select Salutation")
                   }
                 />
-                <Text
-                  style={[
-                    GlobalStyle.underline,
-                    {
-                      backgroundColor:
-                        isSubmitPress && selector.salutation === ""
-                          ? "red"
-                          : "rgba(208, 212, 214, 0.7)",
-                    },
-                  ]}
-                ></Text>
+                <Text style={GlobalStyle.underline} />
                 {selector.enquiry_segment.toLowerCase() == "personal" ? (
                   <DropDownSelectionItem
                     label={"Gender"}
