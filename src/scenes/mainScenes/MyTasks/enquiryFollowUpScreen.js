@@ -173,9 +173,7 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       let payload = {
         orgId: jsonObj.orgId,
         taskName:
-          taskName == "Booking Followup -DSE"
-            ? "Booking Followup"
-            : taskName == "Booking approval task"
+          taskName == "Booking approval task"
             ? "PreBooking FollowUp"
             : taskName,
       };
