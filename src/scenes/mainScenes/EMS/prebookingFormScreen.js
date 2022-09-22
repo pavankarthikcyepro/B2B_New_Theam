@@ -4966,7 +4966,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <Text style={GlobalStyle.underline}></Text>
 
                   <TextAndAmountComp
-                    title={"TCS(>=10Lakhs -> 1%):"}
+                    title={"TCS(>=10Lakhs = 1%Tax):"}
                     amount={tcsAmount.toFixed(2)}
                   />
                   <Text style={GlobalStyle.underline}></Text>
