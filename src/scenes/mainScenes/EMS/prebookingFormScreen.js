@@ -5804,7 +5804,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         <Text style={GlobalStyle.underline}></Text>
                         <TextinputComp
                           style={styles.textInputStyle}
-                          value={selector.transfer_from_mobile}
+                          value={selector.transfer_from_mobile+""}
                           label={"Transfer From Mobile"}
                           keyboardType={"number-pad"}
                           maxLength={10}
@@ -5820,7 +5820,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         <Text style={GlobalStyle.underline}></Text>
                         <TextinputComp
                           style={styles.textInputStyle}
-                          value={selector.transfer_to_mobile}
+                          value={selector.transfer_to_mobile+""}
                           label={"Transfer To Mobile"}
                           keyboardType={"number-pad"}
                           maxLength={10}
