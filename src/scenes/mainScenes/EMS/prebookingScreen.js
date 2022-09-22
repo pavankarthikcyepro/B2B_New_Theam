@@ -79,13 +79,21 @@ const PreBookingScreen = ({ navigation }) => {
                 let tempData = []
                 tempData = selector.pre_booking_list.filter((item) => {
                     return (
-                        item.firstName
-                            .toLowerCase()
-                            .includes(appSelector.searchKey.toLowerCase()) ||
-                        item.lastName
-                            .toLowerCase()
-                            .includes(appSelector.searchKey.toLowerCase()) ||
-                        item.phone.includes(appSelector.searchKey)
+                      `${item.firstName} ${item.lastName}`
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.phone
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.enquirySource
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.enquiryCategory
+                        ?.toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase()) ||
+                      item.model
+                        .toLowerCase()
+                        .includes(appSelector.searchKey.toLowerCase())
                     );
                 })
                 setSearchedData([]);
@@ -371,7 +379,7 @@ const PreBookingScreen = ({ navigation }) => {
                                             type='PreBook'
                                             status={""}
                                             created={item.modifiedDate}
-                                            dmsLead={item.createdBy}
+                                            dmsLead={item.salesConsultant}
                                             phone={item.phone}
                                             source={item.enquirySource}
                                             model={item.model}

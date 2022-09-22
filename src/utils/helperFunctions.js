@@ -411,6 +411,9 @@ export const GetDropList = async ( orgId, token, type) => {
             const newObj = {...obj};
             if (newObj.status === "Active") {
               newObj.name = newObj.lostReason;
+              newObj.sublostreasons.forEach(subObj => {
+                subObj.name =  subObj.subReason
+              })
               updatedData.push(newObj)
             } 
           })

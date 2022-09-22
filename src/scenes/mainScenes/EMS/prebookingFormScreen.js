@@ -1349,6 +1349,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     };
 
     const checkModelSelection = () => {
+      console.log("carModelsList =====> ", carModelsList);
       let error = false;
       for (let i = 0; i < carModelsList.length; i++) {
         if (carModelsList[i].model.length == 0) {
@@ -1500,22 +1501,20 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         //   return;
         // }
 
-        // if (selector.form_or_pan === "PAN") {
-        //     if (selector.pan_number.length == 0) {
-        //         scrollToPos(4)
-        //         setOpenAccordian("4")
-        //         showToast("please enter pan card number");
-        //         return;
-        //     }
-        // }
-
-        if (selector.enquiry_segment.toLowerCase() === "personal") {
-            if (selector.adhaar_number.length == 0) {
+        if (selector.form_or_pan === "PAN") {
+            if (selector.pan_number.length == 0) {
                 scrollToPos(4)
                 setOpenAccordian("4")
-                showToast("please enter aadhar number");
+                showToast("please enter PAN Number");
                 return;
             }
+        }
+        
+        if (taxPercent === "") {
+            scrollToPos(5);
+            setOpenAccordian("5");
+            showToast("please enter Life Tax");
+            return;
         }
 
         if ((selector.enquiry_segment.toLowerCase() === "company" && selector.customer_type.toLowerCase() === "institution") && (selector.customer_type_category == "B2B" ||
@@ -1545,6 +1544,13 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         //     }
         // }
 
+        if (selector.retail_finance.length === 0) {
+          scrollToPos(7);
+          setOpenAccordian("7");
+          showToast("Please select Retail Finance");
+          return;
+        }
+
         const bookingAmount = parseInt(selector.booking_amount);
         if (bookingAmount < 5000) {
             scrollToPos(8)
@@ -1554,26 +1560,11 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         }
 
         if (
-            selector.payment_at.length === 0 ||
             selector.booking_payment_mode.length === 0
         ) {
             scrollToPos(8)
             setOpenAccordian('8')
-            showToast("Please enter booking details");
-            return;
-        }
-
-        if (
-            selector.customer_preferred_date.length === 0 ||
-            selector.tentative_delivery_date.length === 0
-        ) {
-          console.log(
-            "Function Preferred-=-=>>>",
-            selector.customer_preferred_date
-          );
-            showToast("Please enter DOD details");
-            scrollToPos(9)
-            setOpenAccordian('9')
+            showToast("Please enter Booking Payment Mode");
             return;
         }
 
@@ -1705,47 +1696,53 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     return item.documentType === "pan";
                 })) {
                     tempAttachments.push({
-                        branchId: jsonObj.branchs[0]?.branchId,
-                        contentSize: 0,
-                        createdBy: new Date().getSeconds(),
-                        description: "",
-                        documentNumber: selector.pan_number,
-                        documentPath:
-                            dmsLeadDto.dmsAttachments.length > 0
-                                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "pan";
-                                })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "pan";
-                                })[0]?.documentPath : '')
-                                : "",
-                        documentType: "pan",
-                        documentVersion: 0,
-                        fileName:
-                            dmsLeadDto.dmsAttachments.length > 0
-                                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "pan";
-                                })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "pan";
-                                })[0]?.fileName : '')
-                                : "",
-                        gstNumber: "",
-                        id: 0,
-                        isActive: 0,
-                        isPrivate: 0,
-                        keyName:
-                            dmsLeadDto.dmsAttachments.length > 0
-                                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "pan";
-                                })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "pan";
-                                })[0]?.keyName : '')
-                                : "",
-                        modifiedBy: jsonObj.empName,
-                        orgId: jsonObj.orgId,
-                        ownerId: "",
-                        ownerName: jsonObj.empName,
-                        parentId: "",
-                        tinNumber: "",
+                      branchId: jsonObj.branchs[0]?.branchId,
+                      contentSize: 0,
+                      createdBy: new Date().getSeconds(),
+                      description: "",
+                      documentNumber: selector.pan_number,
+                      documentPath:
+                        dmsLeadDto.dmsAttachments.length > 0
+                          ? dmsLeadDto.dmsAttachments.filter((item) => {
+                              return item.documentType === "pan";
+                            })[0]?.documentPath
+                            ? dmsLeadDto.dmsAttachments.filter((item) => {
+                                return item.documentType === "pan";
+                              })[0]?.documentPath
+                            : ""
+                          : "",
+                      documentType: "pan",
+                      documentVersion: 0,
+                      fileName:
+                        dmsLeadDto.dmsAttachments.length > 0
+                          ? dmsLeadDto.dmsAttachments.filter((item) => {
+                              return item.documentType === "pan";
+                            })[0]?.fileName
+                            ? dmsLeadDto.dmsAttachments.filter((item) => {
+                                return item.documentType === "pan";
+                              })[0]?.fileName
+                            : ""
+                          : "",
+                      gstNumber: selector.gstin_number,
+                      id: 0,
+                      isActive: 0,
+                      isPrivate: 0,
+                      keyName:
+                        dmsLeadDto.dmsAttachments.length > 0
+                          ? dmsLeadDto.dmsAttachments.filter((item) => {
+                              return item.documentType === "pan";
+                            })[0]?.keyName
+                            ? dmsLeadDto.dmsAttachments.filter((item) => {
+                                return item.documentType === "pan";
+                              })[0]?.keyName
+                            : ""
+                          : "",
+                      modifiedBy: jsonObj.empName,
+                      orgId: jsonObj.orgId,
+                      ownerId: "",
+                      ownerName: jsonObj.empName,
+                      parentId: "",
+                      tinNumber: "",
                     });
                 }
 
@@ -1754,47 +1751,53 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 }))
                 {
                     tempAttachments.push({
-                        branchId: jsonObj.branchs[0]?.branchId,
-                        contentSize: 0,
-                        createdBy: new Date().getSeconds(),
-                        description: "",
-                        documentNumber: selector.pan_number,
-                        documentPath:
-                            dmsLeadDto.dmsAttachments.length > 0
-                                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "Form60";
-                                })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "Form60";
-                                })[0]?.documentPath : '')
-                                : "",
-                        documentType: "pan",
-                        documentVersion: 0,
-                        fileName:
-                            dmsLeadDto.dmsAttachments.length > 0
-                                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "Form60";
-                                })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "Form60";
-                                })[0]?.fileName : '')
-                                : "",
-                        gstNumber: "",
-                        id: 0,
-                        isActive: 0,
-                        isPrivate: 0,
-                        keyName:
-                            dmsLeadDto.dmsAttachments.length > 0
-                                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "Form60";
-                                })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "Form60";
-                                })[0]?.keyName : '')
-                                : "",
-                        modifiedBy: jsonObj.empName,
-                        orgId: jsonObj.orgId,
-                        ownerId: "",
-                        ownerName: jsonObj.empName,
-                        parentId: "",
-                        tinNumber: "",
+                      branchId: jsonObj.branchs[0]?.branchId,
+                      contentSize: 0,
+                      createdBy: new Date().getSeconds(),
+                      description: "",
+                      documentNumber: selector.pan_number,
+                      documentPath:
+                        dmsLeadDto.dmsAttachments.length > 0
+                          ? dmsLeadDto.dmsAttachments.filter((item) => {
+                              return item.documentType === "Form60";
+                            })[0]?.documentPath
+                            ? dmsLeadDto.dmsAttachments.filter((item) => {
+                                return item.documentType === "Form60";
+                              })[0]?.documentPath
+                            : ""
+                          : "",
+                      documentType: "pan",
+                      documentVersion: 0,
+                      fileName:
+                        dmsLeadDto.dmsAttachments.length > 0
+                          ? dmsLeadDto.dmsAttachments.filter((item) => {
+                              return item.documentType === "Form60";
+                            })[0]?.fileName
+                            ? dmsLeadDto.dmsAttachments.filter((item) => {
+                                return item.documentType === "Form60";
+                              })[0]?.fileName
+                            : ""
+                          : "",
+                      gstNumber: selector.gstin_number,
+                      id: 0,
+                      isActive: 0,
+                      isPrivate: 0,
+                      keyName:
+                        dmsLeadDto.dmsAttachments.length > 0
+                          ? dmsLeadDto.dmsAttachments.filter((item) => {
+                              return item.documentType === "Form60";
+                            })[0]?.keyName
+                            ? dmsLeadDto.dmsAttachments.filter((item) => {
+                                return item.documentType === "Form60";
+                              })[0]?.keyName
+                            : ""
+                          : "",
+                      modifiedBy: jsonObj.empName,
+                      orgId: jsonObj.orgId,
+                      ownerId: "",
+                      ownerName: jsonObj.empName,
+                      parentId: "",
+                      tinNumber: "",
                     });
                 }
 
@@ -1803,120 +1806,132 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     return item.documentType === "aadhar";
                 })) {
                     tempAttachments.push({
-                        branchId: jsonObj.branchs[0]?.branchId,
-                        contentSize: 0,
-                        createdBy: new Date().getSeconds(),
-                        description: "",
-                        documentNumber: selector.adhaar_number,
-                        documentPath:
-                            dmsLeadDto.dmsAttachments.length > 0
-                                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "aadhar";
-                                })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "aadhar";
-                                })[0]?.documentPath : '')
-                                : "",
-                        documentType: "aadhar",
-                        documentVersion: 0,
-                        fileName:
-                            dmsLeadDto.dmsAttachments.length > 0
-                                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "aadhar";
-                                })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "aadhar";
-                                })[0]?.fileName : '')
-                                : "",
-                        gstNumber: "",
-                        id: 0,
-                        isActive: 0,
-                        isPrivate: 0,
-                        keyName:
-                            dmsLeadDto.dmsAttachments.length > 0
-                                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "aadhar";
-                                })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "aadhar";
-                                })[0]?.keyName : '')
-                                : "",
-                        modifiedBy: jsonObj.empName,
-                        orgId: jsonObj.orgId,
-                        ownerId: "",
-                        ownerName: jsonObj.empName,
-                        parentId: "",
-                        tinNumber: "",
+                      branchId: jsonObj.branchs[0]?.branchId,
+                      contentSize: 0,
+                      createdBy: new Date().getSeconds(),
+                      description: "",
+                      documentNumber: selector.adhaar_number,
+                      documentPath:
+                        dmsLeadDto.dmsAttachments.length > 0
+                          ? dmsLeadDto.dmsAttachments.filter((item) => {
+                              return item.documentType === "aadhar";
+                            })[0]?.documentPath
+                            ? dmsLeadDto.dmsAttachments.filter((item) => {
+                                return item.documentType === "aadhar";
+                              })[0]?.documentPath
+                            : ""
+                          : "",
+                      documentType: "aadhar",
+                      documentVersion: 0,
+                      fileName:
+                        dmsLeadDto.dmsAttachments.length > 0
+                          ? dmsLeadDto.dmsAttachments.filter((item) => {
+                              return item.documentType === "aadhar";
+                            })[0]?.fileName
+                            ? dmsLeadDto.dmsAttachments.filter((item) => {
+                                return item.documentType === "aadhar";
+                              })[0]?.fileName
+                            : ""
+                          : "",
+                      gstNumber: selector.gstin_number,
+                      id: 0,
+                      isActive: 0,
+                      isPrivate: 0,
+                      keyName:
+                        dmsLeadDto.dmsAttachments.length > 0
+                          ? dmsLeadDto.dmsAttachments.filter((item) => {
+                              return item.documentType === "aadhar";
+                            })[0]?.keyName
+                            ? dmsLeadDto.dmsAttachments.filter((item) => {
+                                return item.documentType === "aadhar";
+                              })[0]?.keyName
+                            : ""
+                          : "",
+                      modifiedBy: jsonObj.empName,
+                      orgId: jsonObj.orgId,
+                      ownerId: "",
+                      ownerName: jsonObj.empName,
+                      parentId: "",
+                      tinNumber: "",
                     });
                 }
                 if (selector.employee_id || dmsLeadDto.dmsAttachments.filter((item) => {
                     return item.documentType === "employeeId";
                 })) {
                     tempAttachments.push({
-                        branchId: jsonObj.branchs[0]?.branchId,
-                        contentSize: 0,
-                        createdBy: new Date().getSeconds(),
-                        description: "",
-                        documentNumber: selector.employee_id,
-                        documentPath:
-                            dmsLeadDto.dmsAttachments.length > 0
-                                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "employeeId";
-                                })[0]?.documentPath ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "employeeId";
-                                })[0]?.documentPath : '')
-                                : "",
-                        documentType: "employeeId",
-                        documentVersion: 0,
-                        fileName:
-                            dmsLeadDto.dmsAttachments.length > 0
-                                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "employeeId";
-                                })[0]?.fileName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "employeeId";
-                                })[0]?.fileName : '')
-                                : "",
-                        gstNumber: "",
-                        id: 0,
-                        isActive: 0,
-                        isPrivate: 0,
-                        keyName:
-                            dmsLeadDto.dmsAttachments.length > 0
-                                ? (dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "employeeId";
-                                })[0]?.keyName ? dmsLeadDto.dmsAttachments.filter((item) => {
-                                    return item.documentType === "employeeId";
-                                })[0]?.keyName : '')
-                                : "",
-                        modifiedBy: jsonObj.empName,
-                        orgId: jsonObj.orgId,
-                        ownerId: "",
-                        ownerName: jsonObj.empName,
-                        parentId: "",
-                        tinNumber: "",
+                      branchId: jsonObj.branchs[0]?.branchId,
+                      contentSize: 0,
+                      createdBy: new Date().getSeconds(),
+                      description: "",
+                      documentNumber: selector.employee_id,
+                      documentPath:
+                        dmsLeadDto.dmsAttachments.length > 0
+                          ? dmsLeadDto.dmsAttachments.filter((item) => {
+                              return item.documentType === "employeeId";
+                            })[0]?.documentPath
+                            ? dmsLeadDto.dmsAttachments.filter((item) => {
+                                return item.documentType === "employeeId";
+                              })[0]?.documentPath
+                            : ""
+                          : "",
+                      documentType: "employeeId",
+                      documentVersion: 0,
+                      fileName:
+                        dmsLeadDto.dmsAttachments.length > 0
+                          ? dmsLeadDto.dmsAttachments.filter((item) => {
+                              return item.documentType === "employeeId";
+                            })[0]?.fileName
+                            ? dmsLeadDto.dmsAttachments.filter((item) => {
+                                return item.documentType === "employeeId";
+                              })[0]?.fileName
+                            : ""
+                          : "",
+                      gstNumber: selector.gstin_number,
+                      id: 0,
+                      isActive: 0,
+                      isPrivate: 0,
+                      keyName:
+                        dmsLeadDto.dmsAttachments.length > 0
+                          ? dmsLeadDto.dmsAttachments.filter((item) => {
+                              return item.documentType === "employeeId";
+                            })[0]?.keyName
+                            ? dmsLeadDto.dmsAttachments.filter((item) => {
+                                return item.documentType === "employeeId";
+                              })[0]?.keyName
+                            : ""
+                          : "",
+                      modifiedBy: jsonObj.empName,
+                      orgId: jsonObj.orgId,
+                      ownerId: "",
+                      ownerName: jsonObj.empName,
+                      parentId: "",
+                      tinNumber: "",
                     });
                 }
                 if (Object.keys(uploadedImagesDataObj).length > 0) {
                     let tempImages = Object.entries(uploadedImagesDataObj).map((e) => ({ name: e[0], value: e[1] }));
                     for (let i = 0; i < tempImages.length; i++) {
                         tempAttachments.push({
-                            branchId: jsonObj.branchs[0]?.branchId,
-                            contentSize: 0,
-                            createdBy: new Date().getSeconds(),
-                            description: "",
-                            documentNumber: '',
-                            documentPath: tempImages[i].value.documentPath,
-                            documentType: tempImages[i].name,
-                            documentVersion: 0,
-                            fileName: tempImages[i].value.fileName,
-                            gstNumber: "",
-                            id: 0,
-                            isActive: 0,
-                            isPrivate: 0,
-                            keyName: tempImages[i].value.keyName,
-                            modifiedBy: jsonObj.empName,
-                            orgId: jsonObj.orgId,
-                            ownerId: "",
-                            ownerName: jsonObj.empName,
-                            parentId: "",
-                            tinNumber: "",
+                          branchId: jsonObj.branchs[0]?.branchId,
+                          contentSize: 0,
+                          createdBy: new Date().getSeconds(),
+                          description: "",
+                          documentNumber: "",
+                          documentPath: tempImages[i].value.documentPath,
+                          documentType: tempImages[i].name,
+                          documentVersion: 0,
+                          fileName: tempImages[i].value.fileName,
+                          gstNumber: selector.gstin_number,
+                          id: 0,
+                          isActive: 0,
+                          isPrivate: 0,
+                          keyName: tempImages[i].value.keyName,
+                          modifiedBy: jsonObj.empName,
+                          orgId: jsonObj.orgId,
+                          ownerId: "",
+                          ownerName: jsonObj.empName,
+                          parentId: "",
+                          tinNumber: "",
                         });
 
                         if (i === tempImages.length - 1) {
@@ -1942,7 +1957,6 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     dmsLeadDto: dmsLeadDto,
                 };
             }
-            console.log("PBK PAYLOAD:", JSON.stringify(formData));
             setTypeOfActionDispatched("UPDATE_PRE_BOOKING");
             // dispatch(updatePrebookingDetailsApi(formData));
             Promise.all([
@@ -2242,14 +2256,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         if (dmsAttachments.length > 0) {
             dmsAttachments.forEach((obj, index) => {
                 const item = uploadedImagesDataObj[obj.documentType];
-                 console.log("uploadedImagesDataObj2: ", uploadedImagesDataObj);
-                const object = formatAttachment(
-                    { ...obj },
-                    item,
-                    index,
-                    obj.documentType
-                );
-                dmsAttachments[index] = object;
+                if(item){
+                  const object = formatAttachment(
+                      { ...obj },
+                      item,
+                      index,
+                      obj.documentType
+                  );
+                  dmsAttachments[index] = object;
+                }
             });
         } else {
              console.log("uploadedImagesDataObj1: ", uploadedImagesDataObj);
@@ -2335,7 +2350,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 otherReason: "",
                 droppedBy: userData.employeeId,
                 lostSubReason: dropSubReason,
-                stage: "PREBOOKING",
+                stage: "BOOKINGAPPROVAL",
                 status: "PREBOOKING",
             },
         };
@@ -2730,19 +2745,20 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                 break;
         }
 
+        
         await fetch(URL.UPLOAD_DOCUMENT(), {
-            method: "POST",
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-            body: formData,
+          method: "POST",
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          body: formData,
         })
-            .then((response) => response.json())
-            .then((response) => {
-                console.log('response', response);
-                if (response) {
-                    const dataObj = { ...uploadedImagesDataObj };
-                    dataObj[response.documentType] = response;
+        .then((response) => response.json())
+        .then((response) => {
+          console.log('response', response);
+          if (response) {
+                  const dataObj = { ...uploadedImagesDataObj };
+                  dataObj[response.documentType] = response;
                     setUploadedImagesDataObj({ ...dataObj });
                     setIsReciptDocUpload(true)
                 }
@@ -4007,7 +4023,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                        disabled={userData.isManager ? (isEdit ? false : true) : false}
                         style={styles.textInputStyle}
                         value={selector.pan_number}
-                        label={"PAN Number"}
+                        label={"PAN Number*"}
                         maxLength={10}
                         autoCapitalize={"characters"}
                         onChangeText={(text) => {
@@ -4019,6 +4035,17 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           );
                         }}
                       />
+                      <Text
+                        style={[
+                          GlobalStyle.underline,
+                          {
+                            backgroundColor:
+                              isSubmitPress && selector.pan_number === ""
+                                ? "red"
+                                : "rgba(208, 212, 214, 0.7)",
+                          },
+                        ]}
+                      ></Text>
                       <Text style={GlobalStyle.underline}></Text>
                       <View style={styles.select_image_bck_vw}>
                         <ImageSelectItem  disabled={userData.isManager ? (isEdit ? false : true) : false}
@@ -4124,7 +4151,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       <TextinputComp  disabled={userData.isManager ? (isEdit ? false : true) : false}
                         style={styles.textInputStyle}
                         value={selector.adhaar_number}
-                        label={"Aadhaar Number*"}
+                        label={"Aadhaar Number"}
                         keyboardType={"phone-pad"}
                         maxLength={12}
                         onChangeText={(text) =>
@@ -4137,19 +4164,10 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         }
                       />
                       <Text
-                        style={[
-                          GlobalStyle.underline,
-                          {
-                            backgroundColor:
-                              isSubmitPress && selector.adhaar_number === ""
-                                ? "red"
-                                : "rgba(208, 212, 214, 0.7)",
-                          },
-                        ]}
-                      ></Text>
+                        style={GlobalStyle.underline} />
                       <View style={styles.select_image_bck_vw}>
-                        <ImageSelectItem  disabled={userData.isManager ? (isEdit ? false : true) : false}
-                          name={"Upload Adhar"}
+                        <ImageSelectItem  disabled={userData.isManager? true:false}
+                          name={"Upload Aadhaar"}
                           onPress={() =>
                             dispatch(setImagePicker("UPLOAD_ADHAR"))
                           }
@@ -4743,7 +4761,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ]}
                 >
                   <TextAndAmountComp
-                    title={"Ex-Showroom Price:"}
+                    title={"Ex-Showroom Price*:"}
                     amount={priceInfomationData.ex_showroom_price.toFixed(2)}
                   />
                   {/* <View style={styles.radioGroupBcVw}>
@@ -4805,7 +4823,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                                 /> */}
                   <View style={styles.textAndAmountView}>
                     {/* <View style={{width: '60%', flexDirection: 'row'}}> */}
-                    <Text style={[styles.leftLabel]}>{"Life Tax:"}</Text>
+                    <Text style={[styles.leftLabel]}>{"Life Tax*:"}</Text>
                     {/* </View> */}
                     <View
                       style={{
@@ -4814,7 +4832,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         // justifyContent: 'center',
                         paddingHorizontal: 10,
                         borderBottomWidth: 1,
-                        borderBottomColor: "#d1d1d1",
+                        borderBottomColor: isSubmitPress && taxPercent == "" ? "red" : "#d1d1d1",
                       }}
                     >
                       <TextInput  disabled={userData.isManager ? (isEdit ? false : true) : false}
@@ -5283,8 +5301,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     styles.accordianBorder,
                   ]}
                 >
-                  <DropDownSelectionItem  disabled={userData.isManager ? (isEdit ? false : true) : false}
-                    label={"Retail Finance"}
+                  <DropDownSelectionItem  disabled={userData.isManager? true:false}
+                    label={"Retail Finance*"}
                     value={selector.retail_finance}
                     onPress={() =>
                       showDropDownModelMethod(
@@ -5293,6 +5311,18 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       )
                     }
                   />
+
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.retail_finance === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
 
                   {selector.retail_finance === "Out House" ? (
                     <View>
@@ -5552,25 +5582,17 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     ]}
                   ></Text>
 
-                  <DropDownSelectionItem disabled={userData.isManager ? (isEdit ? false : true) : false}
-                    label={"Payment At*"}
+                  <DropDownSelectionItem disabled={userData.isManager? true:false}
+                    label={"Payment At"}
                     value={selector.payment_at}
                     onPress={() =>
                       showDropDownModelMethod("PAYMENT_AT", "Payment At")
                     }
                   />
                   <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.payment_at === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
-                  <DropDownSelectionItem disabled={userData.isManager ? (isEdit ? false : true) : false}
+                    style={GlobalStyle.underline} />
+                  
+                  <DropDownSelectionItem disabled={userData.isManager? true:false}
                     label={"Booking Payment Mode*"}
                     value={selector.booking_payment_mode}
                     onPress={() =>
@@ -5611,26 +5633,16 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     styles.accordianBorder,
                   ]}
                 >
-                  <DateSelectItem disabled={userData.isManager ? (isEdit ? false : true) : false}
-                    label={"Customer Preferred Date*"}
+                  <DateSelectItem disabled={userData.isManager? true:false}
+                    label={"Customer Preferred Date"}
                     value={selector.customer_preferred_date}
                     onPress={() =>
                       dispatch(setDatePicker("CUSTOMER_PREFERRED_DATE"))
                     }
                   />
                   <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress &&
-                          selector.customer_preferred_date === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
-                  <TextinputComp disabled={userData.isManager ? (isEdit ? false : true) : false}
+                    style={GlobalStyle.underline} />
+                  <TextinputComp disabled={userData.isManager? true:false}
                     style={{ height: 65, width: "100%" }}
                     label={"Occasion"}
                     value={selector.occasion}
@@ -5642,26 +5654,15 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     }
                   />
                   <Text style={GlobalStyle.underline}></Text>
-                  <DateSelectItem disabled={userData.isManager ? (isEdit ? false : true) : false}
-                    label={"Tentative Delivery Date*"}
+                  <DateSelectItem disabled={userData.isManager? true:false}
+                    label={"Tentative Delivery Date"}
                     value={selector.tentative_delivery_date}
                     onPress={() =>
                       dispatch(setDatePicker("TENTATIVE_DELIVERY_DATE"))
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress &&
-                          selector.tentative_delivery_date === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
-                  <TextinputComp disabled={userData.isManager ? (isEdit ? false : true) : false}
+                  <Text style={GlobalStyle.underline} />
+                  <TextinputComp disabled={userData.isManager? true:false}
                     style={{ height: 65, width: "100%" }}
                     label={"Delivery Location"}
                     maxLength={50}

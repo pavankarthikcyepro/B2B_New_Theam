@@ -165,14 +165,18 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
   );
 
   const getReasonListData = async (taskName) => {
+
     setLoading(true)
     const employeeData = await AsyncStorage.getData(AsyncStorage.Keys.LOGIN_EMPLOYEE);
     if (employeeData) {
       const jsonObj = JSON.parse(employeeData);
       let payload = {
         orgId: jsonObj.orgId,
-        taskName: taskName
-      }
+        taskName:
+          taskName == "Booking approval task"
+            ? "PreBooking FollowUp"
+            : taskName,
+      };
       console.log('123421: ', payload)
       Promise.all([
         dispatch(getReasonList(payload))
@@ -328,24 +332,16 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
       showToast("Please Enter Other Reason");
       return;
     }
-    if (selector.customer_remarks === 0) {
+    if (selector.customer_remarks.trim().length === 0) {
       showToast("Please enter customer remarks");
       return;
     }
-    if (!isValidateAlphabetics(selector.customer_remarks)) {
-      showToast("Please enter alphabetics only in customer remarks");
-      return;
-    }
 
-    if (selector.employee_remarks.length === 0) {
+    if (selector.employee_remarks.trim().length === 0) {
       showToast("Please enter employee remarks");
       return;
     }
 
-    if (!isValidateAlphabetics(selector.employee_remarks)) {
-      showToast("Please enter alphabetics only in employee remarks");
-      return;
-    }
     const newTaskObj = { ...selector.task_details_response };
     newTaskObj.reason = selector.reason === 'Other' ? otherReason : selector.reason;
     newTaskObj.customerRemarks = selector.customer_remarks;
@@ -455,12 +451,12 @@ const EnquiryFollowUpScreen = ({ route, navigation }) => {
                                       selector.enquiry_details_response
                                           ?.dmsLeadDto?.model
                                   }
-                                  // onPress={() =>
-                                  //     setDropDownDataForModel(
-                                  //         'MODEL',
-                                  //         'Select Model'
-                                  //     )
-                                  // }
+                                  onPress={() =>
+                                      setDropDownDataForModel(
+                                          'MODEL',
+                                          'Select Model'
+                                      )
+                                  }
                               />
 
                               {identifier === 'ENQUIRY_FOLLOW_UP' && (

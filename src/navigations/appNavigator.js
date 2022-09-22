@@ -504,75 +504,81 @@ const MyTaskStack = createStackNavigator();
 
 const MyTaskStackNavigator = ({ navigation }) => {
     return (
-        <MyTaskStack.Navigator
-            initialRouteName={MyTasksStackIdentifiers.mytasks}
-            screenOptions={screeOptionStyle}
-        >
-            <MyTaskStack.Screen
-                name={MyTasksStackIdentifiers.mytasks}
-                component={MyTasksScreen}
-                options={{
-                    title: "My Tasks",
-                    headerLeft: () => <MenuIcon navigation={navigation} />,
-                    headerRight: () => {
-                        return (
-                            <View style={{ flexDirection: "row" }}>
-                                {/* <SearchIcon /> */}
-                                <NotficationIcon
-                                    navigation={navigation}
-                                    identifier={"NOTIF_3"}
-                                />
-                            </View>
-                        );
-                    },
-                }}
-            />
+      <MyTaskStack.Navigator
+        initialRouteName={MyTasksStackIdentifiers.mytasks}
+        screenOptions={screeOptionStyle}
+      >
+        <MyTaskStack.Screen
+          name={MyTasksStackIdentifiers.mytasks}
+          component={MyTasksScreen}
+          options={{
+            title: "My Tasks",
+            headerLeft: () => <MenuIcon navigation={navigation} />,
+            headerRight: () => {
+              return (
+                <View style={{ flexDirection: "row" }}>
+                  {/* <SearchIcon /> */}
+                  <NotficationIcon
+                    navigation={navigation}
+                    identifier={"NOTIF_3"}
+                  />
+                </View>
+              );
+            },
+          }}
+        />
 
-            <MyTaskStack.Screen
-                name={"NOTIF_3"}
-                component={NotificationScreen}
-                options={{ title: "Notifications" }}
-            />
+        <MyTaskStack.Screen
+          name={"NOTIF_3"}
+          component={NotificationScreen}
+          options={{ title: "Notifications" }}
+        />
 
-            <MyTaskStack.Screen
-                name={MyTasksStackIdentifiers.tasksListScreen}
-                component={TaskListScreen}
-                options={{ title: "My Tasks" }}
-            />
-            <MyTaskStack.Screen
-                name={MyTasksStackIdentifiers.createEnquiry}
-                component={CreateEnquiryScreen}
-                options={{ title: "Create Enquiry" }}
-            />
+        <MyTaskStack.Screen
+          name={MyTasksStackIdentifiers.tasksListScreen}
+          component={TaskListScreen}
+          options={{ title: "My Tasks" }}
+        />
 
-            <MyTaskStack.Screen
-                name={MyTasksStackIdentifiers.enquiryFollowUp}
-                component={EnquiryFollowUpScreen}
-                options={{ title: "Enquiry Follow Up" }}
-            />
-            <MyTaskStack.Screen
-                name={MyTasksStackIdentifiers.testDrive}
-                component={TestDriveScreen}
-                options={{ title: "Test Drive" }}
-            />
+        <MyTaskStack.Screen
+          name={MyTasksStackIdentifiers.bookingFollowUp}
+          component={EnquiryFollowUpScreen}
+          options={{ title: "Booking Follow Up" }}
+        />
+        <MyTaskStack.Screen
+          name={MyTasksStackIdentifiers.createEnquiry}
+          component={CreateEnquiryScreen}
+          options={{ title: "Create Enquiry" }}
+        />
 
-            <MyTaskStack.Screen
-                name={MyTasksStackIdentifiers.homeVisit}
-                component={HomeVisitScreen}
-                options={{ title: "Visit" }}
-            />
+        <MyTaskStack.Screen
+          name={MyTasksStackIdentifiers.enquiryFollowUp}
+          component={EnquiryFollowUpScreen}
+          options={{ title: "Enquiry Follow Up" }}
+        />
+        <MyTaskStack.Screen
+          name={MyTasksStackIdentifiers.testDrive}
+          component={TestDriveScreen}
+          options={{ title: "Test Drive" }}
+        />
 
-            <MyTaskStack.Screen
-                name={MyTasksStackIdentifiers.proceedToPreBooking}
-                component={ProceedToPreBookingScreen}
-                options={{ title: "Proceed to Booking approval" }}
-            />
-            <MyTaskStack.Screen
-                name={MyTasksStackIdentifiers.proceedToBooking}
-                component={ProceedToBookingScreen}
-                options={{ title: "Proceed To Booking View" }}
-            />
-        </MyTaskStack.Navigator>
+        <MyTaskStack.Screen
+          name={MyTasksStackIdentifiers.homeVisit}
+          component={HomeVisitScreen}
+          options={{ title: "Visit" }}
+        />
+
+        <MyTaskStack.Screen
+          name={MyTasksStackIdentifiers.proceedToPreBooking}
+          component={ProceedToPreBookingScreen}
+          options={{ title: "Proceed to Booking approval" }}
+        />
+        <MyTaskStack.Screen
+          name={MyTasksStackIdentifiers.proceedToBooking}
+          component={ProceedToBookingScreen}
+          options={{ title: "Proceed To Booking View" }}
+        />
+      </MyTaskStack.Navigator>
     );
 };
 

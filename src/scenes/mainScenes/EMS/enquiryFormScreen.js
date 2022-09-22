@@ -1163,12 +1163,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
   const submitClicked = async () => {
     //Personal Intro
     setIsSubmitPress(true);
-    if (selector.salutation.length == 0) {
-      scrollToPos(0);
-      setOpenAccordian("2");
-      showToast("Please fill required salutation field in Personal Intro");
-      return;
-    }
 
     // if (selector.enquiry_segment.toLowerCase() == "personal") {
     //   if (
@@ -1187,108 +1181,35 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("please enter alphabetics only in firstname");
       return;
     }
+
     if (!isValidate(selector.lastName)) {
       scrollToPos(0);
       setOpenAccordian("2");
       showToast("please enter alphabetics only in lastname");
       return;
     }
-    // if (!isValidateAlphabetics(selector.relationName)) {
-    //   scrollToPos(0)
-    //   setOpenAccordian('2')
-    //   showToast("please enter alphabetics only in relationname");
-    //   return;
-    // }
-    if (!isValidateAlphabetics(selector.streetName)) {
-      scrollToPos(3);
-      setOpenAccordian("3");
-      showToast("Please enter alphabetics only in street name");
-      return;
-    }
-    //Customer Profile
-
-    if (selector.designation.length == 0) {
-      scrollToPos(2);
-      setOpenAccordian("1");
-      showToast("Please fill designation");
-      return;
-    }
-    // if (selector.expected_delivery_date.length == 0) {
-    //   showToast("Please select expected delivery date");
-    //   return;
-    // }
+    
     if (selector.enquiry_segment.length == 0) {
       scrollToPos(2);
       setOpenAccordian("1");
       showToast("Please select enquery segment");
       return;
     }
+
     if (selector.customer_type.length == 0) {
       scrollToPos(2);
       setOpenAccordian("1");
       showToast("Please select customer type");
       return;
     }
+
     if (selector.buyer_type.length == 0) {
       scrollToPos(2);
       setOpenAccordian("1");
       showToast("Please fill  Buyer type");
       return;
     }
-    // if (!isValidateAlphabetics(selector.occupation)) {
-    //   showToast("Please enter alphabetics only in occupation");
-    //   return;
-    // }
 
-    if (!isValidateAlphabetics(selector.designation)) {
-      scrollToPos(2);
-      setOpenAccordian("1");
-      showToast("Please enter alphabetics only in designation");
-      return;
-    }
-    //communication Address
-    if (selector.houseNum.length == 0) {
-      scrollToPos(3);
-      setOpenAccordian("3");
-      showToast("Please fill H.No ");
-      return;
-    }
-    if (selector.streetName.length == 0) {
-      scrollToPos(3);
-      setOpenAccordian("3");
-      showToast("Please fill Street Name ");
-      return;
-    }
-    if (selector.village.length == 0) {
-      scrollToPos(3);
-      setOpenAccordian("3");
-      showToast("Please fill village ");
-      return;
-    }
-    if (selector.mandal.length == 0) {
-      scrollToPos(3);
-      setOpenAccordian("3");
-      showToast("Please fill mandal");
-      return;
-    }
-    if (selector.city.length == 0) {
-      scrollToPos(3);
-      setOpenAccordian("3");
-      showToast("Please fill city ");
-      return;
-    }
-    if (selector.state.length == 0) {
-      scrollToPos(3);
-      setOpenAccordian("3");
-      showToast("Please fill state ");
-      return;
-    }
-    if (selector.district.length == 0) {
-      scrollToPos(3);
-      setOpenAccordian("3");
-      showToast("Please fill district ");
-      return;
-    }
     // if (
     //   selector.p_pincode.length == 0 ||
     //   selector.p_urban_or_rural.length == 0 ||
@@ -1305,68 +1226,20 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   showToast("Please fill permanent address ");
     //   return;
     // }
+
     if (selector.p_pincode.length == 0) {
       scrollToPos(14);
       setOpenAccordian("3");
       showToast("Please fill Permanent pincode");
       return;
     }
+
     if (selector.p_urban_or_rural.length == 0) {
       scrollToPos(14);
       setOpenAccordian("3");
       showToast("Please fill Permanent Urban or Rural");
       return;
     }
-    if (selector.p_houseNum.length == 0) {
-      scrollToPos(14);
-      setOpenAccordian("3");
-      showToast("Please fill Permanent house number");
-      return;
-    }
-    if (selector.p_streetName.length == 0) {
-      scrollToPos(14);
-      setOpenAccordian("3");
-      showToast("Please fill Permanent street");
-      return;
-    }
-    if (selector.p_village.length == 0) {
-      scrollToPos(14);
-      setOpenAccordian("3");
-      showToast("Please fill Permanent village");
-      return;
-    }
-    if (selector.p_mandal.length == 0) {
-      scrollToPos(14);
-      setOpenAccordian("3");
-      showToast("Please fill Permanent mandal");
-      return;
-    }
-    if (selector.p_city.length == 0) {
-      scrollToPos(14);
-      setOpenAccordian("3");
-      showToast("Please fill Permanent City");
-      return;
-    }
-    if (selector.p_district.length == 0) {
-      scrollToPos(14);
-      setOpenAccordian("3");
-      showToast("Please fill Permanent District");
-      return;
-    }
-    if (selector.p_state.length == 0) {
-      scrollToPos(14);
-      setOpenAccordian("3");
-      showToast("Please fill Permanent state");
-      return;
-    }
-
-    // Model Selection
-    // if (carModelsList.length == 0) {
-    //   scrollToPos(4)
-    //   setOpenAccordian('4')
-    //   showToast("Please fill model details");
-    //   return;
-    // }
 
     if (checkModelSelection()) {
       scrollToPos(4);
@@ -1385,26 +1258,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("Select is Primary for atleast one vehicle");
       return;
     }
-    // if (
-    //   selector.model.length == 0) {
-    //   scrollToPos(4)
-    //   setOpenAccordian('4')
-    //   showToast("Please fill model");
-    //   return;
-    // }
-    // if (selector.varient.length == 0) {
-    //   scrollToPos(4)
-    //   setOpenAccordian('4')
-    //   showToast("Please fill Varient");
-    //   return;
-    // }
-    // if (selector.color.length == 0) {
-    //   scrollToPos(4)
-    //   setOpenAccordian('4')
-    //   showToast("Please fill color");
-    //   return;
-    // }
-
+    
     //Finance Details
     if (selector.retail_finance.length == 0) {
       scrollToPos(5);
@@ -3097,6 +2951,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           ) {
             updateModelTypesForCustomerNeedAnalysis(item.name, dropDownKey);
           }
+
+          if (dropDownKey === "RETAIL_FINANCE" && selector.retail_finance !== item.name) {
+            dispatch(setFinancialDetails({key: "BANK_R_FINANCE_NAME", text: ""}));
+            dispatch(setFinancialDetails({key: "LOAN_AMOUNT", text: ""}));
+            dispatch(setFinancialDetails({key: "RATE_OF_INTEREST",text: ""}));
+          };
+
           setShowDropDownModel(false);
           dispatch(
             setDropDownData({ key: dropDownKey, value: item.name, id: item.id, orgId: userData.orgId })
@@ -3246,23 +3107,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 ]}
               >
                 <DropDownSelectionItem
-                  label={"Salutation*"}
+                  label={"Salutation"}
                   value={selector.salutation}
                   onPress={() =>
                     showDropDownModelMethod("SALUTATION", "Select Salutation")
                   }
                 />
-                <Text
-                  style={[
-                    GlobalStyle.underline,
-                    {
-                      backgroundColor:
-                        isSubmitPress && selector.salutation === ""
-                          ? "red"
-                          : "rgba(208, 212, 214, 0.7)",
-                    },
-                  ]}
-                ></Text>
+                <Text style={GlobalStyle.underline} />
                 {selector.enquiry_segment.toLowerCase() == "personal" ? (
                   <DropDownSelectionItem
                     label={"Gender"}
@@ -3453,7 +3304,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   style={styles.textInputStyle}
                   value={selector.designation}
                   autoCapitalize="words"
-                  label={"Designation*"}
+                  label={"Designation"}
                   keyboardType={"default"}
                   maxLength={40}
                   onChangeText={(text) =>
@@ -3462,17 +3313,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     )
                   }
                 />
-                <Text
-                  style={[
-                    GlobalStyle.underline,
-                    {
-                      backgroundColor:
-                        isSubmitPress && selector.designation === ""
-                          ? "red"
-                          : "rgba(208, 212, 214, 0.7)",
-                    },
-                  ]}
-                ></Text>
+                <Text style={GlobalStyle.underline} />
 
                 <DropDownSelectionItem
                   label={"Enquiry Segment*"}
@@ -3528,7 +3369,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.source_of_enquiry}
-                  label={"Source Of Enquiry"}
+                  label={"Source Of Enquiry*"}
                   editable={false}
                 />
                 <Text style={GlobalStyle.underline}></Text>
@@ -3831,7 +3672,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.houseNum}
-                  label={"H.No*"}
+                  label={"H.No"}
                   maxLength={50}
                   // keyboardType={"number-pad"}
                   onChangeText={(text) =>
@@ -3840,21 +3681,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     )
                   }
                 />
-                <Text
-                  style={[
-                    GlobalStyle.underline,
-                    {
-                      backgroundColor:
-                        isSubmitPress && selector.houseNum === ""
-                          ? "red"
-                          : "rgba(208, 212, 214, 0.7)",
-                    },
-                  ]}
-                ></Text>
+                <Text style={GlobalStyle.underline} />
                 <TextinputComp
                   style={styles.textInputStyle}
                   value={selector.streetName}
-                  label={"Street Name*"}
+                  label={"Street Name"}
                   autoCapitalize="words"
                   maxLength={120}
                   keyboardType={"default"}
@@ -3867,23 +3698,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     )
                   }
                 />
-                <Text
-                  style={[
-                    GlobalStyle.underline,
-                    {
-                      backgroundColor:
-                        isSubmitPress && selector.streetName === ""
-                          ? "red"
-                          : "rgba(208, 212, 214, 0.7)",
-                    },
-                  ]}
-                ></Text>
+                <Text style={GlobalStyle.underline} />
                 {/* {selector.isAddressSet && ( */}
                 <>
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.village}
-                    label={"Village/Town*"}
+                    label={"Village/Town"}
                     autoCapitalize="words"
                     maxLength={50}
                     keyboardType={"default"}
@@ -3896,22 +3717,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.village === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
 
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.mandal}
-                    label={"Mandal*"}
+                    label={"Mandal"}
                     autoCapitalize="words"
                     maxLength={50}
                     keyboardType={"default"}
@@ -3924,22 +3735,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.mandal === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
 
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.city}
-                    label={"City*"}
+                    label={"City"}
                     autoCapitalize="words"
                     maxLength={50}
                     keyboardType={"default"}
@@ -3949,21 +3750,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.city === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.district}
-                    label={"District*"}
+                    label={"District"}
                     autoCapitalize="words"
                     maxLength={50}
                     keyboardType={"default"}
@@ -3976,21 +3767,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.district === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.state}
-                    label={"State*"}
+                    label={"State"}
                     autoCapitalize="words"
                     maxLength={50}
                     keyboardType={"default"}
@@ -4003,17 +3784,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.state === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
                 </>
                 {/* )} */}
                 <View
@@ -4157,7 +3928,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                   <TextinputComp
                     style={styles.textInputStyle}
-                    label={"H.No*"}
+                    label={"H.No"}
                     // keyboardType={"number-pad"}
                     maxLength={50}
                     value={selector.p_houseNum}
@@ -4170,20 +3941,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.p_houseNum === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
                   <TextinputComp
                     style={styles.textInputStyle}
-                    label={"Street Name*"}
+                    label={"Street Name"}
                     autoCapitalize="words"
                     keyboardType={"default"}
                     maxLength={50}
@@ -4201,7 +3962,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.p_village}
-                    label={"Village/Town*"}
+                    label={"Village/Town"}
                     autoCapitalize="words"
                     maxLength={50}
                     keyboardType={"default"}
@@ -4214,21 +3975,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.p_village === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.p_mandal}
-                    label={"Mandal*"}
+                    label={"Mandal"}
                     autoCapitalize="words"
                     maxLength={50}
                     keyboardType={"default"}
@@ -4245,7 +3996,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.p_city}
-                    label={"City*"}
+                    label={"City"}
                     autoCapitalize="words"
                     maxLength={50}
                     keyboardType={"default"}
@@ -4258,21 +4009,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.p_city === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.p_district}
-                    label={"District*"}
+                    label={"District"}
                     autoCapitalize="words"
                     maxLength={50}
                     keyboardType={"default"}
@@ -4285,21 +4026,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.p_district === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.p_state}
-                    label={"State*"}
+                    label={"State"}
                     autoCapitalize="words"
                     maxLength={50}
                     keyboardType={"default"}
@@ -4312,17 +4043,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       )
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.p_state === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
                 </View>
                 {/* ) : null} */}
               </List.Accordion>
@@ -4787,7 +4508,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     <Text style={GlobalStyle.underline}></Text>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
-                        name={"Upload Adhar"}
+                        name={"Upload Aadhaar"}
                         onPress={() => dispatch(setImagePicker("UPLOAD_ADHAR"))}
                       />
                     </View>
