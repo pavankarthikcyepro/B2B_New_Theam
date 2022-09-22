@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, FlatList, Dimensions, Text, TouchableOpacity, Image, Alert } from "react-native";
-import {Colors} from "../../../../styles";
+import { Colors } from "../../../../styles";
 import { TargetListComp } from "../../../../components";
 import { ChartNameList, EmptyListView } from "../../../../pureComponents";
 import { targetStyle } from "../../../../components/targetListComp";
@@ -33,10 +33,10 @@ import {
   getNewTargetParametersAllData,
   getTotalTargetParametersData
 } from "../../../../redux/homeReducer";
-import {RenderGrandTotal} from "./components/RenderGrandTotal";
-import {RenderEmployeeTotal} from "./components/RenderEmployeeTotal";
-import {RenderEmployeeParameters} from "./components/RenderEmployeeParameters";
-import {RenderSelfInsights} from "./components/RenderSelfInsights";
+import { RenderGrandTotal } from "./components/RenderGrandTotal";
+import { RenderEmployeeTotal } from "./components/RenderEmployeeTotal";
+import { RenderEmployeeParameters } from "./components/RenderEmployeeParameters";
+import { RenderSelfInsights } from "./components/RenderSelfInsights";
 
 
 //const paramtersTitlesData = ["Parameter", "E", "TD", "HV", "VC", "B", "Ex", "R", "F", "I", "Ex-W", "Acc.", "Ev"]
@@ -421,7 +421,7 @@ const targetData = [
 
 const TargetScreen = ({ route, navigation }) => {
   const selector = useSelector((state) => state.homeReducer);
- //console.log("ACHIEVE========>", selector.totalParameters);
+  //console.log("ACHIEVE========>", selector.totalParameters);
   console.log(
     "ACC==--=-=-=-==-=>>",
     selector.self_target_parameters_data
@@ -434,6 +434,13 @@ const TargetScreen = ({ route, navigation }) => {
 
   const [visitData, setVisitData] = useState(null);
   const [TDData, setTDData] = useState(null);
+  const [exgData, setExgData] = useState(null);
+  const [finData, setFinData] = useState(null);
+  const [insData, setInsData] = useState(null);
+  const [exwData, setExwData] = useState(null);
+  const [accData, setAccData] = useState(null);
+  const [selfInsightsData, setSelfInsightsData] = useState([]);
+
   const [dateDiff, setDateDiff] = useState(null);
   const [isTeamPresent, setIsTeamPresent] = useState(false);
   const [isTeam, setIsTeam] = useState(false);
@@ -570,6 +577,7 @@ const TargetScreen = ({ route, navigation }) => {
     const isInsights = selector.isTeamPresent && !selector.isDSE;
     const isSelf = selector.isDSE;
     const dashboardSelfParamsData = isSelf ? selector.self_target_parameters_data : selector.insights_target_parameters_data;
+
     if (dashboardSelfParamsData.length > 0) {
       let tempRetail = [];
       tempRetail = dashboardSelfParamsData.filter((item) => {
@@ -611,6 +619,51 @@ const TargetScreen = ({ route, navigation }) => {
       if (tempTD.length > 0) {
         setTDData(tempTD[0])
       }
+
+
+      let tempEXG = [];
+      tempEXG = dashboardSelfParamsData.filter((item) => {
+        return item.paramName.toLowerCase() === 'exchange'
+      })
+      if (tempEXG.length > 0) {
+        setExgData(tempEXG[0])
+      }
+
+      let tempFin = [];
+      tempFin = dashboardSelfParamsData.filter((item) => {
+        return item.paramName.toLowerCase() === 'finance'
+      })
+      if (tempFin.length > 0) {
+        setFinData(tempFin[0])
+      }
+
+      let tempIns = [];
+      tempIns = dashboardSelfParamsData.filter((item) => {
+        return item.paramName.toLowerCase() === 'insurance'
+      })
+      if (tempIns.length > 0) {
+        setInsData(tempIns[0])
+      }
+
+      let tempExw = [];
+      tempExw = dashboardSelfParamsData.filter((item) => {
+        return item.paramName.toLowerCase() === 'extendedwarranty'
+      })
+      if (tempExw.length > 0) {
+        setExwData(tempExw[0])
+      }
+
+      let tempAcc = [];
+      tempAcc = dashboardSelfParamsData.filter((item) => {
+        return item.paramName.toLowerCase() === 'accessories'
+      })
+      if (tempAcc.length > 0) {
+
+        setAccData(tempAcc[0])
+      }
+
+      setSelfInsightsData([tempEnq[0], tempTD[0], tempVisit[0], tempBooking[0], tempRetail[0], tempEXG[0], tempFin[0], tempIns[0], tempExw[0], tempAcc[0]])
+
     } else {
     }
 
@@ -753,9 +806,9 @@ const TargetScreen = ({ route, navigation }) => {
 
   const renderTotalView = () => {
     return (
-        <View style={styles.totalView}>
-          <Text style={styles.totalText}>Total</Text>
-        </View>
+      <View style={styles.totalView}>
+        <Text style={styles.totalText}>Total</Text>
+      </View>
     )
   }
 
@@ -796,7 +849,7 @@ const TargetScreen = ({ route, navigation }) => {
             >
               <Text style={{ fontSize: 17, fontWeight: "500", margin: 10 }}>
                 Team Shuffle
-                  </Text>
+              </Text>
 
               <TouchableOpacity
                 activeOpacity={0.6}
@@ -986,75 +1039,75 @@ const TargetScreen = ({ route, navigation }) => {
                       <View style={{ width: '8%', minHeight: 40, justifyContent: 'center', alignItems: 'center', flexDirection: 'column', }}>
                         {/*// left side name section */}
                         <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#C62159', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 5, marginBottom: item.isOpenInner ? 5 : 5 }}
-                                          onPress={async () => {
-                                            setSelectedName(item.empName); // to display name on click of the left view - first letter
-                                            setTimeout(() => {
-                                              setSelectedName('')
-                                            }, 900);
-                                            let localData = [...allParameters];
-                                            let current = localData[index].isOpenInner;
-                                            for (let i = 0; i < localData.length; i++) {
-                                              localData[i].isOpenInner = false;
-                                              if (i === localData.length - 1) {
-                                                localData[index].isOpenInner = !current;
-                                              }
-                                            }
-                                            if (!current) {
-                                              let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-                                              // console.log("$$$$$ LOGIN EMP:", employeeData);
-                                              if (employeeData) {
-                                                const jsonObj = JSON.parse(employeeData);
-                                                const dateFormat = "YYYY-MM-DD";
-                                                const currentDate = moment().format(dateFormat)
-                                                const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-                                                const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-                                                let payload = {
-                                                  "orgId": jsonObj.orgId,
-                                                  "selectedEmpId": item.empId,
-                                                  "endDate": monthLastDate,
-                                                  "loggedInEmpId": jsonObj.empId,
-                                                  "empId": item.empId,
-                                                  "startDate": monthFirstDate,
-                                                  "levelSelected": null,
-                                                  "pageNo": 0,
-                                                  "size": 100
-                                                }
-                                                console.log("PPPLLL", payload);
-                                                Promise.all([
-                                                  dispatch(getUserWiseTargetParameters(payload))
-                                                ]).then((res) => {
-                                                  console.log("DATA:", JSON.stringify(res));
-                                                  let tempRawData = [];
-                                                  tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((emp) => emp.empId !== item.empId);
-                                                  if (tempRawData.length > 0) {
+                          onPress={async () => {
+                            setSelectedName(item.empName); // to display name on click of the left view - first letter
+                            setTimeout(() => {
+                              setSelectedName('')
+                            }, 900);
+                            let localData = [...allParameters];
+                            let current = localData[index].isOpenInner;
+                            for (let i = 0; i < localData.length; i++) {
+                              localData[i].isOpenInner = false;
+                              if (i === localData.length - 1) {
+                                localData[index].isOpenInner = !current;
+                              }
+                            }
+                            if (!current) {
+                              let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+                              // console.log("$$$$$ LOGIN EMP:", employeeData);
+                              if (employeeData) {
+                                const jsonObj = JSON.parse(employeeData);
+                                const dateFormat = "YYYY-MM-DD";
+                                const currentDate = moment().format(dateFormat)
+                                const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                                const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                                let payload = {
+                                  "orgId": jsonObj.orgId,
+                                  "selectedEmpId": item.empId,
+                                  "endDate": monthLastDate,
+                                  "loggedInEmpId": jsonObj.empId,
+                                  "empId": item.empId,
+                                  "startDate": monthFirstDate,
+                                  "levelSelected": null,
+                                  "pageNo": 0,
+                                  "size": 100
+                                }
+                                console.log("PPPLLL", payload);
+                                Promise.all([
+                                  dispatch(getUserWiseTargetParameters(payload))
+                                ]).then((res) => {
+                                  console.log("DATA:", JSON.stringify(res));
+                                  let tempRawData = [];
+                                  tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((emp) => emp.empId !== item.empId);
+                                  if (tempRawData.length > 0) {
 
-                                                    for (let i = 0; i < tempRawData.length; i++) {
-                                                      tempRawData[i].empName = tempRawData[i].empName,
-                                                          tempRawData[i] = {
-                                                            ...tempRawData[i],
-                                                            isOpenInner: false,
-                                                            employeeTargetAchievements: []
-                                                          }
-                                                      if (i === tempRawData.length - 1) {
-                                                        localData[index].employeeTargetAchievements = tempRawData;
-                                                      }
-                                                    }
-                                                  }
-                                                  // alert(JSON.stringify(localData))
-                                                  setAllParameters([...localData])
-                                                })
+                                    for (let i = 0; i < tempRawData.length; i++) {
+                                      tempRawData[i].empName = tempRawData[i].empName,
+                                        tempRawData[i] = {
+                                          ...tempRawData[i],
+                                          isOpenInner: false,
+                                          employeeTargetAchievements: []
+                                        }
+                                      if (i === tempRawData.length - 1) {
+                                        localData[index].employeeTargetAchievements = tempRawData;
+                                      }
+                                    }
+                                  }
+                                  // alert(JSON.stringify(localData))
+                                  setAllParameters([...localData])
+                                })
 
-                                                // if (localData[index].employeeTargetAchievements.length > 0) {
-                                                //   for (let j = 0; j < localData[index].employeeTargetAchievements.length; j++) {
-                                                //     localData[index].employeeTargetAchievements[j].isOpenInner = false;
-                                                //   }
-                                                // }
-                                              }
-                                            }
-                                            else {
-                                              setAllParameters([...localData])
-                                            }
-                                          }}>
+                                // if (localData[index].employeeTargetAchievements.length > 0) {
+                                //   for (let j = 0; j < localData[index].employeeTargetAchievements.length; j++) {
+                                //     localData[index].employeeTargetAchievements[j].isOpenInner = false;
+                                //   }
+                                // }
+                              }
+                            }
+                            else {
+                              setAllParameters([...localData])
+                            }
+                          }}>
                           <Text style={{ fontSize: 14, color: '#fff' }}>{item.empName.charAt(0)}</Text>
                         </TouchableOpacity>
                         {/* <View style={{ position: 'absolute', left: 10, top: 5 }}>
@@ -1067,461 +1120,461 @@ const TargetScreen = ({ route, navigation }) => {
                     </View> */}
                         {item.isOpenInner && item.employeeTargetAchievements.length > 0 && item.employeeTargetAchievements.map((innerItem1, innerIndex1) => {
                           return (
-                              <>
-                                <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F59D00', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 4, marginBottom: item.isOpenInner ? 5 : 4 }} onPress={async () => {
-                                  setSelectedName(innerItem1.empName);
-                                  setTimeout(() => {
-                                    setSelectedName('')
-                                  }, 900);
-                                  let localData = [...allParameters];
-                                  let current = localData[index].employeeTargetAchievements[innerIndex1].isOpenInner;
-                                  for (let i = 0; i < localData[index].employeeTargetAchievements.length; i++) {
-                                    localData[index].employeeTargetAchievements[i].isOpenInner = false;
-                                    if (i === localData[index].employeeTargetAchievements.length - 1) {
-                                      localData[index].employeeTargetAchievements[innerIndex1].isOpenInner = !current;
-                                    }
+                            <>
+                              <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F59D00', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 4, marginBottom: item.isOpenInner ? 5 : 4 }} onPress={async () => {
+                                setSelectedName(innerItem1.empName);
+                                setTimeout(() => {
+                                  setSelectedName('')
+                                }, 900);
+                                let localData = [...allParameters];
+                                let current = localData[index].employeeTargetAchievements[innerIndex1].isOpenInner;
+                                for (let i = 0; i < localData[index].employeeTargetAchievements.length; i++) {
+                                  localData[index].employeeTargetAchievements[i].isOpenInner = false;
+                                  if (i === localData[index].employeeTargetAchievements.length - 1) {
+                                    localData[index].employeeTargetAchievements[innerIndex1].isOpenInner = !current;
                                   }
+                                }
 
-                                  if (!current) {
-                                    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-                                    // console.log("$$$$$ LOGIN EMP:", employeeData);
-                                    if (employeeData) {
-                                      const jsonObj = JSON.parse(employeeData);
-                                      const dateFormat = "YYYY-MM-DD";
-                                      const currentDate = moment().format(dateFormat)
-                                      const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-                                      const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-                                      let payload = {
-                                        "orgId": jsonObj.orgId,
-                                        "selectedEmpId": innerItem1.empId,
-                                        "endDate": monthLastDate,
-                                        "loggedInEmpId": jsonObj.empId,
-                                        "empId": innerItem1.empId,
-                                        "startDate": monthFirstDate,
-                                        "levelSelected": null,
-                                        "pageNo": 0,
-                                        "size": 100
-                                      }
-                                      console.log("PPPLLL", payload);
-                                      Promise.all([
-                                        dispatch(getUserWiseTargetParameters(payload))
-                                      ]).then((res) => {
-                                        console.log("DATA:", JSON.stringify(res));
-                                        let tempRawData = [];
-                                        tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem1.empId);
-                                        if (tempRawData.length > 0) {
-                                          for (let i = 0; i < tempRawData.length; i++) {
-                                            tempRawData[i] = {
-                                              ...tempRawData[i],
-                                              isOpenInner: false,
-                                              employeeTargetAchievements: []
-                                            }
-                                            if (i === tempRawData.length - 1) {
-                                              localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements = tempRawData;
-                                            }
+                                if (!current) {
+                                  let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+                                  // console.log("$$$$$ LOGIN EMP:", employeeData);
+                                  if (employeeData) {
+                                    const jsonObj = JSON.parse(employeeData);
+                                    const dateFormat = "YYYY-MM-DD";
+                                    const currentDate = moment().format(dateFormat)
+                                    const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                                    const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                                    let payload = {
+                                      "orgId": jsonObj.orgId,
+                                      "selectedEmpId": innerItem1.empId,
+                                      "endDate": monthLastDate,
+                                      "loggedInEmpId": jsonObj.empId,
+                                      "empId": innerItem1.empId,
+                                      "startDate": monthFirstDate,
+                                      "levelSelected": null,
+                                      "pageNo": 0,
+                                      "size": 100
+                                    }
+                                    console.log("PPPLLL", payload);
+                                    Promise.all([
+                                      dispatch(getUserWiseTargetParameters(payload))
+                                    ]).then((res) => {
+                                      console.log("DATA:", JSON.stringify(res));
+                                      let tempRawData = [];
+                                      tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem1.empId);
+                                      if (tempRawData.length > 0) {
+                                        for (let i = 0; i < tempRawData.length; i++) {
+                                          tempRawData[i] = {
+                                            ...tempRawData[i],
+                                            isOpenInner: false,
+                                            employeeTargetAchievements: []
+                                          }
+                                          if (i === tempRawData.length - 1) {
+                                            localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements = tempRawData;
                                           }
                                         }
-                                        setAllParameters([...localData])
-                                      })
+                                      }
+                                      setAllParameters([...localData])
+                                    })
 
-                                      // if (localData[index].employeeTargetAchievements.length > 0) {
-                                      //   for (let j = 0; j < localData[index].employeeTargetAchievements.length; j++) {
-                                      //     localData[index].employeeTargetAchievements[j].isOpenInner = false;
-                                      //   }
-                                      // }
-                                      // setAllParameters([...localData])
-                                    }
+                                    // if (localData[index].employeeTargetAchievements.length > 0) {
+                                    //   for (let j = 0; j < localData[index].employeeTargetAchievements.length; j++) {
+                                    //     localData[index].employeeTargetAchievements[j].isOpenInner = false;
+                                    //   }
+                                    // }
+                                    // setAllParameters([...localData])
                                   }
-                                  else {
-                                    setAllParameters([...localData])
-                                  }
-                                  // setAllParameters([...localData])
-                                }}>
-                                  <Text style={{ fontSize: 14, color: '#fff' }}>{innerItem1.empName.charAt(0)}</Text>
-                                </TouchableOpacity>
-                                {
-                                    innerItem1.isOpenInner && innerItem1.employeeTargetAchievements.length > 0 && innerItem1.employeeTargetAchievements.map((innerItem2, innerIndex2) => {
-                                      return (
-                                          <>
-                                            <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#2C97DE', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 4, marginBottom: item.isOpenInner ? 5 : 4 }} onPress={async () => {
-                                              setSelectedName(innerItem2.empName);
-                                              setTimeout(() => {
-                                                setSelectedName('')
-                                              }, 900);
-                                              let localData = [...allParameters];
-                                              let current = localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].isOpenInner;
-                                              for (let i = 0; i < localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements.length; i++) {
-                                                localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[i].isOpenInner = false;
-                                                if (i === localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements.length - 1) {
-                                                  localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].isOpenInner = !current;
+                                }
+                                else {
+                                  setAllParameters([...localData])
+                                }
+                                // setAllParameters([...localData])
+                              }}>
+                                <Text style={{ fontSize: 14, color: '#fff' }}>{innerItem1.empName.charAt(0)}</Text>
+                              </TouchableOpacity>
+                              {
+                                innerItem1.isOpenInner && innerItem1.employeeTargetAchievements.length > 0 && innerItem1.employeeTargetAchievements.map((innerItem2, innerIndex2) => {
+                                  return (
+                                    <>
+                                      <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#2C97DE', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 4, marginBottom: item.isOpenInner ? 5 : 4 }} onPress={async () => {
+                                        setSelectedName(innerItem2.empName);
+                                        setTimeout(() => {
+                                          setSelectedName('')
+                                        }, 900);
+                                        let localData = [...allParameters];
+                                        let current = localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].isOpenInner;
+                                        for (let i = 0; i < localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements.length; i++) {
+                                          localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[i].isOpenInner = false;
+                                          if (i === localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements.length - 1) {
+                                            localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].isOpenInner = !current;
+                                          }
+                                        }
+
+                                        if (!current) {
+                                          let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+                                          // console.log("$$$$$ LOGIN EMP:", employeeData);
+                                          if (employeeData) {
+                                            const jsonObj = JSON.parse(employeeData);
+                                            const dateFormat = "YYYY-MM-DD";
+                                            const currentDate = moment().format(dateFormat)
+                                            const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                                            const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                                            let payload = {
+                                              "orgId": jsonObj.orgId,
+                                              "selectedEmpId": innerItem2.empId,
+                                              "endDate": monthLastDate,
+                                              "loggedInEmpId": jsonObj.empId,
+                                              "empId": innerItem2.empId,
+                                              "startDate": monthFirstDate,
+                                              "levelSelected": null,
+                                              "pageNo": 0,
+                                              "size": 100
+                                            }
+                                            console.log("PPPLLL", payload);
+                                            Promise.all([
+                                              dispatch(getUserWiseTargetParameters(payload))
+                                            ]).then((res) => {
+                                              console.log("DATA:", JSON.stringify(res));
+                                              let tempRawData = [];
+                                              tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem2.empId);
+                                              if (tempRawData.length > 0) {
+                                                for (let i = 0; i < tempRawData.length; i++) {
+                                                  tempRawData[i] = {
+                                                    ...tempRawData[i],
+                                                    isOpenInner: false,
+                                                    employeeTargetAchievements: []
+                                                  }
+                                                  if (i === tempRawData.length - 1) {
+                                                    localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements = tempRawData;
+                                                  }
                                                 }
                                               }
+                                              setIsLevel2Available(tempRawData.length > 0);
+                                              setAllParameters([...localData])
+                                            })
 
-                                              if (!current) {
-                                                let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-                                                // console.log("$$$$$ LOGIN EMP:", employeeData);
-                                                if (employeeData) {
-                                                  const jsonObj = JSON.parse(employeeData);
-                                                  const dateFormat = "YYYY-MM-DD";
-                                                  const currentDate = moment().format(dateFormat)
-                                                  const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-                                                  const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-                                                  let payload = {
-                                                    "orgId": jsonObj.orgId,
-                                                    "selectedEmpId": innerItem2.empId,
-                                                    "endDate": monthLastDate,
-                                                    "loggedInEmpId": jsonObj.empId,
-                                                    "empId": innerItem2.empId,
-                                                    "startDate": monthFirstDate,
-                                                    "levelSelected": null,
-                                                    "pageNo": 0,
-                                                    "size": 100
+                                            // if (localData[index].employeeTargetAchievements.length > 0) {
+                                            //   for (let j = 0; j < localData[index].employeeTargetAchievements.length; j++) {
+                                            //     localData[index].employeeTargetAchievements[j].isOpenInner = false;
+                                            //   }
+                                            // }
+                                            // setAllParameters([...localData])
+                                          }
+                                        }
+                                        else {
+                                          setAllParameters([...localData])
+                                        }
+                                        // setAllParameters([...localData])
+                                      }}>
+                                        <Text style={{ fontSize: 14, color: '#fff' }}>{innerItem2.empName.charAt(0)}</Text>
+                                      </TouchableOpacity>
+
+                                      {
+                                        innerItem2.isOpenInner && innerItem2.employeeTargetAchievements.length > 0 && innerItem2.employeeTargetAchievements.map((innerItem3, innerIndex3) => {
+                                          return (
+                                            <>
+                                              <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#EC3466', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 4, marginBottom: item.isOpenInner ? 5 : 4 }} onPress={async () => {
+                                                setSelectedName(innerItem3.empName);
+                                                setTimeout(() => {
+                                                  setSelectedName('')
+                                                }, 900);
+                                                let localData = [...allParameters];
+                                                let current = localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].isOpenInner;
+                                                for (let i = 0; i < localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements.length; i++) {
+                                                  localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[i].isOpenInner = false;
+                                                  if (i === localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements.length - 1) {
+                                                    localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].isOpenInner = !current;
                                                   }
-                                                  console.log("PPPLLL", payload);
-                                                  Promise.all([
-                                                    dispatch(getUserWiseTargetParameters(payload))
-                                                  ]).then((res) => {
-                                                    console.log("DATA:", JSON.stringify(res));
-                                                    let tempRawData = [];
-                                                    tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem2.empId);
-                                                    if (tempRawData.length > 0) {
-                                                      for (let i = 0; i < tempRawData.length; i++) {
-                                                        tempRawData[i] = {
-                                                          ...tempRawData[i],
-                                                          isOpenInner: false,
-                                                          employeeTargetAchievements: []
-                                                        }
-                                                        if (i === tempRawData.length - 1) {
-                                                          localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements = tempRawData;
+                                                }
+
+                                                if (!current) {
+                                                  let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+                                                  // console.log("$$$$$ LOGIN EMP:", employeeData);
+                                                  if (employeeData) {
+                                                    const jsonObj = JSON.parse(employeeData);
+                                                    const dateFormat = "YYYY-MM-DD";
+                                                    const currentDate = moment().format(dateFormat)
+                                                    const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                                                    const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                                                    let payload = {
+                                                      "orgId": jsonObj.orgId,
+                                                      "selectedEmpId": innerItem3.empId,
+                                                      "endDate": monthLastDate,
+                                                      "loggedInEmpId": jsonObj.empId,
+                                                      "empId": innerItem3.empId,
+                                                      "startDate": monthFirstDate,
+                                                      "levelSelected": null,
+                                                      "pageNo": 0,
+                                                      "size": 100
+                                                    }
+                                                    console.log("PPPLLL", payload);
+                                                    Promise.all([
+                                                      dispatch(getUserWiseTargetParameters(payload))
+                                                    ]).then((res) => {
+                                                      console.log("DATA:", JSON.stringify(res));
+                                                      let tempRawData = [];
+                                                      tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem3.empId);
+                                                      if (tempRawData.length > 0) {
+                                                        for (let i = 0; i < tempRawData.length; i++) {
+                                                          tempRawData[i] = {
+                                                            ...tempRawData[i],
+                                                            isOpenInner: false,
+                                                            employeeTargetAchievements: []
+                                                          }
+                                                          if (i === tempRawData.length - 1) {
+                                                            localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements = tempRawData;
+                                                          }
                                                         }
                                                       }
-                                                    }
-                                                    setIsLevel2Available(tempRawData.length > 0);
-                                                    setAllParameters([...localData])
-                                                  })
-
-                                                  // if (localData[index].employeeTargetAchievements.length > 0) {
-                                                  //   for (let j = 0; j < localData[index].employeeTargetAchievements.length; j++) {
-                                                  //     localData[index].employeeTargetAchievements[j].isOpenInner = false;
-                                                  //   }
-                                                  // }
-                                                  // setAllParameters([...localData])
+                                                      setIsLevel3Available(tempRawData.length > 0);
+                                                      setAllParameters([...localData])
+                                                    })
+                                                  }
                                                 }
-                                              }
-                                              else {
-                                                setAllParameters([...localData])
-                                              }
-                                              // setAllParameters([...localData])
-                                            }}>
-                                              <Text style={{ fontSize: 14, color: '#fff' }}>{innerItem2.empName.charAt(0)}</Text>
-                                            </TouchableOpacity>
+                                                else {
+                                                  setAllParameters([...localData])
+                                                }
+                                                // setAllParameters([...localData])
+                                              }}>
+                                                <Text style={{ fontSize: 14, color: '#fff' }}>{innerItem3.empName.charAt(0)}</Text>
+                                              </TouchableOpacity>
 
-                                            {
-                                                innerItem2.isOpenInner && innerItem2.employeeTargetAchievements.length > 0 && innerItem2.employeeTargetAchievements.map((innerItem3, innerIndex3) => {
+                                              {
+                                                innerItem3.isOpenInner && innerItem3.employeeTargetAchievements.length > 0 && innerItem3.employeeTargetAchievements.map((innerItem4, innerIndex4) => {
                                                   return (
-                                                      <>
-                                                        <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#EC3466', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 4, marginBottom: item.isOpenInner ? 5 : 4 }} onPress={async () => {
-                                                          setSelectedName(innerItem3.empName);
-                                                          setTimeout(() => {
-                                                            setSelectedName('')
-                                                          }, 900);
-                                                          let localData = [...allParameters];
-                                                          let current = localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].isOpenInner;
-                                                          for (let i = 0; i < localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements.length; i++) {
-                                                            localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[i].isOpenInner = false;
-                                                            if (i === localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements.length - 1) {
-                                                              localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].isOpenInner = !current;
-                                                            }
+                                                    <>
+                                                      <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#1C95A6', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 4, marginBottom: item.isOpenInner ? 5 : 4 }} onPress={async () => {
+                                                        setSelectedName(innerItem4.empName);
+                                                        setTimeout(() => {
+                                                          setSelectedName('')
+                                                        }, 900);
+                                                        let localData = [...allParameters];
+                                                        let current = localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].isOpenInner;
+                                                        for (let i = 0; i < localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements.length; i++) {
+                                                          localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[i].isOpenInner = false;
+                                                          if (i === localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements.length - 1) {
+                                                            localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].isOpenInner = !current;
                                                           }
+                                                        }
 
-                                                          if (!current) {
-                                                            let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-                                                            // console.log("$$$$$ LOGIN EMP:", employeeData);
-                                                            if (employeeData) {
-                                                              const jsonObj = JSON.parse(employeeData);
-                                                              const dateFormat = "YYYY-MM-DD";
-                                                              const currentDate = moment().format(dateFormat)
-                                                              const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-                                                              const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-                                                              let payload = {
-                                                                "orgId": jsonObj.orgId,
-                                                                "selectedEmpId": innerItem3.empId,
-                                                                "endDate": monthLastDate,
-                                                                "loggedInEmpId": jsonObj.empId,
-                                                                "empId": innerItem3.empId,
-                                                                "startDate": monthFirstDate,
-                                                                "levelSelected": null,
-                                                                "pageNo": 0,
-                                                                "size": 100
-                                                              }
-                                                              console.log("PPPLLL", payload);
-                                                              Promise.all([
-                                                                dispatch(getUserWiseTargetParameters(payload))
-                                                              ]).then((res) => {
-                                                                console.log("DATA:", JSON.stringify(res));
-                                                                let tempRawData = [];
-                                                                tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem3.empId);
-                                                                if (tempRawData.length > 0) {
-                                                                  for (let i = 0; i < tempRawData.length; i++) {
-                                                                    tempRawData[i] = {
-                                                                      ...tempRawData[i],
-                                                                      isOpenInner: false,
-                                                                      employeeTargetAchievements: []
-                                                                    }
-                                                                    if (i === tempRawData.length - 1) {
-                                                                      localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements = tempRawData;
-                                                                    }
+                                                        if (!current) {
+                                                          let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+                                                          // console.log("$$$$$ LOGIN EMP:", employeeData);
+                                                          if (employeeData) {
+                                                            const jsonObj = JSON.parse(employeeData);
+                                                            const dateFormat = "YYYY-MM-DD";
+                                                            const currentDate = moment().format(dateFormat)
+                                                            const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                                                            const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                                                            let payload = {
+                                                              "orgId": jsonObj.orgId,
+                                                              "selectedEmpId": innerItem4.empId,
+                                                              "endDate": monthLastDate,
+                                                              "loggedInEmpId": jsonObj.empId,
+                                                              "empId": innerItem4.empId,
+                                                              "startDate": monthFirstDate,
+                                                              "levelSelected": null,
+                                                              "pageNo": 0,
+                                                              "size": 100
+                                                            }
+                                                            console.log("PPPLLL", payload);
+                                                            Promise.all([
+                                                              dispatch(getUserWiseTargetParameters(payload))
+                                                            ]).then((res) => {
+                                                              console.log("DATA:", JSON.stringify(res));
+                                                              let tempRawData = [];
+                                                              tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem4.empId);
+                                                              if (tempRawData.length > 0) {
+                                                                for (let i = 0; i < tempRawData.length; i++) {
+                                                                  tempRawData[i] = {
+                                                                    ...tempRawData[i],
+                                                                    isOpenInner: false,
+                                                                    employeeTargetAchievements: []
+                                                                  }
+                                                                  if (i === tempRawData.length - 1) {
+                                                                    localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements = tempRawData;
                                                                   }
                                                                 }
-                                                                setIsLevel3Available(tempRawData.length > 0);
-                                                                setAllParameters([...localData])
-                                                              })
-                                                            }
+                                                              }
+                                                              setIsLevel4Available(tempRawData.length > 0);
+                                                              setAllParameters([...localData])
+                                                            })
                                                           }
-                                                          else {
-                                                            setAllParameters([...localData])
-                                                          }
-                                                          // setAllParameters([...localData])
-                                                        }}>
-                                                          <Text style={{ fontSize: 14, color: '#fff' }}>{innerItem3.empName.charAt(0)}</Text>
-                                                        </TouchableOpacity>
+                                                        }
+                                                        else {
+                                                          setAllParameters([...localData])
+                                                        }
+                                                        // setAllParameters([...localData])
+                                                      }}>
+                                                        <Text style={{ fontSize: 14, color: '#fff' }}>{innerItem4.empName.charAt(0)}</Text>
+                                                      </TouchableOpacity>
 
-                                                        {
-                                                            innerItem3.isOpenInner && innerItem3.employeeTargetAchievements.length > 0 && innerItem3.employeeTargetAchievements.map((innerItem4, innerIndex4) => {
-                                                              return (
-                                                                  <>
-                                                                    <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#1C95A6', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 4, marginBottom: item.isOpenInner ? 5 : 4 }} onPress={async () => {
-                                                                      setSelectedName(innerItem4.empName);
-                                                                      setTimeout(() => {
-                                                                        setSelectedName('')
-                                                                      }, 900);
-                                                                      let localData = [...allParameters];
-                                                                      let current = localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].isOpenInner;
-                                                                      for (let i = 0; i < localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements.length; i++) {
-                                                                        localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[i].isOpenInner = false;
-                                                                        if (i === localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements.length - 1) {
-                                                                          localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].isOpenInner = !current;
+                                                      {
+                                                        innerItem4.isOpenInner && innerItem4.employeeTargetAchievements.length > 0 && innerItem4.employeeTargetAchievements.map((innerItem5, innerIndex5) => {
+                                                          return (
+                                                            <>
+                                                              <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#9E31BE', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 4, marginBottom: item.isOpenInner ? 5 : 4 }} onPress={async () => {
+                                                                setSelectedName(innerItem5.empName);
+                                                                setTimeout(() => {
+                                                                  setSelectedName('')
+                                                                }, 900);
+                                                                let localData = [...allParameters];
+                                                                let current = localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].isOpenInner;
+                                                                for (let i = 0; i < localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements.length; i++) {
+                                                                  localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[i].isOpenInner = false;
+                                                                  if (i === localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements.length - 1) {
+                                                                    localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].isOpenInner = !current;
+                                                                  }
+                                                                }
+
+                                                                if (!current) {
+                                                                  let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+                                                                  // console.log("$$$$$ LOGIN EMP:", employeeData);
+                                                                  if (employeeData) {
+                                                                    const jsonObj = JSON.parse(employeeData);
+                                                                    const dateFormat = "YYYY-MM-DD";
+                                                                    const currentDate = moment().format(dateFormat)
+                                                                    const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                                                                    const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                                                                    let payload = {
+                                                                      "orgId": jsonObj.orgId,
+                                                                      "selectedEmpId": innerItem5.empId,
+                                                                      "endDate": monthLastDate,
+                                                                      "loggedInEmpId": jsonObj.empId,
+                                                                      "empId": innerItem5.empId,
+                                                                      "startDate": monthFirstDate,
+                                                                      "levelSelected": null,
+                                                                      "pageNo": 0,
+                                                                      "size": 100
+                                                                    }
+                                                                    console.log("PPPLLL", payload);
+                                                                    Promise.all([
+                                                                      dispatch(getUserWiseTargetParameters(payload))
+                                                                    ]).then((res) => {
+                                                                      console.log("DATA:", JSON.stringify(res));
+                                                                      let tempRawData = [];
+                                                                      tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem5.empId);
+                                                                      if (tempRawData.length > 0) {
+                                                                        for (let i = 0; i < tempRawData.length; i++) {
+                                                                          tempRawData[i] = {
+                                                                            ...tempRawData[i],
+                                                                            isOpenInner: false,
+                                                                            employeeTargetAchievements: []
+                                                                          }
+                                                                          if (i === tempRawData.length - 1) {
+                                                                            localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].employeeTargetAchievements = tempRawData;
+                                                                          }
                                                                         }
                                                                       }
+                                                                      setIsLevel5Available(tempRawData.length > 0);
+                                                                      setAllParameters([...localData])
+                                                                    })
+                                                                  }
+                                                                }
+                                                                else {
+                                                                  setAllParameters([...localData])
+                                                                }
+                                                                // setAllParameters([...localData])
+                                                              }}>
+                                                                <Text style={{ fontSize: 14, color: '#fff' }}>{innerItem5.empName.charAt(0)}</Text>
+                                                              </TouchableOpacity>
 
-                                                                      if (!current) {
-                                                                        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-                                                                        // console.log("$$$$$ LOGIN EMP:", employeeData);
-                                                                        if (employeeData) {
-                                                                          const jsonObj = JSON.parse(employeeData);
-                                                                          const dateFormat = "YYYY-MM-DD";
-                                                                          const currentDate = moment().format(dateFormat)
-                                                                          const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-                                                                          const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-                                                                          let payload = {
-                                                                            "orgId": jsonObj.orgId,
-                                                                            "selectedEmpId": innerItem4.empId,
-                                                                            "endDate": monthLastDate,
-                                                                            "loggedInEmpId": jsonObj.empId,
-                                                                            "empId": innerItem4.empId,
-                                                                            "startDate": monthFirstDate,
-                                                                            "levelSelected": null,
-                                                                            "pageNo": 0,
-                                                                            "size": 100
+                                                              {
+                                                                innerItem5.isOpenInner && innerItem5.employeeTargetAchievements.length > 0 && innerItem5.employeeTargetAchievements.map((innerItem6, innerIndex6) => {
+                                                                  return (
+                                                                    <>
+                                                                      <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#5BBD66', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 4, marginBottom: item.isOpenInner ? 5 : 4 }} onPress={async () => {
+                                                                        setSelectedName(innerItem6.empName);
+                                                                        setTimeout(() => {
+                                                                          setSelectedName('')
+                                                                        }, 900);
+                                                                        let localData = [...allParameters];
+                                                                        let current = localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].employeeTargetAchievements[innerIndex6].isOpenInner;
+                                                                        for (let i = 0; i < localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].employeeTargetAchievements.length; i++) {
+                                                                          localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].employeeTargetAchievements[i].isOpenInner = false;
+                                                                          if (i === localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].employeeTargetAchievements.length - 1) {
+                                                                            localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].employeeTargetAchievements[innerIndex6].isOpenInner = !current;
                                                                           }
-                                                                          console.log("PPPLLL", payload);
-                                                                          Promise.all([
-                                                                            dispatch(getUserWiseTargetParameters(payload))
-                                                                          ]).then((res) => {
-                                                                            console.log("DATA:", JSON.stringify(res));
-                                                                            let tempRawData = [];
-                                                                            tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem4.empId);
-                                                                            if (tempRawData.length > 0) {
-                                                                              for (let i = 0; i < tempRawData.length; i++) {
-                                                                                tempRawData[i] = {
-                                                                                  ...tempRawData[i],
-                                                                                  isOpenInner: false,
-                                                                                  employeeTargetAchievements: []
-                                                                                }
-                                                                                if (i === tempRawData.length - 1) {
-                                                                                  localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements = tempRawData;
+                                                                        }
+
+                                                                        if (!current) {
+                                                                          let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+                                                                          // console.log("$$$$$ LOGIN EMP:", employeeData);
+                                                                          if (employeeData) {
+                                                                            const jsonObj = JSON.parse(employeeData);
+                                                                            const dateFormat = "YYYY-MM-DD";
+                                                                            const currentDate = moment().format(dateFormat)
+                                                                            const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
+                                                                            const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
+                                                                            let payload = {
+                                                                              "orgId": jsonObj.orgId,
+                                                                              "selectedEmpId": innerItem6.empId,
+                                                                              "endDate": monthLastDate,
+                                                                              "loggedInEmpId": jsonObj.empId,
+                                                                              "empId": innerItem6.empId,
+                                                                              "startDate": monthFirstDate,
+                                                                              "levelSelected": null,
+                                                                              "pageNo": 0,
+                                                                              "size": 100
+                                                                            }
+                                                                            console.log("PPPLLL", payload);
+                                                                            Promise.all([
+                                                                              dispatch(getUserWiseTargetParameters(payload))
+                                                                            ]).then((res) => {
+                                                                              console.log("DATA:", JSON.stringify(res));
+                                                                              let tempRawData = [];
+                                                                              tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem6.empId);
+                                                                              if (tempRawData.length > 0) {
+                                                                                for (let i = 0; i < tempRawData.length; i++) {
+                                                                                  tempRawData[i] = {
+                                                                                    ...tempRawData[i],
+                                                                                    isOpenInner: false,
+                                                                                    employeeTargetAchievements: []
+                                                                                  }
+                                                                                  if (i === tempRawData.length - 1) {
+                                                                                    localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].employeeTargetAchievements[innerIndex6].employeeTargetAchievements = tempRawData;
+                                                                                  }
                                                                                 }
                                                                               }
-                                                                            }
-                                                                            setIsLevel4Available(tempRawData.length > 0);
-                                                                            setAllParameters([...localData])
-                                                                          })
+                                                                              setAllParameters([...localData])
+                                                                            })
+                                                                          }
                                                                         }
-                                                                      }
-                                                                      else {
-                                                                        setAllParameters([...localData])
-                                                                      }
-                                                                      // setAllParameters([...localData])
-                                                                    }}>
-                                                                      <Text style={{ fontSize: 14, color: '#fff' }}>{innerItem4.empName.charAt(0)}</Text>
-                                                                    </TouchableOpacity>
+                                                                        else {
+                                                                          setAllParameters([...localData])
+                                                                        }
+                                                                        // setAllParameters([...localData])
+                                                                      }}>
+                                                                        <Text style={{ fontSize: 14, color: '#fff' }}>{innerItem6.empName.charAt(0)}</Text>
+                                                                      </TouchableOpacity>
+                                                                    </>
+                                                                  )
+                                                                })
+                                                              }
 
-                                                                    {
-                                                                        innerItem4.isOpenInner && innerItem4.employeeTargetAchievements.length > 0 && innerItem4.employeeTargetAchievements.map((innerItem5, innerIndex5) => {
-                                                                          return (
-                                                                              <>
-                                                                                <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#9E31BE', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 4, marginBottom: item.isOpenInner ? 5 : 4 }} onPress={async () => {
-                                                                                  setSelectedName(innerItem5.empName);
-                                                                                  setTimeout(() => {
-                                                                                    setSelectedName('')
-                                                                                  }, 900);
-                                                                                  let localData = [...allParameters];
-                                                                                  let current = localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].isOpenInner;
-                                                                                  for (let i = 0; i < localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements.length; i++) {
-                                                                                    localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[i].isOpenInner = false;
-                                                                                    if (i === localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements.length - 1) {
-                                                                                      localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].isOpenInner = !current;
-                                                                                    }
-                                                                                  }
-
-                                                                                  if (!current) {
-                                                                                    let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-                                                                                    // console.log("$$$$$ LOGIN EMP:", employeeData);
-                                                                                    if (employeeData) {
-                                                                                      const jsonObj = JSON.parse(employeeData);
-                                                                                      const dateFormat = "YYYY-MM-DD";
-                                                                                      const currentDate = moment().format(dateFormat)
-                                                                                      const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-                                                                                      const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-                                                                                      let payload = {
-                                                                                        "orgId": jsonObj.orgId,
-                                                                                        "selectedEmpId": innerItem5.empId,
-                                                                                        "endDate": monthLastDate,
-                                                                                        "loggedInEmpId": jsonObj.empId,
-                                                                                        "empId": innerItem5.empId,
-                                                                                        "startDate": monthFirstDate,
-                                                                                        "levelSelected": null,
-                                                                                        "pageNo": 0,
-                                                                                        "size": 100
-                                                                                      }
-                                                                                      console.log("PPPLLL", payload);
-                                                                                      Promise.all([
-                                                                                        dispatch(getUserWiseTargetParameters(payload))
-                                                                                      ]).then((res) => {
-                                                                                        console.log("DATA:", JSON.stringify(res));
-                                                                                        let tempRawData = [];
-                                                                                        tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem5.empId);
-                                                                                        if (tempRawData.length > 0) {
-                                                                                          for (let i = 0; i < tempRawData.length; i++) {
-                                                                                            tempRawData[i] = {
-                                                                                              ...tempRawData[i],
-                                                                                              isOpenInner: false,
-                                                                                              employeeTargetAchievements: []
-                                                                                            }
-                                                                                            if (i === tempRawData.length - 1) {
-                                                                                              localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].employeeTargetAchievements = tempRawData;
-                                                                                            }
-                                                                                          }
-                                                                                        }
-                                                                                        setIsLevel5Available(tempRawData.length > 0);
-                                                                                        setAllParameters([...localData])
-                                                                                      })
-                                                                                    }
-                                                                                  }
-                                                                                  else {
-                                                                                    setAllParameters([...localData])
-                                                                                  }
-                                                                                  // setAllParameters([...localData])
-                                                                                }}>
-                                                                                  <Text style={{ fontSize: 14, color: '#fff' }}>{innerItem5.empName.charAt(0)}</Text>
-                                                                                </TouchableOpacity>
-
-                                                                                {
-                                                                                    innerItem5.isOpenInner && innerItem5.employeeTargetAchievements.length > 0 && innerItem5.employeeTargetAchievements.map((innerItem6, innerIndex6) => {
-                                                                                      return (
-                                                                                          <>
-                                                                                            <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#5BBD66', borderRadius: 20, marginTop: item.isOpenInner ? 5 : 4, marginBottom: item.isOpenInner ? 5 : 4 }} onPress={async () => {
-                                                                                              setSelectedName(innerItem6.empName);
-                                                                                              setTimeout(() => {
-                                                                                                setSelectedName('')
-                                                                                              }, 900);
-                                                                                              let localData = [...allParameters];
-                                                                                              let current = localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].employeeTargetAchievements[innerIndex6].isOpenInner;
-                                                                                              for (let i = 0; i < localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].employeeTargetAchievements.length; i++) {
-                                                                                                localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].employeeTargetAchievements[i].isOpenInner = false;
-                                                                                                if (i === localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].employeeTargetAchievements.length - 1) {
-                                                                                                  localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].employeeTargetAchievements[innerIndex6].isOpenInner = !current;
-                                                                                                }
-                                                                                              }
-
-                                                                                              if (!current) {
-                                                                                                let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-                                                                                                // console.log("$$$$$ LOGIN EMP:", employeeData);
-                                                                                                if (employeeData) {
-                                                                                                  const jsonObj = JSON.parse(employeeData);
-                                                                                                  const dateFormat = "YYYY-MM-DD";
-                                                                                                  const currentDate = moment().format(dateFormat)
-                                                                                                  const monthFirstDate = moment(currentDate, dateFormat).subtract(0, 'months').startOf('month').format(dateFormat);
-                                                                                                  const monthLastDate = moment(currentDate, dateFormat).subtract(0, 'months').endOf('month').format(dateFormat);
-                                                                                                  let payload = {
-                                                                                                    "orgId": jsonObj.orgId,
-                                                                                                    "selectedEmpId": innerItem6.empId,
-                                                                                                    "endDate": monthLastDate,
-                                                                                                    "loggedInEmpId": jsonObj.empId,
-                                                                                                    "empId": innerItem6.empId,
-                                                                                                    "startDate": monthFirstDate,
-                                                                                                    "levelSelected": null,
-                                                                                                    "pageNo": 0,
-                                                                                                    "size": 100
-                                                                                                  }
-                                                                                                  console.log("PPPLLL", payload);
-                                                                                                  Promise.all([
-                                                                                                    dispatch(getUserWiseTargetParameters(payload))
-                                                                                                  ]).then((res) => {
-                                                                                                    console.log("DATA:", JSON.stringify(res));
-                                                                                                    let tempRawData = [];
-                                                                                                    tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem6.empId);
-                                                                                                    if (tempRawData.length > 0) {
-                                                                                                      for (let i = 0; i < tempRawData.length; i++) {
-                                                                                                        tempRawData[i] = {
-                                                                                                          ...tempRawData[i],
-                                                                                                          isOpenInner: false,
-                                                                                                          employeeTargetAchievements: []
-                                                                                                        }
-                                                                                                        if (i === tempRawData.length - 1) {
-                                                                                                          localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements[innerIndex2].employeeTargetAchievements[innerIndex3].employeeTargetAchievements[innerIndex4].employeeTargetAchievements[innerIndex5].employeeTargetAchievements[innerIndex6].employeeTargetAchievements = tempRawData;
-                                                                                                        }
-                                                                                                      }
-                                                                                                    }
-                                                                                                    setAllParameters([...localData])
-                                                                                                  })
-                                                                                                }
-                                                                                              }
-                                                                                              else {
-                                                                                                setAllParameters([...localData])
-                                                                                              }
-                                                                                              // setAllParameters([...localData])
-                                                                                            }}>
-                                                                                              <Text style={{ fontSize: 14, color: '#fff' }}>{innerItem6.empName.charAt(0)}</Text>
-                                                                                            </TouchableOpacity>
-                                                                                          </>
-                                                                                      )
-                                                                                    })
-                                                                                }
-
-                                                                                {isLevel5Available && <View>{renderTotalView()}</View>}
-                                                                              </>
-                                                                          )
-                                                                        })
-                                                                    }
-                                                                    {isLevel4Available && <View>{renderTotalView()}</View>}
-                                                                  </>
-                                                              )
-                                                            })
-                                                        }
-                                                        {isLevel3Available && <View>{renderTotalView()}</View>}
-                                                      </>
+                                                              {isLevel5Available && <View>{renderTotalView()}</View>}
+                                                            </>
+                                                          )
+                                                        })
+                                                      }
+                                                      {isLevel4Available && <View>{renderTotalView()}</View>}
+                                                    </>
                                                   )
                                                 })
-                                            }
-                                            {isLevel2Available && <View>{renderTotalView()}</View>}
-                                          </>
-                                      )
-                                    })
-                                }
-                                {/* <=== INNER ITEM 1 TOTAL ===> */}
-                                <View>{renderTotalView()}</View>
-                              </>
+                                              }
+                                              {isLevel3Available && <View>{renderTotalView()}</View>}
+                                            </>
+                                          )
+                                        })
+                                      }
+                                      {isLevel2Available && <View>{renderTotalView()}</View>}
+                                    </>
+                                  )
+                                })
+                              }
+                              {/* <=== INNER ITEM 1 TOTAL ===> */}
+                              <View>{renderTotalView()}</View>
+                            </>
                           )
                         })
                         }
@@ -1533,103 +1586,103 @@ const TargetScreen = ({ route, navigation }) => {
                         </View>
 
                         {item.isOpenInner && item.employeeTargetAchievements.length > 0 &&
-                            item.employeeTargetAchievements.map((innerItem1, index) => {
-                              return (
-                                  <View style={[{ width: '100%', minHeight: 40, flexDirection: 'column', }, innerItem1.isOpenInner && { borderRadius: 10, borderWidth: 1, borderColor: '#F59D00', backgroundColor: '#FFFFFF' }]}>
-                                    <View style={[{ width: '100%', minHeight: 40, flexDirection: 'column', },]}>
-                                      {renderData(innerItem1, '#F59D00')}
-                                      {
-                                          innerItem1.isOpenInner && innerItem1.employeeTargetAchievements.length > 0 &&
-                                          innerItem1.employeeTargetAchievements.map((innerItem2, innerIndex2) => {
-                                            return (
-                                                <View style={[{ width: '98%', minHeight: 40, flexDirection: 'column', }, innerItem2.isOpenInner && { borderRadius: 10, borderWidth: 1, borderColor: '#2C97DE', backgroundColor: '#EEEEEE', marginHorizontal: 5 }]}>
-                                                  {renderData(innerItem2, '#2C97DE')}
+                          item.employeeTargetAchievements.map((innerItem1, index) => {
+                            return (
+                              <View style={[{ width: '100%', minHeight: 40, flexDirection: 'column', }, innerItem1.isOpenInner && { borderRadius: 10, borderWidth: 1, borderColor: '#F59D00', backgroundColor: '#FFFFFF' }]}>
+                                <View style={[{ width: '100%', minHeight: 40, flexDirection: 'column', },]}>
+                                  {renderData(innerItem1, '#F59D00')}
+                                  {
+                                    innerItem1.isOpenInner && innerItem1.employeeTargetAchievements.length > 0 &&
+                                    innerItem1.employeeTargetAchievements.map((innerItem2, innerIndex2) => {
+                                      return (
+                                        <View style={[{ width: '98%', minHeight: 40, flexDirection: 'column', }, innerItem2.isOpenInner && { borderRadius: 10, borderWidth: 1, borderColor: '#2C97DE', backgroundColor: '#EEEEEE', marginHorizontal: 5 }]}>
+                                          {renderData(innerItem2, '#2C97DE')}
+                                          {
+                                            innerItem2.isOpenInner && innerItem2.employeeTargetAchievements.length > 0 &&
+                                            innerItem2.employeeTargetAchievements.map((innerItem3, innerIndex3) => {
+                                              return (
+                                                <View style={[{ width: '98%', minHeight: 40, flexDirection: 'column', }, innerItem3.isOpenInner && { borderRadius: 10, borderWidth: 1, borderColor: '#EC3466', backgroundColor: '#FFFFFF', marginHorizontal: 5 }]}>
+                                                  {renderData(innerItem3, '#EC3466')}
                                                   {
-                                                      innerItem2.isOpenInner && innerItem2.employeeTargetAchievements.length > 0 &&
-                                                      innerItem2.employeeTargetAchievements.map((innerItem3, innerIndex3) => {
-                                                        return (
-                                                            <View style={[{ width: '98%', minHeight: 40, flexDirection: 'column', }, innerItem3.isOpenInner && { borderRadius: 10, borderWidth: 1, borderColor: '#EC3466', backgroundColor: '#FFFFFF', marginHorizontal: 5 }]}>
-                                                              {renderData(innerItem3, '#EC3466')}
-                                                              {
-                                                                  innerItem3.isOpenInner && innerItem3.employeeTargetAchievements.length > 0 &&
-                                                                  innerItem3.employeeTargetAchievements.map((innerItem4, innerIndex4) => {
-                                                                    return (
-                                                                        <View style={[{ width: '98%', minHeight: 40, flexDirection: 'column', }, innerItem4.isOpenInner && { borderRadius: 10, borderWidth: 1, borderColor: '#1C95A6', backgroundColor: '#EEEEEE', marginHorizontal: 5 }]}>
-                                                                          {renderData(innerItem4, '#1C95A6')}
-                                                                          {
-                                                                              innerItem4.isOpenInner && innerItem4.employeeTargetAchievements.length > 0 &&
-                                                                              innerItem4.employeeTargetAchievements.map((innerItem5, innerIndex5) => {
-                                                                                return (
-                                                                                    <View style={[{ width: '98%', minHeight: 40, flexDirection: 'column', }, innerItem5.isOpenInner && { borderRadius: 10, borderWidth: 1, borderColor: '#C62159', backgroundColor: '#FFFFFF', marginHorizontal: 5 }]}>
-                                                                                      {renderData(innerItem5, '#C62159')}
-                                                                                      {
-                                                                                          innerItem5.isOpenInner && innerItem5.employeeTargetAchievements.length > 0 &&
-                                                                                          innerItem5.employeeTargetAchievements.map((innerItem6, innerIndex6) => {
-                                                                                            return (
-                                                                                                <View style={[{ width: '98%', minHeight: 40, flexDirection: 'column', }, innerItem6.isOpenInner && { borderRadius: 10, borderWidth: 1, borderColor: '#C62159', backgroundColor: '#FFFFFF', marginHorizontal: 5 }]}>
-                                                                                                  {renderData(innerItem6, '#C62159')}
-                                                                                                </View>
-                                                                                            )
-                                                                                          })
-                                                                                      }
-                                                                                      {isLevel5Available &&
-                                                                                          <View style={{flexDirection: 'row'}}>
-                                                                                            <RenderEmployeeTotal empId={innerItem5.empId}
-                                                                                                                 branchId={innerItem5.branchId} level={5}/>
-                                                                                          </View>
-                                                                                      }
-                                                                                    </View>
-                                                                                )
-                                                                              })
-                                                                          }
-                                                                          {isLevel4Available &&
-                                                                              <View style={{flexDirection: 'row'}}>
-                                                                                <RenderEmployeeTotal empId={innerItem4.empId}
-                                                                                                     branchId={innerItem4.branchId} level={4}/>
-                                                                              </View>
-                                                                          }
+                                                    innerItem3.isOpenInner && innerItem3.employeeTargetAchievements.length > 0 &&
+                                                    innerItem3.employeeTargetAchievements.map((innerItem4, innerIndex4) => {
+                                                      return (
+                                                        <View style={[{ width: '98%', minHeight: 40, flexDirection: 'column', }, innerItem4.isOpenInner && { borderRadius: 10, borderWidth: 1, borderColor: '#1C95A6', backgroundColor: '#EEEEEE', marginHorizontal: 5 }]}>
+                                                          {renderData(innerItem4, '#1C95A6')}
+                                                          {
+                                                            innerItem4.isOpenInner && innerItem4.employeeTargetAchievements.length > 0 &&
+                                                            innerItem4.employeeTargetAchievements.map((innerItem5, innerIndex5) => {
+                                                              return (
+                                                                <View style={[{ width: '98%', minHeight: 40, flexDirection: 'column', }, innerItem5.isOpenInner && { borderRadius: 10, borderWidth: 1, borderColor: '#C62159', backgroundColor: '#FFFFFF', marginHorizontal: 5 }]}>
+                                                                  {renderData(innerItem5, '#C62159')}
+                                                                  {
+                                                                    innerItem5.isOpenInner && innerItem5.employeeTargetAchievements.length > 0 &&
+                                                                    innerItem5.employeeTargetAchievements.map((innerItem6, innerIndex6) => {
+                                                                      return (
+                                                                        <View style={[{ width: '98%', minHeight: 40, flexDirection: 'column', }, innerItem6.isOpenInner && { borderRadius: 10, borderWidth: 1, borderColor: '#C62159', backgroundColor: '#FFFFFF', marginHorizontal: 5 }]}>
+                                                                          {renderData(innerItem6, '#C62159')}
                                                                         </View>
-                                                                    )
-                                                                  })
-                                                              }
-                                                              {isLevel3Available &&
-                                                                  <View style={{flexDirection: 'row'}}>
-                                                                    <RenderEmployeeTotal empId={innerItem3.empId}
-                                                                                         branchId={innerItem3.branchId} level={3}/>
-                                                                  </View>
-                                                              }
+                                                                      )
+                                                                    })
+                                                                  }
+                                                                  {isLevel5Available &&
+                                                                    <View style={{ flexDirection: 'row' }}>
+                                                                      <RenderEmployeeTotal empId={innerItem5.empId}
+                                                                        branchId={innerItem5.branchId} level={5} />
+                                                                    </View>
+                                                                  }
+                                                                </View>
+                                                              )
+                                                            })
+                                                          }
+                                                          {isLevel4Available &&
+                                                            <View style={{ flexDirection: 'row' }}>
+                                                              <RenderEmployeeTotal empId={innerItem4.empId}
+                                                                branchId={innerItem4.branchId} level={4} />
                                                             </View>
-                                                        )
-                                                      })
+                                                          }
+                                                        </View>
+                                                      )
+                                                    })
                                                   }
-
-                                                  {isLevel2Available &&
-                                                      <View style={{flexDirection: 'row'}}>
-                                                          <RenderEmployeeTotal empId={innerItem2.empId}
-                                                                         branchId={innerItem2.branchId} level={2}/>
-                                                      </View>
+                                                  {isLevel3Available &&
+                                                    <View style={{ flexDirection: 'row' }}>
+                                                      <RenderEmployeeTotal empId={innerItem3.empId}
+                                                        branchId={innerItem3.branchId} level={3} />
+                                                    </View>
                                                   }
-
                                                 </View>
-                                            )
-                                          })
-                                      }
-                                      {/* GET EMPLOYEE TOTAL INNER ITEM 1 ITEM - LEVEL 1 */}
-                                          <View style={{ flexDirection: 'row'}}>
-                                            <RenderEmployeeTotal empId={innerItem1.empId} branchId={innerItem1.branchId} level={1}/>
-                                          </View>
-                                    </View>
+                                              )
+                                            })
+                                          }
+
+                                          {isLevel2Available &&
+                                            <View style={{ flexDirection: 'row' }}>
+                                              <RenderEmployeeTotal empId={innerItem2.empId}
+                                                branchId={innerItem2.branchId} level={2} />
+                                            </View>
+                                          }
+
+                                        </View>
+                                      )
+                                    })
+                                  }
+                                  {/* GET EMPLOYEE TOTAL INNER ITEM 1 ITEM - LEVEL 1 */}
+                                  <View style={{ flexDirection: 'row' }}>
+                                    <RenderEmployeeTotal empId={innerItem1.empId} branchId={innerItem1.branchId} level={1} />
                                   </View>
-                              )
-                            })
+                                </View>
+                              </View>
+                            )
+                          })
                         }
                         {/* GET EMPLOYEE TOTAL MAIN ITEM */}
                       </View>
                     </View>
                     <View style={{ flexDirection: 'row' }}>
-                      <RenderEmployeeTotal empId={item.empId} branchId={item.branchId} level={0}/>
+                      <RenderEmployeeTotal empId={item.empId} branchId={item.branchId} level={0} />
                     </View>
-                    </View>
+                  </View>
                 )
               })}
               {/* Grand Total Section */}
@@ -1640,16 +1693,16 @@ const TargetScreen = ({ route, navigation }) => {
                   </View>
                   <View style={{ width: '92%', minHeight: 40, flexDirection: 'column', marginRight: 5, paddingHorizontal: 5, }}>
                     <View style={{ width: '92%', minHeight: 40, flexDirection: 'row' }}>
-                      <RenderGrandTotal parameterType={'Enquiry'} totalParams={selector.totalParameters}/>
-                      <RenderGrandTotal parameterType={'Test Drive'} totalParams={selector.totalParameters}/>
-                      <RenderGrandTotal parameterType={'Home Visit'} totalParams={selector.totalParameters}/>
-                      <RenderGrandTotal parameterType={'Booking'} totalParams={selector.totalParameters}/>
-                      <RenderGrandTotal parameterType={'INVOICE'} totalParams={selector.totalParameters}/>
-                      <RenderGrandTotal parameterType={'Finance'} totalParams={selector.totalParameters}/>
-                      <RenderGrandTotal parameterType={'Insurance'} totalParams={selector.totalParameters}/>
-                      <RenderGrandTotal parameterType={'Exchange'} totalParams={selector.totalParameters}/>
-                      <RenderGrandTotal parameterType={'EXTENDEDWARRANTY'} totalParams={selector.totalParameters}/>
-                      <RenderGrandTotal parameterType={'Accessories'} totalParams={selector.totalParameters}/>
+                      <RenderGrandTotal parameterType={'Enquiry'} totalParams={selector.totalParameters} />
+                      <RenderGrandTotal parameterType={'Test Drive'} totalParams={selector.totalParameters} />
+                      <RenderGrandTotal parameterType={'Home Visit'} totalParams={selector.totalParameters} />
+                      <RenderGrandTotal parameterType={'Booking'} totalParams={selector.totalParameters} />
+                      <RenderGrandTotal parameterType={'INVOICE'} totalParams={selector.totalParameters} />
+                      <RenderGrandTotal parameterType={'Finance'} totalParams={selector.totalParameters} />
+                      <RenderGrandTotal parameterType={'Insurance'} totalParams={selector.totalParameters} />
+                      <RenderGrandTotal parameterType={'Exchange'} totalParams={selector.totalParameters} />
+                      <RenderGrandTotal parameterType={'EXTENDEDWARRANTY'} totalParams={selector.totalParameters} />
+                      <RenderGrandTotal parameterType={'Accessories'} totalParams={selector.totalParameters} />
                     </View>
                   </View>
                 </View>
@@ -1660,8 +1713,21 @@ const TargetScreen = ({ route, navigation }) => {
           <>
             <View style={{ flexDirection: "row" }}>
               <View
-                style={{ width: "65%", justifyContent: "center", height: 15 }}
-              ></View>
+                style={{ width: "12%", justifyContent: "center", height: 15 }}
+              >
+
+              </View>
+              <View
+                style={{ width: "35%", justifyContent: "space-between", height: 15, flexDirection: "row" }}
+              >
+                <Text style={{ fontSize: 14, fontWeight: "600" }}>Ach</Text>
+                <Text style={{ fontSize: 14, fontWeight: "600" }}>Tar</Text>
+              </View>
+              <View
+                style={{ width: "18%", justifyContent: "center", height: 15, alignItems:"center" }}
+              >
+                <Text style={{ fontSize: 14, fontWeight: "600" }}>Ach%</Text>
+              </View>
               <View style={{ width: "35%", flexDirection: "row" }}>
                 <Text style={{ fontSize: 14, fontWeight: "600" }}>Balance</Text>
                 <View style={{ marginRight: 10 }}></View>
@@ -1669,16 +1735,17 @@ const TargetScreen = ({ route, navigation }) => {
               </View>
             </View>
             <>
-              <RenderSelfInsights data={selector.isDSE ? selector.self_target_parameters_data : selector.insights_target_parameters_data} />
+              <RenderSelfInsights data={selfInsightsData} />
             </>
             <View
-              style={{ width: "100%", flexDirection: "row", marginTop: 20 }}
+              style={{ flexDirection: "row", marginTop: 16, justifyContent: "space-between", marginHorizontal: 8 }}
             >
-              <View style={{ width: "50%" }}>
+              <View style={{ flexGrow: 1 }}>
+
+                <View style={{ height: 4 }}></View>
                 <View style={styles.statWrap}>
                   <Text
                     style={{
-                      marginRight: "55%",
                       marginLeft: 10,
                       fontSize: 16,
                       fontWeight: "600",
@@ -1699,7 +1766,7 @@ const TargetScreen = ({ route, navigation }) => {
                             ? "#14ce40"
                             : "#ff0000",
                         fontSize: 12,
-
+                        marginRight: 4
                       }}
                     >
                       {parseInt(bookingData?.achievment) === 0 ||
@@ -1723,49 +1790,11 @@ const TargetScreen = ({ route, navigation }) => {
                     </Text>
                   )}
                 </View>
-                <View style={{ height: 5 }}></View>
+
+                <View style={{ height: 4 }}></View>
                 <View style={styles.statWrap}>
                   <Text
                     style={{
-                      marginRight: "55%",
-                      marginLeft: 10,
-                      fontSize: 16,
-                      fontWeight: "600",
-                    }}
-                  >
-                    E2R
-                  </Text>
-                  {retailData !== null && enqData !== null && (
-                    <Text
-                      style={{
-                        color:
-                          Math.floor(
-                            (parseInt(retailData?.achievment) /
-                              parseInt(enqData?.achievment)) *
-                            100
-                          ) > 40
-                            ? "#14ce40"
-                            : "#ff0000",
-                        fontSize: 12,
-                      }}
-                    >
-                      {parseInt(retailData?.achievment) === 0 ||
-                        parseInt(enqData?.achievment) === 0
-                        ? 0
-                        : Math.round(
-                          (parseInt(retailData?.achievment) /
-                            parseInt(enqData?.achievment)) *
-                          100
-                        )}
-                      %
-                    </Text>
-                  )}
-                </View>
-                <View style={{ height: 5 }}></View>
-                <View style={styles.statWrap}>
-                  <Text
-                    style={{
-                      marginRight: "55%",
                       marginLeft: 10,
                       fontSize: 16,
                       fontWeight: "600",
@@ -1785,6 +1814,7 @@ const TargetScreen = ({ route, navigation }) => {
                             ? "#14ce40"
                             : "#ff0000",
                         fontSize: 12,
+                        marginRight: 4
                       }}
                     >
                       {parseInt(enqData?.achievment) === 0 ||
@@ -1808,13 +1838,62 @@ const TargetScreen = ({ route, navigation }) => {
                     </Text>
                   )}
                 </View>
-              </View>
 
-              <View style={{ width: "45%" }}>
+
+                <View style={{ height: 4 }}></View>
                 <View style={styles.statWrap}>
                   <Text
                     style={{
-                      marginRight: "50%",
+                      marginLeft: 10,
+                      fontSize: 16,
+                      fontWeight: "600",
+                    }}
+                  >
+                    FIN
+                  </Text>
+                  {finData !== null && retailData !== null ? (
+                    <Text
+                      style={{
+                        color:
+                          Math.floor(
+                            (parseInt(finData?.achievment) /
+                              parseInt(retailData?.achievment)) *
+                            100
+                          ) > 40
+                            ? "#14ce40"
+                            : "#ff0000",
+                        fontSize: 12,
+                        marginRight: 4
+                      }}
+                    >
+                      {parseInt(finData?.achievment) === 0 ||
+                        parseInt(retailData?.achievment) === 0
+                        ? 0
+                        : Math.round(
+                          (parseInt(finData?.achievment) /
+                            parseInt(retailData?.achievment)) *
+                          100
+                        )}
+                      %
+                    </Text>
+                  ) : (
+                    <Text
+                      style={{
+                        color: "#ff0000",
+                        fontSize: 12,
+                      }}
+                    >
+                      0%
+                    </Text>
+                  )}
+                </View>
+              </View>
+
+              <View style={{ flexGrow: 1, marginHorizontal: 2 }}>
+                <View style={{ height: 4 }}></View>
+                <View style={styles.statWrap}>
+                  <Text
+                    style={{
                       marginLeft: 10,
                       fontSize: 16,
                       fontWeight: "600",
@@ -1834,6 +1913,7 @@ const TargetScreen = ({ route, navigation }) => {
                             ? "#14ce40"
                             : "#ff0000",
                         fontSize: 12,
+                        marginRight: 4
                       }}
                     >
                       {parseInt(bookingData?.achievment) === 0 ||
@@ -1848,11 +1928,11 @@ const TargetScreen = ({ route, navigation }) => {
                     </Text>
                   )}
                 </View>
-                <View style={{ height: 5 }}></View>
+
+                <View style={{ height: 4 }}></View>
                 <View style={styles.statWrap}>
                   <Text
                     style={{
-                      marginRight: "45%",
                       marginLeft: 10,
                       fontSize: 16,
                       fontWeight: "600",
@@ -1872,6 +1952,7 @@ const TargetScreen = ({ route, navigation }) => {
                             ? "#14ce40"
                             : "#ff0000",
                         fontSize: 12,
+                        marginRight: 4
                       }}
                     >
                       {parseInt(TDData?.achievment) === 0 ||
@@ -1886,6 +1967,221 @@ const TargetScreen = ({ route, navigation }) => {
                     </Text>
                   )}
                 </View>
+
+
+                <View style={{ height: 4 }}></View>
+                <View style={styles.statWrap}>
+                  <Text
+                    style={{
+                      marginLeft: 10,
+                      fontSize: 16,
+                      fontWeight: "600",
+                    }}
+                  >
+                    INS
+                  </Text>
+                  {insData !== null && retailData !== null && (
+                    <Text
+                      style={{
+                        color:
+                          Math.round(
+                            (parseInt(insData?.achievment) /
+                              parseInt(retailData?.achievment)) *
+                            100
+                          ) > 40
+                            ? "#14ce40"
+                            : "#ff0000",
+                        fontSize: 12,
+                        marginRight: 4
+                      }}
+                    >
+                      {parseInt(insData?.achievment) === 0 ||
+                        parseInt(retailData?.achievment) === 0
+                        ? 0
+                        : Math.floor(
+                          (parseInt(insData?.achievment) /
+                            parseInt(retailData?.achievment)) *
+                          100
+                        )}
+                      %
+                    </Text>
+                  )}
+                </View>
+
+
+              </View>
+
+              <View style={{ flexGrow: 1 }}>
+
+                <View style={{ height: 4 }}></View>
+                <View style={styles.statWrap}>
+                  <Text
+                    style={{
+                      marginLeft: 10,
+                      fontSize: 16,
+                      fontWeight: "600",
+                    }}
+                  >
+                    E2R
+                  </Text>
+                  {retailData !== null && enqData !== null && (
+                    <Text
+                      style={{
+                        color:
+                          Math.floor(
+                            (parseInt(retailData?.achievment) /
+                              parseInt(enqData?.achievment)) *
+                            100
+                          ) > 40
+                            ? "#14ce40"
+                            : "#ff0000",
+                        fontSize: 12,
+                        marginRight: 4
+                      }}
+                    >
+                      {parseInt(retailData?.achievment) === 0 ||
+                        parseInt(enqData?.achievment) === 0
+                        ? 0
+                        : Math.round(
+                          (parseInt(retailData?.achievment) /
+                            parseInt(enqData?.achievment)) *
+                          100
+                        )}
+                      %
+                    </Text>
+                  )}
+                </View>
+
+
+                <View style={{ height: 4 }}></View>
+                <View style={styles.statWrap}>
+                  <Text
+                    style={{
+                      marginLeft: 10,
+                      fontSize: 16,
+                      fontWeight: "600",
+                    }}
+                  >
+                    EXG
+                  </Text>
+                  {exgData !== null && retailData !== null && (
+                    <Text
+                      style={{
+                        color:
+                          Math.round(
+                            (parseInt(exgData?.achievment) /
+                              parseInt(retailData?.achievment)) *
+                            100
+                          ) > 40
+                            ? "#14ce40"
+                            : "#ff0000",
+                        fontSize: 12,
+                        marginRight: 4
+                      }}
+                    >
+                      {parseInt(exgData?.achievment) === 0 ||
+                        parseInt(retailData?.achievment) === 0
+                        ? 0
+                        : Math.floor(
+                          (parseInt(exgData?.achievment) /
+                            parseInt(retailData?.achievment)) *
+                          100
+                        )}
+                      %
+                    </Text>
+                  )}
+                </View>
+
+                <View style={{ height: 4 }}></View>
+                <View style={styles.statWrap}>
+                  <Text
+                    style={{
+                      marginLeft: 10,
+                      fontSize: 16,
+                      fontWeight: "600",
+                    }}
+                  >
+                    EXW
+                  </Text>
+                  {exwData !== null && retailData !== null ? (
+                    <Text
+                      style={{
+                        color:
+                          Math.floor(
+                            (parseInt(exwData?.achievment) /
+                              parseInt(retailData?.achievment)) *
+                            100
+                          ) > 40
+                            ? "#14ce40"
+                            : "#ff0000",
+                        fontSize: 12,
+                        marginRight: 4
+                      }}
+                    >
+                      {parseInt(exwData?.achievment) === 0 ||
+                        parseInt(retailData?.achievment) === 0
+                        ? 0
+                        : Math.round(
+                          (parseInt(exwData?.achievment) /
+                            parseInt(retailData?.achievment)) *
+                          100
+                        )}
+                      %
+                    </Text>
+                  ) : (
+                    <Text
+                      style={{
+                        color: "#ff0000",
+                        fontSize: 12,
+                      }}
+                    >
+                      0%
+                    </Text>
+                  )}
+                </View>
+
+              </View>
+
+
+            </View>
+            <View style={{ marginHorizontal: 8 }}>
+              <View style={{ height: 4 }}></View>
+              <View style={styles.statWrap}>
+                <Text
+                  style={{
+                    marginLeft: 10,
+                    fontSize: 16,
+                    fontWeight: "600",
+                  }}
+                >
+                  Accessories/Car
+                </Text>
+                {accData !== null && retailData !== null && (
+                  <Text
+                    style={{
+                      color:
+                        Math.round(
+                          (parseInt(accData?.achievment) /
+                            parseInt(retailData?.achievment)) *
+                          100
+                        ) > 40
+                          ? "#14ce40"
+                          : "#ff0000",
+                      fontSize: 12,
+                      marginRight: 4
+                    }}
+                  >
+
+                    {parseInt(accData?.achievment) === 0 ||
+                      parseInt(retailData?.achievment) === 0
+                      ? 0
+                      : Math.floor(
+                        (parseInt(accData?.achievment) /
+                          parseInt(retailData?.achievment)) *
+                        100
+                      )}
+                  </Text>
+                )}
               </View>
             </View>
             <View style={{ height: 20 }}></View>
@@ -2063,7 +2359,7 @@ const styles = StyleSheet.create({
   },
   statWrap: {
     flexDirection: 'row',
-    justifyContent: 'flex-start', alignItems: 'center', height: 30, marginLeft: 10, backgroundColor: "#F5F5F5"
+    justifyContent: 'space-between', alignItems: 'center', height: 30, backgroundColor: "#F5F5F5"
   },
   itemBox: { width: 50, height: 40, justifyContent: 'center', alignItems: 'center' },
   shuffleBGView: {
@@ -2102,6 +2398,6 @@ const styles = StyleSheet.create({
     height: 20,
   },
   grandTotalText: { color: '#fff', fontWeight: 'bold', fontSize: 15 },
-  totalView: {minHeight: 40, alignItems: 'center', justifyContent: 'center'},
+  totalView: { minHeight: 40, alignItems: 'center', justifyContent: 'center' },
   totalText: { fontSize: 12, color: '#000', fontWeight: '500', textAlign: 'center' }
 })

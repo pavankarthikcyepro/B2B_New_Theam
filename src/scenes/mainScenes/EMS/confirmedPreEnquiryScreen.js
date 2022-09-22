@@ -28,6 +28,7 @@ import Geolocation from '@react-native-community/geolocation';
 const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
     const selector = useSelector(state => state.confirmedPreEnquiryReducer);
+    const homeSelector = useSelector(state => state.homeReducer);
     const dispatch = useDispatch();
     const { itemData, fromCreatePreEnquiry } = route.params;
     const [employeeId, setEmployeeId] = useState("");
@@ -105,23 +106,23 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         }
 
         const payload = {
-            dmsLeadDropInfo: {
-                additionalRemarks: dropRemarks,
-                branchId: Number(branchId),
-                brandName: dropBrandName,
-                dealerName: dropDealerName,
-                leadId: leadId,
-                crmUniversalId: itemData.universalId,
-                lostReason: dropReason,
-                lostSubReason: dropSubReason,
-                organizationId: userData.orgId,
-                otherReason: "",
-                droppedBy: userData.employeeId,
-                location: dropLocation,
-                model: dropModel,
-                stage: "PREENQUIRY",
-                status: "PREENQUIRY",
-            },
+          dmsLeadDropInfo: {
+            additionalRemarks: dropRemarks,
+            branchId: Number(branchId),
+            brandName: dropBrandName,
+            dealerName: dropDealerName,
+            leadId: leadId,
+            crmUniversalId: itemData.universalId,
+            lostReason: dropReason,
+            lostSubReason: dropSubReason,
+            organizationId: userData.orgId,
+            otherReason: "",
+            droppedBy: userData.employeeId,
+            location: dropLocation,
+            model: dropModel,
+            stage: "CONTACT",
+            status: "PREENQUIRY",
+          },
         };
         DropPreEnquiryLead(payload, enquiryDetailsObj)
     };
@@ -359,21 +360,32 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     }
 
     const updateRefNumber = async () => {
-        let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        if (employeeData) {
-            const jsonObj = JSON.parse(employeeData);
-            const payload = {
-                "branchid": Number(branchId),
-                "leadstage": "ENQUIRY",
-                "orgid": jsonObj.orgId,
-                "universalId": itemData.universalId
-            }
-            console.log("PAYLOAD LEAD REF:", payload);
-            customerLeadReference(payload)
-        }
+      let employeeData = await AsyncStore.getData(
+        AsyncStore.Keys.LOGIN_EMPLOYEE
+      );
+      if (employeeData) {
+        const jsonObj = JSON.parse(employeeData);
+        const payload = {
+          branchid: Number(branchId),
+          leadstage: "ENQUIRY",
+          orgid: jsonObj.orgId,
+          universalId: itemData.universalId,
+        };
+        console.log("PAYLOAD LEAD REF:", payload);
+        customerLeadReference(payload);
 
-        goToParentScreen();
+        if (
+          jsonObj.hrmsRole === "Reception" ||
+          jsonObj.hrmsRole === "Tele Caller"
+        ) {
+            goToParentScreen();
+            return;
+        }
+      }
+
+      goToEnquiry();
     }
+
     const updateEnquiryDetailsCreateEnquiry = (leadRefIdForEnq) => {
         //SarathKumarUppuluri
         let enquiryDetailsObj = { ...selector.pre_enquiry_details };
@@ -448,10 +460,16 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
             })
     }
 
-    const goToParentScreen = () => {
+    const goToEnquiry = () => {
         getPreEnquiryListFromServer();
         navigation.navigate(EmsTopTabNavigatorIdentifiers.enquiry);
-        // navigation.popToTop();
+        dispatch(clearState());
+    }
+
+    const goToParentScreen = () => {
+        getPreEnquiryListFromServer();
+        // navigation.navigate(EmsTopTabNavigatorIdentifiers.enquiry);
+        navigation.popToTop();
         dispatch(clearState());
     }
 
@@ -593,7 +611,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                     style={{ flex: 1 }}
                 >
                     <View style={styles.view1}>
-                        <Text style={styles.text1}>{"Contact"}</Text>
+                        <Text style={styles.text1}>{"Contacts"}</Text>
                         <IconButton
                             icon='square-edit-outline'
                             color={Colors.DARK_GRAY}
@@ -705,6 +723,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
                                     </Button>
 
                                     <Button
+                                        disabled={disabled}
                                         mode='contained'
                                         style={{ width: 120 }}
                                         color={Colors.GRAY}

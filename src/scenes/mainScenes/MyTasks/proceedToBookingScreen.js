@@ -44,6 +44,11 @@ import URL from "../../../networking/endpoints";
 import { EmsTopTabNavigatorIdentifiers } from "../../../navigations/emsTopTabNavigator";
 import Geolocation from '@react-native-community/geolocation';
 
+
+import {
+  GetDropList,
+} from "../../../utils/helperFunctions";
+
 const FirstDependencyArray = [
   "Lost To Competition",
   "Lost To Used Car",
@@ -63,6 +68,8 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const [showDropDownModel, setShowDropDownModel] = useState(false);
   const [dataForDropDown, setDataForDropDown] = useState([]);
+  const [dropData, setDropData] = useState([]);
+  const [dropSubReasonData, setdropSubReasonData] = useState([]);
   const [dropDownKey, setDropDownKey] = useState("");
   const [dropDownTitle, setDropDownTitle] = useState("Select Data");
   const [dropReason, setDropReason] = useState("");
@@ -159,6 +166,11 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
         parentId: 0,
       };
       dispatch(getDropDataApi(payload));
+
+      AsyncStore.getData(AsyncStore.Keys.USER_TOKEN).then((token) => {
+        GetPreBookingDropReasons(jsonObj.orgId, token)
+      });
+
     }
   };
 
@@ -262,7 +274,7 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
     }
   }, [selector.enquiry_drop_response_status]);
 
-  const proceedToPreBookingClicked = async() => {
+  const proceedToPreBookingClicked = async () => {
     setTypeOfActionDispatched("PROCEED_TO_PREBOOKING");
     console.log("DTLS:", selector.task_details_response?.taskId, taskId);
     if (selector.task_details_response?.taskId !== taskId) {
@@ -274,12 +286,21 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
     newTaskObj.lat = currentLocation ? currentLocation.lat.toString() : null;
     newTaskObj.lon = currentLocation ? currentLocation.long.toString() : null;
     dispatch(updateTaskApi(newTaskObj));
-    
+
   };
 
   useEffect(async() => {
-      // await proceedBooking();
+    // await proceedBooking();
   }, []);
+
+  const GetPreBookingDropReasons = (orgId, token) => {
+
+    GetDropList(orgId, token, "Pre%20Booking").then(resolve => {
+      setDropData(resolve);
+    }, reject => {
+      console.error("Getting drop list faild")
+    })
+  }
 
   const proceedBooking = async () =>{
     await proceedToPreBookingClicked();
@@ -441,7 +462,7 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
       navigation.navigate('EMS_TAB')
       navigation.navigate(EmsTopTabNavigatorIdentifiers.booking)
     }
-    else{
+    else {
       navigation.popToTop();
     }
     dispatch(clearState());
@@ -450,10 +471,10 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
   const showDropDownMethod = (key, title) => {
     switch (key) {
       case "DROP_REASON":
-        setDataForDropDown([...selector.drop_reasons_list]);
+        setDataForDropDown(dropData);
         break;
       case "DROP_SUB_REASON":
-        setDataForDropDown([...selector.drop_sub_reasons_list]);
+        setDataForDropDown(dropSubReasonData);
         break;
       default:
         break;
@@ -499,7 +520,8 @@ const ProceedToBookingScreen = ({ route, navigation }) => {
                     : "PreEnq_Lost_Com_Sub_Reas",
                 parentId: item.id,
               };
-              dispatch(getDropSubReasonDataApi(payload));
+              setdropSubReasonData(item.sublostreasons)
+              setDropSubReason("")
               setDropReason(item.name);
             }
             if (dropDownKey === "DROP_SUB_REASON") {

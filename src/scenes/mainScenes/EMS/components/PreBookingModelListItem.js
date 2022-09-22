@@ -687,7 +687,7 @@ export const PreBookingModelListitemCom = ({
         ></Text>
         <TextinputComp
           style={{ height: 65, width: "100%" }}
-          label={"Fuel Type"}
+          label={"Fuel Type*"}
           editable={false}
           value={carFuelType}
         />
@@ -695,7 +695,7 @@ export const PreBookingModelListitemCom = ({
 
         <TextinputComp
           style={{ height: 65, width: "100%" }}
-          label={"Transmission Type"}
+          label={"Transmission Type*"}
           editable={false}
           value={carTransmissionType}
         />
