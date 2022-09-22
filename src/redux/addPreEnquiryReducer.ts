@@ -40,7 +40,6 @@ export const getPreEnquiryDetails = createAsyncThunk("ADD_PRE_ENQUIRY_SLICE/getP
   console.log("PAYLOAD EDIT ENQ: ", URL.CONTACT_DETAILS(universalId));
 
   const response = await client.get(URL.CONTACT_DETAILS(universalId))
-  console.log("responseresponseresponseresponse: ", response);
 
   const json = await response.json()
   if (!response.ok) {
@@ -94,7 +93,6 @@ export const updatePreEnquiry = createAsyncThunk(
     const response = await client.put(data["url"], data["body"]);
     try {
       const json = await response.json();
-      console.log("jsonjsonjsonjsonjsonjson:", json);
       if (response.status != 200) {
         return rejectWithValue(json);
       }
@@ -306,8 +304,7 @@ state.customerType = "";
         case "COMPANY_NAME":
           state.companyName = text;
           break;
-        case "OTHER":
-          console.log('OTHEROTHERtext', text);
+        case "OTHER":          
           state.other = text;
           break;
         case "OTHER_COMPANY_NAME":
@@ -326,6 +323,7 @@ state.customerType = "";
     setExistingDetails: (state, action) => {
       let orgId = '0';
       const preEnquiryDetails = action.payload.dmsLeadDto;
+      const preDetails = action.payload.dmsAccountDto
       orgId = preEnquiryDetails?.organizationId ? `${preEnquiryDetails?.organizationId}` : '0';
       let dmsAccountOrContactObj = {};
       if (action.payload.dmsAccountDto) {
@@ -381,7 +379,7 @@ state.customerType = "";
       state.subSourceOfEnquiry = preEnquiryDetails.subSource;
       state.subSourceOfEnquiryId = preEnquiryDetails.subSourceOfEnquiry;
       state.companyName = dmsAccountOrContactObj["company"] || "";
-      // state.other = "";
+      state.other = preDetails.company;
     },
   },
   extraReducers: (builder) => {

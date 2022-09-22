@@ -224,11 +224,8 @@ export const postProformaInvoiceDetails = createAsyncThunk(
     console.log("Proforma", JSON.stringify(payload))
     const response = await client.post(URL.SAVE_PROFORMA_DETAILS(), payload);
     const json = await response.json();
-    console.log("auto save details", response);
 
     if (!response.ok) {
-      console.log("response::::::", json);
-
       return rejectWithValue(json);
     }
     return json;
@@ -784,7 +781,7 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.finance_category = value;
           break;
         case "BANK_FINANCE":
-          state.bank_or_finance = value;
+          state.bank_or_finance = value ;
           break;
         case "APPROX_ANNUAL_INCOME":
           state.approx_annual_income = value;
@@ -1530,9 +1527,9 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.loan_amount = dataObj.loanAmount
         ? dataObj.loanAmount.toString()
         : "";
-      state.bank_or_finance = dataObj.financeCompany
+      state.bank_or_finance =  state.retail_finance === 'In House' ? dataObj.financeCompany
         ? dataObj.financeCompany
-        : "" ;
+        : "" : '';
       state.bank_or_finance_name = dataObj.financeCompany
         ? dataObj.financeCompany
         : ""

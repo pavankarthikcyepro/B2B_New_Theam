@@ -411,7 +411,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     };
 
     const submitClicked = async () => {
-        console.log('selector><<><><>><><><><><', selector.other);
         Keyboard.dismiss();
         setIsSubmitPress(true)
         // if (
@@ -609,22 +608,23 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
 
     const makeCreatePreEnquiry = (refNumber, addressObj) => {
         const dmsContactDtoObj = {
-            branchId: Number(branchId),
-            createdBy: employeeName,
-            customerType: selector.customerType,
-            firstName: selector.firstName,
-            lastName: selector.lastName,
-            modifiedBy: employeeName,
-            orgId: organizationId,
-            phone: selector.mobile,
-            company: selector.companyName,
-            email: selector.email,
-            enquirySource: selector.sourceOfEnquiryId,
-            subSource: selector.subSourceOfEnquiryId,
-            ownerName: employeeName,
-            secondaryPhone: selector.alterMobile,
-            status: "PREENQUIRY",
-            pincode: selector.pincode,
+          branchId: Number(branchId),
+          createdBy: employeeName,
+          customerType: selector.customerType,
+          firstName: selector.firstName,
+          lastName: selector.lastName,
+          modifiedBy: employeeName,
+          orgId: organizationId,
+          phone: selector.mobile,
+          company: selector.companyName ? selector.companyName : selector.other,
+          otherCustomerType: selector.other,
+          email: selector.email,
+          enquirySource: selector.sourceOfEnquiryId,
+          subSource: selector.subSourceOfEnquiryId,
+          ownerName: employeeName,
+          secondaryPhone: selector.alterMobile,
+          status: "PREENQUIRY",
+          pincode: selector.pincode,
         };
 
         const dmsLeadDtoObj = {
@@ -697,6 +697,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             url: url,
             body: formData,
         };
+
         dispatch(createPreEnquiry(dataObj));
     };
 
@@ -740,11 +741,11 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         }
     }, [selector.updateEnquiryStatus, selector.create_enquiry_response_obj]);
 
+  
     const updatePreEneuquiryDetails = () => {
         let url = sales_url;
         let dmsAccountOrContactDto = {};
         let dmsLeadDto = {};
-        console.log('selector><<><><>><><><><><', selector.other);
         if (existingPreEnquiryDetails.hasOwnProperty("dmsContactDto")) {
             url = url + "/contact?allocateDse=" + selector.create_enquiry_checked;
             dmsAccountOrContactDto = { ...existingPreEnquiryDetails.dmsContactDto };
@@ -759,8 +760,10 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
         dmsAccountOrContactDto.phone = selector.mobile;
         dmsAccountOrContactDto.secondaryPhone = selector.alterMobile;
         dmsAccountOrContactDto.model = selector.carModel;
-        dmsAccountOrContactDto.company = selector.companyName;
-        dmsAccountOrContactDto.other = selector.other;
+        dmsAccountOrContactDto.company = selector.companyName
+          ? selector.companyName
+          : selector.other;
+        dmsAccountOrContactDto.otherCustomerType = selector.other;
 
         dmsAccountOrContactDto.customerType = selector.customerType;
         dmsAccountOrContactDto.enquirySource = selector.sourceOfEnquiryId;
@@ -782,7 +785,8 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             dmsLeadDto.enquirySource = selector.sourceOfEnquiry;
             dmsLeadDto.subSource = selector.subSourceOfEnquiry;
             dmsLeadDto.pincode = selector.pincode;
-            dmsAccountOrContactDto.other = selector.other;
+            dmsAccountOrContactDto.company = selector.other;
+            dmsAccountOrContactDto.otherCustomerType = selector.other;
         }
 
         let formData = {};
@@ -802,12 +806,11 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
             };
         }
 
-        console.log("formData:><><><><>< ", formData);
-
         let dataObj = {
             url: url,
             body: formData,
         };
+
         dispatch(updatePreEnquiry(dataObj));
     };
 
@@ -856,7 +859,6 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
                     return;
                 }
                 else{
-                    console.log('source_of_enquiry_list', homeSelector.source_of_enquiry_list);
                 }
                 setDataForDropDown([...homeSelector.source_of_enquiry_list]);
                 break;

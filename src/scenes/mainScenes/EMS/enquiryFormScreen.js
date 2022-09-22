@@ -304,6 +304,12 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           text: '',
         })
       )
+       dispatch(
+         setFinancialDetails({
+           key: "BANK_FINANCE",
+           text: selector.bank_or_finance,
+         })
+       );
       dispatch(
         setFinancialDetails({
           key: "LOAN_AMOUNT",
@@ -317,13 +323,59 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         })
       );
     }
-    else{
+    else if (selector.retail_finance === 'Out House') {
       dispatch(
         setFinancialDetails({
           key: "BANK_R_FINANCE_NAME",
           text: selector.bank_or_finance_name,
         })
-      )
+      );
+        dispatch(
+          setFinancialDetails({
+            key: "BANK_FINANCE",
+            text: '',
+          })
+        );
+      dispatch(
+        setFinancialDetails({
+          key: "LOAN_AMOUNT",
+          text: selector.loan_amount,
+        })
+      );
+      
+      dispatch(
+        setFinancialDetails({
+          key: "RATE_OF_INTEREST",
+          text: selector.rate_of_interest,
+        })
+      );
+    }
+    else if (selector.retail_finance === "Leasing") {
+      dispatch(
+        setFinancialDetails({
+          key: "BANK_R_FINANCE_NAME",
+          text: '',
+        })
+      );
+      dispatch(
+        setFinancialDetails({
+          key: "BANK_FINANCE",
+          text: "",
+        })
+      );
+      dispatch(
+        setFinancialDetails({
+          key: "LEASHING_NAME",
+          text: selector.leashing_name,
+        })
+      );
+    } else {
+      dispatch(
+        setFinancialDetails({
+          key: "BANK_R_FINANCE_NAME",
+          text: selector.bank_or_finance_name,
+        })
+      );
       dispatch(
         setFinancialDetails({
           key: "LOAN_AMOUNT",

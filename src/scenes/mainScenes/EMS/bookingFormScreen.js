@@ -1729,8 +1729,6 @@ const BookingFormScreen = ({ route, navigation }) => {
                     leadId: selector.pre_booking_details_response.dmsLeadDto.id,
                     allotmentStatus: null,
                 });
-
-                console.log('newFormatSelectedAccessories', newFormatSelectedAccessories);
             }
         });
         setSelectedPaidAccessoriesPrice(totalPrice);
@@ -3046,7 +3044,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                             {/* // 5.Price Confirmation */}
                             <List.Accordion
                                 id={"5"}
-                                title={"Price Confirmationnnnnnn"}
+                                title={"Price Confirmation"}
                                 description={rupeeSymbol + " " + totalOnRoadPrice.toFixed(2)}
                                 titleStyle={{
                                     color: openAccordian === "5" ? Colors.BLACK : Colors.BLACK,
