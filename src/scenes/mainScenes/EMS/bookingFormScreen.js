@@ -80,6 +80,7 @@ import {
     Finance_Types,
     Finance_Category_Types,
     Approx_Auual_Income_Types,
+    Gender_Types,
 } from "../../../jsonData/enquiryFormScreenJsonData";
 import {
     Payment_At_Types,
@@ -872,7 +873,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                 setDataForDropDown([...selector.customer_types_data]);
                 break;
             case "GENDER":
-                setDataForDropDown([...selector.gender_types_data]);
+                setDataForDropDown([...Gender_Types]);
                 break;
             case "MARITAL_STATUS":
                 setDataForDropDown([...Marital_Status_Types]);
@@ -2190,7 +2191,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 {selector.enquiry_segment.toLowerCase() === "personal" ? (
                                     <View>
                                         <DropDownSelectionItem
-                                            label={"Gender"}
+                                            label={"Gender*"}
                                             value={selector.gender}
                                             disabled={true}
                                             onPress={() =>
@@ -2198,7 +2199,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                             }
                                         />
                                         <DateSelectItem
-                                            label={"Date Of Birth"}
+                                            label={"Date Of Birth*"}
                                             value={selector.date_of_birth}
                                             disabled={true}
                                             onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
@@ -2345,7 +2346,7 @@ const BookingFormScreen = ({ route, navigation }) => {
                                 <TextinputComp
                                     style={styles.textInputStyle}
                                     value={selector.mandal}
-                                    label={"Mandal*"}
+                                    label={"Mandal/Tahsil*"}
                                     disabled={true}
                                     maxLength={40}
                                     onChangeText={(text) =>

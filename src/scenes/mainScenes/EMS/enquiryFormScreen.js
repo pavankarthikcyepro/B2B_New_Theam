@@ -110,6 +110,7 @@ import {
   Enquiry_Drop_Reasons,
   Insurence_Types,
   Referred_By_Source,
+  Gender_Types,
 } from "../../../jsonData/enquiryFormScreenJsonData";
 import {
   showAlertMessage,
@@ -1073,6 +1074,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //     return;
     //   }
     // }
+
+    if (selector.gender.length == 0) {
+      scrollToPos(0);
+      setOpenAccordian("2");
+      showToast("Please select Gender");
+      return;
+    }
 
     if (!isValidate(selector.firstName)) {
       scrollToPos(0);
@@ -2432,7 +2440,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         setDataForDropDown([...Salutation_Types]);
         break;
       case "GENDER":
-        setDataForDropDown([...selector.gender_types_data]);
+        setDataForDropDown([...Gender_Types]);
         break;
       case "RELATION":
         setDataForDropDown([...selector.relation_types_data]);
@@ -2995,11 +3003,25 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
                 <Text style={GlobalStyle.underline} />
                 {selector.enquiry_segment.toLowerCase() == "personal" ? (
-                  <DropDownSelectionItem
-                    label={"Gender"}
-                    value={selector.gender}
-                    onPress={() => showDropDownModelMethod("GENDER", "Gender")}
-                  />
+                  <>
+                    <DropDownSelectionItem
+                      label={"Gender*"}
+                      value={selector.gender}
+                      onPress={() => showDropDownModelMethod("GENDER", "Gender")}
+                    />
+
+                    <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.gender === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                </>
                 ) : null}
 
                 <TextinputComp
@@ -3375,9 +3397,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   }
                 />
 
-                {/* <DropDownSelectionItem
+                <DropDownSelectionItem
                   label={"Enquiry Category"}
-                  disabled={true}
                   value={selector.enquiry_category.length == 0 ? "Hot" : selector.enquiry_category}
                   onPress={() =>
                     showDropDownModelMethod(
@@ -3385,7 +3406,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       "Enquiry Category"
                     )
                   }
-                /> */}
+                />
 
                 <DropDownSelectionItem
                   label={"Buyer Type*"}
@@ -3602,7 +3623,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.mandal}
-                    label={"Mandal"}
+                    label={"Mandal/Tahsil"}
                     autoCapitalize="words"
                     maxLength={50}
                     keyboardType={"default"}
