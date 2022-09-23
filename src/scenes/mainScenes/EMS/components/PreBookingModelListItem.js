@@ -70,6 +70,7 @@ export const PreBookingModelListitemCom = ({
   leadStage,
   isSubmitPress,
   onChangeSubmit,
+  disabled = false,
 }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -529,8 +530,9 @@ export const PreBookingModelListitemCom = ({
     dispatch(updatedmsLeadProduct(modelsarr));
   };
   return (
-    <View>
+    <View disabled={disabled}>
       <DropDownComponant
+        disabled={userData.isManager ? (isEdit ? false : true) : false}
         visible={showDropDownModel}
         headerTitle={dropDownTitle}
         data={dataForDropDown}
@@ -565,15 +567,13 @@ export const PreBookingModelListitemCom = ({
           marginVertical: 10,
           borderRadius: 5,
           backgroundColor: Colors.LIGHT_GRAY2,
-        }}
-      >
+        }}>
         <View
           style={{
             flexDirection: "row",
             width: "100%",
             justifyContent: "space-between",
-          }}
-        >
+          }}>
           <View style={{ height: 50, width: "46%", justifyContent: "center" }}>
             <Text
               style={{
@@ -582,8 +582,7 @@ export const PreBookingModelListitemCom = ({
                 marginLeft: 10,
                 textAlignVertical: "center",
               }}
-              numberOfLines={2}
-            >
+              numberOfLines={2}>
               {carModel}
             </Text>
           </View>
@@ -605,8 +604,7 @@ export const PreBookingModelListitemCom = ({
                      */}
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <Text
-              style={{ color: Colors.WHITE, fontSize: 16, marginRight: 10 }}
-            >
+              style={{ color: Colors.WHITE, fontSize: 16, marginRight: 10 }}>
               Is Primary
             </Text>
             <Switch
@@ -626,8 +624,7 @@ export const PreBookingModelListitemCom = ({
             />
           </View>
           <TouchableOpacity
-            onPress={(value) => modelOnclick(index, item, "delete")}
-          >
+            onPress={(value) => modelOnclick(index, item, "delete")}>
             <IconButton
               icon="trash-can-outline"
               color={Colors.PINK}
@@ -651,8 +648,7 @@ export const PreBookingModelListitemCom = ({
                   ? "red"
                   : "rgba(208, 212, 214, 0.7)",
             },
-          ]}
-        ></Text>
+          ]}></Text>
         <DropDownSelectionItem
           label={"Variant*"}
           value={carVariant}
@@ -667,8 +663,7 @@ export const PreBookingModelListitemCom = ({
                   ? "red"
                   : "rgba(208, 212, 214, 0.7)",
             },
-          ]}
-        ></Text>
+          ]}></Text>
         <DropDownSelectionItem
           label={"Color*"}
           value={carColor}
@@ -683,8 +678,7 @@ export const PreBookingModelListitemCom = ({
                   ? "red"
                   : "rgba(208, 212, 214, 0.7)",
             },
-          ]}
-        ></Text>
+          ]}></Text>
         <TextinputComp
           style={{ height: 65, width: "100%" }}
           label={"Fuel Type*"}
@@ -708,16 +702,14 @@ export const PreBookingModelListitemCom = ({
         onRequestClose={() => {
           setImagePath("");
         }}
-        transparent={true}
-      >
+        transparent={true}>
         <View
           style={{
             flex: 1,
             justifyContent: "center",
             alignItems: "center",
             backgroundColor: "rgba(0,0,0,0.7)",
-          }}
-        >
+          }}>
           <View style={{ width: "90%" }}>
             <Image
               style={{ width: "100%", height: 400, borderRadius: 4 }}
@@ -737,11 +729,9 @@ export const PreBookingModelListitemCom = ({
               borderRadius: 5,
               backgroundColor: Colors.RED,
             }}
-            onPress={() => setImagePath("")}
-          >
+            onPress={() => setImagePath("")}>
             <Text
-              style={{ fontSize: 14, fontWeight: "600", color: Colors.WHITE }}
-            >
+              style={{ fontSize: 14, fontWeight: "600", color: Colors.WHITE }}>
               Close
             </Text>
           </TouchableOpacity>
