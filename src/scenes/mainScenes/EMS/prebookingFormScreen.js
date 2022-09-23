@@ -93,7 +93,8 @@ import {
     Finance_Types,
     Finance_Category_Types,
     Approx_Auual_Income_Types,
-    Buyer_Type_Data
+    Buyer_Type_Data,
+    Gender_Types
 } from "../../../jsonData/enquiryFormScreenJsonData";
 import {
     Payment_At_Types,
@@ -1121,7 +1122,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
 
           case "GENDER":
-            setDataForDropDown([...selector.gender_types_data]);
+            setDataForDropDown([...Gender_Types]);
             break;
           case "MARITAL_STATUS":
             setDataForDropDown([...Marital_Status_Types]);
@@ -1374,281 +1375,402 @@ const PrebookingFormScreen = ({ route, navigation }) => {
     };
 
     const submitClicked = () => {
-        Keyboard.dismiss();
-        setIsSubmitPress(true)
-        console.log("ATTCH", JSON.stringify(uploadedImagesDataObj));
-        // console.log("FOUND: ", uploadedImagesDataObj.hasOwnProperty('receipt'));
-        if (selector.first_name.length === 0) {
-            scrollToPos(0)
-            setOpenAccordian('1')
-            showToast("please enter first name");
-            return;
-        }
-        if (!isValidate(selector.first_name)) {
-            scrollToPos(0)
-            setOpenAccordian('1')
-            showToast("please enter alphabetics only in firstname");
-            return;
-        }
-        if (selector.last_name.length === 0) {
-            scrollToPos(0)
-            setOpenAccordian('1')
-            showToast("please enter last name");
-            return;
-        }
-        if (!isValidate(selector.last_name)) {
-            scrollToPos(0)
-            setOpenAccordian('1')
-            showToast("please enter alphabetics only in lastname");
-            return;
-        }
-        if (selector.mobile.length === 0) {
-            scrollToPos(0)
-            setOpenAccordian('1')
-            showToast("please enter mobile number");
-            return;
-        }
-        if (selector.email.length === 0) {
-            scrollToPos(0)
-            setOpenAccordian('1')
-            showToast("please enter email");
-            return;
-        }
-        if (!isEmail(selector.email)) {
-            scrollToPos(0)
-            setOpenAccordian('1')
-            showToast("please enter valid email");
-            return;
-        }
-        if (selector.enquiry_segment.length == 0) {
-            scrollToPos(0)
-            setOpenAccordian('1')
-            showToast("Please select enquiry segment");
-            return;
-        }
-        if(selector.buyer_type.length ==0){
-            scrollToPos(0)
-            setOpenAccordian('1')
-            showToast("Please select buyer type");
-            return;
-        }
-        if (selector.customer_type.length == 0) {
-            scrollToPos(0)
-            setOpenAccordian('1')
-            showToast("Please select customer type");
-            return;
-        }
-        if (checkModelSelection()) {
-          scrollToPos(3);
-          setOpenAccordian("3");
+      Keyboard.dismiss();
+      setIsSubmitPress(true);
+      console.log("ATTCH", JSON.stringify(uploadedImagesDataObj));
+      // console.log("FOUND: ", uploadedImagesDataObj.hasOwnProperty('receipt'));
+      if (selector.salutation.length === 0) {
+        scrollToPos(0);
+        setOpenAccordian("1");
+        showToast("please select salutation");
+        return;
+      }
+      if (selector.first_name.length === 0) {
+        scrollToPos(0);
+        setOpenAccordian("1");
+        showToast("please enter first name");
+        return;
+      }
+      if (!isValidate(selector.first_name)) {
+        scrollToPos(0);
+        setOpenAccordian("1");
+        showToast("please enter alphabetics only in firstname");
+        return;
+      }
+      if (selector.last_name.length === 0) {
+        scrollToPos(0);
+        setOpenAccordian("1");
+        showToast("please enter last name");
+        return;
+      }
+      if (!isValidate(selector.last_name)) {
+        scrollToPos(0);
+        setOpenAccordian("1");
+        showToast("please enter alphabetics only in lastname");
+        return;
+      }
+      if (selector.mobile.length === 0) {
+        scrollToPos(0);
+        setOpenAccordian("1");
+        showToast("please enter mobile number");
+        return;
+      }
+      if (selector.email.length === 0) {
+        scrollToPos(0);
+        setOpenAccordian("1");
+        showToast("please enter email");
+        return;
+      }
+      if (!isEmail(selector.email)) {
+        scrollToPos(0);
+        setOpenAccordian("1");
+        showToast("please enter valid email");
+        return;
+      }
+      if (selector.enquiry_segment.length == 0) {
+        scrollToPos(0);
+        setOpenAccordian("1");
+        showToast("Please select enquiry segment");
+        return;
+      }
+      if (selector.buyer_type.length == 0) {
+        scrollToPos(0);
+        setOpenAccordian("1");
+        showToast("Please select buyer type");
+        return;
+      }
+      if (selector.customer_type.length == 0) {
+        scrollToPos(0);
+        setOpenAccordian("1");
+        showToast("Please select customer type");
+        return;
+      }
+      if (selector.gender.length === 0) {
+        scrollToPos(0);
+        setOpenAccordian("1");
+        showToast("please select Gender");
+        return;
+      }
+      if (selector.date_of_birth.length === 0) {
+        scrollToPos(0);
+        setOpenAccordian("1");
+        showToast("please select Date Of Birth");
+        return;
+      }
+
+      // Address fields
+      if (selector.pincode.length === 0) {
+        scrollToPos(2);
+        setOpenAccordian("2");
+        showToast("please enter pincode");
+        return;
+      }
+
+      if (!selector.defaultAddress || (selector.defaultAddress && selector.defaultAddress.addressType)) {
+        scrollToPos(2);
+        setOpenAccordian("2");
+        showToast("please select address");
+        return;
+      }
+      if (selector.urban_or_rural == 0) {
+        scrollToPos(2);
+        setOpenAccordian("2");
+        showToast("please enter urban or rural");
+        return;
+      }
+      if (selector.house_number.length === 0) {
+        scrollToPos(2);
+        setOpenAccordian("2");
+        showToast("please enter H.No");
+        return;
+      }
+      if (selector.street_name.length === 0) {
+        scrollToPos(2);
+        setOpenAccordian("2");
+        showToast("please enter street name");
+        return;
+      }
+      if (selector.village.length === 0) {
+        scrollToPos(2);
+        setOpenAccordian("2");
+        showToast("please enter village");
+        return;
+      }
+      if (selector.mandal.length === 0) {
+        scrollToPos(2);
+        setOpenAccordian("2");
+        showToast("please enter mandal");
+        return;
+      }
+      if (selector.city.length === 0) {
+        scrollToPos(2);
+        setOpenAccordian("2");
+        showToast("please enter city");
+        return;
+      }
+      if (selector.district.length === 0) {
+        scrollToPos(2);
+        setOpenAccordian("2");
+        showToast("please enter district");
+        return;
+      }
+      if (selector.state.length === 0) {
+        scrollToPos(2);
+        setOpenAccordian("2");
+        showToast("please enter state");
+        return;
+      }
+
+      // Permanant Address fields
+      if (selector.p_pincode.length === 0) {
+        scrollToPos(2);
+        setOpenAccordian("2");
+        showToast("please enter permanant pincode");
+        return;
+      }
+      if (selector.p_urban_or_rural == 0) {
+        scrollToPos(2);
+        setOpenAccordian("2");
+        showToast("please enter permanant urban or rural");
+        return;
+      }
+      if (selector.p_houseNum.length === 0) {
+        scrollToPos(2);
+        setOpenAccordian("2");
+        showToast("please enter permanant H.No");
+        return;
+      }
+      if (selector.p_streetName.length === 0) {
+        scrollToPos(2);
+        setOpenAccordian("2");
+        showToast("please enter permanant street name");
+        return;
+      }
+      if (selector.p_village.length === 0) {
+        scrollToPos(2);
+        setOpenAccordian("2");
+        showToast("please enter permanant village");
+        return;
+      }
+      if (selector.p_mandal.length === 0) {
+        scrollToPos(2);
+        setOpenAccordian("2");
+        showToast("please enter permanant mandal");
+        return;
+      }
+      if (selector.p_city.length === 0) {
+        scrollToPos(2);
+        setOpenAccordian("2");
+        showToast("please enter permanant city");
+        return;
+      }
+      if (selector.p_district.length === 0) {
+        scrollToPos(2);
+        setOpenAccordian("2");
+        showToast("please enter permanant district");
+        return;
+      }
+      if (selector.p_state.length === 0) {
+        scrollToPos(2);
+        setOpenAccordian("2");
+        showToast("please enter permanant state");
+        return;
+      }
+
+      if (checkModelSelection()) {
+        scrollToPos(3);
+        setOpenAccordian("3");
+        return;
+      }
+
+      let primaryTempCars = [];
+      primaryTempCars = carModelsList.filter((item) => {
+        return item.isPrimary === "Y";
+      });
+      if (!primaryTempCars.length > 0) {
+        scrollToPos(4);
+        setOpenAccordian("4");
+        showToast("Select is Primary for atleast one vehicle");
+        return;
+      }
+      
+      // if (selector.enquiry_segment.toLowerCase() === "personal" && selector.marital_status.length == 0) {
+      //     showToast("Please fill the martial status");
+      //     return;
+      // }
+      // if (selector.form_or_pan.length == 0 ||
+      //     selector.adhaar_number.length == 0
+      //     ) {
+      //     showToast("Please upload document section")
+      //     }
+      // if (
+      //     selector.form_or_pan.length == 0 ||
+      //     selector.adhaar_number.length == 0 ||
+      //     // selector.relationship_proof.length == 0 ||
+      //     selector.customer_type_category.length == 0
+      // ) {
+      //     showToast("please enter document upload section");
+      // }
+
+      // if (
+      //   selector.adhaar_number.length > 0 &&
+      //   !isMobileNumber(selector.adhaar_number)
+      // ) {
+      //   showToast("Please enter valid adhar number");
+      //   return;
+      // }
+
+      if (selector.form_or_pan === "PAN") {
+        if (selector.pan_number.length == 0) {
+          scrollToPos(4);
+          setOpenAccordian("4");
+          showToast("please enter PAN Number");
           return;
         }
+      }
 
-        let primaryTempCars = []
-        primaryTempCars = carModelsList.filter((item) => {
-            return item.isPrimary === 'Y'
-        })
-        if (!primaryTempCars.length > 0) {
-            scrollToPos(4)
-            setOpenAccordian('4')
-            showToast("Select is Primary for atleast one vehicle");
-            return;
+      if (taxPercent === "") {
+        scrollToPos(5);
+        setOpenAccordian("5");
+        showToast("please enter Life Tax");
+        return;
+      }
+
+      if (
+        selector.enquiry_segment.toLowerCase() === "company" &&
+        selector.customer_type.toLowerCase() === "institution" &&
+        (selector.customer_type_category == "B2B" ||
+          selector.customer_type_category == "B2C")
+      ) {
+        if (selector.gstin_number.length == 0) {
+          // showToast("please enter GSTIN number");
         }
-        if (selector.pincode.length === 0 ||
-            selector.house_number.length === 0 ||
-            selector.street_name.length === 0 ||
-            selector.village.length === 0 ||
-            selector.mandal.length === 0 ||
-            selector.city.length === 0 ||
-            selector.district.length === 0 ||
-            selector.state.length === 0 ||
-            selector.p_pincode.length === 0 ||
-            selector.p_houseNum.length === 0 ||
-            selector.p_streetName.length === 0 ||
-            selector.p_village.length === 0 ||
-            selector.p_mandal.length === 0 ||
-            selector.p_city.length === 0 ||
-            selector.p_district.length === 0 ||
-            selector.p_state.length === 0 ||
-            selector.p_urban_or_rural == 0) {
-            scrollToPos(2)
-            setOpenAccordian('2')
-            showToast("please enter address");
-            return;
-        }
-        // if (selector.enquiry_segment.toLowerCase() === "personal" && selector.marital_status.length == 0) {
-        //     showToast("Please fill the martial status");
-        //     return;
-        // }
-        // if (selector.form_or_pan.length == 0 ||
-        //     selector.adhaar_number.length == 0
-        //     ) {
-        //     showToast("Please upload document section")
-        //     }
-        // if (
-        //     selector.form_or_pan.length == 0 ||
-        //     selector.adhaar_number.length == 0 ||
-        //     // selector.relationship_proof.length == 0 ||
-        //     selector.customer_type_category.length == 0
-        // ) {
-        //     showToast("please enter document upload section");
-        // }
+      }
+      // if (selector.retail_finance.length === 0) {
+      //     scrollToPos(7)
+      //     setOpenAccordian('7')
+      //     showToast("Please select retail finance");
+      //     return;
+      // }
+      // if (selector.retail_finance == "Leasing") {
+      //     if (selector.leashing_name.length == 0) {
+      //         scrollToPos(7)
+      //         setOpenAccordian('7')
+      //         showToast("Please fill required fields in leasing name");
+      //         return;
+      //     }
+      //     if (!isValidateAlphabetics(selector.leashing_name)) {
+      //         showToast("Please enter proper leasing name");
+      //         scrollToPos(7)
+      //         setOpenAccordian('7')
+      //         return;
+      //     }
+      // }
 
-        // if (
-        //   selector.adhaar_number.length > 0 &&
-        //   !isMobileNumber(selector.adhaar_number)
-        // ) {
-        //   showToast("Please enter valid adhar number");
-        //   return;
-        // }
+      if (selector.retail_finance.length === 0) {
+        scrollToPos(7);
+        setOpenAccordian("7");
+        showToast("Please select Retail Finance");
+        return;
+      }
 
-        if (selector.form_or_pan === "PAN") {
-            if (selector.pan_number.length == 0) {
-                scrollToPos(4)
-                setOpenAccordian("4")
-                showToast("please enter PAN Number");
-                return;
-            }
-        }
-        
-        if (taxPercent === "") {
-            scrollToPos(5);
-            setOpenAccordian("5");
-            showToast("please enter Life Tax");
-            return;
-        }
+      const bookingAmount = parseInt(selector.booking_amount);
+      if (bookingAmount < 5000) {
+        scrollToPos(8);
+        setOpenAccordian("8");
+        showToast("please enter booking amount minimum 5000");
+        return;
+      }
 
-        if ((selector.enquiry_segment.toLowerCase() === "company" && selector.customer_type.toLowerCase() === "institution") && (selector.customer_type_category == "B2B" ||
-            selector.customer_type_category == "B2C")) {
-            if (selector.gstin_number.length == 0) {
-                // showToast("please enter GSTIN number");
-            }
-        }
-        // if (selector.retail_finance.length === 0) {
-        //     scrollToPos(7)
-        //     setOpenAccordian('7')
-        //     showToast("Please select retail finance");
-        //     return;
-        // }
-        // if (selector.retail_finance == "Leasing") {
-        //     if (selector.leashing_name.length == 0) {
-        //         scrollToPos(7)
-        //         setOpenAccordian('7')
-        //         showToast("Please fill required fields in leasing name");
-        //         return;
-        //     }
-        //     if (!isValidateAlphabetics(selector.leashing_name)) {
-        //         showToast("Please enter proper leasing name");
-        //         scrollToPos(7)
-        //         setOpenAccordian('7')
-        //         return;
-        //     }
-        // }
+      if (selector.booking_payment_mode.length === 0) {
+        scrollToPos(8);
+        setOpenAccordian("8");
+        showToast("Please enter Booking Payment Mode");
+        return;
+      }
 
-        if (selector.retail_finance.length === 0) {
-          scrollToPos(7);
-          setOpenAccordian("7");
-          showToast("Please select Retail Finance");
-          return;
-        }
+      if (!selector.pre_booking_details_response.dmsLeadDto) {
+        return;
+      }
 
-        const bookingAmount = parseInt(selector.booking_amount);
-        if (bookingAmount < 5000) {
-            scrollToPos(8)
-            setOpenAccordian('8')
-            showToast("please enter booking amount minimum 5000");
-            return;
-        }
+      let postOnRoadPriceTable = {};
+      postOnRoadPriceTable.additionalOffer1 = selector.additional_offer_1;
+      postOnRoadPriceTable.additionalOffer2 = selector.additional_offer_2;
+      postOnRoadPriceTable.cashDiscount = selector.cash_discount;
+      postOnRoadPriceTable.corporateCheck = "";
+      postOnRoadPriceTable.corporateName = "";
+      postOnRoadPriceTable.corporateOffer = selector.corporate_offer;
+      postOnRoadPriceTable.exShowroomPrice =
+        priceInfomationData.ex_showroom_price;
+      postOnRoadPriceTable.offerData = [];
+      postOnRoadPriceTable.focAccessories = selector.for_accessories;
+      postOnRoadPriceTable.insuranceDiscount = selector.insurance_discount;
+      postOnRoadPriceTable.accessoriesDiscount = selector.accessories_discount;
+      postOnRoadPriceTable.handlingCharges = handlingChargSlctd
+        ? priceInfomationData.handling_charges
+        : 0;
+      postOnRoadPriceTable.essentialKit = essentialKitSlctd
+        ? priceInfomationData.essential_kit
+        : 0;
+      postOnRoadPriceTable.fast_tag = fastTagSlctd
+        ? priceInfomationData.fast_tag
+        : 0;
+      postOnRoadPriceTable.id = postOnRoadPriceTable.id
+        ? postOnRoadPriceTable.id
+        : 0;
+      postOnRoadPriceTable.insuranceAddonData = selectedInsurenceAddons;
+      postOnRoadPriceTable.insuranceAmount = selectedInsurencePrice;
+      postOnRoadPriceTable.insuranceType = selector.insurance_type;
+      postOnRoadPriceTable.lead_id =
+        selector.pre_booking_details_response.dmsLeadDto.id;
+      postOnRoadPriceTable.lifeTax = lifeTaxAmount;
+      postOnRoadPriceTable.lifeTaxPercentage =
+        taxPercent !== "" ? Number(taxPercent) / 100 : 0;
+      postOnRoadPriceTable.onRoadPrice = totalOnRoadPrice;
+      postOnRoadPriceTable.finalPrice = totalOnRoadPriceAfterDiscount;
+      postOnRoadPriceTable.promotionalOffers = selector.promotional_offer;
+      postOnRoadPriceTable.registrationCharges =
+        priceInfomationData.registration_charges;
+      postOnRoadPriceTable.specialScheme = selector.consumer_offer;
+      postOnRoadPriceTable.exchangeOffers = selector.exchange_offer;
+      postOnRoadPriceTable.tcs = tcsAmount;
+      postOnRoadPriceTable.warrantyAmount = selectedWarrentyPrice;
+      postOnRoadPriceTable.warrantyName = selector.warranty;
 
-        if (
-            selector.booking_payment_mode.length === 0
-        ) {
-            scrollToPos(8)
-            setOpenAccordian('8')
-            showToast("Please enter Booking Payment Mode");
-            return;
-        }
+      postOnRoadPriceTable.form_or_pan = selector.form_or_pan;
 
-        if (!selector.pre_booking_details_response.dmsLeadDto) {
-            return;
-        }
+      console.log(
+        "PAYLOAD:===---=-=-=->>>>>",
+        JSON.stringify(postOnRoadPriceTable)
+      );
+      if (isEdit) {
+        postOnRoadPriceTable.id =
+          selector.on_road_price_dto_list_response[0].id;
+        dispatch(sendEditedOnRoadPriceDetails(postOnRoadPriceTable));
+      } else dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable));
+      // Promise.all([
+      //     dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable))
+      // ]).then(async (res) => {
+      //     console.log("REF NO:", selector.refNo);
+      //     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
+      //     if (employeeData) {
+      //         const jsonObj = JSON.parse(employeeData);
+      //         const payload = {
+      //             "refNo": selector.refNo,
+      //             "orgId": jsonObj.orgId,
+      //             "stageCompleted": "PREBOOKING"
+      //         }
+      //         console.log("PAYLOAD:", payload);
+      //         dispatch(updateRef(payload))
+      //     }
+      // });
+      if (route?.params?.lists && route?.params?.lists.names) {
+        removeExistingKeysFromAsync(route?.params?.lists.names);
+      }
+      //         if(selector.loading){
 
-
-
-        let postOnRoadPriceTable = {};
-        postOnRoadPriceTable.additionalOffer1 = selector.additional_offer_1;
-        postOnRoadPriceTable.additionalOffer2 = selector.additional_offer_2;
-        postOnRoadPriceTable.cashDiscount = selector.cash_discount;
-        postOnRoadPriceTable.corporateCheck = "";
-        postOnRoadPriceTable.corporateName = "";
-        postOnRoadPriceTable.corporateOffer = selector.corporate_offer;
-        postOnRoadPriceTable.exShowroomPrice =
-            priceInfomationData.ex_showroom_price;
-        postOnRoadPriceTable.offerData = [];
-        postOnRoadPriceTable.focAccessories = selector.for_accessories;
-        postOnRoadPriceTable.insuranceDiscount = selector.insurance_discount;
-        postOnRoadPriceTable.accessoriesDiscount = selector.accessories_discount;
-        postOnRoadPriceTable.handlingCharges = handlingChargSlctd
-            ? priceInfomationData.handling_charges
-            : 0;
-        postOnRoadPriceTable.essentialKit = essentialKitSlctd
-            ? priceInfomationData.essential_kit
-            : 0;
-        postOnRoadPriceTable.fast_tag = fastTagSlctd
-            ? priceInfomationData.fast_tag
-            : 0;
-        postOnRoadPriceTable.id = postOnRoadPriceTable.id
-            ? postOnRoadPriceTable.id
-            : 0;
-        postOnRoadPriceTable.insuranceAddonData = selectedInsurenceAddons;
-        postOnRoadPriceTable.insuranceAmount = selectedInsurencePrice;
-        postOnRoadPriceTable.insuranceType = selector.insurance_type;
-        postOnRoadPriceTable.lead_id =
-            selector.pre_booking_details_response.dmsLeadDto.id;
-        postOnRoadPriceTable.lifeTax = lifeTaxAmount;
-        postOnRoadPriceTable.lifeTaxPercentage = taxPercent !== '' ? Number(taxPercent) / 100 : 0;
-        postOnRoadPriceTable.onRoadPrice = totalOnRoadPrice;
-        postOnRoadPriceTable.finalPrice = totalOnRoadPriceAfterDiscount;
-        postOnRoadPriceTable.promotionalOffers = selector.promotional_offer;
-        postOnRoadPriceTable.registrationCharges =
-            priceInfomationData.registration_charges;
-        postOnRoadPriceTable.specialScheme = selector.consumer_offer;
-        postOnRoadPriceTable.exchangeOffers = selector.exchange_offer;
-        postOnRoadPriceTable.tcs = tcsAmount;
-        postOnRoadPriceTable.warrantyAmount = selectedWarrentyPrice;
-        postOnRoadPriceTable.warrantyName = selector.warranty;
-
-        postOnRoadPriceTable.form_or_pan = selector.form_or_pan;
-
-        console.log("PAYLOAD:===---=-=-=->>>>>", JSON.stringify(postOnRoadPriceTable));
-        if(isEdit)
-        {
-            postOnRoadPriceTable.id = selector.on_road_price_dto_list_response[0].id
-            dispatch(sendEditedOnRoadPriceDetails(postOnRoadPriceTable))
-        } else   dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable))
-        // Promise.all([
-        //     dispatch(sendOnRoadPriceDetails(postOnRoadPriceTable))
-        // ]).then(async (res) => {
-        //     console.log("REF NO:", selector.refNo);
-        //     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        //     if (employeeData) {
-        //         const jsonObj = JSON.parse(employeeData);
-        //         const payload = {
-        //             "refNo": selector.refNo,
-        //             "orgId": jsonObj.orgId,
-        //             "stageCompleted": "PREBOOKING"
-        //         }
-        //         console.log("PAYLOAD:", payload);
-        //         dispatch(updateRef(payload))
-        //     }
-        // });
-        if (route?.params?.lists && route?.params?.lists.names) {
-            removeExistingKeysFromAsync(route?.params?.lists.names);
-        }
-//         if(selector.loading){
-
-// setIsSubmitPress(false)
-//         }
+      // setIsSubmitPress(false)
+      //         }
     };
 
       const removeExistingKeysFromAsync = async (keys) => {
@@ -3231,18 +3353,40 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                     <View>
                       <DropDownSelectionItem
                        disabled={userData.isManager? true:false}
-                        label={"Gender"}
+                        label={"Gender*"}
                         value={selector.gender}
                         onPress={() =>
                           showDropDownModelMethod("GENDER", "Gender")
                         }
                       />
+                      <Text
+                        style={[
+                          GlobalStyle.underline,
+                          {
+                            backgroundColor:
+                              isSubmitPress && selector.gender === ""
+                                ? "red"
+                                : "rgba(208, 212, 214, 0.7)",
+                          },
+                        ]}
+                      ></Text>
                       <DateSelectItem
                        disabled={userData.isManager? true:false}
-                        label={"Date Of Birth"}
+                        label={"Date Of Birth*"}
                         value={selector.date_of_birth}
                         onPress={() => dispatch(setDatePicker("DATE_OF_BIRTH"))}
                       />
+                      <Text
+                        style={[
+                          GlobalStyle.underline,
+                          {
+                            backgroundColor:
+                              isSubmitPress && selector.date_of_birth === ""
+                                ? "red"
+                                : "rgba(208, 212, 214, 0.7)",
+                          },
+                        ]}
+                      ></Text>
                       <TextinputComp
                        disabled={userData.isManager? true:false}
                         style={{ height: 65, width: "100%" }}
@@ -3334,7 +3478,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                         maxHeight={300}
                         labelField="label"
                         valueField="value"
-                        placeholder={"Select address"}
+                        placeholder={"Select address*"}
                         searchPlaceholder="Search..."
                         value={defaultAddress}
                         // onFocus={() => setIsFocus(true)}
@@ -3346,7 +3490,17 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                       />
                     </>
                   )}
-                  <Text style={GlobalStyle.underline}></Text>
+                  <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && !defaultAddress
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
                   <View style={styles.radioGroupBcVw}>
                     <RadioTextItem
                      disabled={userData.isManager? true:false}
@@ -3455,7 +3609,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                    disabled={userData.isManager? true:false}
                     style={styles.textInputStyle}
                     value={selector.mandal}
-                    label={"Mandal*"}
+                    label={"Mandal/Tahsil*"}
                     maxLength={40}
                     onChangeText={(text) =>
                       dispatch(
@@ -4966,7 +5120,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   <Text style={GlobalStyle.underline}></Text>
 
                   <TextAndAmountComp
-                    title={"TCS(>=10Lakhs -> 1%):"}
+                    title={"TCS(>=10Lakhs = 1%Tax):"}
                     amount={tcsAmount.toFixed(2)}
                   />
                   <Text style={GlobalStyle.underline}></Text>
