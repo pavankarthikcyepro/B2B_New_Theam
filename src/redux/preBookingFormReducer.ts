@@ -382,6 +382,7 @@ const prebookingFormSlice = createSlice({
     marital_status: "",
     // Communication Address
     pincode: "",
+    defaultAddress: "",
     urban_or_rural: 0, // 1: urban, 2:
     house_number: "",
     street_name: "",
@@ -513,6 +514,7 @@ const prebookingFormSlice = createSlice({
       state.marital_status = "";
       // Communication Address
       state.pincode = "";
+      state.defaultAddress = "";
       state.urban_or_rural = 0; // 1: urban, 2:
       state.house_number = "";
       state.street_name = "";
@@ -819,6 +821,9 @@ const prebookingFormSlice = createSlice({
       switch (key) {
         case "PINCODE":
           state.pincode = text;
+          break;
+        case "DEFAULT_ADDRESS":
+          state.defaultAddress = text;
           break;
         case "RURAL_URBAN":
           state.urban_or_rural = Number(text);
@@ -1149,6 +1154,7 @@ const prebookingFormSlice = createSlice({
         }
         dmsAddresses.forEach((address) => {
           if (address.addressType === 'Communication') {
+            state.defaultAddress = address;
             state.pincode = address.pincode ? address.pincode : "";
             state.house_number = address.houseNo ? address.houseNo : "";
             state.street_name = address.street ? address.street : "";
@@ -1284,7 +1290,7 @@ const prebookingFormSlice = createSlice({
       }
     },
     updateAddressByPincode: (state, action) => {
-
+      state.defaultAddress = action.payload;
       state.village = action.payload.Block || ""
       state.mandal = state.mandal ? state.mandal : action.payload.Mandal || ""
       // state.mandal = action.payload.Block || ""
