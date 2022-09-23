@@ -379,7 +379,7 @@ state.customerType = "";
       state.subSourceOfEnquiry = preEnquiryDetails.subSource;
       state.subSourceOfEnquiryId = preEnquiryDetails.subSourceOfEnquiry;
       state.companyName = dmsAccountOrContactObj["company"] || "";
-      state.other = preDetails.company;
+      state.other = preEnquiryDetails.company;
     },
   },
   extraReducers: (builder) => {
