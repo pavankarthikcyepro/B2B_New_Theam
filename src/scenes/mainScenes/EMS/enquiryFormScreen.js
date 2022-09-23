@@ -1778,6 +1778,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
     return dmsExchagedetails;
   };
+
   const modelOnclick = async (index, value, type) => {
     try {
       if (type == "update") {
@@ -1805,27 +1806,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         if (type == "delete") {
           let arr = await [...carModelsList];
           arr.splice(index, 1);
+          setCarModelsList(Object.assign([],arr));
+          
           deleteModalFromServer({ value });
-
-          let item = {
-            color: arr[0].color,
-            fuel: arr[0].fuel,
-            id: arr[0].id,
-            model: arr[0].model,
-            transimmisionType: arr[0].transimmisionType,
-            variant: arr[0].variant,
-            isPrimary: "Y",
-          };
-          // arr[0] = item;
-          // arr.unshift(item);
-          // arr.splice(0, 1);
-
-          // if (arr[0].variant !== "" && arr[0].model !== "") {
-          //   updateVariantModelsData(arr[0].model, true, arr[0].variant);
-          // }
-          // setCarModelsList([])
-          await setCarModelsList([...arr]);
-          // carModelsList.splice(0, 1)
         }
       }
     } catch (error) {
@@ -4012,8 +3995,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <FlatList
                   //  style={{ height: faltListHeight }}
                   data={carModelsList}
-                  //extraData={carModelsList}
-                  keyExtractor={(item, index) => index.toString()}
+                  extraData={carModelsList}
+                  keyExtractor={(item, index) => item.id.toString()}
                   renderItem={({ item, index }) => {
                     return (
                       // <Pressable onPress={() => selectedItem(item, index)}>
@@ -4024,6 +4007,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           index={index}
                           item={item}
                           isSubmitPress={isSubmitPress}
+                          isOnlyOne={carModelsList.length == 1 ? true : false}
                           onChangeSubmit={() => setIsSubmitPress(false)}
                         />
 
