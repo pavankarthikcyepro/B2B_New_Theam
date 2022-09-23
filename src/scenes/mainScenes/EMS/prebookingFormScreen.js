@@ -1444,17 +1444,19 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         showToast("Please select customer type");
         return;
       }
-      if (selector.gender.length === 0) {
-        scrollToPos(0);
-        setOpenAccordian("1");
-        showToast("please select Gender");
-        return;
-      }
-      if (selector.date_of_birth.length === 0) {
-        scrollToPos(0);
-        setOpenAccordian("1");
-        showToast("please select Date Of Birth");
-        return;
+      if(selector.enquiry_segment.toLowerCase() === "personal"){
+        if (selector.gender.length === 0) {
+          scrollToPos(0);
+          setOpenAccordian("1");
+          showToast("please select Gender");
+          return;
+        }
+        if (selector.date_of_birth.length === 0) {
+          scrollToPos(0);
+          setOpenAccordian("1");
+          showToast("please select Date Of Birth");
+          return;
+        }
       }
 
       // Address fields
