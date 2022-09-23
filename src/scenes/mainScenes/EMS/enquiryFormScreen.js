@@ -1176,12 +1176,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   }
     // }
 
-    if (selector.gender.length == 0) {
-      scrollToPos(0);
-      setOpenAccordian("2");
-      showToast("Please select Gender");
-      return;
+    if(selector.enquiry_segment.toLowerCase() == "personal"){
+      if (selector.gender.length == 0) {
+        scrollToPos(0);
+        setOpenAccordian("2");
+        showToast("Please select Gender");
+        return;
+      }
     }
+
 
     if (!isValidate(selector.firstName)) {
       scrollToPos(0);
