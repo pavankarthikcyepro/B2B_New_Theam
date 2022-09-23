@@ -452,6 +452,53 @@ export const getBranchRanksList = createAsyncThunk("HOME/getBranchRanksList", as
     return json;
 })
 
+export const getSourceModelDataForSelf = createAsyncThunk("HOME/getSourceModelDataForSelf", async (data: any, { rejectWithValue }) => {
+    const {type, payload} = data;
+    console.log(']oiuyuiop[: ', data.type);
+    const url = type === 'SELF' ? URL.MODEL_SOURCE_SELF() : type === 'INSIGHTS' ? URL.MODEL_SOURCE_INSIGHTS() : URL.MODEL_SOURCE_TEAM();
+
+    console.log("]oiuyuiop[: =========>:", url);
+    const response = await client.post(url, payload);
+    const json = await response.json()
+
+    console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
+
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const getSourceModelDataForInsights = createAsyncThunk("HOME/getSourceModelDataForInsights", async (data: any, { rejectWithValue }) => {
+    const payload = data.payload;
+
+    console.log("PAYLOAD=========>:", payload);
+    const response = await client.post(URL.MODEL_SOURCE_INSIGHTS(), payload);
+    const json = await response.json()
+
+    console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
+
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
+export const getSourceModelDataForTeam = createAsyncThunk("HOME/getSourceModelDataForTeam", async (data: any, { rejectWithValue }) => {
+    const payload = data.payload;
+
+    console.log("PAYLOAD=========>:", payload);
+    const response = await client.post(URL.MODEL_SOURCE_TEAM(), payload);
+    const json = await response.json()
+
+    console.log("&&&&&& DATA $$$$$$$:", JSON.stringify(json));
+
+    if (!response.ok) {
+        return rejectWithValue(json);
+    }
+    return json;
+})
+
 const AVAILABLE_SCREENS = [
     {
         "menuId": 81,
@@ -507,7 +554,8 @@ export const homeSlice = createSlice({
         leaderboard_list: [],
         branchrank_list: [],
         designationList: [],
-        deptList: []
+        deptList: [],
+        sourceModelData: []
     },
     reducers: {
         dateSelected: (state, action) => {
@@ -990,6 +1038,21 @@ export const homeSlice = createSlice({
             .addCase(getBranchRanksList.rejected, (state, action) => {
                 state.isLoading = false;
             })
+            .addCase(getSourceModelDataForSelf.pending, (state, action) => {
+                state.isLoading = true;
+                state.sourceModelData = [];
+            })
+            .addCase(getSourceModelDataForSelf.fulfilled, (state, action) => {
+                state.isLoading = false;
+                if (action.payload) {
+                    console.log("TOTAL DATA: ", JSON.stringify(action.payload));
+                    state.sourceModelData = action.payload;
+                }
+            })
+            .addCase(getSourceModelDataForSelf.rejected, (state, action) => {
+                state.isLoading = false;
+            })
+
 
         builder.addCase(getDeptDropdown.pending, (state, action) => {
             state.isLoading = true;
