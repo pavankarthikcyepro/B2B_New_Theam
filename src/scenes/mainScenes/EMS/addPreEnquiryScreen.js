@@ -555,14 +555,16 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       updatePreEneuquiryDetails();
       return;
     }
-    GetPincodeDetails(selector.pincode)
-      .then((data) => {
-        // Genereate new ref number
-        getReferenceNumber(data);
-      })
-      .catch((err) => {
-        setIsSubmitEnable(true);
-      });
+
+    getReferenceNumber();
+    // GetPincodeDetails(selector.pincode)
+    //   .then((data) => {
+    //     // Genereate new ref number
+    //     getReferenceNumber(data);
+    //   })
+    //   .catch((err) => {
+    //     setIsSubmitEnable(true);
+    //   });
   };
 
   const GetPincodeDetails = (pincode) => {
@@ -583,7 +585,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
     });
   };
 
-  const getReferenceNumber = async (addressObj) => {
+  const getReferenceNumber = async (addressObj = {}) => {
     const bodyObj = {
       branchid: Number(branchId),
       leadstage: "PREENQUIRY",
@@ -619,7 +621,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       });
   };
 
-  const makeCreatePreEnquiry = (refNumber, addressObj) => {
+  const makeCreatePreEnquiry = (refNumber, addressObj = {}) => {
     const dmsContactDtoObj = {
       branchId: Number(branchId),
       createdBy: employeeName,
@@ -660,12 +662,12 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           addressType: "Communication",
           houseNo: "",
           street: "",
-          city: addressObj.Circle,
-          district: addressObj.District,
+          city: addressObj?.Circle,
+          district: addressObj?.District,
           pincode: selector.pincode,
-          state: addressObj.State,
+          state: addressObj?.State,
           village: "",
-          county: addressObj.Country,
+          county: addressObj?.Country,
           rural: false,
           urban: true,
           id: 0,
@@ -674,12 +676,12 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           addressType: "Permanent",
           houseNo: "",
           street: "",
-          city: addressObj.Circle,
-          district: addressObj.District,
+          city: addressObj?.Circle,
+          district: addressObj?.District,
           pincode: selector.pincode,
-          state: addressObj.State,
+          state: addressObj?.State,
           village: "",
-          county: addressObj.Country,
+          county: addressObj?.Country,
           rural: false,
           urban: true,
           id: 0,
