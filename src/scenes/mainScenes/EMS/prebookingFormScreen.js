@@ -1467,7 +1467,12 @@ const PrebookingFormScreen = ({ route, navigation }) => {
         return;
       }
 
-      if (!selector.defaultAddress || (selector.defaultAddress && selector.defaultAddress.addressType)) {
+      if (
+        !selector.defaultAddress ||
+        (selector.defaultAddress &&
+          selector.defaultAddress.addressType &&
+          !selector.defaultAddress.addressType.village)
+      ) {
         scrollToPos(2);
         setOpenAccordian("2");
         showToast("please select address");
