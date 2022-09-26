@@ -101,6 +101,8 @@ export const PreBookingModelListitemCom = ({
   });
   const [carModelsData, setCarModelsData] = useState([]);
 
+  const [isEdit, setIsEdit] = useState(false);
+
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
     onChangeSubmit();
@@ -532,7 +534,7 @@ export const PreBookingModelListitemCom = ({
   return (
     <View disabled={disabled}>
       <DropDownComponant
-        disabled={userData.isManager ? (isEdit ? false : true) : false}
+        disabled={disabled}
         visible={showDropDownModel}
         headerTitle={dropDownTitle}
         data={dataForDropDown}
@@ -602,7 +604,9 @@ export const PreBookingModelListitemCom = ({
                         </View> : null
                     } 
                      */}
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <View
+            style={{ flexDirection: "row", alignItems: "center" }}
+            disabled={disabled}>
             <Text
               style={{ color: Colors.WHITE, fontSize: 16, marginRight: 10 }}>
               Is Primary
@@ -610,6 +614,7 @@ export const PreBookingModelListitemCom = ({
             <Switch
               icon=" toggle-switch-off-outline"
               value={isPrimary === "Y" ? true : false}
+              disabled={disabled}
               onValueChange={() => {
                 if (isPrimary === "N") {
                   isPrimaryOnclick("Y", index, item);
@@ -629,6 +634,7 @@ export const PreBookingModelListitemCom = ({
               icon="trash-can-outline"
               color={Colors.PINK}
               size={25}
+              disabled={disabled}
               //  onPress={alert("delete")}
             />
           </TouchableOpacity>
@@ -638,6 +644,7 @@ export const PreBookingModelListitemCom = ({
           label={"Model*"}
           value={carModel}
           onPress={() => showDropDownModelMethod("MODEL", "Select Model")}
+          disabled={disabled}
         />
         <Text
           style={[
@@ -653,6 +660,7 @@ export const PreBookingModelListitemCom = ({
           label={"Variant*"}
           value={carVariant}
           onPress={() => showDropDownModelMethod("VARIENT", "Select Variant")}
+          disabled={disabled}
         />
         <Text
           style={[
@@ -668,6 +676,7 @@ export const PreBookingModelListitemCom = ({
           label={"Color*"}
           value={carColor}
           onPress={() => showDropDownModelMethod("COLOR", "Select Color")}
+          disabled={disabled}
         />
         <Text
           style={[
@@ -684,6 +693,7 @@ export const PreBookingModelListitemCom = ({
           label={"Fuel Type*"}
           editable={false}
           value={carFuelType}
+          disabled={disabled}
         />
         <Text style={GlobalStyle.underline} />
 
@@ -692,6 +702,7 @@ export const PreBookingModelListitemCom = ({
           label={"Transmission Type*"}
           editable={false}
           value={carTransmissionType}
+          disabled={disabled}
         />
         <Text style={GlobalStyle.underline} />
       </View>

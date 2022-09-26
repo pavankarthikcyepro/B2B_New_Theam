@@ -3047,18 +3047,19 @@ const PrebookingFormScreen = ({ route, navigation }) => {
 
     const DisplaySelectedImage = ({ fileName, from }) => {
         return (
-            <View style={styles.selectedImageBckVw}>
-                <Text style={styles.selectedImageTextStyle} numberOfLines={1}>
-                    {fileName}
-                </Text>
-                <IconButton
-                    icon="close-circle-outline"
-                    color={Colors.RED}
-                    style={{ padding: 0, margin: 0 }}
-                    size={15}
-                    onPress={() => deteleButtonPressed(from)}
-                />
-            </View>
+          <View style={styles.selectedImageBckVw}>
+            <Text style={styles.selectedImageTextStyle} numberOfLines={1}>
+              {fileName}
+            </Text>
+            <IconButton
+              icon="close-circle-outline"
+              color={Colors.RED}
+              style={{ padding: 0, margin: 0 }}
+              size={15}
+              disabled={userData.isManager ? (isEdit ? false : true) : false}
+              onPress={() => deteleButtonPressed(from)}
+            />
+          </View>
         );
     };
 
@@ -4429,8 +4430,8 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             disabled={
                               userData.isManager
                                 ? isEdit
-                                  ? false
-                                  : true
+                                  ? true
+                                  : false
                                 : false
                             }
                             style={{
@@ -5141,6 +5142,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             justifyContent: "center",
                             alignItems: "center",
                           }}
+                          disabled={
+                            userData.isManager ? (isEdit ? false : true) : false
+                          }
                           onPress={() => {
                             if (
                               uploadedImagesDataObj.relationshipProof
@@ -5275,11 +5279,17 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           isSubmitPress && taxPercent == "" ? "red" : "#d1d1d1",
                       }}>
                       <TextInput
-                        disabled={
-                          userData.isManager ? (isEdit ? false : true) : false
+                        editable={
+                          userData.isManager ? (isEdit ? true : false) : false
                         }
                         value={taxPercent}
-                        style={[{ fontSize: 14, fontWeight: "400" }]}
+                        style={[
+                          {
+                            fontSize: 14,
+                            fontWeight: "400",
+                            color: isEdit ? Colors.BLACK : Colors.GRAY,
+                          },
+                        ]}
                         keyboardType={"number-pad"}
                         onChangeText={(text) => {
                           setTaxPercent(text);

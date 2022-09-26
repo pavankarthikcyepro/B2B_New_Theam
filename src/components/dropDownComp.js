@@ -30,7 +30,7 @@ const multipleTestData = [
 ]
 
 
-const DropDownComponant = ({ visible = false, multiple = false, headerTitle = "Select Data", data = [], selectedItems, keyId = "", onRequestClose }) => {
+const DropDownComponant = ({ visible = false, disabled = false, multiple = false, headerTitle = "Select Data", data = [], selectedItems, keyId = "", onRequestClose }) => {
 
     const [multipleData, setMultipleData] = useState([]);
 
@@ -80,7 +80,7 @@ const DropDownComponant = ({ visible = false, multiple = false, headerTitle = "S
         >
             <View style={styles.conatiner}>
                 <View style={{ backgroundColor: Colors.WHITE }}>
-                    <SafeAreaView >
+                    <SafeAreaView>
                         <View style={styles.view1}>
                             <View style={styles.view2}>
                                 <Text style={styles.text1}>{headerTitle}</Text>
@@ -104,21 +104,41 @@ const DropDownComponant = ({ visible = false, multiple = false, headerTitle = "S
                                 keyExtractor={(item, index) => index.toString()}
                                 renderItem={({ item, index }) => {
                                     return (
-                                        <Pressable onPress={() => itemSelected(index)}>
-                                            <View>
-                                                <List.Item
-                                                    titleStyle={{ fontSize: 14, fontWeight: '400' }}
-                                                    title={item.name}
-                                                    style={{ height: 40 }}
-                                                    description={""}
-                                                    titleNumberOfLines={1}
-                                                    descriptionEllipsizeMode={'tail'}
-                                                    left={props => <List.Icon {...props} icon={item.selected ? "checkbox-marked" : "checkbox-blank-outline"} color={item.selected ? Colors.RED : Colors.GRAY} style={{ margin: 0 }} />}
-                                                />
-                                                {/* <Divider /> */}
-                                            </View>
-                                        </Pressable>
-                                    )
+                                      <Pressable
+                                        onPress={() => itemSelected(index)}
+                                        disabled={disabled}>
+                                        <View>
+                                          <List.Item
+                                            titleStyle={{
+                                              fontSize: 14,
+                                              fontWeight: "400",
+                                            }}
+                                            title={item.name}
+                                            style={{ height: 40 }}
+                                            description={""}
+                                            titleNumberOfLines={1}
+                                            descriptionEllipsizeMode={"tail"}
+                                            left={(props) => (
+                                              <List.Icon
+                                                {...props}
+                                                icon={
+                                                  item.selected
+                                                    ? "checkbox-marked"
+                                                    : "checkbox-blank-outline"
+                                                }
+                                                color={
+                                                  item.selected
+                                                    ? Colors.RED
+                                                    : Colors.GRAY
+                                                }
+                                                style={{ margin: 0 }}
+                                              />
+                                            )}
+                                          />
+                                          {/* <Divider /> */}
+                                        </View>
+                                      </Pressable>
+                                    );
                                 }}
                             /> : (data.length > 0 ?
                                     <FlatList
@@ -127,7 +147,7 @@ const DropDownComponant = ({ visible = false, multiple = false, headerTitle = "S
                                         keyExtractor={(item, index) => index.toString()}
                                         renderItem={({ item, index }) => {
                                             return (
-                                                <Pressable onPress={() => closeModalWithSelectedItem(item)}>
+                                                <Pressable onPress={() => closeModalWithSelectedItem(item)} disabled={true}>
                                                     <View>
                                                         <List.Item
                                                             titleStyle={{ fontSize: 16, fontWeight: '400' }}
