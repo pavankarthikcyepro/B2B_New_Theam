@@ -4109,6 +4109,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             item={item}
                             leadStage={leadStage}
                             isSubmitPress={isSubmitPress}
+                            isOnlyOne={carModelsList.length == 1 ? true : false}
                             onChangeSubmit={() => setIsSubmitPress(false)}
                           />
 
