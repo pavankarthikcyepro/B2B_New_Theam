@@ -3101,6 +3101,19 @@ const PrebookingFormScreen = ({ route, navigation }) => {
               );
               return;
             }
+
+            if (
+              selector.retail_finance !== item.name &&
+              dropDownKey === "RETAIL_FINANCE"
+            ) {
+              dispatch(
+                setFinancialDetails({
+                  key: "RATE_OF_INTEREST",
+                  text: "",
+                })
+              );
+            };
+
             dispatch(
               setDropDownData({
                 key: dropDownKey,

@@ -682,13 +682,6 @@ const prebookingFormSlice = createSlice({
           break;
         case "RETAIL_FINANCE":
           state.retail_finance = value;
-          if (state.retail_finance == "Out House"){
-            state.rate_of_interest =""
-          }else
-          {
-              state.rate_of_interest = value
-          }
-            //console.log("RETAIL", state.retail_finance);
           break;
         case "FINANCE_CATEGORY":
           state.finance_category = value;
