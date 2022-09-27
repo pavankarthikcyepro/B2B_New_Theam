@@ -775,9 +775,9 @@ const TargetScreen = ({ route, navigation }) => {
         <RenderEmployeeParameters item={item} parameterType={'Home Visit'} />
         <RenderEmployeeParameters item={item} parameterType={'Booking'} />
         <RenderEmployeeParameters item={item} parameterType={'INVOICE'} />
+        <RenderEmployeeParameters item={item} parameterType={'Exchange'} />
         <RenderEmployeeParameters item={item} parameterType={'Finance'} />
         <RenderEmployeeParameters item={item} parameterType={'Insurance'} />
-        <RenderEmployeeParameters item={item} parameterType={'Exchange'} />
         <RenderEmployeeParameters item={item} parameterType={'EXTENDEDWARRANTY'} />
         <RenderEmployeeParameters item={item} parameterType={'Accessories'} />
 
@@ -1009,13 +1009,13 @@ const TargetScreen = ({ route, navigation }) => {
                     <Text style={{ color: '#C62159' }}>Retail</Text>
                   </View>
                   <View style={styles.itemBox}>
+                    <Text style={{ color: '#9E31BE' }}>Exg</Text>
+                  </View>
+                  <View style={styles.itemBox}>
                     <Text style={{ color: '#EC3466' }}>Fin</Text>
                   </View>
                   <View style={styles.itemBox}>
                     <Text style={{ color: '#1C95A6' }}>Ins</Text>
-                  </View>
-                  <View style={styles.itemBox}>
-                    <Text style={{ color: '#9E31BE' }}>Exg</Text>
                   </View>
                   <View style={styles.itemBox}>
                     <Text style={{ color: '#1C95A6' }}>ExW</Text>
@@ -1698,9 +1698,9 @@ const TargetScreen = ({ route, navigation }) => {
                       <RenderGrandTotal parameterType={'Home Visit'} totalParams={selector.totalParameters} />
                       <RenderGrandTotal parameterType={'Booking'} totalParams={selector.totalParameters} />
                       <RenderGrandTotal parameterType={'INVOICE'} totalParams={selector.totalParameters} />
+                      <RenderGrandTotal parameterType={'Exchange'} totalParams={selector.totalParameters} />
                       <RenderGrandTotal parameterType={'Finance'} totalParams={selector.totalParameters} />
                       <RenderGrandTotal parameterType={'Insurance'} totalParams={selector.totalParameters} />
-                      <RenderGrandTotal parameterType={'Exchange'} totalParams={selector.totalParameters} />
                       <RenderGrandTotal parameterType={'EXTENDEDWARRANTY'} totalParams={selector.totalParameters} />
                       <RenderGrandTotal parameterType={'Accessories'} totalParams={selector.totalParameters} />
                     </View>
