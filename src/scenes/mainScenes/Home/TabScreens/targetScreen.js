@@ -1723,15 +1723,19 @@ const TargetScreen = ({ route, navigation }) => {
                 <Text style={{ fontSize: 14, fontWeight: "600" }}>Ach</Text>
                 <Text style={{ fontSize: 14, fontWeight: "600" }}>Tar</Text>
               </View>
-              <View
+              {/* <View
                 style={{ width: "18%", justifyContent: "center", height: 15, alignItems:"center" }}
               >
                 <Text style={{ fontSize: 14, fontWeight: "600" }}>Ach%</Text>
-              </View>
-              <View style={{ width: "35%", flexDirection: "row" }}>
-                <Text style={{ fontSize: 14, fontWeight: "600" }}>Balance</Text>
-                <View style={{ marginRight: 10 }}></View>
-                <Text style={{ fontSize: 14, fontWeight: "600" }}>AR/Day</Text>
+              </View> */}
+
+              <View style={{ width: "45%", flexDirection: "row", marginLeft: 15, alignItems: "center"}}>
+                <View style={{ width: "50%", alignItems: "center" }}>
+                  <Text style={{ fontSize: 14, fontWeight: "600" }}>Balance</Text>
+                </View>
+                <View style={{ width: "50%", alignItems: "center" }}>
+                  <Text style={{ fontSize: 14, fontWeight: "600" }}>AR/Day</Text>
+                </View>
               </View>
             </View>
             <>
@@ -2355,7 +2359,8 @@ export { SupportingScreen };
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.WHITE
+    backgroundColor: Colors.WHITE,
+    paddingTop: 10
   },
   statWrap: {
     flexDirection: 'row',
