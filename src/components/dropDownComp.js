@@ -30,7 +30,7 @@ const multipleTestData = [
 ]
 
 
-const DropDownComponant = ({ visible = false, disabled = false, multiple = false, headerTitle = "Select Data", data = [], selectedItems, keyId = "", onRequestClose }) => {
+const DropDownComponant = ({ visible = false, multiple = false, headerTitle = "Select Data", data = [], selectedItems, keyId = "", onRequestClose }) => {
 
     const [multipleData, setMultipleData] = useState([]);
 
@@ -106,7 +106,7 @@ const DropDownComponant = ({ visible = false, disabled = false, multiple = false
                                     return (
                                       <Pressable
                                         onPress={() => itemSelected(index)}
-                                        disabled={disabled}>
+                                        >
                                         <View>
                                           <List.Item
                                             titleStyle={{
@@ -147,7 +147,7 @@ const DropDownComponant = ({ visible = false, disabled = false, multiple = false
                                         keyExtractor={(item, index) => index.toString()}
                                         renderItem={({ item, index }) => {
                                             return (
-                                                <Pressable onPress={() => closeModalWithSelectedItem(item)} disabled={true}>
+                                                <Pressable onPress={() => closeModalWithSelectedItem(item)}>
                                                     <View>
                                                         <List.Item
                                                             titleStyle={{ fontSize: 16, fontWeight: '400' }}
