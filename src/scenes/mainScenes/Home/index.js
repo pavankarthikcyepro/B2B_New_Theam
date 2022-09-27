@@ -716,7 +716,7 @@ const HomeScreen = ({ route, navigation }) => {
                 branchClicked={() => moveToSelectBranch()}
                 filterClicked={() => moveToFilter()}
             />
-            <View style={{ flex: 1, padding: 10 }}>
+            <View style={{ flex: 1, paddingHorizontal: 10 }}>
                 <FlatList
                     data={[1, 2, 3]}
                     listKey={"TOP_FLAT_LIST"}
@@ -816,7 +816,7 @@ const HomeScreen = ({ route, navigation }) => {
                             return (
                                 <>
                                     {isTeamPresent && !selector.isDSE &&
-                                        <View style={{ flexDirection: 'row', marginBottom: 20, justifyContent: 'center', alignItems: 'center' }}>
+                                        <View style={{ flexDirection: 'row', marginBottom: 15, justifyContent: 'center', alignItems: 'center' }}>
                                             <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, marginTop: 10, justifyContent: 'center', width: '80%' }}>
 
                                                 <TouchableOpacity onPress={() => {
@@ -836,13 +836,13 @@ const HomeScreen = ({ route, navigation }) => {
                                         </View>
                                     }
                                     {selector.isDSE &&
-                                        <View style={{ flexDirection: 'row', marginBottom: 20, justifyContent: 'center', alignItems: 'center' }}>
-                                            <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, marginTop: 10, justifyContent: 'center', width: '80%' }}>
+                                        <View style={{ flexDirection: 'row', marginBottom: 15, justifyContent: 'center', alignItems: 'center' }}>
+                                            <View style={{ flexDirection: 'row', borderColor: Colors.RED, borderWidth: 1, borderRadius: 5, height: 41, justifyContent: 'center', width: '80%' }}>
                                                 <TouchableOpacity onPress={() => {
                                                     // setIsTeam(true)
                                                     dispatch(updateIsTeam(false))
                                                 }} style={{ width: '100%', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.RED, borderTopLeftRadius: 5, borderBottomLeftRadius: 5 }}>
-                                                    <Text style={{ fontSize: 16, color: Colors.WHITE, fontWeight: '600' }}>Self</Text>
+                                                    <Text style={{ fontSize: 16, color: Colors.WHITE, fontWeight: '600' }}>Dashboard</Text>
                                                 </TouchableOpacity>
                                             </View>
                                         </View>
@@ -956,9 +956,9 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 5,
         paddingLeft: 3,
-        height: 80,
+        height: 70,
+        marginTop: 10,
         width: '100%',
     },
     rankIconBox: {
