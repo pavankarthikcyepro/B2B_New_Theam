@@ -1378,12 +1378,7 @@ const PrebookingFormScreen = ({ route, navigation }) => {
       setIsSubmitPress(true);
       console.log("ATTCH", JSON.stringify(uploadedImagesDataObj));
       // console.log("FOUND: ", uploadedImagesDataObj.hasOwnProperty('receipt'));
-      if (selector.salutation.length === 0) {
-        scrollToPos(0);
-        setOpenAccordian("1");
-        showToast("please select salutation");
-        return;
-      }
+      
       if (selector.first_name.length === 0) {
         scrollToPos(0);
         setOpenAccordian("1");
@@ -3195,24 +3190,14 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                   ]}
                 >
                   <DropDownSelectionItem
-                    label={"Salutation*"}
+                    label={"Salutation"}
                     disabled={userData.isManager ? (isEdit ? false : true) : false}
                     value={selector.salutation}
                     onPress={() =>
                       showDropDownModelMethod("SALUTATION", "Salutation")
                     }
                   />
-                  <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.salutation === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
+                  <Text style={GlobalStyle.underline} />
                   <TextinputComp
                     style={{ height: 65, width: "100%" }}
                     disabled={userData.isManager ? (isEdit ? false : true) : false}
