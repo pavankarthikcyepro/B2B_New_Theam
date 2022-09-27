@@ -159,27 +159,31 @@ export const RenderSelfInsights = (args) => {
               marginLeft: 15,
             }}
           >
-            <View
-              style={{
-                width: "45%",
-                height: 25,
-                borderColor: color[index % color.length],
-                borderWidth: 1,
-                borderRadius: 8,
-                justifyContent: "center",
-                alignItems: "center",
-                marginLeft: "5%",
-              }}
-            >
-              <Text numberOfLines={1} style={{ padding: 2 }}>
-                {Number(item.achievment) > Number(item.target)
-                  ? 0
-                  : item.shortfall}
-              </Text>
+            <View style={{ width: "50%", alignItems: "center"}}>
+              <View
+                style={{
+                  width: "70%",
+                  height: 25,
+                  borderColor: color[index % color.length],
+                  borderWidth: 1,
+                  borderRadius: 8,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginLeft: "5%",
+                }}
+              >
+                <Text style={{ padding: 2 }}>
+                  {Number(item.achievment) > Number(item.target)
+                    ? 0
+                    : item.shortfall}
+                </Text>
+              </View>
             </View>
+            <View style={{ width: "50%", alignItems: "center"}}>
+
             <View
               style={{
-                width: "45%",
+                width: "70%",
                 height: 25,
                 borderColor: color[index % color.length],
                 borderWidth: 1,
@@ -188,7 +192,7 @@ export const RenderSelfInsights = (args) => {
                 alignItems: "center",
                 marginLeft: "5%",
               }}
-            >
+              >
               <Text numberOfLines={1} style={{ padding: 2 }}>
                 {parseInt(item.achievment) > parseInt(item.target)
                   ? 0
@@ -197,6 +201,7 @@ export const RenderSelfInsights = (args) => {
                   : 0}
               </Text>
             </View>
+                  </View>
           </View>
         </View>
       );
