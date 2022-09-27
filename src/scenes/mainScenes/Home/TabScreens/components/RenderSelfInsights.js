@@ -193,7 +193,7 @@ export const RenderSelfInsights = (args) => {
                 marginLeft: "5%",
               }}
               >
-              <Text numberOfLines={1} style={{ padding: 2 }}>
+              <Text style={{ padding: 2 }}>
                 {parseInt(item.achievment) > parseInt(item.target)
                   ? 0
                   : dateDiff > 0 && parseInt(item.shortfall) !== 0
