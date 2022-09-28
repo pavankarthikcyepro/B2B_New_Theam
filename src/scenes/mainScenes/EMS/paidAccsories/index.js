@@ -36,7 +36,8 @@ const TopTabNavigator = ({ titles, data }) => {
   return (
     <TopTab.Navigator
       initialRouteName={titles[0]}
-      tabBarOptions={tabBarOptions}>
+      tabBarOptions={tabBarOptions}
+    >
       {titles.map((title, index) => {
         console.log("titles: ", title);
         console.log("titles data: ", data[title].length);
@@ -64,16 +65,15 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
     names: [],
     data: {},
   });
-  const [defaultContext, setDefaultContext] = useState({});
 
   useEffect(() => {
     const titleNames = [];
     const dataObj = {};
- console.log("accessorylist=============>", accessorylist);
-    accessorylist.forEach((item) => {
-      console.log("item=============>", item);
+
+    accessorylist.forEach((item, index) => {
       let isSelected = false;
       let find = [];
+      
       find = selectedAccessoryList.filter((innerItem) => {
         return (
           innerItem.accessoriesName === item.partName &&
@@ -81,6 +81,8 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
           innerItem?.dmsAccessoriesType === item.item
         );
       });
+
+      
       if (find.length > 0) {
         isSelected = true;
         addItemInAsyncStorage(find[0].dmsAccessoriesType, {
@@ -88,29 +90,20 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
           selected: isSelected,
         });
       }
+
       const newItem = { ...item, selected: isSelected };
-  console.log("newItem=============>", newItem);
+      
       if (titleNames.includes(item.item)) {
-        const oldData = dataObj[item.item];
-        const newData = [newItem];
-        dataObj[item.item] = newData;
-        //console.log("RUNNNNN")
-        console.log("OLD=============>", newData);
+        if(dataObj[item.item].findIndex(item => item.id === newItem.id) == -1){
+          dataObj[item.item].push(newItem);
+        }
       } else {
-        //   removeExistingKeysFromAsync(titleNames);
         titleNames.push(item.item);
         dataObj[item.item] = [newItem];
-         console.log("titleNames=============>", titleNames, dataObj);
       }
-   
     });
-     console.log("titleNames<><", titleNames);
-     console.log("dataObj<><", dataObj);
-    //   //console.log("DATAOBJ: ", JSON.stringify(dataObj));
+
     setAccessoriesData({ names: titleNames, data: dataObj });
-
-    console.log("RUNNN====>", JSON.stringify(accessoriesData));
-
     removeExistingKeysFromAsync(titleNames);
   }, []);
 
@@ -174,7 +167,7 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {console.log('accessoriesData.names',accessoriesData)}
+      {console.log("accessoriesData.names", accessoriesData)}
       {accessoriesData.names.length === 0 ? (
         <EmptyListView title={"No Data Found"} />
       ) : (
@@ -197,14 +190,16 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
           style={{ width: 120 }}
           color={Colors.GRAY}
           labelStyle={{ textTransform: "none" }}
-          onPress={() => navigation.goBack()}>
+          onPress={() => navigation.goBack()}
+        >
           Cancel
         </Button>
         <Button
           mode="contained"
           color={Colors.RED}
           labelStyle={{ textTransform: "none" }}
-          onPress={addSelected}>
+          onPress={addSelected}
+        >
           Add Selected
         </Button>
       </View>

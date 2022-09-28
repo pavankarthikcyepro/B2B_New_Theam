@@ -363,7 +363,6 @@ export const GetFinanceBanksList = async (orgId, token) => {
 export const GetPaidAccessoriesList = async (vehicleId, orgId, token) => {
   return await new Promise((resolve, reject) => {
     const url = URL.GET_PAID_ACCESSORIES_LIST(vehicleId);
-    //console.log("url: ", url);
     fetch(url, {
       method: "GET",
       headers: {
@@ -375,7 +374,6 @@ export const GetPaidAccessoriesList = async (vehicleId, orgId, token) => {
     })
       .then((json) => json.json())
       .then((res) => {
-        //console.log("res: ", JSON.stringify(res))
         if (res.success == true) {
           if (res.accessorylist != undefined && res.accessorylist.length > 0) {
             resolve(res.accessorylist);
