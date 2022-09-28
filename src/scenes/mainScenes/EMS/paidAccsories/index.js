@@ -69,8 +69,9 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
   useEffect(() => {
     const titleNames = [];
     const dataObj = {};
-
+ console.log("accessorylist=============>", accessorylist);
     accessorylist.forEach((item) => {
+      console.log("item=============>", item);
       let isSelected = false;
       let find = [];
       find = selectedAccessoryList.filter((innerItem) => {
@@ -88,17 +89,18 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
         });
       }
       const newItem = { ...item, selected: isSelected };
-
+  console.log("newItem=============>", newItem);
       if (titleNames.includes(item.item)) {
         const oldData = dataObj[item.item];
         const newData = [newItem];
         dataObj[item.item] = newData;
         //console.log("RUNNNNN")
-        //console.log("OLD=============>", oldData);
+        console.log("OLD=============>", newData);
       } else {
         //   removeExistingKeysFromAsync(titleNames);
         titleNames.push(item.item);
         dataObj[item.item] = [newItem];
+         console.log("titleNames=============>", titleNames, dataObj);
       }
    
     });
@@ -172,6 +174,7 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {console.log('accessoriesData.names',accessoriesData)}
       {accessoriesData.names.length === 0 ? (
         <EmptyListView title={"No Data Found"} />
       ) : (
