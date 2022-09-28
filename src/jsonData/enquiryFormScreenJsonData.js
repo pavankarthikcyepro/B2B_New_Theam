@@ -396,6 +396,17 @@ export const Salutation_Types = [
   },
 ];
 
+export const Gender_Types = [
+  {
+    id: "1",
+    name: "Male"
+  },
+  {
+    id: "2",
+    name: "Female"
+  }
+]
+
 //Model Selection
 export const Transmission_Types = [
   {

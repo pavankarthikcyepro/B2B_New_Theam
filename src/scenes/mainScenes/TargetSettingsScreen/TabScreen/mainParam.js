@@ -64,6 +64,7 @@ const MainParamScreen = ({ route, navigation }) => {
     const [masterTeamsParamsData, setMasterTeamsParamsData] = useState([]);
 
     const [dropdownData, setDropdownData] = useState([]);
+    const [selectedDropdownData, setSelectedDropdownData] = useState([]);
     const [employeeDropDownDataLocal, setEmployeeDropDownDataLocal] = useState([]);
 
     useEffect(async () => {
@@ -439,7 +440,7 @@ const MainParamScreen = ({ route, navigation }) => {
     function RenderTeamsSelfData(type) {
         return (
             <TextInput editable={editParameters} style={editParameters ? styles.textBox : styles.textBoxDisabled}
-                       value={`${updatedSelfParameters[type]}`} keyboardType={'number-pad'} onChangeText={(z) => onChangeSelfParamValue(type, z)}
+                value={`${updatedSelfParameters[type]}`} keyboardType={'number-pad'} onChangeText={(z) => onChangeSelfParamValue(type, z)}
             />
         );
     }
@@ -577,7 +578,7 @@ const MainParamScreen = ({ route, navigation }) => {
                 {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
                     <View>
                         <TextInput editable={editParameters} style={editParameters ? styles.textBox : styles.textBoxDisabled}
-                                   value={param} onChangeText={(x) => onChangeTeamParamValue(curIndex, x)} />
+                            value={param} onChangeText={(x) => onChangeTeamParamValue(curIndex, x)} />
                     </View>
                 }
             </>
@@ -690,7 +691,7 @@ const MainParamScreen = ({ route, navigation }) => {
                         </View>
                     </View>
                     <ScrollView style={{ width: '100%' }} contentContainerStyle={{ flexDirection: 'column' }} showsVerticalScrollIndicator={false}
-                                showsHorizontalScrollIndicator={false} horizontal={true}>
+                        showsHorizontalScrollIndicator={false} horizontal={true}>
                         <View style={styles.nameWrap}>
                             <View style={styles.nameBox} >
                                 <Text style={styles.text}>Team Total</Text>
@@ -720,6 +721,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                         <>
                                             {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
                                                 <TouchableOpacity style={styles.textBox} onPress={() => {
+                                                    setSelectedDropdownData([{ label: item.branchName, value: item.branch }])
                                                     if (item.retailTarget !== null && selector.endDate === item.endDate && selector.startDate === item.startDate) {
                                                         setSelectedBranch({ label: item.branchName, value: item.branch })
                                                         setDefaultBranch(Number(item.branch))
@@ -967,7 +969,7 @@ const MainParamScreen = ({ route, navigation }) => {
                     </View>
                 </View>
                 <ScrollView style={{ width: '100%' }} contentContainerStyle={{ flexDirection: 'column' }} showsVerticalScrollIndicator={false}
-                            showsHorizontalScrollIndicator={false} horizontal={true}>
+                    showsHorizontalScrollIndicator={false} horizontal={true}>
                     <View style={styles.nameWrap}>
                         <View style={styles.nameBox}>
                             <Text style={styles.text}>Total</Text>
@@ -1086,7 +1088,7 @@ const MainParamScreen = ({ route, navigation }) => {
                     </View>
                     {/*Right Side View*/}
                     <ScrollView style={{ width: '100%' }} contentContainerStyle={{ flexDirection: 'column' }} showsVerticalScrollIndicator={false}
-                                showsHorizontalScrollIndicator={false} horizontal={true}>
+                        showsHorizontalScrollIndicator={false} horizontal={true}>
                         <View style={styles.nameWrap}>
                             <View style={styles.nameBox}>
                                 <Text style={styles.text}>Total</Text>
@@ -1189,7 +1191,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                 selectedTextStyle={styles.selectedTextStyle}
                                 inputSearchStyle={styles.inputSearchStyle}
                                 iconStyle={styles.iconStyle}
-                                data={dropdownData}
+                                data={selector.isTeam ? selectedDropdownData : dropdownData}
                                 search
                                 maxHeight={300}
                                 labelField="label"

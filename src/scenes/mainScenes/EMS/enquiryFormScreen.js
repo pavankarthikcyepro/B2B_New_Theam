@@ -110,6 +110,7 @@ import {
   Enquiry_Drop_Reasons,
   Insurence_Types,
   Referred_By_Source,
+  Gender_Types,
 } from "../../../jsonData/enquiryFormScreenJsonData";
 import {
   showAlertMessage,
@@ -290,6 +291,107 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   clearInterval(interval)
     // })
   }, [updateEnquiry, selector, uploadedImagesDataObj]);
+
+
+  useEffect(() => {
+    handleRetailFinanceFields();
+    
+  }, [selector.retail_finance])
+  const handleRetailFinanceFields = () => {
+    if (selector.retail_finance === 'In House') {
+      dispatch(
+        setFinancialDetails({
+          key: "BANK_R_FINANCE_NAME",
+          text: '',
+        })
+      )
+       dispatch(
+         setFinancialDetails({
+           key: "BANK_FINANCE",
+           text: selector.bank_or_finance,
+         })
+       );
+      dispatch(
+        setFinancialDetails({
+          key: "LOAN_AMOUNT",
+          text: '',
+        })
+      );
+      dispatch(
+        setFinancialDetails({
+          key: "RATE_OF_INTEREST",
+          text: '',
+        })
+      );
+    }
+    else if (selector.retail_finance === 'Out House') {
+      dispatch(
+        setFinancialDetails({
+          key: "BANK_R_FINANCE_NAME",
+          text: selector.bank_or_finance_name,
+        })
+      );
+        dispatch(
+          setFinancialDetails({
+            key: "BANK_FINANCE",
+            text: '',
+          })
+        );
+      dispatch(
+        setFinancialDetails({
+          key: "LOAN_AMOUNT",
+          text: selector.loan_amount,
+        })
+      );
+      
+      dispatch(
+        setFinancialDetails({
+          key: "RATE_OF_INTEREST",
+          text: selector.rate_of_interest,
+        })
+      );
+    }
+    else if (selector.retail_finance === "Leasing") {
+      dispatch(
+        setFinancialDetails({
+          key: "BANK_R_FINANCE_NAME",
+          text: '',
+        })
+      );
+      dispatch(
+        setFinancialDetails({
+          key: "BANK_FINANCE",
+          text: "",
+        })
+      );
+      dispatch(
+        setFinancialDetails({
+          key: "LEASHING_NAME",
+          text: selector.leashing_name,
+        })
+      );
+    } else {
+      dispatch(
+        setFinancialDetails({
+          key: "BANK_R_FINANCE_NAME",
+          text: selector.bank_or_finance_name,
+        })
+      );
+      dispatch(
+        setFinancialDetails({
+          key: "LOAN_AMOUNT",
+          text: selector.loan_amount,
+        })
+      );
+      dispatch(
+        setFinancialDetails({
+          key: "RATE_OF_INTEREST",
+          text: selector.rate_of_interest,
+        })
+      );
+    }
+
+  }
 
   // useEffect(() => {
   //   const interval = setInterval(() => {
@@ -1074,6 +1176,16 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   }
     // }
 
+    if(selector.enquiry_segment.toLowerCase() == "personal"){
+      if (selector.gender.length == 0) {
+        scrollToPos(0);
+        setOpenAccordian("2");
+        showToast("Please select Gender");
+        return;
+      }
+    }
+
+
     if (!isValidate(selector.firstName)) {
       scrollToPos(0);
       setOpenAccordian("2");
@@ -1778,6 +1890,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     }
     return dmsExchagedetails;
   };
+
   const modelOnclick = async (index, value, type) => {
     try {
       if (type == "update") {
@@ -1805,27 +1918,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         if (type == "delete") {
           let arr = await [...carModelsList];
           arr.splice(index, 1);
+          setCarModelsList(Object.assign([],arr));
+          
           deleteModalFromServer({ value });
-
-          let item = {
-            color: arr[0].color,
-            fuel: arr[0].fuel,
-            id: arr[0].id,
-            model: arr[0].model,
-            transimmisionType: arr[0].transimmisionType,
-            variant: arr[0].variant,
-            isPrimary: "Y",
-          };
-          // arr[0] = item;
-          // arr.unshift(item);
-          // arr.splice(0, 1);
-
-          // if (arr[0].variant !== "" && arr[0].model !== "") {
-          //   updateVariantModelsData(arr[0].model, true, arr[0].variant);
-          // }
-          // setCarModelsList([])
-          await setCarModelsList([...arr]);
-          // carModelsList.splice(0, 1)
         }
       }
     } catch (error) {
@@ -1843,15 +1938,18 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       if (carModelsList && carModelsList.length > 0) {
         let arr = await [...carModelsList];
         var data = arr[isPrimaryCureentIndex];
-        const cardata = await {
-          color: data.color,
-          fuel: data.fuel,
-          id: data.id,
-          model: data.model,
-          transimmisionType: data.transimmisionType,
-          variant: data.variant,
-          isPrimary: "N",
-        };
+        if(data){
+          const cardata = await {
+            color: data.color,
+            fuel: data.fuel,
+            id: data.id,
+            model: data.model,
+            transimmisionType: data.transimmisionType,
+            variant: data.variant,
+            isPrimary: "N",
+          };
+          arr[isPrimaryCureentIndex] = cardata;
+        }
         const selecteditem = await {
           color: item.color,
           fuel: item.fuel,
@@ -1861,8 +1959,6 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           variant: item.variant,
           isPrimary: "Y",
         };
-        //await setCarModelsList([])
-        arr[isPrimaryCureentIndex] = cardata;
         arr[index] = selecteditem;
         dispatch(updatedmsLeadProduct([...arr]));
         await setCarModelsList([...arr]);
@@ -2449,7 +2545,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         setDataForDropDown([...Salutation_Types]);
         break;
       case "GENDER":
-        setDataForDropDown([...selector.gender_types_data]);
+        setDataForDropDown([...Gender_Types]);
         break;
       case "RELATION":
         setDataForDropDown([...selector.relation_types_data]);
@@ -2532,7 +2628,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     let arrTemp = carModelsData.filter(function (obj) {
       return obj.model === selectedModelName;
     });
-
+    
     let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
     if (carModelObj !== undefined) {
       let newArray = [];
@@ -2562,7 +2658,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (!selectedVarientName || selectedVarientName.length === 0) {
       return;
     }
-
+    
     let arrTemp = varientList.filter(function (obj) {
       return obj.name === selectedVarientName;
     });
@@ -2573,7 +2669,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       if (mArray.length) {
         mArray.map((item) => {
           newArray.push({
-            id: item.id,
+            id: item.varient_id,
             name: item.color,
           });
         });
@@ -2959,7 +3055,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               expandedId={openAccordian}
               onAccordionPress={(expandedId) => updateAccordian(expandedId)}
             >
-              {/* { (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY') ? <List.Accordion
+              { (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY') ? <List.Accordion
                 id={"10"}
                 title={"Proforma Invoice"}
                 titleStyle={{
@@ -2981,8 +3077,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               >
                 <ProformaComp
                   modelDetails={selector.dmsLeadProducts[0]}
-                  branchId={selectedBranchId} />
-              </List.Accordion> : null} */}
+                  branchId={selectedBranchId} 
+                  universalId={route.params.universalId}
+                  />
+              </List.Accordion> : null}
               <View style={styles.space}></View>
 
               {/* 1. Personal Intro */}
@@ -3012,11 +3110,25 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
                 <Text style={GlobalStyle.underline} />
                 {selector.enquiry_segment.toLowerCase() == "personal" ? (
-                  <DropDownSelectionItem
-                    label={"Gender"}
-                    value={selector.gender}
-                    onPress={() => showDropDownModelMethod("GENDER", "Gender")}
-                  />
+                  <>
+                    <DropDownSelectionItem
+                      label={"Gender*"}
+                      value={selector.gender}
+                      onPress={() => showDropDownModelMethod("GENDER", "Gender")}
+                    />
+
+                    <Text
+                    style={[
+                      GlobalStyle.underline,
+                      {
+                        backgroundColor:
+                          isSubmitPress && selector.gender === ""
+                            ? "red"
+                            : "rgba(208, 212, 214, 0.7)",
+                      },
+                    ]}
+                  ></Text>
+                </>
                 ) : null}
 
                 <TextinputComp
@@ -3392,9 +3504,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   }
                 />
 
-                {/* <DropDownSelectionItem
+                <DropDownSelectionItem
                   label={"Enquiry Category"}
-                  disabled={true}
                   value={selector.enquiry_category.length == 0 ? "Hot" : selector.enquiry_category}
                   onPress={() =>
                     showDropDownModelMethod(
@@ -3402,7 +3513,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                       "Enquiry Category"
                     )
                   }
-                /> */}
+                />
 
                 <DropDownSelectionItem
                   label={"Buyer Type*"}
@@ -3619,7 +3730,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   <TextinputComp
                     style={styles.textInputStyle}
                     value={selector.mandal}
-                    label={"Mandal"}
+                    label={"Mandal/Tahsil"}
                     autoCapitalize="words"
                     maxLength={50}
                     keyboardType={"default"}
@@ -4012,8 +4123,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <FlatList
                   //  style={{ height: faltListHeight }}
                   data={carModelsList}
-                  //extraData={carModelsList}
-                  keyExtractor={(item, index) => index.toString()}
+                  extraData={carModelsList}
+                  keyExtractor={(item, index) => item.id.toString()}
                   renderItem={({ item, index }) => {
                     return (
                       // <Pressable onPress={() => selectedItem(item, index)}>
@@ -4024,6 +4135,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           index={index}
                           item={item}
                           isSubmitPress={isSubmitPress}
+                          isOnlyOne={carModelsList.length == 1 ? true : false}
                           onChangeSubmit={() => setIsSubmitPress(false)}
                         />
 

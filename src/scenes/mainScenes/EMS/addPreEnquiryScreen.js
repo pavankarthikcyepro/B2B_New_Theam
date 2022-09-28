@@ -531,10 +531,10 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       return;
     }
 
-    if (selector.email.length > 0 && !isEmail(selector.email)) {
-      showToast("Please enter valid email");
-      return;
-    }
+        if (selector.email.length > 0 && !isEmail(selector.email)) {
+            showToast("Please enter valid email");
+            return;
+        }
 
     if (!fromEdit) {
       if (selector.pincode.length > 0 && !isPincode(selector.pincode)) {
@@ -619,25 +619,26 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       });
   };
 
-  const makeCreatePreEnquiry = (refNumber, addressObj) => {
-    const dmsContactDtoObj = {
-      branchId: Number(branchId),
-      createdBy: employeeName,
-      customerType: selector.customerType,
-      firstName: selector.firstName,
-      lastName: selector.lastName,
-      modifiedBy: employeeName,
-      orgId: organizationId,
-      phone: selector.mobile,
-      company: selector.companyName,
-      email: selector.email,
-      enquirySource: selector.sourceOfEnquiryId,
-      subSource: selector.subSourceOfEnquiryId,
-      ownerName: employeeName,
-      secondaryPhone: selector.alterMobile,
-      status: "PREENQUIRY",
-      pincode: selector.pincode,
-    };
+    const makeCreatePreEnquiry = (refNumber, addressObj) => {
+        const dmsContactDtoObj = {
+          branchId: Number(branchId),
+          createdBy: employeeName,
+          customerType: selector.customerType,
+          firstName: selector.firstName,
+          lastName: selector.lastName,
+          modifiedBy: employeeName,
+          orgId: organizationId,
+          phone: selector.mobile,
+          company: selector.companyName ? selector.companyName : selector.other,
+          otherCustomerType: selector.other,
+          email: selector.email,
+          enquirySource: selector.sourceOfEnquiryId,
+          subSource: selector.subSourceOfEnquiryId,
+          ownerName: employeeName,
+          secondaryPhone: selector.alterMobile,
+          status: "PREENQUIRY",
+          pincode: selector.pincode,
+        };
 
     const dmsLeadDtoObj = {
       branchId: Number(branchId),
@@ -687,7 +688,7 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       ],
     };
 
-    // http://ec2-3-7-117-218.ap-south-1.compute.amazonaws.com:8081
+        // http://ec2-3-7-117-218.ap-south-1.compute.amazonaws.com:8081
 
     let url = sales_url;
     let formData = {};
@@ -769,17 +770,21 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       dmsAccountOrContactDto = { ...existingPreEnquiryDetails.dmsAccountDto };
     }
 
-    dmsAccountOrContactDto.firstName = selector.firstName;
-    dmsAccountOrContactDto.lastName = selector.lastName;
-    dmsAccountOrContactDto.email = selector.email;
-    dmsAccountOrContactDto.phone = selector.mobile;
-    dmsAccountOrContactDto.secondaryPhone = selector.alterMobile;
-    dmsAccountOrContactDto.model = selector.carModel;
-    (dmsAccountOrContactDto.company = selector.companyName),
-      (dmsAccountOrContactDto.customerType = selector.customerType);
-    dmsAccountOrContactDto.enquirySource = selector.sourceOfEnquiryId;
-    dmsAccountOrContactDto.subSource = selector.subSourceOfEnquiryId;
-    dmsAccountOrContactDto.pincode = selector.pincode;
+        dmsAccountOrContactDto.firstName = selector.firstName;
+        dmsAccountOrContactDto.lastName = selector.lastName;
+        dmsAccountOrContactDto.email = selector.email;
+        dmsAccountOrContactDto.phone = selector.mobile;
+        dmsAccountOrContactDto.secondaryPhone = selector.alterMobile;
+        dmsAccountOrContactDto.model = selector.carModel;
+        dmsAccountOrContactDto.company = selector.companyName
+          ? selector.companyName
+          : selector.other;
+        dmsAccountOrContactDto.otherCustomerType = selector.other;
+
+        dmsAccountOrContactDto.customerType = selector.customerType;
+        dmsAccountOrContactDto.enquirySource = selector.sourceOfEnquiryId;
+        dmsAccountOrContactDto.subSource = selector.subSourceOfEnquiryId;
+        dmsAccountOrContactDto.pincode = selector.pincode;
 
     if (existingPreEnquiryDetails.hasOwnProperty("dmsLeadDto")) {
       dmsLeadDto = { ...existingPreEnquiryDetails.dmsLeadDto };
@@ -796,6 +801,10 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
       dmsLeadDto.enquirySource = selector.sourceOfEnquiry;
       dmsLeadDto.subSource = selector.subSourceOfEnquiry;
       dmsLeadDto.pincode = selector.pincode;
+             dmsAccountOrContactDto.company = selector.companyName
+               ? selector.companyName
+               : selector.other;
+            dmsAccountOrContactDto.otherCustomerType = selector.other;
     }
 
     let formData = {};
@@ -866,6 +875,8 @@ const AddPreEnquiryScreen = ({ route, navigation }) => {
           showToast("No data found");
           return;
         }
+                else{
+                }
         setDataForDropDown([...homeSelector.source_of_enquiry_list]);
         break;
       case "SUB_SOURCE_OF_ENQUIRY":
