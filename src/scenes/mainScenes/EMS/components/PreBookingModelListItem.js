@@ -69,6 +69,7 @@ export const PreBookingModelListitemCom = ({
   index,
   leadStage,
   isSubmitPress,
+  isOnlyOne,
   onChangeSubmit,
   disabled = false,
 }) => {
@@ -629,12 +630,14 @@ export const PreBookingModelListitemCom = ({
             />
           </View>
           <TouchableOpacity
-            onPress={(value) => modelOnclick(index, item, "delete")}>
+            disabled={isOnlyOne}
+            onPress={(value) => modelOnclick(index, item, "delete")}
+          >
             <IconButton
               icon="trash-can-outline"
-              color={Colors.PINK}
+              color={isOnlyOne ? Colors.DARK_GRAY : Colors.PINK}
               size={25}
-              disabled={disabled}
+              disabled={isOnlyOne}
               //  onPress={alert("delete")}
             />
           </TouchableOpacity>
