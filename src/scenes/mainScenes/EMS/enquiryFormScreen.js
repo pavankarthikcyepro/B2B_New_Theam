@@ -38,6 +38,7 @@ import { ModelListitemCom } from "./components/ModelListitemCom";
 import { ProformaComp } from "./components/ProformComp";
 
 import {
+  clearStateData,
   clearState,
   setEditable,
   setDatePicker,
@@ -279,7 +280,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       // if (enqDetails?.leadStage === "ENQUIRY" && enqDetails?.leadStatus === null) {
       updateEnquiry();
       // }
-    }, 10000);
+    }, 5000);
     return () => {
       clearInterval(interval);
     };
@@ -365,6 +366,13 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dispatch(clearState());
     navigation.goBack();
   };
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearStateData());
+      clearLocalData();
+    }
+  }, [])
 
   useEffect(() => {
     getAuthToken();
@@ -821,11 +829,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             documentPath:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "pan";
+                })[0]?.documentPath
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
                     return item.documentType === "pan";
                   })[0]?.documentPath
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "pan";
-                    })[0]?.documentPath
                   : ""
                 : "",
             documentType: "pan",
@@ -833,11 +841,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             fileName:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "pan";
+                })[0]?.fileName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
                     return item.documentType === "pan";
                   })[0]?.fileName
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "pan";
-                    })[0]?.fileName
                   : ""
                 : "",
             gstNumber: "",
@@ -847,11 +855,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             keyName:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "pan";
+                })[0]?.keyName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
                     return item.documentType === "pan";
                   })[0]?.keyName
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "pan";
-                    })[0]?.keyName
                   : ""
                 : "",
             modifiedBy: jsonObj.empName,
@@ -877,11 +885,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             documentPath:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "aadhar";
+                })[0]?.documentPath
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
                     return item.documentType === "aadhar";
                   })[0]?.documentPath
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "aadhar";
-                    })[0]?.documentPath
                   : ""
                 : "",
             documentType: "aadhar",
@@ -889,11 +897,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             fileName:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "aadhar";
+                })[0]?.fileName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
                     return item.documentType === "aadhar";
                   })[0]?.fileName
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "aadhar";
-                    })[0]?.fileName
                   : ""
                 : "",
             gstNumber: "",
@@ -903,11 +911,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             keyName:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "aadhar";
+                })[0]?.keyName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
                     return item.documentType === "aadhar";
                   })[0]?.keyName
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "aadhar";
-                    })[0]?.keyName
                   : ""
                 : "",
             modifiedBy: jsonObj.empName,
@@ -933,11 +941,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             documentPath:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "employeeId";
+                })[0]?.documentPath
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
                     return item.documentType === "employeeId";
                   })[0]?.documentPath
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "employeeId";
-                    })[0]?.documentPath
                   : ""
                 : "",
             documentType: "employeeId",
@@ -945,11 +953,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             fileName:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "employeeId";
+                })[0]?.fileName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
                     return item.documentType === "employeeId";
                   })[0]?.fileName
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "employeeId";
-                    })[0]?.fileName
                   : ""
                 : "",
             gstNumber: "",
@@ -959,11 +967,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             keyName:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "employeeId";
+                })[0]?.keyName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
                     return item.documentType === "employeeId";
                   })[0]?.keyName
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "employeeId";
-                    })[0]?.keyName
                   : ""
                 : "",
             modifiedBy: jsonObj.empName,
@@ -1011,6 +1019,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           dmsLeadDto.dmsAttachments = tempAttachments;
         }
       }
+
+      var tempDmsLeadProducts = selector.dmsLeadProducts
+      var tempArr = [...carModelsList, ...tempDmsLeadProducts.filter(a => a)]
+
+      dmsLeadDto.dmsLeadProducts = tempArr.filter((value, index) => {
+        const _value = JSON.stringify(value);
+        return index === tempArr.findIndex(obj => {
+          return JSON.stringify(obj) === _value;
+        });
+      });
+
     }
 
     if (selector.enquiry_details_response.hasOwnProperty("dmsContactDto")) {
@@ -1095,7 +1114,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("please enter alphabetics only in lastname");
       return;
     }
-    
+
     if (selector.enquiry_segment.length == 0) {
       scrollToPos(2);
       setOpenAccordian("1");
@@ -1165,7 +1184,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       showToast("Select is Primary for atleast one vehicle");
       return;
     }
-    
+
     //Finance Details
     if (selector.retail_finance.length == 0) {
       scrollToPos(5);
@@ -1377,11 +1396,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             documentPath:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "pan";
+                })[0]?.documentPath
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
                     return item.documentType === "pan";
                   })[0]?.documentPath
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "pan";
-                    })[0]?.documentPath
                   : ""
                 : "",
             documentType: "pan",
@@ -1389,11 +1408,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             fileName:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "pan";
+                })[0]?.fileName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
                     return item.documentType === "pan";
                   })[0]?.fileName
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "pan";
-                    })[0]?.fileName
                   : ""
                 : "",
             gstNumber: "",
@@ -1403,11 +1422,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             keyName:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "pan";
+                })[0]?.keyName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
                     return item.documentType === "pan";
                   })[0]?.keyName
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "pan";
-                    })[0]?.keyName
                   : ""
                 : "",
             modifiedBy: jsonObj.empName,
@@ -1433,11 +1452,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             documentPath:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "aadhar";
+                })[0]?.documentPath
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
                     return item.documentType === "aadhar";
                   })[0]?.documentPath
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "aadhar";
-                    })[0]?.documentPath
                   : ""
                 : "",
             documentType: "aadhar",
@@ -1445,11 +1464,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             fileName:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "aadhar";
+                })[0]?.fileName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
                     return item.documentType === "aadhar";
                   })[0]?.fileName
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "aadhar";
-                    })[0]?.fileName
                   : ""
                 : "",
             gstNumber: "",
@@ -1459,11 +1478,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             keyName:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "aadhar";
+                })[0]?.keyName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
                     return item.documentType === "aadhar";
                   })[0]?.keyName
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "aadhar";
-                    })[0]?.keyName
                   : ""
                 : "",
             modifiedBy: jsonObj.empName,
@@ -1489,11 +1508,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             documentPath:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "employeeId";
+                })[0]?.documentPath
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
                     return item.documentType === "employeeId";
                   })[0]?.documentPath
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "employeeId";
-                    })[0]?.documentPath
                   : ""
                 : "",
             documentType: "employeeId",
@@ -1501,11 +1520,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             fileName:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "employeeId";
+                })[0]?.fileName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
                     return item.documentType === "employeeId";
                   })[0]?.fileName
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "employeeId";
-                    })[0]?.fileName
                   : ""
                 : "",
             gstNumber: "",
@@ -1515,11 +1534,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
             keyName:
               dmsLeadDto.dmsAttachments.length > 0
                 ? dmsLeadDto.dmsAttachments.filter((item) => {
+                  return item.documentType === "employeeId";
+                })[0]?.keyName
+                  ? dmsLeadDto.dmsAttachments.filter((item) => {
                     return item.documentType === "employeeId";
                   })[0]?.keyName
-                  ? dmsLeadDto.dmsAttachments.filter((item) => {
-                      return item.documentType === "employeeId";
-                    })[0]?.keyName
                   : ""
                 : "",
             modifiedBy: jsonObj.empName,
@@ -1662,7 +1681,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     dataObj.leadStatus = "ENQUIRYCOMPLETED";
     dataObj.dmsAddresses = mapDMSAddress(dataObj.dmsAddresses);
     dataObj.dmsLeadProducts = mapLeadProducts(dataObj.dmsLeadProducts);
-    dataObj.model = carModelsList[0].model;
+    dataObj.model = carModelsList[0]?.model;
     dataObj.dmsfinancedetails = mapDmsFinanceDetails(dataObj.dmsfinancedetails);
     dataObj.dmsLeadScoreCards = mapDmsLeadScoreCards(dataObj.dmsLeadScoreCards);
     dataObj.dmsExchagedetails = mapExchangeDetails(dataObj.dmsExchagedetails);
@@ -1814,8 +1833,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
         if (type == "delete") {
           let arr = await [...carModelsList];
           arr.splice(index, 1);
-          setCarModelsList(Object.assign([],arr));
-          
+          setCarModelsList(Object.assign([], arr));
+          dispatch(updatedmsLeadProduct(Object.assign([], arr)));
           deleteModalFromServer({ value });
         }
       }
@@ -1834,7 +1853,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       if (carModelsList && carModelsList.length > 0) {
         let arr = await [...carModelsList];
         var data = arr[isPrimaryCureentIndex];
-        if(data){
+        if (data) {
           const cardata = await {
             color: data.color,
             fuel: data.fuel,
@@ -2144,7 +2163,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
       if (
         proceedToPreSelector.update_enquiry_details_response_status ===
-          "success" &&
+        "success" &&
         proceedToPreSelector.update_enquiry_details_response
       ) {
         if (typeOfActionDispatched === "PROCEED_TO_PREBOOKING") {
@@ -2236,7 +2255,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           (selector.enquiry_details_response.dmsLeadDto.buyerType ===
             "Replacement Buyer" ||
             selector.enquiry_details_response.dmsLeadDto.buyerType ===
-              "Exchange Buyer")
+            "Exchange Buyer")
         ) {
           pendingTaskNames.push("Evaluation : Pending \n");
         }
@@ -2264,9 +2283,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
       const jsonObj = JSON.parse(employeeData);
       if (
         selector.enquiry_details_response.dmsLeadDto.salesConsultant ==
-          jsonObj.empName ||
+        jsonObj.empName ||
         selector.enquiry_details_response.dmsLeadDto.createdBy ==
-          jsonObj.empName
+        jsonObj.empName
       ) {
         if (universalId) {
           const endUrl = universalId + "?" + "stage=Enquiry";
@@ -2524,7 +2543,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     let arrTemp = carModelsData.filter(function (obj) {
       return obj.model === selectedModelName;
     });
-    
+
     let carModelObj = arrTemp.length > 0 ? arrTemp[0] : undefined;
     if (carModelObj !== undefined) {
       let newArray = [];
@@ -2554,7 +2573,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     if (!selectedVarientName || selectedVarientName.length === 0) {
       return;
     }
-    
+
     let arrTemp = varientList.filter(function (obj) {
       return obj.name === selectedVarientName;
     });
@@ -3012,17 +3031,17 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     />
 
                     <Text
-                    style={[
-                      GlobalStyle.underline,
-                      {
-                        backgroundColor:
-                          isSubmitPress && selector.gender === ""
-                            ? "red"
-                            : "rgba(208, 212, 214, 0.7)",
-                      },
-                    ]}
-                  ></Text>
-                </>
+                      style={[
+                        GlobalStyle.underline,
+                        {
+                          backgroundColor:
+                            isSubmitPress && selector.gender === ""
+                              ? "red"
+                              : "rgba(208, 212, 214, 0.7)",
+                        },
+                      ]}
+                    ></Text>
+                  </>
                 ) : null}
 
                 <TextinputComp
@@ -3243,11 +3262,11 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
 
                 {selector.customer_type.toLowerCase() === "fleet" ||
-                selector.customer_type.toLowerCase() === "institution" ||
-                selector.customer_type.toLowerCase() === "corporate" ||
-                selector.customer_type.toLowerCase() === "government" ||
-                selector.customer_type.toLowerCase() === "retired" ||
-                selector.customer_type.toLowerCase() === "other" ? (
+                  selector.customer_type.toLowerCase() === "institution" ||
+                  selector.customer_type.toLowerCase() === "corporate" ||
+                  selector.customer_type.toLowerCase() === "government" ||
+                  selector.customer_type.toLowerCase() === "retired" ||
+                  selector.customer_type.toLowerCase() === "other" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -3297,19 +3316,19 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                     .toLowerCase()
                     .trim()
                     .replace(/ /g, "") === "socialnetwork") && (
-                  <View>
-                    <DropDownSelectionItem
-                      label={"Sub Source Of Enquiry"}
-                      value={selector.sub_source_of_enquiry}
-                      onPress={() =>
-                        showDropDownModelMethod(
-                          "SUB_SOURCE_OF_ENQUIRY",
-                          "Sub Source Of Enquiry"
-                        )
-                      }
-                    />
-                  </View>
-                )}
+                    <View>
+                      <DropDownSelectionItem
+                        label={"Sub Source Of Enquiry"}
+                        value={selector.sub_source_of_enquiry}
+                        onPress={() =>
+                          showDropDownModelMethod(
+                            "SUB_SOURCE_OF_ENQUIRY",
+                            "Sub Source Of Enquiry"
+                          )
+                        }
+                      />
+                    </View>
+                  )}
 
                 {selector.source_of_enquiry.toLowerCase() === "reference" && (
                   <View>
@@ -3389,8 +3408,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   value={
                     selector.expected_delivery_date
                       ? moment(
-                          new Date(Number(selector.expected_delivery_date))
-                        ).format("DD/MM/YYYY")
+                        new Date(Number(selector.expected_delivery_date))
+                      ).format("DD/MM/YYYY")
                       : moment().format("DD/MM/YYYY")
                   }
                   onPress={() =>
@@ -4018,7 +4037,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                   //  style={{ height: faltListHeight }}
                   data={carModelsList}
                   extraData={carModelsList}
-                  keyExtractor={(item, index) => item.id.toString()}
+                  // keyExtractor={(item, index) => item.id.toString()}
                   renderItem={({ item, index }) => {
                     return (
                       // <Pressable onPress={() => selectedItem(item, index)}>
@@ -4211,51 +4230,51 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {(selector.retail_finance === "In House" ||
                   selector.retail_finance === "Out House") && (
-                  <View>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Loan Amount"}
-                      keyboardType={"numeric"}
-                      maxLength={10}
-                      value={selector.loan_amount}
-                      onChangeText={(text) => {
-                        emiCal(
-                          text,
-                          selector.loan_of_tenure,
-                          selector.rate_of_interest
-                        );
-                        dispatch(
-                          setFinancialDetails({
-                            key: "LOAN_AMOUNT",
-                            text: text,
-                          })
-                        );
-                      }}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                    <TextinputComp
-                      style={{ height: 65, width: "100%" }}
-                      label={"Rate of Interest"}
-                      keyboardType={"numeric"}
-                      maxLength={10}
-                      value={selector.rate_of_interest}
-                      onChangeText={(text) => {
-                        emiCal(
-                          selector.loan_amount,
-                          selector.loan_of_tenure,
-                          text
-                        );
-                        dispatch(
-                          setFinancialDetails({
-                            key: "RATE_OF_INTEREST",
-                            text: text,
-                          })
-                        );
-                      }}
-                    />
-                    <Text style={GlobalStyle.underline}></Text>
-                  </View>
-                )}
+                    <View>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Loan Amount"}
+                        keyboardType={"numeric"}
+                        maxLength={10}
+                        value={selector.loan_amount}
+                        onChangeText={(text) => {
+                          emiCal(
+                            text,
+                            selector.loan_of_tenure,
+                            selector.rate_of_interest
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "LOAN_AMOUNT",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                      <TextinputComp
+                        style={{ height: 65, width: "100%" }}
+                        label={"Rate of Interest"}
+                        keyboardType={"numeric"}
+                        maxLength={10}
+                        value={selector.rate_of_interest}
+                        onChangeText={(text) => {
+                          emiCal(
+                            selector.loan_amount,
+                            selector.loan_of_tenure,
+                            text
+                          );
+                          dispatch(
+                            setFinancialDetails({
+                              key: "RATE_OF_INTEREST",
+                              text: text,
+                            })
+                          );
+                        }}
+                      />
+                      <Text style={GlobalStyle.underline}></Text>
+                    </View>
+                  )}
 
                 {selector.retail_finance === "In House" && (
                   <View>
@@ -4457,9 +4476,9 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {/* // Employeed ID */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                (selector.customer_type.toLowerCase() === "corporate" ||
-                  selector.customer_type.toLowerCase() === "government" ||
-                  selector.customer_type.toLowerCase() === "retired") ? (
+                  (selector.customer_type.toLowerCase() === "corporate" ||
+                    selector.customer_type.toLowerCase() === "government" ||
+                    selector.customer_type.toLowerCase() === "retired") ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -4528,8 +4547,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {/* Last 3 month payslip */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                (selector.customer_type.toLowerCase() === "corporate" ||
-                  selector.customer_type.toLowerCase() === "government") ? (
+                  (selector.customer_type.toLowerCase() === "corporate" ||
+                    selector.customer_type.toLowerCase() === "government") ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -4581,7 +4600,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {/* Patta Pass book */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                selector.customer_type.toLowerCase() === "farmer" ? (
+                  selector.customer_type.toLowerCase() === "farmer" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -4633,7 +4652,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {/* Pension Letter */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                selector.customer_type.toLowerCase() === "retired" ? (
+                  selector.customer_type.toLowerCase() === "retired" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -4685,7 +4704,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {/* IMA Certificate */}
                 {selector.enquiry_segment.toLowerCase() === "personal" &&
-                selector.customer_type.toLowerCase() === "doctor" ? (
+                  selector.customer_type.toLowerCase() === "doctor" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -4742,7 +4761,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {/* Leasing Confirmation */}
                 {selector.enquiry_segment.toLowerCase() === "commercial" &&
-                selector.customer_type.toLowerCase() === "fleet" ? (
+                  selector.customer_type.toLowerCase() === "fleet" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -4801,7 +4820,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {/* Address Proof */}
                 {selector.enquiry_segment.toLowerCase() === "company" &&
-                selector.customer_type.toLowerCase() === "institution" ? (
+                  selector.customer_type.toLowerCase() === "institution" ? (
                   <View>
                     <View style={styles.select_image_bck_vw}>
                       <ImageSelectItem
@@ -4853,7 +4872,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
                 {/* GSTIN Number */}
                 {selector.enquiry_segment.toLowerCase() === "company" &&
-                selector.customer_type.toLowerCase() === "institution" ? (
+                  selector.customer_type.toLowerCase() === "institution" ? (
                   <View>
                     <TextinputComp
                       style={styles.textInputStyle}
@@ -5126,8 +5145,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 <Text style={GlobalStyle.underline}></Text>
               </List.Accordion>
               {selector.buyer_type == "Additional Buyer" ||
-              selector.buyer_type == "Replacement Buyer" ||
-              selector.buyer_type == "Exchange Buyer" ? (
+                selector.buyer_type == "Replacement Buyer" ||
+                selector.buyer_type == "Exchange Buyer" ? (
                 <View style={styles.space}></View>
               ) : null}
               {/* // 8.Additional Buyer */}
@@ -5254,7 +5273,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
               {/* // 9.Replacement Buyer */}
               {selector.buyer_type == "Replacement Buyer" ||
-              selector.buyer_type == "Exchange Buyer" ? (
+                selector.buyer_type == "Exchange Buyer" ? (
                 <List.Accordion
                   id={"9"}
                   title={"Exchange Buyer"}
@@ -5680,10 +5699,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                         value={
                           selector.r_insurence_expiry_date
                             ? moment(
-                                new Date(
-                                  Number(selector.r_insurence_expiry_date)
-                                )
-                              ).format("DD/MM/YYYY")
+                              new Date(
+                                Number(selector.r_insurence_expiry_date)
+                              )
+                            ).format("DD/MM/YYYY")
                             : selector.r_insurence_expiry_date
                         }
                         onPress={() =>
