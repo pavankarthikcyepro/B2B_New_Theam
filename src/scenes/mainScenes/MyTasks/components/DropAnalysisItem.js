@@ -87,14 +87,16 @@ export const DropAnalysisItem = ({ from = "MY_TASKS", onItemSelected, leadDropId
         <TouchableOpacity  style={styles.section}>
             <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", position: 'relative' }}>
 
-                <View style={{ width: "70%" }}>
-                    <Checkbox
-                    onPress={()=>{
-                        checkboxSelected()
-                    }}
-                        status={isItemSelected}
-                    color={Colors.YELLOW}
-                    uncheckedColor={Colors.YELLOW}/>
+                <View style={{ width: "70%",}}>
+                    {isManager && 
+                        <Checkbox
+                            onPress={() => {
+                                checkboxSelected()
+                            }}
+                            status={isItemSelected}
+                            color={Colors.YELLOW}
+                            uncheckedColor={Colors.YELLOW} />
+                    }                    
                     <View style={{ flexDirection: 'row', marginLeft:10 }}>
                         <View style={{ maxWidth: '73%', }}>
                             <Text style={styles.text1}>{name}</Text>

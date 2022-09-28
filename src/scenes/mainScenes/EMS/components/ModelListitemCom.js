@@ -70,6 +70,7 @@ export const ModelListitemCom = ({
   leadStage,
   isSubmitPress,
   onChangeSubmit,
+  isOnlyOne,
 }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -631,12 +632,14 @@ export const ModelListitemCom = ({
             />
           </View>
           <TouchableOpacity
+            disabled={isOnlyOne}
             onPress={(value) => modelOnclick(index, item, "delete")}
           >
             <IconButton
               icon="trash-can-outline"
-              color={Colors.PINK}
+              color={isOnlyOne ? Colors.DARK_GRAY : Colors.PINK}
               size={25}
+              disabled={isOnlyOne}
               //  onPress={alert("delete")}
             />
           </TouchableOpacity>

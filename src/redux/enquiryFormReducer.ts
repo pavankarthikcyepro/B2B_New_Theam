@@ -224,7 +224,6 @@ export const postProformaInvoiceDetails = createAsyncThunk(
     console.log("Proforma", JSON.stringify(payload))
     const response = await client.post(URL.SAVE_PROFORMA_DETAILS(), payload);
     const json = await response.json();
-    console.log("auto save details", json);
 
     if (!response.ok) {
       return rejectWithValue(json);
@@ -782,7 +781,7 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.finance_category = value;
           break;
         case "BANK_FINANCE":
-          state.bank_or_finance = value;
+          state.bank_or_finance = value ;
           break;
         case "APPROX_ANNUAL_INCOME":
           state.approx_annual_income = value;
@@ -1140,7 +1139,7 @@ const enquiryDetailsOverViewSlice = createSlice({
         case "EMI":
           state.emi = text;
           break;
-        case "BANK_R_FINANCE_NAME":
+        case "BANK_R_FINANCE_NAME":          
           state.bank_or_finance_name = text;
           break;
         case "LOCATION":
@@ -1528,12 +1527,12 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.loan_amount = dataObj.loanAmount
         ? dataObj.loanAmount.toString()
         : "";
-      state.bank_or_finance = dataObj.financeCompany
+      state.bank_or_finance =  state.retail_finance === 'In House' ? dataObj.financeCompany
         ? dataObj.financeCompany
-        : "";
+        : "" : '';
       state.bank_or_finance_name = dataObj.financeCompany
         ? dataObj.financeCompany
-        : "";
+        : ""
       state.rate_of_interest = dataObj.rateOfInterest
         ? dataObj.rateOfInterest
         : "";
@@ -1545,9 +1544,9 @@ const enquiryDetailsOverViewSlice = createSlice({
         ? dataObj.annualIncome
         : "";
       state.location = dataObj.location ? dataObj.location : "";
-      state.leashing_name = dataObj.financeCompany
+      state.leashing_name = dataObj.financeType === 'Leasing' ? (dataObj.financeCompany
         ? dataObj.financeCompany
-        : "";
+        : "") : '';
     },
     updateCustomerNeedAnalysisData: (state, action) => {
       const dmsLeadScoreCards = action.payload;
