@@ -342,7 +342,7 @@ PODS:
     - React-perflogger (= 0.64.3)
   - ReactNativeART (1.2.0):
     - React
-  - RealmJS (10.21.1):
+  - RealmJS (10.21.0):
     - GCDWebServer
     - React
   - rn-fetch-blob (0.12.0):
@@ -357,7 +357,7 @@ PODS:
     - React-Core
   - RNGestureHandler (2.6.0):
     - React-Core
-  - RNReanimated (2.10.0):
+  - RNReanimated (2.4.1):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -365,6 +365,7 @@ PODS:
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
+    - React
     - React-callinvoker
     - React-Core
     - React-Core/DevSupport
@@ -598,7 +599,7 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   FBLazyVector: c71c5917ec0ad2de41d5d06a5855f6d5eda06971
-  FBReactNativeSpec: 8f27f49b47403bdfbb3a25f930f31c5538ca2549
+  FBReactNativeSpec: c29bd06bb550f4a8877ac7dd8c4da5c38e09275d
   Flipper: d3da1aa199aad94455ae725e9f3aa43f3ec17021
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
   Flipper-Folly: 755929a4f851b2fb2c347d533a23f191b008554c
@@ -644,14 +645,14 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: 493d9abb8b23c3f84e19ae221eeba92cadcb70dc
   ReactCommon: 8fea6422328e2fc093e25c9fac67adbcf0f04fb4
   ReactNativeART: 78edc68dd4a1e675338cd0cd113319cf3a65f2ab
-  RealmJS: 96af0fcb0bf79530e090067df590650917c27b20
+  RealmJS: 72a2e69dbadd06192849c8c3644a199aac66f7fc
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
   RNCAsyncStorage: 0c357f3156fcb16c8589ede67cc036330b6698ca
   RNCMaskedView: 0e1bc4bfa8365eba5fbbb71e07fbdc0555249489
   RNDateTimePicker: 7658208086d86d09e1627b5c34ba0cf237c60140
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNGestureHandler: 920eb17f5b1e15dae6e5ed1904045f8f90e0b11e
-  RNReanimated: cce4727fde9f4da9b800d999fa9975ea7a021dcf
+  RNReanimated: 58e7b950e0172235ff8296dd39ec145f9577e301
   RNScreens: 0df01424e9e0ed7827200d6ed1087ddd06c493f9
   RNSnackbar: be3333a21a453ccc272f41a8add5a71f7d44dfcd
   RNSVG: ecd661f380a07ba690c9c5929c475a44f432d674

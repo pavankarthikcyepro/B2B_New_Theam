@@ -506,7 +506,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                                 if (index % 2 != 0) {
                                     color = Colors.LIGHT_GRAY;
                                 }
-
+                                
                                 return (
                                     <>
                                         <View>
@@ -532,7 +532,7 @@ const DropAnalysisScreen = ({ navigation }) => {
                             }}
                         />
                         {renderFooter()}
-                        {renderApprovalUi()}
+                        {isManager && renderApprovalUi()}
                     </View>}
             </SafeAreaView>
    
