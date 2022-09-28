@@ -727,6 +727,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                                         setAddOrEdit('E')
                                                     }
                                                     else {
+                                                        setDefaultBranch(null);
                                                         setAddOrEdit('A')
                                                     }
                                                     if (item?.targetName) {
@@ -991,6 +992,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                     setAddOrEdit('E')
                                 }
                                 else {
+                                    setDefaultBranch(null);
                                     setAddOrEdit('A')
                                 }
                                 (ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate) ? setRetail(ownData.retailTarget.toString()) : setRetail('')
@@ -1116,6 +1118,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                         setAddOrEdit('E')
                                     }
                                     else {
+                                        setDefaultBranch(null);
                                         setAddOrEdit('A')
                                     }
                                     setSelectedUser({...loggedInEmpDetails});
