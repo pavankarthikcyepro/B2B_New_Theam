@@ -252,9 +252,8 @@ const LeadsScreen = ({navigation}) => {
             const jsonObj = JSON.parse(employeeData);
             const leadsData = data.filter(x => x.checked);
             const payload1 = getPayloadData('ENQUIRY', jsonObj.empId, startDate, endDate, 0, modelFilters, categoryFilters, sourceFilters)
-            const payload2 = getPayloadData('PRE_BOOKING', jsonObj.empId, startDate, endDate, 0, modelFilters, categoryFilters, sourceFilters)
+            const payload2 = getPayloadData('PREBOOKING', jsonObj.empId, startDate, endDate, 0, modelFilters, categoryFilters, sourceFilters)
             const payload3 = getPayloadData('BOOKING', jsonObj.empId, startDate, endDate, 0, modelFilters, categoryFilters, sourceFilters)
-
             let dispatchData = [];
             leadsData.forEach(x => {
                 switch (x.id) {
