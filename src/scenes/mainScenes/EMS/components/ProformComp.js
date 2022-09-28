@@ -192,6 +192,7 @@ export const ProformaComp = ({ branchId, modelDetails, universalId, }) => {
     const [userToken, setUserToken] = useState("");
     useEffect(() => {
         getUserData()
+        console.log("selectorselectorselector", selector);
     }, [])
     const getUserData = async () => {
         try {
@@ -251,10 +252,18 @@ export const ProformaComp = ({ branchId, modelDetails, universalId, }) => {
             const allWarrentyTypes =
                 selector.vehicle_on_road_price_insurence_details_response
                     .extended_waranty || [];
+                    console.log(
+                      "allWarrentyTypes<><>><",
+                      selector.vehicle_on_road_price_insurence_details_response.extended_waranty
+                    );
             if (allWarrentyTypes.length > 0) {
                 for (const object of allWarrentyTypes) {
                     if (object.varient_id === selectedVarientId) {
                         const matchedWarrentyTypes = object.warranty || [];
+                        console.log(
+                          "matchedWarrentyTypes",
+                          matchedWarrentyTypes
+                        );
                         if (matchedWarrentyTypes.length > 0) {
                             let newFormatWarrentyTypes = [];
                             matchedWarrentyTypes.forEach((item) => {
@@ -512,6 +521,7 @@ export const ProformaComp = ({ branchId, modelDetails, universalId, }) => {
                     showToast("No Warranty Data Found");
                     return;
                 }
+                console.log("warrentyTypes<><><>", warrentyTypes);
                 setDataForDropDown([...warrentyTypes]);
                 break;
             case "INSURENCE_ADD_ONS":
@@ -935,7 +945,6 @@ export const ProformaComp = ({ branchId, modelDetails, universalId, }) => {
                         </Text>
                     }
                 </View>
-
                 <View style={styles.symbolview}>
                     <View style={{ width: "70%" }}>
                         <DropDownSelectionItem

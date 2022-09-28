@@ -71,6 +71,7 @@ export const PreBookingModelListitemCom = ({
   isSubmitPress,
   isOnlyOne,
   onChangeSubmit,
+  disabled = false,
 }) => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -100,6 +101,8 @@ export const PreBookingModelListitemCom = ({
     varientListForDropDown: [],
   });
   const [carModelsData, setCarModelsData] = useState([]);
+
+  const [isEdit, setIsEdit] = useState(false);
 
   const showDropDownModelMethod = (key, headerText) => {
     Keyboard.dismiss();
@@ -530,8 +533,9 @@ export const PreBookingModelListitemCom = ({
     dispatch(updatedmsLeadProduct(modelsarr));
   };
   return (
-    <View>
+    <View disabled={disabled}>
       <DropDownComponant
+        disabled={disabled}
         visible={showDropDownModel}
         headerTitle={dropDownTitle}
         data={dataForDropDown}
@@ -566,15 +570,13 @@ export const PreBookingModelListitemCom = ({
           marginVertical: 10,
           borderRadius: 5,
           backgroundColor: Colors.LIGHT_GRAY2,
-        }}
-      >
+        }}>
         <View
           style={{
             flexDirection: "row",
             width: "100%",
             justifyContent: "space-between",
-          }}
-        >
+          }}>
           <View style={{ height: 50, width: "46%", justifyContent: "center" }}>
             <Text
               style={{
@@ -583,8 +585,7 @@ export const PreBookingModelListitemCom = ({
                 marginLeft: 10,
                 textAlignVertical: "center",
               }}
-              numberOfLines={2}
-            >
+              numberOfLines={2}>
               {carModel}
             </Text>
           </View>
@@ -604,15 +605,17 @@ export const PreBookingModelListitemCom = ({
                         </View> : null
                     } 
                      */}
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <View
+            style={{ flexDirection: "row", alignItems: "center" }}
+            disabled={disabled}>
             <Text
-              style={{ color: Colors.WHITE, fontSize: 16, marginRight: 10 }}
-            >
+              style={{ color: Colors.WHITE, fontSize: 16, marginRight: 10 }}>
               Is Primary
             </Text>
             <Switch
               icon=" toggle-switch-off-outline"
               value={isPrimary === "Y" ? true : false}
+              disabled={disabled}
               onValueChange={() => {
                 if (isPrimary === "N") {
                   isPrimaryOnclick("Y", index, item);
@@ -644,6 +647,7 @@ export const PreBookingModelListitemCom = ({
           label={"Model*"}
           value={carModel}
           onPress={() => showDropDownModelMethod("MODEL", "Select Model")}
+          disabled={disabled}
         />
         <Text
           style={[
@@ -654,12 +658,12 @@ export const PreBookingModelListitemCom = ({
                   ? "red"
                   : "rgba(208, 212, 214, 0.7)",
             },
-          ]}
-        ></Text>
+          ]}></Text>
         <DropDownSelectionItem
           label={"Variant*"}
           value={carVariant}
           onPress={() => showDropDownModelMethod("VARIENT", "Select Variant")}
+          disabled={disabled}
         />
         <Text
           style={[
@@ -670,12 +674,12 @@ export const PreBookingModelListitemCom = ({
                   ? "red"
                   : "rgba(208, 212, 214, 0.7)",
             },
-          ]}
-        ></Text>
+          ]}></Text>
         <DropDownSelectionItem
           label={"Color*"}
           value={carColor}
           onPress={() => showDropDownModelMethod("COLOR", "Select Color")}
+          disabled={disabled}
         />
         <Text
           style={[
@@ -686,13 +690,13 @@ export const PreBookingModelListitemCom = ({
                   ? "red"
                   : "rgba(208, 212, 214, 0.7)",
             },
-          ]}
-        ></Text>
+          ]}></Text>
         <TextinputComp
           style={{ height: 65, width: "100%" }}
           label={"Fuel Type*"}
           editable={false}
           value={carFuelType}
+          disabled={disabled}
         />
         <Text style={GlobalStyle.underline} />
 
@@ -701,6 +705,7 @@ export const PreBookingModelListitemCom = ({
           label={"Transmission Type*"}
           editable={false}
           value={carTransmissionType}
+          disabled={disabled}
         />
         <Text style={GlobalStyle.underline} />
       </View>
@@ -711,16 +716,14 @@ export const PreBookingModelListitemCom = ({
         onRequestClose={() => {
           setImagePath("");
         }}
-        transparent={true}
-      >
+        transparent={true}>
         <View
           style={{
             flex: 1,
             justifyContent: "center",
             alignItems: "center",
             backgroundColor: "rgba(0,0,0,0.7)",
-          }}
-        >
+          }}>
           <View style={{ width: "90%" }}>
             <Image
               style={{ width: "100%", height: 400, borderRadius: 4 }}
@@ -740,11 +743,9 @@ export const PreBookingModelListitemCom = ({
               borderRadius: 5,
               backgroundColor: Colors.RED,
             }}
-            onPress={() => setImagePath("")}
-          >
+            onPress={() => setImagePath("")}>
             <Text
-              style={{ fontSize: 14, fontWeight: "600", color: Colors.WHITE }}
-            >
+              style={{ fontSize: 14, fontWeight: "600", color: Colors.WHITE }}>
               Close
             </Text>
           </TouchableOpacity>

@@ -1231,7 +1231,9 @@ const prebookingFormSlice = createSlice({
       state.finance_category = dataObj.financeCategory ? dataObj.financeCategory : "";
       state.down_payment = dataObj.downPayment ? dataObj.downPayment.toString() : "";
       state.loan_amount = dataObj.loanAmount ? dataObj.loanAmount.toString() : "";
-      state.bank_or_finance = dataObj.financeCompany ? dataObj.financeCompany : "";
+      state.bank_or_finance =  state.retail_finance === 'In House' ? dataObj.financeCompany
+        ? dataObj.financeCompany
+        : "" : '';
       state.bank_or_finance_name = dataObj.financeCompany ? dataObj.financeCompany : "";
       state.rate_of_interest = dataObj.rateOfInterest ? dataObj.rateOfInterest : "";
       state.loan_of_tenure = dataObj.expectedTenureYears ? dataObj.expectedTenureYears : "";
