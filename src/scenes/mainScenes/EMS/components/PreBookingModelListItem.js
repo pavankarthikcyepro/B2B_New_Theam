@@ -69,6 +69,7 @@ export const PreBookingModelListitemCom = ({
   index,
   leadStage,
   isSubmitPress,
+  isOnlyOne,
   onChangeSubmit,
 }) => {
   const dispatch = useDispatch();
@@ -626,12 +627,14 @@ export const PreBookingModelListitemCom = ({
             />
           </View>
           <TouchableOpacity
+            disabled={isOnlyOne}
             onPress={(value) => modelOnclick(index, item, "delete")}
           >
             <IconButton
               icon="trash-can-outline"
-              color={Colors.PINK}
+              color={isOnlyOne ? Colors.DARK_GRAY : Colors.PINK}
               size={25}
+              disabled={isOnlyOne}
               //  onPress={alert("delete")}
             />
           </TouchableOpacity>

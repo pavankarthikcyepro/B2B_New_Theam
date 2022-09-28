@@ -3505,7 +3505,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
 
                 <DropDownSelectionItem
-                  label={"Enquiry Category"}
+                  label={"Enquiry Category*"}
+                  disabled={true}
                   value={selector.enquiry_category.length == 0 ? "Hot" : selector.enquiry_category}
                   onPress={() =>
                     showDropDownModelMethod(
