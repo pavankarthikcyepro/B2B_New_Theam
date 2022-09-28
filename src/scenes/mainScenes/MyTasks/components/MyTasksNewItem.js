@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import { Colors } from '../../../../styles';
 import { convertTimeStampToDateString, callNumber, navigatetoCallWebView } from '../../../../utils/helperFunctions';
 import { IconButton } from "react-native-paper";
@@ -45,9 +45,9 @@ const IconComp = ({ iconName, onPress }) => {
  const callWebViewRecord = async({navigator,phone, uniqueId, type}) =>{
     try{
         let extensionId = await AsyncStore.getData(AsyncStore.Keys.EXTENSION_ID);
-        var password = await AsyncStore.getData(AsyncStore.Keys.EXTENSSION_PWD);        
+        var password = await AsyncStore.getData(AsyncStore.Keys.EXTENSSION_PWD);
         password = await encodeURIComponent(password)
-       var uri = 'https://ardemoiipl.s3.ap-south-1.amazonaws.com/call/webphone/click2call.html?u=' + extensionId + '&p=' + password + '&c=' + phone + '&type=' + type + '&uniqueId=' + uniqueId 
+       var uri = 'https://ardemoiipl.s3.ap-south-1.amazonaws.com/call/webphone/click2call.html?u=' + extensionId + '&p=' + password + '&c=' + phone + '&type=' + type + '&uniqueId=' + uniqueId
 
       // await alert("phone" + phone + "  type" + type + "  uniqueId" + uniqueId + "  userName" + extensionId + "  pwd " + password)
  //alert(uri)
@@ -67,16 +67,16 @@ const IconComp = ({ iconName, onPress }) => {
                     url: uri
                 })
             }
-                
+
 
         }
         else callNumber(phone)
        // alert(phone + uniqueId + "/" + type + "/" + password)
-       
+
     }catch(error){
       console.log("call record issue",error)
     }
-    
+
 
 }
 
@@ -88,11 +88,41 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, na
         date = convertTimeStampToDateString(created);
     }
 
+
     let bgColor = Colors.BLUE;
     let statusName = status;
     if (status === "CANCELLED" || status === "ASSIGNED" || status === "SENT_FOR_APPROVAL" || status === "RESCHEDULED") {
         bgColor = statusBgColors[status].color;
         statusName = statusBgColors[status].title;
+    }
+
+    function getStageColor(leadStage, leadStatus) {
+        return leadStatus === "PREENQUIRYCOMPLETED" ||
+        (leadStatus === "ENQUIRYCOMPLETED" &&
+            leadStage === "ENQUIRY") ||
+        (leadStatus === "PREBOOKINGCOMPLETED" &&
+            leadStage === "PREBOOKING") ||
+        leadStatus === "BOOKINGCOMPLETED"
+            ? "#18a835"
+            : "#f29a22";
+    }
+    function getCategoryTextColor(cat) {
+        let color = '#7b79f6';
+        if (!cat) {
+            return color;
+        }
+        switch (cat.toLowerCase()) {
+            case 'hot':
+                color = Colors.RED;
+                break;
+            case 'warm':
+                color = '#7b79f6';
+                break;
+            case 'cold':
+                color = Colors.LIGHT_GRAY2;
+                break;
+        }
+        return color;
     }
 
     return (
@@ -102,7 +132,7 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, na
             flexDirection: "row",
             justifyContent: "space-between",
             alignItems: "center",
-            position: "relative",
+            position: "relative"
           }}
         >
           <View style={{ width: "70%" }}>
@@ -110,39 +140,55 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, na
               <View style={{ maxWidth: "73%" }}>
                 <Text style={styles.text1}>{name}</Text>
               </View>
-              <Text style={styles.catText}>{enqCat}</Text>
+              {/*<Text style={styles.catText}>{enqCat}</Text>*/}
             </View>
-            <Text style={styles.text2}>{source + " - " + dmsLead}</Text>
+              <Text style={styles.text2}>{date}</Text>
+              <Text style={styles.text2}>{source + " - " + dmsLead}</Text>
             <Text style={styles.text2}>{phone}</Text>
-
-            <Text style={styles.text3}>{date}</Text>
-            {needStatus === "YES" && (
-              <View
-                style={{
-                  height: 16,
-                  width: 16,
-                  borderRadius: 4,
-                  backgroundColor:
-                    leadStatus === "PREENQUIRYCOMPLETED" ||
-                    (leadStatus === "ENQUIRYCOMPLETED" &&
-                      leadStage === "ENQUIRY") ||
-                    (leadStatus === "PREBOOKINGCOMPLETED" &&
-                      leadStage === "PREBOOKING") ||
-                    leadStatus === "BOOKINGCOMPLETED"
-                      ? "#18a835"
-                      : "#f29a22",
-                  position: "absolute",
-                  top: 14,
-                  right: -12,
-                }}
-              ></View>
-            )}
+              <>
+                  {from !== 'PRE_ENQUIRY' &&
+                      <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                          <>
+                              {enqCat !== '' && enqCat?.length > 0 &&
+                                  <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+                                      <Text style={[styles.text3, {color: getCategoryTextColor(enqCat)}]}>{enqCat}</Text>
+                                      <Text style={{fontWeight: '600', color: Colors.BLACK}}> | </Text>
+                                  </View>
+                              }
+                          </>
+                          <Text style={[styles.text3, {color: getStageColor(leadStage, leadStatus)}]}>{leadStage}</Text>
+                      </View>
+                  }
+              </>
           </View>
           <View style={{ width: "30%", alignItems: "center", }}>
-            <View style={styles.modal}>
-              <Text style={styles.text4}>{model}</Text>
-              {/* <Text style={styles.text4}>{"Jeep Compact SUV"}</Text> */}
-            </View>
+             <View style={{justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
+                 <>
+                     {needStatus === "YES" && from === 'PRE_ENQUIRY' && (
+                         <View
+                             style={{
+                                 height: 16,
+                                 width: 16,
+                                 borderRadius: 4,
+                                 backgroundColor:
+                                     leadStatus === "PREENQUIRYCOMPLETED" ||
+                                     (leadStatus === "ENQUIRYCOMPLETED" &&
+                                         leadStage === "ENQUIRY") ||
+                                     (leadStatus === "PREBOOKINGCOMPLETED" &&
+                                         leadStage === "PREBOOKING") ||
+                                     leadStatus === "BOOKINGCOMPLETED"
+                                         ? "#18a835"
+                                         : "#f29a22",
+                             }}
+                         >
+                         </View>
+                     )}
+                 </>
+                 <View style={styles.modal}>
+                     <Text style={styles.text4}>{model}</Text>
+                     {/* <Text style={styles.text4}>{"Jeep Compact SUV"}</Text> */}
+                 </View>
+             </View>
             {/* <View style={{ height: 8 }}></View> */}
             <View
               style={{
@@ -201,13 +247,12 @@ const styles = StyleSheet.create({
         color: Colors.WHITE,
         fontSize: 11,
         fontWeight: "bold",
-        
-        // textAlign: "center",
-        // paddingHorizontal: 5
+        textAlign: "center",
+        paddingHorizontal: 2
     },
-    section: { 
-        // flex: 1, 
-        // padding: 5, 
+    section: {
+        // flex: 1,
+        // padding: 5,
         backgroundColor: Colors.WHITE,
         paddingHorizontal: 10,
         paddingVertical: 10,
@@ -223,7 +268,7 @@ const styles = StyleSheet.create({
         minHeight: 21,
         justifyContent: "center",
         alignItems: "center",
-        marginLeft:26,
+        marginLeft: 8,
         marginBottom: 10
     },
     catText: {
