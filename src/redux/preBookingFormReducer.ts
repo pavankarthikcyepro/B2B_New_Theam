@@ -646,13 +646,13 @@ const prebookingFormSlice = createSlice({
           }
 
           break;
-          case "BUYER_TYPE":
-            state.buyer_type = value;
-            //state.customer_type ="";
-//             if(state.customer_types_response){
-// state.customer_types_data = state.customer_types_response[value.toLowerCase()]
-//             }
-            break;
+        case "BUYER_TYPE":
+          state.buyer_type = value;
+          //state.customer_type ="";
+          //             if(state.customer_types_response){
+          // state.customer_types_data = state.customer_types_response[value.toLowerCase()]
+          //             }
+          break;
         case "CUSTOMER_TYPE":
           state.customer_type = value;
           break;
@@ -1102,9 +1102,9 @@ const prebookingFormSlice = createSlice({
       // if(state.customer_types_response && state){
       //   state.customer_types_data = state.customer_types_response[state.buyer_type.toLowerCase()]
       // }
-       state.buyer_type = dmsLeadDto.buyerType
-         ? dmsLeadDto.buyerType
-         : "";
+      state.buyer_type = dmsLeadDto.buyerType
+        ? dmsLeadDto.buyerType
+        : "";
       state.marital_status = dmsLeadDto.maritalStatus ? dmsLeadDto.maritalStatus : "";
       state.vehicle_type = dmsLeadDto.otherVehicleType ? dmsLeadDto.otherVehicleType : "";
       state.registration_number = dmsLeadDto.otherVehicleRcNo ? dmsLeadDto.otherVehicleRcNo : "";
@@ -1113,7 +1113,9 @@ const prebookingFormSlice = createSlice({
       if (dmsLeadDto.documentType) {
         state.form_or_pan = dmsLeadDto.documentType;
       }
-      state.gstin_number = dmsLeadDto.gstNumber ? dmsLeadDto.gstNumber : "";
+      if (dmsLeadDto.gstNumber && dmsLeadDto.gstNumber != "") {
+        state.gstin_number = dmsLeadDto.gstNumber
+      }
       state.customer_type_category = dmsLeadDto.customerCategoryType ? dmsLeadDto.customerCategoryType : "";
 
       // Commitment
@@ -1121,7 +1123,7 @@ const prebookingFormSlice = createSlice({
       const customerPreferredDate = dmsLeadDto.commitmentDeliveryPreferredDate ? dmsLeadDto.commitmentDeliveryPreferredDate : "";
 
       state.customer_preferred_date = convertTimeStampToDateString(customerPreferredDate, "DD/MM/YYYY");
-       console.log("Select---------->>>>>>>>", customerPreferredDate);
+      console.log("Select---------->>>>>>>>", customerPreferredDate);
       const tentativeDeliveryDate = dmsLeadDto.commitmentDeliveryTentativeDate ? dmsLeadDto.commitmentDeliveryTentativeDate : ""
       state.tentative_delivery_date = convertTimeStampToDateString(tentativeDeliveryDate, "DD/MM/YYYY");
 
@@ -1219,7 +1221,7 @@ const prebookingFormSlice = createSlice({
       } catch (error) {
         // alert(error)
       }
-//state.model_drop_down_data_update_status = "update";
+      //state.model_drop_down_data_update_status = "update";
     },
     updateFinancialData: (state, action) => {
       const dmsfinancedetails = action.payload;
@@ -1279,6 +1281,11 @@ const prebookingFormSlice = createSlice({
           else if (item.documentType === "employeeId" || item.documentType === "employeeId") {
             if (item.documentNumber) {
               state.employee_id = item.documentNumber;
+            }
+          }
+          else if (item.documentType === "gstNumber") {
+            if (item.documentNumber && item.documentNumber != "") {
+              state.gstin_number = item.documentNumber;
             }
           }
         })
