@@ -4753,7 +4753,43 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           />
                         </View>
                       </View>
-                    ) : null}
+                      ) : uploadedImagesDataObj.pattaPassBook ? (
+                        <View style={{ flexDirection: "row" }}>
+                          <TouchableOpacity
+                            style={{
+                              width: "20%",
+                              height: 30,
+                              backgroundColor: Colors.SKY_BLUE,
+                              borderRadius: 4,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                            onPress={() => {
+                              if (uploadedImagesDataObj.pattaPassBook?.documentPath) {
+                                setImagePath(
+                                  uploadedImagesDataObj.pattaPassBook?.documentPath
+                                );
+                              }
+                            }}
+                          >
+                            <Text
+                              style={{
+                                color: Colors.WHITE,
+                                fontSize: 14,
+                                fontWeight: "600",
+                              }}
+                            >
+                              Preview
+                            </Text>
+                          </TouchableOpacity>
+                          <View style={{ width: "80%" }}>
+                            <DisplaySelectedImage
+                              fileName={uploadedImagesDataObj.pattaPassBook.fileName}
+                              from={"PATTA_PASS_BOOK"}
+                            />
+                          </View>
+                        </View>
+                      ) : null}
                   </View>
                 ) : null}
 
@@ -4921,7 +4957,49 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                           />
                         </View>
                       </View>
-                    ) : null}
+                      ) : 
+                        uploadedImagesDataObj.leasingConfirmationLetter ? (
+                        <View style={{ flexDirection: "row" }}>
+                          <TouchableOpacity
+                            style={{
+                              width: "20%",
+                              height: 30,
+                              backgroundColor: Colors.SKY_BLUE,
+                              borderRadius: 4,
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                            onPress={() => {
+                              if (
+                                uploadedImagesDataObj.leasingConfirmationLetter?.documentPath
+                              ) {
+                                setImagePath(
+                                  uploadedImagesDataObj.leasingConfirmationLetter
+                                    ?.documentPath
+                                );
+                              }
+                            }}
+                          >
+                            <Text
+                              style={{
+                                color: Colors.WHITE,
+                                fontSize: 14,
+                                fontWeight: "600",
+                              }}
+                            >
+                              Preview
+                            </Text>
+                          </TouchableOpacity>
+                          <View style={{ width: "80%" }}>
+                            <DisplaySelectedImage
+                              fileName={
+                                  uploadedImagesDataObj.leasingConfirmationLetter.fileName
+                              }
+                              from={"LEASING_CONFIRMATION"}
+                            />
+                          </View>
+                        </View>
+                      ) : null}
                   </View>
                 ) : null}
 
