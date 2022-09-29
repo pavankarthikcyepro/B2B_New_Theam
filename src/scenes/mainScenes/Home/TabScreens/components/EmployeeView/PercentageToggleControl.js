@@ -13,8 +13,8 @@ const PercentageToggleControl = (props) => {
             renderActiveText={false}
             renderInActiveText={false}
             circleActiveColor={Colors.RED}
-            backgroundActive={Colors.RETAIL_BORDER_COLOR}
-            backgroundInactive={Colors.LIGHT_GRAY2}
+            backgroundActive={Colors.GREEN}
+            backgroundInactive={Colors.RETAIL_BORDER_COLOR}
             circleInActiveColor={Colors.RED}
             innerCircleStyle={{
                 color: Colors.YELLOW,
@@ -23,12 +23,12 @@ const PercentageToggleControl = (props) => {
             }}
             circleBorderActiveColor={Colors.RED}
             circleBorderInactiveColor={Colors.RED}
-            barHeight={15}
-            circleSize={25}
+            barHeight={16}
+            circleSize={18}
             renderInsideCircle={() => {
                 return (
                     <Text
-                        style={{color: Colors.WHITE, fontWeight: 'bold', fontSize: 14}}>%</Text>
+                        style={{color: Colors.WHITE, fontWeight: 'bold', fontSize: 12}}>%</Text>
                 )
             }}
             onValueChange={x => {

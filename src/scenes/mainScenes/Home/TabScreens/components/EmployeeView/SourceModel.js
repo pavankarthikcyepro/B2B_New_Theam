@@ -60,17 +60,13 @@ const SourceModel = ({route, navigation}) => {
                 break;
         }
         dispatch(getSourceModelDataForSelf({type, payload}))
-        console.log('=-09-=-090-0: ', payload);
     }, [empId]);
 
     useEffect(() => {
         if (selector.sourceModelData) {
-            console.log(selector.sourceModelData);
-
             const json = selector.sourceModelData;
             const sourceData = [];
             const modelData = [];
-            console.log('12345678765432345: ---> ', json);
             const data = type === 'TEAM' ? json.overallTargetAchivements : json;
             data && data.length > 0 && data.filter(x => {
                 if (x.model) {
@@ -88,9 +84,15 @@ const SourceModel = ({route, navigation}) => {
             setLeadSource(groupedSources);
             const groupedModels = getData([...modelData], 1);
             setVehicleModel(groupedModels);
-            getTotal(0);
+            // getTotal(0);
         }
     }, [selector.sourceModelData])
+
+    useEffect(() => {
+        if (leadSource) {
+            getTotal(0);
+        }
+    }, [leadSource]);
 
     const getTotal = (type) => {
         const keys = type === 0 ? leadSourceKeys : vehicleModelKeys;
@@ -110,11 +112,9 @@ const SourceModel = ({route, navigation}) => {
         // {e: 0, t: 0, v: 0, b: 0, r: 0, f: 0, i: 0, exg: 0, exw: 0, acc: 0};
         keys.map(x => {
             data[x].forEach(d => {
-                console.log('===> S ', d.paramName);
                 totals[d.paramName] = +totals[d.paramName] + +d.achievment;
             })
         })
-        console.log('===> V ', totals);
         setSourceModelTotals({...totals});
     }
     const paramsMetadata = [{
@@ -231,7 +231,7 @@ const SourceModel = ({route, navigation}) => {
                                 justifyContent: 'flex-start',
                                 flex: 1,
                                 alignItems: 'center',
-                                backgroundColor: Colors.DARK_GRAY,
+                                backgroundColor: Colors.RED,
                             }]}>
                                 <Text style={{
                                     flexDirection: 'row',
@@ -263,7 +263,7 @@ const SourceModel = ({route, navigation}) => {
                                 {/* Total section */}
                                 <View>
                                     <View style={{
-                                        flexDirection: 'row', height: 40, backgroundColor: Colors.DARK_GRAY
+                                        flexDirection: 'row', height: 40, backgroundColor: Colors.RED
                                     }}>
                                         <View style={{
                                             width: '92%',

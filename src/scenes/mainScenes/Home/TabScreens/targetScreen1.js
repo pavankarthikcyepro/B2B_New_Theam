@@ -28,6 +28,7 @@ import {useNavigation} from "@react-navigation/native";
 import {AppNavigator} from "../../../../navigations";
 import SegmentedControl from "@react-native-segmented-control/segmented-control";
 import PercentageToggleControl from "./components/EmployeeView/PercentageToggleControl";
+import {IconButton} from "react-native-paper";
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
@@ -86,13 +87,11 @@ const TargetScreen = ({route}) => {
         const payload = {
             "empId": user.empId
         }
-        console.log("EMP PAYLOAD: ", payload);
         dispatch(getEmployeesList(payload));
     }
 
     const getReportingManagerListFromServer = async (user) => {
         const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-        console.log("EMP DTLS: ", employeeData);
         if (employeeData) {
             const jsonObj = JSON.parse(employeeData);
             dispatch(delegateTask({
@@ -120,7 +119,6 @@ const TargetScreen = ({route}) => {
                 setReoprtingManagerDropdownList([]);
                 setSelectedUser(null);
                 const employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-                console.log("EMP DTLS: ", employeeData);
                 if (employeeData) {
                     const jsonObj = JSON.parse(employeeData);
                     const dateFormat = "YYYY-MM-DD";
@@ -138,12 +136,10 @@ const TargetScreen = ({route}) => {
                         "pageNo": 0,
                         "size": 100
                     }
-                    console.log("$$$$PAYLOAD:", payload2);
                     Promise.allSettled([
                         dispatch(getNewTargetParametersAllData(payload2)),
                         dispatch(getTotalTargetParametersData(payload2)),
                     ]).then(() => {
-                        console.log('I did everything!');
                     });
                 }
             })
@@ -172,7 +168,6 @@ const TargetScreen = ({route}) => {
             tempBooking = dashboardSelfParamsData.filter((item) => {
                 return item.paramName.toLowerCase() === 'booking'
             })
-            console.log("%%%TEMP BOOK", tempBooking);
             if (tempBooking.length > 0) {
                 setBookingData(tempBooking[0])
             }
@@ -217,7 +212,6 @@ const TargetScreen = ({route}) => {
     useEffect(async () => {
         let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
         if (employeeData) {
-            console.log('HUmbley::: ', selector.login_employee_details);
             const jsonObj = JSON.parse(employeeData);
             if (selector.login_employee_details.hasOwnProperty('roles') && selector.login_employee_details.roles.length > 0) {
                 let rolesArr = [];
@@ -225,7 +219,6 @@ const TargetScreen = ({route}) => {
                     return item === "Admin Prod" || item === "App Admin" || item === "Manager" || item === "TL" || item === "General Manager" || item === "branch manager" || item === "Testdrive_Manager"
                 })
                 if (rolesArr.length > 0) {
-                    // console.log("%%%%% TEAM:", rolesArr);
                     setIsTeamPresent(true)
                 }
             }
@@ -254,7 +247,6 @@ const TargetScreen = ({route}) => {
     }, [selector.isTeam])
 
     const handleModalDropdownDataForShuffle = (user) => {
-        console.log("USER: ", user);
         if (delegateButtonClick) {
             getReportingManagerListFromServer(user);
             setShowShuffleModal(true);
@@ -295,9 +287,7 @@ const TargetScreen = ({route}) => {
                     }
                     // tempParams[i]["isOpenInner"] = false;
                     // tempParams[i]["employeeTargetAchievements"] = [];
-                    console.log("%%%%^^^:", tempParams[i]);
                     if (i === tempParams.length - 1) {
-                        console.log("MODIFIED DATA: ", JSON.stringify(tempParams));
                         setAllParameters([...tempParams]);
                     }
                 }
@@ -347,7 +337,6 @@ const TargetScreen = ({route}) => {
     }
 
     const onEmployeeNameClick = async (item, index) => {
-        console.log('', item, ' <<<+++>>> ', index)
         setSelectedName(item.empName); // to display name on click of the left view - first letter
         setTimeout(() => {
             setSelectedName('')
@@ -362,7 +351,6 @@ const TargetScreen = ({route}) => {
         }
         if (!current) {
             let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-            // console.log("$$$$$ LOGIN EMP:", employeeData);
             if (employeeData) {
                 const jsonObj = JSON.parse(employeeData);
                 const dateFormat = "YYYY-MM-DD";
@@ -380,11 +368,9 @@ const TargetScreen = ({route}) => {
                     "pageNo": 0,
                     "size": 100
                 }
-                console.log("PPPLLL", payload);
                 Promise.all([
                     dispatch(getUserWiseTargetParameters(payload))
                 ]).then((res) => {
-                    console.log("DATA: 1", JSON.stringify(res));
                     let tempRawData = [];
                     tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((emp) => emp.empId !== item.empId);
                     if (tempRawData.length > 0) {
@@ -507,10 +493,8 @@ const TargetScreen = ({route}) => {
                                 />
                             )}
                             onChange={async (item) => {
-                                console.log("£££", item.value);
                                 if (delegateButtonClick) {
                                     setReoprtingManagerListDropdownItem(item.value);
-                                    console.log(reoprtingManagerListDropdownItem);
                                 } else {
                                     setEmployeeListDropdownItem(item.value);
                                 }
@@ -553,7 +537,6 @@ const TargetScreen = ({route}) => {
                                             setDelegateButtonClick(true);
                                             setHeaderTitle('Reporting Managers');
                                             setDropDownPlaceHolder(state => state = 'Reporting Manager');
-                                            console.log("TDTDTDTDTDTD: ", employeeListDropdownItem);
                                             getReportingManagerListFromServer(selectedUser);
                                         }
                                     }}>
@@ -656,12 +639,13 @@ const TargetScreen = ({route}) => {
             <View style={styles.container}>
                 {selector.isTeam ? (
                     <View>
-                        <View style={{display: 'flex', flexDirection: 'row'}}>
-                            <View style={{height: 24, marginTop: 12, width: '20%', marginLeft: 4}}>
-                                <View style={styles.percentageToggleView}>
-                                    <PercentageToggleControl toggleChange={(x) => setTogglePercentage(x)}/>
-                                </View>
-                            </View>
+                        <View style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            borderBottomWidth: 2,
+                            borderBottomColor: Colors.RED,
+                            paddingBottom: 8
+                        }}>
                             <SegmentedControl
                                 style={{
                                     marginHorizontal: 4,
@@ -688,13 +672,23 @@ const TargetScreen = ({route}) => {
                                     setToggleParamsIndex(index);
                                 }}
                             />
+                            <View style={{height: 24, marginTop: 8, width: '20%', marginLeft: 4}}>
+                                <View style={styles.percentageToggleView}>
+                                    <PercentageToggleControl toggleChange={(x) => setTogglePercentage(x)}/>
+                                </View>
+                            </View>
                         </View>
 
-                        <ScrollView contentContainerStyle={{paddingRight: 20, flexDirection: 'column'}}
+                        <ScrollView contentContainerStyle={{paddingRight: 0, flexDirection: 'column'}}
                                     horizontal={true} directionalLockEnabled={true}>
                             {/* TOP Header view */}
-                            <View key={'headers'} style={{flexDirection: 'row'}}>
-                                <View style={{width: 50, height: 20, marginRight: 5}}>
+                            <View key={'headers'} style={{
+                                flexDirection: 'row',
+                                borderBottomWidth: .5,
+                                paddingBottom: 4,
+                                borderBottomColor: Colors.GRAY
+                            }}>
+                                <View style={{width: 60, height: 20, marginRight: 5}}>
 
                                 </View>
                                 <View style={{width: '100%', height: 20, flexDirection: 'row'}}>
@@ -702,7 +696,10 @@ const TargetScreen = ({route}) => {
                                         toggleParamsMetaData.map(param => {
                                             return (
                                                 <View style={styles.itemBox}>
-                                                    <Text style={{color: param.color}}>{param.shortName}</Text>
+                                                    <Text style={{
+                                                        color: param.color,
+                                                        fontSize: 12
+                                                    }}>{param.shortName}</Text>
                                                 </View>
                                             )
                                         })
@@ -718,7 +715,8 @@ const TargetScreen = ({route}) => {
                                             display: 'flex',
                                             flexDirection: 'row',
                                             justifyContent: 'space-between',
-                                            marginTop: 12
+                                            marginTop: 12,
+                                            width: '100%'
                                         }}>
                                             <Text style={{fontSize: 12, fontWeight: '600'}}>{item.empName}</Text>
                                             <Pressable onPress={() => {
@@ -734,7 +732,6 @@ const TargetScreen = ({route}) => {
                                                     fontSize: 12,
                                                     fontWeight: '600',
                                                     color: Colors.BLUE,
-                                                    marginLeft: 8
                                                 }}>Source/Model</Text>
                                             </Pressable>
                                         </View>
@@ -827,7 +824,6 @@ const TargetScreen = ({route}) => {
 
                                                                                                   if (!current) {
                                                                                                       let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-                                                                                                      // console.log("$$$$$ LOGIN EMP:", employeeData);
                                                                                                       if (employeeData) {
                                                                                                           const jsonObj = JSON.parse(employeeData);
                                                                                                           const dateFormat = "YYYY-MM-DD";
@@ -845,11 +841,9 @@ const TargetScreen = ({route}) => {
                                                                                                               "pageNo": 0,
                                                                                                               "size": 100
                                                                                                           }
-                                                                                                          console.log("PPPLLL", payload);
                                                                                                           Promise.all([
                                                                                                               dispatch(getUserWiseTargetParameters(payload))
                                                                                                           ]).then((res) => {
-                                                                                                              console.log("DATA: 2", JSON.stringify(res));
                                                                                                               let tempRawData = [];
                                                                                                               tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem1.empId);
                                                                                                               if (tempRawData.length > 0) {
@@ -859,9 +853,7 @@ const TargetScreen = ({route}) => {
                                                                                                                           isOpenInner: false,
                                                                                                                           employeeTargetAchievements: []
                                                                                                                       }
-                                                                                                                      console.log(tempRawData.length, '<<<+++>>>')
                                                                                                                       if (i === tempRawData.length - 1) {
-                                                                                                                          console.log(innerItem1, '<<<+++>>>', index, '<<<+++>>>', innerIndex1)
                                                                                                                           localData[index].employeeTargetAchievements[innerIndex1].employeeTargetAchievements = tempRawData;
                                                                                                                       }
                                                                                                                   }
@@ -945,7 +937,6 @@ const TargetScreen = ({route}) => {
 
                                                                                                                   if (!current) {
                                                                                                                       let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-                                                                                                                      // console.log("$$$$$ LOGIN EMP:", employeeData);
                                                                                                                       if (employeeData) {
                                                                                                                           const jsonObj = JSON.parse(employeeData);
                                                                                                                           const dateFormat = "YYYY-MM-DD";
@@ -963,11 +954,9 @@ const TargetScreen = ({route}) => {
                                                                                                                               "pageNo": 0,
                                                                                                                               "size": 100
                                                                                                                           }
-                                                                                                                          console.log("PPPLLL", payload);
                                                                                                                           Promise.all([
                                                                                                                               dispatch(getUserWiseTargetParameters(payload))
                                                                                                                           ]).then((res) => {
-                                                                                                                              console.log("DATA:", JSON.stringify(res));
                                                                                                                               let tempRawData = [];
                                                                                                                               tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem2.empId);
                                                                                                                               if (tempRawData.length > 0) {
@@ -1065,7 +1054,6 @@ const TargetScreen = ({route}) => {
 
                                                                                                                 if (!current) {
                                                                                                                     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-                                                                                                                    // console.log("$$$$$ LOGIN EMP:", employeeData);
                                                                                                                     if (employeeData) {
                                                                                                                         const jsonObj = JSON.parse(employeeData);
                                                                                                                         const dateFormat = "YYYY-MM-DD";
@@ -1083,11 +1071,9 @@ const TargetScreen = ({route}) => {
                                                                                                                             "pageNo": 0,
                                                                                                                             "size": 100
                                                                                                                         }
-                                                                                                                        console.log("PPPLLL", payload);
                                                                                                                         Promise.all([
                                                                                                                             dispatch(getUserWiseTargetParameters(payload))
                                                                                                                         ]).then((res) => {
-                                                                                                                            console.log("DATA:", JSON.stringify(res));
                                                                                                                             let tempRawData = [];
                                                                                                                             tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem3.empId);
                                                                                                                             if (tempRawData.length > 0) {
@@ -1130,7 +1116,8 @@ const TargetScreen = ({route}) => {
                                                                                                                         backgroundColor: '#EEEEEE',
                                                                                                                         marginHorizontal: 5
                                                                                                                     }]}>
-                                                                                                                    <View style={{flexDirection: 'row'}}>
+                                                                                                                    <View
+                                                                                                                        style={{flexDirection: 'row'}}>
                                                                                                                         <RenderLevel1NameView
                                                                                                                             level={4}
                                                                                                                             item={innerItem4}
@@ -1152,7 +1139,6 @@ const TargetScreen = ({route}) => {
 
                                                                                                                                 if (!current) {
                                                                                                                                     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-                                                                                                                                    // console.log("$$$$$ LOGIN EMP:", employeeData);
                                                                                                                                     if (employeeData) {
                                                                                                                                         const jsonObj = JSON.parse(employeeData);
                                                                                                                                         const dateFormat = "YYYY-MM-DD";
@@ -1170,11 +1156,9 @@ const TargetScreen = ({route}) => {
                                                                                                                                             "pageNo": 0,
                                                                                                                                             "size": 100
                                                                                                                                         }
-                                                                                                                                        console.log("PPPLLL", payload);
                                                                                                                                         Promise.all([
                                                                                                                                             dispatch(getUserWiseTargetParameters(payload))
                                                                                                                                         ]).then((res) => {
-                                                                                                                                            console.log("DATA:", JSON.stringify(res));
                                                                                                                                             let tempRawData = [];
                                                                                                                                             tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem4.empId);
                                                                                                                                             if (tempRawData.length > 0) {
@@ -1193,8 +1177,7 @@ const TargetScreen = ({route}) => {
                                                                                                                                             setAllParameters([...localData])
                                                                                                                                         })
                                                                                                                                     }
-                                                                                                                                }
-                                                                                                                                else {
+                                                                                                                                } else {
                                                                                                                                     setAllParameters([...localData])
                                                                                                                                 }
                                                                                                                                 // setAllParameters([...localData])
@@ -1217,7 +1200,8 @@ const TargetScreen = ({route}) => {
                                                                                                                                         backgroundColor: '#FFFFFF',
                                                                                                                                         marginHorizontal: 5
                                                                                                                                     }]}>
-                                                                                                                                    <View style={{flexDirection: 'row'}}>
+                                                                                                                                    <View
+                                                                                                                                        style={{flexDirection: 'row'}}>
                                                                                                                                         <RenderLevel1NameView
                                                                                                                                             level={5}
                                                                                                                                             item={innerItem5}
@@ -1239,7 +1223,6 @@ const TargetScreen = ({route}) => {
 
                                                                                                                                                 if (!current) {
                                                                                                                                                     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-                                                                                                                                                    // console.log("$$$$$ LOGIN EMP:", employeeData);
                                                                                                                                                     if (employeeData) {
                                                                                                                                                         const jsonObj = JSON.parse(employeeData);
                                                                                                                                                         const dateFormat = "YYYY-MM-DD";
@@ -1257,11 +1240,9 @@ const TargetScreen = ({route}) => {
                                                                                                                                                             "pageNo": 0,
                                                                                                                                                             "size": 100
                                                                                                                                                         }
-                                                                                                                                                        console.log("PPPLLL", payload);
                                                                                                                                                         Promise.all([
                                                                                                                                                             dispatch(getUserWiseTargetParameters(payload))
                                                                                                                                                         ]).then((res) => {
-                                                                                                                                                            console.log("DATA:", JSON.stringify(res));
                                                                                                                                                             let tempRawData = [];
                                                                                                                                                             tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem5.empId);
                                                                                                                                                             if (tempRawData.length > 0) {
@@ -1280,12 +1261,11 @@ const TargetScreen = ({route}) => {
                                                                                                                                                             setAllParameters([...localData])
                                                                                                                                                         })
                                                                                                                                                     }
-                                                                                                                                                }
-                                                                                                                                                else {
+                                                                                                                                                } else {
                                                                                                                                                     setAllParameters([...localData])
                                                                                                                                                 }
                                                                                                                                                 // setAllParameters([...localData])
-                                                                                                                                            }} />
+                                                                                                                                            }}/>
                                                                                                                                         {renderData(innerItem5, '#C62159')}
                                                                                                                                     </View>
                                                                                                                                     {
@@ -1304,7 +1284,8 @@ const TargetScreen = ({route}) => {
                                                                                                                                                         backgroundColor: '#FFFFFF',
                                                                                                                                                         marginHorizontal: 5
                                                                                                                                                     }]}>
-                                                                                                                                                    <View style={{flexDirection: 'row'}}>
+                                                                                                                                                    <View
+                                                                                                                                                        style={{flexDirection: 'row'}}>
                                                                                                                                                         <RenderLevel1NameView
                                                                                                                                                             level={6}
                                                                                                                                                             item={innerItem6}
@@ -1326,7 +1307,6 @@ const TargetScreen = ({route}) => {
 
                                                                                                                                                                 if (!current) {
                                                                                                                                                                     let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
-                                                                                                                                                                    // console.log("$$$$$ LOGIN EMP:", employeeData);
                                                                                                                                                                     if (employeeData) {
                                                                                                                                                                         const jsonObj = JSON.parse(employeeData);
                                                                                                                                                                         const dateFormat = "YYYY-MM-DD";
@@ -1344,11 +1324,9 @@ const TargetScreen = ({route}) => {
                                                                                                                                                                             "pageNo": 0,
                                                                                                                                                                             "size": 100
                                                                                                                                                                         }
-                                                                                                                                                                        console.log("PPPLLL", payload);
                                                                                                                                                                         Promise.all([
                                                                                                                                                                             dispatch(getUserWiseTargetParameters(payload))
                                                                                                                                                                         ]).then((res) => {
-                                                                                                                                                                            console.log("DATA:", JSON.stringify(res));
                                                                                                                                                                             let tempRawData = [];
                                                                                                                                                                             tempRawData = res[0]?.payload?.employeeTargetAchievements.filter((item) => item.empId !== innerItem6.empId);
                                                                                                                                                                             if (tempRawData.length > 0) {
@@ -1366,12 +1344,11 @@ const TargetScreen = ({route}) => {
                                                                                                                                                                             setAllParameters([...localData])
                                                                                                                                                                         })
                                                                                                                                                                     }
-                                                                                                                                                                }
-                                                                                                                                                                else {
+                                                                                                                                                                } else {
                                                                                                                                                                     setAllParameters([...localData])
                                                                                                                                                                 }
                                                                                                                                                                 // setAllParameters([...localData])
-                                                                                                                                                            }} />
+                                                                                                                                                            }}/>
                                                                                                                                                         {renderData(innerItem6, '#C62159')}
                                                                                                                                                     </View>
                                                                                                                                                 </View>
@@ -1424,32 +1401,46 @@ const TargetScreen = ({route}) => {
                                         }}>Source/Model</Text>
                                     </Pressable>
 
-                                    <View style={{flexDirection: 'row', height: 40,}}>
+                                    <View style={{flexDirection: 'row', height: 40}}>
                                         <View style={{
-                                            width: 50,
+                                            width: 60,
                                             minHeight: 40,
-                                            justifyContent: 'center',
+                                            justifyContent: 'space-between',
                                             alignItems: 'center',
-                                            flexDirection: 'column'
+                                            flexDirection: 'row',
+                                            backgroundColor: Colors.RED
                                         }}>
-                                            <Text style={[styles.grandTotalText, {
-                                                textAlign: 'center',
-                                                color: Colors.BLACK,
-                                                fontSize: 12
-                                            }]}>Grand Total</Text>
+                                            <View style={{justifyContent: 'center', alignItems: 'center', marginLeft: 6}}>
+                                                <Text style={[styles.grandTotalText, {
+                                                    color: Colors.WHITE,
+                                                    fontSize: 12,
+                                                }]}>Total</Text>
+                                            </View>
+                                            <View >
+                                                <Text style={{
+                                                    fontSize: 6,
+                                                    fontWeight: 'bold',
+                                                    paddingVertical: 6,
+                                                    paddingRight: 2,
+                                                    height: 20,
+                                                    color: Colors.WHITE
+                                                }}>ACH</Text>
+                                                <Text style={{
+                                                    fontSize: 6,
+                                                    fontWeight: 'bold',
+                                                    paddingVertical: 6,
+                                                    height: 20,
+                                                    color: Colors.WHITE
+                                                }}>TGT</Text>
+                                            </View>
                                         </View>
                                         <View style={{
-                                            width: '92%',
                                             minHeight: 40,
-                                            flexDirection: 'column',
-                                            marginRight: 5,
-                                            paddingHorizontal: 5,
+                                            flexDirection: 'column'
                                         }}>
                                             <View style={{
-                                                width: '92%',
                                                 minHeight: 40,
                                                 flexDirection: 'row',
-                                                color: Colors.BLACK
                                             }}>
                                                 <RenderGrandTotal totalParams={selector.totalParameters}
                                                                   displayType={togglePercentage}
@@ -1499,9 +1490,15 @@ const TargetScreen = ({route}) => {
                         </View>
                         <>
                             <View>
-                                <View style={{width: "32%", marginLeft: '12%', marginBottom: -6, flexDirection: "row", justifyContent: 'space-between'}}>
+                                <View style={{
+                                    width: "32%",
+                                    marginLeft: '12%',
+                                    marginBottom: -6,
+                                    flexDirection: "row",
+                                    justifyContent: 'space-between'
+                                }}>
                                     <Text style={{fontSize: 8}}>Ach</Text>
-                                    <Text style={{fontSize: 8}}>Tgt</Text>
+                                    <Text style={{fontSize: 8}}>TGT</Text>
                                 </View>
                                 <RenderSelfInsights
                                     data={selector.isDSE ? selector.self_target_parameters_data : selector.insights_target_parameters_data}
@@ -1738,8 +1735,8 @@ export default TargetScreen;
 
 export const RenderLevel1NameView = ({level, item, branchName, color, titleClick}) => {
     return (
-        <View style={{width: 50, justifyContent: 'center', textAlign: 'center', display: 'flex', flexDirection: 'row'}}>
-            <View>
+        <View style={{width: 60, justifyContent: 'center', textAlign: 'center', display: 'flex', flexDirection: 'row'}}>
+            <View style={{justifyContent: 'center', alignItems: 'center'}}>
                 <TouchableOpacity style={{
                     width: 30,
                     height: 30,
@@ -1756,8 +1753,16 @@ export const RenderLevel1NameView = ({level, item, branchName, color, titleClick
                         color: '#fff'
                     }}>{item.empName.charAt(0)}</Text>
                 </TouchableOpacity>
-                {level === 0 && <Text style={{fontSize: 8}}
-                                      numberOfLines={1}>{branchName}</Text>}
+                {level === 0 && <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <IconButton
+                        icon="map-marker"
+                        style={{padding: 0, margin: 0}}
+                        color={Colors.BLACK}
+                        size={8}
+                    />
+                    <Text style={{fontSize: 8}}
+                          numberOfLines={1}>{branchName}</Text>
+                </View>}
             </View>
             <View style={{
                 width: '25%',
@@ -1765,10 +1770,11 @@ export const RenderLevel1NameView = ({level, item, branchName, color, titleClick
                 textAlign: 'center',
                 alignItems: 'center',
                 display: 'flex',
-                flexDirection: 'column'
+                flexDirection: 'column',
+                marginRight: 5
             }}>
-                <Text style={{fontSize: 6, fontWeight: 'bold', paddingVertical: 6, height: 25}}>Ach</Text>
-                <Text style={{fontSize: 6, fontWeight: 'bold', paddingVertical: 6, height: 20}}>Tgt</Text>
+                <Text style={{fontSize: 6, fontWeight: 'bold', paddingVertical: 6, height: 25}}>ACH</Text>
+                <Text style={{fontSize: 6, fontWeight: 'bold', paddingVertical: 6, height: 20}}>TGT</Text>
             </View>
         </View>
     )
@@ -1784,7 +1790,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-start', alignItems: 'center', height: 30, marginLeft: 10, backgroundColor: "#F5F5F5"
     },
-    itemBox: {width: 60, height: 40, justifyContent: 'center', alignItems: 'center'},
+    itemBox: {width: 55, height: 30, justifyContent: 'center', alignItems: 'center'},
     shuffleBGView: {
         width: 30,
         height: 30,

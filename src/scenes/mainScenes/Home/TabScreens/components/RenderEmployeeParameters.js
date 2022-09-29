@@ -38,9 +38,9 @@ export const RenderEmployeeParameters = (parameter) => {
 
                     const elementColor = getColor(Number(selectedParameter.achievment), Number(selectedParameter.target));
                     return (
-                        <View style={[styles.itemBox, {width: param === "Accessories" ? 80 : 60}]}>
+                        <View style={[styles.itemBox, {width: param === "Accessories" ? 65 : 55}]}>
                             <View style={{justifyContent: 'center', alignItems: 'center', height: 23}}>
-                                <Text style={[styles.totalText1, {color: elementColor}]}>
+                                <Text style={[styles.totalText1, {color: Colors.RED}]}>
                                     {selectedParameter ?
                                         displayType === 0 ? selectedParameter.achievment :
                                             selectedParameter.target > 0 ? achievementPercentage(selectedParameter.achievment, selectedParameter.target, param, enquiryParameter.achievment) :
@@ -50,8 +50,7 @@ export const RenderEmployeeParameters = (parameter) => {
                             </View>
                             {/*<View style={{height: 1, backgroundColor: 'black'}}/>*/}
                             <Text style={[styles.totalText, {
-                                width: param === "Accessories" ? 78 : 58,
-                                color: "#FA03B9",
+                                width: param === "Accessories" ? 63 : 53,
                                 backgroundColor: 'lightgray'
                             }]}>
                                 {Number(selectedParameter.target)}
@@ -70,11 +69,10 @@ const styles = StyleSheet.create({
     itemBox: {
         borderLeftWidth: 1,
         borderLeftColor: 'lightgray',
-        textAlign: 'center',
         alignItems: 'center',
         justifyContent: 'center'
     },
-    totalText: {textAlign: "center", fontSize: 14, height: 22},
+    totalText: {textAlign: "center", fontSize: 12, height: 22},
     totalText1: {
         color: "black",
         fontSize: 14,
