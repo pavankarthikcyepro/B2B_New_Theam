@@ -1107,11 +1107,6 @@ const MainParamScreen = ({ route, navigation }) => {
                                 // }
                                 if (loggedInEmpDetails.primaryDepartment === 'Sales')
                                 {
-                                    console.log("==================================");
-                                    console.log("ownData ===> ", JSON.stringify(ownData));
-                                    console.log("selector.endDate ===> ", selector.endDate);
-                                    console.log("selector.startDate ===> ", selector.startDate);
-                                    console.log("==================================");
                                     if (ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate) {
                                         setSelectedBranch({ label: ownData.branchName, value: ownData.branch })
                                         setDefaultBranch(ownData.branch)
@@ -1290,7 +1285,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                 // }
                                 // else {
                                 //     editTargetData()
-                                // }
+                                // }    
                                 if (isNoTargetAvailable) {
                                     addTargetData()
                                 }

@@ -252,13 +252,11 @@ export const targetSettingsSlice = createSlice({
             })
             .addCase(getAllTargetMapping.pending, (state, action) => {
                 state.isLoading = true;
-
                 state.isDataLoaded = false
                 state.targetMapping = [];
             })
             .addCase(getAllTargetMapping.fulfilled, (state, action) => {
                 state.isLoading = false;
-
                 console.log('menu_list: ', JSON.stringify(action.payload));
                 state.targetMapping = []
                 state.targetMapping = action.payload.data ? action.payload.data : [];
@@ -266,7 +264,6 @@ export const targetSettingsSlice = createSlice({
             })
             .addCase(getAllTargetMapping.rejected, (state, action) => {
                 state.isLoading = false;
-
                 state.targetMapping = [];
                 state.isDataLoaded = true
             })
@@ -288,11 +285,10 @@ export const targetSettingsSlice = createSlice({
             })
             .addCase(editTargetMapping.pending, (state, action) => {
                 state.isLoading = true;
-
+                
             })
             .addCase(editTargetMapping.fulfilled, (state, action) => {
-                state.isLoading = false;
-
+                // state.isLoading = false;
                 if (action.payload?.message) {
                     showToast(action.payload.message)
                 }
