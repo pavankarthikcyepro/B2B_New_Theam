@@ -26,6 +26,7 @@ export const RenderSelfInsights = (args) => {
     console.log('45678====> ', enq)
     return (
         data.map((item, index) => {
+            if (item){
             return (
                 <View style={{flexDirection: "row", marginLeft: 8}} key={index}>
                     <View style={{width: "10%", justifyContent: "center", marginTop: 5}}>
@@ -180,6 +181,9 @@ export const RenderSelfInsights = (args) => {
                     </View>
                 </View>
             )
+            }else{
+                return <View/>
+            }
         })
     )
 }
