@@ -77,6 +77,7 @@ import ProformaScreen from "../scenes/mainScenes/EMS/ProformaScreen";
 
 import leaderBoardScreen from "../scenes/mainScenes/Home/leaderBoardScreen";
 import branchRankingScreen from "../scenes/mainScenes/Home/branchRankingScreen";
+import SourceModel from "../scenes/mainScenes/Home/TabScreens/components/EmployeeView/SourceModel";
 
 const drawerWidth = 300;
 const screeOptionStyle = {
@@ -241,6 +242,7 @@ export const HomeStackIdentifiers = {
     test: "TEST",
     leaderboard: "LEADERBOARD",
     branchRanking: "BRANCH_RANKING",
+    sourceModel: "SOURCE_MODEL",
     home: "HOME_SCREEN",
 
 };
@@ -353,6 +355,11 @@ const HomeStackNavigator = ({ navigation }) => {
                 name={HomeStackIdentifiers.branchRanking}
                 component={branchRankingScreen}
                 options={{ title: "Branch ranking" }}
+            />
+            <HomeStack.Screen
+                name={HomeStackIdentifiers.sourceModel}
+                component={SourceModel}
+                options={{ title: "Source/Model" }}
             />
         </HomeStack.Navigator>
     );

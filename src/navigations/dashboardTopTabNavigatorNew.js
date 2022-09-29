@@ -20,6 +20,7 @@ import TasksScreen, {
 import { SalesComparisonScreen } from "../scenes/mainScenes/Home/TabScreens/salesComparisonScreen";
 
 import { Colors } from "../styles";
+import {View} from "react-native";
 
 const DashboardTopTabNavigatorIdentifiers = {
   target: "Target V/s Actual",

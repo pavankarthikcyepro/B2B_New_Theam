@@ -1,13 +1,12 @@
 import React from "react";
 import {Dimensions, StyleSheet, Text, View} from "react-native";
 import {achievementPercentage} from "../../../../../utils/helperFunctions";
-import {Colors} from "../../../../../styles";
 
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = (screenWidth - 100) / 5;
 
-export const RenderEmployeeParameters = (parameter) => {
-    // const paramsData = ['Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Finance', 'Insurance', 'Exchange', 'EXTENDEDWARRANTY', 'Accessories'];
+export const RenderSourceModelParameters = (parameter) => {
+    const paramsData = ['Enquiry', 'Test Drive', 'Home Visit', 'Booking', 'INVOICE', 'Exchange', 'Finance', 'Insurance', 'EXTENDEDWARRANTY', 'Accessories'];
 
     const getColor = (ach, tar) => {
         if (ach > 0 && tar === 0) {
@@ -26,9 +25,8 @@ export const RenderEmployeeParameters = (parameter) => {
     }
 
     const {params, item, color, displayType} = parameter;
-    const paramsData = params.map(({paramName}) => paramName);
-    console.log('PARAMS in Employee Params: ', paramsData);
-
+    // const paramsData = params.map(({paramName}) => paramName);
+    console.log('PARAMS in Employee Params: ', item);
     return (
         <>
             {
@@ -36,27 +34,27 @@ export const RenderEmployeeParameters = (parameter) => {
                     const selectedParameter = item.targetAchievements.filter((x) => x.paramName === param)[0];
                     const enquiryParameter = item.targetAchievements.filter((item) => item.paramName === 'Enquiry')[0];
 
-                    const elementColor = getColor(Number(selectedParameter.achievment), Number(selectedParameter.target));
-                    return (
-                        <View style={[styles.itemBox, {width: param === "Accessories" ? 65 : 55}]}>
-                            <View style={{justifyContent: 'center', alignItems: 'center', height: 23}}>
-                                <Text style={[styles.totalText1, {color: Colors.RED}]}>
+                    if (selectedParameter) {
+                        const elementColor = getColor(Number(selectedParameter.achievment), Number(selectedParameter.target));
+                        return (
+                            <View style={[styles.itemBox, {width: param === "Accessories" ? 80 : 60}]}>
+                                <Text style={[styles.totalText1, {color: elementColor}]}>
                                     {selectedParameter ?
                                         displayType === 0 ? selectedParameter.achievment :
                                             selectedParameter.target > 0 ? achievementPercentage(selectedParameter.achievment, selectedParameter.target, param, enquiryParameter.achievment) :
                                                 selectedParameter.achievment
                                         : 0}
                                 </Text>
+                                {/*<Text style={[styles.totalText, {*/}
+                                {/*    width: param === "Accessories" ? 78 : 58,*/}
+                                {/*    color: "#FA03B9",*/}
+                                {/*    backgroundColor: 'lightgray'*/}
+                                {/*}]}>*/}
+                                {/*    {Number(selectedParameter.target)}*/}
+                                {/*</Text>*/}
                             </View>
-                            {/*<View style={{height: 1, backgroundColor: 'black'}}/>*/}
-                            <Text style={[styles.totalText, {
-                                width: param === "Accessories" ? 63 : 53,
-                                backgroundColor: 'lightgray'
-                            }]}>
-                                {Number(selectedParameter.target)}
-                            </Text>
-                        </View>
-                    );
+                        );
+                    }
                 })
             }
         </>
@@ -67,17 +65,20 @@ export const RenderEmployeeParameters = (parameter) => {
 
 const styles = StyleSheet.create({
     itemBox: {
-        borderLeftWidth: 1,
-        borderLeftColor: 'lightgray',
-        alignItems: 'center',
-        justifyContent: 'center'
+        height: 25,
+        marginVertical: 6
     },
-    totalText: {textAlign: "center", fontSize: 12, height: 22},
+    totalText: {textAlign: "center", fontSize: 14, height: 20, textAlignVertical: 'center',},
     totalText1: {
         color: "black",
+        height: 25,
         fontSize: 14,
         width: '98%',
+        paddingTop: 6,
         textAlign: 'center',
+        textAlignVertical: 'center',
+        alignContent: 'center',
+        justifyContent: 'center',
         backgroundColor: 'rgba(223,228,231,0.67)'
     },
 });
