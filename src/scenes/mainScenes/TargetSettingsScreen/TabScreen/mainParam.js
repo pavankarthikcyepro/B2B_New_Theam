@@ -1107,14 +1107,9 @@ const MainParamScreen = ({ route, navigation }) => {
                                 // }
                                 if (loggedInEmpDetails.primaryDepartment === 'Sales')
                                 {
-                                    console.log("==================================");
-                                    console.log("ownData ===> ", JSON.stringify(ownData));
-                                    console.log("selector.endDate ===> ", selector.endDate);
-                                    console.log("selector.startDate ===> ", selector.startDate);
-                                    console.log("==================================");
                                     if (ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate) {
                                         setSelectedBranch({ label: ownData.branchName, value: ownData.branch })
-                                        setDefaultBranch(ownData.branch)
+                                        setDefaultBranch(Number(ownData.branch))
                                         setAddOrEdit('E')
                                     }
                                     else {
@@ -1189,6 +1184,10 @@ const MainParamScreen = ({ route, navigation }) => {
                     alignItems: 'center',
                     backgroundColor: 'rgba(0,0,0,0.7)',
                 }}>
+                    {console.log("dropdownData =>>>>>>>> ",dropdownData)}
+                    {console.log("selectedDropdownData =>>>>>>>> ",selectedDropdownData)}
+                    {console.log("defaultBranch =>>>>>>>> ",defaultBranch)}
+                    {console.log("selector.isTeam =>>>>>>>> ",selector.isTeam)}
                     <ScrollView style={{ maxHeight: 500, width: '90%', backgroundColor: '#fff', padding: 10, borderRadius: 5, paddingTop: 50 }}>
                         {/* {isDataLoaded && */}
                         <View style={[{ justifyContent: 'center', alignItems: 'center', paddingBottom: 10 }]}>
