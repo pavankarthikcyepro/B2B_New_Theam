@@ -5316,9 +5316,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           isSubmitPress && taxPercent == "" ? "red" : "#d1d1d1",
                       }}>
                       <TextInput
-                        editable={
-                          userData.isManager ? (isEdit ? true : false) : false
-                        }
+                        // editable={
+                        //   userData.isManager ? (isEdit ? true : false) : false
+                        // }
                         value={taxPercent}
                         style={[
                           {
