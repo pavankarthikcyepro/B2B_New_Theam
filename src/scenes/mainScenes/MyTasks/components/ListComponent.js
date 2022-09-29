@@ -972,7 +972,6 @@ const ListComponent = ({ route, navigation }) => {
       );
     } else {
       newData = newData.filter((value) =>
-        (homeSelector.isTeamPresent || homeSelector.isDSE) &&
         value.taskName === "Test Drive Approval"
           ? false
           : true
@@ -1371,7 +1370,7 @@ const ListComponent = ({ route, navigation }) => {
 
       {index === 1 && myTeamsData.length > 0 && (
         <FlatList
-          data={myTeamsData}
+          data={checkForTaskData(myTasksData)}
           style={{ flex: 1 }}
           numColumns={3}
           extraData={myTeamsData}

@@ -1,5 +1,5 @@
 import React from "react";
-import {Alert, Switch, Text, View} from "react-native";
+import {Text, View} from "react-native";
 import {IconButton, ProgressBar} from "react-native-paper";
 import {Colors} from "../../../../../styles";
 import moment from "moment/moment";
@@ -7,8 +7,15 @@ import {achievementPercentage} from "../../../../../utils/helperFunctions";
 
 export const RenderSelfInsights = (args) => {
     const color = [
-        '#9f31bf', '#00b1ff', '#fb03b9', '#ffa239', '#d12a78', '#0800ff', '#1f93ab', '#ec3466'
-    ]
+        "#9f31bf",
+        "#00b1ff",
+        "#fb03b9",
+        "#ffa239",
+        "#d12a78",
+        "#0800ff",
+        "#1f93ab",
+        "#ec3466",
+    ];
 
     const dateFormat = "YYYY-MM-DD";
     const currentDate = moment().format(dateFormat)
@@ -35,7 +42,8 @@ export const RenderSelfInsights = (args) => {
                         borderTopLeftRadius: 3,
                         borderBottomLeftRadius: 3
                     }}>
-                        <Text style={{color: "#fff"}}>{type === 0 ? item.achievment : achievementPercentage(item.achievment, item.target, item.paramName, enq.achievment)}
+                        <Text
+                            style={{color: "#fff"}}>{type === 0 ? item.achievment : achievementPercentage(item.achievment, item.target, item.paramName, enq.achievment)}
                         </Text>
                     </View>
                     <View style={{

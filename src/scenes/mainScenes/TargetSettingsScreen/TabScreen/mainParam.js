@@ -570,7 +570,6 @@ const MainParamScreen = ({ route, navigation }) => {
         let param;
         if (curIndex !== -1) {
             const curParam = updateTeamsParamsData[curIndex];
-            console.log('123````: ', curParam, item.employeeId)
             param = curParam.target;
         }
         return (
@@ -724,10 +723,11 @@ const MainParamScreen = ({ route, navigation }) => {
                                                     setSelectedDropdownData([{ label: item.branchName, value: item.branch }])
                                                     if (item.retailTarget !== null && selector.endDate === item.endDate && selector.startDate === item.startDate) {
                                                         setSelectedBranch({ label: item.branchName, value: item.branch })
-                                                        setDefaultBranch(Number(item.branch))
+                                                        setDefaultBranch(item.branch)
                                                         setAddOrEdit('E')
                                                     }
                                                     else {
+                                                        setDefaultBranch(null);
                                                         setAddOrEdit('A')
                                                     }
                                                     if (item?.targetName) {
@@ -988,10 +988,11 @@ const MainParamScreen = ({ route, navigation }) => {
                             if(loggedInEmpDetails.primaryDepartment === 'Sales'){
                                 if (ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate) {
                                     setSelectedBranch({ label: ownData.branchName, value: ownData.branch })
-                                    setDefaultBranch(Number(ownData.branch))
+                                    setDefaultBranch(ownData.branch)
                                     setAddOrEdit('E')
                                 }
                                 else {
+                                    setDefaultBranch(null);
                                     setAddOrEdit('A')
                                 }
                                 (ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate) ? setRetail(ownData.retailTarget.toString()) : setRetail('')
@@ -1106,12 +1107,18 @@ const MainParamScreen = ({ route, navigation }) => {
                                 // }
                                 if (loggedInEmpDetails.primaryDepartment === 'Sales')
                                 {
+                                    console.log("==================================");
+                                    console.log("ownData ===> ", JSON.stringify(ownData));
+                                    console.log("selector.endDate ===> ", selector.endDate);
+                                    console.log("selector.startDate ===> ", selector.startDate);
+                                    console.log("==================================");
                                     if (ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate) {
                                         setSelectedBranch({ label: ownData.branchName, value: ownData.branch })
-                                        setDefaultBranch(Number(ownData.branch))
+                                        setDefaultBranch(ownData.branch)
                                         setAddOrEdit('E')
                                     }
                                     else {
+                                        setDefaultBranch(null);
                                         setAddOrEdit('A')
                                     }
                                     setSelectedUser({...loggedInEmpDetails});
