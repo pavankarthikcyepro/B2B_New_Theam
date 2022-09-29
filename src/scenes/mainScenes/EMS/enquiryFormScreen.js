@@ -293,6 +293,107 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     // })
   }, [updateEnquiry, selector, uploadedImagesDataObj]);
 
+
+  useEffect(() => {
+    handleRetailFinanceFields();
+    
+  }, [selector.retail_finance])
+  const handleRetailFinanceFields = () => {
+    if (selector.retail_finance === 'In House') {
+      dispatch(
+        setFinancialDetails({
+          key: "BANK_R_FINANCE_NAME",
+          text: '',
+        })
+      )
+       dispatch(
+         setFinancialDetails({
+           key: "BANK_FINANCE",
+           text: selector.bank_or_finance,
+         })
+       );
+      dispatch(
+        setFinancialDetails({
+          key: "LOAN_AMOUNT",
+          text: '',
+        })
+      );
+      dispatch(
+        setFinancialDetails({
+          key: "RATE_OF_INTEREST",
+          text: '',
+        })
+      );
+    }
+    else if (selector.retail_finance === 'Out House') {
+      dispatch(
+        setFinancialDetails({
+          key: "BANK_R_FINANCE_NAME",
+          text: selector.bank_or_finance_name,
+        })
+      );
+        dispatch(
+          setFinancialDetails({
+            key: "BANK_FINANCE",
+            text: '',
+          })
+        );
+      dispatch(
+        setFinancialDetails({
+          key: "LOAN_AMOUNT",
+          text: selector.loan_amount,
+        })
+      );
+      
+      dispatch(
+        setFinancialDetails({
+          key: "RATE_OF_INTEREST",
+          text: selector.rate_of_interest,
+        })
+      );
+    }
+    else if (selector.retail_finance === "Leasing") {
+      dispatch(
+        setFinancialDetails({
+          key: "BANK_R_FINANCE_NAME",
+          text: '',
+        })
+      );
+      dispatch(
+        setFinancialDetails({
+          key: "BANK_FINANCE",
+          text: "",
+        })
+      );
+      dispatch(
+        setFinancialDetails({
+          key: "LEASHING_NAME",
+          text: selector.leashing_name,
+        })
+      );
+    } else {
+      dispatch(
+        setFinancialDetails({
+          key: "BANK_R_FINANCE_NAME",
+          text: selector.bank_or_finance_name,
+        })
+      );
+      dispatch(
+        setFinancialDetails({
+          key: "LOAN_AMOUNT",
+          text: selector.loan_amount,
+        })
+      );
+      dispatch(
+        setFinancialDetails({
+          key: "RATE_OF_INTEREST",
+          text: selector.rate_of_interest,
+        })
+      );
+    }
+
+  }
+
   // useEffect(() => {
   //   const interval = setInterval(() => {
   //     autoSave()
@@ -1094,12 +1195,15 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
     //   }
     // }
 
-    if (selector.gender.length == 0) {
-      scrollToPos(0);
-      setOpenAccordian("2");
-      showToast("Please select Gender");
-      return;
+    if(selector.enquiry_segment.toLowerCase() == "personal"){
+      if (selector.gender.length == 0) {
+        scrollToPos(0);
+        setOpenAccordian("2");
+        showToast("Please select Gender");
+        return;
+      }
     }
+
 
     if (!isValidate(selector.firstName)) {
       scrollToPos(0);
@@ -2970,7 +3074,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               expandedId={openAccordian}
               onAccordionPress={(expandedId) => updateAccordian(expandedId)}
             >
-              {/* { (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY') ? <List.Accordion
+              { (leadStatus === 'ENQUIRYCOMPLETED' && leadStage === 'ENQUIRY') ? <List.Accordion
                 id={"10"}
                 title={"Proforma Invoice"}
                 titleStyle={{
@@ -2992,8 +3096,10 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               >
                 <ProformaComp
                   modelDetails={selector.dmsLeadProducts[0]}
-                  branchId={selectedBranchId} />
-              </List.Accordion> : null} */}
+                  branchId={selectedBranchId} 
+                  universalId={route.params.universalId}
+                  />
+              </List.Accordion> : null}
               <View style={styles.space}></View>
 
               {/* 1. Personal Intro */}
@@ -3418,7 +3524,8 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
                 />
 
                 <DropDownSelectionItem
-                  label={"Enquiry Category"}
+                  label={"Enquiry Category*"}
+                  disabled={true}
                   value={selector.enquiry_category.length == 0 ? "Hot" : selector.enquiry_category}
                   onPress={() =>
                     showDropDownModelMethod(
