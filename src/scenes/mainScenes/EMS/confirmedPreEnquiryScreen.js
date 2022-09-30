@@ -313,7 +313,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
     useEffect(() => {
         if (selector.all_pre_enquiry_tasks.length > 0 && employeeId) {
             let arrTemp = selector.all_pre_enquiry_tasks.filter((obj, index) => {
-                return obj.taskName === 'Create Enquiry' && obj.assignee.empId == employeeId;
+                return obj.taskName === 'Create Enquiry' && obj.assignee.empId === employeeId;
             })
             let filteredObj = arrTemp.length > 0 ? { ...arrTemp[0] } : undefined;
             if (filteredObj !== undefined) {
@@ -451,11 +451,12 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
         })
             .then(json => json.json())
             .then(response => {
-
+                return respone;
             })
             .catch(err => {
-                console.error(err);
-                showToastRedAlert(err);
+                if (typeof err === 'string') {
+                    showToastRedAlert(err);
+                }
                 setIsLoading(false);
             })
     }
@@ -552,7 +553,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
             .then(response => {
                 console.log("Customer Refernce=====", response)
                 if (response && response.dmsEntity && response.dmsEntity.leadCustomerReference) {
-                    dispatch(updateEnquiryDetailsCreateEnquiry(response.dmsEntity.leadCustomerReference.referencenumber));
+                    dispatch(() => updateEnquiryDetailsCreateEnquiry(response.dmsEntity.leadCustomerReference.referencenumber));
                 }
             })
             .catch(err => {
