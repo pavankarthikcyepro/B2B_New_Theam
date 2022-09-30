@@ -462,7 +462,7 @@ const ConfirmedPreEnquiryScreen = ({ route, navigation }) => {
 
     const goToEnquiry = () => {
         getPreEnquiryListFromServer();
-        navigation.navigate(EmsTopTabNavigatorIdentifiers.enquiry);
+        navigation.navigate(EmsTopTabNavigatorIdentifiers.leads);
         dispatch(clearState());
     }
 

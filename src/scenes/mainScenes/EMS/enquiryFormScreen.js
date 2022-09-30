@@ -296,7 +296,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     handleRetailFinanceFields();
-    
+
   }, [selector.retail_finance])
   const handleRetailFinanceFields = () => {
     if (selector.retail_finance === 'In House') {
@@ -344,7 +344,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
           text: selector.loan_amount,
         })
       );
-      
+
       dispatch(
         setFinancialDetails({
           key: "RATE_OF_INTEREST",
@@ -2318,7 +2318,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
 
   const goToParentScreen = () => {
     getMyTasksListFromServer();
-    navigation.navigate(EmsTopTabNavigatorIdentifiers.preBooking);
+    navigation.navigate(EmsTopTabNavigatorIdentifiers.leads);
     dispatch(preClearState());
     dispatch(clearState2());
     clearState();
@@ -3096,7 +3096,7 @@ const DetailsOverviewScreen = ({ route, navigation }) => {
               >
                 <ProformaComp
                   modelDetails={selector.dmsLeadProducts[0]}
-                  branchId={selectedBranchId} 
+                  branchId={selectedBranchId}
                   universalId={route.params.universalId}
                   />
               </List.Accordion> : null}

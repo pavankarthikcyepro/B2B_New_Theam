@@ -156,7 +156,7 @@ export const MyTaskNewItem = ({ from = "MY_TASKS", navigator, type, uniqueId, na
                                   </View>
                               }
                           </>
-                          <Text style={[styles.text3, {color: getStageColor(leadStage, leadStatus)}]}>{leadStage}</Text>
+                          <Text style={[styles.text3, {color: getStageColor(leadStage, leadStatus)}]}>{leadStage === 'PREBOOKING' ? 'BOOKING APPROVAL' : leadStage}</Text>
                       </View>
                   }
               </>
