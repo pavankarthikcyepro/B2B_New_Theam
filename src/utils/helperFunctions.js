@@ -429,7 +429,6 @@ export const GetDropList = async ( orgId, token, type) => {
 export const achievementPercentage = (achievement, tgt, paramName, enquiryAchievement) => {
   const paramsToCalculateDirectTotal = ['Enquiry', 'Accessories'];
   let target = tgt;
-  console.log('paramname===> ', achievement, tgt, paramName, enquiryAchievement)
   if (paramName && !paramsToCalculateDirectTotal.includes(paramName)) {
     target = enquiryAchievement;
   }

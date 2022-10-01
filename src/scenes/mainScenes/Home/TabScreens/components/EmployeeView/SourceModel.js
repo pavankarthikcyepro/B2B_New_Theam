@@ -168,7 +168,7 @@ const SourceModel = ({route, navigation}) => {
         const data = isSourceIndex === 0 ? leadSource : vehicleModel;
         return (<>
             {keys && keys.length > 0 && keys.map((x, index) => {
-                return (<View>
+                return (<View key={`${index}`}>
                     <View style={styles.flexRow}>
                         {data[x] && <RenderSourceModelParameters item={{targetAchievements: data[x]}}
                                                                  displayType={displayType}/>}
@@ -181,8 +181,8 @@ const SourceModel = ({route, navigation}) => {
     function renderTitleColumn() {
         const keys = isSourceIndex === 0 ? leadSourceKeys : vehicleModelKeys;
         return (<>
-            {keys && keys.length > 0 && keys.map(x => {
-                return (<View style={styles.titleColumnView}>
+            {keys && keys.length > 0 && keys.map((x, index) => {
+                return (<View key={`${index}`} style={styles.titleColumnView}>
                     <Text style={styles.titleColumnText} numberOfLines={2}>{x}</Text>
                 </View>)
             })}
@@ -249,7 +249,7 @@ const SourceModel = ({route, navigation}) => {
                                 <View key={'headers'} style={[styles.flexRow]}>
                                     <View style={[styles.flexRow, {height: 20}]}>
                                         {paramsMetadata.map(param => {
-                                            return (<View style={[styles.flexRow, styles.justifyAlignCenter, {
+                                            return (<View key={param} style={[styles.flexRow, styles.justifyAlignCenter, {
                                                 width: param.paramName === "Accessories" ? 80 : 60
                                             }]}>
                                                 <Text style={{color: param.color}}>{param.shortName}</Text>
@@ -273,9 +273,9 @@ const SourceModel = ({route, navigation}) => {
                                             paddingHorizontal: 5,
                                         }}>
                                             <View style={{width: '92%', minHeight: 40, flexDirection: 'row'}}>
-                                                {Object.keys(sourceModelTotals).map(x => {
+                                                {Object.keys(sourceModelTotals).map((x, index) => {
                                                     return (
-                                                        <View style={[styles.justifyAlignCenter, {width: 60}]}>
+                                                        <View key={`${index}`} style={[styles.justifyAlignCenter, {width: 60}]}>
                                                             <Text
                                                                 style={{color: Colors.WHITE}}>{sourceModelTotals[x]}</Text>
                                                         </View>

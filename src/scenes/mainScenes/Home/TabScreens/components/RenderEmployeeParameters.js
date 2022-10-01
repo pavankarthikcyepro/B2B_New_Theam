@@ -27,7 +27,6 @@ export const RenderEmployeeParameters = (parameter) => {
 
     const {params, item, color, displayType} = parameter;
     const paramsData = params.map(({paramName}) => paramName);
-    console.log('PARAMS in Employee Params: ', paramsData);
 
     return (
         <>
