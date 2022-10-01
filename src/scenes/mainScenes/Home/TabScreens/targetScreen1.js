@@ -695,7 +695,7 @@ const TargetScreen = ({route}) => {
                                     {
                                         toggleParamsMetaData.map(param => {
                                             return (
-                                                <View style={styles.itemBox}>
+                                                <View style={styles.itemBox} key={param.shortName}>
                                                     <Text style={{
                                                         color: param.color,
                                                         fontSize: 12
@@ -762,7 +762,7 @@ const TargetScreen = ({route}) => {
                                                 {item.isOpenInner && item.employeeTargetAchievements.length > 0 &&
                                                     item.employeeTargetAchievements.map((innerItem1, innerIndex1) => {
                                                         return (
-                                                            <View style={[{
+                                                            <View key={innerIndex1} style={[{
                                                                 width: '100%',
                                                                 minHeight: 40,
                                                                 flexDirection: 'column',
@@ -879,7 +879,7 @@ const TargetScreen = ({route}) => {
                                                                         innerItem1.isOpenInner && innerItem1.employeeTargetAchievements.length > 0 &&
                                                                         innerItem1.employeeTargetAchievements.map((innerItem2, innerIndex2) => {
                                                                             return (
-                                                                                <View style={[{
+                                                                                <View key={innerIndex2} style={[{
                                                                                     width: '98%',
                                                                                     minHeight: 40,
                                                                                     flexDirection: 'column',
@@ -993,7 +993,7 @@ const TargetScreen = ({route}) => {
                                                                                         innerItem2.isOpenInner && innerItem2.employeeTargetAchievements.length > 0 &&
                                                                                         innerItem2.employeeTargetAchievements.map((innerItem3, innerIndex3) => {
                                                                                             return (
-                                                                                                <View style={[{
+                                                                                                <View key={innerIndex3} style={[{
                                                                                                     width: '98%',
                                                                                                     minHeight: 40,
                                                                                                     flexDirection: 'column',
@@ -1104,7 +1104,7 @@ const TargetScreen = ({route}) => {
                                                                                                         innerItem3.isOpenInner && innerItem3.employeeTargetAchievements.length > 0 &&
                                                                                                         innerItem3.employeeTargetAchievements.map((innerItem4, innerIndex4) => {
                                                                                                             return (
-                                                                                                                <View
+                                                                                                                <View key={innerIndex4}
                                                                                                                     style={[{
                                                                                                                         width: '98%',
                                                                                                                         minHeight: 40,
@@ -1188,7 +1188,7 @@ const TargetScreen = ({route}) => {
                                                                                                                         innerItem4.isOpenInner && innerItem4.employeeTargetAchievements.length > 0 &&
                                                                                                                         innerItem4.employeeTargetAchievements.map((innerItem5, innerIndex5) => {
                                                                                                                             return (
-                                                                                                                                <View
+                                                                                                                                <View key={innerIndex5}
                                                                                                                                     style={[{
                                                                                                                                         width: '98%',
                                                                                                                                         minHeight: 40,
@@ -1272,7 +1272,7 @@ const TargetScreen = ({route}) => {
                                                                                                                                         innerItem5.isOpenInner && innerItem5.employeeTargetAchievements.length > 0 &&
                                                                                                                                         innerItem5.employeeTargetAchievements.map((innerItem6, innerIndex6) => {
                                                                                                                                             return (
-                                                                                                                                                <View
+                                                                                                                                                <View key={innerIndex6}
                                                                                                                                                     style={[{
                                                                                                                                                         width: '98%',
                                                                                                                                                         minHeight: 40,
