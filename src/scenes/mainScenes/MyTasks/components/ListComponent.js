@@ -31,6 +31,8 @@ import {
   getUpcomingTeamTasksListApi,
   getPendingTeamTasksListApi,
   getRescheduleTeamTasksListApi,
+  getCompletedMyTasksListApi,
+  getCompletedTeamTasksListApi,
 } from "../../../../redux/mytaskReducer";
 import moment from "moment";
 import { showToast } from "../../../../utils/toast";
@@ -714,6 +716,155 @@ const ListComponent = ({ route, navigation }) => {
               let tempArr = [];
               let tempTaskName = "";
               let allData = res[0].payload.rescheduledData;
+              if (allData.length > 0) {
+                for (
+                  let nameIndex = 0;
+                  nameIndex < taskNames.length;
+                  nameIndex++
+                ) {
+                  let taskLists = [];
+                  for (let index = 0; index < allData.length; index++) {
+                    if (allData[index].tasksList.length > 0) {
+                      let userWiseTasks = allData[index].tasksList;
+                      for (
+                        let taskIndex = 0;
+                        taskIndex < userWiseTasks.length;
+                        taskIndex++
+                      ) {
+                        let trimName = userWiseTasks[taskIndex].taskName
+                          .toLowerCase()
+                          .trim();
+                        let finalTaskName = trimName.replace(/ /g, "");
+                        if (userWiseTasks[taskIndex].myTaskList.length > 0) {
+                          let allTasks = userWiseTasks[taskIndex].myTaskList;
+                          for (
+                            let innerIndex = 0;
+                            innerIndex < allTasks.length;
+                            innerIndex++
+                          ) {
+                            if (finalTaskName === taskNames[nameIndex]) {
+                              tempTaskName = userWiseTasks[taskIndex].taskName;
+                              taskLists.push(allTasks[innerIndex]);
+                            }
+                          }
+                        }
+                      }
+                    }
+                    if (index === allData.length - 1) {
+                      if (taskLists.length > 0) {
+                        tempArr.push({
+                          taskCnt: taskLists.length,
+                          taskName: tempTaskName,
+                          myTaskList: taskLists,
+                        });
+                      }
+                    }
+                  }
+                  if (nameIndex === taskNames.length - 1) {
+                    // setMyTeamsData(tempArr);
+                    let tempData = [...defaultData];
+                    if (tempArr.length > 0) {
+                      for (let i = 0; i < tempArr.length; i++) {
+                        let index = -1;
+                        index = tempData.findIndex(
+                          (item) => item.taskName === tempArr[i].taskName
+                        );
+                        console.log(tempArr[i].taskName, index);
+                        if (index !== -1) {
+                          tempData[index].taskCnt = tempArr[i].taskCnt;
+                          tempData[index].myTaskList = tempArr[i].myTaskList;
+                        }
+                        if (i === tempArr.length - 1) {
+                          setMyTeamsData(tempData);
+                        }
+                      }
+                    }
+                  }
+                }
+              } else {
+                setMyTeamsData([...defaultData]);
+              }
+            });
+          }
+        } else if (route.params.from === "CLOSED") {
+          if (index === 0) {
+            let payload = {};
+            if (selectedFilterLocal !== "ALL") {
+              payload = {
+                orgId: jsonObj.orgId,
+                loggedInEmpId: jsonObj.empId,
+                onlyForEmp: true,
+                dataType: "completedData",
+                startDate: startDate,
+                endDate: endDate,
+                ignoreDateFilter: false,
+              };
+            } else {
+              payload = {
+                orgId: jsonObj.orgId,
+                loggedInEmpId: jsonObj.empId,
+                onlyForEmp: true,
+                dataType: "completedData",
+                ignoreDateFilter: true,
+              };
+            }
+
+            console.log("PAYLOAD COMPLETED: ", payload);
+            Promise.all([dispatch(getCompletedMyTasksListApi(payload))]).then(
+              (res) => {
+                const todaysData = res[0].payload.completedData[0];
+                let tempData = [...defaultData];
+                const filteredData = todaysData.tasksList.filter((element) => {
+                  const trimName = element.taskName.toLowerCase().trim();
+                  const finalTaskName = trimName.replace(/ /g, "");
+                  return taskNames.includes(finalTaskName);
+                });
+                if (filteredData.length > 0) {
+                  for (let i = 0; i < filteredData.length; i++) {
+                    let index = -1;
+                    index = tempData.findIndex(
+                      (item) => item.taskName === filteredData[i].taskName
+                    );
+                    console.log(filteredData[i].taskName, index);
+                    if (index !== -1) {
+                      tempData[index].taskCnt = filteredData[i].taskCnt;
+                      tempData[index].myTaskList = filteredData[i].myTaskList;
+                    }
+                    if (i === filteredData.length - 1) {
+                      setMyTasksData(tempData);
+                    }
+                  }
+                }
+              }
+            );
+          } else if (index === 1) {
+            let payload = {};
+            if (selectedFilterLocal !== "ALL") {
+              payload = {
+                orgId: jsonObj.orgId,
+                loggedInEmpId: jsonObj.empId,
+                onlyForEmp: false,
+                dataType: "completedData",
+                startDate: startDate,
+                endDate: endDate,
+                ignoreDateFilter: false,
+              };
+            } else {
+              payload = {
+                orgId: jsonObj.orgId,
+                loggedInEmpId: jsonObj.empId,
+                onlyForEmp: false,
+                dataType: "completedData",
+                ignoreDateFilter: true,
+              };
+            }
+            console.log("PAYLOAD COMPLETED TEAM: ", payload);
+            Promise.all([
+              dispatch(getCompletedTeamTasksListApi(payload)),
+            ]).then((res) => {
+              let tempArr = [];
+              let tempTaskName = "";
+              let allData = res[0].payload.completedData;
               if (allData.length > 0) {
                 for (
                   let nameIndex = 0;
