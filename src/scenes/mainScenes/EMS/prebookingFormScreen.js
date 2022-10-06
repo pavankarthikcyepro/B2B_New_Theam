@@ -5071,7 +5071,46 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                             />
                           </View>
                         </View>
-                      ) : null}
+                      ) 
+                      : 
+                          uploadedImagesDataObj.addressProof?.fileName ? (
+                            <View style={{ flexDirection: "row" }}>
+                              <TouchableOpacity
+                                style={{
+                                  width: "20%",
+                                  height: 30,
+                                  backgroundColor: Colors.SKY_BLUE,
+                                  borderRadius: 4,
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                }}
+                                onPress={() => {
+                                  if (uploadedImagesDataObj.addressProof?.documentPath) {
+                                    setImagePath(
+                                      uploadedImagesDataObj.addressProof?.documentPath
+                                    );
+                                  }
+                                }}>
+                                <Text
+                                  style={{
+                                    color: Colors.WHITE,
+                                    fontSize: 14,
+                                    fontWeight: "600",
+                                  }}>
+                                  Preview
+                                </Text>
+                              </TouchableOpacity>
+                              <View style={{ width: "80%" }}>
+                                <DisplaySelectedImage
+                                  fileName={uploadedImagesDataObj.addressProof.fileName}
+                                  from={"ADDRESS_PROOF"}
+                                />
+                              </View>
+                            </View>
+                          ) :null
+                      
+                      
+                      }
                     </View>
                   ) : null}
 
@@ -5294,9 +5333,9 @@ const PrebookingFormScreen = ({ route, navigation }) => {
                           isSubmitPress && taxPercent == "" ? "red" : "#d1d1d1",
                       }}>
                       <TextInput
-                        editable={
-                          userData.isManager ? (isEdit ? true : false) : false
-                        }
+                        // editable={
+                        //   userData.isManager ? (isEdit ? true : false) : false
+                        // }
                         value={taxPercent}
                         style={[
                           {

@@ -8,9 +8,11 @@ import BookingScreen from "../scenes/mainScenes/EMS/bookingScreen";
 import { Colors } from "../styles";
 import * as AsyncStore from "../asyncStore";
 import ProceedToBookingScreen from "../scenes/mainScenes/MyTasks/proceedToBookingScreen";
+import Leads from "../scenes/mainScenes/EMS/leadsScreen";
 
 export const EmsTopTabNavigatorIdentifiers = {
   preEnquiry: "PRE_ENQUIRY",
+  leads: 'LEADS',
   enquiry: "ENQUIRY",
   preBooking: "PRE_BOOKING",
   booking:"BOOKING",
@@ -61,20 +63,26 @@ const EMSTopTabNavigatorTwo = () => {
 
       />
       <EMSTopTab.Screen
-        name={EmsTopTabNavigatorIdentifiers.enquiry}
-        component={EnquiryScreen}
-        options={{ title: "Enquiry" }}
+        name={EmsTopTabNavigatorIdentifiers.leads}
+        component={Leads}
+        options={{ title: "Leads",  }}
+
       />
-      <EMSTopTab.Screen
-        name={EmsTopTabNavigatorIdentifiers.preBooking}
-        component={PreBookingScreen}
-        options={{ title: "Booking Approval" }}
-      />
-      <EMSTopTab.Screen
-        name={EmsTopTabNavigatorIdentifiers.booking}
-        component={BookingScreen}
-        options={{ title: "Booking View" }}
-      />
+      {/*<EMSTopTab.Screen*/}
+      {/*  name={EmsTopTabNavigatorIdentifiers.enquiry}*/}
+      {/*  component={EnquiryScreen}*/}
+      {/*  options={{ title: "Enquiry" }}*/}
+      {/*/>*/}
+      {/*<EMSTopTab.Screen*/}
+      {/*  name={EmsTopTabNavigatorIdentifiers.preBooking}*/}
+      {/*  component={PreBookingScreen}*/}
+      {/*  options={{ title: "Booking Approval" }}*/}
+      {/*/>*/}
+      {/*<EMSTopTab.Screen*/}
+      {/*  name={EmsTopTabNavigatorIdentifiers.booking}*/}
+      {/*  component={BookingScreen}*/}
+      {/*  options={{ title: "Booking View" }}*/}
+      {/*/>*/}
       {/* <EMSTopTab.Screen
         name={EmsTopTabNavigatorIdentifiers.proceedToBooking}
         component={ProceedToBookingScreen}

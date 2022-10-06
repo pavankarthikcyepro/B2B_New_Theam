@@ -58,7 +58,7 @@ export const isValidateAplhaNumeric = (text) => {
   return false;
 };
 export const navigatetoCallWebView = async () => {
- 
+
   const requestMicroPhonePermission = async () => {
     if (Platform.OS === 'android') {
       try {
@@ -100,7 +100,7 @@ export const navigatetoCallWebView = async () => {
   var granted = await requestCameraPermission()
   var granted2 = await requestMicroPhonePermission()
   if(granted && granted2)
-  return true 
+  return true
   else return false
 
   // (granted)
@@ -189,9 +189,9 @@ export const convertToDate = (isoDate, format = "DD/MM/YYYY") => {
 export const convertTimeStampToDateString = (timeStamp, format) => {
   if (!timeStamp || timeStamp.length === 0) return "";
   format = format ? format : "DD/MM/YYYY h:mm a";
-  
+
   const date = moment(Number(timeStamp)).format(format);
-  
+
   return date;
 };
 
@@ -413,7 +413,7 @@ export const GetDropList = async ( orgId, token, type) => {
                 subObj.name =  subObj.subReason
               })
               updatedData.push(newObj)
-            } 
+            }
           })
           resolve(updatedData);
         } else {
@@ -423,3 +423,22 @@ export const GetDropList = async ( orgId, token, type) => {
       .catch((err) => reject(err));
   });
 };
+
+export const achievementPercentage = (achievement, tgt, paramName, enquiryAchievement) => {
+  const paramsToCalculateDirectTotal = ['Enquiry', 'Accessories'];
+  let target = tgt;
+  if (paramName && !paramsToCalculateDirectTotal.includes(paramName)) {
+    target = enquiryAchievement;
+  }
+  if (achievement) {
+    achievement = Number(achievement);
+  } else {
+    achievement = 0;
+  }
+  if (target) {
+    target = Number(target);
+  } else {
+    target = 0;
+  }
+  return target > 0 ? Math.round((achievement/target)*100) : achievement; // if denominator is > 0, display percentage, else no change, display achievement
+}

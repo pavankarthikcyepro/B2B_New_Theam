@@ -1120,44 +1120,30 @@ const prebookingFormSlice = createSlice({
       // if(state.customer_types_response && state){
       //   state.customer_types_data = state.customer_types_response[state.buyer_type.toLowerCase()]
       // }
-      state.buyer_type = dmsLeadDto.buyerType ? dmsLeadDto.buyerType : "";
-      state.marital_status = dmsLeadDto.maritalStatus
-        ? dmsLeadDto.maritalStatus
+      state.buyer_type = dmsLeadDto.buyerType
+        ? dmsLeadDto.buyerType
         : "";
-      state.vehicle_type = dmsLeadDto.otherVehicleType
-        ? dmsLeadDto.otherVehicleType
-        : "";
-      state.registration_number = dmsLeadDto.otherVehicleRcNo
-        ? dmsLeadDto.otherVehicleRcNo
-        : "";
+      state.marital_status = dmsLeadDto.maritalStatus ? dmsLeadDto.maritalStatus : "";
+      state.vehicle_type = dmsLeadDto.otherVehicleType ? dmsLeadDto.otherVehicleType : "";
+      state.registration_number = dmsLeadDto.otherVehicleRcNo ? dmsLeadDto.otherVehicleRcNo : "";
 
       // Documents
       if (dmsLeadDto.documentType) {
         state.form_or_pan = dmsLeadDto.documentType;
       }
-      state.gstin_number = dmsLeadDto.gstNumber ? dmsLeadDto.gstNumber : "";
-      state.customer_type_category = dmsLeadDto.customerCategoryType
-        ? dmsLeadDto.customerCategoryType
-        : "";
+      if (dmsLeadDto.gstNumber && dmsLeadDto.gstNumber != "") {
+        state.gstin_number = dmsLeadDto.gstNumber
+      }
+      state.customer_type_category = dmsLeadDto.customerCategoryType ? dmsLeadDto.customerCategoryType : "";
 
       // Commitment
       state.occasion = dmsLeadDto.occasion ? dmsLeadDto.occasion : "";
-      const customerPreferredDate = dmsLeadDto.commitmentDeliveryPreferredDate
-        ? dmsLeadDto.commitmentDeliveryPreferredDate
-        : "";
+      const customerPreferredDate = dmsLeadDto.commitmentDeliveryPreferredDate ? dmsLeadDto.commitmentDeliveryPreferredDate : "";
 
-      state.customer_preferred_date = convertTimeStampToDateString(
-        customerPreferredDate,
-        "DD/MM/YYYY"
-      );
+      state.customer_preferred_date = convertTimeStampToDateString(customerPreferredDate, "DD/MM/YYYY");
       console.log("Select---------->>>>>>>>", customerPreferredDate);
-      const tentativeDeliveryDate = dmsLeadDto.commitmentDeliveryTentativeDate
-        ? dmsLeadDto.commitmentDeliveryTentativeDate
-        : "";
-      state.tentative_delivery_date = convertTimeStampToDateString(
-        tentativeDeliveryDate,
-        "DD/MM/YYYY"
-      );
+      const tentativeDeliveryDate = dmsLeadDto.commitmentDeliveryTentativeDate ? dmsLeadDto.commitmentDeliveryTentativeDate : ""
+      state.tentative_delivery_date = convertTimeStampToDateString(tentativeDeliveryDate, "DD/MM/YYYY");
 
       // Reject Remarks
       state.reject_remarks = dmsLeadDto.remarks ? dmsLeadDto.remarks : "";
@@ -1345,7 +1331,12 @@ const prebookingFormSlice = createSlice({
               state.employee_id = item.documentNumber;
             }
           }
-        });
+          else if (item.documentType === "gstNumber") {
+            if (item.documentNumber && item.documentNumber != "") {
+              state.gstin_number = item.documentNumber;
+            }
+          }
+        })
       }
     },
     updateAddressByPincode: (state, action) => {
