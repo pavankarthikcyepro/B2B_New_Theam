@@ -248,8 +248,8 @@ const SourceModel = ({route, navigation}) => {
                                 {/* TOP Header view */}
                                 <View key={'headers'} style={[styles.flexRow]}>
                                     <View style={[styles.flexRow, {height: 20}]}>
-                                        {paramsMetadata.map(param => {
-                                            return (<View key={param} style={[styles.flexRow, styles.justifyAlignCenter, {
+                                        {paramsMetadata.map((param, i) => {
+                                            return (<View key={`${param.paramName}__${i}`} style={[styles.flexRow, styles.justifyAlignCenter, {
                                                 width: param.paramName === "Accessories" ? 80 : 60
                                             }]}>
                                                 <Text style={{color: param.color}}>{param.shortName}</Text>

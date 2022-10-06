@@ -67,6 +67,11 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
   });
 
   useEffect(() => {
+    console.log(
+      "accessorylist: ",
+      selectedAccessoryList.length,
+      accessorylist.length
+    );
     const titleNames = [];
     const dataObj = {};
 
@@ -115,22 +120,28 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
     try {
       const asyncStorageData = await AsyncStorage.getData(key);
       let existingData;
-      console.log("JSON.parse(asyncStorageData)", JSON.parse(asyncStorageData));
+      console.log(">>>>>>>>>><<<<<<<<<<<, main: ", asyncStorageData);
       if (
         asyncStorageData &&
         asyncStorageData.length &&
         typeof asyncStorageData === "string"
       ) {
+        console.log(">>>>>>>>>><<<<<<<<<<<, Async: ", asyncStorageData);
         existingData = JSON.parse(asyncStorageData);
       }
+      console.log(">>>>>>>>>><<<<<<<<<<<, exis???????: ", existingData);
       const itemExists = existingData.findIndex((x) => x.id === item.id);
       let data = [];
       if (itemExists === -1) {
+        console.log("exis??????? DATA NA: ", existingData, " :key: ", key);
         data = [item];
       } else {
+        console.log("exis??????? DATA AV: ", existingData, " :key: ", key);
+
         data = [...existingData, item];
       }
 
+      console.log("exis??????? final: ", key);
       const uniqueTags = [];
       data.map((item) => {
         const findItem = uniqueTags.find((x) => x.id === item.id);
@@ -167,7 +178,6 @@ const PaidAccessoriesScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {console.log("accessoriesData.names", accessoriesData)}
       {accessoriesData.names.length === 0 ? (
         <EmptyListView title={"No Data Found"} />
       ) : (

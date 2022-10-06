@@ -56,7 +56,6 @@ export const getPrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/
 })
 
 export const updatePrebookingDetailsApi = createAsyncThunk("PREBOONING_FORMS_SLICE/updatePrebookingDetailsApi", async (payload, { rejectWithValue }) => {
-console.log({payload})
   const response = await client.post(URL.UPDATE_ENQUIRY_DETAILS(), payload);
   try {
     const json = await response.json();
@@ -111,8 +110,6 @@ export const dropPreBooingApi = createAsyncThunk("PREBOONING_FORMS_SLICE/dropPre
 })
 export const sendEditedOnRoadPriceDetails = createAsyncThunk("PREBOONING_FORMS_SLICE/sendEditedOnRoadPriceDetails", async (payload, { rejectWithValue }) => {
 
-  console.log("PPPTTT:", URL.SEND_ON_ROAD_PRICE_DETAILS(), JSON.stringify(payload));
-
   const response = await client.put(URL.SEND_ON_ROAD_PRICE_DETAILS(), payload);
   try {
     const json = await response.json();
@@ -129,8 +126,6 @@ export const sendEditedOnRoadPriceDetails = createAsyncThunk("PREBOONING_FORMS_S
 })
 
 export const sendOnRoadPriceDetails = createAsyncThunk("PREBOONING_FORMS_SLICE/sendOnRoadPriceDetails", async (payload, { rejectWithValue }) => {
-
-  console.log("PPPTTT:", URL.SEND_ON_ROAD_PRICE_DETAILS(), JSON.stringify(payload));
 
   const response = await client.post(URL.SEND_ON_ROAD_PRICE_DETAILS(), payload);
   try {
@@ -900,6 +895,9 @@ const prebookingFormSlice = createSlice({
         case "LOAN_AMOUNT":
           state.loan_amount = text;
           break;
+        case "LOAN_AMOUNT_OUT":
+          state.loan_amount = text;
+          break;
         case "RATE_OF_INTEREST":
           state.rate_of_interest = text;
           break;
@@ -1522,15 +1520,15 @@ const prebookingFormSlice = createSlice({
     builder.addCase(getOnRoadPriceDtoListApi.fulfilled, (state, action) => {
       // console.log("S getOnRoadPriceDtoListApi: ", JSON.stringify(action.payload));
       if (action.payload.dmsEntity) {
-        const dmsOnRoadPriceDtoList =
-          action.payload.dmsEntity.dmsOnRoadPriceDtoList;
+
+        const dmsOnRoadPriceDtoList = action.payload.dmsEntity.dmsOnRoadPriceDtoList;
         state.on_road_price_dto_list_response = dmsOnRoadPriceDtoList;
         if (dmsOnRoadPriceDtoList.length > 0) {
-          const dataObj = dmsOnRoadPriceDtoList[0];
+        
 
-          state.insurance_type = dataObj.insuranceType
-            ? dataObj.insuranceType
-            : "";
+          const dataObj = dmsOnRoadPriceDtoList[2];
+          console.log('dataObjdataObj',dmsOnRoadPriceDtoList);
+          state.insurance_type = dataObj.insuranceType ? dataObj.insuranceType : "";
           state.warranty = dataObj.warrantyName ? dataObj.warrantyName : "";
 
           if (
@@ -1546,37 +1544,22 @@ const prebookingFormSlice = createSlice({
             state.add_on_insurance = addOnNames;
           }
 
-          state.consumer_offer = dataObj.specialScheme
-            ? dataObj.specialScheme.toString()
-            : "";
-          state.exchange_offer = dataObj.exchangeOffers
-            ? dataObj.exchangeOffers.toString()
-            : "";
-          state.corporate_offer = dataObj.corporateOffer
-            ? dataObj.corporateOffer.toString()
-            : "";
-          state.promotional_offer = dataObj.promotionalOffers
-            ? dataObj.promotionalOffers.toString()
-            : "";
-          state.cash_discount = dataObj.cashDiscount
-            ? dataObj.cashDiscount.toString()
-            : "";
-          state.for_accessories = dataObj.focAccessories
-            ? dataObj.focAccessories.toString()
-            : "";
-          state.additional_offer_1 = dataObj.additionalOffer1
-            ? dataObj.additionalOffer1.toString()
-            : "";
-          state.additional_offer_2 = dataObj.additionalOffer2
-            ? dataObj.additionalOffer2.toString()
-            : "";
-          state.insurance_discount = dataObj.insuranceDiscount
-            ? dataObj.insuranceDiscount.toString()
-            : "";
-          state.accessories_discount = dataObj.accessoriesDiscount
-            ? dataObj.accessoriesDiscount.toString()
-            : "";
+          
+          state.consumer_offer = dataObj.specialScheme ? dataObj.specialScheme.toString() : "";
+          state.exchange_offer = dataObj.exchangeOffers ? dataObj.exchangeOffers.toString() : "";
+          state.corporate_offer = dataObj.corporateOffer ? dataObj.corporateOffer.toString() : "";
+          state.promotional_offer = dataObj.promotionalOffers ? dataObj.promotionalOffers.toString() : "";
+          state.cash_discount = dataObj.cashDiscount ? dataObj.cashDiscount.toString() : "";
+          state.for_accessories = dataObj.focAccessories ? dataObj.focAccessories.toString() : "";
+          state.additional_offer_1 = dataObj.additionalOffer1 ? dataObj.additionalOffer1.toString() : "";
+          state.additional_offer_2 = dataObj.additionalOffer2 ? dataObj.additionalOffer2.toString() : "";
+          state.insurance_discount = dataObj.insuranceDiscount ? dataObj.insuranceDiscount.toString() : "";
+          state.accessories_discount = dataObj.accessoriesDiscount ? dataObj.accessoriesDiscount.toString() : "";
+
+          // console.log('corporate_offercorporate_offer',dataObj.corporateOffer.toString());
+          
         }
+        
       }
       state.isLoading = false;
     });

@@ -66,7 +66,7 @@ const MainParamScreen = ({ route, navigation }) => {
     const [dropdownData, setDropdownData] = useState([]);
     const [selectedDropdownData, setSelectedDropdownData] = useState([]);
     const [employeeDropDownDataLocal, setEmployeeDropDownDataLocal] = useState([]);
-
+    const [showChild, setShowChild] = useState(false);
     useEffect(async () => {
         navigation.addListener('focus', async () => {
             let employeeData = await AsyncStore.getData(AsyncStore.Keys.LOGIN_EMPLOYEE);
@@ -164,7 +164,7 @@ const MainParamScreen = ({ route, navigation }) => {
             }
         }
         else {
-            setTargetName('')
+            setTargetName('');
         }
     }, [selector.isTeam, selector.selectedMonth])
 
@@ -172,20 +172,21 @@ const MainParamScreen = ({ route, navigation }) => {
         const paramsArray = [];
         selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
             if (item.endDate === selector.endDate && item.startDate === selector.startDate && +item.employeeId !== +loggedInEmpDetails.empId) {
-                const params = ['enquiry','testDrive','homeVisit','booking','exchange','finance','insurance','exWarranty','accessories'];
+                const params = ['enquiry', 'testDrive', 'homeVisit', 'booking', 'exchange', 'finance', 'insurance', 'exWarranty', 'accessories'];
                 params.forEach(x => {
-                    const obj = {empId: item.employeeId, target: item[x], type: x} ;
+                    const obj = { empId: item.employeeId, target: item[x], type: x, id: item.id };
                     paramsArray.push(obj);
                 })
             }
         });
+        console.log("paramsArray", paramsArray);
         setUpdateTeamsParamsData([...paramsArray]);
     }
 
     const setEmployeeTargetParams = () => {
-        const data = {enquiry: getTargetParamValue(ownData?.enquiry), booking: getTargetParamValue(ownData?.booking), testDrive: getTargetParamValue(ownData?.testDrive), homeVisit: getTargetParamValue(ownData?.homeVisit), finance: getTargetParamValue(ownData?.finance), insurance: getTargetParamValue(ownData?.insurance), accessories: getTargetParamValue(ownData?.accessories), exchange: getTargetParamValue(ownData?.exchange), exWarranty: getTargetParamValue(ownData?.exWarranty)};
-        setUpdatedSelfParameters({...data});
-        setMasterSelfParameters({...data});
+        const data = { enquiry: getTargetParamValue(ownData?.enquiry), booking: getTargetParamValue(ownData?.booking), testDrive: getTargetParamValue(ownData?.testDrive), homeVisit: getTargetParamValue(ownData?.homeVisit), finance: getTargetParamValue(ownData?.finance), insurance: getTargetParamValue(ownData?.insurance), accessories: getTargetParamValue(ownData?.accessories), exchange: getTargetParamValue(ownData?.exchange), exWarranty: getTargetParamValue(ownData?.exWarranty) };
+        setUpdatedSelfParameters({ ...data });
+        setMasterSelfParameters({ ...data });
     }
 
     const getTargetParamValue = (param) => {
@@ -399,7 +400,8 @@ const MainParamScreen = ({ route, navigation }) => {
                 console.log("PAYLOAD EDIT:", payload);
                 Promise.all([
                     dispatch(editTargetMapping(payload))
-                ]).then(() => {
+                ]).then((response) => {
+                    console.log("response", response);
                     setSelectedUser(null)
                     setRetail('')
                     setSelectedBranch(null)
@@ -413,6 +415,8 @@ const MainParamScreen = ({ route, navigation }) => {
                         "targetType": selector.targetType
                     }
                     dispatch(getAllTargetMapping(payload2))
+                }).catch((error) => {
+                    console.log("ERROR", error);
                 });
             }
         }
@@ -433,7 +437,7 @@ const MainParamScreen = ({ route, navigation }) => {
 
     const onChangeSelfParamValue = (type, value) => {
         updatedSelfParameters[type] = value;
-        const updatedParams = {...updatedSelfParameters};
+        const updatedParams = { ...updatedSelfParameters };
         setUpdatedSelfParameters(updatedParams)
     }
 
@@ -447,11 +451,11 @@ const MainParamScreen = ({ route, navigation }) => {
 
     const formParamsTargetPayloadData = () => {
         const targets = [];
-        const data = {...updatedSelfParameters};
+        const data = { ...updatedSelfParameters };
         for (const key in data) {
             if (data.hasOwnProperty(key)) {
                 const target = data[key];
-                const obj = {unit: key === 'accessories' ? 'number' : 'percentage', target, parameter: key};
+                const obj = { unit: key === 'accessories' ? 'number' : 'percentage', target, parameter: key };
                 targets.push(obj);
             }
         }
@@ -460,7 +464,7 @@ const MainParamScreen = ({ route, navigation }) => {
     const formTeamParamsTargetPayloadData = () => {
         const targets = [];
         const data = [...updateTeamsParamsData];
-        const empIds = data.map(({empId}) => empId);
+        const empIds = data.map(({ empId }) => empId);
         const teamMembers = new Set(empIds);
         teamMembers.forEach(x => {
             const internalTargets = [];
@@ -468,16 +472,16 @@ const MainParamScreen = ({ route, navigation }) => {
             const user = selector.targetMapping.find(y => y.employeeId === x);
             const branchInfo = {};
             if (user) {
-                const {branch, department, designation} = user;
+                const { branch, department, designation } = user;
                 branchInfo.branch = branch;
                 branchInfo.department = department;
                 branchInfo.designation = designation;
             }
             empData.forEach(e => {
-                const obj = {unit: e.type === 'accessories' ? 'number' : 'percentage', target: e.target, parameter: e.type};
+                const obj = { unit: e.type === 'accessories' ? 'number' : 'percentage', target: e.target, parameter: e.type };
                 internalTargets.push(obj);
             });
-            const obj = {employeeId: x, ...branchInfo, targets: internalTargets};
+            const obj = { employeeId: x, ...branchInfo, targets: internalTargets };
             targets.push(obj);
         });
         return targets;
@@ -491,10 +495,10 @@ const MainParamScreen = ({ route, navigation }) => {
         //     return;
         // }
         setEditParameters(false);
-        const data = {...updatedSelfParameters};
-        setMasterSelfParameters({...data});
+        const data = { ...updatedSelfParameters };
+        setMasterSelfParameters({ ...data });
         if (loggedInEmpDetails) {
-            const {orgId, empId, branchId} = loggedInEmpDetails;
+            const { orgId, empId, branchId } = loggedInEmpDetails;
             const payload = {
                 orgId: `${orgId}`,
                 employeeId: `${empId}`,
@@ -522,10 +526,10 @@ const MainParamScreen = ({ route, navigation }) => {
         //     return;
         // }
         setEditParameters(false);
-        const data = {...updateTeamsParamsData};
-        setMasterTeamsParamsData({...data});
+        const data = { ...updateTeamsParamsData };
+        setMasterTeamsParamsData({ ...data });
         if (loggedInEmpDetails) {
-            const {orgId, empId, branchId} = loggedInEmpDetails;
+            const { orgId, empId, branchId } = loggedInEmpDetails;
             const payload = {
                 orgId: `${orgId}`,
                 employeeId: `${empId}`,
@@ -559,14 +563,15 @@ const MainParamScreen = ({ route, navigation }) => {
         }
     }
 
-    function onChangeTeamParamValue(curIndex, x) {
+    function onChangeTeamParamValue(curIndex, x, ID, type) {
+        const index = updateTeamsParamsData.findIndex(item => item.id === ID && item.type === type);
         updateTeamsParamsData[curIndex].target = x;
         const updatedParams = [...updateTeamsParamsData];
         setUpdateTeamsParamsData(updatedParams);
     }
 
-    const RenderTeamsTargetData = (item, type) => {
-        const curIndex = updateTeamsParamsData.findIndex(x => x.empId === item.employeeId && x.type === type);
+    const RenderTeamsTargetData = (item, type, index) => {
+        const curIndex = updateTeamsParamsData.findIndex(x => x.empId === item.employeeId && x.type === type && x.id === item.id);
         let param;
         if (curIndex !== -1) {
             const curParam = updateTeamsParamsData[curIndex];
@@ -575,9 +580,9 @@ const MainParamScreen = ({ route, navigation }) => {
         return (
             <>
                 {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
-                    <View>
-                        <TextInput editable={editParameters} style={editParameters ? styles.textBox : styles.textBoxDisabled}
-                            value={param} onChangeText={(x) => onChangeTeamParamValue(curIndex, x)} />
+                    <View key={index}>
+                        <TextInput key={index} editable={editParameters} style={editParameters ? styles.textBox : styles.textBoxDisabled}
+                            value={param} onChangeText={(x) => onChangeTeamParamValue(curIndex, x, item.id, type)} />
                     </View>
                 }
             </>
@@ -589,19 +594,19 @@ const MainParamScreen = ({ route, navigation }) => {
             <View>
                 {!editParameters &&
                     <View>
-                        <Pressable style={[styles.editParamsButton, {borderColor: Colors.RED}]} onPress={() => {
+                        <Pressable style={[styles.editParamsButton, { borderColor: Colors.RED }]} onPress={() => {
                             setEditParameters(true);
                         }}>
                             <View style={styles.editParamsBtnView}>
-                                <IconButton icon="pencil" size={16} color={Colors.RED}/>
+                                <IconButton icon="pencil" size={16} color={Colors.RED} />
                                 <Text>Edit Parameters</Text>
                             </View>
                         </Pressable>
                     </View>
                 }
                 {editParameters &&
-                    <View style={{display: 'flex', flexDirection: 'row', alignSelf: 'flex-end'}}>
-                        <Pressable style={[styles.editParamsButton, {borderColor: 'green'}]} onPress={() => {
+                    <View style={{ display: 'flex', flexDirection: 'row', alignSelf: 'flex-end' }}>
+                        <Pressable style={[styles.editParamsButton, { borderColor: 'green' }]} onPress={() => {
                             if ((homeSelector.isTeamPresent && selector.isTeam)) {
                                 saveTeamData();
                             } else {
@@ -613,7 +618,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                 <Text>Save</Text>
                             </View>
                         </Pressable>
-                        <Pressable style={[styles.editParamsButton, {borderColor: 'red'}]} onPress={() => {
+                        <Pressable style={[styles.editParamsButton, { borderColor: 'red' }]} onPress={() => {
                             setEditParameters(false);
                             if (homeSelector.isTeamPresent) {
                                 if (selector.isTeam) {
@@ -633,16 +638,16 @@ const MainParamScreen = ({ route, navigation }) => {
                                         console.log('daata: errr', y)
                                     })
                                 } else {
-                                    const data = {...masterSelfParameters};
+                                    const data = { ...masterSelfParameters };
                                     setUpdatedSelfParameters(data);
                                 }
                             } else {
-                                const data = {...masterSelfParameters};
+                                const data = { ...masterSelfParameters };
                                 setUpdatedSelfParameters(data);
                             }
                         }}>
                             <View style={styles.editParamsBtnView}>
-                                <IconButton icon="cancel" size={16} color={'red'} style={{padding: 0}}/>
+                                <IconButton icon="cancel" size={16} color={'red'} style={{ padding: 0 }} />
                                 <Text>Cancel</Text>
                             </View>
                         </Pressable>
@@ -651,280 +656,144 @@ const MainParamScreen = ({ route, navigation }) => {
             </View>
             {/*Teams Data Section*/}
             {loggedInEmpDetails !== null && (homeSelector.isTeamPresent && selector.isTeam) &&
-                <View style={{ flexDirection: 'row' }}>
-                    <View style={{ width: '30%', }}>
-                        <View style={{ height: 35, }}></View>
-                        <View style={styles.paramBox}>
-                            <Text style={[styles.text, { color: 'blue' }]}>Retail</Text>
-                        </View>
-                        <View style={styles.paramBox}>
-                            <Text style={[styles.text]}>Enquiry</Text>
-                        </View>
-                        <View style={styles.paramBox}>
-                            <Text style={[styles.text,]}>Booking</Text>
-                        </View>
-                        <View style={styles.paramBox}>
-                            <Text style={[styles.text,]}>Test Drive</Text>
-                        </View>
-                        <View style={styles.paramBox}>
-                            <Text style={[styles.text,]}>Visit</Text>
-                        </View>
+                <View>
+                    <ScrollView contentContainerStyle={{ paddingRight: 20, flexDirection: 'column' }} horizontal={true} directionalLockEnabled={true}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <View style={{ width: 100, height: 40 }}>
 
-                        <View style={styles.paramBox}>
-                            <Text style={[styles.text,]}>Finance</Text>
-                        </View>
-
-                        <View style={styles.paramBox}>
-                            <Text style={[styles.text,]}>Insurance</Text>
-                        </View>
-
-                        <View style={styles.paramBox}>
-                            <Text style={[styles.text,]}>Accessories</Text>
-                        </View>
-
-                        <View style={styles.paramBox}>
-                            <Text style={[styles.text,]}>Exchange</Text>
-                        </View>
-                        <View style={styles.paramBox}>
-                            <Text style={[styles.text,]}>Extended Warranty</Text>
-                        </View>
-                    </View>
-                    <ScrollView style={{ width: '100%' }} contentContainerStyle={{ flexDirection: 'column' }} showsVerticalScrollIndicator={false}
-                        showsHorizontalScrollIndicator={false} horizontal={true}>
-                        <View style={styles.nameWrap}>
-                            <View style={styles.nameBox} >
-                                <Text style={styles.text}>Team Total</Text>
                             </View>
-                            {
-                                selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
-                                    return (
-                                        <>
-                                            {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
-                                                <View style={styles.nameBox}>
-                                                    <Text style={styles.text} numberOfLines={1}>{item.empName}</Text>
-                                                </View>
-                                            }
-                                        </>
-                                    )
-                                })
-                            }
+                            <View style={{ height: 40, flexDirection: 'row' }}>
+                                <View style={styles.itemBox}>
+                                    <Text style={{ color: '#FA03B9' }}>Retail</Text>
+                                </View>
+                                <View style={styles.itemBox}>
+                                    <Text style={{ color: '#FA03B9' }}>Enquiry</Text>
+                                </View>
+                                <View style={styles.itemBox}>
+                                    <Text style={{ color: '#9E31BE' }}>Test Drive</Text>
+                                </View>
+                                <View style={styles.itemBox}>
+                                    <Text style={{ color: '#1C95A6' }}>Visit</Text>
+                                </View>
+                                <View style={styles.itemBox}>
+                                    <Text style={{ color: '#C62159' }}>Booking</Text>
+                                </View>
+                                {/* <View style={styles.itemBox}>
+                                    <Text style={{ color: '#9E31BE' }}>Retail</Text>
+                                </View> */}
+                                <View style={styles.itemBox}>
+                                    <Text style={{ color: '#EC3466' }}>Exchange</Text>
+                                </View>
+                                <View style={styles.itemBox}>
+                                    <Text style={{ color: '#1C95A6' }}>Finance</Text>
+                                </View>
+                                <View style={styles.itemBox}>
+                                    <Text style={{ color: '#1C95A6' }}>Insurance</Text>
+                                </View>
+                                <View style={styles.itemBox}>
+                                    <Text style={{ color: '#C62159' }}>Exwarranty</Text>
+                                </View>
+                                {/*<View style={styles.itemBox}>*/}
+                                {/*  <Text style={{ color: '#EC3466' }}>Total</Text>*/}
+                                {/*</View>*/}
+                                <View style={styles.itemBox}>
+                                    <Text style={{ color: '#0c0c0c' }}>Accessories</Text>
+                                </View>
+                            </View>
                         </View>
+                        {selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
+                            return (
+                                <>
+                                    {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate && <View style={{ flexDirection: 'row', marginTop: 5 }}>
+                                        <View style={{ minHeight: 40, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', }}>
+                                            {/*// left side name section */}
+                                            <View style={{ width: 100, marginTop: 5 }}>
+                                                {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
+                                                    <View style={styles.nameBox}>
+                                                        <Text style={styles.text} numberOfLines={1}>{item?.empName}</Text>
+                                                    </View>
+                                                }
+                                            </View>
 
-                        <View style={styles.textBoxWrap}>
-                            <TouchableOpacity style={styles.textBox}>
-                                <Text style={styles.textInput}>{getTotal('retailTarget')}</Text>
-                            </TouchableOpacity>
-                            {
-                                selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
-                                    return (
-                                        <>
+                                            <View style={{ width: 88, alignItems: "center" }}>
+                                                {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
+                                                    <TouchableOpacity onPress={() => {
+                                                        setSelectedDropdownData([{ label: item?.branchName, value: item?.branch }])
+                                                        if (item?.retailTarget !== null && selector?.endDate === item?.endDate && selector?.startDate === item?.startDate) {
+                                                            setSelectedBranch({ label: item?.branchName, value: item?.branch })
+                                                            setDefaultBranch(item?.branch)
+                                                            setAddOrEdit('E')
+                                                        }
+                                                        else {
+                                                            setDefaultBranch(null);
+                                                            setAddOrEdit('A')
+                                                        }
+                                                        if (item?.targetName) {
+                                                            setTargetName(item?.targetName)
+                                                        }
+                                                        setIsNoTargetAvailable(false)
+                                                        setRetail((item.retailTarget !== null && selector.endDate === item.endDate && selector.startDate === item.startDate) ? item.retailTarget : 0)
+                                                        setSelectedUser(item)
+
+                                                        setOpenRetail(true)
+                                                    }} style={{ width: 80, height: 40, borderWidth: 1, borderRadius: 5, borderColor: 'blue', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }} >
+                                                        <Text style={styles.textInput}>{item?.retailTarget ? item?.retailTarget : 0}</Text>
+                                                    </TouchableOpacity>}
+                                            </View>
+
                                             {Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&
-                                                <TouchableOpacity style={styles.textBox} onPress={() => {
-                                                    setSelectedDropdownData([{ label: item.branchName, value: item.branch }])
-                                                    if (item.retailTarget !== null && selector.endDate === item.endDate && selector.startDate === item.startDate) {
-                                                        setSelectedBranch({ label: item.branchName, value: item.branch })
-                                                        setDefaultBranch(item.branch)
-                                                        setAddOrEdit('E')
-                                                    }
-                                                    else {
-                                                        setDefaultBranch(null);
-                                                        setAddOrEdit('A')
-                                                    }
-                                                    if (item?.targetName) {
-                                                        setTargetName(item?.targetName)
-                                                    }
-                                                    setIsNoTargetAvailable(false)
-                                                    setRetail((item.retailTarget !== null && selector.endDate === item.endDate && selector.startDate === item.startDate) ? item.retailTarget : 0)
-                                                    setSelectedUser(item)
+                                                ["enquiry", "testDrive", "homeVisit", "booking", "exchange", "finance", "insurance", "exWarranty", "accessories"].map((subItem) => (
+                                                    <View key={index} style={{ width: 88, alignItems: "center" }}>
+                                                        {RenderTeamsTargetData(item, subItem, index)}
+                                                    </View>
+                                                ))}
+                                            {/* <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#C62159', borderRadius: 20, marginTop: 5, marginBottom: 5 }}>
+                                    
+                                </TouchableOpacity> */}
+                                        </View>
 
-                                                    setOpenRetail(true)
-                                                }}>
-                                                    <Text style={styles.textInput}>{item.retailTarget !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.retailTarget : 0}</Text>
+                                    </View>}
+
+                                </>
+                            )
+                        })}
+                        <View style={{ flexDirection: 'row', marginTop: 5 }}>
+                            <View style={{ minHeight: 40, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', }}>
+                                {/*// left side name section */}
+                                <View style={{ flexDirection: 'row' }}>
+                                    <View style={{ minHeight: 40, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                                        {/*// left side name section */}
+                                        <View style={{ width: 100, marginTop: 5 }}>
+                                            <View style={styles.nameBox}>
+                                                <Text style={styles.text} numberOfLines={1}>{'Team Total'}</Text>
+                                            </View>
+                                        </View>
+
+                                        <View style={{ width: 88, alignItems: "center" }}>
+                                            <TouchableOpacity style={{ width: 80, height: 40, borderWidth: 1, borderRadius: 5, borderColor: 'blue', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }} >
+                                                <Text style={styles.textInput}>{getTotal("retailTarget")}</Text>
+                                            </TouchableOpacity>
+                                        </View>
+
+                                        {["enquiry", "testDrive", "homeVisit", "booking", "exchange", "finance", "insurance", "exWarranty", "accessories"].map((item) => (
+                                            <View style={{ width: 88, alignItems: "center" }}>
+                                                <TouchableOpacity style={styles.textBoxDisabled} >
+                                                    <Text style={styles.textInput}>{getTotal(item)}</Text>
                                                 </TouchableOpacity>
-                                            }
-                                        </>
-                                    )
-                                })
-                            }
-                        </View>
+                                            </View>
+                                        ))
 
-                        <View style={styles.textBoxWrap}>
-                            <View style={styles.textBoxDisabled}>
-                                <Text style={styles.textInput}>{getTotal('enquiry')}</Text>
+                                        }
+                                        {/* <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#C62159', borderRadius: 20, marginTop: 5, marginBottom: 5 }}>
+                                    
+                                </TouchableOpacity> */}
+                                    </View>
+                                </View>
+
+                                {/* <TouchableOpacity style={{ width: 30, height: 30, justifyContent: 'center', alignItems: 'center', backgroundColor: '#C62159', borderRadius: 20, marginTop: 5, marginBottom: 5 }}>
+                                    
+                                </TouchableOpacity> */}
                             </View>
-                            {
-                                selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
-                                    return (
-                                        <>
-                                            {RenderTeamsTargetData(item, 'enquiry')}
-                                        </>
-                                    )
-                                })
-                            }
-                        </View>
-
-                        <View style={styles.textBoxWrap}>
-                            <View style={styles.textBoxDisabled}>
-                                <Text style={styles.textInput}>{getTotal('booking')}</Text>
-                            </View>
-                            {
-                                selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
-                                    return (
-                                        <>
-                                            {RenderTeamsTargetData(item, 'booking')}
-                                            {/*{Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&*/}
-                                            {/*    <View style={styles.textBoxDisabled}>*/}
-                                            {/*        <Text style={styles.textInput}>{item.booking !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.booking : 0}</Text>*/}
-                                            {/*    </View>*/}
-                                            {/*}*/}
-                                        </>
-                                    )
-                                })
-                            }
-                        </View>
-
-                        <View style={styles.textBoxWrap}>
-                            <View style={styles.textBoxDisabled}>
-                                <Text style={styles.textInput}>{getTotal('testDrive')}</Text>
-                            </View>
-                            {
-                                selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
-                                    return (
-                                        <>
-                                            {RenderTeamsTargetData(item, 'testDrive')}
-
-                                            {/*{Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&*/}
-                                            {/*    <View style={styles.textBoxDisabled}>*/}
-                                            {/*        <Text style={styles.textInput}>{item.testDrive !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.testDrive : 0}</Text>*/}
-                                            {/*    </View>*/}
-                                            {/*}*/}
-                                        </>
-                                    )
-                                })
-                            }
-                        </View>
-
-
-
-                        <View style={styles.textBoxWrap}>
-                            <View style={styles.textBoxDisabled}>
-                                <Text style={styles.textInput}>{getTotal('homeVisit')}</Text>
-                            </View>
-                            {
-                                selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
-                                    return (
-                                        <>
-                                            {RenderTeamsTargetData(item, 'homeVisit')}
-
-                                            {/*{Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&*/}
-                                            {/*    <View style={styles.textBoxDisabled}>*/}
-                                            {/*        <Text style={styles.textInput}>{item.homeVisit !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.homeVisit : 0}</Text>*/}
-                                            {/*    </View>*/}
-                                            {/*}*/}
-                                        </>
-                                    )
-                                })
-                            }
-                        </View>
-
-                        <View style={styles.textBoxWrap}>
-                            <View style={styles.textBoxDisabled}>
-                                <Text style={styles.textInput}>{getTotal('finance')}</Text>
-                            </View>
-                            {
-                                selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
-                                    return (
-                                        <>
-                                            {RenderTeamsTargetData(item, 'finance')}
-                                            {/*{Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&*/}
-                                            {/*    <View style={styles.textBoxDisabled}>*/}
-                                            {/*        <Text style={styles.textInput}>{item.finance !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.finance : 0}</Text>*/}
-                                            {/*    </View>*/}
-                                            {/*}*/}
-                                        </>
-                                    )
-                                })
-                            }
-                        </View>
-
-                        <View style={styles.textBoxWrap}>
-                            <View style={styles.textBoxDisabled}>
-                                <Text style={styles.textInput}>{getTotal('insurance')}</Text>
-                            </View>
-                            {
-                                selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
-                                    return (
-                                        <>
-                                            {RenderTeamsTargetData(item, 'insurance')}
-                                            {/*{Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&*/}
-                                            {/*    <View style={styles.textBoxDisabled}>*/}
-                                            {/*        <Text style={styles.textInput}>{item.insurance !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.insurance : 0}</Text>*/}
-                                            {/*    </View>*/}
-                                            {/*}*/}
-                                        </>
-                                    )
-                                })
-                            }
-                        </View>
-
-                        <View style={styles.textBoxWrap}>
-                            <View style={styles.textBoxDisabled}>
-                                <Text style={styles.textInput}>{getTotal('accessories')}</Text>
-                            </View>
-                            {
-                                selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
-                                    return (
-                                        <>
-                                            {RenderTeamsTargetData(item, 'accessories')}
-                                            {/*{Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&*/}
-                                            {/*    <View style={styles.textBoxDisabled}>*/}
-                                            {/*        <Text style={styles.textInput}>{item.accessories !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.accessories : 0}</Text>*/}
-                                            {/*    </View>*/}
-                                            {/*}*/}
-                                        </>
-                                    )
-                                })
-                            }
-                        </View>
-
-                        <View style={styles.textBoxWrap}>
-                            <View style={styles.textBoxDisabled}>
-                                <Text style={styles.textInput}>{getTotal('exchange')}</Text>
-                            </View>
-                            {
-                                selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
-                                    return (
-                                        <>
-                                            {RenderTeamsTargetData(item, 'exchange')}
-                                            {/*{Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&*/}
-                                            {/*    <View style={styles.textBoxDisabled}>*/}
-                                            {/*        <Text style={styles.textInput}>{item.exchange !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.exchange : 0}</Text>*/}
-                                            {/*    </View>*/}
-                                            {/*}*/}
-                                        </>
-                                    )
-                                })
-                            }
-                        </View>
-
-                        <View style={styles.textBoxWrap}>
-                            <View style={styles.textBoxDisabled}>
-                                <Text style={styles.textInput}>{getTotal('exWarranty')}</Text>
-                            </View>
-                            {
-                                selector.targetMapping.length > 0 && selector.targetMapping.map((item, index) => {
-                                    return (
-                                        <>
-                                            {RenderTeamsTargetData(item, 'exWarranty')}
-                                            {/*{Number(item.employeeId) !== Number(loggedInEmpDetails?.empId) && selector.endDate === item.endDate && selector.startDate === item.startDate &&*/}
-                                            {/*    <View style={styles.textBoxDisabled}>*/}
-                                            {/*        <Text style={styles.textInput}>{item.exWarranty !== null && selector.endDate === item.endDate && selector.startDate === item.startDate ? item.exWarranty : 0}</Text>*/}
-                                            {/*    </View>*/}
-                                            {/*}*/}
-                                        </>
-                                    )
-                                })
-                            }
                         </View>
                     </ScrollView>
                 </View>
@@ -978,14 +847,14 @@ const MainParamScreen = ({ route, navigation }) => {
 
                     <View style={styles.textBoxWrap}>
                         <TouchableOpacity style={styles.textBox} onPress={() => {
-                            setSelectedUser({...loggedInEmpDetails})
+                            setSelectedUser({ ...loggedInEmpDetails })
                             // if (isNoTargetAvailable) {
                             //     setAddOrEdit('A')
                             // }
                             // else {
                             //     setAddOrEdit('E')
                             // }
-                            if(loggedInEmpDetails.primaryDepartment === 'Sales'){
+                            if (loggedInEmpDetails.primaryDepartment === 'Sales') {
                                 if (ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate) {
                                     setSelectedBranch({ label: ownData.branchName, value: ownData.branch })
                                     setDefaultBranch(ownData.branch)
@@ -1116,7 +985,7 @@ const MainParamScreen = ({ route, navigation }) => {
                                         setDefaultBranch(null);
                                         setAddOrEdit('A')
                                     }
-                                    setSelectedUser({...loggedInEmpDetails});
+                                    setSelectedUser({ ...loggedInEmpDetails });
                                     (ownData.retailTarget !== null && selector.endDate === ownData.endDate && selector.startDate === ownData.startDate) ? setRetail(ownData.retailTarget.toString()) : setRetail('')
 
                                     setOpenRetail(true)
@@ -1378,7 +1247,10 @@ const styles = StyleSheet.create({
         height: 40,
         fontSize: 16,
     },
-    editParamsButton: {borderStyle: 'solid', borderWidth: 1, paddingEnd: 4, margin: 4, alignSelf: 'flex-end' },
-    editParamsBtnView: {display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}
+    editParamsButton: { borderStyle: 'solid', borderWidth: 1, paddingEnd: 4, margin: 4, alignSelf: 'flex-end' },
+    editParamsBtnView: { display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
+    itemBox: { width: 88, height: 40, justifyContent: 'center', alignItems: 'center' },
+    totalView: { width: 40, minHeight: 40, alignItems: 'center', justifyContent: 'center' },
+    totalText: { width: 60, fontSize: 12, color: '#000', fontWeight: '500', textAlign: 'center' }
 });
 
