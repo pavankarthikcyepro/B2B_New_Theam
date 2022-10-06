@@ -655,7 +655,7 @@ const TargetScreen = ({route}) => {
                                     marginTop: 8,
                                     width: '75%'
                                 }}
-                                values={['ETVBR', 'Support Params', 'View All']}
+                                values={['ETVBR', 'Alead', 'View All']}
                                 selectedIndex={toggleParamsIndex}
                                 tintColor={Colors.RED}
                                 fontStyle={{color: Colors.BLACK, fontSize: 10}}
