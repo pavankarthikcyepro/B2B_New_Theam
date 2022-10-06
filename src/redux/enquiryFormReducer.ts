@@ -617,7 +617,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.r_insurence_from_date = ""
       state.r_insurence_to_date = ""
       state.r_insurence_document_checked = false
-      state.dmsLeadProducts =[];
+      state.dmsLeadProducts = [];
       state.refNo = ''
     },
     clearState2: (state, action) => {
@@ -690,13 +690,13 @@ const enquiryDetailsOverViewSlice = createSlice({
           //       state.customer_types_response[value.toLowerCase()];
           // }
           // state.customer_type_list = CustomerTypesObj21[value.toLowerCase()]
-          if(+orgId == 21){
+          if (+orgId == 21) {
             state.customer_types_data = CustomerTypesObj21[value.toLowerCase()];
           }
-          else if( +orgId == 22){
+          else if (+orgId == 22) {
             state.customer_types_data = CustomerTypesObj22[value.toLowerCase()];
           }
-          else{
+          else {
             state.customer_types_data = CustomerTypesObj[value.toLowerCase()];
           }
           break;
@@ -784,7 +784,7 @@ const enquiryDetailsOverViewSlice = createSlice({
           state.finance_category = value;
           break;
         case "BANK_FINANCE":
-          state.bank_or_finance = value ;
+          state.bank_or_finance = value;
           break;
         case "APPROX_ANNUAL_INCOME":
           state.approx_annual_income = value;
@@ -889,7 +889,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       state.datePickerKeyId = action.payload;
       state.showDatepicker = !state.showDatepicker;
     },
-    updatedmsLeadProduct:(state, action)=>{
+    updatedmsLeadProduct: (state, action) => {
       // alert(JSON.stringify(action.payload))
       const data = action.payload;
       console.log("updatedmsLeadProduct: ", JSON.stringify(action.payload));
@@ -1142,7 +1142,7 @@ const enquiryDetailsOverViewSlice = createSlice({
         case "EMI":
           state.emi = text;
           break;
-        case "BANK_R_FINANCE_NAME":          
+        case "BANK_R_FINANCE_NAME":
           state.bank_or_finance_name = text;
           break;
         case "LOCATION":
@@ -1866,6 +1866,10 @@ const enquiryDetailsOverViewSlice = createSlice({
               if (item.documentNumber && item.documentNumber != "") {
                 state.employee_id = item.documentNumber;
               }
+            case "gstNumber":
+              if (item.documentNumber && item.documentNumber != "") {
+                state.gstin_number = item.documentNumber;
+              }
               break;
           }
         });
@@ -1939,8 +1943,7 @@ const enquiryDetailsOverViewSlice = createSlice({
       // if (action.payload.dmsEntity) {
       //  state.enquiry_details_response = action.payload.dmsEntity;
       const data = action.payload
-      if (data && data.orgName)
-      {
+      if (data && data.orgName) {
         state.proforma_orgName = data.orgName
         state.proforma_logo = data.url
         state.proforma_branch = data.branchName
