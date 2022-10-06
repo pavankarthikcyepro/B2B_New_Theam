@@ -29,14 +29,14 @@ export const RenderSourceModelParameters = (parameter) => {
     return (
         <>
             {
-                paramsData.map((param) => {
+                paramsData.map((param, i) => {
                     const selectedParameter = item.targetAchievements.filter((x) => x.paramName === param)[0];
                     const enquiryParameter = item.targetAchievements.filter((item) => item.paramName === 'Enquiry')[0];
 
                     if (selectedParameter) {
                         const elementColor = getColor(Number(selectedParameter.achievment), Number(selectedParameter.target));
                         return (
-                            <View key={param} style={[styles.itemBox, {width: param === "Accessories" ? 80 : 60}]}>
+                            <View key={`${param}_${i}`} style={[styles.itemBox, {width: param === "Accessories" ? 80 : 60}]}>
                                 <Text style={[styles.totalText1, {color: elementColor}]}>
                                     {selectedParameter ?
                                         displayType === 0 ? selectedParameter.achievment :

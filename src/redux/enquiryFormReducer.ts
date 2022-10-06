@@ -411,7 +411,7 @@ const initialState = {
   insurance_type: "",
   add_on_insurance: "",
   addOnPrice: 0,
-
+    warranty: "",
   //personal Intro
   gender_types_data: [],
   relation_types_data: [],
@@ -681,7 +681,6 @@ const enquiryDetailsOverViewSlice = createSlice({
 
       switch (key) {
         case "ENQUIRY_SEGMENT":
-          console.log("selected: ", value);
           state.enquiry_segment = value;
           state.customer_type = "";
 
@@ -750,7 +749,9 @@ const enquiryDetailsOverViewSlice = createSlice({
         case "INSURANCE_TYPE":
           state.insurance_type = value;
           break;
-
+        case "WARRANTY":
+          state.warranty = value;
+          break;
         case "INSURENCE_ADD_ONS":
           state.add_on_insurance = value;
         case "SOURCE_OF_ENQUIRY":
@@ -1829,6 +1830,7 @@ const enquiryDetailsOverViewSlice = createSlice({
         state.r_insurence_type = dataObj.insuranceType
           ? dataObj.insuranceType
           : "";
+        state.warranty = dataObj.warrantyName ? dataObj.warrantyName : "";
         const insurenceFromDate = dataObj.insuranceFromDate
           ? dataObj.insuranceFromDate
           : "";
