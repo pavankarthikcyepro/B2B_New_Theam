@@ -119,14 +119,12 @@ const HomeScreen = ({ route, navigation }) => {
     // insights data
     useEffect(() => {
         if (selector.insights_target_parameters_data.length > 0) {
-            console.log("@@@@@@@@@@@@@@@@@@selector.insights_target_parameters_data.length$$$$$$", selector.insights_target_parameters_data);
             let tempRetail = [];
             tempRetail = selector.insights_target_parameters_data.filter((item) => {
                 return item.paramName.toLowerCase() === 'invoice'
             })
             if (tempRetail.length > 0) {
                 setRetailData(tempRetail[0])
-                console.log("tempRetail[0]>>>>>>>>>>>>>>>>>>>>>> insights", tempRetail);
             }
         } else {
         }

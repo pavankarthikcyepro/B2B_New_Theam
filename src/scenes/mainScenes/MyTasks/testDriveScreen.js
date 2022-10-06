@@ -1159,7 +1159,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 <DropDownSelectionItem
                   label={"Model*"}
                   value={
-                    selectedVehicleDetails.vehicleId
+                    selectedVehicleDetails.model
                       ? selectedVehicleDetails.model
                       : ""
                   }
@@ -1181,7 +1181,7 @@ const TestDriveScreen = ({ route, navigation }) => {
                 <DropDownSelectionItem
                   label={"Varient*"}
                   value={
-                    selectedVehicleDetails.varientId
+                    selectedVehicleDetails.varient
                       ? selectedVehicleDetails.varient
                       : ""
                   }
